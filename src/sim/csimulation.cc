@@ -1051,7 +1051,8 @@ void cSimulation::executeEvent(cEvent *event)
 
 #undef DEBUG_TRAP_IF_REQUESTED
 
-class cDefaultEventLoopRunner : public cIEventLoopRunner {
+class cDefaultEventLoopRunner : public cIEventLoopRunner
+{
   private:
     cSimulation *simulation;
   public:
@@ -1061,15 +1062,24 @@ class cDefaultEventLoopRunner : public cIEventLoopRunner {
 
 void cDefaultEventLoopRunner::run()
 {
-    bool hasTimeLimit = simulation->hasRealTimeLimit();
-    unsigned int i = 0;
-    while (true) {
-        cEvent *event = simulation->takeNextEvent();
-        if (!event)
-            throw cTerminationException("Scheduler interrupted while waiting");
-        simulation->executeEvent(event);
-        if (hasTimeLimit && (i++ & 1023) == 0)
-            simulation->checkRealTimeLimits();
+    if (simulation->hasRealTimeLimit()) {
+        unsigned int i = 0;
+        while (true) {
+            cEvent *event = simulation->takeNextEvent();
+            if (!event)
+                throw cTerminationException("Scheduler interrupted while waiting");
+            simulation->executeEvent(event);
+            if ((i++ & 1023) == 0)
+                simulation->checkRealTimeLimits();
+        }
+    }
+    else {
+        while (true) {
+            cEvent *event = simulation->takeNextEvent();
+            if (!event)
+                throw cTerminationException("Scheduler interrupted while waiting");
+            simulation->executeEvent(event);
+        }
     }
 }
 
