@@ -14,11 +14,12 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "cmdenvenvir.h"
+
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 #include "envir/appbase.h"
-#include "cmdenvir.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -36,11 +37,11 @@ extern cConfigOption *CFGID_CMDENV_EXPRESS_MODE;
 extern cConfigOption *CFGID_CMDENV_AUTOFLUSH;
 extern cConfigOption *CFGID_CMDENV_EVENT_BANNERS;
 
-CmdEnvir::CmdEnvir(std::ostream& out, bool& sigintReceived) : out(out), sigintReceived(sigintReceived)
+CmdenvEnvir::CmdenvEnvir(std::ostream& out, bool& sigintReceived) : out(out), sigintReceived(sigintReceived)
 {
 }
 
-void CmdEnvir::configure(cConfiguration *cfg)
+void CmdenvEnvir::configure(cConfiguration *cfg)
 {
     EnvirBase::configure(cfg);
 
@@ -60,7 +61,7 @@ void CmdEnvir::configure(cConfiguration *cfg)
         fakeGUI->configure(getSimulation(), cfg);
 }
 
-void CmdEnvir::setFakeGUI(FakeGUI *fakeGUI)
+void CmdenvEnvir::setFakeGUI(FakeGUI *fakeGUI)
 {
     delete this->fakeGUI;
     this->fakeGUI = fakeGUI;
@@ -68,7 +69,7 @@ void CmdEnvir::setFakeGUI(FakeGUI *fakeGUI)
         out << "\n*** WARNING: FAKEGUI IS AN EXPERIMENTAL FEATURE -- DO NOT RELY ON FINGERPRINTS GENERATED UNDER FAKEGUI UNTIL CODE IS FINALIZED!\n" << endl;
 }
 
-void CmdEnvir::componentInitBegin(cComponent *component, int stage)
+void CmdenvEnvir::componentInitBegin(cComponent *component, int stage)
 {
     EnvirBase::componentInitBegin(component, stage);
 
@@ -77,7 +78,7 @@ void CmdEnvir::componentInitBegin(cComponent *component, int stage)
         out << "Initializing " << (component->isModule() ? "module" : "channel") << " " << component->getFullPath() << ", stage " << stage << endl;
 }
 
-void CmdEnvir::configureComponent(cComponent *component)
+void CmdenvEnvir::configureComponent(cComponent *component)
 {
     EnvirBase::configureComponent(component);
 
@@ -85,7 +86,7 @@ void CmdEnvir::configureComponent(cComponent *component)
     component->setLogLevel(level);
 }
 
-void CmdEnvir::askParameter(cPar *par, bool unassigned)
+void CmdenvEnvir::askParameter(cPar *par, bool unassigned)
 {
     bool success = false;
     while (!success) {
@@ -112,12 +113,12 @@ void CmdEnvir::askParameter(cPar *par, bool unassigned)
     }
 }
 
-void CmdEnvir::alert(const char *msg)
+void CmdenvEnvir::alert(const char *msg)
 {
     out << "\n<!> " << msg << endl << endl;
 }
 
-void CmdEnvir::log(cLogEntry *entry)
+void CmdenvEnvir::log(cLogEntry *entry)
 {
     EnvirBase::log(entry);
 
@@ -129,7 +130,7 @@ void CmdEnvir::log(cLogEntry *entry)
         out.flush();
 }
 
-std::string CmdEnvir::input(const char *prompt, const char *defaultReply)
+std::string CmdenvEnvir::input(const char *prompt, const char *defaultReply)
 {
     if (!interactive)
         throw cRuntimeError("The simulation attempted to prompt for user input, set cmdenv-interactive=true to allow it: \"%s\"", prompt);
@@ -146,7 +147,7 @@ std::string CmdEnvir::input(const char *prompt, const char *defaultReply)
     return buffer;
 }
 
-bool CmdEnvir::askYesNo(const char *question)
+bool CmdenvEnvir::askYesNo(const char *question)
 {
     if (!interactive)
         throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
@@ -167,34 +168,34 @@ bool CmdEnvir::askYesNo(const char *question)
     }
 }
 
-void CmdEnvir::undisposedObject(cObject *obj)
+void CmdenvEnvir::undisposedObject(cObject *obj)
 {
     // overridden to use the "right" stream
     if (printUndisposed)
         out << "undisposed object: (" << obj->getClassName() << ") " << obj->getFullPath() << " -- check module destructor" << endl;
 }
 
-bool CmdEnvir::idle()
+bool CmdenvEnvir::idle()
 {
     return sigintReceived;
 }
 
-double CmdEnvir::getAnimationTime() const
+double CmdenvEnvir::getAnimationTime() const
 {
     return fakeGUI ? fakeGUI->getAnimationTime() : 0;
 }
 
-double CmdEnvir::getAnimationSpeed() const
+double CmdenvEnvir::getAnimationSpeed() const
 {
     return fakeGUI ? fakeGUI->getAnimationSpeed() : 0;
 }
 
-double CmdEnvir::getRemainingAnimationHoldTime() const
+double CmdenvEnvir::getRemainingAnimationHoldTime() const
 {
     return fakeGUI ? fakeGUI->getRemainingAnimationHoldTime() : 0;
 }
 
-void CmdEnvir::getImageSize(const char *imageName, double& outWidth, double& outHeight)
+void CmdenvEnvir::getImageSize(const char *imageName, double& outWidth, double& outHeight)
 {
     if (fakeGUI)
         fakeGUI->getImageSize(imageName, outWidth, outHeight);
@@ -202,7 +203,7 @@ void CmdEnvir::getImageSize(const char *imageName, double& outWidth, double& out
         outWidth = outHeight = 32;
 }
 
-void CmdEnvir::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
+void CmdenvEnvir::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
 {
     if (!*text)
         outWidth = outHeight = outAscent = 0;
@@ -215,34 +216,34 @@ void CmdEnvir::getTextExtent(const cFigure::Font& font, const char *text, double
     }
 }
 
-void CmdEnvir::appendToImagePath(const char *directory)
+void CmdenvEnvir::appendToImagePath(const char *directory)
 {
     if (fakeGUI)
         fakeGUI->appendToImagePath(directory);
 }
 
-void CmdEnvir::loadImage(const char *fileName, const char *imageName)
+void CmdenvEnvir::loadImage(const char *fileName, const char *imageName)
 {
     if (fakeGUI)
         fakeGUI->loadImage(fileName, imageName);
 }
 
-cFigure::Rectangle CmdEnvir::getSubmoduleBounds(const cModule *submodule)
+cFigure::Rectangle CmdenvEnvir::getSubmoduleBounds(const cModule *submodule)
 {
     return fakeGUI ? fakeGUI->getSubmoduleBounds(submodule) : cFigure::Rectangle(NAN, NAN, NAN, NAN);
 }
 
-std::vector<cFigure::Point> CmdEnvir::getConnectionLine(const cGate *sourceGate)
+std::vector<cFigure::Point> CmdenvEnvir::getConnectionLine(const cGate *sourceGate)
 {
     return fakeGUI ? fakeGUI->getConnectionLine(sourceGate) : std::vector<cFigure::Point>();
 }
 
-double CmdEnvir::getZoomLevel(const cModule *module)
+double CmdenvEnvir::getZoomLevel(const cModule *module)
 {
     return fakeGUI ? fakeGUI->getZoomLevel(module) : NAN;
 }
 
-bool CmdEnvir::ensureDebugger(cRuntimeError *error)
+bool CmdenvEnvir::ensureDebugger(cRuntimeError *error)
 {
     AppBase *app = AppBase::getActiveApp();  //TODO should not rely on active App
     return app ? app->ensureDebugger(error) : false;

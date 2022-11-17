@@ -29,7 +29,7 @@ COPTS=$(CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS= -loppsim$D -loppenvir$D -loppcommon$D
 
-OBJS = $O/cmdenvapp.o $O/cmdenvir.o $O/cmdenvsimulationrunner.o $O/fakegui.o
+OBJS = $O/cmdenvapp.o $O/cmdenvenvir.o $O/cmdenvsimulationrunner.o $O/fakegui.o
 
 ifeq ($(WITH_PYTHONSIM),yes)
   COPTS += $(PYTHON_CFLAGS)

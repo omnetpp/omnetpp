@@ -1,5 +1,5 @@
 //==========================================================================
-//  CMDENVIR.H - part of
+//  CMDENVENVIR.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CMDENV_CMDENVIR_H
-#define __OMNETPP_CMDENV_CMDENVIR_H
+#ifndef __OMNETPP_CMDENV_CMDENVENVIR_H
+#define __OMNETPP_CMDENV_CMDENVENVIR_H
 
 #include "cmddefs.h"
 #include "fakegui.h"
@@ -28,7 +28,7 @@ using namespace omnetpp::envir;
 /**
  * Envir class for the command line user interface.
  */
-class CMDENV_API CmdEnvir : public EnvirBase
+class CMDENV_API CmdenvEnvir : public EnvirBase
 {
    protected:
     std::ostream& out;
@@ -40,8 +40,8 @@ class CMDENV_API CmdEnvir : public EnvirBase
     bool interactive = false;
 
    public:
-    CmdEnvir(std::ostream& out, bool& sigintReceived);
-    virtual ~CmdEnvir() {delete fakeGUI;}
+    CmdenvEnvir(std::ostream& out, bool& sigintReceived);
+    virtual ~CmdenvEnvir() {delete fakeGUI;}
     virtual void configure(cConfiguration *cfg) override;
 
     void setFakeGUI(FakeGUI *fakeGUI);

@@ -25,8 +25,6 @@
 
 #include "cmddefs.h"
 #include "cmdenvapp.h"
-#include "cmdenvir.h"
-#include "common/enumstr.h"
 #include "common/fileutil.h"
 #include "common/stlutil.h"
 #include "common/stringutil.h"
@@ -49,6 +47,7 @@
 #include "sim/netbuilder/cnedloader.h"
 #include "sim/pythonutil.h"
 #include "cmdenvsimulationrunner.h"
+#include "cmdenvenvir.h"
 
 #ifdef WITH_PYTHONSIM
 #include <Python.h>
@@ -404,7 +403,7 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
 
 cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& out)
 {
-    CmdEnvir *envir = new CmdEnvir(out, sigintReceived);
+    CmdenvEnvir *envir = new CmdenvEnvir(out, sigintReceived);
     envir->setArgs(args);
     envir->setVerbose(verbose);
 
