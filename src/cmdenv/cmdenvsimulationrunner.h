@@ -35,15 +35,15 @@ using namespace omnetpp::envir;
 class CMDENV_API CmdenvSimulationRunner
 {
    protected:
+     std::ostream& out;
+
      cINedLoader *nedLoader = nullptr;
      ArgList *args = nullptr;
-
-     std::ostream& out = std::cout; //TODO
 
      std::thread::id homeThreadId;
 
      bool verbose;
-     bool useStderr; // only used in subclasses
+     bool useStderr;
 
      // set to true on SIGINT/SIGTERM signals
      static bool sigintReceived;
@@ -56,7 +56,8 @@ class CMDENV_API CmdenvSimulationRunner
      bool stopBatchOnError = true;
 
    protected:
-     virtual cSimulation *createSimulation(std::ostream& out);
+     virtual cINedLoader *createConfiguredNedLoader(cConfiguration *cfg);
+     virtual cSimulation *createSimulation(std::ostream& simout);
      virtual cIEventLoopRunner *createEventLoopRunner(cSimulation *simulation, std::ostream& simout, cConfiguration *cfg);
      virtual void logException(std::ostream& out, std::exception& e);
 
@@ -69,16 +70,14 @@ class CMDENV_API CmdenvSimulationRunner
      static void sigintHandler(int signum);
 
    public:
-     CmdenvSimulationRunner();
+     CmdenvSimulationRunner(std::ostream& out, ArgList *args);
      virtual ~CmdenvSimulationRunner();
 
      virtual void setVerbose(bool verbose) {this->verbose = verbose;}
      virtual void setUseStderr(bool useStderr) {this->useStderr = useStderr;}
 
-     virtual int runCmdenv(InifileContents *ini, ArgList *args);
-     virtual int runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args);
-
-     virtual cINedLoader *createConfiguredNedLoader(cConfiguration *cfg);
+     virtual int runCmdenv(InifileContents *ini);
+     virtual int runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter);
 
      virtual void runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
      virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads);

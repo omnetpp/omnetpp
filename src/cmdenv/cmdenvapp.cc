@@ -57,10 +57,10 @@ void CmdenvApp::printUISpecificHelp()
 
 int CmdenvApp::doRunApp()
 {
-    CmdenvSimulationRunner core;
+    CmdenvSimulationRunner core(out, args);
     core.setVerbose(verbose);
     core.setUseStderr(useStderr);
-    return core.runCmdenv(ini, args);
+    return core.runCmdenv(ini);
 }
 
 void CmdenvApp::displayException(std::exception& ex)

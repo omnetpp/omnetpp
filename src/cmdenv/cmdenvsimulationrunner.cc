@@ -110,8 +110,7 @@ void VerboseListener::listenerRemoved()
 
 //---
 
-//TODO better ctors!
-CmdenvSimulationRunner::CmdenvSimulationRunner()
+CmdenvSimulationRunner::CmdenvSimulationRunner(std::ostream& out, ArgList *args) : out(out), args(args)
 {
     homeThreadId = std::this_thread::get_id();
 }
@@ -120,7 +119,7 @@ CmdenvSimulationRunner::~CmdenvSimulationRunner()
 {
 }
 
-int CmdenvSimulationRunner::runCmdenv(InifileContents *ini, ArgList *args)
+int CmdenvSimulationRunner::runCmdenv(InifileContents *ini)
 {
     cConfiguration *globalCfg = ini->extractGlobalConfig();
     std::string configName = globalCfg->getAsString(CFGID_CMDENV_CONFIG_NAME);
@@ -137,13 +136,11 @@ int CmdenvSimulationRunner::runCmdenv(InifileContents *ini, ArgList *args)
     if (args->optionGiven('r'))
         runFilter = args->optionValue('r');
 
-    return runParameterStudy(ini, configName.c_str(), runFilter.c_str(), args);
+    return runParameterStudy(ini, configName.c_str(), runFilter.c_str());
 }
 
-int CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter, ArgList *args)
+int CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter)
 {
-    this->args = args;
-
     std::vector<int> runNumbers;
     try {
         runNumbers = ini->resolveRunFilter(configName, runFilter);
@@ -392,9 +389,9 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
     }
 }
 
-cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& out)
+cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& simout)
 {
-    CmdenvEnvir *envir = new CmdenvEnvir(out, sigintReceived);
+    CmdenvEnvir *envir = new CmdenvEnvir(simout, sigintReceived);
     envir->setArgs(args);
     envir->setVerbose(verbose);
 
