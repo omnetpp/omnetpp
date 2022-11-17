@@ -304,7 +304,7 @@ bool CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *con
         bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
         std::string outputFile = redirectOutput ? ResultFileUtils(cfg.get()).augmentFileName(cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE)) : "";
 
-        cTerminationException *reason = setupAndRunSimulation(cfg.get(), nullptr, redirectOutput ? outputFile.c_str() : nullptr);
+        cTerminationException *reason = setupAndRunSimulation(cfg.get(), redirectOutput ? outputFile.c_str() : nullptr);
         delete reason;
         return true;
     }
@@ -317,10 +317,8 @@ bool CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *con
 
 inline const char *opp_nulltodefault(const char *s, const char *defaultString)  {return s == nullptr ? defaultString : s;}
 
-cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfiguration *cfg, cIEventLoopRunner *runner, const char *redirectFileName)
+cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfiguration *cfg, const char *redirectFileName)
 {
-    //TODO more factories? createSimulation(), createEnvir(), createRunner()?
-
     bool redirectOutput = redirectFileName != nullptr;
 
     const char *configName = opp_nulltodefault(cfg->getVariable(CFGVAR_CONFIGNAME), "?");
@@ -356,10 +354,8 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
     std::unique_ptr<cSimulation> tmp(createSimulation(simout));
     cSimulation *simulation = tmp.get();
 
-    GenericEventLoopRunner localRunner(simulation, simout, sigintReceived);
-    if (runner == nullptr)
-        runner = &localRunner;
-    configureRunner(runner, cfg);
+    std::unique_ptr<cIEventLoopRunner> tmp2(createEventLoopRunner(simulation, simout, cfg));
+    cIEventLoopRunner *runner = tmp2.get();
 
     if (verbose)
         simulation->addLifecycleListener(new VerboseListener(simout));
@@ -405,18 +401,18 @@ cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& out)
     return new cSimulation("simulation", envir, nedLoader);
 }
 
-void CmdenvSimulationRunner::configureRunner(cIEventLoopRunner *irunner, cConfiguration *cfg)
+cIEventLoopRunner *CmdenvSimulationRunner::createEventLoopRunner(cSimulation *simulation, std::ostream& simout, cConfiguration *cfg)
 {
-    if (GenericEventLoopRunner *runner = dynamic_cast<GenericEventLoopRunner*>(irunner)) {
-        runner->setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
-        runner->setAutoFlush(cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH));
-        runner->setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
-        runner->setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
-        runner->setPrintThreadId(std::this_thread::get_id() != homeThreadId);
-        runner->setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
-        runner->setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
-        runner->setBatchProgress(runsTried, numRuns);
-    }
+    GenericEventLoopRunner *runner = new GenericEventLoopRunner(simulation, simout, sigintReceived);
+    runner->setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
+    runner->setAutoFlush(cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH));
+    runner->setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
+    runner->setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
+    runner->setPrintThreadId(std::this_thread::get_id() != homeThreadId);
+    runner->setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
+    runner->setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
+    runner->setBatchProgress(runsTried, numRuns);
+    return runner;
 }
 
 void CmdenvSimulationRunner::sigintHandler(int signum)
