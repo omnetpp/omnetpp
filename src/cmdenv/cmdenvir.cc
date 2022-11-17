@@ -17,6 +17,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
+#include "envir/appbase.h"
 #include "cmdenvir.h"
 
 using namespace omnetpp::common;

@@ -19,7 +19,6 @@
 #include "cmddefs.h"
 #include "fakegui.h"
 #include "envir/envirbase.h"
-#include "cmdenv.h"
 
 namespace omnetpp {
 namespace cmdenv {

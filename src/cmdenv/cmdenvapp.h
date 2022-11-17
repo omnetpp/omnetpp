@@ -1,5 +1,5 @@
 //==========================================================================
-//  CMDENV.H - part of
+//  CMDENVAPP.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CMDENV_CMDENV_H
-#define __OMNETPP_CMDENV_CMDENV_H
+#ifndef __OMNETPP_CMDENV_CMDENVAPP_H
+#define __OMNETPP_CMDENV_CMDENVAPP_H
 
 #include "cmddefs.h"
 #include "envir/appbase.h"
@@ -27,15 +27,15 @@ using namespace omnetpp::envir;
 /**
  * Command line user interface.
  */
-class CMDENV_API Cmdenv : public AppBase
+class CMDENV_API CmdenvApp : public AppBase
 {
    protected:
      virtual void alert(const char *msg) override; //TODO route to CmdenvCore instance?
      virtual void displayException(std::exception& ex) override; //TODO route to CmdenvCore instance?
 
    public:
-     Cmdenv();
-     virtual ~Cmdenv();
+     CmdenvApp();
+     virtual ~CmdenvApp();
 
    protected:
      virtual int doRunApp() override;
