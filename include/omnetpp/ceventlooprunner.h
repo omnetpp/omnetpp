@@ -1,5 +1,5 @@
 //==========================================================================
-//   CRUNNER.H  - part of
+//   CEVENTLOOPRUNNER.H  - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,10 +13,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_CRUNNER_H
-#define __OMNETPP_CRUNNER_H
+#ifndef __OMNETPP_CEVENTLOOPRUNNER_H
+#define __OMNETPP_CEVENTLOOPRUNNER_H
 
-#include "cownedobject.h"
+#include "simkerneldefs.h"
 
 namespace omnetpp {
 
@@ -34,9 +34,9 @@ namespace omnetpp {
  *
  * @ingroup SimSupport
  */
-class SIM_API cIRunner {
+class SIM_API cIEventLoopRunner {
   public:
-    virtual ~cIRunner();
+    virtual ~cIEventLoopRunner();
 
     /**
      * Exceptions thrown from the simulation are propagated. The method is

@@ -35,7 +35,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
-#include "omnetpp/crunner.h"
+#include "omnetpp/ceventlooprunner.h"
 
 #include "ctemporaryowner.h"
 #include "omnetpp/cscheduler.h"
@@ -1051,15 +1051,15 @@ void cSimulation::executeEvent(cEvent *event)
 
 #undef DEBUG_TRAP_IF_REQUESTED
 
-class DefaultRunner : public cIRunner {
+class cDefaultEventLoopRunner : public cIEventLoopRunner {
   private:
     cSimulation *simulation;
   public:
-    DefaultRunner(cSimulation *simulation) : simulation(simulation) {}
+    cDefaultEventLoopRunner(cSimulation *simulation) : simulation(simulation) {}
     virtual void run() override;
 };
 
-void DefaultRunner::run()
+void cDefaultEventLoopRunner::run()
 {
     bool hasTimeLimit = simulation->hasRealTimeLimit();
     unsigned int i = 0;
@@ -1073,7 +1073,7 @@ void DefaultRunner::run()
     }
 }
 
-bool cSimulation::run(cIRunner *runner, bool shouldCallFinish)
+bool cSimulation::run(cIEventLoopRunner *runner, bool shouldCallFinish)
 {
     ASSERT(stage == STAGE_NONE);  // must not be doing something else
 
@@ -1086,7 +1086,7 @@ bool cSimulation::run(cIRunner *runner, bool shouldCallFinish)
         case SIM_ERROR: throw cRuntimeError("run(): Cannot continue after an error");
     }
 
-    DefaultRunner defaultRunner(this);
+    cDefaultEventLoopRunner defaultRunner(this);
     if (runner == nullptr)
         runner = &defaultRunner;
 

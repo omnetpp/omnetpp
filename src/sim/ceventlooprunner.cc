@@ -1,5 +1,5 @@
 //=========================================================================
-//  CRUNNER.CC - part of
+//  CEVENTLOOPRUNNER.CC - part of
 //
 //                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
@@ -14,11 +14,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "omnetpp/crunner.h"
+#include "omnetpp/ceventlooprunner.h"
 
 namespace omnetpp {
 
-cIRunner::~cIRunner()
+cIEventLoopRunner::~cIEventLoopRunner()
 {
 }
 

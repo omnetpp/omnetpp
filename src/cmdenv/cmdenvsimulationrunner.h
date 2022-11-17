@@ -55,7 +55,7 @@ class CMDENV_API CmdenvSimulationRunner
 
    protected:
      virtual cSimulation *createSimulation(std::ostream& out);
-     virtual void configureRunner(cIRunner *runner, cConfiguration *cfg);
+     virtual void configureRunner(cIEventLoopRunner *runner, cConfiguration *cfg);
      virtual void logException(std::ostream& out, std::exception& e);
 
      virtual void alert(const char *msg);
@@ -82,7 +82,7 @@ class CMDENV_API CmdenvSimulationRunner
      virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads);
      virtual bool runSimulation(InifileContents *ini, const char *configName, int runNumber);
 
-     virtual cTerminationException *setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner=nullptr, const char *redirectFileName=nullptr);
+     virtual cTerminationException *setupAndRunSimulation(cConfiguration *cfg, cIEventLoopRunner *runner=nullptr, const char *redirectFileName=nullptr);
 };
 
 }  // namespace cmdenv

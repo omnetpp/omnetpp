@@ -32,17 +32,17 @@
 #include "envir/appreg.h"
 #include "envir/args.h"
 #include "envir/genericenvir.h"
+#include "envir/genericeventlooprunner.h"
 #include "envir/envirutils.h"
 #include "envir/inifilecontents.h"
 #include "envir/resultfileutils.h"
-#include "envir/runner.h"
 #include "omnetpp/ccomponenttype.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/cinedloader.h"
 #include "omnetpp/cmodule.h"
-#include "omnetpp/crunner.h"
+#include "omnetpp/ceventlooprunner.h"
 #include "omnetpp/csimulation.h"
 #include "sim/netbuilder/cnedloader.h"
 #include "sim/pythonutil.h"
@@ -325,7 +325,7 @@ static void deleteNetworkOnError(cSimulation *simulation, cRuntimeError& error)
 
 inline const char *opp_nulltodefault(const char *s, const char *defaultString)  {return s == nullptr ? defaultString : s;}
 
-cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfiguration *cfg, cIRunner *runner, const char *redirectFileName)
+cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfiguration *cfg, cIEventLoopRunner *runner, const char *redirectFileName)
 {
     //TODO more factories? createSimulation(), createEnvir(), createRunner()?
 
@@ -364,7 +364,7 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
     std::unique_ptr<cSimulation> tmp(createSimulation(simout));
     cSimulation *simulation = tmp.get();
 
-    Runner localRunner(simulation, simout, sigintReceived);
+    GenericEventLoopRunner localRunner(simulation, simout, sigintReceived);
     if (runner == nullptr)
         runner = &localRunner;
     configureRunner(runner, cfg);
@@ -410,9 +410,9 @@ cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& out)
     return new cSimulation("simulation", envir, nedLoader);
 }
 
-void CmdenvSimulationRunner::configureRunner(cIRunner *irunner, cConfiguration *cfg)
+void CmdenvSimulationRunner::configureRunner(cIEventLoopRunner *irunner, cConfiguration *cfg)
 {
-    if (Runner *runner = dynamic_cast<Runner*>(irunner)) {
+    if (GenericEventLoopRunner *runner = dynamic_cast<GenericEventLoopRunner*>(irunner)) {
         runner->setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
         runner->setAutoFlush(cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH));
         runner->setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));

@@ -54,7 +54,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
-#include "omnetpp/crunner.h"
+#include "omnetpp/ceventlooprunner.h"
 #include "omnetpp/cproperties.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cfutureeventset.h"
@@ -854,16 +854,16 @@ void Qtenv::rebuildSim()
         confirm(INFO, "Choose File|New Network or File|New Run.");
 }
 
-class QtenvRunner : public cIRunner
+class QtenvEventLoopRunner : public cIEventLoopRunner
 {
     private:
         Qtenv *qtenv;
     public:
-        QtenvRunner(Qtenv *qtenv) : qtenv(qtenv) {}
+        QtenvEventLoopRunner(Qtenv *qtenv) : qtenv(qtenv) {}
         virtual void run() override;
 };
 
-void QtenvRunner::run()
+void QtenvEventLoopRunner::run()
 {
     // initial, "cheap" version of a Qtenv runner -- just delegates back to Qtenv
     // TODO move out to its own file, and move Qtenv's running-related functionality into it
@@ -915,7 +915,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
 
     startClock();
     try {
-        QtenvRunner runner(this);
+        QtenvEventLoopRunner runner(this);
         bool paused = getSimulation()->run(&runner, false);
 
         if (runMode != RUNMODE_NORMAL) { // in NORMAL mode, doRunSimulation() already calls refreshDisplay() after each event

@@ -1,5 +1,5 @@
 //==========================================================================
-//  RUNNER.H - part of
+//  GENERICEVENTLOOPRUNNER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -13,11 +13,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_RUNNER_H
-#define __OMNETPP_ENVIR_RUNNER_H
+#ifndef __OMNETPP_ENVIR_GENERICEVENTLOOPRUNNER_H
+#define __OMNETPP_ENVIR_GENERICEVENTLOOPRUNNER_H
 
 #include "envirdefs.h"
-#include "omnetpp/crunner.h"
+#include "omnetpp/ceventlooprunner.h"
 #include "omnetpp/csimulation.h"
 #include "stopwatch.h"
 #include "speedometer.h"
@@ -31,7 +31,7 @@ namespace envir {
 
 class IFakeGUI;
 
-class ENVIR_API Runner : public cIRunner
+class ENVIR_API GenericEventLoopRunner : public cIEventLoopRunner
 {
   protected:
     cSimulation *simulation; // not owned
@@ -65,8 +65,8 @@ class ENVIR_API Runner : public cIRunner
     bool elapsed(long millis, int64_t& since);
 
   public:
-    Runner(cSimulation *simulation, std::ostream& out, bool& sigintReceived) : simulation(simulation), out(out), sigintReceived(sigintReceived) {}
-    virtual ~Runner() {}
+    GenericEventLoopRunner(cSimulation *simulation, std::ostream& out, bool& sigintReceived) : simulation(simulation), out(out), sigintReceived(sigintReceived) {}
+    virtual ~GenericEventLoopRunner() {}
     virtual void configure(cConfiguration *cfg);
 
     virtual void setFakeGUI(IFakeGUI *fakeGUI) {this->fakeGUI = fakeGUI;}

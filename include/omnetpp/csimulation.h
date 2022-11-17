@@ -43,7 +43,7 @@ class cEnvir;
 class cSoftOwner;
 class cINedLoader;
 class cIRngManager;
-class cIRunner;
+class cIEventLoopRunner;
 
 namespace envir {
 class Stopwatch;
@@ -669,7 +669,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     /**
      * Executes an event as part of the simulation. Also increments the event
      * number (see getEventNumber()). This method may not be called directly,
-     * only from run() via runners (see cIRunner).
+     * only from run() via runners (see cIEventLoopRunner).
      */
     virtual void executeEvent(cEvent *event);
 
@@ -687,7 +687,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * If there was an error, it manifests as an exception which is allowed
      * to propagate out of this method.
      */
-    virtual bool run(cIRunner *runner=nullptr, bool shouldCallFinish=true);
+    virtual bool run(cIEventLoopRunner *runner=nullptr, bool shouldCallFinish=true);
 
     /**
      * Invoke callRefreshDisplay() on the system module.

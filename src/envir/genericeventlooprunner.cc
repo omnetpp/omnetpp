@@ -1,5 +1,5 @@
 //==========================================================================
-//  RUNNER.CC - part of
+//  GENERICEVENTLOOPRUNNER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -25,8 +25,8 @@
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/cconfigoption.h"
 #include "ifakegui.h"
-#include "runner.h"
 #include "genericenvir.h"
+#include "genericeventlooprunner.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -34,11 +34,11 @@ using namespace omnetpp::internal;
 namespace omnetpp {
 namespace envir {
 
-void Runner::configure(cConfiguration *cfg)
+void GenericEventLoopRunner::configure(cConfiguration *cfg)
 {
 }
 
-bool Runner::elapsed(long millis, int64_t& since)
+bool GenericEventLoopRunner::elapsed(long millis, int64_t& since)
 {
     int64_t now = opp_get_monotonic_clock_usecs();
     bool ret = (now - since) > millis * 1000;
@@ -47,7 +47,7 @@ bool Runner::elapsed(long millis, int64_t& since)
     return ret;
 }
 
-void Runner::doRunNormal()
+void GenericEventLoopRunner::doRunNormal()
 {
     while (true) {
         cEvent *event = simulation->takeNextEvent();
@@ -83,7 +83,7 @@ void Runner::doRunNormal()
     }
 }
 
-void Runner::doRunExpressWithFakeGUI()
+void GenericEventLoopRunner::doRunExpressWithFakeGUI()
 {
     ASSERT(fakeGUI != nullptr);
 
@@ -118,7 +118,7 @@ void Runner::doRunExpressWithFakeGUI()
     }
 }
 
-void Runner::doRunExpressNoFakeGui()
+void GenericEventLoopRunner::doRunExpressNoFakeGui()
 {
     ASSERT(fakeGUI == nullptr);
 
@@ -149,7 +149,7 @@ void Runner::doRunExpressNoFakeGui()
     }
 }
 
-void Runner::doRunExpressNoFakeGuiNoTimelimit()
+void GenericEventLoopRunner::doRunExpressNoFakeGuiNoTimelimit()
 {
     ASSERT(fakeGUI == nullptr);
     ASSERT(!simulation->hasRealTimeLimit());
@@ -177,7 +177,7 @@ void Runner::doRunExpressNoFakeGuiNoTimelimit()
     }
 }
 
-void Runner::doRunExpressNoStatusUpdates()
+void GenericEventLoopRunner::doRunExpressNoStatusUpdates()
 {
     ASSERT(fakeGUI == nullptr);
     ASSERT(!simulation->hasRealTimeLimit());
@@ -195,7 +195,7 @@ void Runner::doRunExpressNoStatusUpdates()
     }
 }
 
-void Runner::run()
+void GenericEventLoopRunner::run()
 {
     ASSERT(simulation == cSimulation::getActiveSimulation());
 
@@ -239,7 +239,7 @@ static char *timeToStr(double t, char *buf)
     return buf;
 }
 
-void Runner::printStatusUpdate()
+void GenericEventLoopRunner::printStatusUpdate()
 {
     speedometer.beginNewInterval();
 
@@ -272,7 +272,7 @@ void Runner::printStatusUpdate()
     out.flush();
 }
 
-std::string Runner::getProgressPercentage()
+std::string GenericEventLoopRunner::getProgressPercentage()
 {
     double simtimeRatio = -1;
     simtime_t simtimeLimit = simulation->getSimulationTimeLimit();
@@ -302,7 +302,7 @@ std::string Runner::getProgressPercentage()
     return "";
 }
 
-void Runner::printEventBanner(eventnumber_t eventNumber, cEvent *event)
+void GenericEventLoopRunner::printEventBanner(eventnumber_t eventNumber, cEvent *event)
 {
     out << "** Event #" << eventNumber << "  t=" << event->getArrivalTime() << getProgressPercentage() << "   ";  // note: IDE launcher uses this to track progress
 
