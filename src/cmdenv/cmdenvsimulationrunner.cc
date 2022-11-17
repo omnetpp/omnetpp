@@ -113,6 +113,7 @@ void VerboseListener::listenerRemoved()
 //TODO better ctors!
 CmdenvSimulationRunner::CmdenvSimulationRunner()
 {
+    homeThreadId = std::this_thread::get_id();
 }
 
 CmdenvSimulationRunner::~CmdenvSimulationRunner()
@@ -411,7 +412,7 @@ void CmdenvSimulationRunner::configureRunner(cIEventLoopRunner *irunner, cConfig
         runner->setAutoFlush(cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH));
         runner->setStatusFrequencyMs(1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY));
         runner->setPrintPerformanceData(cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY));
-        runner->setPrintThreadId(false); //TODO
+        runner->setPrintThreadId(std::this_thread::get_id() != homeThreadId);
         runner->setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
         runner->setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
         runner->setBatchProgress(runsTried, numRuns);

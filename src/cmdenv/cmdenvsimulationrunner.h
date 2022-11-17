@@ -40,6 +40,8 @@ class CMDENV_API CmdenvSimulationRunner
 
      std::ostream& out = std::cout; //TODO
 
+     std::thread::id homeThreadId;
+
      bool verbose;
      bool useStderr; // only used in subclasses
 
