@@ -1,0 +1,94 @@
+{
+  description = "OMNeT++ Discrete Event Simulator";
+
+  inputs = {
+    # nixpkgs.url = "nixpkgs/nixos-22.05";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem(system:
+    let
+      pname = "omnetpp";
+      version = "6.0.1.${nixpkgs.lib.substring 0 8 self.lastModifiedDate}.${self.shortRev or "dirty"}";
+      pkgs = import nixpkgs { inherit system; };
+    in rec {
+      # set different defaults for creating packages.
+      oppPkgs =  pkgs // {
+          stdenv = pkgs.llvmPackages_14.stdenv;  # use clang14 instead of the standard g++ compiler
+          lld = pkgs.lld_14;
+          python3 = pkgs.python310;
+          inherit (pkgs.qt515) qtbase qtsvg;
+          callPackage = pkgs.newScope oppPkgs;
+      };
+
+      packages = rec {
+        default = packages.${pname};
+
+        ${pname} = oppPkgs.callPackage ./nix-support/opp_mkDerivation.nix {
+          inherit pname version;
+          src = self;
+          WITH_QTENV = true;
+        };
+
+        "${pname}-samples" = oppPkgs.callPackage ./nix-support/opp_mkSamplesDerivation.nix {
+          inherit pname version;
+          omnetpp = self.packages.${system}.${pname};
+          src = self;
+        };
+      };
+
+      devShells = rec {
+        ${pname} = oppPkgs.stdenv.mkDerivation {
+          name = "${pname}";
+          # This shell is intended to be used by users writing models.
+          # It includes also the omnetpp package as a dependency.
+          buildInputs = [ self.packages.${system}.default self.packages.${system}."${pname}-samples" ];
+          shellHook = ''
+            source ${self.packages.${system}.default.bin}/setenv
+            source ${self.packages.${system}.default.dev}/nix-support/set-qtenv
+          '';
+        };
+
+        "${pname}-dev" = oppPkgs.stdenv.mkDerivation {
+          name = "${pname}-dev";
+          # use the same toolchain as omnetpp, but nothing else is included in this shell
+          buildInputs = self.packages.${system}.default.buildInputs;
+          propagatedNativeBuildInputs = self.packages.${system}.default.propagatedNativeBuildInputs;
+        };
+
+        default = devShells.${pname};
+      };
+
+      apps = rec {
+        "${pname}-samples" = {
+          type = "app";
+          program = "${self.packages.${system}."${pname}-samples"}/bin/.opp_samples_wrapper";
+        };
+
+        default = apps."${pname}-samples";
+      };
+    }) // {
+      templates = rec {
+        samples = {
+          path = ./samples;
+          description = "OMNeT++ Samples";
+          welcomeText =
+            ''This template contains OMNeT++ sample projects. Change to the project
+            you want to build and create an OMNeT++ development shell.
+
+            Use:
+
+              cd <dirname>
+              nix develop -i github:omnetpp/omnetpp/flake/omnetpp-6.0.x
+              opp_makemake -f
+              make
+              ./executable_name
+            '';
+        };
+
+        default = samples;
+      };
+    };
+}

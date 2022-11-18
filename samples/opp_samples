@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+import re
+import os
+import subprocess
+from PyQt5.QtWidgets import *
+
+my_dir = os.path.dirname(__file__)
+html = open(my_dir + "/samples.html","r").read()
+
+if os.path.basename(my_dir) == "bin":
+    omnetpp_samples_dir = os.path.dirname(my_dir) # if we are in a bin/ directory, assume our parent is the samples dir
+else:
+    omnetpp_samples_dir = my_dir # otherwise assume we are in the samples dir
+
+app = QApplication([])
+label = QLabel(html)
+label.setWordWrap(True)  # takes no effect in HTML page (table-related issue?)
+
+def on_link_activated(url):
+    m = re.search(r"workspace:/(.*)\?action=(.*)", url)
+    if not m:
+        print("invalid link clicked:", url)
+        return
+    resource, action = m.groups()
+    #print(resource,action)
+    resource_path = os.path.join(omnetpp_samples_dir, resource)
+    if action == "reveal":
+        subprocess.Popen(['xdg-open', resource_path])
+    elif action == "openEditor":
+        subprocess.Popen(['xdg-open', resource_path])
+    elif action == "launchRun":
+        launch_simulation(resource_path)
+    else:
+        print("invalid action in link:", action)
+
+def launch_simulation(inifile):
+    dir = os.path.dirname(inifile)
+    ini = os.path.basename(inifile)
+    prog = os.path.join(dir, os.path.basename(dir))
+    #print(f"{dir=} {prog=} {ini=}")
+    subprocess.Popen([prog, ini, "--result-dir=\"" + os.getcwd() + "/opp_samples-result/" + os.path.basename(dir) +  "\" "], cwd=dir)
+
+
+label.linkActivated.connect(on_link_activated)
+
+label.show()
+app.exec_()

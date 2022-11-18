@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# This is a wrapper script to source all necessary startup files.
+# Do not change or remove the lines below!
+# The markers will be replaced with real directory names of the omnetpp installation.
+
+source @omnetpp.bin@/setenv
+source @omnetpp.dev@/nix-support/set-qtenv
+
+$(dirname $0)/opp_samples

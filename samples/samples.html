@@ -1,0 +1,429 @@
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+  <title>OMNeT++ Samples</title>
+  <meta name="copyright" content="OpenSim Ltd.">
+  <meta name="author" content="Andras Varga">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link rel="STYLESHEET" href="../book.css"  type="text/css"/>
+  <style>
+     table { border-collapse:collapse; }
+     td { border-bottom: 3px solid white; }
+     td { vertical-align: top; padding: 0px 10px 10px 10px; }
+     td h2 { margin-top: 8px; }
+     tr.red { background-color: #ffc5a8; }
+     tr.grey { background-color: #f0f0f0; }
+     tr.green { background-color: #E0F7D2; }
+     tr.brown { background-color: #F4F0D2; }
+     tr.cyan { background-color: #D2F2F2; }
+     tr.slate { background-color: #E6E9F7; }
+     tr.slate2 { background-color: #E5DCE1; }
+  </style>
+</head>
+
+<body>
+
+<h1>OMNeT++ Samples</h1>
+
+<p>This is a table of sample simulations provided with OMNeT++. They are
+not meant as faithful or actually useful simulations on their own, but
+rather, they serve the purpose of demonstrating various features of the
+simulation framework. </p>
+
+<table>
+
+<tr class="red"><td> <h2>Tictoc Tutorial</h2> </td><td>
+
+<p>This is a tutorial that contains a series of simulation models numbered 1 through 16. The
+models are of increasing complexity -- they start from the basics and
+introduce new OMNeT++ features or simulation techniques in each step.
+The additions are well commented, so the model sources can help you
+build up a good working knowledge of OMNeT++ in a short time.</p>
+
+<div class="links">
+<a href="workspace:/tictoc?action=reveal">Reveal</a> &bull;
+<a href="workspace:/tictoc/README.txt?action=openEditor">README</a> &bull;
+<a href="../tictoc-tutorial/index.html?action=openEditor">TicToc Tutorial</a> &bull;
+<a href="workspace:/tictoc/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="grey"><td> <h2>NED Demo</h2> </td><td>
+
+<p>Demonstrates how one can create various topologies using NED: chain, mesh,
+star, hexagonal grid, full graph, random graph and binary tree.
+The models themselves don't do anything apart from setting up the necessary
+model structure.</p>
+
+<div class="links">
+<a href="workspace:/neddemo?action=reveal">Reveal</a> &bull;
+<a href="workspace:/neddemo/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/neddemo/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="grey"><td> <h2>Histograms</h2> </td><td>
+
+<p>Demonstrates the density estimation and histogram classes. The model generates
+random numbers, and feeds them into various density estimation objects that
+can be visually inspected during runtime.</p>
+
+<div class="links">
+<a href="workspace:/histograms?action=reveal">Reveal</a> &bull;
+<a href="workspace:/histograms/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/histograms/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="grey"><td> <h2>Result Files</h2> </td><td>
+
+<p>This project contains pre-recorded result files for trying out
+the Analysis and the Sequence Chart tools in the IDE.</p>
+
+<div class="links">
+<a href="workspace:/resultfiles?action=reveal">Reveal</a> &bull;
+<a href="workspace:/resultfiles/README.txt?action=openEditor">README</a>
+</div>
+
+
+</td></tr>
+
+<tr class="green"><td> <h2>Fifo</h2> </td><td>
+
+<p>Demonstrates a single-server queue. The network contains a source, a queue
+and a sink module.</p>
+
+<div class="links">
+<a href="workspace:/fifo?action=reveal">Reveal</a> &bull;
+<a href="workspace:/fifo/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/fifo/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="green"><td> <h2>CQN</h2> </td><td>
+
+<p>This simulation example contains a Closed Queueing Network that
+consists of N tandem queues and a switch in front if each tandem queue.</p>
+
+<div class="links">
+<a href="workspace:/cqn?action=reveal">Reveal</a> &bull;
+<a href="workspace:/cqn/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/cqn/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="green"><td> <h2>QueueingLib</h2> </td><td>
+
+<p>QueueingLib is an example queueing library for OMNeT++. It contains several
+building blocks that can be used to build more complex queueing networks.
+The code is compiled into a shared library that can be used from other projects.
+See the QueueNet project for example usage.</p>
+
+<div class="links">
+<a href="workspace:/queueinglib?action=reveal">Reveal</a> &bull;
+<a href="workspace:/queueinglib/README.txt?action=openEditor">README</a>
+</div>
+
+</td></tr>
+
+<tr class="green"><td> <h2>QueueNet</h2> </td><td>
+
+<p>The QueueNet project demonstrates how to use an already existing model library
+(QueueingLib) from a different project. QueueNet contains no C++ code and
+uses only the building blocks (simple modules) provided by QueueingLib.</p>
+
+<div class="links">
+<a href="workspace:/queuenet?action=reveal">Reveal</a> &bull;
+<a href="workspace:/queuenet/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/queuenet/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="green"><td> <h2>QueueingLibExt</h2> </td><td>
+
+<p>This project demonstrates how to use and extend an already existing
+model library (QueueingLib) from a different project. QueueingLibExt
+contains some C++ code that extends the behavior of the Sink module from
+the QueueingLib project. The QueueingLib shared library is linked
+dynamically to this project's executable.</p>
+
+<div class="links">
+<a href="workspace:/queueinglibext?action=reveal">Reveal</a> &bull;
+<a href="workspace:/queueinglibext/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/queueinglibext/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="brown"><td> <h2>Aloha</h2> </td><td>
+
+<p>Model of the classic Aloha protocol from communication network textbooks.
+Both pure and slotted Aloha transmission modes are supported. The model
+also defines a parameter study (a.k.a. simulation campaign) for exploring
+the channel utilization in the function of number of hosts and packet
+generation frequency.</p>
+
+<div class="links">
+<a href="workspace:/aloha?action=reveal">Reveal</a> &bull;
+<a href="workspace:/aloha/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/aloha/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="brown"><td> <h2>Dyna</h2> </td><td>
+
+<p>Dyna is a model of a simple client-server network. The network contains
+several clients and one server interconnected via a switch. It demonstrates
+message files (.msg), dynamic module creation and many other OMNeT++
+facilities.
+</p>
+
+<div class="links">
+<a href="workspace:/dyna?action=reveal">Reveal</a> &bull;
+<a href="workspace:/dyna/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/dyna/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="brown"><td> <h2>Hypercube</h2> </td><td>
+
+<p>Simulates a communication network with parametric hypercube topology and
+simplified deflection routing. Each node consists of a traffic source, a
+sink, and a router module. Demonstrates having module type as parameter,
+parametric topologies, and more.</p>
+
+<div class="links">
+<a href="workspace:/hypercube?action=reveal">Reveal</a> &bull;
+<a href="workspace:/hypercube/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/hypercube/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="brown"><td> <h2>Routing</h2> </td><td>
+
+<p>Demonstrates static shortest-path routing. Routing tables are set up at
+the beginning of the simulation using the cTopology class. The model is
+intentionally kept simple to facilitate understanding.</p>
+
+<div class="links">
+<a href="workspace:/routing?action=reveal">Reveal</a> &bull;
+<a href="workspace:/routing/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/routing/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="brown"><td> <h2>Wired PHY</h2> </td><td>
+
+<p>A network with three nodes (source, switch, sink) that contain simple network
+interfaces, for demonstrating how to model things like aborting/preempting
+transmissions, and "streaming" packets between two interfaces of a node
+to implement cut-through. The code relies on the use of the transmission update API.
+</p>
+
+<div class="links">
+<a href="workspace:/wiredphy?action=reveal">Reveal</a> &bull;
+<a href="workspace:/wiredphy/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/wiredphy/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="brown"><td> <h2>Petri Nets</h2> </td><td>
+
+<p>This is a simulation model for stochastic Petri nets, a well-known formalism
+for the description of distributed systems. Petri nets can be assembled from
+modules using the NED language, or imported from PNML (Petri Net Markup Language)
+files.</p>
+
+<div class="links">
+<a href="workspace:/petrinets?action=reveal">Reveal</a> &bull;
+<a href="workspace:/petrinets/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/petrinets/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="cyan"><td> <h2>Canvas Demo</h2> </td><td>
+
+<p>This model demonstrates the use of the Canvas API. The Canvas API can be used
+for enhancing the visualization of simulations.</p>
+
+<div class="links">
+<a href="workspace:/canvas?action=reveal">Reveal</a> &bull;
+<a href="workspace:/canvas/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/canvas/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="cyan"><td> <h2>OpenStreetMap</h2> </td><td>
+
+<p>This simulation displays a city map using the Canvas API, with some
+animated car traffic on it. The input for map rendering and city traffic
+generation comes from the OpenStreetMap (openstreetmap.org) database.</p>
+
+<div class="links">
+<a href="workspace:/openstreetmap?action=reveal">Reveal</a> &bull;
+<a href="workspace:/openstreetmap/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/openstreetmap/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="cyan"><td> <h2>OpenSceneGraph Introduction</h2> </td><td>
+
+<p>This model demonstrates 3D visualization in OMNeT++, based on OpenSceneGraph.
+(Requires Qtenv)
+</p>
+
+<div class="links">
+<a href="workspace:/osg-intro?action=reveal">Reveal</a> &bull;
+<a href="workspace:/osg-intro/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/osg-intro/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="cyan"><td> <h2>OpenSceneGraph Earth Demo</h2> </td><td>
+
+<p>This sample demonstrates how to render 3rd party mapping data in OMNeT++,
+using OpenSceneGraph and osgEarth. (Requires Qtenv)
+</p>
+
+<div class="links">
+<a href="workspace:/osg-earth?action=reveal">Reveal</a> &bull;
+<a href="workspace:/osg-earth/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/osg-earth/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="cyan"><td> <h2>OpenSceneGraph Indoors Demo</h2> </td><td>
+
+<p>This sample demonstrates how to render 3 dimensional internal spaces (an office)
+using OpenSceneGraph. (Requires Qtenv)
+</p>
+
+<div class="links">
+<a href="workspace:/osg-indoor?action=reveal">Reveal</a> &bull;
+<a href="workspace:/osg-indoor/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/osg-indoor/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="cyan"><td> <h2>OpenSceneGraph Satellites Demo</h2> </td><td>
+
+<p>This sample demonstrates how to render scenarios in near Earth space (orbiting
+satellites) using OpenSceneGraph. (Requires Qtenv)
+</p>
+
+<div class="links">
+<a href="workspace:/osg-satellites?action=reveal">Reveal</a> &bull;
+<a href="workspace:/osg-satellites/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/osg-satellites/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="slate"><td> <h2>CQN/ParSim</h2> </td><td>
+
+<p>This example demonstrates the parallel distributed simulation
+capabilities of OMNeT++ via the "stock" CQN simulation. Each tandem queue
+is simulated on a separate processor or processor core (given that there
+are enough.)  To try it, run the provided script from the command line.</p>
+
+<div class="links">
+<a href="workspace:/cqn/parsim?action=reveal">Reveal</a> &bull;
+<a href="workspace:/cqn/parsim/README.txt?action=openEditor">README</a>
+</div>
+
+</td></tr>
+
+<tr class="slate"><td> <h2>Routing/Parsim</h2> </td><td>
+
+<p>This example demonstrates the parallel distributed simulation capabilities
+of OMNeT++. The model itself is the "stock" Routing simulation -- it hasn't
+been modified or specially instrumented for parallel execution. To try it,
+run the provided script from the command line.</p>
+
+<div class="links">
+<a href="workspace:/routing/parsim?action=reveal">Reveal</a> &bull;
+<a href="workspace:/routing/parsim/README.txt?action=openEditor">README</a>
+</div>
+
+</td></tr>
+
+<tr class="slate"><td> <h2>Dyna/RealTime</h2> </td><td>
+
+<p>This demonstrates real-time simulation capability of OMNeT++.
+The word simply means that the simulation is executed in a way such that
+simulation time is synchronized to real time: simulating one second
+in the model will also take one "real" second.
+</p>
+
+<div class="links">
+<a href="workspace:/dyna/realtime?action=reveal">Reveal</a> &bull;
+<a href="workspace:/dyna/realtime/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/dyna/realtime.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="slate"><td> <h2>Sockets/Hw-in-the-Loop</h2> </td><td>
+
+<p>This is an example how one can implement hardware-in-the-loop simulation
+with OMNeT++. Hardware-in-the-loop means that some external device
+is taking part in the simulation. (In other scenarios, the simulation
+program may emulate a device in a real system.)</p>
+
+<div class="links">
+<a href="workspace:/sockets?action=reveal">Reveal</a> &bull;
+<a href="workspace:/sockets/README.txt?action=openEditor">README</a> &bull;
+<a href="workspace:/sockets/omnetpp.ini?action=launchRun">Run</a>
+</div>
+
+</td></tr>
+
+<tr class="slate2"><td> <h2>Embedding</h2> </td><td>
+
+<p>This example shows how to embed the simulation kernel into an application.
+The example defines the minimal environment required to execute a simulation.
+The model subdirectory contains all the code and NED files that belong to the
+simulation we want to execute. Run the executable from the command line to try it.</p>
+
+<div class="links">
+<a href="workspace:/embedding?action=reveal">Reveal</a> &bull;
+<a href="workspace:/embedding/README.txt?action=openEditor">README</a>
+</div>
+
+</td></tr>
+
+<tr class="slate2"><td> <h2>Embedding2</h2> </td><td>
+
+<p>This example shows how to embed a whole simulation into an application.
+Here, NED files are compiled into the application, so that the program
+has fewer external dependencies. Run the executable from the command line to try it.</p>
+
+<div class="links">
+<a href="workspace:/embedding2?action=reveal">Reveal</a> &bull;
+<a href="workspace:/embedding2/README.txt?action=openEditor">README</a>
+</div>
+
+</td></tr>
+
+</table>
+
+</body>
+</html>
