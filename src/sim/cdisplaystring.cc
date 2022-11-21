@@ -410,6 +410,8 @@ void cDisplayString::doParse()
             // "${expression(1, b)}"), as that is interpreted in a later stage.
             if (*(s+1) != '\0')
                 *d = *++s;
+            else
+                d--; // neutralize end-loop d++
         }
         else if (*s == ';') {
             // new tag begins
