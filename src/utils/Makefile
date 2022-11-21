@@ -25,6 +25,7 @@ all: $(CONFIGFILE)
 	$(Q)cp opp_shlib_postprocess $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_runall $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_neddoc $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_docbrowser $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_ide $(OMNETPP_BIN_DIR)
 	$(Q)cp omnetpp $(OMNETPP_BIN_DIR)
 	$(Q)cp omnest $(OMNETPP_BIN_DIR)
@@ -33,7 +34,7 @@ all: $(CONFIGFILE)
 clean:
 	$(qecho) Cleaning utils
 	$(Q)rm -rf $O
-	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f omnest omnetpp opp_ide opp_configfilepath opp_charttool opp_featuretool opp_shlib_postprocess opp_makemake opp_runall opp_neddoc opp_test opp_fingerprinttest
+	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f omnest omnetpp opp_ide opp_configfilepath opp_charttool opp_featuretool opp_shlib_postprocess opp_makemake opp_runall opp_neddoc opp_docbrowser opp_test opp_fingerprinttest
 
 -include $(OBJS:%=%.d)
 

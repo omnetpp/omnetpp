@@ -1,0 +1,4 @@
+#!/bin/sh
+# open the documentation in a browser window
+
+xdg-open $(dirname $0)/../doc/index.html

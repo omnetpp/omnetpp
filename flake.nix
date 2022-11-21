@@ -20,23 +20,32 @@
           lld = pkgs.lld_14;
           python3 = pkgs.python310;
           inherit (pkgs.qt515) qtbase qtsvg;
+          texlive = pkgs.texlive.combined.scheme-full;
           callPackage = pkgs.newScope oppPkgs;
       };
 
       packages = rec {
         default = packages.${pname};
 
-        ${pname} = oppPkgs.callPackage ./nix-support/opp_mkDerivation.nix {
+        ${pname} = oppPkgs.callPackage ./nix-support/mkOmnetppDerivation.nix {
           inherit pname version;
           src = self;
           WITH_QTENV = true;
         };
 
-        "${pname}-samples" = oppPkgs.callPackage ./nix-support/opp_mkSamplesDerivation.nix {
-          inherit pname version;
+        "${pname}-samples" = oppPkgs.callPackage ./nix-support/mkOmnetppSamplesDerivation.nix {
+          inherit version;
+          pname = "${pname}-samples";
           omnetpp = self.packages.${system}.${pname};
           src = self;
         };
+
+        "${pname}-doc-git" = oppPkgs.callPackage ./nix-support/mkOmnetppDocGitDerivation.nix {
+          inherit version;
+          pname = "${pname}-doc-git";
+          src = self;
+        };
+
       };
 
       devShells = rec {
