@@ -11,7 +11,10 @@
     flake-utils.lib.eachDefaultSystem(system:
     let
       pname = "omnetpp";
-      version = "6.0.1.${nixpkgs.lib.substring 0 8 self.lastModifiedDate}.${self.shortRev or "dirty"}";
+      sversion = "6.0.1"; # schemantic version number
+      timestamp = nixpkgs.lib.substring 0 8 self.lastModifiedDate;
+      githash = self.shortRev or "dirty";
+      version = "${sversion}.${timestamp}.${githash}";
       pkgs = import nixpkgs { inherit system; };
     in rec {
       # set different defaults for creating packages.
@@ -38,6 +41,15 @@
           pname = "${pname}-samples";
           omnetpp = self.packages.${system}.${pname};
           src = self;
+        };
+
+        "${pname}-doc" = oppPkgs.callPackage ./nix-support/mkOmnetppDocDerivation.nix {
+          version = sversion;
+          pname = "${pname}-doc";
+          src = pkgs.fetchzip {
+            url = "https://github.com/omnetpp/omnetpp/releases/download/${pname}-${sversion}/${pname}-${sversion}-core.tgz";
+            sha256 = "sha256-ftmYmDSE3zGm9pLyi3QR7wDWinYwAN8rQog0WietSCk=";
+          };
         };
 
         "${pname}-doc-git" = oppPkgs.callPackage ./nix-support/mkOmnetppDocGitDerivation.nix {
