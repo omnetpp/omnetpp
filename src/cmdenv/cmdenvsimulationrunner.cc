@@ -121,11 +121,6 @@ void CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char 
     int numThreads = masterCfg->getAsInt(CFGID_CMDENV_NUM_THREADS);
     delete masterCfg;
 
-    if (numThreads <= 0) {
-        numThreads = std::thread::hardware_concurrency();
-        if (numThreads <= 0)
-            numThreads = 1;
-    }
     bool threaded = numThreads != 1;
 
     numRuns = (int)runNumbers.size();
@@ -165,6 +160,12 @@ cINedLoader *CmdenvSimulationRunner::createConfiguredNedLoader(cConfiguration *c
 
 void CmdenvSimulationRunner::runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads)
 {
+    if (numThreads <= 0) {
+        numThreads = std::thread::hardware_concurrency();
+        if (numThreads <= 0)
+            numThreads = 1;
+    }
+
     cConfiguration *firstCfg = ini->extractConfig(configName, runNumbers[0]);
     ensureNedLoader(firstCfg);
     delete firstCfg;
@@ -291,14 +292,14 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
     catch (cRuntimeError& e) {
         simulation->deleteNetworkOnError(e);
         if (redirectOutput)
-            narrator->logException(fout, e); //TODO needed?
+            narrator->logException(fout, e);
         throw;
     }
     catch (std::exception& e) {
         cRuntimeError re(e);
         simulation->deleteNetworkOnError(re);
         if (redirectOutput)
-            narrator->logException(fout, re); //TODO needed?
+            narrator->logException(fout, re);
         throw re;
     }
 }

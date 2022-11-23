@@ -84,7 +84,7 @@ class CMDENV_API CmdenvSimulationRunner
      // these ones throw:
      virtual void runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter);
      virtual void runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
-     virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads);
+     virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads=-1);
      virtual void runSimulation(InifileContents *ini, const char *configName, int runNumber);
 };
 
