@@ -69,6 +69,16 @@
           src = self;
         };
 
+        "${pname}-ide" = oppPkgs.callPackage ./nix-support/mkOmnetppIDEDerivation.nix {
+          pname = "${pname}-ide";
+          version = sversion;
+          src = pkgs.fetchzip {
+            url = "https://github.com/omnetpp/omnetpp/releases/download/${pname}-${sversion}/${pname}-${sversion}-linux-x86_64.tgz";
+            sha256 = "sha256-968zGE+C7G5nYNw7jlcVbs5QwXuPy8dTMQQzn5mLJyU=";
+          };
+          omnetpp = self.packages.${system}."${pname}";
+        };
+
       };
 
       devShells = rec {
