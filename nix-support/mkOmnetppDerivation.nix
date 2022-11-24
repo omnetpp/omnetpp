@@ -32,6 +32,8 @@ let
       (python3.withPackages(ps: with ps; [ numpy pandas matplotlib scipy seaborn ]))
     ] ++ lib.optionals WITH_QTENV [ qtbase ];
 
+    patches = [ ./flake-support-on-6.0.1.patch ];
+
     configureFlags = [ "WITH_OSG=no" "WITH_OSGEARTH=no" ]
                      ++ lib.optionals (!WITH_QTENV) [ "WITH_QTENV=no" ];
 
@@ -64,7 +66,7 @@ let
 
       mkdir -p ${placeholder "dev"}/bin ${placeholder "dev"}/lib
 
-      rm nix-support/*.nix
+      rm -f nix-support/*.nix nix-support/flake-support-on-6.0.1.patch
       mv Makefile.inc configure.user include src nix-support ${placeholder "dev"}
       (cd bin && mv opp_run_dbg* opp_configfilepath opp_featuretool opp_makemake opp_shlib_postprocess ${placeholder "dev"}/bin || true)
       (cd lib && mv *.a *_dbg.* liboppqtenv.* ${placeholder "dev"}/lib || true)

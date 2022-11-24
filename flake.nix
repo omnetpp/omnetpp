@@ -11,10 +11,10 @@
     flake-utils.lib.eachDefaultSystem(system:
     let
       pname = "omnetpp";
-      sversion = "6.0.1"; # schemantic version number
-      timestamp = nixpkgs.lib.substring 0 8 self.lastModifiedDate;
       githash = self.shortRev or "dirty";
-      version = "${sversion}.${timestamp}.${githash}";
+      timestamp = nixpkgs.lib.substring 0 8 self.lastModifiedDate;
+      gversion = "${githash}.${timestamp}";
+      sversion = "6.0.1"; # schemantic version number
       pkgs = import nixpkgs { inherit system; };
     in rec {
       # set different defaults for creating packages.
@@ -28,24 +28,35 @@
       };
 
       packages = rec {
-        default = packages.${pname};
+        default = packages."${pname}";
 
-        ${pname} = oppPkgs.callPackage ./nix-support/mkOmnetppDerivation.nix {
-          inherit pname version;
+        "${pname}" = oppPkgs.callPackage ./nix-support/mkOmnetppDerivation.nix {
+          pname = "${pname}";
+          version = sversion;
+          src = pkgs.fetchzip {
+            url = "https://github.com/omnetpp/omnetpp/releases/download/${pname}-${sversion}/${pname}-${sversion}-core.tgz";
+            sha256 = "sha256-ftmYmDSE3zGm9pLyi3QR7wDWinYwAN8rQog0WietSCk=";
+          };
+          WITH_QTENV = true;
+        };
+
+        "${pname}-git" = oppPkgs.callPackage ./nix-support/mkOmnetppDerivation.nix {
+          pname = "${pname}-git";
+          version = gversion;
           src = self;
           WITH_QTENV = true;
         };
 
-        "${pname}-samples" = oppPkgs.callPackage ./nix-support/mkOmnetppSamplesDerivation.nix {
-          inherit version;
-          pname = "${pname}-samples";
-          omnetpp = self.packages.${system}.${pname};
+        "${pname}-samples-git" = oppPkgs.callPackage ./nix-support/mkOmnetppSamplesDerivation.nix {
+          pname = "${pname}-samples-git";
+          version = gversion;
           src = self;
+          omnetpp = self.packages.${system}."${pname}-git";
         };
 
         "${pname}-doc" = oppPkgs.callPackage ./nix-support/mkOmnetppDocDerivation.nix {
-          version = sversion;
           pname = "${pname}-doc";
+          version = sversion;
           src = pkgs.fetchzip {
             url = "https://github.com/omnetpp/omnetpp/releases/download/${pname}-${sversion}/${pname}-${sversion}-core.tgz";
             sha256 = "sha256-ftmYmDSE3zGm9pLyi3QR7wDWinYwAN8rQog0WietSCk=";
@@ -53,8 +64,8 @@
         };
 
         "${pname}-doc-git" = oppPkgs.callPackage ./nix-support/mkOmnetppDocGitDerivation.nix {
-          inherit version;
           pname = "${pname}-doc-git";
+          version = gversion;
           src = self;
         };
 
@@ -65,7 +76,11 @@
           name = "${pname}";
           # This shell is intended to be used by users writing models.
           # It includes also the omnetpp package as a dependency.
-          buildInputs = [ self.packages.${system}.default self.packages.${system}."${pname}-samples" ];
+          buildInputs = [ 
+            self.packages.${system}."${pname}" 
+            # self.packages.${system}."${pname}-samples-git" 
+            self.packages.${system}."${pname}-doc"
+            self.packages.${system}."${pname}-ide"];
           shellHook = ''
             source ${self.packages.${system}.default.bin}/setenv
             source ${self.packages.${system}.default.dev}/nix-support/set-qtenv
