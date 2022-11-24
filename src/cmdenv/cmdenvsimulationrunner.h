@@ -34,39 +34,45 @@ using namespace omnetpp::envir;
  */
 class CMDENV_API CmdenvSimulationRunner
 {
+   public:
+    struct BatchResult {
+         int numRuns;
+         int runsTried; // i.e. started
+         int numCompleted;
+         int numInterrupted;
+         int numErrors;
+    };
+
    protected:
      std::ostream& out;
-
      cINedLoader *nedLoader = nullptr;
      ArgList *args = nullptr;
-
      ICmdenvNarrator *narrator;
-
      std::thread::id homeThreadId;
 
-     // set to true on SIGINT/SIGTERM signals
-     static bool sigintReceived;
+     static bool sigintReceived;  // set to true on SIGINT/SIGTERM signals
 
-     // the number of runs already started (>1 if multiple runs are running in the same process)
-     std::atomic_int numRuns;
-     std::atomic_int runsTried;
-     std::atomic_int numErrors;
-     //TODO numCompleted?  interrupted ones should be counted separately from error ones!
-
-     bool stopBatchOnError = true;
+     struct BatchState {
+          std::atomic_int numRuns{0};
+          std::atomic_int runsTried{0}; // i.e. started
+          std::atomic_int numCompleted{0};
+          std::atomic_int numInterrupted{0};
+          std::atomic_int numErrors{0};
+          std::atomic_bool stopBatchOnError{0};
+     };
 
    protected:
      // overridable factory methods
      virtual cINedLoader *createConfiguredNedLoader(cConfiguration *cfg);
      virtual cSimulation *createSimulation(std::ostream& simout);
-     virtual cIEventLoopRunner *createEventLoopRunner(cSimulation *simulation, std::ostream& simout, cConfiguration *cfg);
+     virtual cIEventLoopRunner *createEventLoopRunner(BatchState& state, cSimulation *simulation, std::ostream& simout, cConfiguration *cfg);
 
      // internal
-     std::thread startThread(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
      virtual void ensureNedLoader(cConfiguration *cfg);
-     virtual bool runSimulationSafe(InifileContents *ini, const char *configName, int runNumber);
-     virtual cTerminationException *setupAndRunSimulation(cConfiguration *cfg, const char *redirectFileName=nullptr);
-
+     virtual void doRunSimulations(BatchState& state, InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
+     virtual void doRunSimulation(BatchState& state, InifileContents *ini, const char *configName, int runNumber); // note: throws on error
+     virtual BatchResult extractResult(const BatchState& state);
+     virtual cTerminationException *setupAndRunSimulation(BatchState& state, cConfiguration *cfg);
      static void sigintHandler(int signum);
 
    public:
@@ -80,12 +86,10 @@ class CMDENV_API CmdenvSimulationRunner
      virtual void setUseStderr(bool useStderr) {narrator->setUseStderr(useStderr);}
 
      virtual int runCmdenv(InifileContents *ini); // does not throw, returns exit code
-
-     // these ones throw:
-     virtual void runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter);
-     virtual void runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
-     virtual void runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads=-1);
-     virtual void runSimulation(InifileContents *ini, const char *configName, int runNumber);
+     virtual BatchResult runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter);
+     virtual BatchResult runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
+     virtual BatchResult runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads=-1);
+     virtual void runSimulation(InifileContents *ini, const char *configName, int runNumber); // note: throws on error
 };
 
 }  // namespace cmdenv

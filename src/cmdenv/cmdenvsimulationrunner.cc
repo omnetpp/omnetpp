@@ -103,15 +103,16 @@ int CmdenvSimulationRunner::runCmdenv(InifileContents *ini)
         if (args->optionGiven('r'))
             runFilter = args->optionValue('r');
 
-        runParameterStudy(ini, configName.c_str(), runFilter.c_str());
-        return 0;
+        auto result = runParameterStudy(ini, configName.c_str(), runFilter.c_str());
+        return sigintReceived ? 2 : result.numErrors > 0 ? 1 : 0;
     }
     catch (std::exception& e) {
-        return sigintReceived ? 2 : 1;
+        narrator->displayException(e);
+        return 1;
     }
 }
 
-void CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter)
+CmdenvSimulationRunner::BatchResult CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char *configName, const char *runFilter)
 {
     std::vector<int> runNumbers = ini->resolveRunFilter(configName, runFilter);
     if (runNumbers.empty())
@@ -123,21 +124,17 @@ void CmdenvSimulationRunner::runParameterStudy(InifileContents *ini, const char 
 
     bool threaded = numThreads != 1;
 
-    numRuns = (int)runNumbers.size();
-    runsTried = 0;
-    numErrors = 0;
+    BatchResult result;
+    result.numRuns = (int)runNumbers.size();
 
-    if (numRuns == 1)
-        runSimulation(ini, configName, runNumbers[0]);  // throws
-    else if (!threaded)
-        runSimulations(ini, configName, runNumbers); // does not throw
+    if (!threaded)
+        result = runSimulations(ini, configName, runNumbers); // does not throw
     else
-        runSimulationsInThreads(ini, configName, runNumbers, numThreads); // does not throw
+        result = runSimulationsInThreads(ini, configName, runNumbers, numThreads); // does not throw
 
-    narrator->summary(numRuns, runsTried, numErrors);
+    narrator->summary(result.numRuns, result.runsTried, result.numErrors);
 
-    if (numErrors > 0)
-        throw cRuntimeError("An error occurred in %d simulation%s (tried %d/%d)", (int)numErrors, (numErrors==1?"":"s"), (int)runsTried, (int)numRuns); //TODO or ctrl+c??
+    return result;
 }
 
 void CmdenvSimulationRunner::ensureNedLoader(cConfiguration *cfg)
@@ -158,7 +155,7 @@ cINedLoader *CmdenvSimulationRunner::createConfiguredNedLoader(cConfiguration *c
     return nedLoader;
 }
 
-void CmdenvSimulationRunner::runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads)
+CmdenvSimulationRunner::BatchResult CmdenvSimulationRunner::runSimulationsInThreads(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers, int numThreads)
 {
     if (numThreads <= 0) {
         numThreads = std::thread::hardware_concurrency();
@@ -177,75 +174,79 @@ void CmdenvSimulationRunner::runSimulationsInThreads(InifileContents *ini, const
 
     narrator->usingThreads(numThreads);
 
+    BatchState state;
+
     Py_BEGIN_ALLOW_THREADS
 
     // create and launch threads
     std::vector<std::thread> threads;
-    for (int i = 0; i < numThreads; i++)
-        threads.push_back(startThread(ini, configName, runListPerThread[i]));
+    for (int i = 0; i < numThreads; i++) {
+        auto fn = [this](BatchState *state, InifileContents *ini, std::string configName, std::vector<int> runNumbers) {
+            doRunSimulations(*state, ini, configName.c_str(), runNumbers);
+        };
+        threads.push_back(std::thread(fn, &state, ini, configName, runListPerThread[i]));
+    }
 
     // wait for them to finish
     for (int i = 0; i < numThreads; i++)
         threads[i].join();
 
     Py_END_ALLOW_THREADS
+
+    return extractResult(state);
 }
 
-std::thread CmdenvSimulationRunner::startThread(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
+CmdenvSimulationRunner::BatchResult CmdenvSimulationRunner::runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
 {
-    auto fn = [this](InifileContents *ini, std::string configName, std::vector<int> runNumbers) {
-        runSimulations(ini, configName.c_str(), runNumbers);
-    };
-    return std::thread(fn, ini, configName, runNumbers);
+    BatchState state;
+    doRunSimulations(state, ini, configName, runNumbers);
+    return extractResult(state);
 }
 
-void CmdenvSimulationRunner::runSimulations(InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
+void CmdenvSimulationRunner::doRunSimulations(BatchState& state, InifileContents *ini, const char *configName, const std::vector<int>& runNumbers)
 {
+    state.numRuns = (int)runNumbers.size();
     for (int runNumber : runNumbers) {
-        runsTried++;
-
-        bool finishedOK = runSimulationSafe(ini, configName, runNumber);
-        if (!finishedOK)
-            numErrors++;
+        try {
+            state.runsTried++;
+            doRunSimulation(state, ini, configName, runNumber);
+            state.numCompleted++;
+        }
+        catch (std::exception& e) {
+            narrator->displayException(e);  // note: must take care not to print again if it was already printed
+            state.numErrors++;
+            if (state.stopBatchOnError)
+                break;
+        }
 
         // skip further runs if signal was caught
         if (sigintReceived)
             break;
-
-        if (!finishedOK && stopBatchOnError)
-            break;
-    }
-}
-
-bool CmdenvSimulationRunner::runSimulationSafe(InifileContents *ini, const char *configName, int runNumber)
-{
-    try {
-        runSimulation(ini, configName, runNumber);
-        return true;
-    }
-    catch (std::exception& e) {
-        narrator->displayException(e);  // note: must take care not to print again if it was already printed
-        return false;
     }
 }
 
 void CmdenvSimulationRunner::runSimulation(InifileContents *ini, const char *configName, int runNumber)
 {
+    BatchState state;
+    doRunSimulation(state, ini, configName, runNumber);
+}
+
+void CmdenvSimulationRunner::doRunSimulation(BatchState& state, InifileContents *ini, const char *configName, int runNumber)
+{
     narrator->preparing(configName, runNumber);
 
     std::unique_ptr<cConfiguration> cfg(ini->extractConfig(configName, runNumber));
-    stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
-
-    bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
-    std::string outputFile = redirectOutput ? ResultFileUtils(cfg.get()).augmentFileName(cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE)) : "";
-
-    cTerminationException *reason = setupAndRunSimulation(cfg.get(), redirectOutput ? outputFile.c_str() : nullptr);
+    cTerminationException *reason = setupAndRunSimulation(state, cfg.get());
     delete reason;
 }
 
-cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfiguration *cfg, const char *redirectFileName)
+cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(BatchState& state, cConfiguration *cfg)
 {
-    bool redirectOutput = redirectFileName != nullptr;
+    state.stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
+
+    bool redirectOutput = cfg->getAsBool(CFGID_CMDENV_REDIRECT_OUTPUT);
+    std::string outputFile = redirectOutput ? ResultFileUtils(cfg).augmentFileName(cfg->getAsFilename(CFGID_CMDENV_OUTPUT_FILE)) : "";
+    const char *redirectFileName = outputFile.c_str();
 
     narrator->beforeRedirecting(cfg);
     std::ofstream fout;
@@ -261,12 +262,14 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(cConfigurat
 
     std::ostream& simout = redirectOutput ? fout : out;
 
+    narrator->afterRedirecting(cfg, fout);
+
     ensureNedLoader(cfg);
 
     std::unique_ptr<cSimulation> tmp(createSimulation(simout));
     cSimulation *simulation = tmp.get();
 
-    std::unique_ptr<cIEventLoopRunner> tmp2(createEventLoopRunner(simulation, simout, cfg));
+    std::unique_ptr<cIEventLoopRunner> tmp2(createEventLoopRunner(state, simulation, simout, cfg));
     cIEventLoopRunner *runner = tmp2.get();
 
     narrator->simulationCreated(simulation, fout);
@@ -312,7 +315,7 @@ cSimulation *CmdenvSimulationRunner::createSimulation(std::ostream& simout)
     return new cSimulation("simulation", envir, nedLoader);
 }
 
-cIEventLoopRunner *CmdenvSimulationRunner::createEventLoopRunner(cSimulation *simulation, std::ostream& simout, cConfiguration *cfg)
+cIEventLoopRunner *CmdenvSimulationRunner::createEventLoopRunner(BatchState& state, cSimulation *simulation, std::ostream& simout, cConfiguration *cfg)
 {
     GenericEventLoopRunner *runner = new GenericEventLoopRunner(simulation, simout, sigintReceived);
     runner->setExpressMode(cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE));
@@ -322,9 +325,21 @@ cIEventLoopRunner *CmdenvSimulationRunner::createEventLoopRunner(cSimulation *si
     runner->setPrintThreadId(std::this_thread::get_id() != homeThreadId);
     runner->setPrintEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS));
     runner->setDetailedEventBanners(cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS));
-    runner->setBatchProgress(runsTried, numRuns);
+    runner->setBatchProgress(state.runsTried, state.numRuns);
     return runner;
 }
+
+CmdenvSimulationRunner::BatchResult CmdenvSimulationRunner::extractResult(const BatchState& state)
+{
+    BatchResult result;
+    result.numRuns = state.numRuns;
+    result.runsTried = state.runsTried;
+    result.numCompleted = state.numCompleted;
+    result.numInterrupted = state.numInterrupted;
+    result.numErrors = state.numErrors;
+    return result;
+}
+
 
 void CmdenvSimulationRunner::sigintHandler(int signum)
 {

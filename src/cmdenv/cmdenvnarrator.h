@@ -57,6 +57,7 @@ class ICmdenvNarrator
     virtual void beforeRedirecting(cConfiguration *cfg) = 0;
     virtual void redirectingTo(cConfiguration *cfg, const char *redirectFileName) = 0;
     virtual void onRedirectionFileOpen(std::ostream& fout, cConfiguration *cfg, const char *redirectFileName) = 0; // non-narrating
+    virtual void afterRedirecting(cConfiguration *cfg, std::ofstream& fout) = 0;
     virtual void simulationCreated(cSimulation *simulation, std::ofstream& fout);
     virtual void simulationLifecycleEvent(cSimulation *simulation, std::ofstream& fout, SimulationLifecycleEventType eventType, cObject *details) = 0;
     virtual void displayException(std::exception& ex) = 0;
@@ -73,6 +74,7 @@ class CmdenvNarrator : public ICmdenvNarrator
     virtual void beforeRedirecting(cConfiguration *cfg) override;
     virtual void redirectingTo(cConfiguration *cfg, const char *redirectFileName) override;
     virtual void onRedirectionFileOpen(std::ostream& fout, cConfiguration *cfg, const char *redirectFileName) override;
+    virtual void afterRedirecting(cConfiguration *cfg, std::ofstream& fout) override;
     virtual void simulationLifecycleEvent(cSimulation *simulation, std::ofstream& fout, SimulationLifecycleEventType eventType, cObject *details) override;
     virtual void displayException(std::exception& ex) override;
     virtual void logException(std::ofstream& fout, std::exception& ex) override;

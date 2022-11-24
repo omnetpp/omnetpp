@@ -82,8 +82,17 @@ void CmdenvNarrator::onRedirectionFileOpen(std::ostream& fout, cConfiguration *c
     const char *iterVars = opp_nulltodefault(cfg->getVariable(CFGVAR_ITERATIONVARS), "?");
     const char *runId = opp_nulltodefault(cfg->getVariable(CFGVAR_RUNID), "?");
     const char *repetition = opp_nulltodefault(cfg->getVariable(CFGVAR_REPETITION), "?");
-    if (verbose)
-        fout << "\nRunning configuration " << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << " --> runID=" << runId << endl;
+    fout << endl;
+    fout << "Running configuration " << configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl;
+    fout << "Assigned runID=" << runId << endl;
+}
+
+void CmdenvNarrator::afterRedirecting(cConfiguration *cfg, std::ofstream& fout)
+{
+    if (verbose) {
+        const char *runId = opp_nulltodefault(cfg->getVariable(CFGVAR_RUNID), "?");
+        out << "Assigned runID=" << runId << endl;
+    }
 }
 
 void CmdenvNarrator::simulationLifecycleEvent(cSimulation *simulation, std::ofstream& fout, SimulationLifecycleEventType eventType, cObject *details)
