@@ -427,7 +427,6 @@ class SIM_API cIEventlogManager : public cObject, public cISimulationLifecycleLi
      */
     virtual const char *getFileName() const = 0;
 
-    //TODO this one could be removed from the interface by invoking it via the LF_ON_RUN_END lifecycle event, but it needs to send more details
     virtual void endRun(bool isError, int resultCode, const char *message) = 0;
     //@}
 

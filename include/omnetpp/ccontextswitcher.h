@@ -111,7 +111,6 @@ class SIM_API cMethodCallContextSwitcher : public cContextSwitcher
     /**
      * Switches context to the given module
      */
-    //TODO store previous frame, __FILE__, __LINE__, __FUNCTION__ too, at least in debug builds?
     cMethodCallContextSwitcher(const cComponent *newContext);
 
     /**

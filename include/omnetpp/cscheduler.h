@@ -204,7 +204,6 @@ class SIM_API cSequentialScheduler : public cScheduler
  *
  * @ingroup SimCore
  */
-//TODO soft realtime, hard realtime (that is: tries to catch up, or resynchronizes on each event)
 class SIM_API cRealTimeScheduler : public cScheduler
 {
   protected:

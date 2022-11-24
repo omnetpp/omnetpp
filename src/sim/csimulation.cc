@@ -684,7 +684,6 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
         throw cRuntimeError("Cannot set up network: '%s' is not a network type", networkType->getFullName());
 
     // just to be sure
-//    fes->clear();  --TODO because it clears previously set simTimeLimit
     cComponent::clearSignalState();
 
     if (cfg)

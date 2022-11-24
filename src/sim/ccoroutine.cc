@@ -50,12 +50,8 @@ Register_GlobalConfigOptionU(CFGID_TOTAL_STACK, "total-stack", "B", nullptr, "Sp
 void cCoroutine::configure(cConfiguration *cfg)
 {
     size_t totalStack = (size_t)cfg->getAsDouble(CFGID_TOTAL_STACK, TOTAL_STACK_SIZE);
-    if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096) {
-        //TODO:
-        //if (opt->verbose)
-        //    out << "Total stack size " << totalStack << " increased to " << MAIN_STACK_SIZE << endl;
+    if (TOTAL_STACK_SIZE != 0 && totalStack <= MAIN_STACK_SIZE+4096)
         totalStack = MAIN_STACK_SIZE+4096;
-    }
     init(totalStack, MAIN_STACK_SIZE);
 }
 

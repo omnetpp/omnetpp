@@ -79,7 +79,6 @@ void cNedLoader::forEachChild(cVisitor *v)
 void cNedLoader::loadEmbeddedNedFiles()
 {
     LOCK;
-    // TODO if (verbose) out << "Loading embedded NED files: " << embeddedNedFiles.size() << endl;
     for (const auto& file : embeddedNedFiles) {
         std::string nedText = file.nedText;
         if (!file.garblephrase.empty())
@@ -122,17 +121,10 @@ std::string cNedLoader::extractNedExcludedPackages(cConfiguration *cfg, const ch
 void cNedLoader::loadNedFiles()
 {
     LOCK;
-    // load NED files from folders on the NED path
     std::set<std::string> foldersLoaded;
     for (std::string folder : opp_splitpath(nedPath)) {
         if (foldersLoaded.find(folder) == foldersLoaded.end()) {
-//TODO verbose mode log:
-//            if (opt->verbose)
-//                out << "Loading NED files from " << folder << ": ";
-            int count = loadNedFolder(folder.c_str(), nedExcludedPackages.c_str());
-            (void)count;
-//            if (opt->verbose)
-//                out << " " << count << endl;
+            loadNedFolder(folder.c_str(), nedExcludedPackages.c_str());
             foldersLoaded.insert(folder);
         }
     }

@@ -153,7 +153,7 @@ class SIM_API CodeFragments
   private:
     Type type;
     SimulationLifecycleEventType lifecycleEvent;
-    void (*code)();  //TODO std::function?  "done" flag instead of setting code ptr to null
+    void (*code)();
     const char *sourceCode;
     CodeFragments *next;
     static CodeFragments *head;
