@@ -593,7 +593,6 @@ const char *cSimulation::getStageName(Stage stage)
         CASE(INITIALIZE);
         CASE(EVENT);
         CASE(REFRESHDISPLAY);
-        CASE(BUSY);
         CASE(FINISH);
         CASE(CLEANUP);
         default: return "???";

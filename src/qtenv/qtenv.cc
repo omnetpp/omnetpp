@@ -1233,7 +1233,7 @@ bool Qtenv::checkRunning()
         else
             warningText = "Sorry, you cannot do this while the simulation is running. Please stop it first.";
     }
-    else if (getSimulation()->getStage() == cSimulation::STAGE_BUSY) {
+    else if (insideIdle) {
         warningText = "The simulation is waiting for external synchronization -- press STOP to interrupt it.";
     }
 
@@ -1859,8 +1859,17 @@ void Qtenv::askParameter(cPar *par, bool unassigned)
 
 bool Qtenv::idle()
 {
+    // set the insideIdle flag for the duration of this call
+    struct FlagSwitcher {
+        bool& flag;
+        FlagSwitcher(bool& flag) : flag(flag) {flag = true;}
+        ~FlagSwitcher() {flag = false;}
+    };
+    FlagSwitcher tmp(insideIdle);
+    (void)tmp;
+
     // process UI events
-    displayUpdateController->idle(); // TODO switch simulationStage to STAGE_BUSY for the duration of this call
+    displayUpdateController->idle();
 
     return stopSimulationFlag;
 }

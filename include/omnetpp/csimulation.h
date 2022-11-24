@@ -109,7 +109,6 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
         STAGE_INITIALIZE,
         STAGE_EVENT,
         STAGE_REFRESHDISPLAY,
-        STAGE_BUSY,  //TODO remove?
         STAGE_FINISH,
         STAGE_CLEANUP
     };

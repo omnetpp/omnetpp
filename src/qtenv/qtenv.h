@@ -163,6 +163,7 @@ class QTENV_API Qtenv : public QObject, public AppBase
       Stopwatch stopwatch;      // CPU and real time limit checking --TODO already in cSimulation, eliminate!!!
       simtime_t simulatedTime;  // sim. time after finishing simulation
 
+      bool insideIdle = false;      // set to true while the idle() callback method is on the call stack
       bool stopSimulationFlag;      // indicates that the simulation should be stopped (STOP button pressed in the UI)
       bool callFinishOnExitFlag = false;
 
