@@ -425,7 +425,11 @@ class SIM_API SimTime
     static void setScaleExp(int e);
 
     /**
-     * TODO delegates to setScaleExp(); invalidates existing SimTime instances so beware of calling it later, yada yada
+     * Configures SimTime using the configuration. It currently reads the
+     * simulation time resolution from the configuration, and invokes
+     * setScaleExp() with it. Note that once the simulation time resolution
+     * has been set to a particular value, it cannot be changed, as it would
+     * invalidate all existing SimTime instances.
      */
     static void configure(cConfiguration *cfg);
 

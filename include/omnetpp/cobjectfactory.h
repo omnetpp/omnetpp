@@ -151,16 +151,27 @@ inline cObject *createOneIfClassIsKnown(const char *classname) {
 }
 
 /**
- * TODO
+ * @brief A variation of createOne() that also includes casting the created object
+ * to the requested type. The second argument should be a descriptive noun
+ * which is included in the exception message if the creation or the type
+ * casting fails.
+ *
+ * Example:
+ *
+ * <pre>
+ * cScheduler *scheduler = createByClassName<cScheduler>(className, "event scheduler");
+ * </pre>
+ *
+ * @ingroup Misc
  */
 template<class T>
-T *createByClassName(const char *className, const char *what) {
+T *createByClassName(const char *className, const char *what=nullptr) {
     cObject *obj = createOneIfClassIsKnown(className);
     if (obj == nullptr)
-        throw cRuntimeError("Cannot create %s: class \"%s\" not found", what, className);
+        throw cRuntimeError("Cannot create %s: class \"%s\" not found", what ? what : opp_typename(typeid(T)), className);
     T *result = dynamic_cast<T *>(obj);
     if (result == nullptr)
-        throw cRuntimeError("Cannot create %s: class \"%s\" is not subclassed from %s", what, className, opp_typename(typeid(T)));
+        throw cRuntimeError("Cannot create %s: class \"%s\" is not subclassed from %s", what ? what : opp_typename(typeid(T)), className, opp_typename(typeid(T)));
     return result;
 }
 

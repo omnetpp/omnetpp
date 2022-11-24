@@ -58,12 +58,14 @@ class SIM_API cStatisticBuilder
         void addResultRecorders(cComponent *component, simsignal_t signal, const char *statisticName, cProperty *statisticTemplateProperty);
 
         /**
-         * TODO
+         * Utility function to recursively print the list of result recorders installed
+         * on the given component and the components in its subtree.
          */
         static void dumpResultRecorders(std::ostream& out, cComponent *component);
 
         /**
-         * TODO
+         * Utility function to print the list of result recorders installed on the
+         * given component.
          */
         static void dumpComponentResultRecorders(std::ostream& out, cComponent *component);
 
