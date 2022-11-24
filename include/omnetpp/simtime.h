@@ -105,6 +105,12 @@ class SIM_API SimTime
     }
 
     void setSeconds(int64_t sec) {
+        if (sec > maxseconds || sec < -maxseconds)
+            rangeErrorSeconds(sec);
+        t = dscale * sec;
+    }
+
+    void setSecondsU(uint64_t sec) {
         if (sec > maxseconds)
             rangeErrorSeconds(sec);
         t = dscale * sec;
@@ -192,14 +198,14 @@ class SIM_API SimTime
     SimTime& operator=(const SimTime& x) = default;
     SimTime& operator=(const cPar& d);
     SimTime& operator=(double d) {assertInited(d); t=toInt64(fscale*d); return *this;}
-    SimTime& operator=(short d) {assertInited(d); setSeconds(d); return *this;}  //TODO check overflow
+    SimTime& operator=(short d) {assertInited(d); setSeconds(d); return *this;}
     SimTime& operator=(int d) {assertInited(d); setSeconds(d); return *this;}
     SimTime& operator=(long d) {assertInited(d); setSeconds(d); return *this;}
     SimTime& operator=(long long d) {assertInited(d); setSeconds(d); return *this;}
-    SimTime& operator=(unsigned short d) {assertInited(d); setSeconds(d); return *this;}
-    SimTime& operator=(unsigned int d) {assertInited(d); setSeconds(d); return *this;}
-    SimTime& operator=(unsigned long d) {assertInited(d); setSeconds(d); return *this;}
-    SimTime& operator=(unsigned long long d) {assertInited(d); setSeconds(d); return *this;}
+    SimTime& operator=(unsigned short d) {assertInited(d); setSecondsU(d); return *this;}
+    SimTime& operator=(unsigned int d) {assertInited(d); setSecondsU(d); return *this;}
+    SimTime& operator=(unsigned long d) {assertInited(d); setSecondsU(d); return *this;}
+    SimTime& operator=(unsigned long long d) {assertInited(d); setSecondsU(d); return *this;}
 
     bool operator==(const SimTime& x) const  {return t==x.t;}
     bool operator!=(const SimTime& x) const  {return t!=x.t;}
@@ -223,7 +229,7 @@ class SIM_API SimTime
     const SimTime& operator*=(unsigned short d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
     const SimTime& operator*=(unsigned int d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
     const SimTime& operator*=(unsigned long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
-    const SimTime& operator*=(unsigned long long d) {if (checkmul) checkedMul(d); else t*=d; return *this;}
+    const SimTime& operator*=(unsigned long long d) {if (checkmul) checkedMul(d); else t*=d; return *this;} //TODO check overflow from unsigned->signed conversion
     const SimTime& operator*=(const cPar& p);
 
     const SimTime& operator/=(double d) {t=toInt64(t/d); return *this;}
