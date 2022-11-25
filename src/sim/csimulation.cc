@@ -1063,14 +1063,13 @@ void cSimulation::executeEvent(cEvent *event)
 
 class cDefaultEventLoopRunner : public cIEventLoopRunner
 {
-  private:
-    cSimulation *simulation;
   public:
-    cDefaultEventLoopRunner(cSimulation *simulation) : simulation(simulation) {}
-    virtual void run() override;
+    cDefaultEventLoopRunner(cSimulation *simulation) : cIEventLoopRunner(simulation) {}
+    virtual void configure(cConfiguration *cfg) override {}
+    virtual void runEventLoop() override;
 };
 
-void cDefaultEventLoopRunner::run()
+void cDefaultEventLoopRunner::runEventLoop()
 {
     if (simulation->hasRealTimeLimit()) {
         unsigned int i = 0;
@@ -1119,7 +1118,7 @@ bool cSimulation::run(cIEventLoopRunner *runner, bool shouldCallFinish)
 
     try {
         notifyLifecycleListeners(firstRun ? LF_ON_SIMULATION_START : LF_ON_SIMULATION_RESUME);
-        runner->run();
+        runner->runEventLoop();
         stopwatch->stopClock();
         gotoState(SIM_PAUSED);
         notifyLifecycleListeners(LF_ON_SIMULATION_PAUSE);

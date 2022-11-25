@@ -195,9 +195,12 @@ void GenericEventLoopRunner::doRunExpressNoStatusUpdates()
     }
 }
 
-void GenericEventLoopRunner::run()
+void GenericEventLoopRunner::runEventLoop()
 {
-    ASSERT(simulation == cSimulation::getActiveSimulation());
+    if (simulation != cSimulation::getActiveSimulation())
+        throw cRuntimeError("GenericEventLoopRunner: Associated simulation object is not the active one (runEventLoop() called outside cSimulation::run()?)");
+    if (simulation->getState() != cSimulation::SIM_RUNNING)
+        throw cRuntimeError("GenericEventLoopRunner: Associated simulation object is not in the RUNNING state (runEventLoop() called outside cSimulation::run()?)");
 
     if (GenericEnvir *envir = dynamic_cast<GenericEnvir*>(simulation->getEnvir()))
         setFakeGUI(envir->getFakeGui());

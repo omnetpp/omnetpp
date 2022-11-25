@@ -34,7 +34,6 @@ class IFakeGUI;
 class ENVIR_API GenericEventLoopRunner : public cIEventLoopRunner
 {
   protected:
-    cSimulation *simulation; // not owned
     IFakeGUI *fakeGUI = nullptr; // not owned
     std::ostream& out;
     bool& sigintReceived;
@@ -65,9 +64,9 @@ class ENVIR_API GenericEventLoopRunner : public cIEventLoopRunner
     bool elapsed(long millis, int64_t& since);
 
   public:
-    GenericEventLoopRunner(cSimulation *simulation, std::ostream& out, bool& sigintReceived) : simulation(simulation), out(out), sigintReceived(sigintReceived) {}
+    GenericEventLoopRunner(cSimulation *simulation, std::ostream& out, bool& sigintReceived) : cIEventLoopRunner(simulation), out(out), sigintReceived(sigintReceived) {}
     virtual ~GenericEventLoopRunner() {}
-    virtual void configure(cConfiguration *cfg);
+    virtual void configure(cConfiguration *cfg) override;
 
     virtual void setFakeGUI(IFakeGUI *fakeGUI) {this->fakeGUI = fakeGUI;}
     virtual void setExpressMode(bool express) {expressMode = express;}
@@ -79,7 +78,7 @@ class ENVIR_API GenericEventLoopRunner : public cIEventLoopRunner
     virtual void setDetailedEventBanners(bool enable) {detailedEventBanners = enable;}
     virtual void setBatchProgress(int runsTried, int numRuns) {this->runsTried = runsTried; this->numRuns = numRuns;}
 
-    virtual void run();
+    virtual void runEventLoop() override;
 };
 
 }  // namespace envir

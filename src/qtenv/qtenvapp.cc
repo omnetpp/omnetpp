@@ -860,11 +860,12 @@ class QtenvEventLoopRunner : public cIEventLoopRunner
     private:
         QtenvApp *qtenv;
     public:
-        QtenvEventLoopRunner(QtenvApp *qtenv) : qtenv(qtenv) {}
-        virtual void run() override;
+        QtenvEventLoopRunner(QtenvApp *qtenv) : cIEventLoopRunner(cSimulation::getActiveSimulation()), qtenv(qtenv) {}
+        virtual void configure(cConfiguration *cfg) override {}
+        virtual void runEventLoop() override;
 };
 
-void QtenvEventLoopRunner::run()
+void QtenvEventLoopRunner::runEventLoop()
 {
     // initial, "cheap" version of a Qtenv runner -- just delegates back to Qtenv
     // TODO move out to its own file, and move Qtenv's running-related functionality into it

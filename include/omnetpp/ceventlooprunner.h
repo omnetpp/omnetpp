@@ -20,6 +20,9 @@
 
 namespace omnetpp {
 
+class cSimulation;
+class cConfiguration;
+
 /**
  * @brief Encapsulates the discrete simulation event loop in cSimulation.
  * The loop repeats the two steps of (1) getting the next event from the FES
@@ -34,9 +37,27 @@ namespace omnetpp {
  *
  * @ingroup SimSupport
  */
-class SIM_API cIEventLoopRunner {
+class SIM_API cIEventLoopRunner
+{
+  protected:
+    cSimulation *simulation; // not owned
+
   public:
+    /**
+     * The constructor accepts the simulation object on which this object
+     * is going to operate.
+     */
+    cIEventLoopRunner(cSimulation *simulation) : simulation(simulation) {}
+
+    /**
+     * Destructor.
+     */
     virtual ~cIEventLoopRunner();
+
+    /**
+     * Configures the object.
+     */
+    virtual void configure(cConfiguration *cfg) = 0;
 
     /**
      * Exceptions thrown from the simulation are propagated. The method is
@@ -51,7 +72,7 @@ class SIM_API cIEventLoopRunner {
      * normally (case 3). For cases 1 and 2, the simulation is considered finished;
      * successfully or with an error.
      */
-    virtual void run() = 0;
+    virtual void runEventLoop() = 0;
 };
 
 }  // namespace omnetpp
