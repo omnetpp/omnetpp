@@ -1,19 +1,16 @@
 { 
   pname, version, src ? ./.,                 # direct parameters
-  stdenv, lib, fetchurl, symlinkJoin, lndir, # build environment
-  bintools, perl, flex, bison, lld,          # dependencies
-  python3,
-  qtbase ? null, qtsvg ? null,
+  stdenv, lib, bintools, 
+  perl, flex, bison, lld,                    # dependencies
+  python3, qtbase ? null, qtsvg ? null,
   MODE ? "release",                          # build parameters
-  WITH_QTENV ? false,                        # build parameters
+  WITH_QTENV ? false,
 }:
 assert WITH_QTENV -> ! builtins.any isNull [ qtbase qtsvg ] ;
 
 let
   omnetpp-outputs = stdenv.mkDerivation rec {
     inherit pname version src;
-
-    outputs = [ "bin" "dev" "out" ]; # doc, samples, gui, gui3d, ide
 
     enableParallelBuilding = true;
     strictDeps = true;
@@ -24,13 +21,13 @@ let
     buildInputs = [ ] ++ lib.optionals WITH_QTENV [ qtbase ];
 
     # tools required for build only (not needed in derivations)
-    nativeBuildInputs = [ ];
+    nativeBuildInputs = [ ] ++ lib.optionals WITH_QTENV [ qtbase ];
 
     # tools required for build only (needed in derivations)
     propagatedNativeBuildInputs = [
-      stdenv perl bison flex bintools lld lndir
+      stdenv perl bison flex bintools lld
       (python3.withPackages(ps: with ps; [ numpy pandas matplotlib scipy seaborn ]))
-    ] ++ lib.optionals WITH_QTENV [ qtbase ];
+    ];
 
     patches = [ ./flake-support-on-6.0.1.patch ];
 
@@ -51,55 +48,42 @@ let
       rm -rf samples images/src
     '';
 
-    buildPhase = ''
+    buildPhase = (lib.optionalString WITH_QTENV ''
+      # Do not link with qtenv by default. It should be loaded dynamically.
+      substituteInPlace Makefile.inc --replace "ALL_ENV_LIBS += \$(QTENV_LIBS)" ""
       substituteInPlace Makefile.inc --replace ${qtbase.dev}/lib ${qtbase.out}/lib
-      substituteInPlace Makefile.inc --replace "OMNETPP_IMAGE_PATH := \$(OMNETPP_ROOT)/images" "OMNETPP_IMAGE_PATH := ${placeholder "bin"}/images"
+    '') + ''
+      # fix the image path temporarily to the final pacakge location
+      substituteInPlace Makefile.inc --replace "\$(OMNETPP_ROOT)/images" "${placeholder "out"}/images"
+
       make MODE=release -j$NIX_BUILD_CORES
     '';
 
     installPhase = ''
       runHook preInstall
-
-      substituteInPlace nix-support/set-qtenv --replace "@qtPluginPath@" "${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
-      substituteInPlace nix-support/set-qtenv --replace "@ldLibraryPath@" "${placeholder "dev"}/lib"
-      substituteInPlace Makefile.inc --replace "OMNETPP_LIB_DIR = \$(OMNETPP_ROOT)/lib\$(OUTPUT_PREFIX)" "OMNETPP_LIB_DIR = ${placeholder "bin"}/lib"
-
-      mkdir -p ${placeholder "dev"}/bin ${placeholder "dev"}/lib
-
-      rm -f nix-support/*.nix nix-support/flake-support-on-6.0.1.patch
-      mv Makefile.inc configure.user include src nix-support ${placeholder "dev"}
-      (cd bin && mv opp_run_dbg* opp_configfilepath opp_featuretool opp_makemake opp_shlib_postprocess ${placeholder "dev"}/bin || true)
-      (cd lib && mv *.a *_dbg.* liboppqtenv.* ${placeholder "dev"}/lib || true)
-
-      mkdir -p ${placeholder "bin"}/bin ${placeholder "bin"}/lib
-      mv images setenv Version ${placeholder "bin"}
-      (cd bin && mv  opp_run* opp_msgtool opp_msgc opp_nedtool opp_charttool opp_eventlogtool opp_fingerprinttest opp_scavetool opp_test ${placeholder "bin"}/bin || true)
-      (cd lib && mv * ${placeholder "bin"}/lib || true)
-      mv python ${placeholder "bin"}
-
       mkdir -p ${placeholder "out"}
 
+    '' + (lib.optionalString WITH_QTENV ''
+      substituteInPlace nix-support/set-qtenv --replace "@qtPluginPath@" "${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
+      substituteInPlace nix-support/set-qtenv --replace "@ldLibraryPath@" "${placeholder "out"}/lib"
+      mv nix-support/set-qtenv ${placeholder "out"}
+    '') + ''
+
+      # fix the image path back to the original value
+      substituteInPlace Makefile.inc --replace "${placeholder "out"}/images" "\$(OMNETPP_ROOT)/images"
+
+      (cd bin; rm -f opp_ide omnetpp omnest opp_samples opp_docbrowser)
+      mv doc/License doc/3rdparty.txt ${placeholder "out"}
+      mv setenv Version Makefile.inc configure.user bin images include lib python ${placeholder "out"}
+
       runHook postInstall
-      '';
+    '';
 
-
-    preFixup = lib.optionalString stdenv.isLinux ''
-      (
-        # patch rpath on BIN executables
-        for file in $(find ${placeholder "bin"} -type f -executable); do
-          if patchelf --print-rpath $file; then
-            patchelf --set-rpath '${placeholder "bin"}/lib' $file
-          fi
-        done
-        for file in $(find ${placeholder "dev"} -type f -executable); do
-          if patchelf --print-rpath $file; then
-            patchelf --set-rpath '${placeholder "bin"}/lib:${qtbase.out}/lib' $file
-          fi
-        done
-      )'';
+    postFixup = lib.optionalString (WITH_QTENV && stdenv.isLinux) ''      
+        patchelf --set-rpath '${placeholder "out"}/lib:${qtbase.out}/lib' ${placeholder "out"}/lib/liboppqtenv.so
+    '';
 
     meta = with lib; {
-      outputsToInstall = [ "bin" "dev" ];
       homepage= "https://omnetpp.org";
       description = "OMNeT++ Discrete Event Simulator runtime";
       longDescription = "OMNeT++ is an extensible, modular, component-based C++ simulation library and framework, primarily for building network simulators.";
@@ -111,10 +95,3 @@ let
   };
 in
    omnetpp-outputs
-/*
-  symlinkJoin {
-    name = "${pname}-${version}";
-    paths = with omnetpp-outputs; [ bin dev ]; 
-    postBuild = "";  # TODO optimize the symlink forest (include, src, images, samples, python could be linked as a single directory)
-  }
-*/
