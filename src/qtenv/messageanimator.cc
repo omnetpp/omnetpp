@@ -413,6 +413,8 @@ void MessageAnimator::updateAnimations()
         for (auto& p : e.second)
             if (p->getState() == Animation::PLAYING) {
                 p->update();
+                if (p->getState() == Animation::FINISHED)
+                    p->cleanup();
                 if (p->getState() == Animation::DONE) {
                     delete p;
                     p = nullptr;
