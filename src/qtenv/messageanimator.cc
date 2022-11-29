@@ -432,10 +432,10 @@ void MessageAnimator::updateAnimations()
 
     // If there were no deliveries (or the last one just ended):
 
-    // Then advancing the holding anims that we haven't already.
+    // Then advancing the non-holding anims that we haven't already.
     for (auto& e : nonHoldingAnims) {
         for (auto& p : e.second)
-            if (!p->isHolding() && (p->getState() != Animation::PLAYING) && !p->advance()) {
+            if (!p->isHolding() && (p->getState() != Animation::PLAYING) && (p->getState() == Animation::DONE || !p->advance())) {
                 delete p;
                 p = nullptr;
             }
