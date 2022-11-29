@@ -1780,24 +1780,33 @@ bool Qtenv::idle()
 void Qtenv::pausePoint()
 {
     ASSERT(!pauseEventLoop->isRunning());
+    ++pausePointNumber;
 
-    if (runMode == RUNMODE_STEP && !stopSimulationFlag) {
-        ++pausePointNumber;
-        // pop out all the "play" buttons
-        mainWindow->setGuiForRunmode(RUNMODE_PAUSED);
+    if (getStopSimulationFlag() || isExpressMode())
+        return;
+
+    if (runMode != RUNMODE_FAST) {
         updateSimtimeDisplay();
         callRefreshInspectors();
+    }
 
-        // have to do it _before_ the blocking event loop,
-        // and this will also process GUI events anyway
+    // have to do it _before_ the blocking event loop,
+    // and this will also process GUI events anyway
+    if (runMode != RUNMODE_FAST && messageAnimator->getShowAnimations() && opt->animationEnabled)
         performHoldAnimations();
+    else
+        skipHoldAnimations();
+
+    // only actually blocking the execution of the event if the user stepped
+    if (runMode == RUNMODE_STEP) {
+        // pop out all the "play" buttons
+        mainWindow->setGuiForRunmode(RUNMODE_PAUSED);
 
         displayUpdateController->pause();
         pauseEventLoop->exec();
         displayUpdateController->resume();
 
         mainWindow->setGuiForRunmode(runMode);
-        updateSimtimeDisplay();
     }
 }
 
