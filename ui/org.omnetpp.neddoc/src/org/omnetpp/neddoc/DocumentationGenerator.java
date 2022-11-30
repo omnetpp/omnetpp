@@ -67,6 +67,7 @@ import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -1999,7 +2000,7 @@ public class DocumentationGenerator {
                                 if (child instanceof SubmoduleEditPart) {
                                     SubmoduleEditPart submoduleEditPart = (SubmoduleEditPart)child;
                                     SubmoduleElementEx submoduleElement = submoduleEditPart.getModel();
-                                    outMapReference(submoduleElement.getEffectiveTypeRef(), submoduleEditPart.getFigure());
+                                    outMapReference(resolveSubmoduleType(submoduleElement), submoduleEditPart.getFigure());
                                 }
                             }
                         }
@@ -2018,6 +2019,33 @@ public class DocumentationGenerator {
         }
     }
 
+    private String tryToParseQuotedString(String s) {
+        try {
+            if (s.charAt(0) == '"')
+                return Common.parseQuotedString(s);
+        }
+        catch (RuntimeException e) {
+        }
+        return null;
+    }
+
+    protected INedTypeElement resolveSubmoduleType(SubmoduleElementEx submodule) {
+        // get module type expression
+        String likeExpr = submodule.getLikeExpr();
+
+        // first, try to use expression between angle braces from the NED file
+        if (StringUtils.isNotEmpty(likeExpr)) {
+            String typeString = tryToParseQuotedString(likeExpr);
+            if (typeString != null) {
+                INedTypeElement interfaceType = submodule.getEffectiveTypeRef();
+                INedTypeInfo submoduleType = nedResources.lookupLikeType(typeString, interfaceType.getNedTypeInfo(), project);
+                if (submoduleType != null)
+                    return submoduleType.getNedElement();
+            }
+        }
+        return submodule.getEffectiveTypeRef();
+    }
+    
     protected void generateFullDiagrams() throws Exception {
         try {
             monitor.beginTask("Generating full diagrams...", (generateFullUsageDiagrams ? 2 : 0) + (generateFullInheritanceDiagrams ? 2 : 0));
