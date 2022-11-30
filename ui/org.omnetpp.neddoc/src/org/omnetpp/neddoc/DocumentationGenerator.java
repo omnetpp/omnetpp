@@ -2231,7 +2231,7 @@ public class DocumentationGenerator {
 
     protected void generateSourceContent(String source, boolean nedSource) throws IOException {
         out(renderer.subsectionHeading("Source code", "subtitle"));
-        out(renderer.beginSource());
+        out(renderer.beginSource(SyntaxHighlightHelper.isDarkTheme));
 
         org.eclipse.jface.text.Document document = new org.eclipse.jface.text.Document(source);
         ITokenScanner partitioner = nedSource ? new NedSyntaxHighlightPartitionScanner() : new MsgSyntaxHighlightPartitionScanner();

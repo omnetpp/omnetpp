@@ -103,8 +103,11 @@ public class HtmlRenderer implements INeddocRenderer {
         return result;
     }
 
-    public String beginSource() {
-        return "<pre class=\"src\">\n";
+    public String beginSource(boolean isDarkBackground) {
+    	if (isDarkBackground)
+            return "<pre class=\"src dark-bg\">\n";
+    	else
+    		return "<pre class=\"src\">\n";
     }
 
     public String endSource() {
