@@ -31,7 +31,7 @@
 #include "common/stringtokenizer.h"
 #include "common/stlutil.h"
 #include "loginspector.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"

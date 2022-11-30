@@ -20,7 +20,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QMenu>
 #include "omnetpp/coutvector.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 #include "inspectorfactory.h"
 #include "outputvectorinspector.h"

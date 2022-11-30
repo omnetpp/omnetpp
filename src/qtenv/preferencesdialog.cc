@@ -16,7 +16,7 @@
 
 #include "preferencesdialog.h"
 #include "ui_preferencesdialog.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "mainwindow.h"
 #include "messageanimator.h"
 #include "inspectorutil.h"
@@ -165,7 +165,7 @@ void PreferencesDialog::accept()
         getQtenv()->opt->logFormat = logFormat.c_str();
     }
     catch (std::exception& e) {
-        getQtenv()->confirm(Qtenv::ERROR, (std::string("Error in log prefix format: ") + e.what()).c_str());
+        getQtenv()->confirm(QtenvApp::ERROR, (std::string("Error in log prefix format: ") + e.what()).c_str());
     }
 
     LogLevel logLevel = LogLevel(ui->logLevel->currentData().toInt());

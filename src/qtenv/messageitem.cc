@@ -17,7 +17,7 @@
 #include "messageitem.h"
 #include <QtCore/QDebug>
 #include <QtGui/QPen>
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "graphicsitems.h"
 #include "displaystringaccess.h"
 #include "omnetpp/cdisplaystring.h"

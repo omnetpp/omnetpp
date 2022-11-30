@@ -16,7 +16,7 @@
 
 #include "comboselectiondialog.h"
 #include "ui_comboselectiondialog.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include <QtCore/QDebug>
 
 namespace omnetpp {

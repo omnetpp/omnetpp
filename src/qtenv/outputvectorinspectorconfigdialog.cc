@@ -19,7 +19,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QMessageBox>
 #include "common/stringutil.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspectorutil.h"
 
 namespace omnetpp {

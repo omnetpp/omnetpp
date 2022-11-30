@@ -18,7 +18,7 @@
 #include "ui_layersdialog.h"
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QVBoxLayout>
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "modulecanvasviewer.h"
 #include "canvasrenderer.h"
 

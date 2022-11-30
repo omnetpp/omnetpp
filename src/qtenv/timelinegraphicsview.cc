@@ -21,7 +21,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cdisplaystring.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"
 #include "qtutil.h"

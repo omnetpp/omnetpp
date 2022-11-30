@@ -62,7 +62,7 @@ void IOsgViewer::ensureViewerFactory()
         // for example) creates a cOsgCanvas - which is possible now. And it won't be a dummy
         // implementation anymore. And the dummy viewer will show an error anyways.
         if (osgViewerFactory == &dummyOsgFactory)
-            getQtenv()->confirm(Qtenv::WARNING,
+            getQtenv()->confirm(QtenvApp::WARNING,
                                 "Could not load the OSG viewer library (qtenv-osg).\n"
                                 "Continuing without the ability to view the scenes of cOsgCanvas objects.\n"
                                 "(Is " OMNETPP_PRODUCT " compiled with OSG support enabled?)");

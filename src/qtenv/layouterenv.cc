@@ -26,7 +26,7 @@
 #include "omnetpp/cdisplaystring.h"
 #include "layouterenv.h"
 #include "qtutil.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGraphicsLineItem>

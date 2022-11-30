@@ -19,7 +19,7 @@
 #include <omnetpp/cdisplaystring.h>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QPushButton>
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "layout/graphlayouter.h"
 #include "layout/basicspringembedderlayout.h"
 #include "layout/forcedirectedgraphlayouter.h"

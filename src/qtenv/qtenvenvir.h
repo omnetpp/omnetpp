@@ -24,12 +24,12 @@ using namespace omnetpp::envir;
 namespace omnetpp {
 namespace qtenv {
 
-class Qtenv;
+class QtenvApp;
 
 class QTENV_API QtenvEnvir : public GenericEnvir
 {
   protected:
-    Qtenv *app = nullptr;
+    QtenvApp *app = nullptr;
 
   protected:
     // Called internally from readParameter(), to interactively prompt the
@@ -37,11 +37,11 @@ class QTENV_API QtenvEnvir : public GenericEnvir
     virtual void askParameter(cPar *par, bool unassigned) override;
 
   public:
-    QtenvEnvir(Qtenv *app) : app(app) {}
+    QtenvEnvir(QtenvApp *app) : app(app) {}
     virtual ~QtenvEnvir() {}
 
     // getters/setters
-    Qtenv *getApp() {return app;}
+    QtenvApp *getApp() {return app;}
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;

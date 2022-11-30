@@ -16,7 +16,7 @@
 
 #include "messageanimations.h"
 #include "messageanimator.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "moduleinspector.h"
 #include "messageitem.h"
 #include "connectionitem.h"

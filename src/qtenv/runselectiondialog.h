@@ -30,7 +30,7 @@ class RunSelectionDialog;
 namespace omnetpp {
 namespace qtenv {
 
-class Qtenv;
+class QtenvApp;
 
 class QTENV_API RunSelectionDialog : public QDialog
 {

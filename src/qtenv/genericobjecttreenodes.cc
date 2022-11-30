@@ -19,7 +19,7 @@
 #include "common/stlutil.h"
 #include "common/stringutil.h"
 #include "qtutil.h"
-#include "qtenv.h"  // for getQtenv
+#include "qtenvapp.h"  // for getQtenv
 #include <QtCore/QElapsedTimer>
 #include <set>
 #include "envir/visitor.h"

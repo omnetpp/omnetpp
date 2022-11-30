@@ -50,7 +50,7 @@ private:
 
     static const char *sizePostfix(IconSize size);
 
-    // A reference to the out member of EnvirBase (Qtenv),
+    // A reference to the out member of EnvirBase (QtenvApp),
     // using this to make output redirection work.
     std::ostream& out;
     bool verbose = true;

@@ -17,7 +17,7 @@
 #ifndef __OMNETPP_QTENV_IOSGVIEWER_H
 #define __OMNETPP_QTENV_IOSGVIEWER_H
 
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "common/ver.h"
 
 #include <QtWidgets/QOpenGLWidget>

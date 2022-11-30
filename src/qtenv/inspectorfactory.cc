@@ -16,7 +16,7 @@
 
 #include <cstdarg>
 #include "omnetpp/cobject.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 

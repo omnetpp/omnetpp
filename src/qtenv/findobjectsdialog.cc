@@ -22,7 +22,7 @@
 #include "omnetpp/globals.h"
 #include "envir/visitor.h"
 #include "common/matchexpression.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspector.h"
 #include "objectlistmodel.h"
 #include "objectlistview.h"

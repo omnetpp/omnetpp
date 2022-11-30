@@ -34,7 +34,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-class Qtenv;
+class QtenvApp;
 
 class QTENV_API TextViewerContentProvider : public QObject {
     Q_OBJECT
@@ -192,7 +192,7 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     std::map<int, QString> lineCache;
 
 public:
-    ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);
+    ModuleOutputContentProvider(QtenvApp *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);
     ~ModuleOutputContentProvider();
 
     LogBuffer *getLogBuffer() { return logBuffer; }

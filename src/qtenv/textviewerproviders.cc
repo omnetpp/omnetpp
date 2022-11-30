@@ -18,7 +18,7 @@
 #include "common/stlutil.h"
 #include "common/sgr_macro.h"
 #include "qtutil.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include <QtCore/QDebug>
 
 using namespace omnetpp::common;
@@ -60,7 +60,7 @@ QStringList ModuleOutputContentProvider::gatherEnabledColumnNames()
     return result;
 }
 
-ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions)
+ModuleOutputContentProvider::ModuleOutputContentProvider(QtenvApp *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions)
     : logBuffer(qtenv->getLogBuffer()),
       mode(mode),
       componentHistory(qtenv->getComponentHistory()),

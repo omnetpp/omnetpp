@@ -1,5 +1,5 @@
 //==========================================================================
-//  QTENV.H - part of
+//  QTENVAPP.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_QTENV_QTENV_H
-#define __OMNETPP_QTENV_QTENV_H
+#ifndef __OMNETPP_QTENV_QTENVAPP_H
+#define __OMNETPP_QTENV_QTENVAPP_H
 
 #include <vector>
 #include <list>
@@ -119,7 +119,7 @@ struct QtenvOptions
 /**
  * A Qt-based user interface.
  */
-class QTENV_API Qtenv : public QObject, public AppBase
+class QTENV_API QtenvApp : public QObject, public AppBase
 {
    Q_OBJECT
 
@@ -222,8 +222,8 @@ class QTENV_API Qtenv : public QObject, public AppBase
       bool isLocalPrefKey(const QString& key);
 
    public:
-      Qtenv();
-      virtual ~Qtenv();
+      QtenvApp();
+      virtual ~QtenvApp();
 
       virtual void objectDeleted(cObject *object); // notify environment
       virtual void componentInitBegin(cComponent *component, int stage);
@@ -474,9 +474,9 @@ class QTENV_API Qtenv : public QObject, public AppBase
 /**
  * Utility function
  */
-inline Qtenv *getQtenv()
+inline QtenvApp *getQtenv()
 {
-    return dynamic_cast<Qtenv *>(AppBase::getActiveApp());
+    return dynamic_cast<QtenvApp *>(AppBase::getActiveApp());
 }
 
 }  // namespace qtenv

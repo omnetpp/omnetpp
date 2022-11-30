@@ -123,7 +123,7 @@ HEADERS += mainwindow.h \
     componenthistory.h \
     layouterenv.h \
     moduleinspector.h \
-    qtenv.h \
+    qtenvapp.h \
     watchinspector.h \
     canvasinspector.h \
     figurerenderers.h \

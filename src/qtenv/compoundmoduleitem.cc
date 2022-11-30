@@ -22,7 +22,7 @@
 #include <QtGui/QPen>
 #include <QtCore/QDebug>
 #include <omnetpp/cdisplaystring.h>
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 #include "displaystringaccess.h"
 

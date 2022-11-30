@@ -17,7 +17,7 @@
 #include "figurerenderers.h"
 
 #include "graphicsitems.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include <sstream>
 #include <cfloat>
 #include <QtWidgets/QGraphicsScene>

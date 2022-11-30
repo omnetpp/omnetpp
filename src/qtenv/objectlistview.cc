@@ -16,7 +16,7 @@
 
 #include "objectlistview.h"
 #include "objectlistmodel.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspectorutil.h"
 #include "mainwindow.h"
 #include <QtWidgets/QHeaderView>

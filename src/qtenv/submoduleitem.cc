@@ -16,7 +16,7 @@
 
 #include "submoduleitem.h"
 
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 #include "graphicsitems.h"
 #include "displaystringaccess.h"

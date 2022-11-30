@@ -16,7 +16,7 @@
 
 #include "messageprintertagsdialog.h"
 #include "ui_messageprintertagsdialog.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 #include "common/stlutil.h"
 #include <QtCore/QList>

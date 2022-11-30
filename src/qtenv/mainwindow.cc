@@ -69,7 +69,7 @@ QString MainWindow::aboutText = "OMNeT++/OMNEST\nDiscrete Event Simulation Frame
         "Qtenv was compiled with Qt " + QT_VERSION_STR + ", is running with Qt " + qVersion() + "\n\n"
         "NO WARRANTY -- see license for details.";
 
-MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
+MainWindow::MainWindow(QtenvApp *env, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     env(env)
@@ -558,7 +558,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     // No filter used for subsequent run selections.
     // Note that if invoked this way, we pretty much avoid all possibility of an exception,
     // because the run filter is constant, and the config name is the current one, so it must exist.
-    // This, and the fact that Qtenv::displayException is protected, along with Qt not supporting
+    // This, and the fact that QtenvApp::displayException is protected, along with Qt not supporting
     // throwing exceptions from slots, justifies the omission of a try-catch block.
     // It would only be an ASSERT(false) or something similar anyway.
     RunSelectionDialog dialog(ini, config->getActiveConfigName(), "", this);
@@ -651,7 +651,7 @@ void MainWindow::updateStatusDisplay()
     updateSimtimeDisplay();
 
     if (showStatusDetails) {
-        //FIXME: switching between NextEvent Display and Performance Display should be explicit and in the Qtenv class not here! --Andras
+        //FIXME: switching between NextEvent Display and Performance Display should be explicit and in the QtenvApp class not here! --Andras
         if (getSimulation()->getState() == cSimulation::SIM_RUNNING
                 && (env->getSimulationRunMode() == RUNMODE_FAST
                     || env->getSimulationRunMode() == RUNMODE_EXPRESS))
@@ -1070,7 +1070,7 @@ void MainWindow::reflectConfigOnUi()
     ui->actionDebugOnErrors->setChecked(getQtenv()->getDebugOnErrors());
 }
 
-// XXX why is this in MainWindow, and not in Qtenv?
+// XXX why is this in MainWindow, and not in QtenvApp?
 void MainWindow::configureNetwork()
 {
     if (env->checkRunning())

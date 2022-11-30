@@ -17,7 +17,7 @@
 #include "canvasviewer.h"
 #include "canvasrenderer.h"
 #include "graphicsitems.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "figurerenderers.h"
 #include <QtGui/QMouseEvent>
 #include <QtCore/QDebug>

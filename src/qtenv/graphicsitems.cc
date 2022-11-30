@@ -21,7 +21,7 @@
 #include <QtGui/QPainter>
 #include <QtGui/QFontMetricsF>
 #include <QtCore/QDebug>
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 
 namespace omnetpp {

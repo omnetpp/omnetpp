@@ -16,7 +16,7 @@
 
 #include "logfilterdialog.h"
 #include "ui_logfilterdialog.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 
 namespace omnetpp {

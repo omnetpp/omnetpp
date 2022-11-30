@@ -16,7 +16,7 @@
 
 #include "stopdialog.h"
 #include "ui_stopdialog.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include <QtGui/QKeyEvent>
 
 namespace omnetpp {

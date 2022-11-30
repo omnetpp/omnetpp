@@ -23,7 +23,7 @@
 #include <omnetpp/csimplemodule.h>
 #include <omnetpp/cmodule.h>
 #include <omnetpp/cmessage.h>
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"

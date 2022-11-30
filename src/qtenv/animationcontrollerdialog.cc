@@ -17,7 +17,7 @@
 #include "animationcontrollerdialog.h"
 #include "ui_animationcontrollerdialog.h"
 
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "mainwindow.h"
 #include "displayupdatecontroller.h"
 #include <QtCore/QPoint>

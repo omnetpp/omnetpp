@@ -20,7 +20,7 @@
 #include "genericobjecttreenodes.h"
 #include "highlighteritemdelegate.h"
 #include "inspectorutil.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include <omnetpp/cfutureeventset.h>
 #include <omnetpp/cmodule.h>
 #include <QtWidgets/QLayout>

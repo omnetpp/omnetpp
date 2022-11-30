@@ -1,5 +1,5 @@
 //==========================================================================
-//  QTENV.CC - part of
+//  QTENVAPP.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -15,6 +15,8 @@
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+#include "qtenvapp.h"
 
 #include <cassert>
 #include <cstring>
@@ -62,7 +64,6 @@
 #include "omnetpp/ccontextswitcher.h"
 #include "sim/netbuilder/cnedloader.h"
 #include "qtenvdefs.h"
-#include "qtenv.h"
 #include "inspector.h"
 #include "inspectorfactory.h"
 #include "inspectorutil.h"
@@ -136,7 +137,7 @@ namespace qtenv {
 //
 // Register the Qtenv user interface
 //
-Register_OmnetApp("Qtenv", Qtenv, 30, "Qt-based graphical user interface");
+Register_OmnetApp("Qtenv", QtenvApp, 30, "Qt-based graphical user interface");
 
 //
 // The following function can be used to force linking with Qtenv; specify
@@ -208,12 +209,12 @@ static void checkQSettingsStatus(QSettings *settings)
     }
 }
 
-bool Qtenv::isLocalPrefKey(const QString& key)
+bool QtenvApp::isLocalPrefKey(const QString& key)
 {
     return (key == "last-configname") || (key == "last-runnumber") || key.startsWith("RunModeProfiles");
 }
 
-void Qtenv::storeOptsInPrefs()
+void QtenvApp::storeOptsInPrefs()
 {
     setPref("updatefreq_express_ms", QVariant::fromValue<int>(opt->updateFreqExpress));
     setPref("event_banners", opt->printEventBanners);
@@ -266,7 +267,7 @@ void Qtenv::storeOptsInPrefs()
     checkQSettingsStatus(localPrefs);
 }
 
-void Qtenv::restoreOptsFromPrefs()
+void QtenvApp::restoreOptsFromPrefs()
 {
     auto pref = getPref("updatefreq_express_ms");
     if (pref.isValid())
@@ -395,7 +396,7 @@ void Qtenv::restoreOptsFromPrefs()
         logBuffer.setMaxNumEntries(pref.toInt());
 }
 
-void Qtenv::storeInspectors(bool closeThem)
+void QtenvApp::storeInspectors(bool closeThem)
 {
     // erasing the previously stored inspectors from the rc file
     QStringList groups = localPrefs->childGroups();
@@ -435,7 +436,7 @@ void Qtenv::storeInspectors(bool closeThem)
         deleteInspector(i);
 }
 
-void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
+void QtenvApp::updateStoredInspector(cObject *newObject, cObject *oldObject)
 {
     if (!newObject || !oldObject)
         return;
@@ -485,7 +486,7 @@ void Qtenv::updateStoredInspector(cObject *newObject, cObject *oldObject)
     }
 }
 
-void Qtenv::restoreInspectors()
+void QtenvApp::restoreInspectors()
 {
     QStringList groups = localPrefs->childGroups();
     for (auto group : groups) {
@@ -549,7 +550,7 @@ void Qtenv::restoreInspectors()
     }
 }
 
-double Qtenv::computeModelAnimationSpeedRequest()
+double QtenvApp::computeModelAnimationSpeedRequest()
 {
     double animSpeed = DBL_MAX;
 
@@ -571,7 +572,7 @@ double Qtenv::computeModelAnimationSpeedRequest()
     return animSpeed;
 }
 
-double Qtenv::computeModelHoldEndTime()
+double QtenvApp::computeModelHoldEndTime()
 {
     double holdEndTime = -1;
 
@@ -590,7 +591,7 @@ double Qtenv::computeModelHoldEndTime()
     return holdEndTime;
 }
 
-Qtenv::Qtenv() : icons(out)
+QtenvApp::QtenvApp() : icons(out)
 {
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
@@ -600,7 +601,7 @@ Qtenv::Qtenv() : icons(out)
     inspectorfactories.getInstance()->setName("inspectorfactories");
 }
 
-Qtenv::~Qtenv()
+QtenvApp::~QtenvApp()
 {
     if (globalPrefs) {
         globalPrefs->sync();
@@ -623,7 +624,7 @@ static void signalHandler(int signum)
 {
     cStaticFlag::setExiting();
 
-    Qtenv *qtenv = getQtenv();
+    QtenvApp *qtenv = getQtenv();
 
     // The DisplayUpdateController loops check for this flag:
     if (qtenv)
@@ -632,7 +633,7 @@ static void signalHandler(int signum)
     QApplication::exit(2);
 }
 
-int Qtenv::doRunApp()
+int QtenvApp::doRunApp()
 {
     //
     // SETUP
@@ -753,7 +754,7 @@ int Qtenv::doRunApp()
     // We have to wait a bit for the window manager to process the trauma of having to show a window,
     // and only then pop up the RunSelectionDialog. If done instantly, our request to place it
     // centered over the MainWindow might get ignored/overridden.
-    QTimer::singleShot(500, this, &Qtenv::initialSetUpConfiguration);
+    QTimer::singleShot(500, this, &QtenvApp::initialSetUpConfiguration);
 
     // needs to be set here too, the setting in the Designer wasn't enough on Mac
     QApplication::setWindowIcon(QIcon(":/logo/logo128m"));
@@ -835,7 +836,7 @@ int Qtenv::doRunApp()
     return exitCode;
 }
 
-void Qtenv::printUISpecificHelp()
+void QtenvApp::printUISpecificHelp()
 {
     out << "\n";
     out << "Qtenv-specific information:\n";
@@ -844,7 +845,7 @@ void Qtenv::printUISpecificHelp()
     out << "    the GUI.\n";
 }
 
-void Qtenv::rebuildSim()
+void QtenvApp::rebuildSim()
 {
     if (isConfigRun)
         newRun(getConfig()->getActiveConfigName(), getConfig()->getActiveRunNumber());
@@ -857,9 +858,9 @@ void Qtenv::rebuildSim()
 class QtenvEventLoopRunner : public cIEventLoopRunner
 {
     private:
-        Qtenv *qtenv;
+        QtenvApp *qtenv;
     public:
-        QtenvEventLoopRunner(Qtenv *qtenv) : qtenv(qtenv) {}
+        QtenvEventLoopRunner(QtenvApp *qtenv) : qtenv(qtenv) {}
         virtual void run() override;
 };
 
@@ -876,7 +877,7 @@ void QtenvEventLoopRunner::run()
     }
 }
 
-cINedLoader *Qtenv::createConfiguredNedLoader(cConfiguration *cfg, ArgList *args)
+cINedLoader *QtenvApp::createConfiguredNedLoader(cConfiguration *cfg, ArgList *args)
 {
     cINedLoader *nedLoader = new cNedLoader("nedLoader");
     nedLoader->removeFromOwnershipTree();
@@ -886,7 +887,7 @@ cINedLoader *Qtenv::createConfiguredNedLoader(cConfiguration *cfg, ArgList *args
     return nedLoader;
 }
 
-void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
+void QtenvApp::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module,
                           bool stopOnMsgCancel)
 {
     if (!isPaused())
@@ -960,7 +961,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
     callRefreshInspectors();
 }
 
-void Qtenv::setSimulationRunMode(RunMode mode)
+void QtenvApp::setSimulationRunMode(RunMode mode)
 {
     // We want to skip even in STEP mode, because we want the
     // next event to be executed immediately.
@@ -977,7 +978,7 @@ void Qtenv::setSimulationRunMode(RunMode mode)
     getEnvir()->setExpressMode(runMode == RUNMODE_EXPRESS);
 }
 
-void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel)
+void QtenvApp::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel)
 {
     runUntil.time = until_time;
     runUntil.eventNumber = until_eventnum;
@@ -985,7 +986,7 @@ void Qtenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_even
     runUntil.stopOnMsgCancel = stopOnMsgCancel;
 }
 
-void Qtenv::setSimulationRunUntilModule(cModule *until_module)
+void QtenvApp::setSimulationRunUntilModule(cModule *until_module)
 {
     runUntil.module = until_module;
 }
@@ -1001,7 +1002,7 @@ inline bool elapsed(long millis, int64_t& since, bool restart)
     return ret;
 }
 
-void Qtenv::prepareForRun()
+void QtenvApp::prepareForRun()
 {
     resetClock();
     cSimulation *simulation = getSimulation();
@@ -1012,7 +1013,7 @@ void Qtenv::prepareForRun()
     simulation->callInitialize();
 }
 
-bool Qtenv::doRunSimulation()
+bool QtenvApp::doRunSimulation()
 {
     //
     // IMPORTANT:
@@ -1110,7 +1111,7 @@ bool Qtenv::doRunSimulation()
     return false;
 }
 
-bool Qtenv::doRunSimulationExpress()
+bool QtenvApp::doRunSimulationExpress()
 {
     //
     // IMPORTANT:
@@ -1198,12 +1199,12 @@ bool Qtenv::doRunSimulationExpress()
     return result;
 }
 
-void Qtenv::startAll()
+void QtenvApp::startAll()
 {
     confirm(INFO, "Not implemented.");
 }
 
-void Qtenv::finishSimulation()
+void QtenvApp::finishSimulation()
 {
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
     ASSERT(getSimulation()->getState() != cSimulation::SIM_NONETWORK && getSimulation()->getState() != cSimulation::SIM_FINISHCALLED);
@@ -1223,7 +1224,7 @@ void Qtenv::finishSimulation()
     callRefreshInspectors();
 }
 
-bool Qtenv::checkRunning()
+bool QtenvApp::checkRunning()
 {
     const char *warningText = nullptr;
 
@@ -1245,7 +1246,7 @@ bool Qtenv::checkRunning()
         return false;
 }
 
-void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
+void QtenvApp::loadNedFile(const char *fname, const char *expectedPackage, bool isXML)
 {
     try {
         getSimulation()->loadNedFile(fname, expectedPackage, isXML);
@@ -1256,7 +1257,7 @@ void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
 }
 
 // XXX too similar to newRun
-void Qtenv::newNetwork(const char *networkname)
+void QtenvApp::newNetwork(const char *networkname)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
@@ -1304,7 +1305,7 @@ void Qtenv::newNetwork(const char *networkname)
 }
 
 // XXX too similar to newNetwork
-void Qtenv::newRun(const char *configname, int runnumber)
+void QtenvApp::newRun(const char *configname, int runnumber)
 {
     try {
         // finish & cleanup previous run if we haven't done so yet
@@ -1355,7 +1356,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
     callRefreshInspectors();
 }
 
-void Qtenv::setupNetwork(cModuleType *networkType)
+void QtenvApp::setupNetwork(cModuleType *networkType)
 {
     cSimulation::getActiveSimulation()->setupNetwork(networkType);
 
@@ -1367,7 +1368,7 @@ void Qtenv::setupNetwork(cModuleType *networkType)
     // mainwindow->getObjectTree()->collapseAll();
 }
 
-Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
+Inspector *QtenvApp::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
 {
     // first, try finding and displaying existing inspector
     Inspector *inspector = findFirstInspector(obj, type, ignoreEmbedded);
@@ -1415,7 +1416,7 @@ Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)
     return inspector;
 }
 
-Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *parent)
+Inspector *QtenvApp::addEmbeddedInspector(InspectorFactory *factory, QWidget *parent)
 {
     Inspector *insp = factory->createInspector(parent, false);
     inspectors.push_back(insp);
@@ -1427,7 +1428,7 @@ Inspector *Qtenv::addEmbeddedInspector(InspectorFactory *factory, QWidget *paren
     return insp;
 }
 
-Inspector *Qtenv::findFirstInspector(const cObject *obj, InspectorType type, bool ignoreEmbedded)
+Inspector *QtenvApp::findFirstInspector(const cObject *obj, InspectorType type, bool ignoreEmbedded)
 {
     for (auto insp : inspectors) {
         if (insp->getObject() == obj && insp->getType() == type && (!ignoreEmbedded || insp->isToplevelInspector()))
@@ -1436,7 +1437,7 @@ Inspector *Qtenv::findFirstInspector(const cObject *obj, InspectorType type, boo
     return nullptr;
 }
 
-void Qtenv::deleteInspector(Inspector *insp)
+void QtenvApp::deleteInspector(Inspector *insp)
 {
     ASSERT(insp->isToplevelInspector());
     ASSERT(insp->testAttribute(Qt::WA_DeleteOnClose));
@@ -1446,13 +1447,13 @@ void Qtenv::deleteInspector(Inspector *insp)
     delete insp;
 }
 
-void Qtenv::inspectorDeleted(Inspector *insp)
+void QtenvApp::inspectorDeleted(Inspector *insp)
 {
     // this should be idempotent, because of Inspector::closeEvent()
     inspectors.remove(insp);
 }
 
-void Qtenv::callRefreshDisplay()
+void QtenvApp::callRefreshDisplay()
 {
     ASSERT(getSimulation()->getState() != cSimulation::SIM_ERROR && getSimulation()->getState() != cSimulation::SIM_NONETWORK);
 
@@ -1473,7 +1474,7 @@ void Qtenv::callRefreshDisplay()
     setLogLevel(oldLogLevel);
 }
 
-void Qtenv::callRefreshDisplaySafe()
+void QtenvApp::callRefreshDisplaySafe()
 {
     try { // if we are _in_ a callback, inside deleteNetwork, the state might not have been updated yet...
         if (getSimulation()->getState() != cSimulation::SIM_ERROR && getSimulation()->getState() != cSimulation::SIM_NONETWORK)
@@ -1485,7 +1486,7 @@ void Qtenv::callRefreshDisplaySafe()
     }
 }
 
-void Qtenv::refreshInspectors()
+void QtenvApp::refreshInspectors()
 {
     // update inspectors
     for (auto it : inspectors)
@@ -1504,7 +1505,7 @@ void Qtenv::refreshInspectors()
     inspectorsFresh = true;
 }
 
-void Qtenv::callRefreshInspectors()
+void QtenvApp::callRefreshInspectors()
 {
     try {
         refreshInspectors();
@@ -1514,19 +1515,19 @@ void Qtenv::callRefreshInspectors()
     }
 }
 
-void Qtenv::createSnapshot(const char *label)
+void QtenvApp::createSnapshot(const char *label)
 {
     getSimulation()->snapshot(getSimulation(), label);
 }
 
-void Qtenv::performHoldAnimations()
+void QtenvApp::performHoldAnimations()
 {
     displayUpdateController->setRunMode(runMode);
     messageAnimator->updateAnimations();
     displayUpdateController->animateUntilHoldEnds();
 }
 
-void Qtenv::skipHoldAnimations()
+void QtenvApp::skipHoldAnimations()
 {
     // TODO
 
@@ -1535,7 +1536,7 @@ void Qtenv::skipHoldAnimations()
     messageAnimator->updateAnimations();
 }
 
-std::string Qtenv::getWindowTitle()
+std::string QtenvApp::getWindowTitle()
 {
     const char *configName = getConfig()->getActiveConfigName();
     int runNumber = getConfig()->getActiveRunNumber();
@@ -1559,23 +1560,23 @@ std::string Qtenv::getWindowTitle()
     return os.str();
 }
 
-void Qtenv::updateNetworkRunDisplay()
+void QtenvApp::updateNetworkRunDisplay()
 {
     mainWindow->updateNetworkRunDisplay();
     mainWindow->setWindowTitle(getWindowTitle().c_str());
 }
 
-void Qtenv::updateSimtimeDisplay()
+void QtenvApp::updateSimtimeDisplay()
 {
     mainWindow->updateSimtimeDisplay();
 }
 
-void Qtenv::updateStatusDisplay()
+void QtenvApp::updateStatusDisplay()
 {
     mainWindow->updateStatusDisplay();
 }
 
-void Qtenv::addEventToLog(cEvent *event)
+void QtenvApp::addEventToLog(cEvent *event)
 {
     cObject *target = event->getTargetObject();
     cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : nullptr;
@@ -1626,28 +1627,28 @@ void Qtenv::addEventToLog(cEvent *event)
     logBuffer.addEvent(getSimulation()->getEventNumber(), getSimulation()->getSimTime(), module, banner);
 }
 
-void Qtenv::resetClock()
+void QtenvApp::resetClock()
 {
     stopwatch.resetClock();
 }
 
-void Qtenv::startClock()
+void QtenvApp::startClock()
 {
     stopwatch.startClock();
 }
 
-void Qtenv::stopClock()
+void QtenvApp::stopClock()
 {
     stopwatch.stopClock();
     simulatedTime = getSimulation()->getSimTime();
 }
 
-double Qtenv::getElapsedSecs()
+double QtenvApp::getElapsedSecs()
 {
     return stopwatch.getElapsedSecs();
 }
 
-void Qtenv::checkTimeLimits()
+void QtenvApp::checkTimeLimits()
 {
     if (!stopwatch.hasTimeLimits())
         return;
@@ -1656,7 +1657,7 @@ void Qtenv::checkTimeLimits()
     stopwatch.checkTimeLimits();
 }
 
-void Qtenv::printException(std::exception& ex)
+void QtenvApp::printException(std::exception& ex)
 {
     // print exception text into main window
     cException *e = dynamic_cast<cException *>(&ex);
@@ -1668,7 +1669,7 @@ void Qtenv::printException(std::exception& ex)
     showException(ex);
 }
 
-void Qtenv::componentInitBegin(cComponent *component, int stage)
+void QtenvApp::componentInitBegin(cComponent *component, int stage)
 {
     auto logLevel = getPref(QString("ComponentLogLevels/") + component->getFullPath().c_str());
     if (logLevel.isValid() && logLevel.canConvert(QVariant::Int))
@@ -1686,7 +1687,7 @@ void Qtenv::componentInitBegin(cComponent *component, int stage)
     logBuffer.addInitialize(component, banner);
 }
 
-void Qtenv::setSilentEventFilters(const char *filterLines)
+void QtenvApp::setSilentEventFilters(const char *filterLines)
 {
     // parse into tmp
     MatchExpressions tmp;
@@ -1712,7 +1713,7 @@ void Qtenv::setSilentEventFilters(const char *filterLines)
     silentEventFilters = tmp;
 }
 
-bool Qtenv::isSilentEvent(cMessage *msg)
+bool QtenvApp::isSilentEvent(cMessage *msg)
 {
     MatchableObjectAdapter wrappedMsg(MatchableObjectAdapter::FULLNAME, msg);
     for (auto & silentEventFilter : silentEventFilters)
@@ -1724,7 +1725,7 @@ bool Qtenv::isSilentEvent(cMessage *msg)
 
 //=========================================================================
 
-void Qtenv::readOptions(cConfiguration *cfg)
+void QtenvApp::readOptions(cConfiguration *cfg)
 {
     // note: this is read per run as well, but Qtenv needs its value on startup too
     opt->inifileNetworkDir = cfg->getConfigEntry(CFGID_NETWORK->getName()).getBaseDirectory();
@@ -1739,7 +1740,7 @@ void Qtenv::readOptions(cConfiguration *cfg)
     opt->runFilter = r ? r : cfg->getAsString(CFGID_QTENV_DEFAULT_RUN);
 }
 
-void Qtenv::readPerRunOptions(cConfiguration *cfg)
+void QtenvApp::readPerRunOptions(cConfiguration *cfg)
 {
     bool origDebugOnErrors = getDebugOnErrors();
 
@@ -1765,7 +1766,7 @@ void Qtenv::readPerRunOptions(cConfiguration *cfg)
 
 }
 
-void Qtenv::initialSetUpConfiguration()
+void QtenvApp::initialSetUpConfiguration()
 {
     if (checkRunning())
         return;
@@ -1816,7 +1817,7 @@ void Qtenv::initialSetUpConfiguration()
     QTimer::singleShot(0, mainWindow, &MainWindow::activateWindow);
 }
 
-void Qtenv::askParameter(cPar *par, bool unassigned)
+void QtenvApp::askParameter(cPar *par, bool unassigned)
 {
     // use a value entered by the user earlier ("[x] use this value for similar parameters")
     std::string key = std::string(((cComponent *)par->getOwner())->getNedTypeName()) + ":" + par->getName();
@@ -1857,7 +1858,7 @@ void Qtenv::askParameter(cPar *par, bool unassigned)
     }
 }
 
-bool Qtenv::idle()
+bool QtenvApp::idle()
 {
     // set the insideIdle flag for the duration of this call
     struct FlagSwitcher {
@@ -1874,7 +1875,7 @@ bool Qtenv::idle()
     return stopSimulationFlag;
 }
 
-void Qtenv::pausePoint()
+void QtenvApp::pausePoint()
 {
     ASSERT(!pauseEventLoop->isRunning());
 
@@ -1898,14 +1899,14 @@ void Qtenv::pausePoint()
     }
 }
 
-void Qtenv::requestQuitFromPausePointEventLoop(RunMode continueIn)
+void QtenvApp::requestQuitFromPausePointEventLoop(RunMode continueIn)
 {
     ASSERT(pauseEventLoop->isRunning());
     pauseEventLoop->quit();
     runMode = continueIn;
 }
 
-bool Qtenv::ensureDebugger(cRuntimeError *error)
+bool QtenvApp::ensureDebugger(cRuntimeError *error)
 {
     bool debuggerPresent = debuggerSupport->detectDebugger() == DebuggerPresence::PRESENT;
 
@@ -1982,7 +1983,7 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
     return debuggerSupport->detectDebugger() != DebuggerPresence::NOT_PRESENT;
 }
 
-void Qtenv::objectDeleted(cObject *object)
+void QtenvApp::objectDeleted(cObject *object)
 {
     if (object == runUntil.msg) {
         // message to "run until" deleted -- stop the simulation by other means
@@ -2009,7 +2010,7 @@ void Qtenv::objectDeleted(cObject *object)
     }
 }
 
-void Qtenv::simulationEvent(cEvent *event)
+void QtenvApp::simulationEvent(cEvent *event)
 {
     if (cLog::isLoggingEnabled())
         addEventToLog(event);  // must be done here, because eventnum and simtime are updated inside executeEvent()
@@ -2043,11 +2044,11 @@ void Qtenv::simulationEvent(cEvent *event)
     }
 }
 
-void Qtenv::messageScheduled(cMessage *msg)
+void QtenvApp::messageScheduled(cMessage *msg)
 {
 }
 
-void Qtenv::messageCancelled(cMessage *msg)
+void QtenvApp::messageCancelled(cMessage *msg)
 {
     if (msg == runUntil.msg && runUntil.stopOnMsgCancel) {
         if (getSimulation()->getState() == cSimulation::SIM_RUNNING)
@@ -2057,7 +2058,7 @@ void Qtenv::messageCancelled(cMessage *msg)
     }
 }
 
-void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
+void QtenvApp::beginSend(cMessage *msg, const SendOptions& options)
 {
     if (cLog::isLoggingEnabled())
         logBuffer.beginSend(msg, options);
@@ -2066,7 +2067,7 @@ void Qtenv::beginSend(cMessage *msg, const SendOptions& options)
         messageAnimator->beginSend(msg, options);
 }
 
-void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
+void QtenvApp::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result)
 {
     if (cLog::isLoggingEnabled())
         logBuffer.messageSendDirect(msg, toGate, result);
@@ -2075,7 +2076,7 @@ void Qtenv::messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult&
         messageAnimator->sendDirect(msg, msg->getSenderModule(), toGate, result);
 }
 
-void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
+void QtenvApp::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     if (cLog::isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate);
@@ -2086,7 +2087,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate)
     }
 }
 
-void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
+void QtenvApp::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result& result)
 {
     if (cLog::isLoggingEnabled())
         logBuffer.messageSendHop(msg, srcGate, result);
@@ -2097,7 +2098,7 @@ void Qtenv::messageSendHop(cMessage *msg, cGate *srcGate, const cChannel::Result
     }
 }
 
-void Qtenv::endSend(cMessage *msg)
+void QtenvApp::endSend(cMessage *msg)
 {
     if (cLog::isLoggingEnabled())
         logBuffer.endSend(msg);
@@ -2106,13 +2107,13 @@ void Qtenv::endSend(cMessage *msg)
         messageAnimator->endSend(msg);
 }
 
-void Qtenv::messageDeleted(cMessage *msg)
+void QtenvApp::messageDeleted(cMessage *msg)
 {
     if (messageAnimator)
         messageAnimator->removeMessagePointer(msg);
 }
 
-void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va, bool silent)
+void QtenvApp::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const char *methodFmt, va_list va, bool silent)
 {
     if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator) {
         static char methodText[MAX_METHODCALL];
@@ -2123,13 +2124,13 @@ void Qtenv::componentMethodBegin(cComponent *fromComp, cComponent *toComp, const
     }
 }
 
-void Qtenv::componentMethodEnd()
+void QtenvApp::componentMethodEnd()
 {
     if (messageAnimator->getShowAnimations() && opt->animateMethodCalls && messageAnimator)
         messageAnimator->methodcallEnd();
 }
 
-void Qtenv::moduleCreated(cModule *newmodule)
+void QtenvApp::moduleCreated(cModule *newmodule)
 {
     cModule *mod = newmodule->getParentModule();
 
@@ -2140,7 +2141,7 @@ void Qtenv::moduleCreated(cModule *newmodule)
     }
 }
 
-void Qtenv::moduleDeleted(cModule *module)
+void QtenvApp::moduleDeleted(cModule *module)
 {
     componentHistory.componentDeleted(module);
 
@@ -2156,7 +2157,7 @@ void Qtenv::moduleDeleted(cModule *module)
     }
 }
 
-void Qtenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
+void QtenvApp::moduleReparented(cModule *module, cModule *oldParent, int oldId)
 {
     componentHistory.componentReparented(module, oldParent, oldId);
 
@@ -2175,7 +2176,7 @@ void Qtenv::moduleReparented(cModule *module, cModule *oldParent, int oldId)
     }
 }
 
-void Qtenv::connectionCreated(cGate *srcgate)
+void QtenvApp::connectionCreated(cGate *srcgate)
 {
     // notify compound module where the connection (whose source is this gate) is displayed
     cModule *notifymodule = nullptr;
@@ -2191,7 +2192,7 @@ void Qtenv::connectionCreated(cGate *srcgate)
     }
 }
 
-void Qtenv::connectionDeleted(cGate *srcgate)
+void QtenvApp::connectionDeleted(cGate *srcgate)
 {
     if (srcgate->getChannel())
         componentHistory.componentDeleted(srcgate->getChannel());
@@ -2211,7 +2212,7 @@ void Qtenv::connectionDeleted(cGate *srcgate)
     }
 }
 
-void Qtenv::displayStringChanged(cComponent *component)
+void QtenvApp::displayStringChanged(cComponent *component)
 {
     if (cModule *module = dynamic_cast<cModule *>(component))
         moduleDisplayStringChanged(module);
@@ -2219,14 +2220,14 @@ void Qtenv::displayStringChanged(cComponent *component)
         channelDisplayStringChanged(channel);
 }
 
-void Qtenv::getImageSize(const char *imageName, double& outWidth, double& outHeight)
+void QtenvApp::getImageSize(const char *imageName, double& outWidth, double& outHeight)
 {
     auto size = icons.getImage(imageName)->size();
     outWidth = size.width();
     outHeight = size.height();
 }
 
-void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
+void QtenvApp::getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent)
 {
     if (!*text) {
         outWidth = outHeight = outAscent = 0;
@@ -2263,17 +2264,17 @@ void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, double& o
     outAscent = metrics.ascent();
 }
 
-void Qtenv::appendToImagePath(const char *directory)
+void QtenvApp::appendToImagePath(const char *directory)
 {
     icons.loadImages(directory);
 }
 
-void Qtenv::loadImage(const char *fileName, const char *imageName)
+void QtenvApp::loadImage(const char *fileName, const char *imageName)
 {
     icons.loadImage(fileName, imageName);
 }
 
-cFigure::Rectangle Qtenv::getSubmoduleBounds(const cModule *submodule)
+cFigure::Rectangle QtenvApp::getSubmoduleBounds(const cModule *submodule)
 {
     cObject *parentObject = static_cast<cObject*>(submodule->getParentModule());
 
@@ -2316,7 +2317,7 @@ cFigure::Rectangle Qtenv::getSubmoduleBounds(const cModule *submodule)
     return cFigure::Rectangle(r.x(), r.y(), r.width(), r.height());
 }
 
-std::vector<cFigure::Point> Qtenv::getConnectionLine(const cGate *sourceGate)
+std::vector<cFigure::Point> QtenvApp::getConnectionLine(const cGate *sourceGate)
 {
     const cGate *nextGate = sourceGate ? sourceGate->getNextGate() : nullptr;
     if (!nextGate)
@@ -2343,7 +2344,7 @@ std::vector<cFigure::Point> Qtenv::getConnectionLine(const cGate *sourceGate)
     return {cFigure::Point(line.x1(), line.y1()) / zoomFactor, cFigure::Point(line.x2(), line.y2()) / zoomFactor };
 }
 
-double Qtenv::getZoomLevel(const cModule *module)
+double QtenvApp::getZoomLevel(const cModule *module)
 {
     const cObject *object = static_cast<const cObject*>(module);
 
@@ -2359,22 +2360,22 @@ double Qtenv::getZoomLevel(const cModule *module)
     return primaryInsp ? primaryInsp->getZoomFactor() : NAN;
 }
 
-double Qtenv::getAnimationTime() const
+double QtenvApp::getAnimationTime() const
 {
     return displayUpdateController->getAnimationTime();
 }
 
-double Qtenv::getAnimationSpeed() const
+double QtenvApp::getAnimationSpeed() const
 {
     return displayUpdateController->getAnimationSpeed();
 }
 
-double Qtenv::getRemainingAnimationHoldTime() const
+double QtenvApp::getRemainingAnimationHoldTime() const
 {
     return std::max(0.0, displayUpdateController->getAnimationHoldEndTime() - displayUpdateController->getAnimationTime());
 }
 
-void Qtenv::channelDisplayStringChanged(cChannel *channel)
+void QtenvApp::channelDisplayStringChanged(cChannel *channel)
 {
     cGate *gate = channel->getSourceGate();
 
@@ -2392,7 +2393,7 @@ void Qtenv::channelDisplayStringChanged(cChannel *channel)
     }
 }
 
-void Qtenv::moduleDisplayStringChanged(cModule *module)
+void QtenvApp::moduleDisplayStringChanged(cModule *module)
 {
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->getParentModule();
@@ -2412,12 +2413,12 @@ void Qtenv::moduleDisplayStringChanged(cModule *module)
     }
 }
 
-void Qtenv::onSelectionChanged(cObject *object)
+void QtenvApp::onSelectionChanged(cObject *object)
 {
     mainInspector->setObject(object);
 }
 
-void Qtenv::onObjectDoubleClicked(cObject *object)
+void QtenvApp::onObjectDoubleClicked(cObject *object)
 {
     if (cModule *module = dynamic_cast<cModule *>(object)) {
         mainNetworkView->setObject(module);
@@ -2427,7 +2428,7 @@ void Qtenv::onObjectDoubleClicked(cObject *object)
     }
 }
 
-void Qtenv::bubble(cComponent *component, const char *text)
+void QtenvApp::bubble(cComponent *component, const char *text)
 {
     if (!opt->showBubbles)
         return;
@@ -2442,7 +2443,7 @@ void Qtenv::bubble(cComponent *component, const char *text)
     }
 }
 
-void Qtenv::confirm(DialogKind kind, const char *msg)
+void QtenvApp::confirm(DialogKind kind, const char *msg)
 {
     if (!mainWindow) {
         // fallback in case Qt didn't fire up correctly
@@ -2458,12 +2459,12 @@ void Qtenv::confirm(DialogKind kind, const char *msg)
     }
 }
 
-void Qtenv::alert(const char *msg)
+void QtenvApp::alert(const char *msg)
 {
     confirm(WARNING, msg);
 }
 
-void Qtenv::log(cLogEntry *entry)
+void QtenvApp::log(cLogEntry *entry)
 {
     if (!cLog::isLoggingEnabled())
         return;
@@ -2488,7 +2489,7 @@ void Qtenv::log(cLogEntry *entry)
         logBuffer.addInfo(s, n);
 }
 
-bool Qtenv::inputDialog(const char *title, const char *prompt,
+bool QtenvApp::inputDialog(const char *title, const char *prompt,
         const char *checkboxLabel, const char *defaultValue,
         std::string& outResult, bool& inoutCheckState)
 {
@@ -2525,7 +2526,7 @@ bool Qtenv::inputDialog(const char *title, const char *prompt,
     return true;
 }
 
-void Qtenv::showException(std::exception& e)
+void QtenvApp::showException(std::exception& e)
 {
     if (cRuntimeError *runtimeError = dynamic_cast<cRuntimeError*>(&e))
         // do not pop up dialog if this error was already displayed
@@ -2536,7 +2537,7 @@ void Qtenv::showException(std::exception& e)
     confirm(ERROR, cException::getFormattedMessage(e,false).c_str());
 }
 
-std::string Qtenv::gets(const char *prompt, const char *defaultReply)
+std::string QtenvApp::gets(const char *prompt, const char *defaultReply)
 {
     cModule *mod = getSimulation()->getContextModule();
     std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();
@@ -2548,7 +2549,7 @@ std::string Qtenv::gets(const char *prompt, const char *defaultReply)
     return result;
 }
 
-bool Qtenv::askYesNo(const char *question)
+bool QtenvApp::askYesNo(const char *question)
 {
     cModule *mod = getSimulation()->getContextModule();
     std::string title = mod ? mod->getFullPath() : getSimulation()->getNetworkType()->getName();
@@ -2561,13 +2562,13 @@ bool Qtenv::askYesNo(const char *question)
     }
 }
 
-QPoint Qtenv::getDefaultStopDialogCorner(const QPoint& offset)
+QPoint QtenvApp::getDefaultStopDialogCorner(const QPoint& offset)
 {
     auto insp = getQtenv()->getMainModuleInspector();
     return insp->mapToGlobal(insp->contentsRect().topRight() + offset);  // not covering the toolbar
 }
 
-void Qtenv::setPref(const QString& key, const QVariant& value)
+void QtenvApp::setPref(const QString& key, const QVariant& value)
 {
     QSettings *settings = (isLocalPrefKey(key) ? localPrefs : globalPrefs);
     if (value.isValid())
@@ -2576,13 +2577,13 @@ void Qtenv::setPref(const QString& key, const QVariant& value)
         settings->remove(key);
 }
 
-QVariant Qtenv::getPref(const QString& key, const QVariant& defaultValue)
+QVariant QtenvApp::getPref(const QString& key, const QVariant& defaultValue)
 {
     QSettings *settings = (isLocalPrefKey(key) ? localPrefs : globalPrefs);
     return settings->value(key, defaultValue);
 }
 
-QStringList Qtenv::getKeysInPrefGroup(const QString &prefGroup)
+QStringList QtenvApp::getKeysInPrefGroup(const QString &prefGroup)
 {
     globalPrefs->beginGroup(prefGroup);
     auto keys = globalPrefs->allKeys();
@@ -2590,7 +2591,7 @@ QStringList Qtenv::getKeysInPrefGroup(const QString &prefGroup)
     return keys;
 }
 
-void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp)
+void QtenvApp::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp)
 {
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     if (mainWindow->isRunning()) {
@@ -2615,17 +2616,17 @@ void Qtenv::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp
     }
 }
 
-void Qtenv::refOsgNode(osg::Node *scene)
+void QtenvApp::refOsgNode(osg::Node *scene)
 {
     IOsgViewer::refNode(scene);
 }
 
-void Qtenv::unrefOsgNode(osg::Node *scene)
+void QtenvApp::unrefOsgNode(osg::Node *scene)
 {
     IOsgViewer::unrefNode(scene);
 }
 
-void Qtenv::inspect()
+void QtenvApp::inspect()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
@@ -2634,7 +2635,7 @@ void Qtenv::inspect()
     }
 }
 
-void Qtenv::runUntilModule()
+void QtenvApp::runUntilModule()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
@@ -2643,7 +2644,7 @@ void Qtenv::runUntilModule()
     }
 }
 
-void Qtenv::runUntilMessage()
+void QtenvApp::runUntilMessage()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
@@ -2652,14 +2653,14 @@ void Qtenv::runUntilMessage()
     }
 }
 
-void Qtenv::excludeMessage()
+void QtenvApp::excludeMessage()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid())
         getQtenv()->getMainWindow()->excludeMessageFromAnimation(variant.value<cObject *>());
 }
 
-void Qtenv::utilitiesSubMenu()
+void QtenvApp::utilitiesSubMenu()
 {
     auto action = dynamic_cast<QAction *>(sender());
     if (action) {
@@ -2671,7 +2672,7 @@ void Qtenv::utilitiesSubMenu()
     }
 }
 
-void Qtenv::setComponentLogLevel()
+void QtenvApp::setComponentLogLevel()
 {
     auto action = dynamic_cast<QAction *>(sender());
     if (action) {
@@ -2686,7 +2687,7 @@ void Qtenv::setComponentLogLevel()
 // the save parameter will be false when restoring the levels from the prefs
 // without it, the loglevels of all children would be erased when restoring
 // the level of one of its ancestor components
-void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level, bool save)
+void QtenvApp::setComponentLogLevel(cComponent *component, LogLevel level, bool save)
 {
     cCollectObjectsOfTypeVisitor<cComponent> v;  // should include the component itself
     v.process(component);
@@ -2707,7 +2708,7 @@ void Qtenv::setComponentLogLevel(cComponent *component, LogLevel level, bool sav
         setPref(QString("ComponentLogLevels/") + component->getFullPath().c_str(), level);
 }
 
-void Qtenv::initFonts()
+void QtenvApp::initFonts()
 {
     // TODO Check default time font in Windows and Mac
 #ifdef Q_OS_WIN
@@ -2758,7 +2759,7 @@ void Qtenv::initFonts()
 
 // Returns the first font family from the given preference list that is
 // available on the system. If none are available, returns defaultValue.
-QFont Qtenv::getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue)
+QFont QtenvApp::getFirstAvailableFontFamily(std::initializer_list<QString> preferenceList, int pointSize, QFont defaultValue)
 {
     QFontDatabase fontDb;
     for (QString str : preferenceList) {
@@ -2769,7 +2770,7 @@ QFont Qtenv::getFirstAvailableFontFamily(std::initializer_list<QString> preferen
     return defaultValue;
 }
 
-void Qtenv::saveFonts()
+void QtenvApp::saveFonts()
 {
     auto saveFont = [this](const QString &key, const QFont &font) {
         setPref("Fonts/" + key, QStringList() << font.family() << QString::number(font.pointSize()));
@@ -2782,7 +2783,7 @@ void Qtenv::saveFonts()
     saveFont("time", timeFont);
 }
 
-void Qtenv::updateQtFonts()
+void QtenvApp::updateQtFonts()
 {
     Q_EMIT fontChanged();
     mainWindow->setStyleSheet(

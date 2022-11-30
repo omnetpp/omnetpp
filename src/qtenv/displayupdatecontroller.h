@@ -22,7 +22,7 @@
 #include <QtCore/QElapsedTimer>
 #include <QtWidgets/QToolButton>
 
-#include "qtenv.h"
+#include "qtenvapp.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -96,7 +96,7 @@ class QTENV_API DisplayUpdateController : public QObject
 
     // simple shortcuts
     cSimulation *sim = getSimulation();
-    Qtenv *qtenv = getQtenv();
+    QtenvApp *qtenv = getQtenv();
     MessageAnimator *msgAnim = qtenv->getMessageAnimator();
 
     // factory defaults

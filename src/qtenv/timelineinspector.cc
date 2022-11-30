@@ -20,7 +20,7 @@
 #include "timelinegraphicsview.h"
 #include "inspectorutil.h"
 #include "inspectorfactory.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 
 namespace omnetpp {
 namespace qtenv {

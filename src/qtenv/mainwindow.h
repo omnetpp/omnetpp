@@ -21,7 +21,7 @@
 #include "ui_mainwindow.h"
 #include <QtWidgets/QMainWindow>
 #include <QtCore/QModelIndex>
-#include "qtenv.h"
+#include "qtenvapp.h"
 
 class QGraphicsScene;
 class QStandardItem;
@@ -41,7 +41,7 @@ class cMessage;
 
 namespace qtenv {
 
-class Qtenv;
+class QtenvApp;
 class Inspector;
 class StopDialog;
 class AnimationControllerDialog;
@@ -56,7 +56,7 @@ class QTENV_API MainWindow : public QMainWindow
     std::set<QObject*> disabledForLayouting;
 
 public:
-    explicit MainWindow(Qtenv *env, QWidget *parent = 0);
+    explicit MainWindow(QtenvApp *env, QWidget *parent = 0);
     ~MainWindow();
 
     void updateSimtimeDisplay();
@@ -173,7 +173,7 @@ Q_SIGNALS:
 
 private:
     Ui::MainWindow *ui;
-    Qtenv *env;
+    QtenvApp *env;
     StopDialog *stopDialog = nullptr;
     QSlider *slider;
     QList<int> timeLineSize;

@@ -26,7 +26,7 @@
 #include "inspectorfactory.h"
 #include "canvasrenderer.h"
 #include "canvasviewer.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspectorutil.h"
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QToolBar>

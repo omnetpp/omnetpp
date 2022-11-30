@@ -40,7 +40,7 @@
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cgate.h"
 #include "moduleinspector.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspectorfactory.h"
 #include "arrow.h"
 #include "canvasrenderer.h"

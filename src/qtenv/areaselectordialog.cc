@@ -17,7 +17,7 @@
 #include "areaselectordialog.h"
 #include "ui_areaselectordialog.h"
 
-#include "qtenv.h"
+#include "qtenvapp.h"
 
 namespace omnetpp {
 namespace qtenv {

@@ -23,7 +23,7 @@
 #include "common/stlutil.h"
 #include "runselectiondialog.h"
 #include "ui_runselectiondialog.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 
 namespace omnetpp {
 using namespace common;

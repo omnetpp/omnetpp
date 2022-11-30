@@ -16,7 +16,7 @@
 
 #include "messageanimator.h"
 
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "moduleinspector.h"  // for the layer
 #include "messageitem.h"
 #include "messageanimations.h"

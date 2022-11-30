@@ -53,7 +53,7 @@
 #include "omnetpp/cwatch.h"
 #include "omnetpp/cdisplaystring.h"
 #include "omnetpp/cdynamicexpression.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 #include "charttickdecimal.h"
 #include "moduleinspector.h"

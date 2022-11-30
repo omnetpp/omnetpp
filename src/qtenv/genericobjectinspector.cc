@@ -22,7 +22,7 @@
 #include "omnetpp/cregistrationlist.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspectorfactory.h"
 #include "moduleinspector.h"
 #include "loginspector.h"
@@ -264,7 +264,7 @@ void GenericObjectInspector::onTreeViewActivated(const QModelIndex &index)
 
     InspectorFactory *factory = findInspectorFactoryFor(object, INSP_DEFAULT);
     if (!factory) {
-        getQtenv()->confirm(Qtenv::INFO, opp_stringf("Class '%s' has no associated inspectors.", object->getClassName()).c_str());
+        getQtenv()->confirm(QtenvApp::INFO, opp_stringf("Class '%s' has no associated inspectors.", object->getClassName()).c_str());
         return;
     }
 

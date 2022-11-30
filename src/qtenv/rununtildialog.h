@@ -18,7 +18,7 @@
 #define __OMNETPP_QTENV_RUNUNTILDIALOG_H
 
 #include <QtWidgets/QDialog>
-#include "qtenv.h"
+#include "qtenvapp.h"
 
 namespace Ui {
 class RunUntilDialog;

@@ -21,7 +21,7 @@
 #include <set>
 #include "qtutil.h"
 #include "envir/visitor.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/cwatch.h"

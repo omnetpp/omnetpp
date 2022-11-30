@@ -22,7 +22,7 @@
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cfutureeventset.h"
 #include "common/stlutil.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtutil.h"
 #include "mainwindow.h"
 #include "layouterenv.h"

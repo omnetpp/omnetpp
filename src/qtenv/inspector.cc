@@ -30,7 +30,7 @@
 #include "common/stringutil.h"
 #include "common/stlutil.h"
 #include "omnetpp/cobject.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "qtenvdefs.h"
 #include "qtutil.h"
 #include "inspector.h"

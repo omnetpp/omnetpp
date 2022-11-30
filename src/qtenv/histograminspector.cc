@@ -21,7 +21,7 @@
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QMenu>
 #include "omnetpp/cabstracthistogram.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 #include "inspectorfactory.h"
 #include "histograminspector.h"
 #include "histograminspectorconfigdialog.h"

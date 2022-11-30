@@ -16,7 +16,7 @@
 
 #include "logfinddialog.h"
 #include "ui_logfinddialog.h"
-#include "qtenv.h"
+#include "qtenvapp.h"
 
 namespace omnetpp {
 namespace qtenv {
