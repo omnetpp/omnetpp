@@ -15,21 +15,24 @@ let
     strictDeps = true;
     dontStrip = true;
     dontWrapQtApps = true;
-    # hardeningDisable = all;
 
     buildInputs = [ qtbase ];
 
-    # tools required for build only (not needed in derivations)
     nativeBuildInputs = [ autoPatchelfHook perl python3 bison flex lld bintools qtbase];
 
     patches = [ ./flake-support-on-6.0.1.patch ];
+
+    postPatch = ''
+      # variables used as a replacement in the setup hook
+      export qtPluginPath="${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
+      export ldLibraryPath="$out/lib"
+    '';
 
     preConfigure = ''
       if [ ! -f configure.user ]; then
         cp configure.user.dist configure.user
       fi
       source setenv
-      rm -rf samples images/src
     '';
 
     configureFlags = [ "LDFLAGS=-L${omnetpp.out}/lib" # to allow linking with core omnetpp libraries
@@ -43,25 +46,21 @@ let
 
     installPhase = ''
       runHook preInstall
-
       mkdir -p $out
-      mv nix-support/set-qtenv $out/setenv
-      substituteInPlace $out/setenv --replace "@qtPluginPath@" "${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
-      substituteInPlace $out/setenv --replace "@ldLibraryPath@" "$out/lib"
       mv Version lib $out
-
       runHook postInstall
     '';
-
 
     preFixup = 
       lib.optionalString stdenv.isLinux ''
         addAutoPatchelfSearchPath "${omnetpp.out}/lib"
     '';
 
+    setupHook = ./set-qtenv;
+
     meta = with lib; {
       homepage= "https://omnetpp.org";
-      description = "OMNeT++ Discrete Event Simulator runtime";
+      description = "OMNeT++ Discrete Event Simulator QTEnv";
       longDescription = "OMNeT++ is an extensible, modular, component-based C++ simulation library and framework, primarily for building network simulators.";
       changelog = "https://github.com/omnetpp/omnetpp/blob/omnetpp-${version}/WHATSNEW";
       license = licenses.free;

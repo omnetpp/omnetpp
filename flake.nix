@@ -99,13 +99,14 @@
           # It includes also the omnetpp package as a dependency.
           buildInputs = [ 
             self.packages.${system}."${pname}-runtime" 
+            self.packages.${system}."${pname}-qtenv" 
             # self.packages.${system}."${pname}-samples-git" 
             # self.packages.${system}."${pname}-doc"
             # self.packages.${system}."${pname}-ide"
           ];
           shellHook = ''
             source ${self.packages.${system}.default}/setenv
-            source ${self.packages.${system}."${pname}-qtenv"}/setenv
+            # source ${self.packages.${system}."${pname}-qtenv"}/setenv
           '';
         };
 

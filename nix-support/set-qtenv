@@ -26,14 +26,6 @@ fi
 # disable GL support as NIX does not play nicely with OpenGL (except on nixOS)
 export QT_XCB_GL_INTEGRATION=none
 
-if test -z "$DISPLAY"; then
-  export DISPLAY=:0
-fi
-
-if test -z "$XDG_RUNTIME_DIR"; then
-  export XDG_RUNTIME_DIR=$TMPDIR/xdg_runtime
-fi
-
-if test -z "$HOME"; then
-  export HOME=$TMPDIR/xdg_home
-fi
+export DISPLAY=${DISPLAY:=:0}
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:=$TMPDIR/xdg_runtime}
+export HOME=${HOME:=$TMPDIR/xdg_home}
