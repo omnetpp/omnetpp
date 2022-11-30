@@ -59,6 +59,7 @@ pre.src {
     line-height: 1.3em;
     overflow-x: auto;
 }
+pre.dark-bg { background-color: #202020; }
 .src-keyword { font-weight:bold }
 .src-comment { font-style:italic; color:#404040 }
 .src-string  { color:#006000 }

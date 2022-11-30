@@ -56,8 +56,10 @@ public class SyntaxHighlightHelper {
     public static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
 
+    public final static boolean isDarkTheme = DisplayUtils.isDarkTheme(); 
+    
     static {
-        if (DisplayUtils.isDarkTheme()) {
+        if (isDarkTheme) {
             docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
             docKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_YELLOW)));
             docTagToken = new Token(new TextAttribute(ColorFactory.GREY31));

@@ -27,7 +27,7 @@ public interface INeddocRenderer {
     String typeSectionHeading(ITypeElement typeElement);
     String sectionHeading(String text, String clazz);
     String subsectionHeading(String text, String clazz);
-    String beginSource();
+    String beginSource(boolean isDarkBackground);
     String endSource();
     String beginTable(String clazz);
     String endTable();
