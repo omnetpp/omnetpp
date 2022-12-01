@@ -120,10 +120,12 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 import org.omnetpp.neddoc.NeddocExtensions.ExtType;
 import org.omnetpp.neddoc.properties.DocumentationGeneratorPropertyPage;
 import org.w3c.dom.Node;
@@ -2000,13 +2002,29 @@ public class DocumentationGenerator {
                                 if (child instanceof SubmoduleEditPart) {
                                     SubmoduleEditPart submoduleEditPart = (SubmoduleEditPart)child;
                                     SubmoduleElementEx submoduleElement = submoduleEditPart.getModel();
-                                    outMapReference(resolveSubmoduleType(submoduleElement), submoduleEditPart.getFigure());
+                                    
+                                    String tooltip = NedModelLabelProvider.getInstance().getText(submoduleElement);
+                                    
+                                    if (submoduleElement instanceof ISubmoduleOrConnection) {
+                                        INedTypeElement effectiveType = ((ISubmoduleOrConnection)submoduleElement).getEffectiveTypeRef();
+                                        if (effectiveType != null) {
+                                        	String comment = StringUtils.trimToEmpty(NedCommentFormatter.makeBriefDocu(effectiveType.getComment(), 100));
+                                        	if (StringUtils.isNotBlank(comment))
+                                        		tooltip += "\n\n" + comment;
+                                        }
+                                    }
+
+                                    String nedCode = StringUtils.stripLeadingCommentLines(submoduleElement.getNedSource().trim(), "//");
+                                    tooltip += "\n\nSource:\n" + StringUtils.quoteForHtml(
+                                    		StringUtils.abbreviate(nedCode, 300).replaceAll("\"", "&quot;"));
+
+                                    outMapReference(resolveSubmoduleType(submoduleElement), submoduleEditPart.getFigure(), tooltip);
                                 }
                             }
                         }
                         else if (editPart instanceof NedTypeEditPart) {
                             NedTypeEditPart nedTypeEditPart = (NedTypeEditPart)editPart;
-                            outMapReference(nedTypeEditPart.getModel(), nedTypeEditPart.getFigure());
+                            outMapReference(nedTypeEditPart.getModel(), nedTypeEditPart.getFigure(), "");
                         }
 
                         out(renderer.endTypeImageMap());
@@ -2475,7 +2493,7 @@ public class DocumentationGenerator {
         currentOutputStream.write(data);
     }
 
-    protected void outMapReference(INedTypeElement model, IFigure figure) throws IOException {
+    protected void outMapReference(INedTypeElement model, IFigure figure, String tooltip) throws IOException {
         //FigureUtils.debugPrintFigureAncestors(figure, "");
         Rectangle bounds = new Rectangle(figure.getBounds());
         if (figure instanceof SubmoduleFigure) {
@@ -2488,7 +2506,7 @@ public class DocumentationGenerator {
             }
         }
 
-        out(renderer.areaRef(model.getName(), renderer.appendFilenameExtension(getOutputBaseFileName(model)), bounds));
+        out(renderer.areaRef(tooltip, renderer.appendFilenameExtension(getOutputBaseFileName(model)), bounds));
     }
 
     protected IPath getOutputFilePath(IFile file) {
