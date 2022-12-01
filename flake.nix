@@ -75,7 +75,7 @@
           pname = "${pname}-runtime-git";
           version = gversion;
           src = self;
-          WITH_QTENV = true;
+          WITH_QTENV = false;
         };
 
         "${pname}-samples-git" = oppPkgs.callPackage ./nix-support/mkOmnetppSamplesDerivation.nix {
@@ -105,7 +105,7 @@
             # self.packages.${system}."${pname}-ide"
           ];
           shellHook = ''
-            source ${self.packages.${system}.default}/setenv
+            # source ${self.packages.${system}.default}/setenv
             # source ${self.packages.${system}."${pname}-qtenv"}/setenv
           '';
         };

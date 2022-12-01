@@ -1,6 +1,6 @@
 { 
   pname, version, src ? ./.,                 # direct parameters
-  stdenv, lib, bintools, 
+  stdenv, lib, bintools, writeText,
   perl, flex, bison, lld,                    # dependencies
   python3, qtbase ? null, qtsvg ? null,
   MODE ? "release",                          # build parameters
@@ -36,6 +36,7 @@ let
 
     # we have to patch all shebangs to use NIX versions of the interpreters
     prePatch = ''
+      patchShebangs setenv
       patchShebangs src/nedxml
       patchShebangs src/utils
     '';
@@ -49,6 +50,8 @@ let
     '';
 
     buildPhase = (lib.optionalString WITH_QTENV ''
+      runHook preBuild
+
       # Do not link with qtenv by default. It should be loaded dynamically.
       substituteInPlace Makefile.inc --replace "ALL_ENV_LIBS += \$(QTENV_LIBS)" ""
       substituteInPlace Makefile.inc --replace ${qtbase.dev}/lib ${qtbase.out}/lib
@@ -57,6 +60,8 @@ let
       substituteInPlace Makefile.inc --replace "\$(OMNETPP_ROOT)/images" "${placeholder "out"}/images"
 
       make MODE=release -j$NIX_BUILD_CORES
+
+      runHook postBuild
     '';
 
     installPhase = ''
@@ -81,6 +86,12 @@ let
 
     postFixup = lib.optionalString (WITH_QTENV && stdenv.isLinux) ''      
         patchelf --set-rpath '${placeholder "out"}/lib:${qtbase.out}/lib' ${placeholder "out"}/lib/liboppqtenv.so
+    '';
+
+    setupHook = writeText "setup-hook" ''
+      set +u # turn off unbouned variable check
+      source @out@/setenv
+      set -u
     '';
 
     meta = with lib; {
