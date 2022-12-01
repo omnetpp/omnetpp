@@ -1,12 +1,9 @@
 { 
   pname, version, src ? ./.,                 # direct parameters
   stdenv, lib, bintools, writeText,
-  perl, flex, bison, lld,                    # dependencies
-  python3, qtbase ? null, qtsvg ? null,
+  perl, flex, bison, lld, python3,           # dependencies
   MODE ? "release",                          # build parameters
-  WITH_QTENV ? false,
 }:
-assert WITH_QTENV -> ! builtins.any isNull [ qtbase qtsvg ] ;
 
 let
   omnetpp-outputs = stdenv.mkDerivation rec {
@@ -14,14 +11,6 @@ let
 
     enableParallelBuilding = true;
     strictDeps = true;
-    dontStrip = true;
-    dontWrapQtApps = true;
-    # hardeningDisable = all;
-
-    buildInputs = [ ] ++ lib.optionals WITH_QTENV [ qtbase ];
-
-    # tools required for build only (not needed in derivations)
-    nativeBuildInputs = [ ] ++ lib.optionals WITH_QTENV [ qtbase ];
 
     # tools required for build only (needed in derivations)
     propagatedNativeBuildInputs = [
@@ -31,14 +20,9 @@ let
 
     patches = [ ./flake-support-on-6.0.1.patch ];
 
-    configureFlags = [ "WITH_OSG=no" "WITH_OSGEARTH=no" ]
-                     ++ lib.optionals (!WITH_QTENV) [ "WITH_QTENV=no" ];
-
     # we have to patch all shebangs to use NIX versions of the interpreters
-    prePatch = ''
-      patchShebangs setenv
-      patchShebangs src/nedxml
-      patchShebangs src/utils
+    postPatch = ''
+      patchShebangs src
     '';
 
     preConfigure = ''
@@ -46,50 +30,29 @@ let
         cp configure.user.dist configure.user
       fi
       source setenv
-      rm -rf samples images/src
+      rm -rf samples images/src python/ChangeLog
     '';
 
-    buildPhase = (lib.optionalString WITH_QTENV ''
-      runHook preBuild
+    configureFlags = [ "WITH_QTENV=no" "WITH_OSG=no" "WITH_OSGEARTH=no" ];
 
-      # Do not link with qtenv by default. It should be loaded dynamically.
-      substituteInPlace Makefile.inc --replace "ALL_ENV_LIBS += \$(QTENV_LIBS)" ""
-      substituteInPlace Makefile.inc --replace ${qtbase.dev}/lib ${qtbase.out}/lib
-    '') + ''
-      # fix the image path temporarily to the final pacakge location
-      substituteInPlace Makefile.inc --replace "\$(OMNETPP_ROOT)/images" "${placeholder "out"}/images"
-
-      make MODE=release -j$NIX_BUILD_CORES
-
-      runHook postBuild
-    '';
+    buildFlags = [ "MODE=release" "OMNETPP_IMAGE_PATH=$(out)/images" ];
 
     installPhase = ''
       runHook preInstall
-      mkdir -p ${placeholder "out"}
+      
+      mkdir -p $out
 
-    '' + (lib.optionalString WITH_QTENV ''
-      substituteInPlace nix-support/set-qtenv --replace "@qtPluginPath@" "${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
-      substituteInPlace nix-support/set-qtenv --replace "@ldLibraryPath@" "${placeholder "out"}/lib"
-      mv nix-support/set-qtenv ${placeholder "out"}
-    '') + ''
-
-      # fix the image path back to the original value
-      substituteInPlace Makefile.inc --replace "${placeholder "out"}/images" "\$(OMNETPP_ROOT)/images"
-
+      # remove commands that are in different packages
       (cd bin; rm -f opp_ide omnetpp omnest opp_samples opp_docbrowser)
-      mv doc/License doc/3rdparty.txt ${placeholder "out"}
-      mv setenv Version Makefile.inc configure.user bin images include lib python ${placeholder "out"}
+
+      mv doc/License doc/3rdparty.txt setenv Version Makefile.inc configure.user \
+         bin images include lib python $out
 
       runHook postInstall
     '';
 
-    postFixup = lib.optionalString (WITH_QTENV && stdenv.isLinux) ''      
-        patchelf --set-rpath '${placeholder "out"}/lib:${qtbase.out}/lib' ${placeholder "out"}/lib/liboppqtenv.so
-    '';
-
     setupHook = writeText "setup-hook" ''
-      set +u # turn off unbouned variable check
+      set +u # temporarily turn off unbouned variable check
       source @out@/setenv
       set -u
     '';

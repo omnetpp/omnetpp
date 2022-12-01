@@ -39,7 +39,6 @@
             url = "${tarball_base_url}-core.tgz";
             sha256 = sha256_core;
           };
-          WITH_QTENV = false;
         };
 
         "${pname}-qtenv" = oppPkgs.callPackage ./nix-support/mkOmnetppQtenvDerivation.nix {
@@ -75,7 +74,6 @@
           pname = "${pname}-runtime-git";
           version = gversion;
           src = self;
-          WITH_QTENV = false;
         };
 
         "${pname}-samples-git" = oppPkgs.callPackage ./nix-support/mkOmnetppSamplesDerivation.nix {
@@ -104,10 +102,6 @@
             # self.packages.${system}."${pname}-doc"
             # self.packages.${system}."${pname}-ide"
           ];
-          shellHook = ''
-            # source ${self.packages.${system}.default}/setenv
-            # source ${self.packages.${system}."${pname}-qtenv"}/setenv
-          '';
         };
 
         "${pname}-dev" = oppPkgs.stdenv.mkDerivation {
