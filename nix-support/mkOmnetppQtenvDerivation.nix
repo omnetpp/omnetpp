@@ -13,7 +13,6 @@ let
 
     enableParallelBuilding = true;
     strictDeps = true;
-    dontStrip = true;
     dontWrapQtApps = true;
 
     buildInputs = [ qtbase ];
@@ -40,7 +39,7 @@ let
 
     buildPhase = ''
       runHook preBuild
-      (make utils && cd src/qtenv && make MODE=release -j$NIX_BUILD_CORES)
+      (make utils && cd src/qtenv && make MODE=${MODE} -j$NIX_BUILD_CORES)
       runHook postBuild
     '';
 
