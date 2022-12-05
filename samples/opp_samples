@@ -39,7 +39,7 @@ def launch_simulation(inifile):
     ini = os.path.basename(inifile)
     prog = os.path.join(dir, os.path.basename(dir))
     #print(f"{dir=} {prog=} {ini=}")
-    subprocess.Popen([prog, ini, "--result-dir=\"" + os.getcwd() + "/opp_samples-result/" + os.path.basename(dir) +  "\" "], cwd=dir)
+    subprocess.Popen([prog, ini, "-l", "oppqtenv", "--result-dir=\"" + os.getcwd() + "/opp_samples-result/" + os.path.basename(dir) +  "\" "], cwd=dir)
 
 
 label.linkActivated.connect(on_link_activated)

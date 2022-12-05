@@ -3,6 +3,7 @@
   stdenv, lib, lld,                 # build environment
   autoPatchelfHook,
   perl, omnetpp,                    # dependencies
+  omnetpp-qtenv,
   python3
 }:
 let
@@ -15,7 +16,7 @@ stdenv.mkDerivation rec {
   dontStrip = true;
   dontWrapQtApps = true;
 
-  buildInputs = [ omnetpp (python3.withPackages(ps: with ps; [ pyqt5 ])) ];
+  buildInputs = [ omnetpp omnetpp-qtenv (python3.withPackages(ps: with ps; [ pyqt5 ])) ];
 
   # tools required for build only (not needed in derivations)
   nativeBuildInputs = [ autoPatchelfHook ];
@@ -26,8 +27,6 @@ stdenv.mkDerivation rec {
   prePatch = ''
     cd samples
     patchShebangs . wiredphy parsim resultfiles queuenet queueinglibext cqn/parsim
-    substituteInPlace .opp_samples_wrapper --replace "@omnetpp.bin@" "${omnetpp.bin}"
-    substituteInPlace .opp_samples_wrapper --replace "@omnetpp.dev@" "${omnetpp.dev}"    
   '';
 
   buildPhase = ''

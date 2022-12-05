@@ -1,6 +1,6 @@
 { 
   pname, version, src ? ./.,                 # direct parameters
-  stdenv, lib, bintools, autoPatchelfHook,
+  stdenv, lib, bintools, autoPatchelfHook, writeText,
   perl, flex, bison, lld,                    # dependencies
   python3, qtbase, qtsvg,
   omnetpp,
@@ -22,9 +22,23 @@ let
     patches = [ ./flake-support-on-6.0.1.patch ];
 
     postPatch = ''
-      # variables used as a replacement in the setup hook
-      export qtPluginPath="${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
+      # variables used as a replacement in the setup-hook
+      export ldLibraryPathVar=${if stdenv.isDarwin then "DYLD_FALLBACK_LIBRARY_PATH" else "LD_LIBRARY_PATH"}
       export ldLibraryPath="$out/lib"
+      export qtPluginPath="${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
+    '';
+
+    setupHook =  writeText "setup-hook" ''
+      export @ldLibraryPathVar@='@ldLibraryPath@':''${@ldLibraryPathVar@:-}
+      export QT_PLUGIN_PATH='@qtPluginPath@':''${QT_PLUGIN_PATH:-}
+
+      # disable GL support as NIX does not play nicely with OpenGL (except on nixOS)
+      export QT_XCB_GL_INTEGRATION=''${QT_XCB_GL_INTEGRATION:-none}
+      
+      export DISPLAY=''${DISPLAY:-:0}
+      export XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:-$TMPDIR/xdg_runtime}
+      export XDG_CACHE_HOME=''${XDG_CACHE_HOME:-$TMPDIR/xdg_cache}
+      export HOME=''${HOME:-$TMPDIR/xdg_home}
     '';
 
     preConfigure = ''
@@ -34,11 +48,12 @@ let
       source setenv
     '';
 
-    configureFlags = [ "LDFLAGS=-L${omnetpp.out}/lib" # to allow linking with core omnetpp libraries
+    configureFlags = [ "LDFLAGS=-L${omnetpp.out}/lib" # to allow linking with core omnetpp-runtime libraries
                        "WITH_OSG=no" "WITH_OSGEARTH=no" "WITH_QTENV=yes" ];
 
     buildPhase = ''
       runHook preBuild
+      # to build only the qtenv library we go directly into its source folder
       (make utils && cd src/qtenv && make MODE=${MODE} -j$NIX_BUILD_CORES)
       runHook postBuild
     '';
@@ -54,8 +69,6 @@ let
       lib.optionalString stdenv.isLinux ''
         addAutoPatchelfSearchPath "${omnetpp.out}/lib"
     '';
-
-    setupHook = ./set-qtenv;
 
     meta = with lib; {
       homepage= "https://omnetpp.org";

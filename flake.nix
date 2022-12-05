@@ -17,7 +17,9 @@
       sversion = "6.0.1"; # schemantic version number
       pkgs = import nixpkgs { inherit system; };
       tarball_base_url = "https://github.com/omnetpp/omnetpp/releases/download/${pname}-${sversion}/${pname}-${sversion}";
-      sha256_core = "sha256-ftmYmDSE3zGm9pLyi3QR7wDWinYwAN8rQog0WietSCk="; # sha256 of the core tarball
+      src_core = pkgs.fetchzip { url = "${tarball_base_url}-core.tgz"; sha256 = "sha256-ftmYmDSE3zGm9pLyi3QR7wDWinYwAN8rQog0WietSCk="; };
+      src_linux-x86_64 = pkgs.fetchzip { url = "${tarball_base_url}-linux-x86_64.tgz"; sha256 = "sha256-968zGE+C7G5nYNw7jlcVbs5QwXuPy8dTMQQzn5mLJyU="; };
+
     in rec {
       # set different defaults for creating packages.
       oppPkgs =  pkgs // {
@@ -35,38 +37,26 @@
         "${pname}-runtime" = oppPkgs.callPackage ./nix-support/mkOmnetppDerivation.nix {
           pname = "${pname}-runtime";
           version = sversion;
-          src = pkgs.fetchzip {
-            url = "${tarball_base_url}-core.tgz";
-            sha256 = sha256_core;
-          };
+          src = src_core;
         };
 
         "${pname}-qtenv" = oppPkgs.callPackage ./nix-support/mkOmnetppQtenvDerivation.nix {
           pname = "${pname}-qtenv";
           version = sversion;
-          src = pkgs.fetchzip {
-            url = "${tarball_base_url}-core.tgz";
-            sha256 = sha256_core;
-          };
+          src = src_core;
           omnetpp = self.packages.${system}."${pname}-runtime"; # depends on the base omnetpp runtime component
         };
 
         "${pname}-doc" = oppPkgs.callPackage ./nix-support/mkOmnetppDocDerivation.nix {
           pname = "${pname}-doc";
           version = sversion;
-          src = pkgs.fetchzip {
-            url = "${tarball_base_url}-core.tgz";
-            sha256 = sha256_core;
-          };
+          src = src_core;
         };
 
         "${pname}-ide" = oppPkgs.callPackage ./nix-support/mkOmnetppIDEDerivation.nix {
           pname = "${pname}-ide";
           version = sversion;
-          src = pkgs.fetchzip {
-            url = "${tarball_base_url}-linux-x86_64.tgz";
-            sha256 = "sha256-968zGE+C7G5nYNw7jlcVbs5QwXuPy8dTMQQzn5mLJyU=";
-          };
+          src = src_linux-x86_64;
           omnetpp = self.packages.${system}."${pname}-runtime";
         };
 
@@ -80,7 +70,8 @@
           pname = "${pname}-samples-git";
           version = gversion;
           src = self;
-          omnetpp = self.packages.${system}."${pname}-git";
+          omnetpp = self.packages.${system}."${pname}-runtime";
+          omnetpp-qtenv = self.packages.${system}."${pname}-qtenv";
         };
 
         "${pname}-doc-git" = oppPkgs.callPackage ./nix-support/mkOmnetppDocGitDerivation.nix {
@@ -98,9 +89,9 @@
           buildInputs = [ 
             self.packages.${system}."${pname}-runtime" 
             self.packages.${system}."${pname}-qtenv" 
-            # self.packages.${system}."${pname}-samples-git" 
-            # self.packages.${system}."${pname}-doc"
-            # self.packages.${system}."${pname}-ide"
+            self.packages.${system}."${pname}-samples-git" 
+            self.packages.${system}."${pname}-doc"
+            self.packages.${system}."${pname}-ide"
           ];
         };
 
@@ -117,7 +108,7 @@
       apps = rec {
         "${pname}-samples" = {
           type = "app";
-          program = "${self.packages.${system}."${pname}-samples-git"}/bin/.opp_samples_wrapper";
+          program = "${self.packages.${system}."${pname}-samples-git"}/bin/opp_samples";
         };
 
         default = apps."${pname}-samples";
