@@ -1368,8 +1368,11 @@ by calling the \ffunc{par()} member function of \cclass{cComponent}:
 cPar& delayPar = par("delay");
 \end{cpp}
 
-\cclass{cPar}'s value can be read with methods that correspond to
-the parameter's NED type: \ffunc{boolValue()}, \ffunc{intValue()},
+\subsection{Reading the Value}
+\label{sec:simple-modules:parameters-reading}
+
+The value in a \cclass{cPar} object can be read with methods that correspond
+to the parameter's NED type: \ffunc{boolValue()}, \ffunc{intValue()},
 \ffunc{doubleValue()}, \ffunc{stringValue()}/\ffunc{stdstringValue()},
 \ffunc{objectValue()}, \ffunc{xmlValue()}.
 There are also overloaded type cast operators for the corresponding types
@@ -1394,7 +1397,31 @@ resolved by adding an explicit cast such as \ttt{(double)par("foo")},
 or using the \ffunc{doubleValue()} or \ffunc{intValue()} methods.
 
 
-\subsection{Volatile and Non-Volatile Parameters}
+\subsection{Object Parameters}
+\label{sec:simple-modules:object-parameters}
+
+The method \ttt{objectValue()} is used to access object parameters. It returns a
+pointer of the type \ttt{cObject*}, which must be cast to the appropriate type
+using \ttt{check\_and\_cast()} or \ttt{dynamic\_cast()}. Object parameters are
+often used to pass compound values, such as arrays and dictionaries, to a module
+using a JSON-like syntax. In C++, these values are represented as object trees,
+with arrays represented by the \cclass{cValueArray} class and dictionaries
+represented by the \cclass{cValueMap} class. Values inside \cclass{cValueArray}
+and \cclass{cValueMap} are represented with the \cclass{cValue} class. When a
+single value is assigned to an object parameter, it is represented as a
+\cclass{cValue} wrapped in a \cclass{cValueHolder}. \footnote{Object parameters
+were introduced in version 6.0 of {\opp}. In earlier versions, string parameters
+were often used to emulate arrays and were parsed with the help of the
+\cclass{cStringTokenizer} class and its convenience methods, such as
+\ffunc{asIntVector()} and \ffunc{asDoubleVector()}.}
+
+If the \textit{object} notation includes a \textit{class name}, then the named C++ class
+will be used instead of \cclass{cValueMap}, and filled in using the key-value list
+with the help of the class descriptor (\cclass{cClassDescriptor}) of the class,
+interpreting keys as field names.
+
+
+\subsection{Volatile versus Non-Volatile Parameters}
 \label{sec:simple-modules:volatile-parameters}
 
 Parameters declared in the NED file can be marked as \texttt{volatile}. When a
@@ -1545,59 +1572,7 @@ assign parameters. They are documented in the \tbf{API Reference}, but
 they are normally of little interest to users.
 
 
-\subsection{Object Parameters}
-\label{sec:simple-modules:object-parameters}
-
-As of version 4.2, {\opp} does not support parameter arrays,
-but in practice they can be emulated using string parameters.
-One can assign the parameter a string which contains all values
-in a textual form (for example, \ttt{"0 1.234 3.95 5.467"}), then
-parse this string in the simple module.
-
-The \cclass{cStringTokenizer} class can be quite useful for this
-purpose. The constructor accepts a string, which it regards as
-a sequence of tokens (words) separated by delimiter characters
-(by default, spaces). Then you can either enumerate the tokens
-and process them one by one (\ffunc{hasMoreTokens()}, \ffunc{nextToken()}),
-or use one of the \cclass{cStringTokenizer} convenience methods to convert
-them into a vector of strings (\ffunc{asVector()}), integers (\ffunc{asIntVector()}),
-or \ttt{double}s (\ffunc{asDoubleVector()}).
-
-The latter methods can be used like this:
-
-\begin{cpp}
-const char *vstr = par("v").stringValue(); // e.g. "aa bb cc";
-std::vector<std::string> v = cStringTokenizer(vstr).asVector();
-\end{cpp}
-
-and
-
-\begin{cpp}
-const char *str = "34 42 13 46 72 41";
-std::vector<int> v = cStringTokenizer().asIntVector();
-
-const char *str = "0.4311 0.7402 0.7134";
-std::vector<double> v = cStringTokenizer().asDoubleVector();
-\end{cpp}
-
-The following example processes the string by enumerating the tokens:
-
-\begin{cpp}
-const char *str = "3.25 1.83 34 X 19.8"; // input
-
-std::vector<double> result;
-cStringTokenizer tokenizer(str);
-while (tokenizer.hasMoreTokens())
-{
-    const char *token = tokenizer.nextToken();
-    if (strcmp(token, "X")==0)
-        result.push_back(DEFAULT_VALUE);
-    else
-        result.push_back(atof(token));
-}
-\end{cpp}
-
-\subsection{handleParameterChange()}
+\subsection{Reacting to Parameter Changes}
 \label{sec:simple-modules:handleparameterchange}
 
 It is possible for modules to be notified when the value of a parameter changes
@@ -1625,8 +1600,9 @@ void Queue::handleParameterChange(const char *parameterName)
 \end{cpp}
 
 \begin{note}
-  As a rule of thumb, \ffunc{handleParameterChange()} should handle
-  all parameters that are marked as \fprop{@mutable} in the NED file.
+  As a rule of thumb, when implementing a \ffunc{handleParameterChange()}
+  method, care must be taken that it is prepared to handle the changes of all
+  parameters that are marked as \fprop{@mutable} in the NED file.
 \end{note}
 
 Notifications are suppressed while the network (or module) is being set
