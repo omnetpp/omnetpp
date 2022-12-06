@@ -1370,11 +1370,11 @@ cPar& delayPar = par("delay");
 
 \cclass{cPar}'s value can be read with methods that correspond to
 the parameter's NED type: \ffunc{boolValue()}, \ffunc{intValue()},
-\ffunc{doubleValue()}, \ffunc{stringValue()}, \ffunc{stdstringValue()},
-\ffunc{xmlValue()}.
+\ffunc{doubleValue()}, \ffunc{stringValue()}/\ffunc{stdstringValue()},
+\ffunc{objectValue()}, \ffunc{xmlValue()}.
 There are also overloaded type cast operators for the corresponding types
-(\ttt{bool}; integer types including \ttt{int}, \ttt{long}, etc;
-\ttt{double}; \ttt{const char *}; \ttt{cXMLElement *}).
+(\ttt{bool}, integer types including \ttt{int} and \ttt{long},
+\ttt{double}, \ttt{const char *}, \ttt{cObject*} and \ttt{cXMLElement*}).
 
 \begin{cpp}
 long numJobs = par("numJobs").intValue();
@@ -1493,10 +1493,10 @@ This is rarely needed, but may be useful for some scenarios.
 
 The methods to set the parameter value are \ffunc{setBoolValue()},
 \ffunc{setLongValue()}, \ffunc{setStringValue()},
-\ffunc{setDoubleValue()}, \ffunc{setXMLValue()}. There are also
-overloaded assignment operators for various types including \ttt{bool},
-\ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *}, and
-\ttt{cXMLElement *}.
+\ffunc{setDoubleValue()}, \ffunc{setObjectValue()}, \ffunc{setXMLValue()}.
+There are also overloaded assignment operators for various types including
+\ttt{bool}, \ttt{int}, \ttt{long}, \ttt{double}, \ttt{const char *},
+\ttt{cObject*}, and \ttt{cXMLElement*}.
 
 To allow a module to be notified about parameter changes, override
 its \ffunc{handleParameterChange()} method, see
@@ -1510,7 +1510,7 @@ The parameter's name and type are returned by the \ffunc{getName()} and
 \ffunc{getType()} methods. The latter returns a value from an enum,
 which can be converted to a readable string with the \ffunc{getTypeName()}
 static method. The enum values are \ttt{BOOL}, \ttt{DOUBLE}, \ttt{INT},
-\ttt{STRING} and \ttt{XML}; and since the enum is an inner type,
+\ttt{STRING}, \ttt{OBJECT}, and \ttt{XML}; and since the enum is an inner type,
 they usually have to be qualified with \ttt{cPar::}.
 
 \ffunc{isVolatile()} returns whether the parameter was declared volatile
