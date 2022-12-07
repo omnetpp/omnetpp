@@ -26,6 +26,7 @@
 #include <algorithm> // copy_n()
 #include <mutex>
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cpacket.h"
@@ -66,6 +67,9 @@
 #include "sim/parsim/cparsimsynchr.h"
 #endif
 
+#ifdef WITH_PYTHONSIM
+#include "pythonutil.h"
+#endif
 
 #ifdef DEVELOPER_DEBUG
 #include <set>
@@ -161,6 +165,12 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
 
 cSimulation::~cSimulation()
 {
+#ifdef WITH_PYTHONSIM
+    for (auto p : componentAccessors)
+        Py_DECREF(p.second);
+    componentAccessors.clear();
+#endif
+
 //    if (this == activeSimulation) {
 //        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
 //        getEnvir()->alert(cRuntimeError(this, "Cannot delete the active simulation manager object, ABORTING").getFormattedMessage().c_str());
@@ -1310,6 +1320,23 @@ int cSimulation::getParsimNumPartitions() const
     return 0;
 #endif
 }
+
+#ifdef WITH_PYTHONSIM
+PyObject *cSimulation::getComponentAccessor(int componentId)
+{
+    // These have to be initialized lazily, for two reasons:
+    //  - So the NEDPATH is properly set up when it's put into PYTHONPATH.
+    //  - So we don't do it unnecessarily if the model doesn't make use of it.
+    auto it = componentAccessors.find(componentId);
+    return it == componentAccessors.end() ? nullptr : it->second;
+}
+
+void cSimulation::putComponentAccessor(int componentId, PyObject *accessor)
+{
+    ASSERT(!common::containsKey(componentAccessors, componentId));
+    componentAccessors[componentId] = accessor;
+}
+#endif
 
 void cSimulation::setFingerprintCalculator(cFingerprintCalculator *f)
 {

@@ -18,6 +18,7 @@
 #include "omnetpp/platdep/config.h"
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/cexception.h"
+#include "omnetpp/ccomponent.h"
 
 #ifdef WITH_PYTHONSIM
 
@@ -29,6 +30,7 @@
 #include "omnetpp/cvalue.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
+#include "omnetpp/csimulation.h"
 #include "pythonutil.h"
 
 #endif
@@ -141,6 +143,8 @@ class Accessor:
             if t == cPar.OBJECT:
                 return unwrap(par.objectValue())
             # TODO: XML?
+        elif hasattr(super(), name):
+            return getattr(super(), name)
         else:
             return getattr(self.contextComponent, name)
 )";
@@ -295,23 +299,36 @@ static PyObject *valueToPyObject(const cValue& val)
 // the interpreter builtins and our helper code already defined.
 static PyObject *makeGlobalsWithAccessor(cComponent *contextComponent)
 {
+    int cid = contextComponent->getId();
+    cSimulation *sim = contextComponent->getSimulation();
+
+    ensurePythonInterpreter();
+
     PyObject *globals = PyDict_New();
     PyDict_SetItemString(globals, "__builtins__", PyEval_GetBuiltins());
 
-    PyRun_String(CPP_CONTAINER_UNWRAP_CODE, Py_file_input, globals, globals);
-    PyRun_String(COMPONENT_WRAPPER_CODE, Py_file_input, globals, globals);
-    checkPythonException();
+    PyObject *accessor = sim->getComponentAccessor(cid);
 
-    PyObject *accessorClass = PyDict_GetItemString(globals, "Accessor");
-    ASSERT(!Py_IsNone(accessorClass));
-    checkPythonException();
+    if (accessor == nullptr) {
+        PyRun_String(CPP_CONTAINER_UNWRAP_CODE, Py_file_input, globals, globals);
+        PyRun_String(COMPONENT_WRAPPER_CODE, Py_file_input, globals, globals);
+        checkPythonException();
 
-    PyObject *args = PyTuple_New(1);
-    PyTuple_SetItem(args, 0, PyLong_FromVoidPtr(reinterpret_cast<void*>(contextComponent)));
-    checkPythonException();
+        PyObject *accessorClass = PyDict_GetItemString(globals, "Accessor");
+        ASSERT(!Py_IsNone(accessorClass));
+        checkPythonException();
 
-    PyObject *accessor = PyObject_Call(accessorClass, args, nullptr);
-    checkPythonException();
+        PyObject *args = PyTuple_New(1);
+        PyTuple_SetItem(args, 0, PyLong_FromVoidPtr(reinterpret_cast<void*>(contextComponent)));
+        checkPythonException();
+
+        accessor = PyObject_Call(accessorClass, args, nullptr);
+        checkPythonException();
+
+        sim->putComponentAccessor(cid, accessor);
+    }
+
+    ASSERT(accessor != nullptr);
 
     PyDict_SetItemString(globals, "this", accessor);
     PyDict_SetItemString(globals, "self", accessor);
