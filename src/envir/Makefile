@@ -60,11 +60,6 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/logformatter.o $O/generi
 
 GENERATED_SOURCES= eventlogwriter.cc eventlogwriter.h
 
-ifeq ($(WITH_PYTHONSIM),yes)
-  COPTS += $(PYTHON_CFLAGS)
-  IMPLIBS += $(PYTHON_LIBS)
-endif
-
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DENVIR_EXPORT
 

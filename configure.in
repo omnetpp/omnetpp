@@ -824,12 +824,17 @@ fi
 #   import prettyplotlib
 #   import seaborn
 
+SYS_LIBS=""
+
 #-------------------------------------------
 # Check for python embedding cflags and libs
 #-------------------------------------------
 if test "$WITH_PYTHONSIM" = "yes"; then
   PYTHON_CFLAGS=$(pkg-config --cflags python3-embed)
   PYTHON_LIBS=$(pkg-config --libs python3-embed)
+
+  CFLAGS="$CFLAGS $PYTHON_CFLAGS"
+  SYS_LIBS="$SYS_LIBS $PYTHON_LIBS"
 
   OPP_CHECK_LIB(python3-dev, Python.h, Py_Initialize(), $PYTHON_CFLAGS, $PYTHON_LIBS, python3_found)
   if test $python3_found = no; then
@@ -840,8 +845,6 @@ fi
 #----------------------
 # Checks for standard libraries.
 #----------------------
-
-SYS_LIBS=""
 
 if test "$TOOLCHAIN_NAME" != "clang-msabi"; then
   # math functions

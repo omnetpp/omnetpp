@@ -31,11 +31,6 @@ IMPLIBS= -loppsim$D -loppenvir$D -loppcommon$D
 
 OBJS = $O/cmdenvapp.o $O/cmdenvenvir.o $O/cmdenvsimulationrunner.o $O/cmdenvnarrator.o $O/fakegui.o
 
-ifeq ($(WITH_PYTHONSIM),yes)
-  COPTS += $(PYTHON_CFLAGS)
-  IMPLIBS += $(PYTHON_LIBS)
-endif
-
 # macro is used in $(EXPORT_DEFINES) with clang-msabi when building a shared lib
 EXPORT_MACRO = -DCMDENV_EXPORT
 
