@@ -281,7 +281,7 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
     }
 
     public INedTypeElement getNedTypeElementToOpen() {
-        INedTypeElement typeToOpen = getModel().getEffectiveTypeRef();
+        INedTypeElement typeToOpen = getModel().getTypeOrLikeTypeRef();
         // detect built-in types (that are not defined in a file) and return null (they cannot be opened)
         if (typeToOpen != null && typeToOpen.getNedTypeInfo().getNedFile()==null)
             return null;

@@ -819,7 +819,7 @@ public class GraphicalNedEditor
         // comment from the submodule's or connection channel's type
         String typeComment = "";
         if (element instanceof ISubmoduleOrConnection) {
-            INedTypeElement typeElement = ((ISubmoduleOrConnection)element).getEffectiveTypeRef();
+            INedTypeElement typeElement = ((ISubmoduleOrConnection)element).getTypeOrLikeTypeRef();
             if (typeElement != null)
                 typeComment = StringUtils.trimToEmpty(typeElement.getComment());
         }

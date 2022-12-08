@@ -81,28 +81,28 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
     public void setIsDefault(boolean isDefault);
 
     /**
-     * Returns the type, or the likeType if type was not specified. For connections with
-     * implicit type (i.e. where getType()==""), it returns one of "ned.IdealChannel",
-     * "ned.DelayChannel" or "ned.DatarateChannel", based on the parameter assignments
-     * in the connection's "parameters" section.
+     * Returns the type or the likeType (i.e. the interface name), whichever is specified.
+     * For connections with implicit type (i.e. where getType()==""), it returns one of
+     * "ned.IdealChannel", "ned.DelayChannel" or "ned.DatarateChannel", based on the
+     * parameter assignments in the connection's "parameters" section.
      */
-    public String getEffectiveType();
+    public String getTypeOrLikeType();
 
     /**
-     * Returns the typeinfo for the effective type.
+     * Returns the typeinfo for the type or interface type.
      *
-     * Returns null if the effective type is not filled in, or is not a valid NED type,
-     * or not a type that's accepted at the given place (e.g. a channel for submodule type).
+     * Returns null if the type/interface type is not filled in, or is not a valid NED type,
+     * or a type which is not acceptable at the given place (e.g. a channel for submodule type).
      */
     public INedTypeInfo getNedTypeInfo();
 
     /**
-     * Returns the model element for the effective type. Equivalent to
+     * Returns the model element for the type or interface type. Equivalent to
      * getNedTypeInfo().getNedElement(), but handles nulls.
      *
-     * Returns null if the effective type is not filled in, or is not a valid NED type,
-     * or not a type that's accepted at the given place (e.g. a channel for submodule type).
+     * Returns null if the type/interface type is not filled in, or is not a valid NED type,
+     * or a type which is not acceptable at the given place (e.g. a channel for submodule type).
      */
-    public INedTypeElement getEffectiveTypeRef();
+    public INedTypeElement getTypeOrLikeTypeRef();
 
 }

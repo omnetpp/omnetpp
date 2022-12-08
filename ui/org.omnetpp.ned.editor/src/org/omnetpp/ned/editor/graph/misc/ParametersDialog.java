@@ -741,7 +741,7 @@ public class ParametersDialog extends TitleAreaDialog {
         Button addButton = createButton(buttonComposite, BUTTON_ADD_ID, "Add", false);
         INedTypeElement nedTypeElement = null;
         if (parameterProvider instanceof ISubmoduleOrConnection) {
-            nedTypeElement = ((ISubmoduleOrConnection)parameterProvider).getEffectiveTypeRef();
+            nedTypeElement = ((ISubmoduleOrConnection)parameterProvider).getTypeOrLikeTypeRef();
             addButton.setEnabled(nedTypeElement instanceof CompoundModuleElementEx);
         }
         addButton.addSelectionListener(new SelectionAdapter() {

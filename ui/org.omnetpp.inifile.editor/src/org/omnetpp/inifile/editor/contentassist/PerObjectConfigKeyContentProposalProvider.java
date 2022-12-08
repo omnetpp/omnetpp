@@ -150,7 +150,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
             objectKinds.add(ObjectKind.KIND_COMPONENT);
             objectKinds.add(ObjectKind.KIND_MODULE);
             ISubmoduleOrConnection module = entry.getValue();
-            if (module != null && module.getEffectiveTypeRef() instanceof SimpleModuleElement) //FIXME getEffectiveTypeRef(): not good here: does not obey inifile content (it always returns an IModuleInterfaceElement for "like" submodules)
+            if (module != null && module.getTypeOrLikeTypeRef() instanceof SimpleModuleElement) //FIXME getEffectiveTypeRef(): not good here: does not obey inifile content (it always returns an IModuleInterfaceElement for "like" submodules)
                 objectKinds.add(ObjectKind.KIND_SIMPLE_MODULE);
             if (module != null && !StringUtils.isEmpty(module.getLikeType()))
                 objectKinds.add(ObjectKind.KIND_UNSPECIFIED_TYPE);

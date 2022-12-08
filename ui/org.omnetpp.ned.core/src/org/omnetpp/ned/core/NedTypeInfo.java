@@ -154,7 +154,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
             if (submodules != null) {
                 for (INedElement node : submodules) {
                     if (node instanceof SubmoduleElementEx) {
-                        INedTypeElement usedType = ((SubmoduleElementEx)node).getEffectiveTypeRef();
+                        INedTypeElement usedType = ((SubmoduleElementEx)node).getTypeOrLikeTypeRef();
                         if (usedType != null)
                             result.add(usedType);
                     }
@@ -166,7 +166,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
             if (connections != null) {
                 for (INedElement node : connections) {
                     if (node instanceof ConnectionElementEx) {
-                        INedTypeElement usedType = ((ConnectionElementEx)node).getEffectiveTypeRef();
+                        INedTypeElement usedType = ((ConnectionElementEx)node).getTypeOrLikeTypeRef();
                         if (usedType != null)
                             result.add(usedType);
                     }

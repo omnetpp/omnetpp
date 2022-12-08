@@ -100,7 +100,7 @@ public class NedTextUtils {
                 return createInfo(element, dottedWordRegion, declElement);
             }
             if (element instanceof SubmoduleElementEx) {
-                if (dottedWord.equals(((SubmoduleElementEx)element).getEffectiveType())) {
+                if (dottedWord.equals(((SubmoduleElementEx)element).getTypeOrLikeType())) {
                     INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
                     return createInfo(element, dottedWordRegion, declElement);
                 }
@@ -150,7 +150,7 @@ public class NedTextUtils {
                 if (isInDestGateRegion && word.equals(conn.getDestGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getDestModule(), conn.getDestGate()));
 
-                if (dottedWord.equals(conn.getEffectiveType())) {
+                if (dottedWord.equals(conn.getTypeOrLikeType())) {
                     INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
                     return createInfo(element, dottedWordRegion, declElement);
                 }
