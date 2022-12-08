@@ -257,6 +257,25 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return result.toString();
     }
 
+    public static String abbreviateText(String comment, int maxLength) {
+        return abbreviateText(comment, maxLength, 30);
+    }
+
+    /**
+     * Abbreviate, but avoid cutting words in half. However, words longer than
+     * breakableWordLength may be cut.
+     */
+    public static String abbreviateText(String text, int maxLength, int breakableWordLength) {
+        if (text.length() > maxLength) {
+            int breakIndex = text.substring(0, maxLength).lastIndexOf(" "); // last space before the limit
+            if (breakIndex < maxLength - breakableWordLength || breakIndex < breakableWordLength) // handle edge case (comment ending in a long "word")
+                breakIndex = maxLength;
+            text = text.substring(0, breakIndex) + "...";  // abbreviate
+        }
+        return text;
+    }
+
+
     /**
      * Returns true if string is null or "".
      */
