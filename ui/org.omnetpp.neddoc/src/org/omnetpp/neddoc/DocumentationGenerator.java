@@ -1741,7 +1741,7 @@ public class DocumentationGenerator {
 
     protected void collectUnassignedParameters(String prefix, Map<String, SubmoduleElementEx> typeElementMap, ArrayList<ArrayList<Object>> params) throws IOException {
         for (SubmoduleElementEx submodule : typeElementMap.values()) {
-            INedTypeElement typeElement = submodule.getEffectiveTypeRef();
+            INedTypeElement typeElement = submodule.getTypeOrLikeTypeRef();
 
             if (typeElement != null) {
                 String newPrefix = (prefix == null ? "" : prefix + ".") + typeReferenceString(typeElement, submodule.getName());
@@ -2006,7 +2006,7 @@ public class DocumentationGenerator {
                                     String tooltip = NedModelLabelProvider.getInstance().getText(submoduleElement);
                                     
                                     if (submoduleElement instanceof ISubmoduleOrConnection) {
-                                        INedTypeElement effectiveType = ((ISubmoduleOrConnection)submoduleElement).getEffectiveTypeRef();
+                                        INedTypeElement effectiveType = ((ISubmoduleOrConnection)submoduleElement).getTypeOrLikeTypeRef();
                                         if (effectiveType != null) {
                                         	String comment = StringUtils.trimToEmpty(NedCommentFormatter.makeBriefDocu(effectiveType.getComment(), 100));
                                         	if (StringUtils.isNotBlank(comment))
@@ -2055,13 +2055,13 @@ public class DocumentationGenerator {
         if (StringUtils.isNotEmpty(likeExpr)) {
             String typeString = tryToParseQuotedString(likeExpr);
             if (typeString != null) {
-                INedTypeElement interfaceType = submodule.getEffectiveTypeRef();
+                INedTypeElement interfaceType = submodule.getTypeOrLikeTypeRef();
                 INedTypeInfo submoduleType = nedResources.lookupLikeType(typeString, interfaceType.getNedTypeInfo(), project);
                 if (submoduleType != null)
                     return submoduleType.getNedElement();
             }
         }
-        return submodule.getEffectiveTypeRef();
+        return submodule.getTypeOrLikeTypeRef();
     }
     
     protected void generateFullDiagrams() throws Exception {

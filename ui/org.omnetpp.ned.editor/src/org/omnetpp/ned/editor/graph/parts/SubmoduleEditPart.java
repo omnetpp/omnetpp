@@ -180,6 +180,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     @Override
     public INedTypeElement getNedTypeElementToOpen() {
-        return getModel().getEffectiveTypeRef();  // open the effective type if pressed F3
+        return getModel().getTypeOrLikeTypeRef();  // open the effective type if pressed F3
     }
 }

@@ -188,7 +188,7 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
     public DisplayString getDisplayString() {
         if (displayString == null)
             displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-        displayString.setFallbackDisplayString(NedElement.displayStringOf(getEffectiveTypeRef()));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getTypeOrLikeTypeRef()));
         return displayString;
     }
 
@@ -216,7 +216,7 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
 
     // type management
 
-    public String getEffectiveType() {
+    public String getTypeOrLikeType() {
         String likeType = getLikeType();
         if (StringUtils.isEmpty(likeType)) {
             String type = getType();
@@ -242,12 +242,12 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
     }
 
     public INedTypeInfo getNedTypeInfo() {
-        INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
+        INedTypeInfo typeInfo = resolveTypeName(getTypeOrLikeType(), getCompoundModule());
         INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
         return (typeElement instanceof IChannelKindTypeElement) ? typeInfo : null;
     }
 
-    public INedTypeElement getEffectiveTypeRef() {
+    public INedTypeElement getTypeOrLikeTypeRef() {
         INedTypeInfo info = getNedTypeInfo();
         return info == null ? null : info.getNedElement();
     }

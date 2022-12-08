@@ -1882,7 +1882,7 @@ public class PropertiesDialog extends TrayDialog {
             if (e instanceof INedTypeElement)
                 typeOrSuperTypeElement = ((INedTypeElement) e).getNedTypeInfo().getSuperType();
             else if (e instanceof ISubmoduleOrConnection)
-                typeOrSuperTypeElement = ((ISubmoduleOrConnection) e).getEffectiveTypeRef();
+                typeOrSuperTypeElement = ((ISubmoduleOrConnection) e).getTypeOrLikeTypeRef();
             return typeOrSuperTypeElement != null ? typeOrSuperTypeElement.getDisplayString() : new DisplayString("");
         }
     }

@@ -224,7 +224,7 @@ public class RefactoringTools {
                 CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)element;
 
                 for (SubmoduleElementEx submoduleElement : compoundModule.getSubmodules()) {
-                    if (submoduleElement.getEffectiveTypeRef() == typeElement) {
+                    if (submoduleElement.getTypeOrLikeTypeRef() == typeElement) {
                         inferLabelsOnConnections(compoundModule.getSrcConnectionsFor(submoduleElement.getName()), gate, forward, result);
                         inferLabelsOnConnections(compoundModule.getDestConnectionsFor(submoduleElement.getName()), gate, forward, result);
                     }

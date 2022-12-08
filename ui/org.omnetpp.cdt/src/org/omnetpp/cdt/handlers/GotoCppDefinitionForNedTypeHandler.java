@@ -100,7 +100,7 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                 }
 
                 if (nedElement instanceof ISubmoduleOrConnection)
-                    nedElement = ((ISubmoduleOrConnection)nedElement).getEffectiveTypeRef();
+                    nedElement = ((ISubmoduleOrConnection)nedElement).getTypeOrLikeTypeRef();
 
                 if (nedElement instanceof SimpleModuleElement || nedElement instanceof ChannelElement) {
                     INedTypeElement nedTypeElement = (INedTypeElement)nedElement;

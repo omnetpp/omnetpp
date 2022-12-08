@@ -89,7 +89,7 @@ public class SubmoduleElementEx extends SubmoduleElement
     public DisplayString getDisplayString() {
         if (displayString == null)
             displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-        displayString.setFallbackDisplayString(NedElement.displayStringOf(getEffectiveTypeRef()));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getTypeOrLikeTypeRef()));
         return displayString;
     }
 
@@ -136,7 +136,7 @@ public class SubmoduleElementEx extends SubmoduleElement
     }
 
     // type support
-    public String getEffectiveType() {
+    public String getTypeOrLikeType() {
         String likeType = getLikeType();
         return StringUtils.isEmpty(likeType) ? getType() : likeType;
     }
@@ -144,7 +144,7 @@ public class SubmoduleElementEx extends SubmoduleElement
     public INedTypeInfo getNedTypeInfo() {
         if (cachedTypeInfoSerial != getResolver().getLastChangeSerial()) {
             // determine and cache typeInfo
-            INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
+            INedTypeInfo typeInfo = resolveTypeName(getTypeOrLikeType(), getCompoundModule());
             INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
             cachedTypeInfo = (typeElement instanceof IModuleKindTypeElement) ? typeInfo : null;
             cachedTypeInfoSerial = getResolver().getLastChangeSerial();
@@ -152,7 +152,7 @@ public class SubmoduleElementEx extends SubmoduleElement
         return cachedTypeInfo;
     }
 
-    public INedTypeElement getEffectiveTypeRef() {
+    public INedTypeElement getTypeOrLikeTypeRef() {
         INedTypeInfo info = getNedTypeInfo();
         return info == null ? null : info.getNedElement();
     }
