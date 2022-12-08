@@ -120,7 +120,6 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
@@ -2002,29 +2001,16 @@ public class DocumentationGenerator {
                                 if (child instanceof SubmoduleEditPart) {
                                     SubmoduleEditPart submoduleEditPart = (SubmoduleEditPart)child;
                                     SubmoduleElementEx submoduleElement = submoduleEditPart.getModel();
-                                    
-                                    String tooltip = NedModelLabelProvider.getInstance().getText(submoduleElement);
-                                    
-                                    if (submoduleElement instanceof ISubmoduleOrConnection) {
-                                        INedTypeElement effectiveType = ((ISubmoduleOrConnection)submoduleElement).getTypeOrLikeTypeRef();
-                                        if (effectiveType != null) {
-                                        	String comment = StringUtils.trimToEmpty(NedCommentFormatter.makeBriefDocu(effectiveType.getComment(), 100));
-                                        	if (StringUtils.isNotBlank(comment))
-                                        		tooltip += "\n\n" + comment;
-                                        }
-                                    }
-
-                                    String nedCode = StringUtils.stripLeadingCommentLines(submoduleElement.getNedSource().trim(), "//");
-                                    tooltip += "\n\nSource:\n" + StringUtils.quoteForHtml(
-                                    		StringUtils.abbreviate(nedCode, 300).replaceAll("\"", "&quot;"));
-
-                                    outMapReference(resolveSubmoduleType(submoduleElement), submoduleEditPart.getFigure(), tooltip);
+                                    String tooltip = makeSubmoduleTooltip(submoduleElement);
+                                    INedTypeElement type = resolveSubmoduleType(submoduleElement);
+                                    if (type != null)
+                                        outMapReference(type, submoduleEditPart, tooltip);
                                 }
                             }
                         }
                         else if (editPart instanceof NedTypeEditPart) {
                             NedTypeEditPart nedTypeEditPart = (NedTypeEditPart)editPart;
-                            outMapReference(nedTypeEditPart.getModel(), nedTypeEditPart.getFigure(), "");
+                            outMapReference(nedTypeEditPart.getModel(), nedTypeEditPart, "");
                         }
 
                         out(renderer.endTypeImageMap());
@@ -2035,6 +2021,50 @@ public class DocumentationGenerator {
                 }
             );
         }
+    }
+
+    protected String makeSubmoduleTooltip(SubmoduleElementEx submodule) {
+        String declarationLine = NedModelLabelProvider.getInstance().getText(submodule);
+
+        String type1Docu = null;
+        String type2Docu = null;
+        if (!submodule.isParametricType()) {
+            INedTypeElement type = submodule.getTypeOrLikeTypeRef();
+            if (type != null)
+                type1Docu = getDocForTooltip(type);
+        }
+        else {
+            INedTypeElement guessedActualType = resolveSubmoduleType(submodule);
+            INedTypeElement likeType = submodule.getTypeOrLikeTypeRef();
+            if (guessedActualType != null)
+                type1Docu = getDocForTooltipWithPrefix(guessedActualType);
+            if (likeType != null && likeType != guessedActualType)
+                type2Docu = getDocForTooltipWithPrefix(likeType);
+        }
+
+        String nedCode = StringUtils.stripLeadingCommentLines(submodule.getNedSource().trim(), "//");
+        nedCode = "Source:\n" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 300).replaceAll("\"", "&quot;"));
+
+        return joinNonempty(new String[] {declarationLine, type1Docu, type2Docu, nedCode}, "\n\n");
+    }
+
+    private String getDocForTooltipWithPrefix(INedTypeElement type) {
+        String doc = getDocForTooltip(type);
+        return doc.isEmpty() ? null : type.getName() + ": " + doc;
+    }
+
+    private String getDocForTooltip(INedTypeElement type) {
+        return StringUtils.trimToEmpty(NedCommentFormatter.makeBriefDocu(type.getComment(), 100));
+    }
+
+    private static String joinNonempty(String[] items, String separator) {
+        StringBuilder sb = new StringBuilder();
+        for (String item : items)
+            if (item != null && !item.isEmpty())
+                sb.append(item).append(separator);
+        if (sb.length() > 0)
+            sb.setLength(sb.length() - separator.length());
+        return sb.toString();
     }
 
     private String tryToParseQuotedString(String s) {
@@ -2054,7 +2084,7 @@ public class DocumentationGenerator {
         // first, try to use expression between angle braces from the NED file
         if (StringUtils.isNotEmpty(likeExpr)) {
             String typeString = tryToParseQuotedString(likeExpr);
-            if (typeString != null) {
+            if (!StringUtils.isEmpty(typeString)) {
                 INedTypeElement interfaceType = submodule.getTypeOrLikeTypeRef();
                 INedTypeInfo submoduleType = nedResources.lookupLikeType(typeString, interfaceType.getNedTypeInfo(), project);
                 if (submoduleType != null)
@@ -2063,7 +2093,7 @@ public class DocumentationGenerator {
         }
         return submodule.getTypeOrLikeTypeRef();
     }
-    
+
     protected void generateFullDiagrams() throws Exception {
         try {
             monitor.beginTask("Generating full diagrams...", (generateFullUsageDiagrams ? 2 : 0) + (generateFullInheritanceDiagrams ? 2 : 0));
@@ -2493,7 +2523,16 @@ public class DocumentationGenerator {
         currentOutputStream.write(data);
     }
 
-    protected void outMapReference(INedTypeElement model, IFigure figure, String tooltip) throws IOException {
+    protected void outMapReference(INedTypeElement model, NedEditPart editPart, String tooltip) throws IOException {
+        outMapReference(model, computeBounds(editPart.getFigure()), tooltip);
+    }
+
+    protected void outMapReference(INedTypeElement model, Rectangle bounds, String tooltip) throws IOException {
+        Assert.isNotNull(model);
+        out(renderer.areaRef(tooltip, renderer.appendFilenameExtension(getOutputBaseFileName(model)), bounds));
+    }
+
+    protected Rectangle computeBounds(IFigure figure) {
         //FigureUtils.debugPrintFigureAncestors(figure, "");
         Rectangle bounds = new Rectangle(figure.getBounds());
         if (figure instanceof SubmoduleFigure) {
@@ -2505,8 +2544,7 @@ public class DocumentationGenerator {
                 Assert.isTrue(f != null);
             }
         }
-
-        out(renderer.areaRef(tooltip, renderer.appendFilenameExtension(getOutputBaseFileName(model)), bounds));
+        return bounds;
     }
 
     protected IPath getOutputFilePath(IFile file) {

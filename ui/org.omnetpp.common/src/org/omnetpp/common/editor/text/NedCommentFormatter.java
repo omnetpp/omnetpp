@@ -221,9 +221,8 @@ public class NedCommentFormatter {
         comment = comment.replaceAll("<(" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?>", "");
         comment = comment.replaceAll("</(" + ANY_RECOGNIZED_HTML_TAG + ")>", "");
 
-        comment = comment.replaceAll("(?s)\\s+", " ");  // make it one line, and normalize whitespace
-        if (comment.length() > maxlen)
-            comment = comment.substring(0, maxlen)+"...";  // abbreviate
+        comment = comment.replaceAll("(?s)\\s+", " ").trim();  // make it one line, and normalize whitespace
+        comment = StringUtils.abbreviateText(comment, maxlen);
         return comment.trim();
     }
 
