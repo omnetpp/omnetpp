@@ -87,7 +87,7 @@ public class RefactoringTools {
         NedElementUtilEx.visitNedTree(nedFileElement, new NedElementUtilEx.INedElementVisitor() {
             public void visit(INedElement element) {
                 if (element instanceof ISubmoduleOrConnection)
-                    collect(element.getEnclosingLookupContext(), NedElementUtilEx.getTypeOrLikeType((ISubmoduleOrConnection)element));
+                    collect(element.getEnclosingLookupContext(), ((ISubmoduleOrConnection)element).getTypeOrLikeType());
                 else if (element instanceof ExtendsElement)
                     collect(element.getEnclosingLookupContext(), ((ExtendsElement)element).getName());
                 else if (element instanceof InterfaceNameElement)

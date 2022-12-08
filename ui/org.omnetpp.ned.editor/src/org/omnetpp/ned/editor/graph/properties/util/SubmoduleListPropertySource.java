@@ -30,6 +30,7 @@ public class SubmoduleListPropertySource extends NedBasePropertySource {
         super(model);
     }
 
+    @Override
     public IPropertyDescriptor[] getPropertyDescriptors() {
         List<SubmoduleElementEx> submodules = ((CompoundModuleElementEx)getModel()).getSubmodules();
 
@@ -41,8 +42,7 @@ public class SubmoduleListPropertySource extends NedBasePropertySource {
                 inheritedSubmoduleCount++;
                 definedIn= " (inherited from "+smodule.getCompoundModule().getName()+")";
             }
-            String typeString = "".equals(smodule.getLikeType()) || smodule.getLikeType() == null ?
-                            smodule.getType() : "<"+smodule.getLikeExpr()+"> like "+smodule.getLikeType();
+            String typeString = smodule.isParametricType() ? "<"+smodule.getLikeExpr()+"> like "+smodule.getLikeType() : smodule.getType();
             pdesc[totalSubmoduleCount] = new PropertyDescriptor(smodule, typeString);
             pdesc[totalSubmoduleCount].setCategory(CATEGORY);
             pdesc[totalSubmoduleCount].setDescription("Submodule "+smodule.getNameWithIndex()+" with type "+typeString

@@ -25,7 +25,7 @@ import org.omnetpp.ned.model.pojo.ImportElement;
  * @author rhornig, andras
  */
 public class CreateSubmoduleCommand extends Command {
-    private String fullyQualifiedTypeName;
+    private String typeName;
     private SubmoduleElementEx child;
     private RectangleF rect;
     private CompoundModuleElementEx parent;
@@ -37,13 +37,13 @@ public class CreateSubmoduleCommand extends Command {
         Assert.isNotNull(child);
         this.child = child;
         this.parent = parent;
-        this.fullyQualifiedTypeName = NedElementUtilEx.getTypeOrLikeType(child);  // redo() destructively modifies child's type
+        this.typeName = child.getTypeOrLikeType();  // redo() destructively modifies child's type
     }
 
     @Override
     public boolean canExecute() {
         // check that the type exists
-        return NedElement.getDefaultNedTypeResolver().lookupNedType(fullyQualifiedTypeName, parent) != null;
+        return NedElement.getDefaultNedTypeResolver().lookupNedType(typeName, parent) != null;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class CreateSubmoduleCommand extends Command {
     @Override
     public void undo() {
         parent.removeSubmodule(child);
-        NedElementUtilEx.setTypeOrLikeType(child, fullyQualifiedTypeName); // restore original value (redo() will need it)
+        NedElementUtilEx.setTypeOrLikeType(child, typeName); // restore original value (redo() will need it)
         if (importElement != null)
             importElement.removeFromParent();
     }

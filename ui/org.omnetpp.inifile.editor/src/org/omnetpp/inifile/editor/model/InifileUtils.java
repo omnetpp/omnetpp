@@ -275,17 +275,6 @@ public class InifileUtils {
     }
 
     /**
-     * Returns the submodule type name. If it uses "like", returns the "like" name.
-     */
-    public static String getSubmoduleType(SubmoduleElement submodule) {
-        //XXX should try to evaluate "like" expression and use result as type (if possible)
-        String submoduleType = submodule.getType();
-        if (StringUtils.isEmpty(submoduleType))
-            submoduleType = submodule.getLikeType();
-        return submoduleType;
-    }
-
-    /**
      * Whether the section chain contains the given section. Useful for detecting
      * cycles in the "extends" hierarchy.
      */
