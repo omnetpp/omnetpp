@@ -2,8 +2,8 @@
   description = "OMNeT++ Discrete Event Simulator";
 
   inputs = {
-    # nixpkgs.url = "nixpkgs/nixos-22.05";
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "nixpkgs/nixos-22.11";
+    #nixpkgs.url = "nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -24,7 +24,7 @@
       # set different defaults for creating packages.
       oppPkgs =  pkgs // {
           stdenv = pkgs.llvmPackages_14.stdenv;  # use clang14 instead of the standard g++ compiler
-          lld = pkgs.lld_14;
+          lld = pkgs.llvmPackages_14.lld;
           python3 = pkgs.python310;
           inherit (pkgs.qt515) qtbase qtsvg;
           texlive = pkgs.texlive.combined.scheme-full;
@@ -82,27 +82,24 @@
       };
 
       devShells = rec {
-        ${pname} = oppPkgs.stdenv.mkDerivation {
-          name = "${pname}";
-          # This shell is intended to be used by users writing models.
-          # It includes also the omnetpp package as a dependency.
-          buildInputs = [ 
+        default = oppPkgs.stdenv.mkDerivation {
+          name = "${pname}-${sversion}";
+          packages = [             
             self.packages.${system}."${pname}-runtime" 
             self.packages.${system}."${pname}-qtenv" 
-            self.packages.${system}."${pname}-samples-git" 
+            #self.packages.${system}."${pname}-samples-git" 
             self.packages.${system}."${pname}-doc"
             self.packages.${system}."${pname}-ide"
           ];
-        };
 
-        "${pname}-dev" = oppPkgs.stdenv.mkDerivation {
-          name = "${pname}-dev";
-          # use the same toolchain as omnetpp, but nothing else is included in this shell
-          buildInputs = self.packages.${system}.default.buildInputs;
-          propagatedNativeBuildInputs = self.packages.${system}.default.propagatedNativeBuildInputs;
-        };
+          propagatedNativeBuildInputs = self.packages.${system}."${pname}-runtime".propagatedNativeBuildInputs;
 
-        default = devShells.${pname};
+          shellHook = ''
+            echo "OMNeT++ development shell"
+            source ${self.packages.${system}."${pname}-runtime"}/setenv 1>/dev/null
+            source ${self.packages.${system}."${pname}-qtenv"}/nix-support/setup-hook
+          '';          
+        };
       };
 
       apps = rec {

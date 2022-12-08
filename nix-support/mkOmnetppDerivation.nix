@@ -1,6 +1,6 @@
 { 
   pname, version, src ? ./.,                 # direct parameters
-  stdenv, lib, bintools, writeText,
+  stdenv, lib, bintools, ccache, writeText,
   perl, flex, bison, lld, python3,           # dependencies
   MODE ? "release",                          # build parameters
 }:
@@ -14,7 +14,7 @@ let
 
     # tools required for build only (needed in derivations)
     propagatedNativeBuildInputs = [
-      stdenv perl bison flex bintools lld
+      stdenv perl bison flex bintools lld ccache
       (python3.withPackages(ps: with ps; [ numpy pandas matplotlib scipy seaborn ]))
     ];
 
@@ -35,7 +35,7 @@ let
 
     configureFlags = [ "WITH_QTENV=no" "WITH_OSG=no" "WITH_OSGEARTH=no" ];
 
-    buildFlags = [ "MODE=release" "OMNETPP_IMAGE_PATH=$(out)/images" ];
+    buildFlags = [ "MODE=${MODE}" "OMNETPP_IMAGE_PATH=$(out)/images" ];
 
     installPhase = ''
       runHook preInstall
@@ -51,10 +51,19 @@ let
       runHook postInstall
     '';
 
+    shellHook = ''
+      echo OmnetppDerivation shellHook
+      export XXX_SHELLHOOK=OmnetppDerivation
+    '';
+
     setupHook = writeText "setup-hook" ''
-      set +u # temporarily turn off unbouned variable check
-      source @out@/setenv
-      set -u
+      _omnetppSetenv () {
+        set +u
+        source @out@/setenv
+        set -u
+      }
+
+      addEnvHooks "$targetOffset" _omnetppSetenv
     '';
 
     meta = with lib; {

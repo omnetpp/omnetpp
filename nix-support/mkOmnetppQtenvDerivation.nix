@@ -15,20 +15,25 @@ let
     strictDeps = true;
     dontWrapQtApps = true;
 
-    buildInputs = [ qtbase ];
+    buildInputs = [ qtbase omnetpp ];
 
-    nativeBuildInputs = [ autoPatchelfHook perl python3 bison flex lld bintools qtbase];
+    propagatedNativeBuildInputs = [ autoPatchelfHook perl python3 bison flex lld bintools qtbase omnetpp ];
 
     patches = [ ./flake-support-on-6.0.1.patch ];
 
     postPatch = ''
       # variables used as a replacement in the setup-hook
       export ldLibraryPathVar=${if stdenv.isDarwin then "DYLD_FALLBACK_LIBRARY_PATH" else "LD_LIBRARY_PATH"}
-      export ldLibraryPath="$out/lib"
+      export ldLibraryPath="$out/lib" 
       export qtPluginPath="${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
     '';
 
-    setupHook =  writeText "setup-hook" ''
+    shellHook = ''
+      echo "shellhook-qtenv run 2"
+      export XXX_SHELLHOOK_2=yes
+    '';
+
+    setupHook =  writeText "../setenv" ''
       export @ldLibraryPathVar@='@ldLibraryPath@':''${@ldLibraryPathVar@:-}
       export QT_PLUGIN_PATH='@qtPluginPath@':''${QT_PLUGIN_PATH:-}
 
@@ -58,16 +63,16 @@ let
       runHook postBuild
     '';
 
+    preFixup = 
+      lib.optionalString stdenv.isLinux ''
+        addAutoPatchelfSearchPath "${omnetpp.out}/lib"
+    '';
+
     installPhase = ''
       runHook preInstall
       mkdir -p $out
       mv Version lib $out
       runHook postInstall
-    '';
-
-    preFixup = 
-      lib.optionalString stdenv.isLinux ''
-        addAutoPatchelfSearchPath "${omnetpp.out}/lib"
     '';
 
     meta = with lib; {
