@@ -81,7 +81,6 @@ import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
-import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
@@ -120,6 +119,7 @@ import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
 import org.omnetpp.ned.model.pojo.FieldElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
@@ -208,7 +208,7 @@ public class DocumentationGenerator {
     protected IPath extensionFilePath;
     protected IPath customCssPath;
     protected IProject project;
-    protected INedResources nedResources;
+    protected INedTypeResolver nedResources;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
 
@@ -243,7 +243,7 @@ public class DocumentationGenerator {
     public DocumentationGenerator(IProject project) {
         this.project = project;
 
-        nedResources = NedResourcesPlugin.getNedResources();
+        nedResources = NedResourcesPlugin.getNedResources().getImmutableCopy();
         msgResources = NedResourcesPlugin.getMsgResources();
 
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
