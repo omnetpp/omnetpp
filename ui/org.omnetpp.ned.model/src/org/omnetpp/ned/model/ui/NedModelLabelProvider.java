@@ -109,11 +109,7 @@ public class NedModelLabelProvider extends LabelProvider {
         else if (model instanceof SubmoduleElementEx) {
             SubmoduleElementEx node = (SubmoduleElementEx)model;
             label = parentPrefixFor(node) + node.getName() + bracketizeIfNotEmpty(node.getVectorSize()) + " : ";
-            String likeType = node.getLikeType();
-            if (likeType == null || "".equals(likeType))
-                 label += node.getType();
-            else
-                label += "like "+node.getLikeType();
+            label += node.isParametricType() ? "like " + node.getLikeType() : node.getType();
         }
         else if (model instanceof ModuleInterfaceElement) {
             ModuleInterfaceElement node = (ModuleInterfaceElement)model;

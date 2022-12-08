@@ -22,7 +22,7 @@ import org.omnetpp.ned.model.pojo.ImportElement;
  */
 public class CreateConnectionCommand extends Command {
     private ImportElement importElement;
-    private String fullyQualifiedTypeName; // needed because redo() destructively modifies the child's type
+    private String qualifiedTypeName; // needed because redo() destructively modifies the child's type
     // the containing compound module
     protected CompoundModuleElementEx parentModule;
     // a template element used to store the requested connection
@@ -34,7 +34,7 @@ public class CreateConnectionCommand extends Command {
         setLabel("Create Connection");
         connection = conn;
         parentModule = compoundModuleElement;
-        fullyQualifiedTypeName = NedElementUtilEx.getTypeOrLikeType(conn);
+        qualifiedTypeName = conn.getTypeOrLikeType();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class CreateConnectionCommand extends Command {
     @Override
     public void undo() {
         connection.removeFromParent();
-        NedElementUtilEx.setTypeOrLikeType(connection, fullyQualifiedTypeName); // restore original value (redo() will need it)
+        NedElementUtilEx.setTypeOrLikeType(connection, qualifiedTypeName); // restore original value (redo() will need it)
         if (importElement != null)
             importElement.removeFromParent();
     }

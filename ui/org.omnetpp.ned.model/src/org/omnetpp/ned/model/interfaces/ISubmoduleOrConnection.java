@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.model.interfaces;
 
+import org.apache.commons.lang3.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
@@ -79,6 +80,13 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
      * <code>default(...)</code> in the NED source.
      */
     public void setIsDefault(boolean isDefault);
+
+    /**
+     * Returns true if the submodule or connection is of a parametric type, i.e. likeType is not empty.
+     */
+    default public boolean isParametricType() {
+        return !StringUtils.isEmpty(getLikeType());
+    }
 
     /**
      * Returns the type or the likeType (i.e. the interface name), whichever is specified.

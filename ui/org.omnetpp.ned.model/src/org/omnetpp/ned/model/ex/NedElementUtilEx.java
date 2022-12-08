@@ -493,7 +493,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * of the last import) will not appear between the import lines.
      */
     public static ImportElement addImportFor(ISubmoduleOrConnection submoduleOrConnection) {
-        String typeOrLikeType = getTypeOrLikeType(submoduleOrConnection);
+        String typeOrLikeType = submoduleOrConnection.getTypeOrLikeType();
         if (StringUtils.isEmpty(typeOrLikeType))
                 return null;
 
@@ -514,20 +514,10 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * Sets whichever of "type" and "like-type" is already set on the element
      */
     public static void setTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection, String value) {
-        if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
+        if (submoduleOrConnection.isParametricType())
             submoduleOrConnection.setLikeType(value);
         else
             submoduleOrConnection.setType(value);
-    }
-
-    /**
-     * Returns whichever of "type" and "like-type" is already set on the element
-     */
-    public static String getTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection) {
-        if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
-            return submoduleOrConnection.getLikeType();
-        else
-            return submoduleOrConnection.getType();
     }
 
     /**

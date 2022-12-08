@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IProject;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -117,7 +116,7 @@ public class NedTreeTraversal {
      */
     protected INedTypeInfo resolveEffectiveType(ISubmoduleOrConnection element, INedTypeLookupContext compoundModule) {
         INedTypeInfo result;
-        if (StringUtils.isEmpty(element.getLikeType())) {
+        if (!element.isParametricType()) {
             result = element.getNedTypeInfo();  // note: this resolves connections with getType()==null as well (to ned.IdealChannel)
             if (result == null)
                 visitor.unresolvedType(element, element.getType());
