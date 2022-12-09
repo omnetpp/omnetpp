@@ -208,7 +208,7 @@ public class DocumentationGenerator {
     protected IPath extensionFilePath;
     protected IPath customCssPath;
     protected IProject project;
-    protected INedTypeResolver nedResources;
+    protected INedTypeResolver nedResolver;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
 
@@ -243,7 +243,7 @@ public class DocumentationGenerator {
     public DocumentationGenerator(IProject project) {
         this.project = project;
 
-        nedResources = NedResourcesPlugin.getNedResources().getImmutableCopy();
+        nedResolver = NedResourcesPlugin.getNedResources().getImmutableCopy();
         msgResources = NedResourcesPlugin.getMsgResources();
 
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
@@ -478,7 +478,7 @@ public class DocumentationGenerator {
     protected void collectFiles() throws CoreException {
         monitor.subTask("Collecting NED and MSG files");
         files = new ArrayList<IFile>();
-        files.addAll(nedResources.getNedFiles(project));
+        files.addAll(nedResolver.getNedFiles(project));
         files.addAll(msgResources.getMsgFiles(project));
         files = files.stream().filter(f -> {
             String path = f.getFullPath().removeLastSegments(1).addTrailingSeparator().toString();
@@ -491,11 +491,11 @@ public class DocumentationGenerator {
 
     protected void collectTypes() throws CoreException, IOException {
         monitor.subTask("Collecting types");
-        for (INedTypeInfo nedTypeInfo : nedResources.getBuiltInDeclarations())
+        for (INedTypeInfo nedTypeInfo : nedResolver.getBuiltInDeclarations())
             typeElements.add(nedTypeInfo.getNedElement());
         for (IFile file : files) {
-            if (nedResources.isNedFile(file))
-                typeElements.addAll(nedResources.getNedFileElement(file).getTopLevelTypeNodes());
+            if (nedResolver.isNedFile(file))
+                typeElements.addAll(nedResolver.getNedFileElement(file).getTopLevelTypeNodes());
             else if (msgResources.isMsgFile(file))
                 typeElements.addAll(msgResources.getMsgFileElement(file).getTopLevelTypeNodes());
         }
@@ -1159,8 +1159,8 @@ public class DocumentationGenerator {
         for (IFile file : files) {
             String comment = null;
 
-            if (nedResources.isNedFile(file))
-                comment = getExpandedComment(nedResources.getNedFileElement(file));
+            if (nedResolver.isNedFile(file))
+                comment = getExpandedComment(nedResolver.getNedFileElement(file));
             else if (msgResources.isMsgFile(file))
                 comment = getExpandedComment(msgResources.getMsgFileElement(file));
 
@@ -1390,14 +1390,14 @@ public class DocumentationGenerator {
             for (final IFile file : files) {
                 generatePage(getOutputBaseNameForFile(file), file.getName(), () -> {
                         monitor.subTask(file.getFullPath().toString());
-                        String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
+                        String fileType = nedResolver.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
                         String fragmentKey = file.getProjectRelativePath().toString();
 
                         out(renderer.sectionHeading(fileType + " File " + file.getProjectRelativePath(), "comptitle"));
                         generateExtensionFragment(ExtType.FILE, fragmentKey, "top");
 
                         INedFileElement fileElement = msgResources.isMsgFile(file) ?
-                                msgResources.getMsgFileElement(file) : nedResources.getNedFileElement(file);
+                                msgResources.getMsgFileElement(file) : nedResolver.getNedFileElement(file);
                         List<? extends ITypeElement> typeElements = fileElement.getTopLevelTypeNodes();
 
                         if (!typeElements.isEmpty()) {
@@ -1531,7 +1531,7 @@ public class DocumentationGenerator {
                 if (generateSourceListings) {
                     generateSourceContent(typeElement);
 
-                    if (typeElement instanceof INedTypeElement && nedResources.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))
+                    if (typeElement instanceof INedTypeElement && nedResolver.isBuiltInDeclaration(((INedTypeElement)typeElement).getNedTypeInfo()))
                         generateBuiltinTypeReference();
                     else
                         generateFileReference(getNedOrMsgFile(typeElement));
@@ -1925,7 +1925,7 @@ public class DocumentationGenerator {
 
     protected void generateNedTypeFigures() throws InterruptedException, CoreException {
         if (generateNedTypeFigures) {
-            ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResources.getNedFiles(project));
+            ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResolver.getNedFiles(project));
 
             final ExportDiagramFilesOperation exportOperation =
                 new ExportDiagramFilesOperation(nedFiles,
@@ -1959,7 +1959,7 @@ public class DocumentationGenerator {
                         System.out.append('.').flush();
                     monitor.subTask(file.getFullPath().toString());
 
-                    List<INedTypeElement> typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
+                    List<INedTypeElement> typeElements = nedResolver.getNedFileElement(file).getTopLevelTypeNodes();
 
                     for (INedTypeElement typeElement : typeElements) {
                         String fileName = file.getName().replaceAll(".ned", "");
@@ -1984,7 +1984,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
-        if (generateNedTypeFigures && !nedResources.isBuiltInDeclaration(typeElement.getNedTypeInfo())) {
+        if (generateNedTypeFigures && !nedResolver.isBuiltInDeclaration(typeElement.getNedTypeInfo())) {
             out(renderer.typeImageTag(getOutputFileName(typeElement, "type", ".svg")));
             DisplayUtils.runNowOrSyncInUIThread(() -> {
                     try {
@@ -2086,7 +2086,7 @@ public class DocumentationGenerator {
             String typeString = tryToParseQuotedString(likeExpr);
             if (!StringUtils.isEmpty(typeString)) {
                 INedTypeElement interfaceType = submodule.getTypeOrLikeTypeRef();
-                INedTypeInfo submoduleType = nedResources.lookupLikeType(typeString, interfaceType.getNedTypeInfo(), project);
+                INedTypeInfo submoduleType = nedResolver.lookupLikeType(typeString, interfaceType.getNedTypeInfo(), project);
                 if (submoduleType != null)
                     return submoduleType.getNedElement();
             }
@@ -2298,7 +2298,7 @@ public class DocumentationGenerator {
     }
 
     protected void generateSourceContent(IFile file) throws IOException, CoreException {
-        generateSourceContent(FileUtils.readTextFile(file.getContents(), file.getCharset()), nedResources.isNedFile(file));
+        generateSourceContent(FileUtils.readTextFile(file.getContents(), file.getCharset()), nedResolver.isNedFile(file));
     }
 
     protected void generateSourceContent(ITypeElement typeElement) throws IOException {
@@ -2599,7 +2599,7 @@ public class DocumentationGenerator {
         NedFileElementEx nedFileElement = element.getContainingNedFileElement();
 
         if (nedFileElement != null)
-            return nedResources.getNedFile(nedFileElement);
+            return nedResolver.getNedFile(nedFileElement);
 
         MsgFileElementEx msgFileElement = element.getContainingMsgFileElement();
 
