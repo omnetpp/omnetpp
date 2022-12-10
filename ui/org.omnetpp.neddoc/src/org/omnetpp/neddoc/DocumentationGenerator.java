@@ -62,6 +62,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
@@ -2089,6 +2090,8 @@ public class DocumentationGenerator {
                 INedTypeInfo submoduleType = nedResolver.lookupLikeType(typeString, interfaceType.getNedTypeInfo(), project);
                 if (submoduleType != null)
                     return submoduleType.getNedElement();
+                else
+                    Debug.println("WARNING: DocumentationGenerator cannot resolve type '" + typeString + "' like " + interfaceType.getName() + " at " + submodule.getSourceLocation());
             }
         }
         return submodule.getTypeOrLikeTypeRef();
