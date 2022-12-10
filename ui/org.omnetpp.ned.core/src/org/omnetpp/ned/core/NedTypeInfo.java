@@ -274,6 +274,8 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
                     INedTypeInfo extendsTypeInfo = getResolver().lookupNedType(extendsName, parentContext);
                     if (extendsTypeInfo != null)
                         localInterfaces.add(extendsTypeInfo.getNedElement());
+                    else
+                        Debug.println("WARNING: NedTypeInfo: Cannot resolve base type " + extendsName + " for " + getName() + " at " + child.getSourceLocation());
                 }
             }
         }
@@ -285,6 +287,8 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
                     INedTypeInfo interfaceTypeInfo = getResolver().lookupNedType(interfaceName, parentContext);
                     if (interfaceTypeInfo != null)
                         localInterfaces.add(interfaceTypeInfo.getNedElement());
+                    else
+                        Debug.println("WARNING: NedTypeInfo: Cannot resolve interface name " + interfaceName + " for " + getName() + " at " + child.getSourceLocation());
                 }
             }
         }
