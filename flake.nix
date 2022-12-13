@@ -23,10 +23,9 @@
     in rec {
       # set different defaults for creating packages.
       oppPkgs =  pkgs // {
-          stdenv = pkgs.llvmPackages_14.stdenv;  # use clang14 instead of the standard g++ compiler
-          lld = pkgs.llvmPackages_14.lld;
-          python3 = pkgs.python310;
+          inherit (pkgs.llvmPackages_14) stdenv bintools;  # use clang14 instead of the standard g++ compiler
           inherit (pkgs.qt515) qtbase qtsvg;
+          python3 = pkgs.python310;
           texlive = pkgs.texlive.combined.scheme-full;
           callPackage = pkgs.newScope oppPkgs;
       };
@@ -83,11 +82,25 @@
 
       devShells = rec {
         default = oppPkgs.stdenv.mkDerivation {
-          name = "${pname}-${sversion}";
-          packages = [             
-            self.packages.${system}."${pname}-runtime" 
-            self.packages.${system}."${pname}-qtenv" 
-            #self.packages.${system}."${pname}-samples-git" 
+          name = "${pname}-${sversion} dependencies";
+          buildInputs =
+              self.packages.${system}."${pname}-runtime".buildInputs ++
+              self.packages.${system}."${pname}-qtenv".buildInputs;
+          propagatedNativeBuildInputs =
+              self.packages.${system}."${pname}-runtime".propagatedNativeBuildInputs ++
+              self.packages.${system}."${pname}-qtenv".propagatedNativeBuildInputs;
+
+          shellHook = ''
+            source setenv
+          '';
+        };
+
+        installed = oppPkgs.stdenv.mkDerivation {
+          name = "${pname}-${sversion} installed";
+          packages = [
+            self.packages.${system}."${pname}-runtime"
+            self.packages.${system}."${pname}-qtenv"
+            self.packages.${system}."${pname}-samples-git"
             self.packages.${system}."${pname}-doc"
             self.packages.${system}."${pname}-ide"
           ];
@@ -95,10 +108,9 @@
           propagatedNativeBuildInputs = self.packages.${system}."${pname}-runtime".propagatedNativeBuildInputs;
 
           shellHook = ''
-            echo "OMNeT++ development shell"
             source ${self.packages.${system}."${pname}-runtime"}/setenv 1>/dev/null
             source ${self.packages.${system}."${pname}-qtenv"}/nix-support/setup-hook
-          '';          
+          '';
         };
       };
 

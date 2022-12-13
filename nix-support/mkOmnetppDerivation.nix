@@ -1,7 +1,8 @@
-{ 
+{
   pname, version, src ? ./.,                 # direct parameters
-  stdenv, lib, bintools, ccache, writeText,
-  perl, flex, bison, lld, python3,           # dependencies
+  lib, stdenv, bintools, which,
+  perl, flex, bison, python3,                # dependencies
+  ccache, writeText,
   MODE ? "release",                          # build parameters
 }:
 
@@ -14,7 +15,7 @@ let
 
     # tools required for build only (needed in derivations)
     propagatedNativeBuildInputs = [
-      stdenv perl bison flex bintools lld ccache
+      stdenv perl bison flex bintools which ccache
       (python3.withPackages(ps: with ps; [ numpy pandas matplotlib scipy seaborn ]))
     ];
 
@@ -39,7 +40,7 @@ let
 
     installPhase = ''
       runHook preInstall
-      
+
       mkdir -p $out
 
       # remove commands that are in different packages
