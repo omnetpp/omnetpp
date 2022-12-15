@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import subprocess
+import filecmp
+
+# Command lines to test
+commands = [
+    "makemake",
+    "makemake -o mymodel -f",
+    "makemake --deep",
+    "makemake --deep -I include/dir1 -I include/dir2",
+    "makemake --deep -X subdir1/subsubdir1 -X subdir2",
+    "makemake -a -e cc -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
+    "makemake -O out/dir -M DEBUG -DFOO=foo",
+    "makemake -P .. -r -d subdir1 -d subdir2",
+    "makemake -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2",
+    "makemake -s -u Cmdenv",
+    "makemake -S -p TEST_API",
+    "makemake -I include/dir1 -I include/dir2 -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
+    "makemake -o mymodel -e cpp -K name=value",
+    "makemake -r -X subdir1 -X subdir2",
+    "makemake -r -X subdir1/subsubdir1",
+    "makemake object1.o object2.o lib1.a lib2.a",
+]
+
+makemake = "../../bin/opp_makemake"
+
+if "/" in makemake:
+    makemake = os.path.abspath(makemake)
+
+# Source directory to test on
+playground_dir = "playground"
+
+# Create the playground directory if it does not exist
+if not os.path.exists(playground_dir):
+    print(f"Error: Playground directory {playground_dir} does not exist")
+    sys.exit(1)
+
+num_tested = 0
+num_pass = 0
+
+# Iterate over the command lines
+for i, command in enumerate(commands):
+    num_tested += 1
+
+    # Execute the command in the playground directory and check for nonzero exit code
+    try:
+        actual_command = command.replace("makemake", makemake)
+        print(f"RUNNING TEST CASE {i}: {actual_command}")
+        subprocess.run(actual_command, shell=True, check=True, cwd=playground_dir)
+    except subprocess.CalledProcessError:
+        print(f"Test case {i} failed (nonzero exit code)")
+        continue
+
+    # Create the path to the actual output file
+    actual_path = f"actual/output{i}.txt"
+
+    # Create the path to the expected output file
+    expected_path = f"expected/output{i}.txt"
+
+    # Copy the resulting Makefile to the actual/ directory
+    os.rename(f"{playground_dir}/Makefile", actual_path)
+
+    # Compare the actual output to the expected output
+    try:
+        if filecmp.cmp(actual_path, expected_path):
+            num_pass += 1
+        else:
+            print(f"Test case {i} failed (output mismatch)")
+    except FileNotFoundError:
+        print(f"Test case {i} failed (expected output file not found)")
+    print()
+
+num_fail = num_tested-num_pass
+
+print(f"Total: {num_tested}, PASS: {num_pass}, FAIL: {num_fail} ==> {'PASS' if num_fail == 0 else 'FAIL'}")
+
+sys.exit(0 if num_fail == 0 else 1)
