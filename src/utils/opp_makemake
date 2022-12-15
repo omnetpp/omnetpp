@@ -7,121 +7,53 @@
 # Author: Andras Varga
 #
 
-use Cwd;
-use Config;
+import os
+import re
+import argparse
+from typing import List, Dict, Any
+from builtins import isinstance
+from configparser import ConfigParser
+from pathlib import Path
 
-$ARG0 = $0;
-$progname = $ARG0;
+progname = sys.argv[0]
+isWindows = bool(os.environ.get('OS')) and 'windows' in os.environ['OS'].lower()
+isMINGW = bool(os.environ.get('MSYSTEM')) and 'mingw' in os.environ['MSYSTEM'].lower()
 
-#$arch = $Config{'archname'};
-#$isCygwin = ($arch =~ /cygwin/i);
-$isWindows = defined $ENV{OS} && $ENV{OS} =~ /windows/i;
-$isMINGW = defined $ENV{MSYSTEM} && $ENV{MSYSTEM} =~ /mingw/i;
+def makemake():
+    # code for makemake function goes here
 
-sub makemake();
+parser = argparse.ArgumentParser(
+    prog='makemake',
+    description="Create a Makefile for an OMNeT++/OMNEST model, based on source files in current directory"
+)
 
-makemake();
-exit 0;
+parser.add_argument('object_files_or_libraries', nargs='*', help="Object files or libraries")
+parser.add_argument('-h', '--help', action='help', help="Show this help message and exit")
+parser.add_argument('-f', '--force', action='store_true', help="Force overwriting existing Makefile")
+parser.add_argument('-e', '--ext', help="C++ source file extension, usually 'cc' or 'cpp'")
+parser.add_argument('-o', '--output', help="Name of simulation executable or library to be built")
+parser.add_argument('-O', '--out', help="Specifies the name of the output directory tree for out-of-directory build")
+parser.add_argument('--deep', action='store_true', help="Generates a 'deep' Makefile")
+parser.add_argument('-r', '--recurse', action='store_true', help="Causes make to recursively descend into all subdirectories")
+parser.add_argument('-X', '--except', dest="except", action="append", help="With -r and --deep option: ignore the given directory")
+parser.add_argument('-d', '--subdir', dest="subdirs", action="append", help="Causes make to recursively descend into the given directory")
+parser.add_argument('-P', '--projectdir', help="Specifies the project root directory")
+parser.add_argument('-M', '--mode', help="Selects the build mode, 'debug' or 'release'")
+parser.add_argument("-Kname=value", "--makefile-define", help="Defines a makefile variable, i.e. causes name=value line to get inserted into the makefile.")
+parser.add_argument("-n", "--nolink", action="store_true", help="Produce object files but do not create executable or library. Useful for models with parts in several directories. With this option, -u and -l have no effect.")
+parser.add_argument("-s", "--make-so", action="store_true", help="Build shared library (.so or .dll). Useful if you want to load the model dynamically (via the load-libs= omnetpp.ini or the -l Cmdenv/Qtenv command-line option).")
+parser.add_argument("-a", "--make-lib", action="store_true", help="Create static library (.a or .lib).")
+parser.add_argument("-S", "--fordll", action="store_true", help="Compile C++ files for use in DLLs; see -p option. The -s (build shared library) option implies this one.")
+parser.add_argument("-w", "--withobjects", action="store_true", help="Link with all object files found in -I directories, or add them to the created library. OBSOLETE.")
+parser.add_argument("-u", "--userinterface", help="Selects the user interface libraries to link with. Possible values are 'all', 'Cmdenv', 'Qtenv'. Defaults to 'all'.")
+parser.add_argument("-I", dest="include_dirs", action="append", help="Additional NED and C++ include directory")
+parser.add_argument("-L", dest="library_dirs", action="append", help="Add a directory to the library path")
+parser.add_argument("-l", dest="libraries", action="append", help="Additional library to link against")
+parser.add_argument("-p", "--symbol", help="DLL export/import symbol")
+parser.add_argument("-i", "--includefragment", help="Append file to near end of Makefile")
 
-
-sub usage()
-{
-    print <<END
-$progname: create a Makefile for an OMNeT++/OMNEST model, based on
-source files in current directory
-
-$progname [options] [object files or libraries]
-    -h, --help            This help text
-    -f, --force           Force overwriting existing Makefile
-    -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
-                          By default, this is determined by looking at
-                          existing files in the directory.
-    -o filename           Name of simulation executable or library to be built.
-                          Defaults to the project name.
-    -O directory, --out directory
-                          Specifies the name of the output directory tree
-                          for out-of-directory build; defaults to "out".
-                          The actual output directory will be
-                          <projectroot>/<dir>/\$(CONFIGNAME)/<subpath>,
-                          where <subpath> is the project-relative path of
-                          the current directory (for <projectroot> see -P).
-                          An absolute directory path can also be specified,
-                          resulting in <absolute-dir>/\$(CONFIGNAME)/<subpath>.
-    --deep                Generates a "deep" Makefile. A deep Makefile will
-                          cover the whole source tree under the make directory,
-                          not just files in that directory. Directories may be
-                          excluded using -X. The include path will contain all
-                          directories in the source tree. Deep is not
-                          compatible with -r (recursive make), but -d
-                          (directory to recurse into) can still be used.
-    -r, --recurse         Causes make to recursively descend into all subdir-
-                          ectories; subdirectories are expected to contain
-                          makefiles themselves. If you need to maintain a
-                          specific order, declare dependencies in the
-                          makefrag(.vc) file. Subdirectories may be excluded
-                          using -X. See also -d.
-    -X directory, -Xdirectory, --except directory
-                          With -r and --deep option: ignore the given directory.
-                          If the argument is a relative path, it is interpreted
-                          as relative to the current directory. Wildcards
-                          (like -X *_backups or -X */tmp) are accepted.
-    -dsubdir, -d subdir, --subdir subdir
-                          Causes make to recursively descend into the given
-                          directory. The directory does not need to be the
-                          child of the make directory. When used with --deep,
-                          -d also implies -X for that directory.
-    -P directory, --projectdir directory
-                          Specifies the project root directory. Any absolute
-                          path (-I, -L, object file names, etc.) that points
-                          into the project's subtree will be converted to
-                          relative, to ease compiling the project in a
-                          different directory. Defaults to first ancestor
-                          directory that contains a ".project" file.
-    -M mode, --mode mode  Selects the build mode, "debug" or "release".
-                          Defaults to "debug". This setting can still be
-                          overridden on the make command line, by specifying
-                          "MODE=debug" or "MODE=release" as an extra argument.
-    -Dname[=value], -D name[=value], --define name[=value]
-                          Preprocessor symbol to be passed to the C++ compiler.
-    -Kname=value, -K name=value, --makefile-define name=value
-                          Defines a makefile variable, i.e. causes name=value
-                          line to get inserted into the makefile.
-    -n, --nolink          Produce object files but do not create executable or
-                          library. Useful for models with parts in several
-                          directories. With this option, -u and -l have
-                          no effect.
-    -s, --make-so         Build shared library (.so or .dll). Useful if you want
-                          to load the model dynamically (via the load-libs=
-                          omnetpp.ini or the -l Cmdenv/Qtenv command-line option).
-    -a, --make-lib        Create static library (.a or .lib).
-    -S, --fordll          Compile C++ files for use in DLLs; see -p option.
-                          The -s (build shared library) option implies this one.
-    -w, --withobjects     Link with all object files found in -I directories,
-                          or add them to the created library. OBSOLETE.
-    -u name, --userinterface name
-                          Selects the user interface libraries to link with.
-                          Possible values are "all", "Cmdenv", "Qtenv".
-                          Defaults to "all".
-    -Idir                 Additional NED and C++ include directory
-    -Ldir                 Add a directory to the library path
-    -llibrary             Additional library to link against. On Unix, -lfoo
-                          will link with libfoo.so or libfoo.a; on Windows,
-                          with foo.lib. The library path (see -L) will be
-                          searched in both cases.
-    -p symbol, -psymbol   The DLL export/import symbol. It will cause
-                          -P<symbol>_API to be passed to opp_msgc. Also,
-                          if target is a DLL or --fordll is specified, the
-                          <symbol>_EXPORT macro will be passed to the compiler;
-                          the source code is expected to be set up so that
-                          dll-public declarations are annotated with
-                          <symbol>_API, and <symbol>_EXPORT causes <symbol>_API
-                          to be defined as __declspec(dllexport).
-    -i filename, --includefragment filename
-                          Append file to near end of Makefile. The file
-                          makefrag.vc (if exists) is appended automatically
-                          if no -i options are given. This option is useful
-                          if a source file (.ned, .msg or .cc) is to be
-                          generated from other files.
+# TODO add to the parser help:
+"""
     object file or library
                           Arguments will simply get added to the linker (or
                           librarian) command line. Thus, wildcards and macros
@@ -136,579 +68,311 @@ Default output is Makefile, which you can invoke by typing "make".
 
 The contents of the makefrag file will be built into the generated makefile,
 letting you to override the default target, change variables, etc.
+"""
 
-END
+#
+# Prepare the variables for the template
+#
+
+args = parser.parse_args()
+
+makefile = "Makefile"
+if os.path.isfile(makefile) and force != 1:
+    error("use -f to force overwriting existing {}".format(makefile))
+
+if type == "SHAREDLIB":
+    compileForDll = 1
+
+folder = os.getcwd()
+
+objs = []
+generatedHeaders = []
+extraObjs = []
+ccfiles = []
+cppfiles = []
+nedfiles = []
+msgfiles = []
+msgccfiles = []
+msghfiles = []
+smfiles = []
+smccfiles = []
+smhfiles = []
+sourceDirs = []
+backslashedSourceDirs = []
+
+# determine, and clean up format of project root dir
+if projectDir == "":
+    # try to find project root directory (go up until we find a ".project" file)
+    dir = os.getcwd()
+    dir = dir.replace("\\", "/")
+    while True:
+        if os.path.isfile("{}/.project".format(dir)):
+            projectDir = dir
+            break
+        if "/" in dir:
+            dir = dir[:dir.rindex("/")]
+        else:
+            projectDir = "."
+            break
+elif not os.path.isdir(projectDir):
+    error("specified project directory \"{}\" does not exist".format(projectDir))
+
+if projectDir != "":
+    projectDir = existingDirtoCanonicalAbsolute(projectDir)
+    #print "Project directory: $projectDir\n"
+    if not (folder.startswith(projectDir)):
+        error("current directory is not under the given project directory \"{}\"".format(projectDir))
+
+projectName = projectDir
+projectName = projectName.rstrip("/\\")
+projectName = projectName[projectName.rindex("/\\")+1:]
+target = target if target != "" else projectName
+
+# target should only be a name, cannot contain relative path
+if "\\" in target or "/" in target:
+    error("target (-o option) should only be a name, it cannot contain relative path")
+
+# recursive and deep do not mix
+if isDeep:
+    isRecursive = 0
+
+makecommand = os.environ.get("MAKE") or "make"
+
+# find Makefile.inc
+comspec = os.environ.get("COMSPEC")
+comspec = comspec.replace("\\", "\\\\")
+configFile = os.popen("opp_configfilepath").read().strip()
+if os.system("opp_configfilepath") != 0:
+    error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH")
+if not configFile or not os.path.isfile(configFile):
+    error("opp_configfilepath didn't return the name of an existing directory, result was \"{}\"".format(configFile))
+
+# determine outdir (defaults to "out")
+if outRoot == "":
+    outRoot = "out"
+outRootAbs = outRoot if not isRelative(outRoot) or projectDir == "" else "{}/{}".format(projectDir, outRoot)
+outRootRel = abs2rel(outRootAbs, projectDir)
+outDir = canonicalize("{}".format(outRootRel))
+
+# determine subpath: the project-relative path of this folder
+subpath = os.getcwd()
+subpath = subpath.replace(projectDir, "", 1)
+subpath = subpath.lstrip("/\\")  # remove the leading slash/backslash as this is a relative directory
+
+# collect source files
+if is_deep:
+    all_excluded_dirs = [out_dir] + except_subdirs + submake_dirs
+    source_dirs = collect_dirs(".", all_excluded_dirs)
+    if len(source_dirs) > 10000:
+        error("too many subdirs for --deep")
+else:
+    source_dirs = []
+    if is_good_dir(".", except_subdirs):
+        source_dirs = ["."]
+
+for f in source_dirs:
+    ff = "" if f == "." else f + "/"
+    ccfiles.extend(glob(ff + "*.cc"))
+    cppfiles.extend(glob(ff + "*.cpp"))
+    msgfiles.extend(glob(ff + "*.msg"))
+    smfiles.extend(glob(ff + "*.sm"))
+    nedfiles.extend(glob(ff + "*.ned"))
+
+backslashed_source_dirs = []
+for i in source_dirs:
+    i2 = i.replace("/", "\\")
+    backslashed_source_dirs.append(i2)
+
+# include dirs and lib dirs (make them relative to the project dir)
+include_dirs = [abs2rel(i, project_dir) for i in include_dirs]
+lib_dirs = [abs2rel(i, project_dir) for i in lib_dirs]
+
+# try to determine if .cc or .cpp files are used
+if ccExt == "":
+    if not ccfiles and cppfiles:
+        ccExt = "cpp"
+    elif ccfiles and not cppfiles:
+        ccExt = "cc"
+    elif ccfiles and cppfiles:
+        error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use")
+    else:
+        ccExt = "cc"  # if no files, use .cc extension
+else:
+    if ccExt == "cc" and not ccfiles and cppfiles:
+        warning("you specified -e cc but you have only .cpp files!")
+    if ccExt == "cpp" and ccfiles and not cppfiles:
+        warning("you specified -e cpp but you have only .cc files!")
+
+objExt = "o"
+
+targetPrefix = ""
+targetSuffix = ""
+if type == "EXE":
+    targetSuffix = "$(EXE_SUFFIX)"
+elif type == "SHAREDLIB":
+    targetSuffix = "$(SHARED_LIB_SUFFIX)"
+    targetPrefix = "$(LIB_PREFIX)"
+elif type == "STATICLIB":
+    targetSuffix = "$(A_LIB_SUFFIX)"
+    targetPrefix = "$(LIB_PREFIX)"
+
+# prepare submakeDirs. First, check that all specified subdirs exist
+for subdir in submakeDirs:
+    if not os.path.isdir(subdir):
+        error("subdirectory '{}' does not exist".format(subdir))
+
+if isRecursive:
+    submakeDirs += [f for f in glob.glob("*") if isGoodDir(f, exceptSubdirs)]
+
+# create names for subdir targets
+submakeNames = [re.sub(r"[^a-zA-Z0-9_]", "_", i) for i in submakeDirs]
+
+# process extraArgs (do ".o" <--> ".obj" translation; NOTE: we don't try to
+# translate library names, because libs are supposed to be given via -L/-l)
+# NOTE2: we need to remove possible quotes (cmd.exe does not do it)
+extraObjs = [i.replace("^'(.*)'$", r"\1").replace(r"\.o(bj)?$", ".objExt") for i in extraArgs]
+
+sources = []
+if ccExt == "cc":
+    sources.extend(ccfiles)
+if ccExt == "cpp":
+    sources.extend(cppfiles)
+sources.extend(msgfiles)
+sources.extend(smfiles)
+if not ignoreNedFiles:
+    sources.extend(nedfiles)
+
+objs = [make_derived_file_name(f, objExt) for f in sources if not f.startswith("*") and not is_generated_ccfile(f, ccExt)]
+
+msgccfiles = [make_derived_file_name(f, "cc") for f in msgfiles]
+msghfiles = [make_derived_file_name(f, "h") for f in msgfiles]
+generatedHeaders += msghfiles
+
+smccfiles = [make_derived_file_name(f, "cc") for f in smfiles]
+smhfiles = [make_derived_file_name(f, "h") for f in smfiles]
+generatedHeaders += smhfiles
+
+# makefrag files
+makefrags = "";
+if fragmentFiles:
+    for frag in fragmentFiles:
+        makefrags += "-include " + frag + "\n"
+else:
+    if os.path.isfile("makefrag"):
+        makefrags += "-include makefrag\n"
+
+# defines
+if compileForDll and dllSymbol != "":
+    defines.append(dllSymbol + "_EXPORT")
+
+deps = ""  # we'll run opp_makedep afterwards
+
+# XP has 8K limit on line length, so we may have to use the inline file feature of nmake
+approximateLinkerLineLength = 500 + len(quoteJoin(objs)) + len(quoteJoin(extraObjs)) + 2*len(quoteJoin(libs)) + 2*len(quoteJoin(libDirs))
+isLongLinkerLine = approximateLinkerLineLength > 8000
+
+# fill in template variables
+m = {
+    "lbrace" : "{",
+    "rbrace" : "}",
+    "targetprefix" : targetPrefix,
+    "target" :  target,
+    "targetsuffix" : targetSuffix,
+    "outdir" : outDir,
+    "subpath" : subpath,
+    "isdeep" : isDeep,
+    "progname" : "opp_makemake",
+    "args" : join(" ", args),
+    "configfile" : configFile,
+    "cc" : ccExt,
+    "deps" : deps,
+    "exe" : type == "EXE",
+    "sharedlib" : type == "SHAREDLIB",
+    "staticlib" : type == "STATICLIB",
+    "nolink" : type == "NOLINK",
+    "defaultmode" : defaultMode,
+    "allenv" : userInterface.startswith('A'),
+    "cmdenv" : userInterface.startswith('C'),
+    "qtenv" : userInterface.startswith('Q'),
+    "extraobjs" : quoteJoin(extraObjs),
+    "includepath" : prefixQuoteJoin(includeDirs, "-I"),
+    "libpathdirs" : libDirs,
+    "libs" : libs,
+    "defines" : prefixQuoteJoin(defines, "-D"),
+    "makefilevariables" : makefileVariables,
+    "makecommand" : makecommand,
+    "makefile" : "Makefile",
+    "makefrags" : makefrags,
+    "msgccfiles" : msgccfiles,
+    "msghfiles" : msghfiles,
+    "msgfiles" : msgfiles,
+    "smccfiles" : smccfiles,
+    "smhfiles" : smhfiles,
+    "smfiles" : smfiles,
+    "objs" : quoteJoin(objs),
+    "submakedirs" : submakeDirs,
+    "submakenames" : submakeNames,
+    "dllsymbol" : dllSymbol,
+    "sourcedirs" : sourceDirs,
+    "backslashedsourcedirs" : backslashedSourceDirs,
+    "gcclongline" : (isLongLinkerLine and isWindows)
 }
 
-sub makemake()
-{
-    if ($isWindows && $ENV{OS} ne "Windows_NT") {
-        error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
-    }
+content = substituteIntoTemplate(template(), m, "{", "}")
 
-    #
-    # process command line args
-    #
-    @args = @ARGV;
-    $projectDir = "";
-    $type = "EXE";
-    $target = "";
-    $outRoot = "";
-    $isDeep = 0;
-    $isRecursive = 0;
-    $force = 0;
-    $defaultMode = "";
-    $userInterface = "ALL";
-    $ccExt = "";
-    $configFile = "";
-    $dllSymbol = "";
-    $compileForDll = 0;
-    $ignoreNedFiles = 1;
-    @fragmentFiles = ();
-    @submakeDirs = ();
-    @exceptSubdirs = ();
-    @includeDirs = ();
-    @libDirs = ();
-    @libs = ();
-    @defines = ();
-    @makefileVariables = ();
-    @extraArgs = ();
+oldContent = readTextFile(makefile) if os.path.exists(makefile) else "";
 
-    # process arg vector
-    while (@ARGV)
-    {
-        $arg = shift @ARGV;
-        if ($arg eq "-h" || $arg eq "--help") {
-            usage();
-            exit(1);
-        }
-        elsif ($arg eq "-f" || $arg eq "--force") {
-            $force = 1;
-        }
-        elsif ($arg eq "-e" || $arg eq "--ext") {
-            $ccExt = shift @ARGV;
-        }
-        elsif ($arg eq "-o") {
-            $target = shift @ARGV;
-        }
-        elsif ($arg =~ /^-o/) {
-            $target = substr($arg, 2);
-        }
-        elsif ($arg eq "-O" || $arg eq "--out") {
-            $outRoot = shift @ARGV;
-        }
-        elsif ($arg =~ /^-O/) {
-            $outRoot = substr($arg, 2);
-        }
-        elsif ($arg eq "--deep") {
-            $isDeep = 1;
-        }
-        elsif ($arg eq "-r" || $arg eq "--recurse") {
-            $isRecursive = 1;
-        }
-        elsif ($arg eq "-X" || $arg eq "--except") {
-            push(@exceptSubdirs, shift @ARGV);
-        }
-        elsif ($arg =~ /^-X/) {
-            my $dir = substr($arg, 2);
-            push(@exceptSubdirs, $dir);
-        }
-        elsif ($arg eq "--no-deep-includes") {
-            # kept for backward compatibility, now this is the default/only mode
-        }
-        elsif ($arg eq "-D" || $arg eq "--define") {
-            push(@defines, shift @ARGV);
-        }
-        elsif ($arg =~ /^-D/) {
-            my $define = substr($arg, 2);
-            push(@defines, $define);
-        }
-        elsif ($arg eq "-K" || $arg eq "--makefile-define") {
-            push(@makefileVariables, shift @ARGV);
-        }
-        elsif ($arg =~ /^-K/) {
-            my $makefileVariable = substr($arg, 2);
-            push(@makefileVariables, $makefileVariable);
-        }
-        elsif ($arg eq "-N" || $arg eq "--ignore-ned") {
-            error("obsolete option $arg, please remove (dynamic NED loading is now the default)");
-        }
-        elsif ($arg eq "-P" || $arg eq "--projectdir") {
-            $projectDir = shift @ARGV;
-        }
-        elsif ($arg =~ /^-P/) {
-            $projectDir = substr($arg, 2);
-        }
-        elsif ($arg eq "-M" || $arg eq "--mode") {
-            $defaultMode = shift @ARGV;
-        }
-        elsif ($arg =~ /^-M/) {
-            $defaultMode = substr($arg, 2);
-        }
-        elsif ($arg eq "-c" || $arg eq "--configfile") {
-            error("option $arg is no longer supported, config file is located using the OMNETPP_CONFIGFILE, or by invoking opp_configfilepath");
-        }
-        elsif ($arg eq "-d" || $arg eq "--subdir") {
-            push(@submakeDirs, shift @ARGV);
-        }
-        elsif ($arg =~ /^-d/) {
-            my $subdir = substr($arg, 2);
-            push(@submakeDirs, $subdir);
-        }
-        elsif ($arg eq "-n" || $arg eq "--nolink") {
-            $type = "NOLINK";
-        }
-        elsif ($arg eq "-s" || $arg eq "--make-so") {
-            $type = "SHAREDLIB";
-        }
-        elsif ($arg eq "-a" || $arg eq "--make-lib") {
-            $type = "STATICLIB";
-        }
-        elsif ($arg eq "-S" || $arg eq "--fordll") {
-            $compileForDll = 1;
-        }
-        elsif ($arg eq "-w" || $arg eq "--withobjects") {
-            error("$progname: $arg: obsolete option, please remove");
-        }
-        elsif ($arg eq "-x" || $arg eq "--notstamp") {
-            error("$progname: $arg: obsolete option, please remove");
-        }
-        elsif ($arg eq "-u" || $arg eq "--userinterface") {
-            $userInterface = shift @ARGV;
-            $userInterface = uc($userInterface);
-            if ($userInterface ne "ALL" && $userInterface ne "CMDENV" && $userInterface ne "QTENV") {
-                error("$progname: -u: specify All, Cmdenv or Qtenv");
-            }
-        }
-        elsif ($arg eq "-i" || $arg eq "--includefragment") {
-            push(@fragmentFiles, shift @ARGV);
-        }
-        elsif ($arg eq "-I") {
-            push(@includeDirs, shift @ARGV);
-        }
-        elsif ($arg =~ /^-I/) {
-            my $dir = substr($arg, 2);
-            push(@includeDirs, $dir);
-        }
-        elsif ($arg eq "-L") {
-            push(@libDirs, shift @ARGV);
-        }
-        elsif ($arg =~ /^-L/) {
-            my $dir = substr($arg, 2);
-            push(@libDirs, $dir);
-        }
-        elsif ($arg =~ /^-l/) {
-            my $lib = substr($arg, 2);
-            push(@libs, $lib);
-        }
-        elsif ($arg eq "-p") {
-            $dllSymbol = shift @ARGV;
-        }
-        elsif ($arg =~ /^-p/) {
-            $dllSymbol = substr($arg, 2);
-        }
-        elsif ($arg =~ /^--meta:/) {
-            error("$progname: --meta options not supported: they rely on information only available inside the IDE");
-        }
-        elsif ($arg eq "--") {
-            last;
-        }
-        else {
-            error("unrecognized option: $arg") if ($arg =~ /^-/);
-            push(@extraArgs, $arg);
-        }
-    }
+if content != oldContent:
+    print(("Updating" if os.path.exists(makefile) else "Creating") + makefile + " in " + folder + "...\n")
+    with fopen(makefile, "w") as f:
+        print(content, file=f)
 
-    # process args after "--"
-    while (@ARGV)
-    {
-        $arg = shift @ARGV;
-        push(@extraArgs, $arg);
-    }
+def is_generated_ccfile(f, ccExt):
+    return f.endswith("_n."+ccExt) or f.endswith("_m."+ccExt) or f.endswith("_sm."+ccExt)
 
+def make_derived_file_name(fname, ext):
+    if fname.endswith(".ned"):
+        return fname[:-4] + "_n." + ext
+    elif fname.endswith(".msg"):
+        return fname[:-4] + "_m." + ext
+    elif fname.endswith(".sm"):
+        return fname[:-3] + "_sm." + ext
+    elif fname.endswith("." + ccExt):
+        return fname[:-len(ccExt)-1] + "." + ext
+    else:
+        return re.sub(r"\.[^.]+$", "." + ext, fname)
 
-    #
-    # Prepare the variables for the template
-    #
+def collect_dirs(dir, except_dirs=None):
+    except_dirs = except_dirs or []
+    result = []
+    if is_good_dir(dir, except_dirs):
+        result.append(canonicalize(dir))
+        for f in glob.glob(f"{dir}/*"):
+            result.extend(collect_dirs(f, except_dirs))
+    return result
 
-    $makefile = "Makefile";
-    if (-f $makefile && $force ne 1) {
-        error("use -f to force overwriting existing $makefile");
-    }
-
-    if ($type eq "SHAREDLIB") {
-        $compileForDll = 1;
-    }
-
-    $folder = cwd;
-
-    @objs = ();
-    @generatedHeaders = ();
-    @extraObjs = ();
-    @ccfiles = ();
-    @cppfiles = ();
-    @nedfiles = ();
-    @msgfiles = ();
-    @msgccfiles = ();
-    @msghfiles = ();
-    @smfiles = ();
-    @smccfiles = ();
-    @smhfiles = ();
-    @sourceDirs = ();
-    @backslashedSourceDirs = ();
-
-    # determine, and clean up format of project root dir
-    if ($projectDir eq "") {
-        # try to find project root directory (go up until we find a ".project" file)
-        my $dir = cwd;
-        $dir =~ s|\\|/|g;
-        for (;;) {
-            if (-f "$dir/.project") {
-                $projectDir = $dir;
-                last;
-            }
-            if ($dir =~ m|/|) {
-                $dir =~ s|/[^/]*$||;
-            }
-            else {
-                $projectDir = ".";
-                last;
-            }
-        }
-    }
-    elsif (! -d $projectDir) {
-        error("specified project directory \"$projectDir\" does not exist");
-    }
-
-    if ($projectDir ne "") {
-        $projectDir = existingDirtoCanonicalAbsolute($projectDir);
-        #print "Project directory: $projectDir\n";
-        if (!($folder =~ /^\Q$projectDir\E/)) {
-            error("current directory is not under the given project directory \"$projectDir\"");
-        }
-    }
-
-    $projectName = $projectDir;
-    $projectName  =~ s/[\/\\]$//;  # remove trailing slash/backslash
-    $projectName  =~ s/.*[\/\\]//; # keep only part after last slash/backslash
-    $target = $target ne "" ? $target : $projectName;
-
-    # target should only be a name, cannot contain relative path
-    if ($target =~ /.*[\/\\].*/) {
-        error("target (-o option) should only be a name, it cannot contain relative path");
-    }
-
-    # recursive and deep do not mix
-    if ($isDeep) {
-        $isRecursive = 0;
-    }
-
-    $makecommand = $ENV{MAKE} ? $ENV{MAKE} : "make";
-
-    # find Makefile.inc
-    $comspec = $ENV{COMSPEC};
-    $comspec =~ s!\\!\\\\!g;
-    $configFile =  `opp_configfilepath`;
-    if ($? != 0) {
-        error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH");
-    }
-    $configFile =~ s/^\s*(.*?)\s*$/$1/gs;
-    if ($configFile eq "" || ! -f $configFile) {
-        error("opp_configfilepath didn't return the name of an existing directory, result was \"$configFile\"");
-    }
-
-    # determine outdir (defaults to "out")
-    if ($outRoot eq "") {$outRoot = "out";}
-    my $outRootAbs = (!isRelative($outRoot) || $projectDir eq "") ? $outRoot : "$projectDir/$outRoot";
-    my $outRootRel = abs2rel($outRootAbs, $projectDir);
-    $outDir = canonicalize("$outRootRel");
-
-    # determine subpath: the project-relative path of this folder
-    my $subpath = cwd();
-    $subpath =~ s|^\Q$projectDir\E||;
-    $subpath  =~ s/^[\/\\]//;  # remove the leading slash/backslash as this is a relative directory
-
-    # collect source files
-    if ($isDeep) {
-        my @allExcludedDirs = ();
-        push(@allExcludedDirs, $outDir);
-        push(@allExcludedDirs, @exceptSubdirs);
-        push(@allExcludedDirs, @submakeDirs);
-        @sourceDirs = collectDirs(".", \@allExcludedDirs);
-        error("too many subdirs for --deep") if (@sourceDirs > 10000);
-    } else {
-        @sourceDirs = ();
-        if (isGoodDir(".", \@exceptSubdirs)) {
-            @sourceDirs = (".");
-        }
-    }
-
-    foreach $f (@sourceDirs) {
-        my $ff = ($f eq ".") ? "" : "$f/";
-        push(@ccfiles,  glob("$ff*.cc"));
-        push(@cppfiles, glob("$ff*.cpp"));
-        push(@msgfiles, glob("$ff*.msg"));
-        push(@smfiles, glob("$ff*.sm"));
-        push(@nedfiles, glob("$ff*.ned"));
-    }
-
-    foreach my $i (@sourceDirs) {
-        my $i2 = $i;
-        $i2 =~ s|/|\\|g;
-        push(@backslashedSourceDirs, $i2);
-    }
-
-    # include dirs and lib dirs (make them relative to the project dir)
-    @tmp = @includeDirs;
-    @includeDirs = ();
-    foreach $i (@tmp) {
-        push(@includeDirs, abs2rel($i,$projectDir));
-    }
-    @tmp = @libDirs;
-    @libDirs = ();
-    foreach $i (@tmp) {
-        push(@libDirs, abs2rel($i,$projectDir));
-    }
-
-    # try to determine if .cc or .cpp files are used
-    if ($ccExt eq "") {
-        if (!@ccfiles && @cppfiles) {
-            $ccExt = "cpp";
-        }
-        elsif (@ccfiles && !@cppfiles) {
-            $ccExt = "cc";
-        }
-        elsif (@ccfiles && @cppfiles) {
-            error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use");
-        }
-        else {
-            $ccExt = "cc";  # if no files, use .cc extension
-        }
-    }
-    else {
-        if ($ccExt eq "cc" && !@ccfiles && @cppfiles) {
-            warning("you specified -e cc but you have only .cpp files!");
-        }
-        if ($ccExt eq "cpp" && @ccfiles && !@cppfiles) {
-            warning("you specified -e cpp but you have only .cc files!");
-        }
-    }
-
-    $objExt = "o";
-
-    $targetPrefix = "";
-    $targetSuffix = "";
-    if ($type eq "EXE") {
-        $targetSuffix = "\$(EXE_SUFFIX)";
-    } elsif ($type eq "SHAREDLIB") {
-        $targetSuffix = "\$(SHARED_LIB_SUFFIX)";
-        $targetPrefix = "\$(LIB_PREFIX)";
-    } elsif ($type eq "STATICLIB") {
-        $targetSuffix = "\$(A_LIB_SUFFIX)";
-        $targetPrefix = "\$(LIB_PREFIX)";
-    }
-
-    # prepare submakeDirs. First, check that all specified subdirs exist
-    foreach $subdir (@submakeDirs) {
-        if (! -d $subdir) {
-            error("subdirectory '$subdir' does not exist");
-        }
-    }
-
-    if ($isRecursive) {
-        foreach $f (glob("*")) {
-            if (isGoodDir($f, \@exceptSubdirs)) {
-                push(@submakeDirs, $f);
-            }
-        }
-    }
-
-    # create names for subdir targets
-    @submakeNames = ();
-    foreach $i (@submakeDirs) {
-        my $i2 = $i;
-        $i2 =~ s/[^a-zA-Z0-9_]/__/g;
-        push(@submakeNames, $i2);
-    }
-
-    # process extraArgs (do ".o" <--> ".obj" translation; NOTE: we don't try to
-    # translate library names, because libs are supposed to be given via -L/-l)
-    @extraObjs = ();
-    foreach $i (@extraArgs) {
-        my $i2 = $i;
-        $i2 =~ s/^'(.*)'$/$1/; # remove possible quotes (cmd.exe does not do it)
-        $i2 =~ s/\.o(bj)?$/.$objExt/;
-        push(@extraObjs, $i2);
-    }
-
-    @sources = ();
-    push(@sources, @ccfiles) if ($ccExt eq "cc");
-    push(@sources, @cppfiles) if ($ccExt eq "cpp");
-    push(@sources, @msgfiles);
-    push(@sources, @smfiles);
-    push(@sources, @nedfiles) if (!$ignoreNedFiles);
-    foreach $i (@sources)
-    {
-        $i =~ s/\*[^ ]*//g;
-        $i =~ s/[^ ]*_n\.$ccExt$//g;
-        $i =~ s/[^ ]*_m\.$ccExt$//g;
-        $i =~ s/[^ ]*_sm\.$ccExt$//g;
-        $i =~ s/\.ned$/_n.$objExt/g;
-        $i =~ s/\.msg$/_m.$objExt/g;
-        $i =~ s/\.sm$/_sm.$objExt/g;
-        $i =~ s/\.$ccExt$/.$objExt/g;
-        if ($i ne '') {
-            push(@objs, "\$O/$i");
-        }
-    }
-
-    foreach $i (@msgfiles) {
-        $h = $i; $h =~ s/\.msg$/_m.h/;
-        $cc = $i; $cc =~ s/\.msg$/_m.$ccExt/;
-        push(@generatedHeaders, $h);
-        push(@msgccfiles, $cc);
-        push(@msghfiles, $h);
-    }
-
-    foreach $i (@smfiles) {
-        $h = $i; $h =~ s/\.sm$/_sm.h/;
-        $cc = $i; $cc =~ s/\.sm$/_sm.$ccExt/;
-        push(@generatedHeaders, $h);
-        push(@smccfiles, $cc);
-        push(@smhfiles, $h);
-    }
-
-    $makefrags = "";
-    if (@fragmentFiles) {
-        foreach $frag (@fragmentFiles) {
-            $makefrags .= "-include $frag\n";
-        }
-    }
-    else {
-        $makefragFilename = "makefrag";
-        if (-f $makefragFilename) {
-            $makefrags .= "-include makefrag\n";
-        }
-    }
-
-    # defines
-    if ($compileForDll && $dllSymbol ne "") {
-        push(@defines, $dllSymbol."_EXPORT");
-    }
-
-    $deps = "";  # we'll run opp_makedep afterwards
-
-    # XP has 8K limit on line length, so we may have to use the inline file feature of nmake
-    $approximateLinkerLineLength = 500 + length(quoteJoin(\@objs)) + length(quoteJoin(\@extraObjs)) + 2*length(quoteJoin(\@libs)) + 2*length(quoteJoin(\@libDirs));
-    $isLongLinkerLine = $approximateLinkerLineLength > 8000;
-
-    # fill in template variables
-    %m = (
-        "lbrace" =>  "{",
-        "rbrace" =>  "}",
-        "targetprefix" => $targetPrefix,
-        "target" =>   $target,
-        "targetsuffix" => $targetSuffix,
-        "outdir" => $outDir,
-        "subpath" => $subpath,
-        "isdeep" => $isDeep,
-        "progname" => "opp_makemake",
-        "args" =>  join(" ", @args),
-        "configfile" =>  $configFile,
-        "cc" =>  $ccExt,
-        "deps" =>  $deps,
-        "exe" =>  $type eq "EXE",
-        "sharedlib" =>  $type eq "SHAREDLIB",
-        "staticlib" =>  $type eq "STATICLIB",
-        "nolink" =>  $type eq "NOLINK",
-        "defaultmode" =>  $defaultMode,
-        "allenv" => ($userInterface =~ /^A/) ne "",
-        "cmdenv" =>  ($userInterface =~ /^C/) ne "",
-        "qtenv" =>  ($userInterface =~ /^Q/) ne "",
-        "extraobjs" =>  quoteJoin(\@extraObjs),
-        "includepath" =>  prefixQuoteJoin(\@includeDirs, "-I"),
-        "libpathdirs" =>  \@libDirs,
-        "libs" =>  \@libs,
-        "defines" => prefixQuoteJoin(\@defines, "-D"),
-        "makefilevariables" => \@makefileVariables,
-        "makecommand" =>  $makecommand,
-        "makefile" =>  "Makefile",
-        "makefrags" =>  $makefrags,
-        "msgccfiles" =>  \@msgccfiles,
-        "msghfiles" =>  \@msghfiles,
-        "msgfiles" =>  \@msgfiles,
-        "smccfiles" =>  \@smccfiles,
-        "smhfiles" =>  \@smhfiles,
-        "smfiles" =>  \@smfiles,
-        "objs" =>  quoteJoin(\@objs),
-        "submakedirs" =>  \@submakeDirs,
-        "submakenames" =>  \@submakeNames,
-        "dllsymbol" =>  $dllSymbol,
-        "sourcedirs" => \@sourceDirs,
-        "backslashedsourcedirs" => \@backslashedSourceDirs,
-        "gcclongline" => ($isLongLinkerLine && $isWindows)
-    );
-
-    my $content = substituteIntoTemplate(template(), \%m, "{", "}");
-
-    my $oldContent = (-e $makefile) ? readTextFile($makefile) : "";
-
-    if ($content ne $oldContent) {
-        print (((-e $makefile) ? "Updating" : "Creating") . " $makefile in $folder...\n");
-        open(OUT, ">$makefile");
-        print OUT $content;
-        close OUT;
-    }
-}
-
-sub collectDirs($;$);
-sub collectDirs($;$)
-{
-    my ($dir,$exceptDirsRef) = @_;
-    my @exceptDirs = @$exceptDirsRef;
-    my @result = ();
-    if (isGoodDir($dir, \@exceptDirs)) {
-        push(@result, canonicalize($dir));
-        foreach $f (glob("$dir/*")) {
-            push(@result, collectDirs($f, \@exceptDirs));
-        }
-    }
-    return @result;
-}
-
-
-sub isGoodDir($;$)
-{
-    my ($dirpath,$exceptDirsRef) = @_;
-    my @exceptDirs = @$exceptDirsRef;
-    if (!-d $dirpath) {
-        return 0;
-    }
+def is_good_dir(dirpath, except_dirs=None):
+    except_dirs = except_dirs or []
+    if not os.path.isdir(dirpath):
+        return False
 
     # skip dot directories, also CVS, SVN, etc aux dirs
-    my @IGNORABLE_DIRS = ("CVS", "RCS", "SCCS", "_darcs", "blib", ".git", ".svn", ".git", ".bzr", ".hg", "backups");
+    IGNORABLE_DIRS = ["CVS", "RCS", "SCCS", "_darcs", "blib", ".git", ".svn", ".git", ".bzr", ".hg", "backups"]
 
-    my $dirname = $dirpath;
-    $dirname =~ s|^.*/||;
-    if ($dirname =~ /^\.(.+)/ || grep(/^\Q$dirname\E$/, @IGNORABLE_DIRS)) {
-        return 0;
-    }
+    dirname = os.path.basename(dirpath)
+    if dirname.startswith(".") or dirname in IGNORABLE_DIRS:
+        return False
 
     # check exceptdirs. For that, we convert everything to canonical absolute path
-    my $absDir = existingDirtoCanonicalAbsolute($dirpath);
-    foreach my $exceptDirPattern (@exceptDirs) {
-        foreach my $exceptDir (glob($exceptDirPattern)) {
-            if (-d $exceptDir) {
-                my $absExceptDir = existingDirtoCanonicalAbsolute($exceptDir);
-                if ($absDir eq $absExceptDir) {
-                    return 0;
-                }
-            }
-        }
+    abs_dir = existing_dir_to_canonical_absolute(dirpath)
+    for except_dir_pattern in except_dirs:
+        for except_dir in glob.glob(except_dir_pattern):
+            if os.path.isdir(except_dir):
+                abs_except_dir = existing_dir_to_canonical_absolute(except_dir)
+                if abs_dir == abs_except_dir:
+                    return False
 
-    }
-    return 1;
-}
+    return True
 
 #
 # Performs template substitution. Constructs understood are:
@@ -725,211 +389,163 @@ sub isGoodDir($;$)
 #
 # Lines starting with ### treated as comments and will be removed from the output
 #
-sub substituteIntoTemplate($;$;$;$);
-sub substituteIntoTemplate($;$;$;$)
-{
-    my ($template,$mapref,$startTag,$endTag) = @_;
-    my %map = %$mapref;
+def substituteIntoTemplate(template: str, mapref: dict, startTag: str = '{', endTag: str = '}') -> str:
+    # remove whole-line comments
+    template = re.sub(r'\n[ \t]*###.*\n', '\n', template)
+    # remove end-line comments
+    template = re.sub(r'[ \t]*###.*\n', '\n', template)
 
-    $template =~ s/\n[ \t]*###.*\n/\n/g; # remove whole-line comments
-    $template =~ s/[ \t]*###.*\n/\n/g;   # remove end-line comments
+    buf = ""
+    startTagLen = len(startTag)
+    endTagLen = len(endTag)
 
-    my $buf = "";
-    my $startTagLen = length($startTag);
-    my $endTagLen = length($endTag);
-
-    my $current = 0;
-    while (1) {
-        my $start = index($template, $startTag, $current);
-        if ($start == -1) {
-            last;
-        }
-        else {
-            my $end = index($template, $endTag, $start);
-            if ($end != -1) {
-                $end += $endTagLen;
-                my $tag = substr2($template, $start, $end);
-                #print("processing $tag\n");
-                my $key = substr2($template, $start+$startTagLen, $end-$endTagLen);
-                if (index($key, "\n") != -1) {
-                    die("template error: newline inside \"$tag\" (misplaced start/end tag?)");
-                }
-                my $isLoop = substr($key, 0, 1) eq "@";
-                if ($isLoop) {
-                    $key = substr($key, 1);  # drop "@"
-                }
-                my $isNegated = substr($key, 0, 1) eq "~";
-                if ($isNegated) {
-                    $key = substr($key, 1);  # drop "~"
-                }
-                my $isOptLine = substr($key,-1,1) eq ":" && index($key, "?") == -1;
-                if ($isOptLine) {
-                    $key = substr($key, 0, length($key)-1);  # drop trailing ":"
-                }
-                my $questionmarkPos = index($key, "?");
-                my $substringAfterQuestionmark = $questionmarkPos == -1 ? "" : substr($key, $questionmarkPos+1);
-                if ($questionmarkPos != -1) {
-                    $key = substr2($key, 0, $questionmarkPos); # drop "?..." from key
-                }
+    current = 0
+    while True:
+        start = template.find(startTag, current)
+        if start == -1:
+            break
+        else:
+            end = template.find(endTag, start)
+            if end != -1:
+                end += endTagLen
+                tag = template[start:end]
+                #print("processing $tag\n")
+                key = template[start+startTagLen:end-endTagLen]
+                if "\n" in key:
+                    raise ValueError("template error: newline inside \"{}\" (misplaced start/end tag?)".format(tag))
+                isLoop = key[0] == "@"
+                if isLoop:
+                    key = key[1:]  # drop "@"
+                isNegated = key[0] == "~"
+                if isNegated:
+                    key = key[1:]  # drop "~"
+                isOptLine = key[-1] == ":" and "?" not in key
+                if isOptLine:
+                    key = key[:-1]  # drop trailing ":"
+                questionmarkPos = key.find("?")
+                substringAfterQuestionmark = "" if questionmarkPos == -1 else key[questionmarkPos+1:]
+                if questionmarkPos != -1:
+                    key = key[:questionmarkPos] # drop "?..." from key
 
                 # determine replacement string, and possibly adjust start/end
-                my $replacement = "";
-                if ($isLoop) {
+                replacement = ""
+                if is_loop:
                     # basic loop syntax: {@i:list1,j:list2,...} ... {i} ... {/@}
                     # this is parallel iteration, not nested loops!
                     # first, find loop close tag {/@}
-                    my $loopEndTag = "$startTag/\@$endTag"; # "{/var}"
-                    my $balance = 1;
-                    my $pos = $end-1;  # because we'll start with +1
-                    while ($balance != 0) {
-                        $pos = indexOfEither($template, "$startTag\@", $loopEndTag, $pos+1);
-                        if ($pos == -1) {
-                            error("template error: missing loop end marker $loopEndTag");
-                        }
-                        my $isStartTag = substr($template, $pos+$startTagLen,1) eq '@';
-                        $balance += $isStartTag ? 1 : -1;
-                    }
-                    my $loopEndPos = $pos;
-                    my $loopBody = substr2($template, $end, $loopEndPos);
-                    $end = $loopEndPos + length($loopEndTag);
+                    loop_end_tag = f"{start_tag}/@{end_tag}" # "{/var}"
+                    balance = 1
+                    pos = end - 1  # because we'll start with +1
+                    while balance != 0:
+                        pos = index_of_either(template, f"{start_tag}@", loop_end_tag, pos + 1)
+                        if pos == -1:
+                            error(f"template error: missing loop end marker {loop_end_tag}")
+                        is_start_tag = template[pos + start_tag_len : pos + start_tag_len + 1] == "@"
+                        balance += 1 if is_start_tag else -1
+                    loop_end_pos = pos
+                    loop_body = template[end:loop_end_pos]
+                    end = loop_end_pos + len(loop_end_tag)
                     # parse loop spec: "i:list1,j:list2,..."
-                    my @loopVars = ();
-                    my @loopLists = ();
-                    foreach $loopSpec (split(",",  $key)) {
-                        if (!($loopSpec =~ / *([a-zA-Z0-9_]+) *: *([a-zA-Z0-9_]+) */)) {
-                            error("template error: syntax error in loop tag $tag, $startTag\@var1:list1,var2:list2,...$endTag expected in body");
-                        }
-                        push(@loopVars, $1);
-                        push(@loopLists, $2);
-                    }
+                    loop_vars = []
+                    loop_lists = []
+                    for loop_spec in key.split(","):
+                        if not re.match(r" *([a-zA-Z0-9_]+) *: *([a-zA-Z0-9_]+) */", loop_spec):
+                            error(f"template error: syntax error in loop tag {tag}, {start_tag}@var1:list1,var2:list2,...{end_tag} expected in body")
+                        loop_vars.append($1)
+                        loop_lists.append($2)
                     # execute loop: iterate in parallel on all loop variables
-                    my $length = @{getFromMapAsList(\%map, $loopLists[0])};
-                    for (my $i=0; $i<$length; $i++) {
-                        for (my $j=0; $j<@loopVars; $j++) {
-                            my $loopVarJ = $loopVars[$j];
-                            my @loopListJ = @{getFromMapAsList(\%map, $loopLists[$j])};
-                            if (@loopListJ != $length) {
-                                error("template error: list lengths differ in $tag");
-                            }
-                            $map{$loopVarJ} = $loopListJ[$i];
-                        }
-                        $replacement .= substituteIntoTemplate($loopBody, \%map, $startTag, $endTag);
-                    }
+                    length = len(get_from_map_as_list(map, loop_lists[0]))
+                    for i in range(length):
+                        for j in range(len(loop_vars)):
+                            loop_var_j = loop_vars[j]
+                            loop_list_j = get_from_map_as_list(map, loop_lists[j])
+                            if len(loop_list_j) != length:
+                                raise ValueError("template error: list lengths differ in {}".format(tag))
+                            map[loop_var_j] = loop_list_j[i]
+                        replacement += substitute_into_template(loop_body, map, start_tag, end_tag)
+
                     # remove loop variables
-                    for (my $j=0; $j<@loopVars; $j++) {
-                        undef $map{$loopVars[$j]};
-                    }
-                }
-                elsif ($isOptLine) {
+                    for j in range(len(loop_vars)):
+                        del map[loop_vars[j]]
+                elif is_opt_line:
                     # replacing a whole line
-                    my $condition = getFromMapAsBool(\%map, $key);
-                    if ($isNegated ? !$condition : $condition) {
+                    condition = get_from_map_as_bool(map, key)
+                    if (not condition if is_negated else condition):
                         # put line in: all variables OK
-                    }
-                    else {
+                        pass
+                    else:
                         # omit line
-                        my $endLine = index($template, "\n", $end);
-                        if ($endLine == -1) {
-                            $endLine = length($template);
-                        }
-                        $replacement = "";
-                        $end = $endLine + 1;
-                    }
-                }
-                elsif ($questionmarkPos != -1) {
+                        end_line = template.index("\n", end)
+                        if end_line == -1:
+                            end_line = len(template)
+                        replacement = ""
+                        end = end_line + 1
+                elif questionmark_pos != -1:
                     # conditional
-                    $replacement = getFromMapAsBool(\%map, $key)!=$isNegated ? $substringAfterQuestionmark : "";
-                }
-                else {
+                    replacement = (get_from_map_as_bool(map, key) != is_negated) ? substring_after_questionmark : ""
+                else:
                     # plain replacement
-                    if ($isNegated) {
-                        die("template error: wrong syntax \"$tag\" (possible missing \"?\")");
-                    }
-                    $replacement = getFromMapAsString(\%map, $key);
-                }
+                    if is_negated:
+                        raise ValueError("template error: wrong syntax \"{}\" (possible missing \"?\")".format(tag))
+                    replacement = get_from_map_as_string(map, key)
 
                 # do it: replace substring(start, end) with replacement, unless replacement==null
-                $buf .= substr2($template, $current, $start);  # template code up to the {...}
-                $buf .= $replacement;
-                $current = $end;
-            }
-        }
-    }
-    $buf .= substr($template, $current);  # rest of the template
-    $buf =~ s/ +\n/\n/sg;            # remove spaces at line end
-    $buf =~ s/\n\n\n+/\n\n/sg;       # remove multiple empty lines
-    return $buf;
-}
+                buf += substr2(template, current, start)  # template code up to the {...}
+                buf += replacement
+                current = end
 
-sub substr2($;$;$)
-{
-    my($string, $startoffset, $endoffset) = @_;
-    return substr($string, $startoffset, $endoffset - $startoffset);
-}
+    buf += template[current:]  # rest of the template
+    buf = re.sub(r" +\n", "\n", buf)  # remove spaces at line end
+    buf = re.sub(r"\n\n\n+", "\n\n", buf)  # remove multiple empty lines
+    return buf
 
-sub quoteJoin($)
-{
-    my($listref) = @_;
-    return prefixQuoteJoin($listref, "");
-}
+def substr2(string: str, startoffset: int, endoffset: int) -> str:
+    return string[startoffset:endoffset]
 
-sub prefixQuoteJoin($;$)
-{
-    my($listref,$prefix) = @_;
-    @list = @$listref;
-    $sep = (@list > 5) ? " \\\n    " : " ";
-    $result = "";
-    foreach $i (@list) {
-        $result .= $sep . $prefix . quote($i);
-    }
-    return $result eq "" ? "" : substr($result, 1); # chop off leading space
-}
+def quoteJoin(listref: List[str]) -> str:
+    return prefixQuoteJoin(listref, "")
 
-sub indexOfEither($;$;$;$)
-{
-    my($template,$substring1,$substring2,$from) = @_;
-    my $index1 = index($template, $substring1, $from);
-    my $index2 = index($template, $substring2, $from);
-    return $index2 if ($index1 == -1);
-    return $index1 if ($index2 == -1);
-    return $index1 < $index2 ? $index1 : $index2;
-}
+def prefixQuoteJoin(listref: List[str], prefix: str) -> str:
+    list = listref[:]  # make a copy of the list
+    sep = " \\\n    " if len(list) > 5 else " "
+    result = ""
+    for i in list:
+        result += sep + prefix + quote(i)
+    return result if result != "" else ""  # chop off leading space
+
+def indexOfEither(template: str, substring1: str, substring2: str, from_: int) -> int:
+    index1 = template.index(substring1, from_)
+    index2 = template.index(substring2, from_)
+    return index2 if index1 == -1 else index1 if index2 == -1 else index1 if index1 < index2 else index2
 
 # for substituteIntoTemplate()
-sub getFromMapAsString($;$)
-{
-    my($mapref,$key) = @_;
-    my %map = %$mapref;
-    die("template error: undefined template parameter '$key'") if (!defined($map{$key}));
-    return $map{$key};
-}
+def getFromMapAsString(mapref: Dict[str, Any], key: str) -> str:
+    map = mapref.copy()
+    if key not in map:
+        raise Exception("template error: undefined template parameter '" + key + "'")
+    return map[key]
 
 # for substituteIntoTemplate()
-sub getFromMapAsBool($;$)
-{
-    my($mapref,$key) = @_;
-    my %map = %$mapref;
-    die("template error: undefined template parameter '$key'") if (!defined($map{$key}));
-    $value = $map{$key};
+def getFromMapAsBool(mapref: Dict[str, Any], key: str) -> bool:
+    map = mapref.copy()
+    if key not in map:
+        raise Exception("template error: undefined template parameter '" + key + "'")
+    value = map[key]
 
-    if (ref($value) eq 'ARRAY') {
-        my @list = @$value;
-        return @list;  # =length; 0 if list is empty
-    } else {
-        return $value ? 1 : 0;
-    }
-}
+    if isinstance(value, list):
+        return bool(len(value))  # True if list is non-empty, False otherwise
+    else:
+        return value
 
 # for substituteIntoTemplate()
-sub getFromMapAsList($;$)
-{
-    my($mapref,$key) = @_;
-    my %map = %$mapref;
-    die("template error: undefined template parameter '$key'") if (!defined($map{$key}));
-    my $value = $map{$key};
-    die("template error: list value expected for template parameter '$key', got '$value'") if (ref($value) ne 'ARRAY');
-    return $value;
-}
+def get_from_map_as_list(mapref, key):
+    map = mapref
+    if key not in map:
+        raise KeyError(f"template error: undefined template parameter '{key}'")
+    value = map[key]
+    if not isinstance(value, list):
+        raise TypeError(f"template error: list value expected for template parameter '{key}', got '{value}'")
+    return value
 
 #
 # Converts absolute path $inputpath to relative path (relative to the current
@@ -937,151 +553,108 @@ sub getFromMapAsList($;$)
 # "project base directory" $projectdir. Otherwise it returns the original path.
 # All "\" are converted to "/".
 #
-sub abs2rel($;$;$;)
-{
-    my($inputpath, $projectdir, $referencedir) = @_;
-
-    if (!defined($projectdir) || $projectdir eq '') {
-        return $inputpath;
-    }
-    if (!defined($referencedir) || $referencedir eq '') {
-        $referencedir = cwd;
-    }
+def abs2rel(inputpath, projectdir=None, referencedir=None):
+    if projectdir is None or projectdir == "":
+        return inputpath
+    if referencedir is None or referencedir == "":
+        referencedir = os.getcwd()
 
     # some normalization
-    $inputpath =~ s|\\|/|g;
-    $referencedir =~ s|\\|/|g;
-    $projectdir =~ s|\\|/|g;
+    inputpath = inputpath.replace("\\", "/")
+    referencedir = referencedir.replace("\\", "/")
+    projectdir = projectdir.replace("\\", "/")
 
-    $inputpath =~ s|/\./|/|g;
-    $referencedir =~ s|/\./|/|g;
-    $projectdir =~ s|/\./|/|g;
+    inputpath = re.sub(r"/\./", "/", inputpath)
+    referencedir = re.sub(r"/\./", "/", referencedir)
+    projectdir = re.sub(r"/\./", "/", projectdir)
 
-    $inputpath =~ s|//+|/|g;
-    $referencedir =~ s|//+|/|g;
-    $projectdir =~ s|//+|/|g;
+    inputpath = re.sub(r"//+", "/", inputpath)
+    referencedir = re.sub(r"//+", "/", referencedir)
+    projectdir = re.sub(r"//+", "/", projectdir)
 
-    $referencedir =~ s|/*$|/|;
-    $projectdir =~ s|/*$|/|;
+    referencedir = re.sub(r"/*$", "/", referencedir)
+    projectdir = re.sub(r"/*$", "/", projectdir)
 
-    if (!($inputpath =~ /^\Q$projectdir\E/i && $referencedir =~ /^\Q$projectdir\E/i)) {
-        return $inputpath;
-    }
+    if not (inputpath.lower().startswith(projectdir.lower()) and referencedir.lower().startswith(projectdir.lower())):
+        return inputpath
 
-    while (1)
-    {
-       # keep cutting off common prefixes until no more
-       if (!($inputpath =~ m|^(.*?/)|)) {
-           last;
-       }
-       my $prefix = $1;
-       if ($referencedir =~ /^\Q$prefix\E/i) {
-           $inputpath =~ s/^\Q$prefix\E//i;
-           $referencedir =~ s/^\Q$prefix\E//i;
-       } else {
-           last;
-       }
-    }
+    while True:
+        # keep cutting off common prefixes until no more
+        match = re.match(r"^(.*?/)", inputpath)
+        if not match:
+            break
+        prefix = match.group(1)
+        if referencedir.lower().startswith(prefix.lower()):
+            inputpath = re.sub(f"^{re.escape(prefix)}", "", inputpath, flags=re.IGNORECASE)
+            referencedir = re.sub(f"^{re.escape(prefix)}", "", referencedir, flags=re.IGNORECASE)
+        else:
+            break
 
     # assemble relative path: change every directory name in $referencedir to "..",
     # then add $inputpath to it.
-    $referencedir =~ s|[^/]+|..|g;
-    my $rel = $referencedir.$inputpath;
+    referencedir = referencedir.replace(r'[^/]+', '..')
+    rel = referencedir + inputpath
 
-    return $rel;
-}
+    return rel
 
-sub isRelative($)
-{
+def is_relative(path):
     # a path is absolute if it begins with "/" or "\", or contains ":/" or ":\"
-    my($path) = @_;
-    return !($path =~ /^[\/\\]/ || $path =~ /:[\/\\]/);
-}
+    return not (path.startswith("/") or path.startswith("\\") or ":/" in path or ":\\" in path)
 
 #
 # Convert a path to an absolute path in canonical form.
 # Path must point to a directory which currently exists.
 #
-sub existingDirtoCanonicalAbsolute($)
-{
-    my($dir) = @_;
-    die "argument must be an existing directory: $dir" unless (-d $dir);
-    $old = cwd();
-    chdir($dir);
-    $ret = cwd();
-    chdir($old);
-    return $ret;
-}
+def existing_dir_to_canonical_absolute(dir):
+    if not os.path.isdir(dir):
+        raise ValueError(f"argument must be an existing directory: {dir}")
 
-sub canonicalize($)
-{
-    my($path) = @_;
-    $path =~ s|\\|/|g;  # backslash -> fwd slash
-    $path =~ s|//+|/|g;  # xx//xx -> xx/xx
-    $path =~ s|(/\.)+/|/|g; # xx/././xx -> xx/xx
-    $path =~ s|^(\./)+||s unless $path eq "./"; # ./xx -> xx
-    $path =~ s|/$||g;  # xx/ -> xx
+    old = os.getcwd()
+    os.chdir(dir)
+    ret = os.getcwd()
+    os.chdir(old)
+    return ret
 
-    # # now we'll need to replace "/<subdir>/../" with "/" as many times as we can;
-    # # unless <subdir> is "." or ".."
-    # $path .= "/" if ($path =~ /\/\.\.$/);  # add "/" if it ends in "/.."
-    # $path =~ s|/../../|/..//../|g;  # prevent /../../ from matching
-    # $path =~ s|/../../|/..//../|g;  # once again, to handle /../../../
-    # while ($path =~ s|/[^/]+/\.\./|/|g) {
-    #     $path =~ s|//+|/|g;
-    #     $path =~ s|/../../|/..//../|g;
-    #     $path =~ s|/../../|/..//../|g;
-    # };
-    # $path =~ s|//+|/|g;  # xx//xx -> xx/xx
+def canonicalize(path):
+    path = path.replace("\\", "/")  # backslash -> fwd slash
+    path = re.sub(r"//+", "/", path)  # xx//xx -> xx/xx
+    path = re.sub(r"(/\.)+/", "/", path)  # xx/././xx -> xx/xx
+    path = re.sub(r"^(\./)+", "", path) unless path == "./"  # ./xx -> xx
+    path = re.sub(r"/$", "", path)  # xx/ -> xx
 
-    return $path;
-}
+    # now we'll need to replace "/<subdir>/../" with "/" as many times as we can
 
-sub quote($)
-{
-    my($dir) = @_;
-    if ($dir =~ / /) {$dir = "\"$dir\"";}
-    return $dir;
-}
+    return path
 
-sub readTextFile($)
-{
-    my($file) = @_;
-    open(INFILE, $file) || die "cannot open $file";
-    defined read(INFILE, $content, 1000000) || die "cannot read $file";
-    return $content;
-}
+def quote(dir):
+    if " " in dir:
+        dir = f"\"{dir}\""
+    return dir
 
-sub runprog
-{
-    my $cmd = shift;
-    if ($isWindows && !$isMINGW) {
-        system($ENV{COMSPEC}, "/c", $cmd);
-    } else {
-        system($cmd);
-    }
-}
+def read_text_file(file):
+    with open(file, "r") as infile:
+        content = infile.read()
+    return content
 
-sub error($)
-{
-    my($text) = @_;
-    print STDERR "$progname: error: $text\n";
-    exit(1);
-}
+def runprog(cmd):
+    if os.name == "nt" and not os.environ.get("isMINGW"):
+        os.system(os.environ["COMSPEC"], "/c", cmd)
+    else:
+        os.system(cmd)
 
-sub warning($)
-{
-    my($text) = @_;
-    print STDERR "$progname: warning: $text\n";
-}
+def error(text):
+    print(f"{progname}: error: {text}", file=sys.stderr)
+    sys.exit(1)
 
-sub template()
-{
+def warning(text):
+    print(f"{progname}: warning: {text}", file=sys.stderr)
+
+def template():
     #
     # NOTE: the following template must be kept in sync with the file:
     # <omnetpp>/ui/org.omnetpp.cdt/src/org/omnetpp/cdt/makefile/Makefile.TEMPLATE
     #
-    return <<'ENDTEMPLATE'
+    return r"""
 #
 # OMNeT++/OMNEST Makefile for {targetprefix}{target}
 #
@@ -1300,5 +873,4 @@ help:
 
 # include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
-ENDTEMPLATE
-}
+"""
