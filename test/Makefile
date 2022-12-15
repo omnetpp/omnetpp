@@ -5,7 +5,7 @@
 MAKEFLAGS=-j1
 
 # a (relatively) fast test which runs all tests that can finish in reasonable time. (i.e. full builds excluded)
-test_quick: | test_common test_envir test_core test_anim test_models test_makemake test_featuretool \
+test_quick: | test_common test_envir test_core test_anim test_models test_makemake test_makemake2 test_featuretool \
               test_sqliteresultfiles test_fingerprint test_scave_results_api \
               test_scave_charttemplates test_scave_analysis test_scave_multi_project test_scave_workspace
 
@@ -29,6 +29,9 @@ test_core:
 
 test_makemake:
 	cd makemake && ./runtest
+
+test_makemake2:
+	cd makemake2 && ./runtest
 
 test_fingerprint: test_models
 	cd fingerprint && ./runtest
