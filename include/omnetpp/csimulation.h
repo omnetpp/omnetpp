@@ -962,12 +962,27 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     uint64_t& getSharedCounter(sharedcounterhandle_t handle, uint64_t initialValue=0);
 
     /**
+     * Returns a reference to the shared counter identified by the given name.
+     * The initialValue argument is only used if the call is the first one to
+     * access the counter.
+     */
+    uint64_t& getSharedCounter(const char *name, uint64_t initialValue=0);
+
+    /**
      * Returns the next value from the shared counter identified by the handle.
      * The handle should be allocated via registerSharedCounterName(). The
      * initialValue argument is only used if the call is the first one to access
      * the counter.
      */
     uint64_t getNextSharedCounterValue(sharedcounterhandle_t handle, uint64_t initialValue=0) {return ++getSharedCounter(handle,initialValue);}
+
+    /**
+     * Returns the next value from the shared counter identified by the handle.
+     * The handle should be allocated via registerSharedCounterName(). The
+     * initialValue argument is only used if the call is the first one to access
+     * the counter.
+     */
+    uint64_t getNextSharedCounterValue(const char *name, uint64_t initialValue=0) {return ++getSharedCounter(name,initialValue);}
 
     /**
      * Writes a snapshot of the given object and its children to the

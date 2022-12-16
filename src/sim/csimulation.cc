@@ -1285,6 +1285,11 @@ uint64_t& cSimulation::getSharedCounter(sharedcounterhandle_t handle, uint64_t i
     return counter;
 }
 
+uint64_t& cSimulation::getSharedCounter(const char *name, uint64_t initialValue)
+{
+    return getSharedCounter(registerSharedCounterName(name), initialValue);
+}
+
 int cSimulation::getParsimProcId() const
 {
 #ifdef WITH_PARSIM
