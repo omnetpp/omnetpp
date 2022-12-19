@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/env python3
 #
 # Creates a makefile for a given OMNeT++/OMNEST model.
 # Assumes that .ned, .msg, .cc and .h files are in one directory (or directory tree).
@@ -9,97 +9,62 @@
 
 import os
 import re
+import sys
 import argparse
+import glob
 from typing import List, Dict, Any
 from builtins import isinstance
 from configparser import ConfigParser
-from pathlib import Path
+import subprocess
 
 progname = sys.argv[0]
-is_windows = bool(os.environ.get('OS')) and 'windows' in os.environ['OS'].lower()
-is_mingw = bool(os.environ.get('MSYSTEM')) and 'mingw' in os.environ['MSYSTEM'].lower()
 
 def makemake():
     parser = argparse.ArgumentParser(
-        prog='makemake',
-        description="Create a Makefile for an OMNeT++/OMNEST model, based on source files in current directory"
+        prog = 'makemake',
+        description = "Create a Makefile for an OMNeT++/OMNEST model, based on source files in current directory",
+        epilog = """The default output is Makefile, which you can invoke by typing "make". The contents of the "makefrag" file will be included into the generated makefile, letting you to override the default target, change variables, etc."""
     )
 
-    parser.add_argument('object_files_or_libraries', nargs='*', help="Object files or libraries")
-    parser.add_argument('-h', '--help', action='help', help="Show this help message and exit")
-    parser.add_argument('-f', '--force', action='store_true', help="Force overwriting existing Makefile")
-    parser.add_argument('-e', '--ext', help="C++ source file extension, usually 'cc' or 'cpp'")
-    parser.add_argument('-o', '--output', help="Name of simulation executable or library to be built")
-    parser.add_argument('-O', '--out', help="Specifies the name of the output directory tree for out-of-directory build")
-    parser.add_argument('--deep', action='store_true', help="Generates a 'deep' Makefile")
-    parser.add_argument('-r', '--recurse', action='store_true', help="Causes make to recursively descend into all subdirectories")
-    parser.add_argument('-X', '--except', dest="except", action="append", help="With -r and --deep option: ignore the given directory")
-    parser.add_argument('-d', '--subdir', dest="subdirs", action="append", help="Causes make to recursively descend into the given directory")
-    parser.add_argument('-P', '--projectdir', help="Specifies the project root directory")
-    parser.add_argument('-M', '--mode', help="Selects the build mode, 'debug' or 'release'")
-    parser.add_argument("-Kname=value", "--makefile-define", help="Defines a makefile variable, i.e. causes name=value line to get inserted into the makefile.")
-    parser.add_argument("-n", "--nolink", action="store_true", help="Produce object files but do not create executable or library. Useful for models with parts in several directories. With this option, -u and -l have no effect.")
-    parser.add_argument("-s", "--make-so", action="store_true", help="Build shared library (.so or .dll). Useful if you want to load the model dynamically (via the load-libs= omnetpp.ini or the -l Cmdenv/Qtenv command-line option).")
-    parser.add_argument("-a", "--make-lib", action="store_true", help="Create static library (.a or .lib).")
-    parser.add_argument("-S", "--fordll", action="store_true", help="Compile C++ files for use in DLLs; see -p option. The -s (build shared library) option implies this one.")
-    parser.add_argument("-w", "--withobjects", action="store_true", help="Link with all object files found in -I directories, or add them to the created library. OBSOLETE.")
-    parser.add_argument("-u", "--userinterface", help="Selects the user interface libraries to link with. Possible values are 'all', 'Cmdenv', 'Qtenv'. Defaults to 'all'.")
-    parser.add_argument("-I", dest="include_dirs", action="append", help="Additional NED and C++ include directory")
-    parser.add_argument("-L", dest="library_dirs", action="append", help="Add a directory to the library path")
-    parser.add_argument("-l", dest="libraries", action="append", help="Additional library to link against")
-    parser.add_argument("-p", "--symbol", help="DLL export/import symbol")
-    parser.add_argument("-i", "--includefragment", help="Append file to near end of Makefile")
-
-    # TODO add to the parser help:
-    """
-        object file or library
-                            Arguments will simply get added to the linker (or
-                            librarian) command line. Thus, wildcards and macros
-                            are accepted, and will be resolved at build time.
-                            Useful macros are \$O (the output location of this
-                            makefile), \$(PROJECT_OUTPUT_PATH) and \$(CONFIGNAME);
-                            see the generated makefiles for more. On Unix you
-                            need to single-quote them ('\$O') against getting
-                            resolved prematurely by the shell.
-
-    Default output is Makefile, which you can invoke by typing "make".
-
-    The contents of the makefrag file will be built into the generated makefile,
-    letting you to override the default target, change variables, etc.
-    """
-
-    #
-    # Prepare the variables for the template
-    #
+    parser.add_argument('extra_args', metavar="object files and libraries", nargs="*", help="""Arguments will simply get added to the linker (or librarian) command line. Thus, wildcards and macros are accepted, and will be resolved at build time. Useful macros are $O (the output location of this makefile), $(PROJECT_OUTPUT_PATH) and $(CONFIGNAME); see the generated makefiles for more. On Unix you need to single-quote them ('$O') gainst getting resolved prematurely by the shell.""")
+    parser.add_argument('-f', '--force', action='store_true', help="""Force overwriting the existing Makefile.""")
+    parser.add_argument('-e', '--ext', metavar="EXT", dest="cc_ext", help="""C++ source file extension, usually "cc" or "cpp". By default, this is determined by looking at existing files in the directory.""")
+    parser.add_argument('-o', '--output', metavar="FILENAME", dest="target", help="""Name of simulation executable or library to be built. Defaults to the project name.""")
+    parser.add_argument('-O', '--out', metavar="DIRECTORY", dest="out_dir", help="""Specifies the name of the output directory tree for out-of-directory build; defaults to "out". The actual output directory will be <projectroot>/<dir>/$(CONFIGNAME)/<subpath>, where <subpath> is the project-relative path of the current directory (for <projectroot> see -P). An absolute directory path can also be specified, resulting in <absolute-dir>/$(CONFIGNAME)/<subpath>.""")
+    parser.add_argument('--deep', dest="is_deep", action='store_true', help="""Generates a "deep" Makefile. A deep Makefile will cover the whole source tree under the make directory, not just files in that directory. Directories may be excluded using -X. The include path will contain all directories in the source tree. Deep is not compatible with -r (recursive make), but -d (directory to recurse into) can still be used.""")
+    parser.add_argument('-r', '--recurse', action='store_true', help="""Causes make to recursively descend into all subdirectories; subdirectories are expected to contain makefiles themselves. If you need to maintain a specific order, declare dependencies in the makefrag(.vc) file. Subdirectories may be excluded using -X. See also -d.""")
+    parser.add_argument('-X', '--except', metavar="DIRECTORY", dest="except_subdirs", action="append", default=[], help="""With -r and --deep option: ignore the given directory. If the argument is a relative path, it is interpreted as relative to the current directory. Wildcards (like -X *_backups or -X */tmp) are accepted.""")
+    parser.add_argument('-d', '--subdir', metavar="DIRECTORY", dest="submake_dirs", action="append", default=[], help="""Causes make to recursively descend into the given directory. The directory does not need to be the child of the make directory. When used with --deep, -d also implies -X for that directory.""")
+    parser.add_argument('-P', '--projectdir', metavar="DIRECTORY", dest="project_dir", help="""Specifies the project root directory. Any absolute path (-I, -L, object file names, etc.) that points into the project's subtree will be converted to relative, to ease compiling the project in a different directory. Defaults to first ancestor directory that contains a ".project" file.""")
+    parser.add_argument('-M', '--mode', metavar="MODE", help="""Selects the build mode, "debug" or "release". Defaults to "debug". This setting can still be overridden on the make command line, by specifying "MODE=debug" or "MODE=release" as an extra argument.""")
+    parser.add_argument("-D", "--define", metavar="NAME[=VALUE]", dest="defines", action="append", default=[], help="""Preprocessor symbol to be passed to the C++ compiler.""")
+    parser.add_argument("-K", "--makefile-define", metavar="NAME=VALUE", dest="makefile_variables", action="append", default=[], help="""Defines a makefile variable, i.e. causes the NAME=VALUE line to be inserted into the makefile.""")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-n", "--nolink", dest="type", action="store_const", const="NOLINK", default="EXE", help="""Produce object files but do not create executable or library. Useful for models with parts in several directories. With this option, -u and -l have no effect.""")
+    group.add_argument("-s", "--make-so", dest="type", action="store_const", const="SHAREDLIB", help="""Build shared library (.so or .dll). Useful if you want to load the model dynamically (via the load-libs= omnetpp.ini or the -l Cmdenv/Qtenv command-line option).""")
+    group.add_argument("-a", "--make-lib", dest="type", action="store_const", const="STATICLIB", help="""Create static library (.a or .lib).""")
+    parser.add_argument("-S", "--fordll", dest="compile_for_dll", action="store_true", help="""Compile C++ files for use in DLLs; see -p option. The -s (build shared library) option implies this one.""")
+    parser.add_argument("-u", "--userinterface", metavar="NAME", dest="user_interface", default="", help="""Selects the user interface libraries to link with. Possible values are "all", "Cmdenv", "Qtenv". Defaults to "all".""")
+    parser.add_argument("-I", metavar="DIRECTORY", dest="include_dirs", action="append", default=[], help="Additional C++ include directory")
+    parser.add_argument("-L", metavar="DIRECTORY", dest="library_dirs", action="append", default=[], help="Add a directory to the library path")
+    parser.add_argument("-l", metavar="LIB", dest="libraries", action="append", default=[], help="""Additional library to link against. On Unix, -lfoo will link with libfoo.so or libfoo.a; on Windows, with foo.lib. The library path (see -L) will be searched in both cases.""")
+    parser.add_argument("-p", "--symbol", metavar="NAME", dest="dll_symbol", help="""The DLL export/import symbol. It will cause the -P<symbol>_API option to be added to opp_msgtool invocations. Also, if target is a DLL or --fordll is specified, the <symbol>_EXPORT macro will be passed to the compiler; the source code is expected to be set up so that dll-public declarations are annotated with <symbol>_API, and <symbol>_EXPORT causes <symbol>_API to be defined as __declspec(dllexport).""")
+    parser.add_argument("-i", "--includefragment", metavar="FILENAME", dest="fragment_files", action="append", default=[], help="""Include the specified makefile fragment into the generate makefile. If a file named "makefrag" exists, it is automatically used if no -i options are given. This option allows for custom rules and settings to be added to the generated makefile.""")
 
     args = parser.parse_args()
 
     makefile = "Makefile"
-    if os.path.isfile(makefile) and force != 1:
+    if os.path.isfile(makefile) and not args.force:
         error("use -f to force overwriting existing {}".format(makefile))
 
-    if type == "SHAREDLIB":
-        compile_for_dll = 1
+    if args.type == "SHAREDLIB":
+        args.compile_for_dll = True
 
-    folder = os.getcwd()
-
-    objs = []
-    generated_headers = []
-    extra_objs = []
-    cc_files = []
-    cpp_files = []
-    ned_files = []
-    msg_files = []
-    msg_cc_files = []
-    msg_h_files = []
-    sm_files = []
-    sm_cc_files = []
-    sm_h_files = []
-    source_dirs = []
-    backslashed_source_dirs = []
+    makemake_dir = os.getcwd()
 
     # determine, and clean up format of project root dir
-    if project_dir == "":
+    project_dir = args.project_dir
+    if not project_dir:
         # try to find project root directory (go up until we find a ".project" file)
         dir = os.getcwd()
         dir = dir.replace("\\", "/")
@@ -115,78 +80,77 @@ def makemake():
     elif not os.path.isdir(project_dir):
         error("specified project directory \"{}\" does not exist".format(project_dir))
 
-    if project_dir != "":
-        project_dir = existing_dirto_canonical_absolute(project_dir)
-        #print "Project directory: $project_dir\n"
-        if not (folder.startswith(project_dir)):
+    if project_dir:
+        project_dir = existing_dir_to_canonical_absolute(project_dir)
+        if not same_or_contains(project_dir, makemake_dir):
             error("current directory is not under the given project directory \"{}\"".format(project_dir))
 
-    project_name = project_dir
-    project_name = project_name.rstrip("/\\")
-    project_name = project_name[project_name.rindex("/\\")+1:]
-    target = target if target != "" else project_name
+    project_name = os.path.basename(project_dir.rstrip("/\\"))
+    target = args.target or project_name
 
     # target should only be a name, cannot contain relative path
     if "\\" in target or "/" in target:
         error("target (-o option) should only be a name, it cannot contain relative path")
 
     # recursive and deep do not mix
-    if is_deep:
-        is_recursive = 0
+    if args.is_deep:
+        args.recurse = False
+
+    is_windows = bool(os.environ.get('OS')) and 'windows' in os.environ['OS'].lower()
 
     makecommand = os.environ.get("MAKE") or "make"
 
-    # find Makefile.inc
-    comspec = os.environ.get("COMSPEC")
-    comspec = comspec.replace("\\", "\\\\")
-    config_file = os.popen("opp_configfilepath").read().strip()
-    if os.system("opp_configfilepath") != 0:
-        error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH")
-    if not config_file or not os.path.isfile(config_file):
-        error("opp_configfilepath didn't return the name of an existing directory, result was \"{}\"".format(config_file))
+    # find Makefile.inc -- apparently not needed
+    # result = subprocess.run(['opp_configfilepath'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+    # if result.returncode != 0:
+    #     error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH")
+    # config_file = result.stdout.strip()
+    # if not config_file or not os.path.isfile(config_file):
+    #     error("opp_configfilepath didn't return the name of an existing file, result was \"{}\"".format(config_file))
 
-    # determine outdir (defaults to "out")
-    if out_root == "":
-        out_root = "out"
-    out_root_abs = out_root if not is_relative(out_root) or project_dir == "" else "{}/{}".format(project_dir, out_root)
-    out_root_rel = abs2rel(out_root_abs, project_dir)
-    out_dir = canonicalize("{}".format(out_root_rel))
+    # determine build output dir (defaults to "out")
+    out_root = args.out_dir or "out"
+    out_root_abs = out_root if (os.path.isabs(out_root) or not project_dir) else project_dir + "/" + out_root
+    out_root_rel = make_relative(out_root_abs, makemake_dir, project_dir)
+    out_dir = canonicalize(out_root_rel)
 
     # determine subpath: the project-relative path of this folder
-    subpath = os.getcwd()
-    subpath = subpath.replace(project_dir, "", 1)
-    subpath = subpath.lstrip("/\\")  # remove the leading slash/backslash as this is a relative directory
+    subpath = os.path.relpath(makemake_dir, project_dir)
+    if subpath == ".":
+        subpath = ""  # because the old (perl) opp_makemake does the same
 
     # collect source files
-    if is_deep:
-        all_excluded_dirs = [out_dir] + except_subdirs + submake_dirs
+    if args.is_deep:
+        all_excluded_dirs = [out_dir] + args.except_subdirs + args.submake_dirs
         source_dirs = collect_dirs(".", all_excluded_dirs)
         if len(source_dirs) > 10000:
             error("too many subdirs for --deep")
     else:
-        source_dirs = []
-        if is_good_dir(".", except_subdirs):
-            source_dirs = ["."]
+        source_dirs = ["."] if is_good_dir(".", args.except_subdirs) else []
+
+    cc_files = []
+    cpp_files = []
+    msg_files = []
+    sm_files = []
+    ned_files = []
 
     for f in source_dirs:
         ff = "" if f == "." else f + "/"
-        cc_files.extend(glob(ff + "*.cc"))
-        cpp_files.extend(glob(ff + "*.cpp"))
-        msg_files.extend(glob(ff + "*.msg"))
-        sm_files.extend(glob(ff + "*.sm"))
-        ned_files.extend(glob(ff + "*.ned"))
+        cc_files.extend(sorted_glob(ff + "*.cc"))
+        cpp_files.extend(sorted_glob(ff + "*.cpp"))
+        msg_files.extend(sorted_glob(ff + "*.msg"))
+        sm_files.extend(sorted_glob(ff + "*.sm"))
+        ned_files.extend(sorted_glob(ff + "*.ned"))
 
-    backslashed_source_dirs = []
-    for i in source_dirs:
-        i2 = i.replace("/", "\\")
-        backslashed_source_dirs.append(i2)
+    backslashed_source_dirs = [f.replace("/", "\\") for f in source_dirs]
 
     # include dirs and lib dirs (make them relative to the project dir)
-    include_dirs = [abs2rel(i, project_dir) for i in include_dirs]
-    lib_dirs = [abs2rel(i, project_dir) for i in lib_dirs]
+    include_dirs = [make_relative(i, makemake_dir, project_dir) for i in args.include_dirs]
+    library_dirs = [make_relative(i, makemake_dir, project_dir) for i in args.library_dirs]
 
     # try to determine if .cc or .cpp files are used
-    if cc_ext == "":
+    cc_ext = args.cc_ext
+    if not cc_ext:
         if not cc_files and cpp_files:
             cc_ext = "cpp"
         elif cc_files and not cpp_files:
@@ -205,30 +169,32 @@ def makemake():
 
     target_prefix = ""
     target_suffix = ""
-    if type == "EXE":
+    if args.type == "EXE":
         target_suffix = "$(EXE_SUFFIX)"
-    elif type == "SHAREDLIB":
+    elif args.type == "SHAREDLIB":
         target_suffix = "$(SHARED_LIB_SUFFIX)"
         target_prefix = "$(LIB_PREFIX)"
-    elif type == "STATICLIB":
+    elif args.type == "STATICLIB":
         target_suffix = "$(A_LIB_SUFFIX)"
         target_prefix = "$(LIB_PREFIX)"
 
-    # prepare submake_dirs. First, check that all specified subdirs exist
-    for subdir in submake_dirs:
+    # prepare submakeDirs. First, check that all specified subdirs exist
+    for subdir in args.submake_dirs:
         if not os.path.isdir(subdir):
             error("subdirectory '{}' does not exist".format(subdir))
 
-    if is_recursive:
-        submake_dirs += [f for f in glob.glob("*") if is_good_dir(f, except_subdirs)]
+    submake_dirs = args.submake_dirs
+
+    if args.recurse:
+        submake_dirs += [f for f in sorted_glob("*") if is_good_dir(f, args.except_subdirs)]
 
     # create names for subdir targets
-    submake_names = [re.sub(r"[^a-z_a-Z0-9_]", "_", i) for i in submake_dirs]
+    submake_target_names = [re.sub(r"[^a-zA-Z0-9_]", "_", i) for i in submake_dirs]
 
-    # process extra_args (do ".o" <--> ".obj" translation; NOTE: we don't try to
+    # process extraArgs (do ".o" <--> ".obj" translation; NOTE: we don't try to
     # translate library names, because libs are supposed to be given via -L/-l)
     # NOTE2: we need to remove possible quotes (cmd.exe does not do it)
-    extra_objs = [i.replace("^'(.*)'$", r"\1").replace(r"\.o(bj)?$", ".obj_ext") for i in extra_args]
+    extra_objs = [i.replace("^'(.*)'$", r"\1").replace(r"\.o(bj)?$", ".objExt") for i in args.extra_args]
 
     sources = []
     if cc_ext == "cc":
@@ -237,10 +203,10 @@ def makemake():
         sources.extend(cpp_files)
     sources.extend(msg_files)
     sources.extend(sm_files)
-    if not ignore_ned_files:
-        sources.extend(ned_files)
 
-    objs = [make_derived_file_name(f, obj_ext) for f in sources if not f.startswith("*") and not is_generated_ccfile(f, cc_ext)]
+    objs = ["$O/" + make_derived_file_name(f, obj_ext) for f in sources if not f.startswith("*") and not is_generated_ccfile(f, cc_ext)]
+
+    generated_headers = []
 
     msg_cc_files = [make_derived_file_name(f, "cc") for f in msg_files]
     msg_h_files = [make_derived_file_name(f, "h") for f in msg_files]
@@ -251,23 +217,24 @@ def makemake():
     generated_headers += sm_h_files
 
     # makefrag files
-    makefrags = "";
-    if fragment_files:
-        for frag in fragment_files:
+    makefrags = ""
+    if args.fragment_files:
+        for frag in args.fragment_files:
             makefrags += "-include " + frag + "\n"
     else:
         if os.path.isfile("makefrag"):
             makefrags += "-include makefrag\n"
 
     # defines
-    if compile_for_dll and dll_symbol != "":
-        defines.append(dll_symbol + "_EXPORT")
+    defines = args.defines
+    if args.compile_for_dll and args.dll_symbol:
+        defines.append(args.dll_symbol + "_EXPORT")
 
     deps = ""  # we'll run opp_makedep afterwards
 
     # XP has 8K limit on line length, so we may have to use the inline file feature of nmake
-    approximate_linker_line_length = 500 + len(quote_join(objs)) + len(quote_join(extra_objs)) + 2*len(quote_join(libs)) + 2*len(quote_join(lib_dirs))
-    is_long_linker_line = approximate_linker_line_length > 8000
+    approx_linker_line_length = 500 + len(quote_join(objs)) + len(quote_join(extra_objs)) + 2*len(quote_join(args.libraries)) + 2*len(quote_join(args.library_dirs))
+    is_long_linker_line = approx_linker_line_length > 8000
 
     # fill in template variables
     m = {
@@ -278,26 +245,25 @@ def makemake():
         "targetsuffix" : target_suffix,
         "outdir" : out_dir,
         "subpath" : subpath,
-        "isdeep" : is_deep,
+        "isdeep" : args.is_deep,
         "progname" : "opp_makemake",
-        "args" : join(" ", args),
-        "configfile" : config_file,
+        "args" : " ".join(sys.argv[1:]),
         "cc" : cc_ext,
         "deps" : deps,
-        "exe" : type == "EXE",
-        "sharedlib" : type == "SHAREDLIB",
-        "staticlib" : type == "STATICLIB",
-        "nolink" : type == "NOLINK",
-        "defaultmode" : default_mode,
-        "allenv" : user_interface.startswith('A'),
-        "cmdenv" : user_interface.startswith('C'),
-        "qtenv" : user_interface.startswith('Q'),
+        "exe" : args.type == "EXE",
+        "sharedlib" : args.type == "SHAREDLIB",
+        "staticlib" : args.type == "STATICLIB",
+        "nolink" : args.type == "NOLINK",
+        "defaultmode" : args.mode,
+        "allenv" : not args.user_interface,
+        "cmdenv" : args.user_interface.startswith('C'),
+        "qtenv" : args.user_interface.startswith('Q'),
         "extraobjs" : quote_join(extra_objs),
-        "includepath" : prefix_quote_join(include_dirs, "-I"),
-        "libpathdirs" : lib_dirs,
-        "libs" : libs,
+        "includepath" : prefix_quote_join(args.include_dirs, "-I"),
+        "libpathdirs" : args.library_dirs,
+        "libs" : args.libraries,
         "defines" : prefix_quote_join(defines, "-D"),
-        "makefilevariables" : makefile_variables,
+        "makefilevariables" : args.makefile_variables,
         "makecommand" : makecommand,
         "makefile" : "Makefile",
         "makefrags" : makefrags,
@@ -309,8 +275,8 @@ def makemake():
         "smfiles" : sm_files,
         "objs" : quote_join(objs),
         "submakedirs" : submake_dirs,
-        "submakenames" : submake_names,
-        "dllsymbol" : dll_symbol,
+        "submakenames" : submake_target_names,
+        "dllsymbol" : args.dll_symbol,
         "sourcedirs" : source_dirs,
         "backslashedsourcedirs" : backslashed_source_dirs,
         "gcclongline" : (is_long_linker_line and is_windows)
@@ -318,34 +284,31 @@ def makemake():
 
     content = substitute_into_template(template(), m, "{", "}")
 
-    old_content = read_text_file(makefile) if os.path.exists(makefile) else "";
+    existing_content = read_text_file(makefile) if os.path.exists(makefile) else "";
 
-    if content != old_content:
-        print(("Updating" if os.path.exists(makefile) else "Creating") + makefile + " in " + folder + "...\n")
-        with fopen(makefile, "w") as f:
-            print(content, file=f)
+    if content != existing_content:
+        print(("Updating" if os.path.exists(makefile) else "Creating") + " " +  makefile + " in " + makemake_dir + "...\n")
+        with open(makefile, "w") as f:
+            print(content, file=f, end="")
 
-def is_generated_ccfile(f, cc_ext):
-    return f.endswith("_n."+cc_ext) or f.endswith("_m."+cc_ext) or f.endswith("_sm."+cc_ext)
+def is_generated_ccfile(fname, ccExt):
+    return fname.endswith("_m." + ccExt) or fname.endswith("_sm." + ccExt)
 
-def make_derived_file_name(fname, ext):
-    if fname.endswith(".ned"):
-        return fname[:-4] + "_n." + ext
-    elif fname.endswith(".msg"):
-        return fname[:-4] + "_m." + ext
-    elif fname.endswith(".sm"):
-        return fname[:-3] + "_sm." + ext
-    elif fname.endswith("." + cc_ext):
-        return fname[:-len(cc_ext)-1] + "." + ext
+def make_derived_file_name(fname, new_ext):
+    base, ext = os.path.splitext(fname)
+    if ext == ".msg":
+        return base + "_m." + new_ext
+    elif ext == ".sm":
+        return base + "_sm." + new_ext
     else:
-        return re.sub(r"\.[^.]+$", "." + ext, fname)
+        return base + "." + new_ext
 
 def collect_dirs(dir, except_dirs=None):
     except_dirs = except_dirs or []
     result = []
     if is_good_dir(dir, except_dirs):
         result.append(canonicalize(dir))
-        for f in glob.glob(f"{dir}/*"):
+        for f in sorted_glob(f"{dir}/*"):
             result.extend(collect_dirs(f, except_dirs))
     return result
 
@@ -358,19 +321,22 @@ def is_good_dir(dirpath, except_dirs=None):
     IGNORABLE_DIRS = ["CVS", "RCS", "SCCS", "_darcs", "blib", ".git", ".svn", ".git", ".bzr", ".hg", "backups"]
 
     dirname = os.path.basename(dirpath)
-    if dirname.startswith(".") or dirname in IGNORABLE_DIRS:
+    if dirname in IGNORABLE_DIRS or (dirname != "." and dirname.startswith(".")):
         return False
 
     # check exceptdirs. For that, we convert everything to canonical absolute path
     abs_dir = existing_dir_to_canonical_absolute(dirpath)
     for except_dir_pattern in except_dirs:
-        for except_dir in glob.glob(except_dir_pattern):
+        for except_dir in sorted_glob(except_dir_pattern):
             if os.path.isdir(except_dir):
                 abs_except_dir = existing_dir_to_canonical_absolute(except_dir)
                 if abs_dir == abs_except_dir:
                     return False
 
     return True
+
+def sorted_glob(pattern):
+    return sorted(glob.glob(pattern), key=str.casefold)
 
 #
 # Performs template substitution. Constructs understood are:
@@ -387,7 +353,7 @@ def is_good_dir(dirpath, except_dirs=None):
 #
 # Lines starting with ### treated as comments and will be removed from the output
 #
-def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', end_tag: str = '}') -> str:
+def substitute_into_template(template: str, map: dict, start_tag: str = '{', end_tag: str = '}') -> str:
     # remove whole-line comments
     template = re.sub(r'\n[ \t]*###.*\n', '\n', template)
     # remove end-line comments
@@ -406,9 +372,9 @@ def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', 
             end = template.find(end_tag, start)
             if end != -1:
                 end += end_tag_len
-                tag = template[start:end]
+                tag = template[start : end]
                 #print("processing $tag\n")
-                key = template[start+start_tag_len:end-end_tag_len]
+                key = template[start + start_tag_len : end - end_tag_len]
                 if "\n" in key:
                     raise ValueError("template error: newline inside \"{}\" (misplaced start/end tag?)".format(tag))
                 is_loop = key[0] == "@"
@@ -447,10 +413,11 @@ def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', 
                     loop_vars = []
                     loop_lists = []
                     for loop_spec in key.split(","):
-                        if not re.match(r" *([a-z_a-Z0-9_]+) *: *([a-z_a-Z0-9_]+) */", loop_spec):
+                        match = re.match(r" *([a-zA-Z0-9_]+) *: *([a-zA-Z0-9_]+) *", loop_spec)
+                        if not match:
                             error(f"template error: syntax error in loop tag {tag}, {start_tag}@var1:list1,var2:list2,...{end_tag} expected in body")
-                        loop_vars.append($1)
-                        loop_lists.append($2)
+                        loop_vars.append(match.group(1))
+                        loop_lists.append(match.group(2))
                     # execute loop: iterate in parallel on all loop variables
                     length = len(get_from_map_as_list(map, loop_lists[0]))
                     for i in range(length):
@@ -463,12 +430,13 @@ def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', 
                         replacement += substitute_into_template(loop_body, map, start_tag, end_tag)
 
                     # remove loop variables
-                    for j in range(len(loop_vars)):
-                        del map[loop_vars[j]]
+                    for loop_var in loop_vars:
+                        if loop_var in map:
+                            del map[loop_var]
                 elif is_opt_line:
                     # replacing a whole line
                     condition = get_from_map_as_bool(map, key)
-                    if (not condition if is_negated else condition):
+                    if not condition if is_negated else condition:
                         # put line in: all variables OK
                         pass
                     else:
@@ -480,7 +448,7 @@ def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', 
                         end = end_line + 1
                 elif questionmark_pos != -1:
                     # conditional
-                    replacement = (get_from_map_as_bool(map, key) != is_negated) ? substring_after_questionmark : ""
+                    replacement = substring_after_questionmark if (get_from_map_as_bool(map, key) != is_negated) else ""
                 else:
                     # plain replacement
                     if is_negated:
@@ -488,8 +456,8 @@ def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', 
                     replacement = get_from_map_as_string(map, key)
 
                 # do it: replace substring(start, end) with replacement, unless replacement==null
-                buf += substr2(template, current, start)  # template code up to the {...}
-                buf += replacement
+                buf += template[current:start]  # template code up to the {...}
+                buf += replacement or ""
                 current = end
 
     buf += template[current:]  # rest of the template
@@ -497,47 +465,36 @@ def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', 
     buf = re.sub(r"\n\n\n+", "\n\n", buf)  # remove multiple empty lines
     return buf
 
-def substr2(string: str, startoffset: int, endoffset: int) -> str:
-    return string[startoffset:endoffset]
+def quote_join(list: List[str]) -> str:
+    return prefix_quote_join(list, "")
 
-def quote_join(listref: List[str]) -> str:
-    return prefix_quote_join(listref, "")
-
-def prefix_quote_join(listref: List[str], prefix: str) -> str:
-    list = listref[:]  # make a copy of the list
+def prefix_quote_join(list: List[str], prefix: str) -> str:
     sep = " \\\n    " if len(list) > 5 else " "
     result = ""
     for i in list:
         result += sep + prefix + quote(i)
-    return result if result != "" else ""  # chop off leading space
+    return result[1:] if result else ""  # chop off leading space
 
 def index_of_either(template: str, substring1: str, substring2: str, from_: int) -> int:
-    index1 = template.index(substring1, from_)
-    index2 = template.index(substring2, from_)
+    index1 = template.find(substring1, from_)
+    index2 = template.find(substring2, from_)
     return index2 if index1 == -1 else index1 if index2 == -1 else index1 if index1 < index2 else index2
 
-# for substitute_into_template()
-def get_from_map_as_string(mapref: Dict[str, Any], key: str) -> str:
-    map = mapref.copy()
+# for substituteIntoTemplate()
+def get_from_map_as_string(map: Dict[str, Any], key: str) -> str:
     if key not in map:
         raise Exception("template error: undefined template parameter '" + key + "'")
     return map[key]
 
-# for substitute_into_template()
-def get_from_map_as_bool(mapref: Dict[str, Any], key: str) -> bool:
-    map = mapref.copy()
+# for substituteIntoTemplate()
+def get_from_map_as_bool(map: Dict[str, Any], key: str) -> bool:
     if key not in map:
         raise Exception("template error: undefined template parameter '" + key + "'")
     value = map[key]
+    return bool(value)  # True if non-empty list or non-empty string, False otherwise
 
-    if isinstance(value, list):
-        return bool(len(value))  # True if list is non-empty, False otherwise
-    else:
-        return value
-
-# for substitute_into_template()
-def get_from_map_as_list(mapref, key):
-    map = mapref
+# for substituteIntoTemplate()
+def get_from_map_as_list(map, key):
     if key not in map:
         raise KeyError(f"template error: undefined template parameter '{key}'")
     value = map[key]
@@ -546,83 +503,38 @@ def get_from_map_as_list(mapref, key):
     return value
 
 #
-# Converts absolute path $inputpath to relative path (relative to the current
-# directory $referencedir), provided that both $inputpath and $referencedir are under a
-# "project base directory" $projectdir. Otherwise it returns the original path.
-# All "\" are converted to "/".
+# Converts path $inputpath to relative path (relative to directory $referencedir),
+# provided that both $inputpath and $referencedir are under $projectdir.
+# Otherwise it returns the original path.
 #
-def abs2rel(inputpath, projectdir=None, referencedir=None):
-    if projectdir is None or projectdir == "":
-        return inputpath
-    if referencedir is None or referencedir == "":
-        referencedir = os.getcwd()
+def make_relative(input_path, reference_dir, project_dir=None):
+    if not project_dir:
+        return input_path
+    if same_or_contains(project_dir, input_path) and same_or_contains(project_dir, reference_dir):
+        return os.path.relpath(input_path, reference_dir)
+    else:
+        return input_path
 
-    # some normalization
-    inputpath = inputpath.replace("\\", "/")
-    referencedir = referencedir.replace("\\", "/")
-    projectdir = projectdir.replace("\\", "/")
-
-    inputpath = re.sub(r"/\./", "/", inputpath)
-    referencedir = re.sub(r"/\./", "/", referencedir)
-    projectdir = re.sub(r"/\./", "/", projectdir)
-
-    inputpath = re.sub(r"//+", "/", inputpath)
-    referencedir = re.sub(r"//+", "/", referencedir)
-    projectdir = re.sub(r"//+", "/", projectdir)
-
-    referencedir = re.sub(r"/*$", "/", referencedir)
-    projectdir = re.sub(r"/*$", "/", projectdir)
-
-    if not (inputpath.lower().startswith(projectdir.lower()) and referencedir.lower().startswith(projectdir.lower())):
-        return inputpath
-
-    while True:
-        # keep cutting off common prefixes until no more
-        match = re.match(r"^(.*?/)", inputpath)
-        if not match:
-            break
-        prefix = match.group(1)
-        if referencedir.lower().startswith(prefix.lower()):
-            inputpath = re.sub(f"^{re.escape(prefix)}", "", inputpath, flags=re.IGNORECASE)
-            referencedir = re.sub(f"^{re.escape(prefix)}", "", referencedir, flags=re.IGNORECASE)
-        else:
-            break
-
-    # assemble relative path: change every directory name in $referencedir to "..",
-    # then add $inputpath to it.
-    referencedir = referencedir.replace(r'[^/]+', '..')
-    rel = referencedir + inputpath
-
-    return rel
-
-def is_relative(path):
-    # a path is absolute if it begins with "/" or "\", or contains ":/" or ":\"
-    return not (path.startswith("/") or path.startswith("\\") or ":/" in path or ":\\" in path)
+#
+# Returns true if the two paths identify the same path in the file system
+# or `file`` is in the subtree of `dir`.
+#
+def same_or_contains(dir, file):
+    dir_abs = os.path.abspath(dir)
+    file_abs = os.path.abspath(file)
+    return os.path.commonpath([file_abs,dir_abs]) == dir_abs
 
 #
 # Convert a path to an absolute path in canonical form.
 # Path must point to a directory which currently exists.
 #
-def existing_dir_to_canonical_absolute(dir):
+def existing_dir_to_canonical_absolute(dir): #TODO eliminate
     if not os.path.isdir(dir):
         raise ValueError(f"argument must be an existing directory: {dir}")
-
-    old = os.getcwd()
-    os.chdir(dir)
-    ret = os.getcwd()
-    os.chdir(old)
-    return ret
+    return os.path.abspath(dir).replace("\\", "/")
 
 def canonicalize(path):
-    path = path.replace("\\", "/")  # backslash -> fwd slash
-    path = re.sub(r"//+", "/", path)  # xx//xx -> xx/xx
-    path = re.sub(r"(/\.)+/", "/", path)  # xx/././xx -> xx/xx
-    path = re.sub(r"^(\./)+", "", path) unless path == "./"  # ./xx -> xx
-    path = re.sub(r"/$", "", path)  # xx/ -> xx
-
-    # now we'll need to replace "/<subdir>/../" with "/" as many times as we can
-
-    return path
+    return os.path.normpath(path).replace("\\", "/")
 
 def quote(dir):
     if " " in dir:
@@ -630,15 +542,9 @@ def quote(dir):
     return dir
 
 def read_text_file(file):
-    with open(file, "r") as infile:
-        content = infile.read()
+    with open(file, "r") as f:
+        content = f.read()
     return content
-
-def runprog(cmd):
-    if os.name == "nt" and not os.environ.get("isMINGW"):
-        os.system(os.environ["COMSPEC"], "/c", cmd)
-    else:
-        os.system(cmd)
 
 def error(text):
     print(f"{progname}: error: {text}", file=sys.stderr)
@@ -870,6 +776,6 @@ help:
 
 # include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
-"""
+""".lstrip()
 
 makemake()
