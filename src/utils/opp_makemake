@@ -20,312 +20,310 @@ is_windows = bool(os.environ.get('OS')) and 'windows' in os.environ['OS'].lower(
 is_mingw = bool(os.environ.get('MSYSTEM')) and 'mingw' in os.environ['MSYSTEM'].lower()
 
 def makemake():
-    # code for makemake function goes here
+    parser = argparse.ArgumentParser(
+        prog='makemake',
+        description="Create a Makefile for an OMNeT++/OMNEST model, based on source files in current directory"
+    )
 
-parser = argparse.ArgumentParser(
-    prog='makemake',
-    description="Create a Makefile for an OMNeT++/OMNEST model, based on source files in current directory"
-)
+    parser.add_argument('object_files_or_libraries', nargs='*', help="Object files or libraries")
+    parser.add_argument('-h', '--help', action='help', help="Show this help message and exit")
+    parser.add_argument('-f', '--force', action='store_true', help="Force overwriting existing Makefile")
+    parser.add_argument('-e', '--ext', help="C++ source file extension, usually 'cc' or 'cpp'")
+    parser.add_argument('-o', '--output', help="Name of simulation executable or library to be built")
+    parser.add_argument('-O', '--out', help="Specifies the name of the output directory tree for out-of-directory build")
+    parser.add_argument('--deep', action='store_true', help="Generates a 'deep' Makefile")
+    parser.add_argument('-r', '--recurse', action='store_true', help="Causes make to recursively descend into all subdirectories")
+    parser.add_argument('-X', '--except', dest="except", action="append", help="With -r and --deep option: ignore the given directory")
+    parser.add_argument('-d', '--subdir', dest="subdirs", action="append", help="Causes make to recursively descend into the given directory")
+    parser.add_argument('-P', '--projectdir', help="Specifies the project root directory")
+    parser.add_argument('-M', '--mode', help="Selects the build mode, 'debug' or 'release'")
+    parser.add_argument("-Kname=value", "--makefile-define", help="Defines a makefile variable, i.e. causes name=value line to get inserted into the makefile.")
+    parser.add_argument("-n", "--nolink", action="store_true", help="Produce object files but do not create executable or library. Useful for models with parts in several directories. With this option, -u and -l have no effect.")
+    parser.add_argument("-s", "--make-so", action="store_true", help="Build shared library (.so or .dll). Useful if you want to load the model dynamically (via the load-libs= omnetpp.ini or the -l Cmdenv/Qtenv command-line option).")
+    parser.add_argument("-a", "--make-lib", action="store_true", help="Create static library (.a or .lib).")
+    parser.add_argument("-S", "--fordll", action="store_true", help="Compile C++ files for use in DLLs; see -p option. The -s (build shared library) option implies this one.")
+    parser.add_argument("-w", "--withobjects", action="store_true", help="Link with all object files found in -I directories, or add them to the created library. OBSOLETE.")
+    parser.add_argument("-u", "--userinterface", help="Selects the user interface libraries to link with. Possible values are 'all', 'Cmdenv', 'Qtenv'. Defaults to 'all'.")
+    parser.add_argument("-I", dest="include_dirs", action="append", help="Additional NED and C++ include directory")
+    parser.add_argument("-L", dest="library_dirs", action="append", help="Add a directory to the library path")
+    parser.add_argument("-l", dest="libraries", action="append", help="Additional library to link against")
+    parser.add_argument("-p", "--symbol", help="DLL export/import symbol")
+    parser.add_argument("-i", "--includefragment", help="Append file to near end of Makefile")
 
-parser.add_argument('object_files_or_libraries', nargs='*', help="Object files or libraries")
-parser.add_argument('-h', '--help', action='help', help="Show this help message and exit")
-parser.add_argument('-f', '--force', action='store_true', help="Force overwriting existing Makefile")
-parser.add_argument('-e', '--ext', help="C++ source file extension, usually 'cc' or 'cpp'")
-parser.add_argument('-o', '--output', help="Name of simulation executable or library to be built")
-parser.add_argument('-O', '--out', help="Specifies the name of the output directory tree for out-of-directory build")
-parser.add_argument('--deep', action='store_true', help="Generates a 'deep' Makefile")
-parser.add_argument('-r', '--recurse', action='store_true', help="Causes make to recursively descend into all subdirectories")
-parser.add_argument('-X', '--except', dest="except", action="append", help="With -r and --deep option: ignore the given directory")
-parser.add_argument('-d', '--subdir', dest="subdirs", action="append", help="Causes make to recursively descend into the given directory")
-parser.add_argument('-P', '--projectdir', help="Specifies the project root directory")
-parser.add_argument('-M', '--mode', help="Selects the build mode, 'debug' or 'release'")
-parser.add_argument("-Kname=value", "--makefile-define", help="Defines a makefile variable, i.e. causes name=value line to get inserted into the makefile.")
-parser.add_argument("-n", "--nolink", action="store_true", help="Produce object files but do not create executable or library. Useful for models with parts in several directories. With this option, -u and -l have no effect.")
-parser.add_argument("-s", "--make-so", action="store_true", help="Build shared library (.so or .dll). Useful if you want to load the model dynamically (via the load-libs= omnetpp.ini or the -l Cmdenv/Qtenv command-line option).")
-parser.add_argument("-a", "--make-lib", action="store_true", help="Create static library (.a or .lib).")
-parser.add_argument("-S", "--fordll", action="store_true", help="Compile C++ files for use in DLLs; see -p option. The -s (build shared library) option implies this one.")
-parser.add_argument("-w", "--withobjects", action="store_true", help="Link with all object files found in -I directories, or add them to the created library. OBSOLETE.")
-parser.add_argument("-u", "--userinterface", help="Selects the user interface libraries to link with. Possible values are 'all', 'Cmdenv', 'Qtenv'. Defaults to 'all'.")
-parser.add_argument("-I", dest="include_dirs", action="append", help="Additional NED and C++ include directory")
-parser.add_argument("-L", dest="library_dirs", action="append", help="Add a directory to the library path")
-parser.add_argument("-l", dest="libraries", action="append", help="Additional library to link against")
-parser.add_argument("-p", "--symbol", help="DLL export/import symbol")
-parser.add_argument("-i", "--includefragment", help="Append file to near end of Makefile")
+    # TODO add to the parser help:
+    """
+        object file or library
+                            Arguments will simply get added to the linker (or
+                            librarian) command line. Thus, wildcards and macros
+                            are accepted, and will be resolved at build time.
+                            Useful macros are \$O (the output location of this
+                            makefile), \$(PROJECT_OUTPUT_PATH) and \$(CONFIGNAME);
+                            see the generated makefiles for more. On Unix you
+                            need to single-quote them ('\$O') against getting
+                            resolved prematurely by the shell.
 
-# TODO add to the parser help:
-"""
-    object file or library
-                          Arguments will simply get added to the linker (or
-                          librarian) command line. Thus, wildcards and macros
-                          are accepted, and will be resolved at build time.
-                          Useful macros are \$O (the output location of this
-                          makefile), \$(PROJECT_OUTPUT_PATH) and \$(CONFIGNAME);
-                          see the generated makefiles for more. On Unix you
-                          need to single-quote them ('\$O') against getting
-                          resolved prematurely by the shell.
+    Default output is Makefile, which you can invoke by typing "make".
 
-Default output is Makefile, which you can invoke by typing "make".
+    The contents of the makefrag file will be built into the generated makefile,
+    letting you to override the default target, change variables, etc.
+    """
 
-The contents of the makefrag file will be built into the generated makefile,
-letting you to override the default target, change variables, etc.
-"""
+    #
+    # Prepare the variables for the template
+    #
 
-#
-# Prepare the variables for the template
-#
+    args = parser.parse_args()
 
-args = parser.parse_args()
+    makefile = "Makefile"
+    if os.path.isfile(makefile) and force != 1:
+        error("use -f to force overwriting existing {}".format(makefile))
 
-makefile = "Makefile"
-if os.path.isfile(makefile) and force != 1:
-    error("use -f to force overwriting existing {}".format(makefile))
+    if type == "SHAREDLIB":
+        compile_for_dll = 1
 
-if type == "SHAREDLIB":
-    compile_for_dll = 1
+    folder = os.getcwd()
 
-folder = os.getcwd()
-
-objs = []
-generated_headers = []
-extra_objs = []
-cc_files = []
-cpp_files = []
-ned_files = []
-msg_files = []
-msg_cc_files = []
-msg_h_files = []
-sm_files = []
-sm_cc_files = []
-sm_h_files = []
-source_dirs = []
-backslashed_source_dirs = []
-
-# determine, and clean up format of project root dir
-if project_dir == "":
-    # try to find project root directory (go up until we find a ".project" file)
-    dir = os.getcwd()
-    dir = dir.replace("\\", "/")
-    while True:
-        if os.path.isfile("{}/.project".format(dir)):
-            project_dir = dir
-            break
-        if "/" in dir:
-            dir = dir[:dir.rindex("/")]
-        else:
-            project_dir = "."
-            break
-elif not os.path.isdir(project_dir):
-    error("specified project directory \"{}\" does not exist".format(project_dir))
-
-if project_dir != "":
-    project_dir = existing_dirto_canonical_absolute(project_dir)
-    #print "Project directory: $project_dir\n"
-    if not (folder.startswith(project_dir)):
-        error("current directory is not under the given project directory \"{}\"".format(project_dir))
-
-project_name = project_dir
-project_name = project_name.rstrip("/\\")
-project_name = project_name[project_name.rindex("/\\")+1:]
-target = target if target != "" else project_name
-
-# target should only be a name, cannot contain relative path
-if "\\" in target or "/" in target:
-    error("target (-o option) should only be a name, it cannot contain relative path")
-
-# recursive and deep do not mix
-if is_deep:
-    is_recursive = 0
-
-makecommand = os.environ.get("MAKE") or "make"
-
-# find Makefile.inc
-comspec = os.environ.get("COMSPEC")
-comspec = comspec.replace("\\", "\\\\")
-config_file = os.popen("opp_configfilepath").read().strip()
-if os.system("opp_configfilepath") != 0:
-    error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH")
-if not config_file or not os.path.isfile(config_file):
-    error("opp_configfilepath didn't return the name of an existing directory, result was \"{}\"".format(config_file))
-
-# determine outdir (defaults to "out")
-if out_root == "":
-    out_root = "out"
-out_root_abs = out_root if not is_relative(out_root) or project_dir == "" else "{}/{}".format(project_dir, out_root)
-out_root_rel = abs2rel(out_root_abs, project_dir)
-out_dir = canonicalize("{}".format(out_root_rel))
-
-# determine subpath: the project-relative path of this folder
-subpath = os.getcwd()
-subpath = subpath.replace(project_dir, "", 1)
-subpath = subpath.lstrip("/\\")  # remove the leading slash/backslash as this is a relative directory
-
-# collect source files
-if is_deep:
-    all_excluded_dirs = [out_dir] + except_subdirs + submake_dirs
-    source_dirs = collect_dirs(".", all_excluded_dirs)
-    if len(source_dirs) > 10000:
-        error("too many subdirs for --deep")
-else:
+    objs = []
+    generated_headers = []
+    extra_objs = []
+    cc_files = []
+    cpp_files = []
+    ned_files = []
+    msg_files = []
+    msg_cc_files = []
+    msg_h_files = []
+    sm_files = []
+    sm_cc_files = []
+    sm_h_files = []
     source_dirs = []
-    if is_good_dir(".", except_subdirs):
-        source_dirs = ["."]
+    backslashed_source_dirs = []
 
-for f in source_dirs:
-    ff = "" if f == "." else f + "/"
-    cc_files.extend(glob(ff + "*.cc"))
-    cpp_files.extend(glob(ff + "*.cpp"))
-    msg_files.extend(glob(ff + "*.msg"))
-    sm_files.extend(glob(ff + "*.sm"))
-    ned_files.extend(glob(ff + "*.ned"))
+    # determine, and clean up format of project root dir
+    if project_dir == "":
+        # try to find project root directory (go up until we find a ".project" file)
+        dir = os.getcwd()
+        dir = dir.replace("\\", "/")
+        while True:
+            if os.path.isfile("{}/.project".format(dir)):
+                project_dir = dir
+                break
+            if "/" in dir:
+                dir = dir[:dir.rindex("/")]
+            else:
+                project_dir = "."
+                break
+    elif not os.path.isdir(project_dir):
+        error("specified project directory \"{}\" does not exist".format(project_dir))
 
-backslashed_source_dirs = []
-for i in source_dirs:
-    i2 = i.replace("/", "\\")
-    backslashed_source_dirs.append(i2)
+    if project_dir != "":
+        project_dir = existing_dirto_canonical_absolute(project_dir)
+        #print "Project directory: $project_dir\n"
+        if not (folder.startswith(project_dir)):
+            error("current directory is not under the given project directory \"{}\"".format(project_dir))
 
-# include dirs and lib dirs (make them relative to the project dir)
-include_dirs = [abs2rel(i, project_dir) for i in include_dirs]
-lib_dirs = [abs2rel(i, project_dir) for i in lib_dirs]
+    project_name = project_dir
+    project_name = project_name.rstrip("/\\")
+    project_name = project_name[project_name.rindex("/\\")+1:]
+    target = target if target != "" else project_name
 
-# try to determine if .cc or .cpp files are used
-if cc_ext == "":
-    if not cc_files and cpp_files:
-        cc_ext = "cpp"
-    elif cc_files and not cpp_files:
-        cc_ext = "cc"
-    elif cc_files and cpp_files:
-        error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use")
+    # target should only be a name, cannot contain relative path
+    if "\\" in target or "/" in target:
+        error("target (-o option) should only be a name, it cannot contain relative path")
+
+    # recursive and deep do not mix
+    if is_deep:
+        is_recursive = 0
+
+    makecommand = os.environ.get("MAKE") or "make"
+
+    # find Makefile.inc
+    comspec = os.environ.get("COMSPEC")
+    comspec = comspec.replace("\\", "\\\\")
+    config_file = os.popen("opp_configfilepath").read().strip()
+    if os.system("opp_configfilepath") != 0:
+        error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH")
+    if not config_file or not os.path.isfile(config_file):
+        error("opp_configfilepath didn't return the name of an existing directory, result was \"{}\"".format(config_file))
+
+    # determine outdir (defaults to "out")
+    if out_root == "":
+        out_root = "out"
+    out_root_abs = out_root if not is_relative(out_root) or project_dir == "" else "{}/{}".format(project_dir, out_root)
+    out_root_rel = abs2rel(out_root_abs, project_dir)
+    out_dir = canonicalize("{}".format(out_root_rel))
+
+    # determine subpath: the project-relative path of this folder
+    subpath = os.getcwd()
+    subpath = subpath.replace(project_dir, "", 1)
+    subpath = subpath.lstrip("/\\")  # remove the leading slash/backslash as this is a relative directory
+
+    # collect source files
+    if is_deep:
+        all_excluded_dirs = [out_dir] + except_subdirs + submake_dirs
+        source_dirs = collect_dirs(".", all_excluded_dirs)
+        if len(source_dirs) > 10000:
+            error("too many subdirs for --deep")
     else:
-        cc_ext = "cc"  # if no files, use .cc extension
-else:
-    if cc_ext == "cc" and not cc_files and cpp_files:
-        warning("you specified -e cc but you have only .cpp files!")
-    if cc_ext == "cpp" and cc_files and not cpp_files:
-        warning("you specified -e cpp but you have only .cc files!")
+        source_dirs = []
+        if is_good_dir(".", except_subdirs):
+            source_dirs = ["."]
 
-obj_ext = "o"
+    for f in source_dirs:
+        ff = "" if f == "." else f + "/"
+        cc_files.extend(glob(ff + "*.cc"))
+        cpp_files.extend(glob(ff + "*.cpp"))
+        msg_files.extend(glob(ff + "*.msg"))
+        sm_files.extend(glob(ff + "*.sm"))
+        ned_files.extend(glob(ff + "*.ned"))
 
-target_prefix = ""
-target_suffix = ""
-if type == "EXE":
-    target_suffix = "$(EXE_SUFFIX)"
-elif type == "SHAREDLIB":
-    target_suffix = "$(SHARED_LIB_SUFFIX)"
-    target_prefix = "$(LIB_PREFIX)"
-elif type == "STATICLIB":
-    target_suffix = "$(A_LIB_SUFFIX)"
-    target_prefix = "$(LIB_PREFIX)"
+    backslashed_source_dirs = []
+    for i in source_dirs:
+        i2 = i.replace("/", "\\")
+        backslashed_source_dirs.append(i2)
 
-# prepare submake_dirs. First, check that all specified subdirs exist
-for subdir in submake_dirs:
-    if not os.path.isdir(subdir):
-        error("subdirectory '{}' does not exist".format(subdir))
+    # include dirs and lib dirs (make them relative to the project dir)
+    include_dirs = [abs2rel(i, project_dir) for i in include_dirs]
+    lib_dirs = [abs2rel(i, project_dir) for i in lib_dirs]
 
-if is_recursive:
-    submake_dirs += [f for f in glob.glob("*") if is_good_dir(f, except_subdirs)]
+    # try to determine if .cc or .cpp files are used
+    if cc_ext == "":
+        if not cc_files and cpp_files:
+            cc_ext = "cpp"
+        elif cc_files and not cpp_files:
+            cc_ext = "cc"
+        elif cc_files and cpp_files:
+            error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use")
+        else:
+            cc_ext = "cc"  # if no files, use .cc extension
+    else:
+        if cc_ext == "cc" and not cc_files and cpp_files:
+            warning("you specified -e cc but you have only .cpp files!")
+        if cc_ext == "cpp" and cc_files and not cpp_files:
+            warning("you specified -e cpp but you have only .cc files!")
 
-# create names for subdir targets
-submake_names = [re.sub(r"[^a-z_a-Z0-9_]", "_", i) for i in submake_dirs]
+    obj_ext = "o"
 
-# process extra_args (do ".o" <--> ".obj" translation; NOTE: we don't try to
-# translate library names, because libs are supposed to be given via -L/-l)
-# NOTE2: we need to remove possible quotes (cmd.exe does not do it)
-extra_objs = [i.replace("^'(.*)'$", r"\1").replace(r"\.o(bj)?$", ".obj_ext") for i in extra_args]
+    target_prefix = ""
+    target_suffix = ""
+    if type == "EXE":
+        target_suffix = "$(EXE_SUFFIX)"
+    elif type == "SHAREDLIB":
+        target_suffix = "$(SHARED_LIB_SUFFIX)"
+        target_prefix = "$(LIB_PREFIX)"
+    elif type == "STATICLIB":
+        target_suffix = "$(A_LIB_SUFFIX)"
+        target_prefix = "$(LIB_PREFIX)"
 
-sources = []
-if cc_ext == "cc":
-    sources.extend(cc_files)
-if cc_ext == "cpp":
-    sources.extend(cpp_files)
-sources.extend(msg_files)
-sources.extend(sm_files)
-if not ignore_ned_files:
-    sources.extend(ned_files)
+    # prepare submake_dirs. First, check that all specified subdirs exist
+    for subdir in submake_dirs:
+        if not os.path.isdir(subdir):
+            error("subdirectory '{}' does not exist".format(subdir))
 
-objs = [make_derived_file_name(f, obj_ext) for f in sources if not f.startswith("*") and not is_generated_ccfile(f, cc_ext)]
+    if is_recursive:
+        submake_dirs += [f for f in glob.glob("*") if is_good_dir(f, except_subdirs)]
 
-msg_cc_files = [make_derived_file_name(f, "cc") for f in msg_files]
-msg_h_files = [make_derived_file_name(f, "h") for f in msg_files]
-generated_headers += msg_h_files
+    # create names for subdir targets
+    submake_names = [re.sub(r"[^a-z_a-Z0-9_]", "_", i) for i in submake_dirs]
 
-sm_cc_files = [make_derived_file_name(f, "cc") for f in sm_files]
-sm_h_files = [make_derived_file_name(f, "h") for f in sm_files]
-generated_headers += sm_h_files
+    # process extra_args (do ".o" <--> ".obj" translation; NOTE: we don't try to
+    # translate library names, because libs are supposed to be given via -L/-l)
+    # NOTE2: we need to remove possible quotes (cmd.exe does not do it)
+    extra_objs = [i.replace("^'(.*)'$", r"\1").replace(r"\.o(bj)?$", ".obj_ext") for i in extra_args]
 
-# makefrag files
-makefrags = "";
-if fragment_files:
-    for frag in fragment_files:
-        makefrags += "-include " + frag + "\n"
-else:
-    if os.path.isfile("makefrag"):
-        makefrags += "-include makefrag\n"
+    sources = []
+    if cc_ext == "cc":
+        sources.extend(cc_files)
+    if cc_ext == "cpp":
+        sources.extend(cpp_files)
+    sources.extend(msg_files)
+    sources.extend(sm_files)
+    if not ignore_ned_files:
+        sources.extend(ned_files)
 
-# defines
-if compile_for_dll and dll_symbol != "":
-    defines.append(dll_symbol + "_EXPORT")
+    objs = [make_derived_file_name(f, obj_ext) for f in sources if not f.startswith("*") and not is_generated_ccfile(f, cc_ext)]
 
-deps = ""  # we'll run opp_makedep afterwards
+    msg_cc_files = [make_derived_file_name(f, "cc") for f in msg_files]
+    msg_h_files = [make_derived_file_name(f, "h") for f in msg_files]
+    generated_headers += msg_h_files
 
-# XP has 8K limit on line length, so we may have to use the inline file feature of nmake
-approximate_linker_line_length = 500 + len(quote_join(objs)) + len(quote_join(extra_objs)) + 2*len(quote_join(libs)) + 2*len(quote_join(lib_dirs))
-is_long_linker_line = approximate_linker_line_length > 8000
+    sm_cc_files = [make_derived_file_name(f, "cc") for f in sm_files]
+    sm_h_files = [make_derived_file_name(f, "h") for f in sm_files]
+    generated_headers += sm_h_files
 
-# fill in template variables
-m = {
-    "lbrace" : "{",
-    "rbrace" : "}",
-    "targetprefix" : target_prefix,
-    "target" :  target,
-    "targetsuffix" : target_suffix,
-    "outdir" : out_dir,
-    "subpath" : subpath,
-    "isdeep" : is_deep,
-    "progname" : "opp_makemake",
-    "args" : join(" ", args),
-    "configfile" : config_file,
-    "cc" : cc_ext,
-    "deps" : deps,
-    "exe" : type == "EXE",
-    "sharedlib" : type == "SHAREDLIB",
-    "staticlib" : type == "STATICLIB",
-    "nolink" : type == "NOLINK",
-    "defaultmode" : default_mode,
-    "allenv" : user_interface.startswith('A'),
-    "cmdenv" : user_interface.startswith('C'),
-    "qtenv" : user_interface.startswith('Q'),
-    "extraobjs" : quote_join(extra_objs),
-    "includepath" : prefix_quote_join(include_dirs, "-I"),
-    "libpathdirs" : lib_dirs,
-    "libs" : libs,
-    "defines" : prefix_quote_join(defines, "-D"),
-    "makefilevariables" : makefile_variables,
-    "makecommand" : makecommand,
-    "makefile" : "Makefile",
-    "makefrags" : makefrags,
-    "msgccfiles" : msg_cc_files,
-    "msghfiles" : msg_h_files,
-    "msgfiles" : msg_files,
-    "smccfiles" : sm_cc_files,
-    "smhfiles" : sm_h_files,
-    "smfiles" : sm_files,
-    "objs" : quote_join(objs),
-    "submakedirs" : submake_dirs,
-    "submakenames" : submake_names,
-    "dllsymbol" : dll_symbol,
-    "sourcedirs" : source_dirs,
-    "backslashedsourcedirs" : backslashed_source_dirs,
-    "gcclongline" : (is_long_linker_line and is_windows)
-}
+    # makefrag files
+    makefrags = "";
+    if fragment_files:
+        for frag in fragment_files:
+            makefrags += "-include " + frag + "\n"
+    else:
+        if os.path.isfile("makefrag"):
+            makefrags += "-include makefrag\n"
 
-content = substitute_into_template(template(), m, "{", "}")
+    # defines
+    if compile_for_dll and dll_symbol != "":
+        defines.append(dll_symbol + "_EXPORT")
 
-old_content = read_text_file(makefile) if os.path.exists(makefile) else "";
+    deps = ""  # we'll run opp_makedep afterwards
 
-if content != old_content:
-    print(("Updating" if os.path.exists(makefile) else "Creating") + makefile + " in " + folder + "...\n")
-    with fopen(makefile, "w") as f:
-        print(content, file=f)
+    # XP has 8K limit on line length, so we may have to use the inline file feature of nmake
+    approximate_linker_line_length = 500 + len(quote_join(objs)) + len(quote_join(extra_objs)) + 2*len(quote_join(libs)) + 2*len(quote_join(lib_dirs))
+    is_long_linker_line = approximate_linker_line_length > 8000
+
+    # fill in template variables
+    m = {
+        "lbrace" : "{",
+        "rbrace" : "}",
+        "targetprefix" : target_prefix,
+        "target" :  target,
+        "targetsuffix" : target_suffix,
+        "outdir" : out_dir,
+        "subpath" : subpath,
+        "isdeep" : is_deep,
+        "progname" : "opp_makemake",
+        "args" : join(" ", args),
+        "configfile" : config_file,
+        "cc" : cc_ext,
+        "deps" : deps,
+        "exe" : type == "EXE",
+        "sharedlib" : type == "SHAREDLIB",
+        "staticlib" : type == "STATICLIB",
+        "nolink" : type == "NOLINK",
+        "defaultmode" : default_mode,
+        "allenv" : user_interface.startswith('A'),
+        "cmdenv" : user_interface.startswith('C'),
+        "qtenv" : user_interface.startswith('Q'),
+        "extraobjs" : quote_join(extra_objs),
+        "includepath" : prefix_quote_join(include_dirs, "-I"),
+        "libpathdirs" : lib_dirs,
+        "libs" : libs,
+        "defines" : prefix_quote_join(defines, "-D"),
+        "makefilevariables" : makefile_variables,
+        "makecommand" : makecommand,
+        "makefile" : "Makefile",
+        "makefrags" : makefrags,
+        "msgccfiles" : msg_cc_files,
+        "msghfiles" : msg_h_files,
+        "msgfiles" : msg_files,
+        "smccfiles" : sm_cc_files,
+        "smhfiles" : sm_h_files,
+        "smfiles" : sm_files,
+        "objs" : quote_join(objs),
+        "submakedirs" : submake_dirs,
+        "submakenames" : submake_names,
+        "dllsymbol" : dll_symbol,
+        "sourcedirs" : source_dirs,
+        "backslashedsourcedirs" : backslashed_source_dirs,
+        "gcclongline" : (is_long_linker_line and is_windows)
+    }
+
+    content = substitute_into_template(template(), m, "{", "}")
+
+    old_content = read_text_file(makefile) if os.path.exists(makefile) else "";
+
+    if content != old_content:
+        print(("Updating" if os.path.exists(makefile) else "Creating") + makefile + " in " + folder + "...\n")
+        with fopen(makefile, "w") as f:
+            print(content, file=f)
 
 def is_generated_ccfile(f, cc_ext):
     return f.endswith("_n."+cc_ext) or f.endswith("_m."+cc_ext) or f.endswith("_sm."+cc_ext)
@@ -874,3 +872,5 @@ help:
 # include all dependencies
 -include $(OBJS:%=%.d) $(MSGFILES:%.msg=$O/%_m.h.d)
 """
+
+makemake()
