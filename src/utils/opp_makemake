@@ -16,8 +16,8 @@ from configparser import ConfigParser
 from pathlib import Path
 
 progname = sys.argv[0]
-isWindows = bool(os.environ.get('OS')) and 'windows' in os.environ['OS'].lower()
-isMINGW = bool(os.environ.get('MSYSTEM')) and 'mingw' in os.environ['MSYSTEM'].lower()
+is_windows = bool(os.environ.get('OS')) and 'windows' in os.environ['OS'].lower()
+is_mingw = bool(os.environ.get('MSYSTEM')) and 'mingw' in os.environ['MSYSTEM'].lower()
 
 def makemake():
     # code for makemake function goes here
@@ -81,82 +81,82 @@ if os.path.isfile(makefile) and force != 1:
     error("use -f to force overwriting existing {}".format(makefile))
 
 if type == "SHAREDLIB":
-    compileForDll = 1
+    compile_for_dll = 1
 
 folder = os.getcwd()
 
 objs = []
-generatedHeaders = []
-extraObjs = []
-ccfiles = []
-cppfiles = []
-nedfiles = []
-msgfiles = []
-msgccfiles = []
-msghfiles = []
-smfiles = []
-smccfiles = []
-smhfiles = []
-sourceDirs = []
-backslashedSourceDirs = []
+generated_headers = []
+extra_objs = []
+cc_files = []
+cpp_files = []
+ned_files = []
+msg_files = []
+msg_cc_files = []
+msg_h_files = []
+sm_files = []
+sm_cc_files = []
+sm_h_files = []
+source_dirs = []
+backslashed_source_dirs = []
 
 # determine, and clean up format of project root dir
-if projectDir == "":
+if project_dir == "":
     # try to find project root directory (go up until we find a ".project" file)
     dir = os.getcwd()
     dir = dir.replace("\\", "/")
     while True:
         if os.path.isfile("{}/.project".format(dir)):
-            projectDir = dir
+            project_dir = dir
             break
         if "/" in dir:
             dir = dir[:dir.rindex("/")]
         else:
-            projectDir = "."
+            project_dir = "."
             break
-elif not os.path.isdir(projectDir):
-    error("specified project directory \"{}\" does not exist".format(projectDir))
+elif not os.path.isdir(project_dir):
+    error("specified project directory \"{}\" does not exist".format(project_dir))
 
-if projectDir != "":
-    projectDir = existingDirtoCanonicalAbsolute(projectDir)
-    #print "Project directory: $projectDir\n"
-    if not (folder.startswith(projectDir)):
-        error("current directory is not under the given project directory \"{}\"".format(projectDir))
+if project_dir != "":
+    project_dir = existing_dirto_canonical_absolute(project_dir)
+    #print "Project directory: $project_dir\n"
+    if not (folder.startswith(project_dir)):
+        error("current directory is not under the given project directory \"{}\"".format(project_dir))
 
-projectName = projectDir
-projectName = projectName.rstrip("/\\")
-projectName = projectName[projectName.rindex("/\\")+1:]
-target = target if target != "" else projectName
+project_name = project_dir
+project_name = project_name.rstrip("/\\")
+project_name = project_name[project_name.rindex("/\\")+1:]
+target = target if target != "" else project_name
 
 # target should only be a name, cannot contain relative path
 if "\\" in target or "/" in target:
     error("target (-o option) should only be a name, it cannot contain relative path")
 
 # recursive and deep do not mix
-if isDeep:
-    isRecursive = 0
+if is_deep:
+    is_recursive = 0
 
 makecommand = os.environ.get("MAKE") or "make"
 
 # find Makefile.inc
 comspec = os.environ.get("COMSPEC")
 comspec = comspec.replace("\\", "\\\\")
-configFile = os.popen("opp_configfilepath").read().strip()
+config_file = os.popen("opp_configfilepath").read().strip()
 if os.system("opp_configfilepath") != 0:
     error("opp_configfilepath returned nonzero exit code -- make sure it exists and is in the PATH")
-if not configFile or not os.path.isfile(configFile):
-    error("opp_configfilepath didn't return the name of an existing directory, result was \"{}\"".format(configFile))
+if not config_file or not os.path.isfile(config_file):
+    error("opp_configfilepath didn't return the name of an existing directory, result was \"{}\"".format(config_file))
 
 # determine outdir (defaults to "out")
-if outRoot == "":
-    outRoot = "out"
-outRootAbs = outRoot if not isRelative(outRoot) or projectDir == "" else "{}/{}".format(projectDir, outRoot)
-outRootRel = abs2rel(outRootAbs, projectDir)
-outDir = canonicalize("{}".format(outRootRel))
+if out_root == "":
+    out_root = "out"
+out_root_abs = out_root if not is_relative(out_root) or project_dir == "" else "{}/{}".format(project_dir, out_root)
+out_root_rel = abs2rel(out_root_abs, project_dir)
+out_dir = canonicalize("{}".format(out_root_rel))
 
 # determine subpath: the project-relative path of this folder
 subpath = os.getcwd()
-subpath = subpath.replace(projectDir, "", 1)
+subpath = subpath.replace(project_dir, "", 1)
 subpath = subpath.lstrip("/\\")  # remove the leading slash/backslash as this is a relative directory
 
 # collect source files
@@ -172,11 +172,11 @@ else:
 
 for f in source_dirs:
     ff = "" if f == "." else f + "/"
-    ccfiles.extend(glob(ff + "*.cc"))
-    cppfiles.extend(glob(ff + "*.cpp"))
-    msgfiles.extend(glob(ff + "*.msg"))
-    smfiles.extend(glob(ff + "*.sm"))
-    nedfiles.extend(glob(ff + "*.ned"))
+    cc_files.extend(glob(ff + "*.cc"))
+    cpp_files.extend(glob(ff + "*.cpp"))
+    msg_files.extend(glob(ff + "*.msg"))
+    sm_files.extend(glob(ff + "*.sm"))
+    ned_files.extend(glob(ff + "*.ned"))
 
 backslashed_source_dirs = []
 for i in source_dirs:
@@ -188,147 +188,147 @@ include_dirs = [abs2rel(i, project_dir) for i in include_dirs]
 lib_dirs = [abs2rel(i, project_dir) for i in lib_dirs]
 
 # try to determine if .cc or .cpp files are used
-if ccExt == "":
-    if not ccfiles and cppfiles:
-        ccExt = "cpp"
-    elif ccfiles and not cppfiles:
-        ccExt = "cc"
-    elif ccfiles and cppfiles:
+if cc_ext == "":
+    if not cc_files and cpp_files:
+        cc_ext = "cpp"
+    elif cc_files and not cpp_files:
+        cc_ext = "cc"
+    elif cc_files and cpp_files:
         error("you have both .cc and .cpp files -- specify -e cc or -e cpp option to select which set of files to use")
     else:
-        ccExt = "cc"  # if no files, use .cc extension
+        cc_ext = "cc"  # if no files, use .cc extension
 else:
-    if ccExt == "cc" and not ccfiles and cppfiles:
+    if cc_ext == "cc" and not cc_files and cpp_files:
         warning("you specified -e cc but you have only .cpp files!")
-    if ccExt == "cpp" and ccfiles and not cppfiles:
+    if cc_ext == "cpp" and cc_files and not cpp_files:
         warning("you specified -e cpp but you have only .cc files!")
 
-objExt = "o"
+obj_ext = "o"
 
-targetPrefix = ""
-targetSuffix = ""
+target_prefix = ""
+target_suffix = ""
 if type == "EXE":
-    targetSuffix = "$(EXE_SUFFIX)"
+    target_suffix = "$(EXE_SUFFIX)"
 elif type == "SHAREDLIB":
-    targetSuffix = "$(SHARED_LIB_SUFFIX)"
-    targetPrefix = "$(LIB_PREFIX)"
+    target_suffix = "$(SHARED_LIB_SUFFIX)"
+    target_prefix = "$(LIB_PREFIX)"
 elif type == "STATICLIB":
-    targetSuffix = "$(A_LIB_SUFFIX)"
-    targetPrefix = "$(LIB_PREFIX)"
+    target_suffix = "$(A_LIB_SUFFIX)"
+    target_prefix = "$(LIB_PREFIX)"
 
-# prepare submakeDirs. First, check that all specified subdirs exist
-for subdir in submakeDirs:
+# prepare submake_dirs. First, check that all specified subdirs exist
+for subdir in submake_dirs:
     if not os.path.isdir(subdir):
         error("subdirectory '{}' does not exist".format(subdir))
 
-if isRecursive:
-    submakeDirs += [f for f in glob.glob("*") if isGoodDir(f, exceptSubdirs)]
+if is_recursive:
+    submake_dirs += [f for f in glob.glob("*") if is_good_dir(f, except_subdirs)]
 
 # create names for subdir targets
-submakeNames = [re.sub(r"[^a-zA-Z0-9_]", "_", i) for i in submakeDirs]
+submake_names = [re.sub(r"[^a-z_a-Z0-9_]", "_", i) for i in submake_dirs]
 
-# process extraArgs (do ".o" <--> ".obj" translation; NOTE: we don't try to
+# process extra_args (do ".o" <--> ".obj" translation; NOTE: we don't try to
 # translate library names, because libs are supposed to be given via -L/-l)
 # NOTE2: we need to remove possible quotes (cmd.exe does not do it)
-extraObjs = [i.replace("^'(.*)'$", r"\1").replace(r"\.o(bj)?$", ".objExt") for i in extraArgs]
+extra_objs = [i.replace("^'(.*)'$", r"\1").replace(r"\.o(bj)?$", ".obj_ext") for i in extra_args]
 
 sources = []
-if ccExt == "cc":
-    sources.extend(ccfiles)
-if ccExt == "cpp":
-    sources.extend(cppfiles)
-sources.extend(msgfiles)
-sources.extend(smfiles)
-if not ignoreNedFiles:
-    sources.extend(nedfiles)
+if cc_ext == "cc":
+    sources.extend(cc_files)
+if cc_ext == "cpp":
+    sources.extend(cpp_files)
+sources.extend(msg_files)
+sources.extend(sm_files)
+if not ignore_ned_files:
+    sources.extend(ned_files)
 
-objs = [make_derived_file_name(f, objExt) for f in sources if not f.startswith("*") and not is_generated_ccfile(f, ccExt)]
+objs = [make_derived_file_name(f, obj_ext) for f in sources if not f.startswith("*") and not is_generated_ccfile(f, cc_ext)]
 
-msgccfiles = [make_derived_file_name(f, "cc") for f in msgfiles]
-msghfiles = [make_derived_file_name(f, "h") for f in msgfiles]
-generatedHeaders += msghfiles
+msg_cc_files = [make_derived_file_name(f, "cc") for f in msg_files]
+msg_h_files = [make_derived_file_name(f, "h") for f in msg_files]
+generated_headers += msg_h_files
 
-smccfiles = [make_derived_file_name(f, "cc") for f in smfiles]
-smhfiles = [make_derived_file_name(f, "h") for f in smfiles]
-generatedHeaders += smhfiles
+sm_cc_files = [make_derived_file_name(f, "cc") for f in sm_files]
+sm_h_files = [make_derived_file_name(f, "h") for f in sm_files]
+generated_headers += sm_h_files
 
 # makefrag files
 makefrags = "";
-if fragmentFiles:
-    for frag in fragmentFiles:
+if fragment_files:
+    for frag in fragment_files:
         makefrags += "-include " + frag + "\n"
 else:
     if os.path.isfile("makefrag"):
         makefrags += "-include makefrag\n"
 
 # defines
-if compileForDll and dllSymbol != "":
-    defines.append(dllSymbol + "_EXPORT")
+if compile_for_dll and dll_symbol != "":
+    defines.append(dll_symbol + "_EXPORT")
 
 deps = ""  # we'll run opp_makedep afterwards
 
 # XP has 8K limit on line length, so we may have to use the inline file feature of nmake
-approximateLinkerLineLength = 500 + len(quoteJoin(objs)) + len(quoteJoin(extraObjs)) + 2*len(quoteJoin(libs)) + 2*len(quoteJoin(libDirs))
-isLongLinkerLine = approximateLinkerLineLength > 8000
+approximate_linker_line_length = 500 + len(quote_join(objs)) + len(quote_join(extra_objs)) + 2*len(quote_join(libs)) + 2*len(quote_join(lib_dirs))
+is_long_linker_line = approximate_linker_line_length > 8000
 
 # fill in template variables
 m = {
     "lbrace" : "{",
     "rbrace" : "}",
-    "targetprefix" : targetPrefix,
+    "targetprefix" : target_prefix,
     "target" :  target,
-    "targetsuffix" : targetSuffix,
-    "outdir" : outDir,
+    "targetsuffix" : target_suffix,
+    "outdir" : out_dir,
     "subpath" : subpath,
-    "isdeep" : isDeep,
+    "isdeep" : is_deep,
     "progname" : "opp_makemake",
     "args" : join(" ", args),
-    "configfile" : configFile,
-    "cc" : ccExt,
+    "configfile" : config_file,
+    "cc" : cc_ext,
     "deps" : deps,
     "exe" : type == "EXE",
     "sharedlib" : type == "SHAREDLIB",
     "staticlib" : type == "STATICLIB",
     "nolink" : type == "NOLINK",
-    "defaultmode" : defaultMode,
-    "allenv" : userInterface.startswith('A'),
-    "cmdenv" : userInterface.startswith('C'),
-    "qtenv" : userInterface.startswith('Q'),
-    "extraobjs" : quoteJoin(extraObjs),
-    "includepath" : prefixQuoteJoin(includeDirs, "-I"),
-    "libpathdirs" : libDirs,
+    "defaultmode" : default_mode,
+    "allenv" : user_interface.startswith('A'),
+    "cmdenv" : user_interface.startswith('C'),
+    "qtenv" : user_interface.startswith('Q'),
+    "extraobjs" : quote_join(extra_objs),
+    "includepath" : prefix_quote_join(include_dirs, "-I"),
+    "libpathdirs" : lib_dirs,
     "libs" : libs,
-    "defines" : prefixQuoteJoin(defines, "-D"),
-    "makefilevariables" : makefileVariables,
+    "defines" : prefix_quote_join(defines, "-D"),
+    "makefilevariables" : makefile_variables,
     "makecommand" : makecommand,
     "makefile" : "Makefile",
     "makefrags" : makefrags,
-    "msgccfiles" : msgccfiles,
-    "msghfiles" : msghfiles,
-    "msgfiles" : msgfiles,
-    "smccfiles" : smccfiles,
-    "smhfiles" : smhfiles,
-    "smfiles" : smfiles,
-    "objs" : quoteJoin(objs),
-    "submakedirs" : submakeDirs,
-    "submakenames" : submakeNames,
-    "dllsymbol" : dllSymbol,
-    "sourcedirs" : sourceDirs,
-    "backslashedsourcedirs" : backslashedSourceDirs,
-    "gcclongline" : (isLongLinkerLine and isWindows)
+    "msgccfiles" : msg_cc_files,
+    "msghfiles" : msg_h_files,
+    "msgfiles" : msg_files,
+    "smccfiles" : sm_cc_files,
+    "smhfiles" : sm_h_files,
+    "smfiles" : sm_files,
+    "objs" : quote_join(objs),
+    "submakedirs" : submake_dirs,
+    "submakenames" : submake_names,
+    "dllsymbol" : dll_symbol,
+    "sourcedirs" : source_dirs,
+    "backslashedsourcedirs" : backslashed_source_dirs,
+    "gcclongline" : (is_long_linker_line and is_windows)
 }
 
-content = substituteIntoTemplate(template(), m, "{", "}")
+content = substitute_into_template(template(), m, "{", "}")
 
-oldContent = readTextFile(makefile) if os.path.exists(makefile) else "";
+old_content = read_text_file(makefile) if os.path.exists(makefile) else "";
 
-if content != oldContent:
+if content != old_content:
     print(("Updating" if os.path.exists(makefile) else "Creating") + makefile + " in " + folder + "...\n")
     with fopen(makefile, "w") as f:
         print(content, file=f)
 
-def is_generated_ccfile(f, ccExt):
-    return f.endswith("_n."+ccExt) or f.endswith("_m."+ccExt) or f.endswith("_sm."+ccExt)
+def is_generated_ccfile(f, cc_ext):
+    return f.endswith("_n."+cc_ext) or f.endswith("_m."+cc_ext) or f.endswith("_sm."+cc_ext)
 
 def make_derived_file_name(fname, ext):
     if fname.endswith(".ned"):
@@ -337,8 +337,8 @@ def make_derived_file_name(fname, ext):
         return fname[:-4] + "_m." + ext
     elif fname.endswith(".sm"):
         return fname[:-3] + "_sm." + ext
-    elif fname.endswith("." + ccExt):
-        return fname[:-len(ccExt)-1] + "." + ext
+    elif fname.endswith("." + cc_ext):
+        return fname[:-len(cc_ext)-1] + "." + ext
     else:
         return re.sub(r"\.[^.]+$", "." + ext, fname)
 
@@ -389,43 +389,43 @@ def is_good_dir(dirpath, except_dirs=None):
 #
 # Lines starting with ### treated as comments and will be removed from the output
 #
-def substituteIntoTemplate(template: str, mapref: dict, startTag: str = '{', endTag: str = '}') -> str:
+def substitute_into_template(template: str, mapref: dict, start_tag: str = '{', end_tag: str = '}') -> str:
     # remove whole-line comments
     template = re.sub(r'\n[ \t]*###.*\n', '\n', template)
     # remove end-line comments
     template = re.sub(r'[ \t]*###.*\n', '\n', template)
 
     buf = ""
-    startTagLen = len(startTag)
-    endTagLen = len(endTag)
+    start_tag_len = len(start_tag)
+    end_tag_len = len(end_tag)
 
     current = 0
     while True:
-        start = template.find(startTag, current)
+        start = template.find(start_tag, current)
         if start == -1:
             break
         else:
-            end = template.find(endTag, start)
+            end = template.find(end_tag, start)
             if end != -1:
-                end += endTagLen
+                end += end_tag_len
                 tag = template[start:end]
                 #print("processing $tag\n")
-                key = template[start+startTagLen:end-endTagLen]
+                key = template[start+start_tag_len:end-end_tag_len]
                 if "\n" in key:
                     raise ValueError("template error: newline inside \"{}\" (misplaced start/end tag?)".format(tag))
-                isLoop = key[0] == "@"
-                if isLoop:
+                is_loop = key[0] == "@"
+                if is_loop:
                     key = key[1:]  # drop "@"
-                isNegated = key[0] == "~"
-                if isNegated:
+                is_negated = key[0] == "~"
+                if is_negated:
                     key = key[1:]  # drop "~"
-                isOptLine = key[-1] == ":" and "?" not in key
-                if isOptLine:
+                is_opt_line = key[-1] == ":" and "?" not in key
+                if is_opt_line:
                     key = key[:-1]  # drop trailing ":"
-                questionmarkPos = key.find("?")
-                substringAfterQuestionmark = "" if questionmarkPos == -1 else key[questionmarkPos+1:]
-                if questionmarkPos != -1:
-                    key = key[:questionmarkPos] # drop "?..." from key
+                questionmark_pos = key.find("?")
+                substring_after_questionmark = "" if questionmark_pos == -1 else key[questionmark_pos+1:]
+                if questionmark_pos != -1:
+                    key = key[:questionmark_pos] # drop "?..." from key
 
                 # determine replacement string, and possibly adjust start/end
                 replacement = ""
@@ -449,7 +449,7 @@ def substituteIntoTemplate(template: str, mapref: dict, startTag: str = '{', end
                     loop_vars = []
                     loop_lists = []
                     for loop_spec in key.split(","):
-                        if not re.match(r" *([a-zA-Z0-9_]+) *: *([a-zA-Z0-9_]+) */", loop_spec):
+                        if not re.match(r" *([a-z_a-Z0-9_]+) *: *([a-z_a-Z0-9_]+) */", loop_spec):
                             error(f"template error: syntax error in loop tag {tag}, {start_tag}@var1:list1,var2:list2,...{end_tag} expected in body")
                         loop_vars.append($1)
                         loop_lists.append($2)
@@ -502,10 +502,10 @@ def substituteIntoTemplate(template: str, mapref: dict, startTag: str = '{', end
 def substr2(string: str, startoffset: int, endoffset: int) -> str:
     return string[startoffset:endoffset]
 
-def quoteJoin(listref: List[str]) -> str:
-    return prefixQuoteJoin(listref, "")
+def quote_join(listref: List[str]) -> str:
+    return prefix_quote_join(listref, "")
 
-def prefixQuoteJoin(listref: List[str], prefix: str) -> str:
+def prefix_quote_join(listref: List[str], prefix: str) -> str:
     list = listref[:]  # make a copy of the list
     sep = " \\\n    " if len(list) > 5 else " "
     result = ""
@@ -513,20 +513,20 @@ def prefixQuoteJoin(listref: List[str], prefix: str) -> str:
         result += sep + prefix + quote(i)
     return result if result != "" else ""  # chop off leading space
 
-def indexOfEither(template: str, substring1: str, substring2: str, from_: int) -> int:
+def index_of_either(template: str, substring1: str, substring2: str, from_: int) -> int:
     index1 = template.index(substring1, from_)
     index2 = template.index(substring2, from_)
     return index2 if index1 == -1 else index1 if index2 == -1 else index1 if index1 < index2 else index2
 
-# for substituteIntoTemplate()
-def getFromMapAsString(mapref: Dict[str, Any], key: str) -> str:
+# for substitute_into_template()
+def get_from_map_as_string(mapref: Dict[str, Any], key: str) -> str:
     map = mapref.copy()
     if key not in map:
         raise Exception("template error: undefined template parameter '" + key + "'")
     return map[key]
 
-# for substituteIntoTemplate()
-def getFromMapAsBool(mapref: Dict[str, Any], key: str) -> bool:
+# for substitute_into_template()
+def get_from_map_as_bool(mapref: Dict[str, Any], key: str) -> bool:
     map = mapref.copy()
     if key not in map:
         raise Exception("template error: undefined template parameter '" + key + "'")
@@ -537,7 +537,7 @@ def getFromMapAsBool(mapref: Dict[str, Any], key: str) -> bool:
     else:
         return value
 
-# for substituteIntoTemplate()
+# for substitute_into_template()
 def get_from_map_as_list(mapref, key):
     map = mapref
     if key not in map:
