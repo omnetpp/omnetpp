@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-22.11";
-    #nixpkgs.url = "nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -97,15 +96,14 @@
 
         installed = oppPkgs.stdenv.mkDerivation {
           name = "${pname}-${sversion} installed";
-          packages = [
+
+          propagatedNativeBuildInputs = [
             self.packages.${system}."${pname}-runtime"
             self.packages.${system}."${pname}-qtenv"
             self.packages.${system}."${pname}-samples-git"
             self.packages.${system}."${pname}-doc"
             self.packages.${system}."${pname}-ide"
           ];
-
-          propagatedNativeBuildInputs = self.packages.${system}."${pname}-runtime".propagatedNativeBuildInputs;
 
           shellHook = ''
             source ${self.packages.${system}."${pname}-runtime"}/setenv 1>/dev/null
