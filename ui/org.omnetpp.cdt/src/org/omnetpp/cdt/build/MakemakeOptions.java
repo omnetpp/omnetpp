@@ -152,9 +152,6 @@ public class MakemakeOptions implements Cloneable {
                 String dir = arg.substring(2);
                 exceptSubdirs.add(dir);
             }
-            else if (arg.equals("--no-deep-includes")) {
-                // ignore -- this option was removed in OMNeT++ version 5.1
-            }
             else if (arg.equals("-D") || arg.equals("--define")) {
                 if (checkArg(argv, i))
                     defines.add(argv[++i]);
