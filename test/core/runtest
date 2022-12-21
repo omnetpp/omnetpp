@@ -19,7 +19,7 @@ $MAKE -C signalreg
 
 opp_test gen -v --args $OPT -- $TESTFILES || exit 1
 echo
-(cd work; opp_makemake -f -o work --deep --no-deep-includes -i ../makefrag $EXTRA_INCLUDES; $MAKE) || exit 1
+(cd work; opp_makemake -f -o work --deep -i ../makefrag $EXTRA_INCLUDES; $MAKE) || exit 1
 echo
 opp_test run -p work_dbg -v --args $OPT -- $TESTFILES || exit 1
 echo
