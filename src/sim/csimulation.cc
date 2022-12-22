@@ -114,6 +114,8 @@ void printAllObjects();
 cSimulation::SharedDataHandles *cSimulation::sharedVariableHandles = nullptr;
 cSimulation::SharedDataHandles *cSimulation::sharedCounterHandles = nullptr;
 
+const uint64_t CTR_UNINITIALIZED = (uint64_t)-1;
+
 /**
  * Stops the simulation at the time it is scheduled for.
  * Used internally by cSimulation.
@@ -152,6 +154,9 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
     envir->setSimulation(this);
 
     stopwatch = new Stopwatch;
+
+    const size_t MAX_NUM_COUNTERS = 1000;  // fixed size to prevent array reallocation -- increase if necessary
+    sharedCounters.resize(MAX_NUM_COUNTERS, CTR_UNINITIALIZED);
 
     // install default objects
     setFES(new cEventHeap("fes"));
@@ -1289,11 +1294,10 @@ const char *cSimulation::getSharedCounterName(sharedcounterhandle_t handle)
 
 uint64_t& cSimulation::getSharedCounter(sharedcounterhandle_t handle, uint64_t initialValue)
 {
-    const uint64_t INVALID = (uint64_t)-1;
     if (sharedCounters.size() <= handle)
-        sharedCounters.resize(handle+1, INVALID);
+        throw cRuntimeError("getSharedCounter(): number of shared counters exhausted (you can increase table size in " __FILE__ ")"); // fixed size to prevent array reallocation which would invalidate returned references -- increase if necessary
     uint64_t& counter = sharedCounters[handle];
-    if (counter == INVALID)
+    if (counter == CTR_UNINITIALIZED)
         counter = initialValue;
     return counter;
 }
