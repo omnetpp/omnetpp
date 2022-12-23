@@ -114,6 +114,7 @@ void printAllObjects();
 cSimulation::SharedDataHandles *cSimulation::sharedVariableHandles = nullptr;
 cSimulation::SharedDataHandles *cSimulation::sharedCounterHandles = nullptr;
 
+const size_t MAX_NUM_COUNTERS = 1000;  // fixed size to prevent array reallocation -- increase if necessary
 const uint64_t CTR_UNINITIALIZED = (uint64_t)-1;
 
 /**
@@ -155,7 +156,6 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
 
     stopwatch = new Stopwatch;
 
-    const size_t MAX_NUM_COUNTERS = 1000;  // fixed size to prevent array reallocation -- increase if necessary
     sharedCounters.resize(MAX_NUM_COUNTERS, CTR_UNINITIALIZED);
 
     // install default objects
@@ -879,11 +879,12 @@ void cSimulation::deleteNetwork()
 
         // delete "simulation global" variables
         //int i = 0;
-        for (auto& item : sharedVariables) {
-            //std::cout << "deleting simulation global \"" << getSharedVariableName(i++) << "\" (" << item.first.typeName() << ")" << std::endl;
+        for (auto& item : sharedVariables)
             item.second(); // call stored destructor
-        }
         sharedVariables.clear();
+
+        sharedCounters.clear();
+        sharedCounters.resize(MAX_NUM_COUNTERS, CTR_UNINITIALIZED);
 
         // and clean up
         delete[] componentv;
@@ -1295,7 +1296,7 @@ const char *cSimulation::getSharedCounterName(sharedcounterhandle_t handle)
 uint64_t& cSimulation::getSharedCounter(sharedcounterhandle_t handle, uint64_t initialValue)
 {
     if (sharedCounters.size() <= handle)
-        throw cRuntimeError("getSharedCounter(): number of shared counters exhausted (you can increase table size in " __FILE__ ")"); // fixed size to prevent array reallocation which would invalidate returned references -- increase if necessary
+        throw cRuntimeError("getSharedCounter(): invalid handle %lu, or number of shared counters exhausted (you can increase table size in " __FILE__ ")", (unsigned long)handle); // fixed size to prevent array reallocation which would invalidate returned references -- increase if necessary
     uint64_t& counter = sharedCounters[handle];
     if (counter == CTR_UNINITIALIZED)
         counter = initialValue;
