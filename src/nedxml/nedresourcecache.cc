@@ -38,11 +38,6 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace nedxml {
 
-inline std::string canonicalize(const char *pathname)
-{
-    return tidyFilename(toAbsolutePath(pathname).c_str(), true);
-}
-
 NedResourceCache::~NedResourceCache()
 {
     for (auto & file : nedFiles)
