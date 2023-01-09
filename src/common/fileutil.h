@@ -44,13 +44,25 @@ COMMON_API std::string directoryOf(const char *path);
 COMMON_API std::string filenameOf(const char *path);
 
 /**
- * Canonicalizes the given path. For example, changes backslashes to slashes
+ * Cleans up the given path. For example, changes backslashes to slashes
  * (or the other way round, depending on the slashes arg), kills off multiple slashes,
  * dot and dot-dot components ((foo//bar --> foo/bar, foo/./bar --> foo/bar,
  * foo/../bar --> bar), etc. You may want to convert the path to absolute
  * (toAbsolutePath()) before calling this function.
  */
 COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
+
+/**
+ * Returns the canonical representation of the given path. This includes
+ * conversion to absolute, resolution of symlinks, standardizing the path
+ * separators, eliminating "." and "..", etc.
+ *
+ * NOTE: Resolving symlinks is important, otherwise the canonicalized forms
+ * of a path given with relative and absolute paths will be different!
+ * This is due to the fact that getcwd(), which is used for making a relative
+ * path absolute, returns a directory name with the symlinks resolved.
+ */
+COMMON_API std::string canonicalize(const char *pathname);
 
 /**
  * Returns the input file name/path without the filename extension, or unchanged

@@ -17,6 +17,7 @@
 #include <cstdlib>  // _MAX_PATH
 #else
 #include <unistd.h>
+#include <limits.h>  // PATH_MAX
 #endif
 #include <sys/stat.h>
 #include <cstring>
@@ -148,6 +149,20 @@ std::string tidyFilename(const char *pathname, bool slashes)
     return result;
 }
 
+std::string canonicalize(const char *pathname)
+{
+#ifdef _WIN32
+    // Note: This doesn't resolve junctions, but it should.
+    return tidyFilename(toAbsolutePath(pathname).c_str(), true);
+#else
+    char buf[PATH_MAX];
+    const char *result = realpath(pathname, buf);
+    if (result == nullptr)
+        throw opp_runtime_error("Cannot canonicalize '%s': realpath() failed: %s", pathname, strerror(errno));
+    return result;
+#endif
+}
+
 std::string removeFileExtension(const char *fileName)
 {
     const char *dot = strrchr(fileName, '.');
@@ -195,8 +210,8 @@ std::string toAbsolutePath(const char *pathname)
     if (pathname[0] == '/')
         return std::string(pathname);  // already absolute
 
-    char wd[1024];
-    return std::string(getcwd(wd, 1024)) + "/" + pathname;  // XXX results in double slash if wd is the root
+    char wd[PATH_MAX];
+    return std::string(getcwd(wd, PATH_MAX)) + "/" + pathname;  // XXX results in double slash if wd is the root
 #endif
 }
 

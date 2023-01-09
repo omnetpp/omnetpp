@@ -42,11 +42,6 @@ std::recursive_mutex NedResourceCache::nedMutex;
 
 #define LOCK   std::lock_guard<std::recursive_mutex> guard(nedMutex)
 
-inline std::string canonicalize(const char *pathname)
-{
-    return tidyFilename(toAbsolutePath(pathname).c_str(), true);
-}
-
 NedResourceCache::NedResourceCache()
 {
 }
