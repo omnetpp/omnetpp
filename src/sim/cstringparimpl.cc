@@ -147,14 +147,6 @@ cExpression *cStringParImpl::getExpression() const
     return (flags & FL_ISEXPR) ? expr : nullptr;
 }
 
-void cStringParImpl::deleteOld()
-{
-    if (flags & FL_ISEXPR) {
-        delete expr;
-        flags &= ~FL_ISEXPR;
-    }
-}
-
 cPar::Type cStringParImpl::getType() const
 {
     return cPar::STRING;

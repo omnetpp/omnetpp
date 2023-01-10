@@ -39,7 +39,7 @@ class SIM_API cIntParImpl : public cParImpl
     void copy(const cIntParImpl& other);
 
   protected:
-    void deleteOld();
+    void deleteOld() {cParImpl::deleteOld(expr);}
 
   public:
     /** @name Constructors, destructor, assignment. */

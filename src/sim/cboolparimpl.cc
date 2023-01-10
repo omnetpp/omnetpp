@@ -144,14 +144,6 @@ cExpression *cBoolParImpl::getExpression() const
     return (flags & FL_ISEXPR) ? expr : nullptr;
 }
 
-void cBoolParImpl::deleteOld()
-{
-    if (flags & FL_ISEXPR) {
-        delete expr;
-        flags &= ~FL_ISEXPR;
-    }
-}
-
 cPar::Type cBoolParImpl::getType() const
 {
     return cPar::BOOL;

@@ -40,7 +40,7 @@ class SIM_API cBoolParImpl : public cParImpl
     void copy(const cBoolParImpl& other);
 
   protected:
-    void deleteOld();
+    void deleteOld() {cParImpl::deleteOld(expr);}
 
   public:
     /** @name Constructors, destructor, assignment. */

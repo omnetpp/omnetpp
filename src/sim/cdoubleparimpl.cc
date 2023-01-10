@@ -146,14 +146,6 @@ cExpression *cDoubleParImpl::getExpression() const
     return (flags & FL_ISEXPR) ? expr : nullptr;
 }
 
-void cDoubleParImpl::deleteOld()
-{
-    if (flags & FL_ISEXPR) {
-        delete expr;
-        flags &= ~FL_ISEXPR;
-    }
-}
-
 cPar::Type cDoubleParImpl::getType() const
 {
     return cPar::DOUBLE;
