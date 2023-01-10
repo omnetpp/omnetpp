@@ -323,8 +323,10 @@ void cObjectParImpl::setExpectedType(const char *s)
 void cObjectParImpl::convertToConst(cComponent *context)
 {
     cObject *saved = objectValue(context);
+    auto loc = getSourceLocation();
     obj = nullptr;
     setObjectValue(saved);
+    setSourceLocation(loc);
 }
 
 std::string cObjectParImpl::str() const
@@ -358,6 +360,8 @@ void cObjectParImpl::parse(const char *text, FileLine loc)
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())
         convertToConst(nullptr);
+
+    setSourceLocation(loc);
 }
 
 int cObjectParImpl::compare(const cParImpl *other) const

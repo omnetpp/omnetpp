@@ -156,7 +156,9 @@ bool cBoolParImpl::isNumeric() const
 
 void cBoolParImpl::convertToConst(cComponent *context)
 {
+    auto loc = getSourceLocation();
     setBoolValue(boolValue(context));
+    setSourceLocation(loc);
 }
 
 std::string cBoolParImpl::str() const
@@ -171,6 +173,7 @@ void cBoolParImpl::parse(const char *text, FileLine loc)
     // shortcut: recognize "true" and "false"
     if (strcmp(text, "true") == 0 || strcmp(text, "false") == 0) {
         setBoolValue(text[0] == 't');
+        setSourceLocation(loc);
         return;
     }
 
@@ -189,6 +192,8 @@ void cBoolParImpl::parse(const char *text, FileLine loc)
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())
         convertToConst(nullptr);
+
+    setSourceLocation(loc);
 }
 
 int cBoolParImpl::compare(const cParImpl *other) const

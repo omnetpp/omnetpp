@@ -131,6 +131,16 @@ cProperties *cPar::getProperties() const
     return props;
 }
 
+const char *cPar::getBaseDirectory() const
+{
+    return p->getBaseDirectory();
+}
+
+std::string cPar::getSourceLocation() const
+{
+    return p->getSourceLocation().str();
+}
+
 const char *cPar::getTypeName(Type t)
 {
     switch (t) {

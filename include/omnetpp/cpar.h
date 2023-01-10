@@ -157,7 +157,7 @@ class SIM_API cPar : public cObject
     /** @name Type, flags. */
     //@{
     /**
-     * Returns the parameter type
+     * Returns the parameter type.
      */
     Type getType() const;
 
@@ -216,6 +216,18 @@ class SIM_API cPar : public cObject
      * at runtime.
      */
     cProperties *getProperties() const;
+
+    /**
+     * Returns the base directory for interpreting relative path names
+     * in the contained expression.
+     */
+    virtual const char *getBaseDirectory() const;
+
+    /**
+     * Returns the file:line info where the value of this parameter was parsed from.
+     * Returns empty string if no such info is available.
+     */
+    virtual std::string getSourceLocation() const;
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */

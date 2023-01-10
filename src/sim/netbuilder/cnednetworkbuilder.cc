@@ -256,13 +256,14 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
                 expr->parseNedExpr(valueExpr.getExprText());
                 impl->setBaseDirectory(paramNode->getSourceFileDirectory());
                 impl->setExpression(expr);
+                auto nodeLoc = paramNode->getSourceLocation();
+                omnetpp::FileLine loc(nodeLoc.file.c_str(), nodeLoc.line);
                 if (expr->isAConstant())
                     impl->convertToConst(nullptr);
-                else {
-                    auto loc = paramNode->getSourceLocation();
-                    expr->setSourceLocation(omnetpp::FileLine(loc.file.c_str(), loc.line)); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
-                }
+                else
+                    expr->setSourceLocation(loc); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
                 impl->setIsSet(!paramNode->getIsDefault());
+                impl->setSourceLocation(loc);
             }
             catch (std::exception& e) {
                 throw cRuntimeError(component, "Error setting up parameter '%s': %s", paramName, e.what());
@@ -392,14 +393,15 @@ void cNedNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             expr->parseNedExpr(valueExpr.getExprText());
             impl->setBaseDirectory(patternNode->getSourceFileDirectory());
             impl->setExpression(expr);
+            auto nodeLoc = patternNode->getSourceLocation();
+            omnetpp::FileLine loc(nodeLoc.file.c_str(), nodeLoc.line);
             if (expr->isAConstant())
                 impl->convertToConst(nullptr);
-            else {
-                auto loc = patternNode->getSourceLocation();
-                expr->setSourceLocation(omnetpp::FileLine(loc.file.c_str(), loc.line)); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
-            }
+            else
+                expr->setSourceLocation(loc); // note: if we do it earlier, file:line may show up TWICE in the error message: one added inside convertToConst(), the other in the 'catch' block at the bottom of this function
             par.setEvaluationContext(evalContext);
             impl->setIsSet(!patternNode->getIsDefault());
+            impl->setSourceLocation(loc);
         }
         else if (patternNode->getIsDefault()) {
             // no expression: set parameter to its existing default value ("par=default;" syntax)
