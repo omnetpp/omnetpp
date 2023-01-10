@@ -104,6 +104,7 @@ Register_GlobalConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHEC
 Register_GlobalConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
 Register_GlobalConfigOption(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "allow-object-stealing-on-deletion", CFG_BOOL, "false", "Setting it to true disables the \"Context component is deleting an object it doesn't own\" error message. This option exists primarily for backward compatibility with pre-6.0 versions that were more permissive during object deletion.");
 Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
+Register_GlobalConfigOption(CFGID_PRINT_UNUSED_CONFIG, "print-unused-config", CFG_BOOL, "true", "Enables listing unused configuration entries after network setup. Note that the listed entries are not necessarily redundant, e.g. they may be needed by modules created dynamically during simulation.");
 
 
 #ifdef DEVELOPER_DEBUG
@@ -728,6 +729,10 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
     bool debugStatisticsRecording = getConfig()->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     if (debugStatisticsRecording)
         cStatisticBuilder::dumpResultRecorders(EV_INFO, getSystemModule());
+
+    bool printUnusedConfig = getConfig()->getAsBool(CFGID_PRINT_UNUSED_CONFIG);
+    if (printUnusedConfig)
+        printUnusedConfigEntriesIfAny(EV_INFO);
 }
 
 void cSimulation::callInitialize()
@@ -810,6 +815,16 @@ void cSimulation::callFinish()
     }
 
     checkFingerprint();
+}
+
+void cSimulation::printUnusedConfigEntriesIfAny(std::ostream& out)
+{
+    auto unusedEntries = getConfig()->getUnusedEntries();
+    if (!unusedEntries.empty()) {
+        out << "Note: There were unused entries in the configuration after network setup:\n";
+        for (auto entry : unusedEntries)
+            out << "  " << entry->str() << std::endl;
+    }
 }
 
 void cSimulation::checkFingerprint()

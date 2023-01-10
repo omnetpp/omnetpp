@@ -87,6 +87,7 @@ class SIM_API cConfiguration : public cObject
         virtual const char *getValue() const = 0;
         virtual const char *getBaseDirectory() const = 0;
         virtual FileLine getSourceLocation() const;
+        virtual std::string str() const;
     };
 
     /**
@@ -389,7 +390,23 @@ class SIM_API cConfiguration : public cObject
      * getPerObjectConfigValue() to obtain the corresponding values.
      */
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
+
+    /**
+     * Returns the list of entries that have not been accessed. This can be
+     * useful for detecting entries in the configuration that take no effect.
+     * By default, config options (i.e. keys that don't contain a dot) are
+     * are omitted from the result because they are checked anyway; specify
+     * all=true to include them as well.
+     */
+    virtual std::vector<const KeyValue*> getUnusedEntries(bool all=false) const {return std::vector<const KeyValue*>();}
+
+    /**
+     * Resets usage info on all config entries, i.e. mark them as having been
+     * never accessed.
+     */
+    virtual void clearUsageInfo() {}
     //@}
+
 };
 
 }  // namespace omnetpp

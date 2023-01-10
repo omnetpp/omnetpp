@@ -216,9 +216,8 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     // internal
     void setParameterMutabilityCheck(bool b) {parameterMutabilityCheck = b;}
     bool getParameterMutabilityCheck() const {return parameterMutabilityCheck;}
-
-    // internal
     void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}
+    void printUnusedConfigEntriesIfAny(std::ostream& out);
 
 #ifdef WITH_PYTHONSIM
     // internal

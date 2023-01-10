@@ -47,7 +47,20 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
     typedef omnetpp::common::PatternMatcher PatternMatcher;
     typedef std::set<std::string> StringSet;
     typedef std::map<std::string,std::string> StringMap;
-    typedef InifileContents::Entry Entry;
+
+    class Entry : public InifileContents::Entry {
+      private:
+        mutable bool accessed = false;
+      public:
+        Entry() {}
+        Entry(const InifileContents::Entry& e) : InifileContents::Entry(e) {}
+        Entry(const char *baseDir, const char *key, const char *value, FileLine loc=FileLine()) : InifileContents::Entry(baseDir, key, value, loc) {}
+
+        bool isAccessed() const {return accessed;}
+        Entry& markAccessed() {accessed = true; return *this;}
+        const Entry& markAccessed() const {accessed = true; return *this;}
+        void clearAccessInfo() {accessed = false;}
+    };
 
     class MatchableEntry : public Entry {
       public:
@@ -58,7 +71,7 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
         MatchableEntry(const Entry& e) : Entry(e) {}
         MatchableEntry(const MatchableEntry& e);   // apparently only used for std::vector storage
         ~MatchableEntry();
-        std::string str() const;
+        std::string debugStr() const;
     };
 
     //
@@ -131,7 +144,7 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
 
   public:
     Configuration() {}
-    Configuration(const std::vector<Entry>& entries, const StringMap& predefinedVariables, const StringMap& iterationVariables, const char *fileName=nullptr);
+    Configuration(const std::vector<InifileContents::Entry>& entries, const StringMap& predefinedVariables, const StringMap& iterationVariables, const char *fileName=nullptr);
     virtual ~Configuration();
 
     virtual const char *getFileName() const override;
@@ -148,7 +161,11 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
     virtual std::map<std::string,std::string> getIterationVariables() const override;
     virtual const char *getVariable(const char *varname) const override;
     virtual const char *substituteVariables(const char *value) const override;
-    virtual void dump() const; //TODO override?
+    virtual std::vector<const KeyValue*> getUnusedEntries(bool all=false) const override;
+    virtual void clearUsageInfo() override;
+    virtual void dump() const;
+    virtual void dumpUnusedEntries() const;
+
 };
 
 }  // namespace envir

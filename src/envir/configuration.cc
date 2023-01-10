@@ -54,7 +54,7 @@ Configuration::MatchableEntry::~MatchableEntry()
     delete fullPathPattern;
 }
 
-std::string Configuration::MatchableEntry::str() const
+std::string Configuration::MatchableEntry::debugStr() const
 {
     return std::string("ownerPattern=") + (ownerPattern ? ownerPattern->str() : "nullptr") +
            " suffixPattern=" + (suffixPattern ? suffixPattern->str() : "nullptr") +
@@ -63,10 +63,10 @@ std::string Configuration::MatchableEntry::str() const
 
 //----
 
-Configuration::Configuration(const std::vector<Entry>& entries, const StringMap& predefinedVars, const StringMap& iterationVars, const char *fileName)
+Configuration::Configuration(const std::vector<InifileContents::Entry>& entries, const StringMap& predefinedVars, const StringMap& iterationVars, const char *fileName)
 {
-    for (const Entry& entry : entries)
-        addEntry(entry);
+    for (const InifileContents::Entry& entry : entries)
+        addEntry(Entry(entry));
 
     predefinedVariables = predefinedVars;
     iterationVariables = iterationVars;
@@ -317,13 +317,15 @@ void Configuration::splitKey(const char *key, std::string& outOwnerName, std::st
 const char *Configuration::getConfigValue(const char *key) const
 {
     std::map<std::string, Entry>::const_iterator it = config.find(key);
-    return it == config.end() ? nullptr : it->second.getValue();
+    return it == config.end() ? nullptr : it->second.markAccessed().getValue();
 }
 
 const cConfiguration::KeyValue& Configuration::getConfigEntry(const char *key) const
 {
     std::map<std::string, Entry>::const_iterator it = config.find(key);
-    return it == config.end() ? (const KeyValue&)nullEntry : (const KeyValue&)it->second;
+    if (it == config.end())
+        return nullEntry;
+    return it->second.markAccessed();
 }
 
 std::vector<const char *> Configuration::getMatchingConfigKeys(const char *pattern) const
@@ -355,9 +357,9 @@ const cConfiguration::KeyValue& Configuration::getParameterEntry(const char *mod
     for (const auto & entry : bin->entries) {
         if (entryMatches(entry, moduleFullPath, paramName))
             if (hasDefaultValue || !opp_streq(entry.getValue(), "default"))
-                return entry;
+                return entry.markAccessed();
     }
-    return nullEntry;  // not found
+    return nullEntry;
 }
 
 bool Configuration::entryMatches(const MatchableEntry& entry, const char *moduleFullPath, const char *paramName)
@@ -405,6 +407,7 @@ std::vector<const char *> Configuration::getKeyValuePairs(int flags) const
         }
 
         if (add) {
+            // note: intentionally no markAccessed()
             result.push_back(entry.getKey());
             result.push_back(entry.getValue());
         }
@@ -439,7 +442,7 @@ const cConfiguration::KeyValue& Configuration::getPerObjectConfigEntry(const cha
     // find first match in the bin
     for (const auto & entry : suffixBin->entries) {
         if (entryMatches(entry, objectFullPath, keySuffix))
-            return entry;  // found value
+            return entry.markAccessed();  // found value
     }
     return nullEntry;  // not found
 }
@@ -490,28 +493,72 @@ std::vector<const char *> Configuration::getMatchingPerObjectConfigKeySuffixes(c
 
 void Configuration::dump() const
 {
-    printf("Config:\n");
-    for (const auto & it : config)
-        printf("  %s = %s\n", it.first.c_str(), it.second.value.c_str());
+    std::cout << "Config:" << std::endl;
+    for (const auto & pair : config)
+        std::cout << "  " << pair.second.str() << std::endl;
 
     for (const auto & suffixBin : suffixBins) {
         const std::string& suffix = suffixBin.first;
         const SuffixBin& bin = suffixBin.second;
-        printf("Suffix Bin %s:\n", suffix.c_str());
+        std::cout << "Suffix Bin " << suffix << ":" << std::endl;
         for (const auto & entry : bin.entries)
-            printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
+            std::cout << "  " << entry.str() << std::endl;
     }
-    printf("Wildcard Suffix Bin:\n");
+    std::cout << "Wildcard Suffix Bin:" << std::endl;
     for (const auto & entry : wildcardSuffixBin.entries)
-        printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
+        std::cout << "  " << entry.str() << std::endl;
 
-    printf("Iteration Variables:\n");
+    std::cout << "Iteration Variables:" << std::endl;
     for (const auto & entry : iterationVariables)
-        printf("  %s = %s\n", entry.first.c_str(), entry.second.c_str());
+        std::cout << "  " << entry.first << " = " << entry.second << std::endl;
 
-    printf("Predefined Variables:\n");
+    std::cout << "Predefined Variables:" << std::endl;
     for (const auto & entry : predefinedVariables)
-        printf("  %s = %s\n", entry.first.c_str(), entry.second.c_str());
+        std::cout << "  " << entry.first << " = " << entry.second << std::endl;
+}
+
+std::vector<const cConfiguration::KeyValue*> Configuration::getUnusedEntries(bool all) const
+{
+    std::vector<const cConfiguration::KeyValue*> result;
+
+    if (all)
+        for (const auto & pair : config)
+            if (!pair.second.isAccessed())
+                result.push_back(&pair.second);
+
+    for (const auto & pair : suffixBins)
+        for (const auto & entry : pair.second.entries)
+            if (!entry.isAccessed())
+                result.push_back(&entry);
+
+    for (const auto & entry : wildcardSuffixBin.entries)
+        if (!entry.isAccessed())
+            result.push_back(&entry);
+
+    return result;
+}
+
+void Configuration::dumpUnusedEntries() const
+{
+    auto unusedEntries = getUnusedEntries();
+    for (auto entry : unusedEntries)
+        std::cout << "  " << entry->str() << std::endl;
+}
+
+void Configuration::clearUsageInfo()
+{
+    for (auto & pair : config)
+        if (!pair.second.isAccessed())
+            pair.second.clearAccessInfo();
+
+    for (auto & pair : suffixBins)
+        for (auto & entry : pair.second.entries)
+            if (!entry.isAccessed())
+                entry.clearAccessInfo();
+
+    for (auto & entry : wildcardSuffixBin.entries)
+        if (!entry.isAccessed())
+            entry.clearAccessInfo();
 }
 
 }  // namespace envir
