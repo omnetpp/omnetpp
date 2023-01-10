@@ -169,7 +169,9 @@ bool cXMLParImpl::isNumeric() const
 
 void cXMLParImpl::convertToConst(cComponent *context)
 {
+    auto loc = getSourceLocation();
     setXMLValue(xmlValue(context));
+    setSourceLocation(loc);
 }
 
 std::string cXMLParImpl::str() const
@@ -197,6 +199,8 @@ void cXMLParImpl::parse(const char *text, FileLine loc)
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())
         convertToConst(nullptr);
+
+    setSourceLocation(loc);
 }
 
 int cXMLParImpl::compare(const cParImpl *other) const

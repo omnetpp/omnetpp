@@ -167,7 +167,9 @@ bool cStringParImpl::isNumeric() const
 
 void cStringParImpl::convertToConst(cComponent *context)
 {
+    auto loc = getSourceLocation();
     setStringValue(stdstringValue(context).c_str());
+    setSourceLocation(loc);
 }
 
 std::string cStringParImpl::str() const
@@ -195,6 +197,8 @@ void cStringParImpl::parse(const char *text, FileLine loc)
     // simplify if possible: store as constant instead of expression
     if (dynexpr->isAConstant())
         convertToConst(nullptr);
+
+    setSourceLocation(loc);
 }
 
 int cStringParImpl::compare(const cParImpl *other) const

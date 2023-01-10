@@ -63,6 +63,9 @@ class SIM_API cParImpl : public cNamedObject
     // base directory for interpreting relative path names in the expression (e.g. xmldoc())
     opp_staticpooledstring baseDirectory = nullptr;
 
+    // the file/line location where the value was assigned from
+    FileLine sourceLoc;
+
     // global variables for statistics
     static long totalParimplObjs;
     static long liveParimplObjs;
@@ -210,6 +213,22 @@ class SIM_API cParImpl : public cNamedObject
      * expression (e.g. in xmldoc()).
      */
     virtual void setBaseDirectory(const char *s) {baseDirectory = s;}
+
+    /**
+     * Sets the value returned by getSourceLocation().
+     */
+    virtual void setSourceLocation(const FileLine &loc);
+
+    /**
+     * Clears the value returned by getSourceLocation().
+     */
+    virtual void clearSourceLocation();
+
+    /**
+     * Returns the file:line info where this parameter was parsed from.
+     * Returns a blank object if no such info is available.
+     */
+    virtual const FileLine& getSourceLocation() const {return sourceLoc;}
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */
@@ -318,8 +337,9 @@ class SIM_API cParImpl : public cNamedObject
     //@{
 
     /**
-     * Replaces for non-const values, replaces the stored expression with its
-     * evaluation.
+     * If the parameter contains an expression, this method replaces the stored
+     * expression with its evaluation. It preserves the stored file/line info,
+     * which may or may not be what is intended.
      */
     virtual void convertToConst(cComponent *context) = 0;
 

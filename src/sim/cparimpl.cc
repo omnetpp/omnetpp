@@ -26,6 +26,7 @@
 #include "omnetpp/cstringparimpl.h"
 #include "omnetpp/cobjectparimpl.h"
 #include "omnetpp/cxmlparimpl.h"
+#include "omnetpp/platdep/platmisc.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -54,6 +55,7 @@ void cParImpl::copy(const cParImpl& other)
 {
     setUnit(other.getUnit());
     setBaseDirectory(other.getBaseDirectory());
+    sourceLoc = other.sourceLoc;
 }
 
 cParImpl& cParImpl::operator=(const cParImpl& other)
@@ -78,6 +80,16 @@ void cParImpl::parsimUnpack(cCommBuffer *buffer)
 cParImpl *cParImpl::dup() const
 {
     throw cRuntimeError(this, E_CANTDUP);  // cannot instantiate an abstract class
+}
+
+void cParImpl::setSourceLocation(const FileLine &loc)
+{
+    sourceLoc = loc;
+}
+
+void cParImpl::clearSourceLocation()
+{
+    sourceLoc = FileLine();
 }
 
 cValue cParImpl::evaluate(cExpression *expr, cComponent *contextComponent) const
