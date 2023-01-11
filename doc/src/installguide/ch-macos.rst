@@ -52,6 +52,12 @@ To be able to debug, you must disable code signature checking globally by typing
 .. code::
 
    $ sudo spctl --master-disable
+   
+or since Mac OS 10.15.7 (Catalina) 
+
+.. code::
+
+   $ sudo spctl --global-disable
 
 After issuing the above command go to *System Preferences / Security and Privacy / General* and
 select *Any* at the bottom of the dialog. After restarting your terminal application, you will be 
