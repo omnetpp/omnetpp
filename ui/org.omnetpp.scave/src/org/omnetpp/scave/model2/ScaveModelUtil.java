@@ -294,7 +294,7 @@ public class ScaveModelUtil {
         String scriptFileName = templateId + ".py";
         String propertiesFileName = templateId + ".properties";
 
-        writeNewTextFile(templatesDir, scriptFileName, chart.getScript());
+        writeNewTextFile(templatesDir, scriptFileName, chart.getUpToDateScript());
         writeNewTextFile(templatesDir, propertiesFileName, makeTemplatePropertiesContent(chart, templateId));
 
         for (DialogPage dp : chart.getDialogPages()) {

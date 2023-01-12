@@ -55,15 +55,6 @@ public class CopyAction extends AbstractScaveAction {
                 if (objects[i] instanceof ModelObject) {
                     ModelObject origObject = (ModelObject)objects[i];
                     objects[i] = origObject.dup();
-
-                    // For Charts that are open in editors, the editor document contents
-                    // authoritative over the script in the data model, so let's use that instead.
-                    if (objects[i] instanceof Chart) {
-                        Chart chart = (Chart)objects[i];
-                        FormEditorPage page = editor.getEditorPage((Chart)origObject);
-                        if (page != null)
-                            chart.setScript(((ChartPage)page).getChartScriptEditor().getDocument().get());
-                    }
                 }
             }
             // TODO filter out non-AnalysisObject objects

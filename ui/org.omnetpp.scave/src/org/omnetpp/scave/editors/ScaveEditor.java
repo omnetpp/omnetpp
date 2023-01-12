@@ -12,7 +12,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -697,6 +696,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         Chart orig = editor.getOriginalChart();
         Chart chart = editor.getChart();
 
+        chart.setEditedScript(null);
         chart.setScript(editor.getDocument().get());
 
         SetChartContentsCommand command = new SetChartContentsCommand(chart, orig, (Chart)chart.dup());
@@ -1540,13 +1540,11 @@ public class ScaveEditor extends MultiPageEditorPartExt
      * This is for implementing {@link IEditorPart} and simply saves the model file.
      */
     public void doSave(IProgressMonitor progressMonitor) {
-        Map<Chart, String> editedScripts = getScriptsOfOpenCharts();
-
         IFileEditorInput modelFile = (IFileEditorInput) getEditorInput();
         IFile f = modelFile.getFile();
 
         try {
-            AnalysisSaver.saveAnalysis(analysis, f, editedScripts);
+            AnalysisSaver.saveAnalysis(analysis, f);
 
             // Refresh the necessary state.
 
@@ -1577,28 +1575,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
         } catch (CoreException e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Cannot save .anf file", e.getMessage());
         }
-    }
-
-    /**
-     * Collects the current script for all charts open in a tab from their
-     * respective Documents.
-     * This is needed for saving, exporting, etc., so the up-to-date script
-     * is used instead of a potentially stale one still in the Chart object.
-     *
-     * @return A Map from Chart objects to their current edited scripts
-     */
-    public Map<Chart, String> getScriptsOfOpenCharts() {
-        Map<Chart, String> editedScripts = new HashMap<Chart, String>();
-
-        for (int i = 0; i < getPageCount(); ++i) {
-            FormEditorPage editorPage = getEditorPage(i);
-            if (editorPage instanceof ChartPage) {
-                ChartPage chartPage = (ChartPage)editorPage;
-                ChartScriptEditor chartScriptEditor = chartPage.getChartScriptEditor();
-                editedScripts.put(chartScriptEditor.getChart(), chartScriptEditor.getDocument().get());
-            }
-        }
-        return editedScripts;
     }
 
     /**
