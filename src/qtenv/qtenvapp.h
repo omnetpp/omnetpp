@@ -245,7 +245,7 @@ class QTENV_API QtenvApp : public QObject, public AppBase
       virtual void connectionDeleted(cGate *srcgate);
       virtual void displayStringChanged(cComponent *component);
 
-      virtual bool isExpressMode() const {return runMode == RUNMODE_EXPRESS;}
+      virtual bool isExpressMode() const {return getEnvir()->isExpressMode();}
 
       virtual void getImageSize(const char *imageName, double& outWidth, double& outHeight);
       virtual void getTextExtent(const cFigure::Font& font, const char *text, double& outWidth, double& outHeight, double& outAscent);

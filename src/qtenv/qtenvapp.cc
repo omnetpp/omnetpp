@@ -640,6 +640,7 @@ int QtenvApp::doRunApp()
     //
     QtenvEnvir *envir = new QtenvEnvir(this);
     envir->setIsGUI(true);
+    envir->setExpressMode(runMode == RUNMODE_EXPRESS);
     envir->setArgs(args);
 
     activeCfg = ini->extractGlobalConfig();
@@ -943,6 +944,7 @@ void QtenvApp::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t u
     runUntil.msg = nullptr;
 
     runMode = RUNMODE_NOT_RUNNING;
+    getEnvir()->setExpressMode(false);
     displayUpdateController->setRunMode(runMode);
     if (!messageAnimator->isHoldActive())
         messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
@@ -975,6 +977,7 @@ void QtenvApp::setSimulationRunMode(RunMode mode)
         doNextEventInStep = true;
     }
 
+    ASSERT(getEnvir()->isExpressMode() == (runMode == RUNMODE_EXPRESS));
     runMode = mode;
     getEnvir()->setExpressMode(runMode == RUNMODE_EXPRESS);
 }
@@ -1905,6 +1908,7 @@ void QtenvApp::requestQuitFromPausePointEventLoop(RunMode continueIn)
     ASSERT(pauseEventLoop->isRunning());
     pauseEventLoop->quit();
     runMode = continueIn;
+    getEnvir()->setExpressMode(runMode == RUNMODE_EXPRESS);
 }
 
 bool QtenvApp::ensureDebugger(cRuntimeError *error)
