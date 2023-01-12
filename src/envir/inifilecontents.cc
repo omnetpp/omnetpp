@@ -1156,7 +1156,7 @@ void InifileContents::validate(const char *ignorableConfigKeys) const
 {
    // check command-line options
    for (const auto & entry : commandLineOptions) {
-       const char *key = entry.key.c_str();
+       const char *key = entry.getKey();
        bool containsDot = strchr(key, '.') != nullptr;
        const char *option = strchr(key, '.') ? strrchr(key, '.')+1 : key;  // check only the part after the last dot, i.e. recognize per-object keys as well
        bool lastSegmentContainsHyphen = strchr(option, '-') != nullptr;

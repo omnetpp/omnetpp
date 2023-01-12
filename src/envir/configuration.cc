@@ -229,9 +229,9 @@ const char *Configuration::getVariable(const char *varname) const
 void Configuration::addEntry(const Entry& entry)
 {
     entries.push_back(entry);
-    const std::string& key = entry.key;
-    const char *lastDot = strrchr(key.c_str(), '.');
-    if (!lastDot && !PatternMatcher::containsWildcards(key.c_str())) {
+    const char *key = entry.getKey();
+    const char *lastDot = strrchr(key, '.');
+    if (!lastDot && !PatternMatcher::containsWildcards(key)) {
         // config: add if not already in there
         if (config.find(key) == config.end())
             config[key] = entry;
@@ -245,14 +245,14 @@ void Configuration::addEntry(const Entry& entry)
         // analyze key and create appropriate entry
         std::string ownerName;
         std::string suffix;
-        splitKey(key.c_str(), ownerName, suffix);
+        splitKey(key, ownerName, suffix);
         bool suffixContainsWildcards = PatternMatcher::containsWildcards(suffix.c_str());
 
         MatchableEntry entry2(entry);
         if (!ownerName.empty())
             entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
         else
-            entry2.fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
+            entry2.fullPathPattern = new PatternMatcher(key, true, true, true);
         entry2.suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : nullptr;
 
         // find which bin it should go into
@@ -317,7 +317,7 @@ void Configuration::splitKey(const char *key, std::string& outOwnerName, std::st
 const char *Configuration::getConfigValue(const char *key) const
 {
     std::map<std::string, Entry>::const_iterator it = config.find(key);
-    return it == config.end() ? nullptr : it->second.value.c_str();
+    return it == config.end() ? nullptr : it->second.getValue();
 }
 
 const cConfiguration::KeyValue& Configuration::getConfigEntry(const char *key) const
@@ -354,7 +354,7 @@ const cConfiguration::KeyValue& Configuration::getParameterEntry(const char *mod
     // find first match in the bin
     for (const auto & entry : bin->entries) {
         if (entryMatches(entry, moduleFullPath, paramName))
-            if (hasDefaultValue || entry.value != "default")
+            if (hasDefaultValue || !opp_streq(entry.getValue(), "default"))
                 return entry;
     }
     return nullEntry;  // not found
@@ -472,15 +472,15 @@ std::vector<const char *> Configuration::getMatchingPerObjectConfigKeySuffixes(c
             const SuffixBin& bin = suffixBin.second;
             for (const auto & entry : bin.entries) {
                 if (entry.fullPathPattern) {
-                    if (PatternMatcher((std::string(objectFullPath)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry.key.c_str()))
-                        result.push_back(partAfterLastDot(entry.key.c_str()));
+                    if (PatternMatcher((std::string(objectFullPath)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry.getKey()))
+                        result.push_back(partAfterLastDot(entry.getKey()));
                 }
                 else if ((anyObject || entry.ownerPattern->matches(objectFullPath))
                     &&
                     (entry.suffixPattern == nullptr ||
-                     suffixMatcher.matches(partAfterLastDot(entry.key.c_str())) ||
+                     suffixMatcher.matches(partAfterLastDot(entry.getKey())) ||
                      entry.suffixPattern->matches(keySuffixPattern)))
-                    result.push_back(partAfterLastDot(entry.key.c_str()));
+                    result.push_back(partAfterLastDot(entry.getKey()));
             }
         }
     }
