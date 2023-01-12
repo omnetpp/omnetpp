@@ -112,7 +112,7 @@ class ENVIR_API GenericEnvir : public cEnvir, protected cISimulationLifecycleLis
     virtual void askParameter(cPar *par, bool unassigned);
 
     // Utility function for getXMLDocument() and getParsedXMLString()
-    cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
+    virtual cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
     virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override;
 
@@ -125,48 +125,48 @@ class ENVIR_API GenericEnvir : public cEnvir, protected cISimulationLifecycleLis
     virtual void configure(cConfiguration *cfg) override;
 
     // getters/setters
-    cSimulation *getSimulation() const override {return simulation;}
+    virtual cSimulation *getSimulation() const override {return simulation;}
     virtual cConfiguration *getConfig() override;
 
-    cIEventlogManager *getEventlogManager() const {return eventlogManager;}
-    void setEventlogManager(cIEventlogManager *obj);
-    cIOutputVectorManager *getOutVectorManager() const {return outVectorManager;}
-    void setOutVectorManager(cIOutputVectorManager *obj);
-    cIOutputScalarManager *getOutScalarManager() const {return outScalarManager;}
-    void setOutScalarManager(cIOutputScalarManager *obj);
-    cISnapshotManager *getSnapshotManager() const {return snapshotManager;}
-    void setSnapshotManager(cISnapshotManager *obj);
+    virtual cIEventlogManager *getEventlogManager() const {return eventlogManager;}
+    virtual void setEventlogManager(cIEventlogManager *obj);
+    virtual cIOutputVectorManager *getOutVectorManager() const {return outVectorManager;}
+    virtual void setOutVectorManager(cIOutputVectorManager *obj);
+    virtual cIOutputScalarManager *getOutScalarManager() const {return outScalarManager;}
+    virtual void setOutScalarManager(cIOutputScalarManager *obj);
+    virtual cISnapshotManager *getSnapshotManager() const {return snapshotManager;}
+    virtual void setSnapshotManager(cISnapshotManager *obj);
 
-    XMLDocCache *getXMLDocCache() const {return xmlCache;}
+    virtual XMLDocCache *getXMLDocCache() const {return xmlCache;}
 
     virtual IFakeGUI *getFakeGui() const {return nullptr;}
 
-    void setExpressMode(bool enabled) {expressMode = enabled;}
-    void setIsGUI(bool enabled) {gui = enabled;}
-    void setExtraStackForEnvir(size_t size) {extraStack = size;}
+    virtual void setExpressMode(bool enabled) {expressMode = enabled;}
+    virtual void setIsGUI(bool enabled) {gui = enabled;}
+    virtual void setExtraStackForEnvir(size_t size) {extraStack = size;}
 
-    bool getDebugOnErrors() const {return debugOnErrors;}
-    void setDebugOnErrors(bool enable) {debugOnErrors = enable;}
-    bool getAttachDebuggerOnErrors() const {return attachDebuggerOnErrors;}
-    void setAttachDebuggerOnErrors(bool enabled) {attachDebuggerOnErrors = enabled;}
+    virtual bool getDebugOnErrors() const {return debugOnErrors;}
+    virtual void setDebugOnErrors(bool enable) {debugOnErrors = enable;}
+    virtual bool getAttachDebuggerOnErrors() const {return attachDebuggerOnErrors;}
+    virtual void setAttachDebuggerOnErrors(bool enabled) {attachDebuggerOnErrors = enabled;}
 
-    void setLogLevel(LogLevel logLevel);
-    void setLogFormat(const char *logFormat);
-    LogFormatter& getLogFormatter() {return logFormatter;}
+    virtual void setLogLevel(LogLevel logLevel);
+    virtual void setLogFormat(const char *logFormat);
+    virtual LogFormatter& getLogFormatter() {return logFormatter;}
 
-    void setEventlogRecording(bool enabled);  //TODO note: currently this does suspend()/resume(), which is mostly only useful for Qtenv
-    bool getEventlogRecording() const {return recordEventlog;}
+    virtual void setEventlogRecording(bool enabled);  //TODO note: currently this does suspend()/resume(), which is mostly only useful for Qtenv
+    virtual bool getEventlogRecording() const {return recordEventlog;}
 
-    bool getCheckSignals() const {return cComponent::getCheckSignals();}
-    void setCheckSignals(bool checkSignals) {cComponent::setCheckSignals(checkSignals);}
-    const char *getImagePath() const {return imagePath.c_str();}
-    void setImagePath(const char *imagePath) {this->imagePath = imagePath;}
-    bool getPrintUndisposed() const {return printUndisposed;}
-    void setPrintUndisposed(bool printUndisposed) {this->printUndisposed = printUndisposed;}
+    virtual bool getCheckSignals() const {return cComponent::getCheckSignals();}
+    virtual void setCheckSignals(bool checkSignals) {cComponent::setCheckSignals(checkSignals);}
+    virtual const char *getImagePath() const {return imagePath.c_str();}
+    virtual void setImagePath(const char *imagePath) {this->imagePath = imagePath;}
+    virtual bool getPrintUndisposed() const {return printUndisposed;}
+    virtual void setPrintUndisposed(bool printUndisposed) {this->printUndisposed = printUndisposed;}
 
     virtual std::string extractImagePath(cConfiguration *cfg, ArgList *args);
 
-    void clearCurrentEventInfo();
+    virtual void clearCurrentEventInfo();
 
     // eventlog callback interface
     virtual void objectDeleted(cObject *object) override;
