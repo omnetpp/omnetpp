@@ -1,0 +1,29 @@
+%description:
+Check detection of unused inifile entries.
+
+%file: test.ned
+network TestNet {
+    parameters:
+       int foo;
+       int bar = 3;
+}
+
+%inifile: test.ini
+[General]
+network = TestNet
+cmdenv-express-mode = false
+
+**.bar = -1
+**.foo = 9999  # only this one takes effect
+**.foo = -2
+**.nonexistent = -3
+**.bogus.vector-recording-intervals = 0..1000s
+
+%contains: stdout
+Note: There were unused entries in the configuration after network setup:
+  **.bar = -1  (at test.ini:5)
+  **.foo = -2  (at test.ini:7)
+  **.nonexistent = -3  (at test.ini:8)
+  **.bogus.vector-recording-intervals = 0..1000s  (at test.ini:9)
+Initializing...
+

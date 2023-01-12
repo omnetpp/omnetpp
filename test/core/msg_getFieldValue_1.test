@@ -118,6 +118,8 @@ void Tester::activity()
 %subst: /\)0x?[0-9a-fA-F]+/)0x.../
 %subst: /stackSize : unsigned int =.*/stackSize : unsigned int = X/
 %subst: /stackUsage : unsigned int =.*/stackUsage : unsigned int = X/
+%subst: /assignedFrom : string =.*/assignedFrom : string = "..."/
+%subst: /baseDirectory : string =.*/baseDirectory : string = "..."/
 
 %contains: stdout
 (msg_getFieldValue_1::Tester)Test.tester:
@@ -164,6 +166,8 @@ isVolatile : bool = false
 isMutable : bool = false
 isExpression : bool = false
 isShared : bool = true
+assignedFrom : string = "..."
+baseDirectory : string = "..."
 
 (omnetpp::cGate)Test.tester.in:
 className : string = "omnetpp::cGate"
