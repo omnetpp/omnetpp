@@ -5,4 +5,5 @@ package testlib;
 //
 simple Dump {
     bool printClassNames = default(false);
+    bool printParamAssignmentLocations = default(false);
 }

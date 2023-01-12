@@ -8,6 +8,7 @@ class Dump : public cSimpleModule
 {
   protected:
     bool printClassNames;
+    bool printParamAssignmentLocations;
 
   protected:
     virtual void initialize() override;
@@ -28,6 +29,7 @@ void Dump::handleMessage(cMessage *msg)
     delete msg;
 
     printClassNames = par("printClassNames").boolValue();
+    printParamAssignmentLocations = par("printParamAssignmentLocations").boolValue();
     printf("==============================\n");
     dump(getSimulation()->getSystemModule(), std::string());
     printf("==============================\n");
@@ -74,7 +76,27 @@ void Dump::dump(cModule *mod, std::string currentIndent)
             printf("%s    parameters:\n", indent);
             parametersHeadingPrinted = true;
         }
-        printf("%s        %s%s = %s\n", indent, mod->par(i).getFullName(), props2str(mod->par(i).getProperties()).c_str(), mod->par(i).str().c_str());
+        cPar& par = mod->par(i);
+        std::string valueString = par.str();
+        if (par.isVolatile()) {
+            try {
+                valueString += " <volatile value>: " + par.getValue().str();
+            }
+            catch (std::exception& e) {
+                valueString += std::string(" <error>: ") + e.what();
+            }
+        }
+        std::string locationString;
+        if (printParamAssignmentLocations) {
+            std::string loc = par.getSourceLocation();
+            if (loc.empty())
+                loc = "n/a";
+            size_t pos = loc.rfind("/");
+            if (pos != std::string::npos)
+                loc = "..." + loc.substr(pos);  // abbreviate
+            locationString = "  (from " + loc + ")";
+        }
+        printf("%s        %s%s = %s%s\n", indent, mod->par(i).getFullName(), props2str(par.getProperties()).c_str(), valueString.c_str(), locationString.c_str());
     }
 
     bool gatesHeadingPrinted = false;
