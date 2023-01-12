@@ -116,12 +116,12 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
     //   **.tcp.eedVector.record-*"       ==> goes into the wildcard bin; ownerPattern="**.tcp.eedVector", suffixPattern="record-*"
     //
     struct SuffixBin {
-        std::vector<MatchableEntry> entries;
+        std::vector<MatchableEntry*> entries;
     };
 
   private:
-    std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
-    std::map<std::string,Entry> config; // config entries (i.e. keys not containing a dot or wildcard)
+    std::vector<Entry*> entries; // entries of the activated configuration, with itervars substituted
+    std::map<std::string,Entry*> config; // config entries (i.e. keys not containing a dot or wildcard)
     std::map<std::string,SuffixBin> suffixBins;  // bins for each non-wildcard suffix
     SuffixBin wildcardSuffixBin; // bin for entries that contain wildcards
 
@@ -134,10 +134,10 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
     std::string fileName;
 
   private:
-    void addEntry(const Entry& entry);
+    void addEntry(const InifileContents::Entry& entry);
     static void parseVariable(const char *txt, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPtr);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outBinName);
-    static bool entryMatches(const MatchableEntry& entry, const char *moduleFullPath, const char *paramName);
+    static bool entryMatches(const MatchableEntry *entry, const char *moduleFullPath, const char *paramName);
     static bool isPredefinedVariable(const char *varname);
     virtual bool isEssentialOption(const char *key) const;
     virtual std::string substituteVariables(const char *text, const StringMap& variables) const;
