@@ -1238,7 +1238,7 @@ bool QtenvApp::checkRunning()
     const char *warningText = nullptr;
 
     if (getSimulation()->getStage() == cSimulation::STAGE_EVENT) {
-        if (getQtenv()->isPaused())
+        if (isPaused())
             warningText = "The simulation is paused in the middle of an event -- press STOP to finish processing it.";
         else
             warningText = "Sorry, you cannot do this while the simulation is running. Please stop it first.";
@@ -2574,7 +2574,7 @@ bool QtenvApp::askYesNo(const char *question)
 
 QPoint QtenvApp::getDefaultStopDialogCorner(const QPoint& offset)
 {
-    auto insp = getQtenv()->getMainModuleInspector();
+    auto insp = getMainModuleInspector();
     return insp->mapToGlobal(insp->contentsRect().topRight() + offset);  // not covering the toolbar
 }
 
@@ -2603,7 +2603,7 @@ QStringList QtenvApp::getKeysInPrefGroup(const QString &prefGroup)
 
 void QtenvApp::runSimulationLocal(RunMode runMode, cObject *object, Inspector *insp)
 {
-    MainWindow *mainWindow = getQtenv()->getMainWindow();
+    MainWindow *mainWindow = getMainWindow();
     if (mainWindow->isRunning()) {
         mainWindow->setGuiForRunmode(runMode, true);
         prepareForRunningInMode(runMode);
@@ -2622,7 +2622,7 @@ void QtenvApp::runSimulationLocal(RunMode runMode, cObject *object, Inspector *i
             // TODO log "object is not a module"
             return;
         }
-        getQtenv()->runSimulation(runMode, 0, 0, nullptr, mod);
+        runSimulation(runMode, 0, 0, nullptr, mod);
         mainWindow->setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
 }
@@ -2660,7 +2660,7 @@ void QtenvApp::runUntilMessage()
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid()) {
         auto data = variant.value<RunUntilActionData>();
-        getQtenv()->getMainWindow()->runUntilMsg(static_cast<cMessage *>(data.object), data.runMode);
+        mainWindow->runUntilMsg(static_cast<cMessage *>(data.object), data.runMode);
     }
 }
 
@@ -2668,7 +2668,7 @@ void QtenvApp::excludeMessage()
 {
     QVariant variant = static_cast<QAction *>(QObject::sender())->data();
     if (variant.isValid())
-        getQtenv()->getMainWindow()->excludeMessageFromAnimation(variant.value<cObject *>());
+        mainWindow->excludeMessageFromAnimation(variant.value<cObject *>());
 }
 
 void QtenvApp::utilitiesSubMenu()
