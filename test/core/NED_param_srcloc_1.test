@@ -1,0 +1,71 @@
+%description:
+Check that cPar::getSourceLocation() accurately returns the place where the
+parameter was assigned from.
+
+%file: subnode.ned
+module Subnode
+{
+    parameters:
+        string a;
+        string b = default("ned");
+        string c;
+}
+
+%file: node.ned
+module Node
+{
+    parameters:
+        string a;
+        string b = default("ned");
+        string c;
+        string d = default("ned");
+    submodules:
+        subnode: Subnode;
+}
+
+%file: test.ned
+import testlib.Dump;
+network Test
+{
+    parameters:
+        string a;
+        string b = default("ned");
+        **.d = "ned-pattern";
+    submodules:
+        node: Node {
+            c = "ned-submod";
+            d = default("ned-overridden");
+            **.c = "ned-submodule-pattern";
+        }
+        dump: Dump {
+            printParamAssignmentLocations = true;
+        }
+}
+
+%inifile: test.ini
+network = Test
+**.a = "ini"
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = "ini"  (from test.ini:2)
+        b = "ned"  (from .../test.ned:6)
+    submodules:
+        module Test.node: Node {
+            parameters:
+                a = "ini"  (from test.ini:2)
+                b = "ned"  (from .../node.ned:5)
+                c = "ned-submod"  (from .../test.ned:10)
+                d = "ned-pattern"  (from .../test.ned:7)
+            submodules:
+                module Test.node.subnode: Subnode {
+                    parameters:
+                        a = "ini"  (from test.ini:2)
+                        b = "ned"  (from .../subnode.ned:5)
+                        c = "ned-submodule-pattern"  (from .../test.ned:12)
+                }
+        }
+}
+
