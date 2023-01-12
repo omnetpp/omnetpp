@@ -53,7 +53,30 @@ public class Chart extends AnalysisItem {
         MATPLOTLIB
     }
 
+    // NOTE: `Chart`s that are currently open in a `ChartScriptEditor` have
+    // their most recent script stored in `editedScript` (instead of `script`),
+    // which is kept in sync with the `IDocument` of the open editor.
+    // This is to keep the two undo/redo stacks - the one that is built into
+    // the text editor, and our own in the `Analysis` data model - from being
+    // intertwined while typing, causing all kinds of havoc.
+    //
+    // In effect, `editedScript` is not really part of the "data model",
+    // it's just a copy of the contents of the edited document, and is
+    // included in this class for easier access, to avoid always having
+    // to look up a potential editor that has it opened at the moment.
+    // Modifying it also doesn't send any change notifications.
+    //
+    // So, the usual usage pattern should be:
+    //  1: Set `editedScript` to the actual script (or the first edited version of it).
+    //     - This "locks" `script`.
+    //  2: Change `editedScript` freely any number of times.
+    //     - During this time, exporting, copy-pasting, etc. of the Chart
+    //       object will have to use `editedScript` instead of `script`.
+    //  3: Once done editing, set `editedScript` back to `null`, then update
+    //     `script` to the new desired value, triggering a single model change.
     protected String script;
+    protected String editedScript = null; // When not null, `script` is unusable.
+
     protected List<Property> properties = new ArrayList<Property>();
     protected boolean temporary;
 
@@ -95,13 +118,32 @@ public class Chart extends AnalysisItem {
         }
     }
 
+    // NOTE: See comment for `script`.
     public String getScript() {
+        Assert.isTrue(editedScript == null, "Chart `script` cannot be accessed while it is being edited (`editedScript` is not null). Use `getUpToDateScript` instead.");
         return script;
     }
 
+    // NOTE: See comment for `script`.
     public void setScript(String script) {
+        Assert.isTrue(editedScript == null, "Chart `script` cannot be modified while it is being edited (`editedScript` is not null). Use `setEditedScript` instead.");
         this.script = script;
         notifyListeners();
+    }
+
+    // NOTE: See comment for `script`.
+    public String getEditedScript() {
+        return editedScript;
+    }
+
+    // NOTE: See comment for `script`.
+    public void setEditedScript(String editedScript) {
+        this.editedScript = editedScript;
+        // no change notification!
+    }
+
+    public String getUpToDateScript() {
+        return (editedScript != null) ? editedScript : script;
     }
 
     public List<Property> getProperties() {
@@ -266,6 +308,9 @@ public class Chart extends AnalysisItem {
 
         for (int i = 0; i < properties.size(); ++i)
             clone.properties.add(properties.get(i).clone());
+
+        clone.setEditedScript(null);
+        clone.setScript(getUpToDateScript());
 
         clone.dialogPages = new ArrayList<Chart.DialogPage>(dialogPages.size());
 

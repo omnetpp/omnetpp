@@ -174,15 +174,13 @@ public class ChartExport {
     }
 
     // NOTE: The list `charts` may be modified, but the objects in it are not
-    public static void exportCharts(List<Chart> charts, Map<Chart, String> editedChartScripts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache, boolean stopOnError, int numConcurrentProcesses) {
+    public static void exportCharts(List<Chart> charts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache, boolean stopOnError, int numConcurrentProcesses) {
         clearPreviousConsoles();
         Context context = new Context(extraProperties, chartsDir, manager, memoizationCache, filterCache, stopOnError, numConcurrentProcesses);
 
         for (int i = 0; i < charts.size(); ++i) {
             Chart chart = charts.get(i);
             Chart chartClone = (Chart)chart.dup();
-            if (editedChartScripts.containsKey(chart))
-                chartClone.setScript(editedChartScripts.get(chart));
             charts.set(i, chartClone);
         }
 
@@ -193,11 +191,9 @@ public class ChartExport {
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
     }
 
-    public static void exportChart(Chart chart, Map<Chart, String> editedChartScripts, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache) {
+    public static void exportChart(Chart chart, Map<String, String> extraProperties, File chartsDir, ResultFileManager manager, MemoizationCache memoizationCache, FilterCache filterCache) {
         clearPreviousConsoles();
         Chart chartClone = (Chart)chart.dup();
-        if (editedChartScripts.containsKey(chart))
-            chartClone.setScript(editedChartScripts.get(chart));
         Context context = new Context(extraProperties, chartsDir, manager, memoizationCache, filterCache, false, 1);
         startExportJob(chartClone, context);
         //TODO folder.refreshLocal(IResource.DEPTH_INFINITE, monitor); // because we're creating the file behind Eclipse's back
@@ -267,7 +263,7 @@ public class ChartExport {
             // Ensure the chart script can load source files and Python modules from the anf file's directory
             proc.getEntryPoint().execute("import os; os.chdir(r\"\"\"" + context.chartsDir.getAbsolutePath() + "\"\"\"); del os;");
             proc.getEntryPoint().execute("import site; site.addsitedir(r\"\"\"" + context.chartsDir.getAbsolutePath() + "\"\"\"); del site;");
-            proc.getEntryPoint().execute(chart.getScript());
+            proc.getEntryPoint().execute(chart.getScript()); // we are working on clones, so there should never be an edited script
         }, runAfterDone, runAfterError);
 
         while (!executionDone[0]) {

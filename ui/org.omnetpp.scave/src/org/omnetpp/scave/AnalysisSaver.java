@@ -8,8 +8,6 @@
 package org.omnetpp.scave;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,23 +35,10 @@ import org.w3c.dom.Element;
 public class AnalysisSaver {
 
     /**
-     * Serializes and writes an analysis model into a file.
+     * Serializes and writes an analysis model into a file. Uses the "getUpToDateScript"
+     * method to access chart scripts, so the opened editors override what's in the model.
      */
     public static void saveAnalysis(Analysis analysis, IFile file) throws CoreException {
-        saveAnalysis(analysis, file, new HashMap<Chart, String>());
-    }
-
-    /**
-     * Serializes and writes an analysis model into a file, replacing the scripts
-     * of some Charts with the contents given in editedChartScripts.
-     *
-     * This is used when the Analysis is open in a ScaveEditor, and there
-     * are some Charts open in ChartScriptEditors, with edited script contents.
-     * These ChartSctriptEditors are not marked as "dirty", but the script
-     * in them is not yet written back into the Chart object itself, to avoid
-     * spamming the "main" (model) CommandStack of the ScaveEditor.
-     */
-    public static void saveAnalysis(Analysis analysis, IFile file, Map<Chart, String> editedChartScripts) throws CoreException {
 
         DocumentBuilder db;
         try {
@@ -78,7 +63,7 @@ public class AnalysisSaver {
             }
 
             for (AnalysisItem item : analysis.getRootFolder().getItems())
-                saveAnalysisItem(item, document, charts, editedChartScripts);
+                saveAnalysisItem(item, document, charts);
 
             String content = XmlUtils.serialize(document);
             if (!file.exists())
@@ -91,7 +76,7 @@ public class AnalysisSaver {
         }
     }
 
-    protected static void saveAnalysisItem(AnalysisItem item, Document document, Element parent, Map<Chart, String> editedChartScripts) {
+    protected static void saveAnalysisItem(AnalysisItem item, Document document, Element parent) {
             if (item instanceof Chart) {
                 Chart chart = (Chart) item;
                 Element chartElem = document.createElement("chart");
@@ -102,7 +87,7 @@ public class AnalysisSaver {
                 chartElem.setAttribute("template", chart.getTemplateID());
 
                 Element scriptElem = document.createElement("script");
-                String script = editedChartScripts.containsKey(chart) ? editedChartScripts.get(chart) : chart.getScript();
+                String script = chart.getUpToDateScript();
                 scriptElem.appendChild(document.createCDATASection(script));
                 chartElem.appendChild(scriptElem);
 
@@ -134,7 +119,7 @@ public class AnalysisSaver {
                 folderElem.setAttribute("name", folder.getName());
 
                 for (AnalysisItem child : folder.getItems())
-                    saveAnalysisItem(child, document, folderElem, editedChartScripts);
+                    saveAnalysisItem(child, document, folderElem);
             }
             else {
                 Debug.println("Unsupported analysis item type '" + item.getClass().getSimpleName() + "', not saved");

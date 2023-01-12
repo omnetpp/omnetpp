@@ -510,6 +510,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             firePropertyChange(ISaveablePart2.PROP_DIRTY);
             if (autoRefreshChart)
                 rerunChartScriptJob.restartTimer();
+            chart.setEditedScript(getDocument().get());
         }
 
         @Override
@@ -1059,6 +1060,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         scaveEditor.getResultFilesTracker().removeChangeListener(changeListener);
         getDocumentProvider().getDocument(editorInput).removeDocumentListener(changeListener);
         chart.removeListener(changeListener);
+        chart.setEditedScript(null);
 
         if (matplotlibChartViewer != null)
             matplotlibChartViewer.dispose();
