@@ -353,7 +353,8 @@ class QTENV_API QtenvApp : public QObject, public AppBase
 
       void rebuildSim();
       void runSimulation(RunMode mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=nullptr, cModule *until_module=nullptr, bool stopOnMsgCancel=true);
-      void setSimulationRunMode(RunMode runMode);
+      void setRunMode(RunMode runMode);
+      void prepareForRunningInMode(RunMode runMode);
       RunMode getSimulationRunMode() const {return runMode;}
       void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel=true);
       void setSimulationRunUntilModule(cModule *until_module);

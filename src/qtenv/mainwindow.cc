@@ -502,7 +502,8 @@ void MainWindow::runSimulation(RunMode runMode)
 
     if (isRunning()) {
         setGuiForRunmode(runMode);
-        env->setSimulationRunMode(runMode);
+        env->prepareForRunningInMode(runMode);
+        env->setRunMode(runMode);
         setRunUntilModule();
     }
     else {
@@ -597,17 +598,18 @@ void MainWindow::on_actionRunUntil_triggered()
     if (isRunning()) {
         // XXX: this would cause an assertion failure in DisplayUpdateController
         //setGuiForRunmode(runMode, untilMode);
-        getQtenv()->setSimulationRunMode(runMode);
-        getQtenv()->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
-        if (getQtenv()->isPaused())
-            getQtenv()->requestQuitFromPausePointEventLoop(runMode);
+        env->prepareForRunningInMode(runMode);
+        env->setRunMode(runMode);
+        env->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
+        if (env->isPaused())
+            env->requestQuitFromPausePointEventLoop(runMode);
     }
     else {
         if (!networkReady())
             return;
 
         setGuiForRunmode(runMode, untilMode);
-        getQtenv()->runSimulation(runMode, time, event, msg, nullptr, stopOnMsgCancel);
+        env->runSimulation(runMode, time, event, msg, nullptr, stopOnMsgCancel);
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }
@@ -763,7 +765,8 @@ void MainWindow::runUntilMsg(cMessage *msg, RunMode runMode)
     // mode must be "normal", "fast" or "express"
     if (isRunning()) {
         setGuiForRunmode(runMode, true);
-        env->setSimulationRunMode(runMode);
+        env->prepareForRunningInMode(runMode);
+        env->setRunMode(runMode);
         env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
     }
     else {

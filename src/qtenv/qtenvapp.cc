@@ -895,7 +895,8 @@ void QtenvApp::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t u
     if (!isPaused())
         ASSERT(getSimulation()->getState() == cSimulation::SIM_INITIALIZED || getSimulation()->getState() == cSimulation::SIM_PAUSED);
 
-    setSimulationRunMode(mode);
+    prepareForRunningInMode(mode);
+    setRunMode(mode);
 
     runUntil.time = until_time;
     runUntil.eventNumber = until_eventnum;
@@ -943,8 +944,7 @@ void QtenvApp::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t u
     cLog::setLoggingEnabled(true);
     runUntil.msg = nullptr;
 
-    runMode = RUNMODE_NOT_RUNNING;
-    getEnvir()->setExpressMode(false);
+    setRunMode(RUNMODE_NOT_RUNNING);
     displayUpdateController->setRunMode(runMode);
     if (!messageAnimator->isHoldActive())
         messageAnimator->setMarkedModule(getSimulation()->guessNextModule());
@@ -964,7 +964,14 @@ void QtenvApp::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t u
     callRefreshInspectors();
 }
 
-void QtenvApp::setSimulationRunMode(RunMode mode)
+void QtenvApp::setRunMode(RunMode mode)
+{
+    ASSERT(getEnvir()->isExpressMode() == (runMode == RUNMODE_EXPRESS));
+    runMode = mode;
+    getEnvir()->setExpressMode(runMode == RUNMODE_EXPRESS);
+}
+
+void QtenvApp::prepareForRunningInMode(RunMode mode)
 {
     // We want to skip even in STEP mode, because we want the
     // next event to be executed immediately.
@@ -977,9 +984,7 @@ void QtenvApp::setSimulationRunMode(RunMode mode)
         doNextEventInStep = true;
     }
 
-    ASSERT(getEnvir()->isExpressMode() == (runMode == RUNMODE_EXPRESS));
-    runMode = mode;
-    getEnvir()->setExpressMode(runMode == RUNMODE_EXPRESS);
+    setRunMode(mode);
 }
 
 void QtenvApp::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, bool stopOnMsgCancel)
@@ -1907,8 +1912,8 @@ void QtenvApp::requestQuitFromPausePointEventLoop(RunMode continueIn)
 {
     ASSERT(pauseEventLoop->isRunning());
     pauseEventLoop->quit();
-    runMode = continueIn;
-    getEnvir()->setExpressMode(runMode == RUNMODE_EXPRESS);
+
+    setRunMode(continueIn);
 }
 
 bool QtenvApp::ensureDebugger(cRuntimeError *error)
@@ -2601,7 +2606,8 @@ void QtenvApp::runSimulationLocal(RunMode runMode, cObject *object, Inspector *i
     MainWindow *mainWindow = getQtenv()->getMainWindow();
     if (mainWindow->isRunning()) {
         mainWindow->setGuiForRunmode(runMode, true);
-        getQtenv()->setSimulationRunMode(runMode);
+        prepareForRunningInMode(runMode);
+        setRunMode(runMode);
         mainWindow->setRunUntilModule(insp);
     }
     else {
