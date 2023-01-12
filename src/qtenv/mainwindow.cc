@@ -69,10 +69,10 @@ QString MainWindow::aboutText = "OMNeT++/OMNEST\nDiscrete Event Simulation Frame
         "Qtenv was compiled with Qt " + QT_VERSION_STR + ", is running with Qt " + qVersion() + "\n\n"
         "NO WARRANTY -- see license for details.";
 
-MainWindow::MainWindow(QtenvApp *env, QWidget *parent) :
+MainWindow::MainWindow(QtenvApp *app, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    env(env)
+    app(app)
 {
     ui->setupUi(this);
 
@@ -111,7 +111,7 @@ MainWindow::MainWindow(QtenvApp *env, QWidget *parent) :
     slider->setMaximumHeight(ui->mainToolBar->height());
     toolBarLayout->addWidget(slider);
     // this will set it up with the current limits
-    setGuiForRunmode(env->getSimulationRunMode());
+    setGuiForRunmode(app->getSimulationRunMode());
 
     // add current event status
     simTimeLabel = new QLabel();
@@ -147,7 +147,7 @@ MainWindow::MainWindow(QtenvApp *env, QWidget *parent) :
     toolBarLayout->addStretch(1);
     toolBarLayout->addWidget(labelsContainer);
 
-    connect(env->getDisplayUpdateController(), &DisplayUpdateController::playbackSpeedChanged,
+    connect(app->getDisplayUpdateController(), &DisplayUpdateController::playbackSpeedChanged,
             this, &MainWindow::updateSpeedSlider);
 
     adjustSize();
@@ -265,9 +265,9 @@ void MainWindow::updateEventNumLabel()
             break;
     }
 
-    int pausePointNumber = env->getPausePointNumber();
-    bool paused = pausePointNumber > 0; // XXX: env->isPaused() might not be accurate yet
-    bool showNextEvent = env->getDisplayUpdateController()->rightBeforeEvent() && env->getSimulationRunMode() == RUNMODE_NOT_RUNNING;
+    int pausePointNumber = app->getPausePointNumber();
+    bool paused = pausePointNumber > 0; // XXX: app->isPaused() might not be accurate yet
+    bool showNextEvent = app->getDisplayUpdateController()->rightBeforeEvent() && app->getSimulationRunMode() == RUNMODE_NOT_RUNNING;
 
     eventnumber_t numToShow = getSimulation()->getEventNumber() + (showNextEvent ? 1 : 0);
     const char *prefix = paused ? "in: " : showNextEvent ? "next: " : "last: ";
@@ -338,7 +338,7 @@ void MainWindow::setGuiForRunmode(RunMode runMode, bool untilMode)
     else
         closeStopDialog();
 
-    auto duc = env->getDisplayUpdateController();
+    auto duc = app->getDisplayUpdateController();
     duc->setRunMode(runMode);
 
     //slider->setEnabled(runMode != RUNMODE_NOT_RUNNING);
@@ -407,7 +407,7 @@ void MainWindow::exitLayoutingMode()
 
 void MainWindow::updateSpeedSlider()
 {
-    auto duc = env->getDisplayUpdateController();
+    auto duc = app->getDisplayUpdateController();
     bool blocked = slider->blockSignals(true);
     int min = playbackSpeedToSliderValue(duc->getMinPlaybackSpeed());
     int max = playbackSpeedToSliderValue(duc->getMaxPlaybackSpeed());
@@ -434,7 +434,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     Action action = QUIT;
 
-    bool confirmExit = env->getPref("confirm-exit", true).toBool();
+    bool confirmExit = app->getPref("confirm-exit", true).toBool();
 
     // First, deciding what to do
     switch (state) {
@@ -488,7 +488,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 
     // finally letting it go, if we got here anyway
-    env->setStopSimulationFlag();
+    app->setStopSimulationFlag();
     QMainWindow::closeEvent(event);
     Q_EMIT closed();
 }
@@ -502,8 +502,8 @@ void MainWindow::runSimulation(RunMode runMode)
 
     if (isRunning()) {
         setGuiForRunmode(runMode);
-        env->prepareForRunningInMode(runMode);
-        env->setRunMode(runMode);
+        app->prepareForRunningInMode(runMode);
+        app->setRunMode(runMode);
         setRunUntilModule();
     }
     else {
@@ -512,7 +512,7 @@ void MainWindow::runSimulation(RunMode runMode)
             return;
         }
         setGuiForRunmode(runMode);
-        env->runSimulation(runMode);
+        app->runSimulation(runMode);
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }
@@ -526,9 +526,9 @@ void MainWindow::stopSimulation()
 
     // implements Simulate|Stop
     if (getSimulation()->getState() == cSimulation::SIM_RUNNING) {
-        // This just *asks* the simulation to stop, causing it to break from the loop in env->runSimulation().
-        // setGuiForRunmode(...NOT_RUNNING) will be called after env->runSimulation() has returned.
-        env->setStopSimulationFlag();
+        // This just *asks* the simulation to stop, causing it to break from the loop in app->runSimulation().
+        // setGuiForRunmode(...NOT_RUNNING) will be called after app->runSimulation() has returned.
+        app->setStopSimulationFlag();
     }
 
     closeStopDialog();
@@ -541,7 +541,7 @@ void MainWindow::stopOrRunSimulation(RunMode runMode)
         return;
     }
 
-    if (env->getSimulationRunMode() == runMode)
+    if (app->getSimulationRunMode() == runMode)
         stopSimulation();
     else
         runSimulation(runMode);
@@ -550,7 +550,7 @@ void MainWindow::stopOrRunSimulation(RunMode runMode)
 // newRun
 void MainWindow::on_actionSetUpConfiguration_triggered()
 {
-    if (env->checkRunning())
+    if (app->checkRunning())
         return;
 
     InifileContents *ini = getQtenv()->getInifileContents();
@@ -566,7 +566,7 @@ void MainWindow::on_actionSetUpConfiguration_triggered()
     if (dialog.exec()) {
         busy("Setting up new run...");
         Q_EMIT setNewNetwork();
-        env->newRun(dialog.getConfigName().c_str(), dialog.getRunNumber());
+        app->newRun(dialog.getConfigName().c_str(), dialog.getRunNumber());
         busy();
         reflectConfigOnUi();
     }
@@ -598,18 +598,18 @@ void MainWindow::on_actionRunUntil_triggered()
     if (isRunning()) {
         // XXX: this would cause an assertion failure in DisplayUpdateController
         //setGuiForRunmode(runMode, untilMode);
-        env->prepareForRunningInMode(runMode);
-        env->setRunMode(runMode);
-        env->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
-        if (env->isPaused())
-            env->requestQuitFromPausePointEventLoop(runMode);
+        app->prepareForRunningInMode(runMode);
+        app->setRunMode(runMode);
+        app->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
+        if (app->isPaused())
+            app->requestQuitFromPausePointEventLoop(runMode);
     }
     else {
         if (!networkReady())
             return;
 
         setGuiForRunmode(runMode, untilMode);
-        env->runSimulation(runMode, time, event, msg, nullptr, stopOnMsgCancel);
+        app->runSimulation(runMode, time, event, msg, nullptr, stopOnMsgCancel);
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
     }
@@ -640,12 +640,12 @@ void MainWindow::onSliderValueChanged(int value)
             speed = snapToSpeed;
         }
 
-        if (env->getAnimationSpeed() == 0)
+        if (app->getAnimationSpeed() == 0)
             QToolTip::showText(QCursor::pos(), "Playback speed has no effect: set animation speed!", slider);
     }
 
     slider->setToolTip(QString::number(speed, 'f', 2));
-    env->getDisplayUpdateController()->setPlaybackSpeed(speed);
+    app->getDisplayUpdateController()->setPlaybackSpeed(speed);
 }
 
 void MainWindow::updateStatusDisplay()
@@ -655,8 +655,8 @@ void MainWindow::updateStatusDisplay()
     if (showStatusDetails) {
         //FIXME: switching between NextEvent Display and Performance Display should be explicit and in the QtenvApp class not here! --Andras
         if (getSimulation()->getState() == cSimulation::SIM_RUNNING
-                && (env->getSimulationRunMode() == RUNMODE_FAST
-                    || env->getSimulationRunMode() == RUNMODE_EXPRESS))
+                && (app->getSimulationRunMode() == RUNMODE_FAST
+                    || app->getSimulationRunMode() == RUNMODE_EXPRESS))
             updatePerformanceDisplay();
         else
             updateNextEventDisplay();
@@ -682,9 +682,9 @@ void MainWindow::updatePerformanceDisplay()
     ui->nextTimeLabel->setToolTip("Event density: events per simulated second");
 
     // Set Status Detail's texts
-    ui->nextModuleLabel->setText("Simsec/sec: " + QString::number(env->getSpeedometer().getSimSecPerSec()));
-    ui->nextEventLabel->setText("Ev/sec: " + QString::number(env->getSpeedometer().getEventsPerSec()));
-    ui->nextTimeLabel->setText("Ev/simsec: " + QString::number(env->getSpeedometer().getEventsPerSimSec()));
+    ui->nextModuleLabel->setText("Simsec/sec: " + QString::number(app->getSpeedometer().getSimSecPerSec()));
+    ui->nextEventLabel->setText("Ev/sec: " + QString::number(app->getSpeedometer().getEventsPerSec()));
+    ui->nextTimeLabel->setText("Ev/simsec: " + QString::number(app->getSpeedometer().getEventsPerSimSec()));
 }
 
 void MainWindow::updateNextEventDisplay()
@@ -727,7 +727,7 @@ void MainWindow::updateNextEventDisplay()
 
 void MainWindow::updateNetworkRunDisplay()
 {
-    const char *configName = opp_nulltoempty(env->getConfig()->getActiveConfigName());
+    const char *configName = opp_nulltoempty(app->getConfig()->getActiveConfigName());
     const char *network = !getSimulation()->getNetworkType() ? "" : getSimulation()->getNetworkType()->getName();
     std::string scheduler = getSimulation()->getScheduler()->str();
     const char *sep = scheduler.empty() ? "" : " - ";
@@ -735,7 +735,7 @@ void MainWindow::updateNetworkRunDisplay()
 // TODO
 //    if {$configname==""} {set configName "n/a"}
 //    if {$network==""} {set network "(no network)"}
-    ui->labelConfigName->setText(QString(configName) + " #" + QString::number(env->getConfig()->getActiveRunNumber()) + ": " + network + sep + scheduler.c_str());
+    ui->labelConfigName->setText(QString(configName) + " #" + QString::number(app->getConfig()->getActiveRunNumber()) + ": " + network + sep + scheduler.c_str());
 }
 
 void MainWindow::excludeMessageFromAnimation(cObject *msg)
@@ -747,14 +747,14 @@ void MainWindow::excludeMessageFromAnimation(cObject *msg)
     if (namePattern.contains(' '))  // must be quoted if contains spaces
         namePattern = "\"" + namePattern + "\"";
 
-    QString filters = env->getSilentEventFilters();
+    QString filters = app->getSilentEventFilters();
     filters = filters.trimmed();
     if (!filters.isEmpty())
         filters += "\n";
     filters += namePattern + " and className =~ " + getObjectShortTypeName(msg, STRIPNAMESPACE_NONE) + "\n";
-    env->setSilentEventFilters(filters.toStdString().c_str());
+    app->setSilentEventFilters(filters.toStdString().c_str());
 
-    env->callRefreshInspectors();
+    app->callRefreshInspectors();
 }
 
 void MainWindow::runUntilMsg(cMessage *msg, RunMode runMode)
@@ -765,13 +765,13 @@ void MainWindow::runUntilMsg(cMessage *msg, RunMode runMode)
     // mode must be "normal", "fast" or "express"
     if (isRunning()) {
         setGuiForRunmode(runMode, true);
-        env->prepareForRunningInMode(runMode);
-        env->setRunMode(runMode);
-        env->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
+        app->prepareForRunningInMode(runMode);
+        app->setRunMode(runMode);
+        app->setSimulationRunUntil(SIMTIME_ZERO, 0, msg);
     }
     else {
         setGuiForRunmode(runMode, true);
-        env->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
+        app->runSimulation(runMode, SIMTIME_ZERO, 0, msg);
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
     }
 }
@@ -780,7 +780,7 @@ void MainWindow::runUntilMsg(cMessage *msg, RunMode runMode)
 void MainWindow::setRunUntilModule(Inspector *insp)
 {
     if (insp == nullptr) {
-        env->setSimulationRunUntilModule(nullptr);
+        app->setSimulationRunUntilModule(nullptr);
         return;
     }
 
@@ -796,7 +796,7 @@ void MainWindow::setRunUntilModule(Inspector *insp)
         return;
     }
 
-    env->setSimulationRunUntilModule(mod);
+    app->setSimulationRunUntilModule(mod);
 }
 
 bool MainWindow::networkReady()
@@ -841,12 +841,12 @@ void MainWindow::saveSplitter(QString prefName, QSplitter *splitter)
     sizes.clear();
     sizes.append(splitter->sizes()[0]);
     sizes.append(splitter->sizes()[1]);
-    env->setPref(prefName, sizes);
+    app->setPref(prefName, sizes);
 }
 
 void MainWindow::storeGeometry()
 {
-    env->setPref("mainwindow-geom", geometry());
+    app->setPref("mainwindow-geom", geometry());
 
     if (ui->actionTimeline->isChecked())
         saveSplitter("mainwin-main-splittersizes", ui->mainSplitter);
@@ -855,7 +855,7 @@ void MainWindow::storeGeometry()
         sizes.clear();
         sizes.append(timeLineSize[0]);
         sizes.append(timeLineSize[1]);
-        env->setPref("mainwin-main-splittersizes", sizes);
+        app->setPref("mainwin-main-splittersizes", sizes);
     }
 
     saveSplitter("mainwin-bottom-splittersizes", ui->splitter_3);
@@ -863,11 +863,11 @@ void MainWindow::storeGeometry()
 
     if (ui->splitter_2->orientation() == Qt::Horizontal) {
         saveSplitter("mainwin-right-splittersizes-horiz", ui->splitter_2);
-        env->setPref("mainwin-right-splitter-orientation", "horiz");
+        app->setPref("mainwin-right-splitter-orientation", "horiz");
     }
     else {
         saveSplitter("mainwin-right-splittersizes-vert", ui->splitter_2);
-        env->setPref("mainwin-right-splitter-orientation", "vert");
+        app->setPref("mainwin-right-splitter-orientation", "vert");
     }
 
     getQtenv()->setPref("display-timeline", ui->actionTimeline->isChecked());
@@ -881,7 +881,7 @@ void MainWindow::storeGeometry()
 
 void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QList<int>& defaultSizes)
 {
-    QList<QVariant> sizes = env->getPref(prefName).value<QList<QVariant> >();
+    QList<QVariant> sizes = app->getPref(prefName).value<QList<QVariant> >();
     QList<int> intSizes;
 
     if (sizes.size() >= 2) {
@@ -899,7 +899,7 @@ void MainWindow::restoreSplitter(QString prefName, QSplitter *splitter, const QL
 
 void MainWindow::restoreGeometry()
 {
-    QRect geom = env->getPref("mainwindow-geom").toRect();
+    QRect geom = app->getPref("mainwindow-geom").toRect();
     if (geom.isValid())
         setGeometry(geom);
 
@@ -920,7 +920,7 @@ void MainWindow::restoreGeometry()
     restoreSplitter("mainwin-bottom-splittersizes", ui->splitter_3, defaultSizes);
     restoreSplitter("mainwin-left-splittersizes", ui->splitter);
 
-    QVariant orient = env->getPref("mainwin-right-splitter-orientation");
+    QVariant orient = app->getPref("mainwin-right-splitter-orientation");
 
     defaultSizes.clear();
 
@@ -965,7 +965,7 @@ void MainWindow::on_actionRebuildNetwork_triggered()
 {
     // implements Simulate|Rebuild
 
-    if (env->checkRunning())
+    if (app->checkRunning())
         return;
 
     if (!networkPresent())
@@ -973,7 +973,7 @@ void MainWindow::on_actionRebuildNetwork_triggered()
 
     busy("Rebuilding network...");
     // TODO inspectorList:addAll 1
-    env->rebuildSim();
+    app->rebuildSim();
     reflectConfigOnUi();
     busy();
 }
@@ -1033,7 +1033,7 @@ void MainWindow::on_actionDebugNextEvent_triggered()
     // implements Simulate|Debug next event
 
     if (isRunning()) {
-        if (env->isPaused())
+        if (app->isPaused())
             QMessageBox::warning(this, "Error", "Simulation is paused in the middle of an event -- please press 'stop' first.",
                     QMessageBox::Ok);
         else
@@ -1058,7 +1058,7 @@ void MainWindow::on_actionDebugOnErrors_triggered(bool checked)
 
 void MainWindow::on_actionDebugNow_triggered()
 {
-    if (env->ensureDebugger())
+    if (app->ensureDebugger())
         DEBUG_TRAP; // YOU ASKED FOR A DEBUGGER IN THE MENU -- PLACE YOUR BREAKPOINTS AND CONTINUE EXECUTION
 }
 
@@ -1076,7 +1076,7 @@ void MainWindow::reflectConfigOnUi()
 // XXX why is this in MainWindow, and not in QtenvApp?
 void MainWindow::configureNetwork()
 {
-    if (env->checkRunning())
+    if (app->checkRunning())
         return;
 
     // get list of network names
@@ -1288,7 +1288,7 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
 void MainWindow::on_actionConcludeSimulation_triggered()
 {
     // check state is not SIM_RUNNING
-    if (env->checkRunning())
+    if (app->checkRunning())
         return;
 
     // check state is not SIM_NONET
@@ -1414,12 +1414,12 @@ void MainWindow::on_actionInspectByPointer_triggered()
 
 void MainWindow::on_actionRecordVideo_toggled(bool checked)
 {
-    auto duc = env->getDisplayUpdateController();
+    auto duc = app->getDisplayUpdateController();
     // have to resize the mainwindow to be a size of a multiple of 4 in both dimensions
     // because many video encoders (like x264) demand it
     if (checked) {
-        QString configRun = env->getConfig()->getActiveConfigName();
-        configRun += "#" + QString::number(env->getConfig()->getActiveRunNumber());
+        QString configRun = app->getConfig()->getActiveConfigName();
+        configRun += "#" + QString::number(app->getConfig()->getActiveRunNumber());
 
         VideoRecordingDialog dialog(this, configRun);
 
@@ -1441,7 +1441,7 @@ void MainWindow::on_actionRecordVideo_toggled(bool checked)
 
 void MainWindow::on_actionShowAnimationParams_toggled(bool checked)
 {
-    auto duc = env->getDisplayUpdateController();
+    auto duc = app->getDisplayUpdateController();
     if (checked)
         duc->showDialog(ui->actionShowAnimationParams);
     else

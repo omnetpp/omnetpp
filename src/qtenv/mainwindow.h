@@ -173,7 +173,7 @@ Q_SIGNALS:
 
 private:
     Ui::MainWindow *ui;
-    QtenvApp *env;
+    QtenvApp *app;
     StopDialog *stopDialog = nullptr;
     QSlider *slider;
     QList<int> timeLineSize;
