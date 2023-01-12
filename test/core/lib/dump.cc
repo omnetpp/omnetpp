@@ -61,28 +61,28 @@ void Dump::dump(cModule *mod, std::string currentIndent)
 
     cProperties *props = mod->getProperties();
     ASSERT(props != nullptr);
-    bool paramheadingprinted = false;
+    bool parametersHeadingPrinted = false;
     for (int i = 0; i < props->getNumProperties(); i++) {
-        if (!paramheadingprinted) {
+        if (!parametersHeadingPrinted) {
             printf("%s    parameters:\n", indent);
-            paramheadingprinted = true;
+            parametersHeadingPrinted = true;
         }
         printf("%s        %s\n", indent, props->get(i)->str().c_str());
     }
     for (int i = 0; i < mod->getNumParams(); i++) {
-        if (!paramheadingprinted) {
+        if (!parametersHeadingPrinted) {
             printf("%s    parameters:\n", indent);
-            paramheadingprinted = true;
+            parametersHeadingPrinted = true;
         }
         printf("%s        %s%s = %s\n", indent, mod->par(i).getFullName(), props2str(mod->par(i).getProperties()).c_str(), mod->par(i).str().c_str());
     }
 
-    bool gateheadingprinted = false;
+    bool gatesHeadingPrinted = false;
     for (cModule::GateIterator it(mod); !it.end(); it++) {
         cGate *gate = *it;
-        if (!gateheadingprinted) {
+        if (!gatesHeadingPrinted) {
             printf("%s    gates:\n", indent);
-            gateheadingprinted = true;
+            gatesHeadingPrinted = true;
         }
         printf("%s        %s%s: %s", indent, gate->getFullName(), props2str(gate->getProperties()).c_str(), gate->str().c_str());
         if (printClassNames && gate->getChannel() != nullptr)
@@ -90,11 +90,11 @@ void Dump::dump(cModule *mod, std::string currentIndent)
         printf("\n");
     }
 
-    bool submodheadingprinted = false;
+    bool submodulesHeadingPrinted = false;
     for (cModule::SubmoduleIterator it(mod); !it.end(); it++) {
-        if (!submodheadingprinted) {
+        if (!submodulesHeadingPrinted) {
             printf("%s    submodules:\n", indent);
-            submodheadingprinted = true;
+            submodulesHeadingPrinted = true;
         }
         dump(*it, currentIndent+"        ");
     }
