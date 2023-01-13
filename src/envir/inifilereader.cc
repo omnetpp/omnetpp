@@ -44,7 +44,7 @@ void InifileReader::read(cConfiguration *spec)
 void InifileReader::readFile(const char *filename)
 {
     std::vector<std::string> includeFileStack;
-    doReadFile(filename, -1, includeFileStack);
+    doReadFile(filename, includeFileStack);
 }
 
 void InifileReader::readText(const char *text, const char *filename, const char *baseDir)
@@ -58,10 +58,10 @@ void InifileReader::readStream(std::istream& in, const char *filename, const cha
     std::string baseDirStr = baseDir ? std::string(baseDir) : getWorkingDir();
 
     std::vector<std::string> includeFileStack;
-    doReadFromStream(in, filename, -1, includeFileStack, std::string(filename), baseDirStr.c_str());
+    doReadFromStream(in, filename, includeFileStack, std::string(filename), baseDirStr.c_str());
 }
 
-void InifileReader::doReadFile(const char *filename, int currentSectionIndex, std::vector<std::string>& includeFileStack)
+void InifileReader::doReadFile(const char *filename, std::vector<std::string>& includeFileStack)
 {
     // create an entry for this file, checking against circular inclusion
     std::string absoluteFilename = tidyFilename(toAbsolutePath(filename).c_str(), true);
@@ -75,7 +75,7 @@ void InifileReader::doReadFile(const char *filename, int currentSectionIndex, st
     if (!in.is_open())
         throw cRuntimeError("Cannot open ini file '%s'", filename);
 
-    doReadFromStream(in, filename, currentSectionIndex, includeFileStack, absoluteFilename, baseDir);
+    doReadFromStream(in, filename, includeFileStack, absoluteFilename, baseDir);
 }
 
 inline char firstNonwhitespaceChar(const char *s)
@@ -85,7 +85,7 @@ inline char firstNonwhitespaceChar(const char *s)
     return *s;
 }
 
-void InifileReader::doReadFromStream(std::istream& in, const char *filename, int currentSectionIndex, std::vector<std::string>& includeFileStack, const std::string& absoluteFilename, const std::string& baseDir)
+void InifileReader::doReadFromStream(std::istream& in, const char *filename, std::vector<std::string>& includeFileStack, const std::string& absoluteFilename, const std::string& baseDir)
 {
     if (callback == nullptr)
         throw cRuntimeError("InifileReader: Callback not set");
@@ -141,7 +141,7 @@ void InifileReader::doReadFromStream(std::istream& in, const char *filename, int
 
             // process included inifile
             includeFileStack.push_back(absoluteFilename);
-            doReadFile(includeFilename.c_str(), currentSectionIndex, includeFileStack);
+            doReadFile(includeFilename.c_str(), includeFileStack);
             includeFileStack.pop_back();
         }
         else if (*line == '[') {

@@ -33,8 +33,8 @@ namespace envir {
 class ENVIR_API InifileReader : public cConfigurationReader
 {
   protected:
-    void doReadFile(const char *filename, int currentSectionIndex, std::vector<std::string>& includedFiles);
-    void doReadFromStream(std::istream& in, const char *filename, int currentSectionIndex, std::vector<std::string>& includedFiles, const std::string& absoluteFilename, const std::string& baseDir);
+    void doReadFile(const char *filename, std::vector<std::string>& includedFiles);
+    void doReadFromStream(std::istream& in, const char *filename, std::vector<std::string>& includedFiles, const std::string& absoluteFilename, const std::string& baseDir);
     void forEachJoinedLine(std::istream& in, const std::function<void(std::string&,int,int)>& processLine);
     static const char *findEndContent(const char *line, const char *filename, int lineNumber);
     static std::string trim(const char *start, const char *end);
