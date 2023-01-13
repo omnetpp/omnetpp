@@ -41,6 +41,12 @@ typename std::set<T,C>& addAll(std::set<T,C>& s, const std::set<T,C2>& t) {
     return s;
 }
 
+template<typename T, typename C, typename C2>
+typename std::unordered_set<T,C>& addAll(std::unordered_set<T,C>& s, const std::unordered_set<T,C2>& t) {
+    s.insert(t.begin(), t.end());
+    return s;
+}
+
 template<typename K, typename V, typename C, typename C2>
 inline std::map<K,V,C>& addAll(std::map<K,V,C>& m, const std::map<K,V,C2>& n) {
     m.insert(n.begin(), n.end());
