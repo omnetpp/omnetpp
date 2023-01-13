@@ -13,8 +13,8 @@ class Dump : public cSimpleModule
   protected:
     virtual void initialize() override;
     virtual void handleMessage(cMessage *msg) override;
-    virtual void dump(cModule *mod, std::string currentIndent);
-    virtual std::string props2str(cProperties *props);
+    virtual void dump(cModule *mod, std::ostream& out, std::string indent);
+    virtual std::string formatProperties(cProperties *props);
 };
 
 Define_Module(Dump);
@@ -31,11 +31,11 @@ void Dump::handleMessage(cMessage *msg)
     printClassNames = par("printClassNames").boolValue();
     printParamAssignmentLocations = par("printParamAssignmentLocations").boolValue();
     printf("==============================\n");
-    dump(getSimulation()->getSystemModule(), std::string());
+    dump(getSimulation()->getSystemModule(), std::cout, "");
     printf("==============================\n");
 }
 
-std::string Dump::props2str(cProperties *props)
+std::string Dump::formatProperties(cProperties *props)
 {
     if (!props)
         return " [props==nullptr]";  // should not happen
@@ -45,19 +45,17 @@ std::string Dump::props2str(cProperties *props)
     return result;
 }
 
-void Dump::dump(cModule *mod, std::string currentIndent)
+void Dump::dump(cModule *mod, std::ostream& out, std::string indent)
 {
     if (mod == this)
         return;
 
-    const char *indent = currentIndent.c_str();
-
-    printf("%smodule %s: %s", indent, mod->getFullPath().c_str(), mod->getComponentType()->getFullName());
+    out << indent << "module " << mod->getFullPath() << ": " << mod->getComponentType()->getFullName();
     if (!opp_isempty(mod->getDisplayName()))
-        printf(" \"%s\"", mod->getDisplayName());
+        out << " \"" << mod->getDisplayName() << "\"";
     if (printClassNames)
-        printf(" (%s)", mod->getClassName());
-    printf(" {\n");
+        out << " (" << mod->getClassName() << ")";
+    out << " {\n";
 
     mod->getDisplayString().str();  // important side effect: parse @display into display string; some test cases rely on this taking place here!
 
@@ -66,14 +64,14 @@ void Dump::dump(cModule *mod, std::string currentIndent)
     bool parametersHeadingPrinted = false;
     for (int i = 0; i < props->getNumProperties(); i++) {
         if (!parametersHeadingPrinted) {
-            printf("%s    parameters:\n", indent);
+            out << indent << "    parameters:\n";
             parametersHeadingPrinted = true;
         }
-        printf("%s        %s\n", indent, props->get(i)->str().c_str());
+        out << indent << "        " << props->get(i)->str() << "\n";
     }
     for (int i = 0; i < mod->getNumParams(); i++) {
         if (!parametersHeadingPrinted) {
-            printf("%s    parameters:\n", indent);
+            out << indent << "    parameters:\n";
             parametersHeadingPrinted = true;
         }
         cPar& par = mod->par(i);
@@ -96,31 +94,31 @@ void Dump::dump(cModule *mod, std::string currentIndent)
                 loc = "..." + loc.substr(pos);  // abbreviate
             locationString = "  (from " + loc + ")";
         }
-        printf("%s        %s%s = %s%s\n", indent, mod->par(i).getFullName(), props2str(par.getProperties()).c_str(), valueString.c_str(), locationString.c_str());
+        out << indent << "        " << mod->par(i).getFullName() << formatProperties(par.getProperties()) << " = " << valueString << locationString << "\n";
     }
 
     bool gatesHeadingPrinted = false;
     for (cModule::GateIterator it(mod); !it.end(); it++) {
         cGate *gate = *it;
         if (!gatesHeadingPrinted) {
-            printf("%s    gates:\n", indent);
+            out << indent << "    gates:\n";
             gatesHeadingPrinted = true;
         }
-        printf("%s        %s%s: %s", indent, gate->getFullName(), props2str(gate->getProperties()).c_str(), gate->str().c_str());
+        out << indent << "        " << gate->getFullName() << formatProperties(gate->getProperties()) << ": " << gate->str();
         if (printClassNames && gate->getChannel() != nullptr)
-            printf(" (%s)", gate->getChannel()->getClassName());
-        printf("\n");
+            out << " (" << gate->getChannel()->getClassName() << ")";
+        out << "\n";
     }
 
     bool submodulesHeadingPrinted = false;
     for (cModule::SubmoduleIterator it(mod); !it.end(); it++) {
         if (!submodulesHeadingPrinted) {
-            printf("%s    submodules:\n", indent);
+            out << indent << "    submodules:\n";
             submodulesHeadingPrinted = true;
         }
-        dump(*it, currentIndent+"        ");
+        dump(*it, out, indent + "        ");
     }
-    printf("%s}\n", indent);
+    out << indent << "}\n";
 }
 
 }
