@@ -27,15 +27,17 @@ namespace omnetpp {
 class SIM_API FileLine
 {
   private:
-    opp_staticpooledstring file;
-    int line = -1;
+    opp_staticpooledstring file; // file name (or something like <input> or <cmdline>)
+    int line = -1;  // line number
+    opp_staticpooledstring note;  // in which section, module, etc.
   public:
     FileLine() {}
-    FileLine(const char *file, int line=-1) : file(file), line(line) {}
-    bool empty() const {return file.empty();}
+    FileLine(const char *file, int line=-1, const char *note=nullptr) : file(file), line(line), note(note) {}
+    FileLine(const opp_staticpooledstring& file, int line=-1, const opp_staticpooledstring& note=nullptr) : file(file), line(line), note(note) {}
+    bool empty() const {return file.empty() && note.empty();}
     const char *getFilename() const {return file.c_str();}
     int getLineNumber() const {return line;}
-    std::string str() const {return empty() ? "" : line == -1 ? file.str() : file.str() + ":" + std::to_string(line);}
+    std::string str() const {return empty() ? "" : (line == -1 ? file.str() : file.str() + ":" + std::to_string(line)) + (note.empty() ? "" : ", " + note.str());}
 };
 
 }  // namespace omnetpp

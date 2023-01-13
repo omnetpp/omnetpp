@@ -92,6 +92,9 @@ void InifileReader::doReadFromStream(std::istream& in, const char *filename, std
 
     std::set<std::string> sectionsInFile;  // we'll check for uniqueness
 
+    opp_staticpooledstring locationFilename = filename;
+    opp_staticpooledstring locationNote;
+
     // open and read this file
     forEachJoinedLine(in, [&](std::string& lineBuf, int lineNumber, int numLines) {
         // remove comments (and catch unterminated string constants) inside multi-line lines
@@ -157,7 +160,9 @@ void InifileReader::doReadFromStream(std::istream& in, const char *filename, std
                 throw cRuntimeError("Duplicate section '%s' within file, '%s' line %d", sectionName.c_str(), filename, lineNumber);
             sectionsInFile.insert(sectionName);
 
-            callback->sectionHeader(sectionName.c_str(), filename, lineNumber);
+            locationNote = "section [" + sectionName + "]";
+
+            callback->sectionHeader(sectionName.c_str(), FileLine(locationFilename, lineNumber, locationNote));
         }
         else {
             // key = value
@@ -170,7 +175,7 @@ void InifileReader::doReadFromStream(std::istream& in, const char *filename, std
             if (key.empty())
                 throw cRuntimeError("Line must be in the form key=value, '%s' line %d", filename, lineNumber);
 
-            callback->keyValue(key.c_str(), value.c_str(), baseDir.c_str(), FileLine(filename, lineNumber));
+            callback->keyValue(key.c_str(), value.c_str(), baseDir.c_str(), FileLine(locationFilename, lineNumber, locationNote));
         }
     });
 

@@ -91,11 +91,11 @@ class ENVIR_API InifileContentsBuilder : public cConfigurationReader::Callback
   public:
     InifileContentsBuilder(InifileContents *target) : ini(target) {}
     virtual ~InifileContentsBuilder() {}
-    virtual void sectionHeader(const char *sectionName, const char *fileName, int lineNumber) override;
+    virtual void sectionHeader(const char *sectionName, const FileLine& fileLine) override;
     virtual void keyValue(const char *key, const char *value, const char *baseDir, const FileLine& fileLine) override;
 };
 
-void InifileContentsBuilder::sectionHeader(const char *sectionName, const char *fileName, int lineNumber)
+void InifileContentsBuilder::sectionHeader(const char *sectionName, const FileLine& fileLine)
 {
     currentSectionIndex = ini->findOrAddSection(sectionName);
 }
