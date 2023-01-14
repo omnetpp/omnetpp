@@ -86,6 +86,8 @@ class SIM_API cConfiguration : public cObject
         virtual const char *getKey() const = 0;
         virtual const char *getValue() const = 0;
         virtual const char *getBaseDirectory() const = 0;
+        virtual const char *getComment() const {return nullptr;}
+        virtual const char *getOriginSection() const {return nullptr;}
         virtual FileLine getSourceLocation() const;
         virtual std::string str() const;
     };

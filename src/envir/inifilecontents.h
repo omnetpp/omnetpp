@@ -43,13 +43,18 @@ class ENVIR_API InifileContents
         opp_staticpooledstring baseDir;
         std::string key;
         std::string value;
+        std::string comment;
+        opp_staticpooledstring originSection;
         FileLine loc;
       public:
         Entry() {}
-        Entry(const char *baseDir, const char *k, const char *v, FileLine loc=FileLine()) : baseDir(baseDir), key(k), value(v), loc(loc) {}
+        Entry(const char *baseDir, const char *key, const char *value, const char *comment, const char *originSection, FileLine loc) :
+            baseDir(baseDir), key(key), value(value), comment(comment), originSection(originSection), loc(loc) {}
         virtual const char *getKey() const override   {return key.c_str();}
         virtual const char *getValue() const override {return value.c_str();}
         virtual const char *getBaseDirectory() const override {return baseDir.c_str();}
+        virtual const char *getComment() const override {return comment.c_str();}
+        virtual const char *getOriginSection() const override {return originSection.c_str();}
         virtual FileLine getSourceLocation() const override {return loc;}
     };
 

@@ -39,7 +39,12 @@ FileLine cConfiguration::KeyValue::getSourceLocation() const
 
 std::string cConfiguration::KeyValue::str() const
 {
-    return std::string(getKey()) + " = " + getValue() + "  (from " + getSourceLocation().str() + ")";
+    std::string result = std::string(getKey()) + " = " + opp_abbreviate(getValue(), 40);
+    if (!opp_isempty(getComment()))
+        result += "  # " + opp_abbreviate(getComment(), 60);
+    if (!getSourceLocation().empty())
+        result += "  (from " + getSourceLocation().str() + ")";
+    return result;
 }
 
 inline cValue evaluate(const char *s, cComponent *contextComponent)

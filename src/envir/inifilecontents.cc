@@ -92,7 +92,7 @@ class ENVIR_API InifileContentsBuilder : public cConfigurationReader::Callback
     InifileContentsBuilder(InifileContents *target) : ini(target) {}
     virtual ~InifileContentsBuilder() {}
     virtual void sectionHeader(const char *sectionName, const FileLine& fileLine) override;
-    virtual void keyValue(const char *key, const char *value, const char *baseDir, const FileLine& fileLine) override;
+    virtual void keyValue(const char *key, const char *value, const char *comment, const char *baseDir, const FileLine& fileLine) override;
 };
 
 void InifileContentsBuilder::sectionHeader(const char *sectionName, const FileLine& fileLine)
@@ -100,12 +100,11 @@ void InifileContentsBuilder::sectionHeader(const char *sectionName, const FileLi
     currentSectionIndex = ini->findOrAddSection(sectionName);
 }
 
-void InifileContentsBuilder::keyValue(const char *key, const char *value, const char *baseDir, const FileLine& fileLine)
+void InifileContentsBuilder::keyValue(const char *key, const char *value, const char *comment, const char *baseDir, const FileLine& fileLine)
 {
     if (currentSectionIndex == -1)
         currentSectionIndex = ini->findOrAddSection("General");
-    InifileContents::Entry entry(baseDir, key, value, fileLine);
-    ini->addEntry(currentSectionIndex, InifileContents::Entry(baseDir, key, value, fileLine));
+    ini->addEntry(currentSectionIndex, InifileContents::Entry(baseDir, key, value, comment, ini->getSectionName(currentSectionIndex), fileLine));
 }
 
 //----------------
@@ -303,7 +302,7 @@ void InifileContents::setCommandLineConfigOptions(const std::map<std::string, st
        const char *value = it.second.c_str();
        if (opp_isempty(value))
            throw cRuntimeError("Missing value for command-line option --%s", key);
-       commandLineOptions.push_back(Entry(baseDir, key, value));
+       commandLineOptions.push_back(Entry(baseDir, key, value, "", "", FileLine("<command-line>")));
    }
 }
 
@@ -416,7 +415,7 @@ cConfiguration *InifileContents::extractGlobalConfig()
     std::vector<Entry> entries;
     for (auto & e : commandLineOptions)
         if (isGlobalOption(e.getKey()))
-            entries.push_back(Entry(e.getBaseDirectory(), e.getKey(), e.getValue())); // note: no substituteVariables() on value, it's too early for that
+            entries.push_back(e); // note: no substituteVariables() on value, it's too early for that
 
     int sectionId = resolveConfigName("General");
     if (sectionId != -1) {
@@ -474,13 +473,11 @@ cConfiguration *InifileContents::extractConfig(const char *configName, int runNu
 
    std::vector<Entry> entries;
 
-   // walk the list of fallback sections, and add entries to our tables
-   // (config[] and suffixBins[]). Meanwhile, substitute the iteration values.
-   // Note: entries added first will have precedence over those added later.
+   // concatenate the contents of the sections and the command line into a common flat list (entries[])
    for (auto & e : commandLineOptions) {
        std::string key = addWildcardIfNeeded(e.getKey());
        std::string value = substituteVariables(e.getValue(), variables, -1, -1);
-       entries.push_back(Entry(e.getBaseDirectory(), key.c_str(), value.c_str(), FileLine("<commandline>")));
+       entries.push_back(Entry(e.getBaseDirectory(), key.c_str(), value.c_str(), e.getComment(), e.getOriginSection(), e.getSourceLocation()));
    }
    for (int sectionId : sectionChain) {
        for (int entryId = 0; entryId < getNumEntries(sectionId); entryId++) {
@@ -488,7 +485,7 @@ cConfiguration *InifileContents::extractConfig(const char *configName, int runNu
            const auto& e = getEntry(sectionId, entryId);
            std::string key = addWildcardIfNeeded(e.getKey());
            std::string value = substituteVariables(e.getValue(), variables, sectionId, entryId);
-           entries.push_back(Entry(e.getBaseDirectory(), key.c_str(), value.c_str(), e.getSourceLocation()));
+           entries.push_back(Entry(e.getBaseDirectory(), key.c_str(), value.c_str(), e.getComment(), e.getOriginSection(), e.getSourceLocation()));
        }
    }
 

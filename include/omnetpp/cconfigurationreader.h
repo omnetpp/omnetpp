@@ -41,7 +41,7 @@ class SIM_API cConfigurationReader
       public:
         virtual ~Callback() {}
         virtual void sectionHeader(const char *sectionName, const FileLine& fileLine) = 0; // note: without the "Config " prefix
-        virtual void keyValue(const char *key, const char *value, const char *baseDir, const FileLine& fileLine) = 0;
+        virtual void keyValue(const char *key, const char *value, const char *comment, const char *baseDir, const FileLine& fileLine) = 0;
     };
   protected:
     Callback *callback = nullptr;

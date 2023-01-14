@@ -54,8 +54,8 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
       public:
         Entry() {}
         Entry(const InifileContents::Entry& e) : InifileContents::Entry(e) {}
-        Entry(const char *baseDir, const char *key, const char *value, FileLine loc=FileLine()) : InifileContents::Entry(baseDir, key, value, loc) {}
-
+        Entry(const char *baseDir, const char *key, const char *value, const char *comment, const char *originSection, FileLine loc) :
+            InifileContents::Entry(baseDir, key, value, comment, originSection, loc) {}
         bool isAccessed() const {return accessed;}
         Entry& markAccessed() {accessed = true; return *this;}
         const Entry& markAccessed() const {accessed = true; return *this;}
@@ -134,7 +134,9 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
     std::string fileName;
 
   private:
-    void addEntry(const InifileContents::Entry& entry);
+    void addEntry(const InifileContents::Entry& iniEntry);
+    SuffixBin& getOrCreateBin(const std::string& suffix);
+    void addToBin(SuffixBin& bin, MatchableEntry *entry);
     static void parseVariable(const char *txt, std::string& outVarname, std::string& outValue, std::string& outParVar, const char *&outEndPtr);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outBinName);
     static bool entryMatches(const MatchableEntry *entry, const char *moduleFullPath, const char *paramName);

@@ -262,30 +262,45 @@ void Configuration::addEntry(const InifileContents::Entry& iniEntry)
 
         // find which bin it should go into
         if (!suffixContainsWildcards) {
-            // no wildcard in suffix (=bin name)
-            if (suffixBins.find(suffix) == suffixBins.end()) {
-                // suffix bin not yet exists, create it
-                SuffixBin& bin = suffixBins[suffix];
-
-                // initialize bin with matching wildcard keys seen so far
-                for (auto wildcardEntry : wildcardSuffixBin.entries)
-                    if (wildcardEntry->suffixPattern->covers(suffix.c_str()))
-                        bin.entries.push_back(wildcardEntry);
-            }
-            suffixBins[suffix].entries.push_back(entry);
+            // no wildcard in suffix
+            SuffixBin& bin = getOrCreateBin(suffix);
+            addToBin(bin, entry);
         }
         else {
-            // suffix contains wildcards: we need to add it to all existing suffix bins it matches
+            // suffix contains wildcard
+            addToBin(wildcardSuffixBin, entry);
+
+            // We also need to add it to all existing suffix bins it matches.
             // Note: if suffix also contains a hyphen, that's actually illegal (per-object
             // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
             // but causes no harm, because getPerObjectConfigEntry() won't look into the
             // wildcard bin
-            wildcardSuffixBin.entries.push_back(entry);
             for (auto & suffixBin : suffixBins)
                 if (entry->suffixPattern->covers(suffixBin.first.c_str()))
                     (suffixBin.second).entries.push_back(entry);
         }
     }
+}
+
+Configuration::SuffixBin& Configuration::getOrCreateBin(const std::string& suffix)
+{
+    auto it = suffixBins.find(suffix);
+    if (it != suffixBins.end())
+        return it->second;
+
+    // suffix bin not yet exists, create it
+    SuffixBin& bin = suffixBins[suffix];
+
+    // initialize bin with matching wildcard keys seen so far
+    for (auto wildcardEntry : wildcardSuffixBin.entries)
+        if (wildcardEntry->suffixPattern->covers(suffix.c_str()))
+            bin.entries.push_back(wildcardEntry);
+    return bin;
+}
+
+void Configuration::addToBin(SuffixBin& bin, MatchableEntry *entry)
+{
+    bin.entries.push_back(entry);
 }
 
 void Configuration::splitKey(const char *key, std::string& outOwnerName, std::string& outBinName)

@@ -174,8 +174,11 @@ void InifileReader::doReadFromStream(std::istream& in, const char *filename, std
             std::string value = trim(equalSignPos+1, endPos);
             if (key.empty())
                 throw cRuntimeError("Line must be in the form key=value, '%s' line %d", filename, lineNumber);
+            std::string comment;
+            if (const char *commentSignPos = strchr(endPos, '#'))
+                comment = trim(commentSignPos+1, commentSignPos+strlen(commentSignPos));
 
-            callback->keyValue(key.c_str(), value.c_str(), baseDir.c_str(), FileLine(locationFilename, lineNumber, locationNote));
+            callback->keyValue(key.c_str(), value.c_str(), comment.c_str(), baseDir.c_str(), FileLine(locationFilename, lineNumber, locationNote));
         }
     });
 
