@@ -1,29 +1,57 @@
 %description:
 Check detection of unused inifile entries.
 
+Common causes of an entry being unused are:
+1. Mistyped or otherwise bogus key -- this is the type we primarily want to detect and report
+2. Accidental shadowing by another entry -- to be reported too
+3. Intentional shadowing (i.e. override) from a derived section
+4. Parameter is to be used by a future (dynamically created) module
+5. Per-object config options that refer to result names are not used until a matching result is recorded
+6. Some config options like "description", "extends" or "repeat" are not consumed via cConfiguration
+
+
 %file: test.ned
 network TestNet {
     parameters:
-       int foo;
-       int bar = 3;
+       int override;
+       int override2;
+       int dupl;
+       int fixed = 3;
 }
 
 %inifile: test.ini
 [General]
-network = TestNet
-cmdenv-express-mode = false
+network = TestNet  # NOTE: this shadows the one in [General] of _defaults.ini, so it will be reported as duplicate within section
+network = Foo  # duplicated within section
+**.override = -1  # to be overridden in [Hello]
+**.override2 = -1  # to be overridden in [Hello]
 
-**.bar = -1
-**.foo = 9999  # only this one takes effect
-**.foo = -2
-**.nonexistent = -3
-**.bogus.vector-recording-intervals = 0..1000s
+[Hello]
+description = "Test config"
+extends = General  # redundant, only here for test's sake
+repeat = 1  # redundant, only here for test's sake
+repeat = 1  # duplicated within section
+**.fixed = -1      # parameter already set in NED file
+**.mistyuped = -1  # mistyped parameter
+
+**.override = 999  # takes effect
+**.override* = 999 # overrides override2
+
+**.dupl = 111  # 1st of duplicated
+**.dupl = 222  # 2nd of duplicated
+**.du* = 333   # 3rd of duplicated, using wildcard
+
+**.bogus.vector-recording-intervals = 0..1000s # no such output vector, but not reported since we're just after network setup (such entries would only be used later)
+
+%extraargs: -c Hello
 
 %contains: stdout
 Note: There were unused entries in the configuration after network setup:
-  **.bar = -1  (at test.ini:5)
-  **.foo = -2  (at test.ini:7)
-  **.nonexistent = -3  (at test.ini:8)
-  **.bogus.vector-recording-intervals = 0..1000s  (at test.ini:9)
+  repeat = 1  # duplicated within section  (from test.ini:11, section [Hello])
+  **.fixed = -1  # parameter already set in NED file  (from test.ini:12, section [Hello])
+  **.mistyuped = -1  # mistyped parameter  (from test.ini:13, section [Hello])
+  **.dupl = 222  # 2nd of duplicated  (from test.ini:19, section [Hello])
+  **.du* = 333  # 3rd of duplicated, using wildcard  (from test.ini:20, section [Hello])
+  network = Foo  # duplicated within section  (from test.ini:3, section [General])
+  network = Test  (from _defaults.ini:3, section [General])
 Initializing...
-
