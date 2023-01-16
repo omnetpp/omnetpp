@@ -37,10 +37,18 @@ namespace omnetpp {
 
 using std::ostream;
 
-cXMLElement::cXMLElement(const char *tagName, cXMLElement *parent) : tagName(tagName)
+cXMLElement::cXMLElement(const char *tagName, cXMLElement *parent) : cOwnedObject(tagName)
 {
     if (parent)
         parent->appendChild(this);
+}
+
+cXMLElement::cXMLElement(const cXMLElement& other)
+{
+    setName(other.getName());
+    value = other.value;
+    attrs = other.attrs;
+    loc = other.loc;
 }
 
 cXMLElement::~cXMLElement()
@@ -50,6 +58,14 @@ cXMLElement::~cXMLElement()
 
     while (firstChild)
         delete removeChild(firstChild);
+}
+
+cXMLElement *cXMLElement::dupTree() const
+{
+    cXMLElement *result = dup();
+    for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
+        result->appendChild(child->dupTree());
+    return result;
 }
 
 std::string cXMLElement::str() const
@@ -74,11 +90,6 @@ void cXMLElement::forEachChild(cVisitor *v)
     for (cXMLElement *child = getFirstChild(); child; child = child->getNextSibling())
         if (!v->visit(child))
             return;
-}
-
-const char *cXMLElement::getTagName() const
-{
-    return tagName.c_str();
 }
 
 void cXMLElement::setSourceLocation(const char *fname, int line)
@@ -179,6 +190,7 @@ void cXMLElement::appendChild(cXMLElement *node)
 {
     if (node->parent)
         node->parent->removeChild(node);
+    take(node);
     node->parent = this;
     node->prevSibling = lastChild;
     node->nextSibling = nullptr;
@@ -193,6 +205,7 @@ void cXMLElement::insertChildBefore(cXMLElement *where, cXMLElement *node)
 {
     if (node->parent)
         node->parent->removeChild(node);
+    take(node);
     node->parent = this;
     node->prevSibling = where->prevSibling;
     node->nextSibling = where;
@@ -214,6 +227,7 @@ cXMLElement *cXMLElement::removeChild(cXMLElement *node)
     else
         lastChild = node->prevSibling;
     node->parent = node->prevSibling = node->nextSibling = nullptr;
+    drop(node);
     return node;
 }
 

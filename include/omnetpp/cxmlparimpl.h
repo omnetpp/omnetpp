@@ -31,13 +31,13 @@ class SIM_API cXMLParImpl : public cParImpl
   protected:
     // selector: flags & FL_ISEXPR
     cExpression *expr = nullptr;
-    cXMLElement *obj = nullptr;
+    mutable cXMLElement *obj = nullptr;
 
   private:
     void copy(const cXMLParImpl& other);
 
   protected:
-    void deleteOld() {cParImpl::deleteOld(expr);}
+    void deleteOld();
 
   public:
     /** @name Constructors, destructor, assignment. */
