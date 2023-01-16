@@ -32,8 +32,8 @@ void cXMLParImpl::copy(const cXMLParImpl& other)
 {
     if (flags & FL_ISEXPR)
         expr = other.expr->dup();
-    else
-        obj = other.obj;
+    else if (other.obj)
+        take(obj = other.obj->dupTree());
 }
 
 void cXMLParImpl::operator=(const cXMLParImpl& other)
@@ -82,6 +82,11 @@ void cXMLParImpl::setXMLValue(cXMLElement *node)
 {
     deleteOld();
     obj = node;
+    if (obj && obj->getOwner()) {
+        if (!obj->getOwner()->isSoftOwner())
+            obj = obj->dupTree();
+        take(obj);
+    }
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
@@ -135,18 +140,33 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
             cValue v = evaluate(expr, context);
             if (v.type != cValue::POINTER)
                 throw cRuntimeError(E_BADCAST, v.getTypeName(), "XML");
-            return v.xmlValue();
+            cXMLElement *newObj = v.xmlValue();
+            cXMLParImpl *this_ = const_cast<cXMLParImpl*>(this);
+            this_->dropAndDelete(obj);
+            obj = newObj;
+            if (obj && obj->getOwner()) {
+                if (!obj->getOwner()->isSoftOwner())
+                    obj = obj->dupTree();
+                this_->take(obj);
+            }
+            return obj;
         }
         catch (std::exception& e) {
             throw cRuntimeError(e, expr->getSourceLocation().c_str());
         }
-
     }
 }
 
 cExpression *cXMLParImpl::getExpression() const
 {
     return (flags & FL_ISEXPR) ? expr : nullptr;
+}
+
+void cXMLParImpl::deleteOld()
+{
+    cParImpl::deleteOld(expr);
+    dropAndDelete(obj);
+    obj = nullptr;
 }
 
 cPar::Type cXMLParImpl::getType() const
@@ -161,8 +181,12 @@ bool cXMLParImpl::isNumeric() const
 
 void cXMLParImpl::convertToConst(cComponent *context)
 {
+    cXMLElement *saved = xmlValue(context);
     auto loc = getSourceLocation();
-    setXMLValue(xmlValue(context));
+    obj = nullptr;
+    if (saved)
+        drop(saved);
+    setXMLValue(saved);
     setSourceLocation(loc);
 }
 

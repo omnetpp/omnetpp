@@ -72,7 +72,7 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  *
  * @ingroup Expressions
  */
-class SIM_API cXMLElement : public cObject, noncopyable
+class SIM_API cXMLElement : public cOwnedObject
 {
     friend class cXMLElementDescriptor; // getAttr(i), getChild(i), etc.
 
@@ -94,7 +94,6 @@ class SIM_API cXMLElement : public cObject, noncopyable
     };
 
   private:
-    opp_pooledstring tagName;
     opp_pooledstring value;
     typedef std::pair<opp_pooledstring,opp_pooledstring> Attr;
     std::vector<Attr> attrs;
@@ -109,11 +108,24 @@ class SIM_API cXMLElement : public cObject, noncopyable
      void doGetElementsByTagName(const char *tagname, cXMLElementList& list) const;
 
   public:
-    // internal: Constructor
-    cXMLElement(const char *tagname, cXMLElement *parent);
+    // internal: constructor
+    cXMLElement(const char *tagname, cXMLElement *parent=nullptr);
 
-    // internal: Constructor - for backward compatibility
+    // internal: constructor - for backward compatibility
     cXMLElement(const char *tagname, const char *ignored, cXMLElement *parent) : cXMLElement(tagname, parent) {}
+
+    // internal: copy constructor
+    cXMLElement(const cXMLElement& other);
+
+    // internal: Destructor. Destroys children too.
+    virtual ~cXMLElement();
+
+    // internal: creates and returns an exact copy of this object. Child nodes are not duplicated.
+    virtual cXMLElement *dup() const override  {return new cXMLElement(*this);}
+
+    virtual cXMLElement *dupTree() const;
+
+    virtual void setTagName(const char *tagName) {setName(tagName);}
 
     // internal: sets source location
     virtual void setSourceLocation(const char *fname, int line);
@@ -126,9 +138,6 @@ class SIM_API cXMLElement : public cObject, noncopyable
 
     // internal: appends to text node within element
     virtual void appendNodeValue(const char *s, int len);
-
-    // internal: Destructor. Destroys children too.
-    virtual ~cXMLElement();
 
     // internal: Sets the value of the attribute with the given name.
     virtual void setAttribute(const char *attr, const char *value);
@@ -168,19 +177,9 @@ class SIM_API cXMLElement : public cObject, noncopyable
     /** @name Redefined cObject methods. */
     //@{
     /**
-     * Returns the tag name as object name.
-     */
-    virtual const char *getName() const override {return getTagName();}
-
-    /**
      * Returns a one-line description of the element.
      */
     virtual std::string str() const override;
-
-    /**
-     * Returns the parent element.
-     */
-    virtual cObject *getOwner() const override {return getParentNode();}
 
     /**
      * Enables traversing the object tree, performing some operation on
@@ -199,7 +198,7 @@ class SIM_API cXMLElement : public cObject, noncopyable
     /**
      * Returns the element name.
      */
-    virtual const char *getTagName() const;
+    virtual const char *getTagName() const {return getName();}
 
     /**
      * Returns the file name this element originally came from.

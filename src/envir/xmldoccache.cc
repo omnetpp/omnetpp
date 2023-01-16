@@ -109,9 +109,9 @@ void cXmlSaxHandler::processingInstruction(const char *target, const char *data)
 XMLDocCache::~XMLDocCache()
 {
     for (auto & i : documentCache)
-        delete i.second;
+        dropAndDelete(i.second);
     for (auto & i : contentCache)
-        delete i.second;
+        dropAndDelete(i.second);
 }
 
 cXMLElement *XMLDocCache::parseDocument(const char *filename)
@@ -155,6 +155,7 @@ cXMLElement *XMLDocCache::getDocument(const char *filename)
     // load and store in cache
     cXMLElement *documentnode = parseDocument(filename);
     documentCache[key] = documentnode;
+    take(documentnode);
     return documentnode;
 }
 
@@ -168,6 +169,7 @@ cXMLElement *XMLDocCache::getParsed(const char *content)
     // parse and store in cache
     cXMLElement *documentnode = parseContent(content);
     contentCache[content] = documentnode;
+    take(documentnode);
     return documentnode;
 }
 
@@ -178,7 +180,7 @@ void XMLDocCache::forgetDocument(const char *filename)
     if (it != documentCache.end()) {
         cXMLElement *node = it->second;
         documentCache.erase(it);
-        delete node;
+        dropAndDelete(node);
     }
 }
 
@@ -188,21 +190,21 @@ void XMLDocCache::forgetParsed(const char *content)
     if (it != contentCache.end()) {
         cXMLElement *node = it->second;
         contentCache.erase(it);
-        delete node;
+        dropAndDelete(node);
     }
 }
 
 void XMLDocCache::flushDocumentCache()
 {
     for (auto & i : documentCache)
-        delete i.second;
+        dropAndDelete(i.second);
     documentCache.clear();
 }
 
 void XMLDocCache::flushParsedContentCache()
 {
     for (auto & i : contentCache)
-        delete i.second;
+        dropAndDelete(i.second);
     contentCache.clear();
 }
 

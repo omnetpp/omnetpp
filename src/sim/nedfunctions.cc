@@ -949,7 +949,7 @@ cValue nedf_readXML(cExpression::Context *context, cValue argv[], int argc)
         else
             throw cRuntimeError("Element \"%s\" in file \"%s\" not found", xpath, filepath.c_str());
     }
-    return static_cast<cObject*>(node);
+    return static_cast<cObject*>(node->dupTree());
 }
 
 DEF2(nedf_parseXML,
@@ -970,7 +970,7 @@ cValue nedf_parseXML(cExpression::Context *context, cValue argv[], int argc)
         else
             throw cRuntimeError("Element \"%s\" not found in XML document string", xpath);
     }
-    return static_cast<cObject*>(node);
+    return static_cast<cObject*>(node->dupTree());
 }
 
 DEF2(nedf_xmldoc,

@@ -798,7 +798,7 @@ bool cMsgPar::parse(const char *text, char tp)
         cXMLElement *node = getEnvir()->getXMLDocument(fname.c_str(), pathexpr.empty() ? nullptr : pathexpr.c_str());
         if (!node)
             throw cRuntimeError(this, "%s: Element not found", tmp);
-        setXMLValue(node);
+        setXMLValue(node->dupTree());
     }
     else {  // maybe function; try to parse it
         if (!strchr("?F", tp))
