@@ -31,8 +31,7 @@ namespace internal {
 
 cObjectParImpl::~cObjectParImpl()
 {
-    deleteExpression();
-    deleteObject();
+    deleteOld();
 }
 
 void cObjectParImpl::copy(const cObjectParImpl& other)
@@ -55,8 +54,7 @@ void cObjectParImpl::operator=(const cObjectParImpl& other)
 {
     if (this == &other)
         return;
-    deleteExpression();
-    deleteObject();
+    deleteOld();
     cParImpl::operator=(other);
     copy(other);
 }
@@ -91,7 +89,7 @@ void cObjectParImpl::setStringValue(const char *s)
 
 void cObjectParImpl::setObjectValue(cObject *object)
 {
-    deleteExpression();
+    deleteOld();
     doSetObject(object);
     flags |= FL_CONTAINSVALUE | FL_ISSET;
     checkType(object);
@@ -104,7 +102,7 @@ void cObjectParImpl::setXMLValue(cXMLElement *node)
 
 void cObjectParImpl::setExpression(cExpression *e)
 {
-    deleteExpression();
+    deleteOld();
     expr = e;
     flags |= FL_ISEXPR | FL_CONTAINSVALUE | FL_ISSET;
 }
@@ -233,6 +231,7 @@ cObject *cObjectParImpl::objectValue(cComponent *context) const
             if (obj)
                 checkOwnership(obj, tmp);
             cObjectParImpl *mutableThis = const_cast<cObjectParImpl*>(this);
+            mutableThis->deleteObject();
             mutableThis->doSetObject(obj);
             checkType(obj);
             return obj;
@@ -253,12 +252,10 @@ cExpression *cObjectParImpl::getExpression() const
     return (flags & FL_ISEXPR) ? expr : nullptr;
 }
 
-void cObjectParImpl::deleteExpression()
+void cObjectParImpl::deleteOld()
 {
-    if (flags & FL_ISEXPR) {
-        delete expr;
-        flags &= ~FL_ISEXPR;
-    }
+    cParImpl::deleteOld(expr);
+    deleteObject();
 }
 
 void cObjectParImpl::deleteObject()
@@ -274,7 +271,6 @@ void cObjectParImpl::deleteObject()
 
 void cObjectParImpl::doSetObject(cObject *object)
 {
-    deleteObject();
     obj = object;
     if (cOwnedObject *ownedObj = dynamic_cast<cOwnedObject*>(obj))
         if (ownedObj->getOwner()->isSoftOwner())
