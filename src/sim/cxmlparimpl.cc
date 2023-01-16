@@ -33,7 +33,7 @@ void cXMLParImpl::copy(const cXMLParImpl& other)
     if (flags & FL_ISEXPR)
         expr = other.expr->dup();
     else
-        val = other.val;
+        obj = other.obj;
 }
 
 void cXMLParImpl::operator=(const cXMLParImpl& other)
@@ -48,8 +48,8 @@ void cXMLParImpl::operator=(const cXMLParImpl& other)
 void cXMLParImpl::forEachChild(cVisitor *v, cComponent *context)
 {
     if (isSet() && !isExpression()) {
-        if (val)
-            v->visit(val);
+        if (obj)
+            v->visit(obj);
     }
 }
 
@@ -81,7 +81,7 @@ void cXMLParImpl::setObjectValue(cObject *object)
 void cXMLParImpl::setXMLValue(cXMLElement *node)
 {
     deleteOld();
-    val = node;
+    obj = node;
     flags |= FL_CONTAINSVALUE | FL_ISSET;
 }
 
@@ -128,7 +128,7 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
         throw cRuntimeError(E_PARNOTSET);
 
     if ((flags & FL_ISEXPR) == 0)
-        return val;
+        return obj;
     else {
         try {
             cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // eventually dispose of potential object result
@@ -171,7 +171,7 @@ std::string cXMLParImpl::str() const
     if (flags & FL_ISEXPR)
         return expr->str();
     else
-        return val ? val->str() : "nullptr";
+        return obj ? obj->str() : "nullptr";
 }
 
 void cXMLParImpl::parse(const char *text, FileLine loc)
@@ -205,7 +205,7 @@ int cXMLParImpl::compare(const cParImpl *other) const
     if (flags & FL_ISEXPR)
         return expr->compare(other2->expr);
     else
-        return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
+        return (obj == other2->obj) ? 0 : (obj < other2->obj) ? -1 : 1;
 }
 
 }  // namespace internal
