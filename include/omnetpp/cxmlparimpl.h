@@ -31,7 +31,7 @@ class SIM_API cXMLParImpl : public cParImpl
   protected:
     // selector: flags & FL_ISEXPR
     cExpression *expr = nullptr;
-    cXMLElement *val = nullptr;
+    cXMLElement *obj = nullptr;
 
   private:
     void copy(const cXMLParImpl& other);
