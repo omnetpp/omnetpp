@@ -3,7 +3,7 @@ Test quantity formatter with meter unit.
 
 %includes:
 
-#include <common/quantityformatter.h>
+#include "../lib/quantityformattertester.h"
 
 using namespace omnetpp::common;
 
