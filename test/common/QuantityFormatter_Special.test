@@ -30,18 +30,18 @@ testQuantityFormatter(quantityFormatter, "-nan", nullptr);
 testQuantityFormatter(quantityFormatter, "-nan", "s");
 
 %contains: stdout
-0                       0.000000000000000000000000              0                 0                 0                 0                 
-0 s                     0.000000000000000000000000 s            0 s               0                 0                 0                 
--0                      -0.000000000000000000000000             -0                -0                0                 0                 
--0 s                    -0.000000000000000000000000 s           -0 s              -0                0                 0                 
-inf                     inf                                     inf               inf               -nan              nan               
-inf s                   inf s                                   inf s             inf               -nan              nan               
--inf                    -inf                                    -inf              -inf              -nan              nan               
--inf s                  -inf s                                  -inf s            -inf              -nan              nan               
-nan                     nan                                     nan               nan               nan               nan               
-nan s                   nan s                                   nan s             nan               nan               nan               
--nan                    -nan                                    -nan              -nan              -nan              nan               
--nan s                  -nan s                                  -nan s            -nan              -nan              nan               
+0                       0.000000000000000000000000              0                 0                 0                 0
+0 s                     0.000000000000000000000000 s            0 s               0                 0                 0
+-0                      -0.000000000000000000000000             -0                -0                0                 0
+-0 s                    -0.000000000000000000000000 s           -0 s              -0                0                 0
+inf                     inf                                     inf               inf               -nan              nan
+inf s                   inf s                                   inf s             inf               -nan              nan
+-inf                    -inf                                    -inf              -inf              -nan              nan
+-inf s                  -inf s                                  -inf s            -inf              -nan              nan
+nan                     nan                                     nan               nan               nan               nan
+nan s                   nan s                                   nan s             nan               nan               nan
+-nan                    -nan                                    -nan              -nan              -nan              nan
+-nan s                  -nan s                                  -nan s            -nan              -nan              nan
 
 %not-contains: stdout
 !!!
