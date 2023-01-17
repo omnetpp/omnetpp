@@ -1,0 +1,34 @@
+%description:
+Test that object parameters accept XML data.
+
+%file: test.ned
+
+import testlib.Dump;
+
+network Test {
+  parameters:
+    object a = xml("<root><greeting type='hello'>world</greeting></root>");
+    object b = xmldoc("data.xml");
+
+  submodules:
+    dump: Dump;
+}
+
+%file: data.xml
+<root>
+   <greeting type="g'day">world</greeting>
+</root>
+
+%subst: |at .*/data.xml|at .../data.xml|
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = (omnetpp::cXMLElement)root: <root>...</root> at content:1
+        b = (omnetpp::cXMLElement)root: <root>...</root> at .../data.xml:1
+    submodules:
+}
+
+%not-contains: stdout
+undisposed object
