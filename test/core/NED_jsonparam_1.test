@@ -9,6 +9,9 @@ network Test {
   parameters:
     object nullptr1 = null;
     object nullptr2 = nullptr;
+    object scalar1 = 5;
+    object scalar2 = "foo";
+    object scalar3 = true;
     object array1 = [];
     object array2 = [ 1s, 1+1, 3.14157m, true, false, "Hello", 'World' ];
     object array3 = [ nan, inf, inf s, null, nullptr ];
@@ -37,6 +40,9 @@ module Test: Test {
         @isNetwork
         nullptr1 = nullptr
         nullptr2 = nullptr
+        scalar1 = (omnetpp::cValueHolder)holder: 5
+        scalar2 = (omnetpp::cValueHolder)holder: "foo"
+        scalar3 = (omnetpp::cValueHolder)holder: true
         array1 = []
         array2 = [1s, 2, 3.14157m, true, false, "Hello", "World"]
         array3 = [nan, inf, inf s, nullptr, nullptr]
