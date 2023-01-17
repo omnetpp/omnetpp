@@ -734,6 +734,10 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
     bool printUnusedConfig = getConfig()->getAsBool(CFGID_PRINT_UNUSED_CONFIG);
     if (printUnusedConfig)
         printUnusedConfigEntriesIfAny(EV_INFO);
+
+    // XML docs loaded for initializing NED parameters of type "xml" in the model are no longer needed
+    envir->flushXMLDocumentCache();
+    envir->flushXMLParsedContentCache();
 }
 
 void cSimulation::callInitialize()
