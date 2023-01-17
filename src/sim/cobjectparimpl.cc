@@ -205,6 +205,10 @@ class OwnershipCheckerVisitor : public cVisitor
 
 void cObjectParImpl::checkOwnership(cObject *obj, cTemporaryOwner& tmp) const
 {
+    // This is the place where we ensure that only cOwnedObjects that we can own
+    // are permitted. Plain cObjects are not allowed, because the user could make
+    // it crash even from NED, by letting one NED object parameter reference another
+    // object parameter whose value can change. See e.g. NED_jsonparam_ownership_1.test
     if (obj->getOwner() != &tmp)
         throwNotOwned(obj);
 

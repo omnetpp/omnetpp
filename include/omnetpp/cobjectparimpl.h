@@ -25,12 +25,12 @@ class cTemporaryOwner;
 namespace internal {
 
 /**
- * @brief A cParImpl subclass that stores a module/channel parameter of type object.
+ * @brief A cParImpl subclass that stores a module/channel parameter of type "object".
  *
  * Rules:
  * 1. The user cannot "take" the object from the cPar. It can only clone it if needs be.
  * 2. A volatile parameters's object value is replaced on each read operation.
- * 3. Plain cObject objects (non-cOwnedObject ones) are owned, i.e. deleted when no longer needed.
+ * 3. Plain cObject objects (non-cOwnedObject ones) are not permitted.
  * 4. cOwnedObject objects are "taken" ownership via take(), but only if their owner allows (i.e. is a soft owner).
  * 5. cOwnedObject objects are owned iff their owner is this object.
  * 6. nullptr is allowed as value.
