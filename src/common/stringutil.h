@@ -273,6 +273,12 @@ COMMON_API std::vector<std::string> opp_splitandtrim(const std::string& text, co
 COMMON_API std::vector<std::string> opp_splitpath(const std::string& path);
 
 /**
+ * Ensure that the string is not longer than maxlen. If it is, it is truncated
+ * and "..." is added.
+ */
+COMMON_API std::string opp_abbreviate(const std::string& text, int maxlen);
+
+/**
  * Aligns columns of a table. Table columns should be separated by tab.
  * Columns widths are automatically determined, but can be overridden
  * by specifying positive numbers at the respective indices in userColumnWidths[]
