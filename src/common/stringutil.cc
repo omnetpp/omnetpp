@@ -503,6 +503,11 @@ std::vector<std::string> opp_splitpath(const std::string& path)
     return items;
 }
 
+std::string opp_abbreviate(const std::string& text, int maxlen)
+{
+    return text.size() <= maxlen ? text : text.substr(0, maxlen-3) + "...";
+}
+
 // helper for opp_formattable()
 static std::vector<int> computeMaxColumnWidths(const std::string& text)
 {
