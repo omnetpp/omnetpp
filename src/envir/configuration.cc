@@ -228,17 +228,17 @@ const char *Configuration::getVariable(const char *varname) const
     return nullptr;
 }
 
-void Configuration::addEntry(const InifileContents::Entry& entry)
+void Configuration::addEntry(const InifileContents::Entry& iniEntry)
 {
-    const char *key = entry.getKey();
+    const char *key = iniEntry.getKey();
     const char *lastDot = strrchr(key, '.');
     if (!lastDot && !PatternMatcher::containsWildcards(key)) {
-        Entry *entry2 = new Entry(entry);
-        entries.push_back(entry2);
+        Entry *entry = new Entry(iniEntry);
+        entries.push_back(entry);
 
         // config: add if not already in there
         if (config.find(key) == config.end())
-            config[key] = entry2;
+            config[key] = entry;
     }
     else {
         // key contains wildcard or dot: parameter or per-object configuration
@@ -252,13 +252,13 @@ void Configuration::addEntry(const InifileContents::Entry& entry)
         splitKey(key, ownerName, suffix);
         bool suffixContainsWildcards = PatternMatcher::containsWildcards(suffix.c_str());
 
-        MatchableEntry *entry2 = new MatchableEntry(entry);
+        MatchableEntry *entry = new MatchableEntry(iniEntry);
         if (!ownerName.empty())
-            entry2->ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
+            entry->ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
         else
-            entry2->fullPathPattern = new PatternMatcher(key, true, true, true);
-        entry2->suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : nullptr;
-        entries.push_back(entry2);
+            entry->fullPathPattern = new PatternMatcher(key, true, true, true);
+        entry->suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : nullptr;
+        entries.push_back(entry);
 
         // find which bin it should go into
         if (!suffixContainsWildcards) {
@@ -269,10 +269,10 @@ void Configuration::addEntry(const InifileContents::Entry& entry)
 
                 // initialize bin with matching wildcard keys seen so far
                 for (auto wildcardEntry : wildcardSuffixBin.entries)
-                    if (wildcardEntry->suffixPattern->matches(suffix.c_str()))
+                    if (wildcardEntry->suffixPattern->covers(suffix.c_str()))
                         bin.entries.push_back(wildcardEntry);
             }
-            suffixBins[suffix].entries.push_back(entry2);
+            suffixBins[suffix].entries.push_back(entry);
         }
         else {
             // suffix contains wildcards: we need to add it to all existing suffix bins it matches
@@ -280,10 +280,10 @@ void Configuration::addEntry(const InifileContents::Entry& entry)
             // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
             // but causes no harm, because getPerObjectConfigEntry() won't look into the
             // wildcard bin
-            wildcardSuffixBin.entries.push_back(entry2);
+            wildcardSuffixBin.entries.push_back(entry);
             for (auto & suffixBin : suffixBins)
-                if (entry2->suffixPattern->matches(suffixBin.first.c_str()))
-                    (suffixBin.second).entries.push_back(entry2);
+                if (entry->suffixPattern->covers(suffixBin.first.c_str()))
+                    (suffixBin.second).entries.push_back(entry);
         }
     }
 }
