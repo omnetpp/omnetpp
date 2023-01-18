@@ -398,6 +398,13 @@ bool PatternMatcher::matches(const char *line) const
     return doMatch(line, 0, 0);
 }
 
+bool PatternMatcher::covers(const char *pattern) const
+{
+    //TODO This is an approximate solution, it doesn't work with numeric ranges.
+    // For example, "*.node[0..10].foo" covers "*.node[3..6].foo", but matches() says no
+    return matches(pattern);
+}
+
 const char *PatternMatcher::patternPrefixMatches(const char *line, int suffixoffset) const
 {
     if (!caseSensitive)

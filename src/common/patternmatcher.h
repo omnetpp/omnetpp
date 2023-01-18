@@ -143,6 +143,16 @@ class COMMON_API PatternMatcher
     bool matches(const char *line) const;
 
     /**
+     * Returns true if this pattern "covers" the given, i.e. matches everything
+     * it does, and potentially some more. E.g. "**.foo" covers "*.node*.foo",
+     * but not "**.f*o".
+     *
+     * Note that this is a partial implementation. For example, even though
+     * "*.node[0..10].foo" covers "*.node[3..6].foo", this function will return false.
+     */
+    bool covers(const char *pattern) const;
+
+    /**
      * Similar to matches(): it returns non-nullptr iif (1) the pattern ends in
      * a string literal (and not, say, '*' or '**') which contains the line suffix
      * (which begins at suffixoffset characters of line) and (2) pattern matches
