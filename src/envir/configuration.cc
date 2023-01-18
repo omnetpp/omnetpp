@@ -537,21 +537,62 @@ void Configuration::dump() const
         std::cout << "  " << entry.first << " = " << entry.second << std::endl;
 }
 
-std::vector<const cConfiguration::KeyValue*> Configuration::getUnusedEntries(bool all) const
+std::vector<const cConfiguration::KeyValue*> Configuration::getUnusedEntries(bool all, bool postsimulation) const
 {
-    std::vector<const cConfiguration::KeyValue*> result;
+    std::vector<const KeyValue*> result;
     for (auto entry : entries)
-        if (!entry->isAccessed())
-            if (all || strchr(entry->getKey(), '.') != nullptr)
-                result.push_back(entry);
+        if (!entry->isAccessed() && (all || reportAsUnaccessed(entry, postsimulation)))
+            result.push_back(entry);
     return result;
 }
 
-void Configuration::dumpUnusedEntries() const
+inline bool fromSameSection(const cConfiguration::KeyValue *a, const cConfiguration::KeyValue *b)
 {
-    auto unusedEntries = getUnusedEntries();
-    for (auto entry : unusedEntries)
-        std::cout << "  " << entry->str() << std::endl;
+    return opp_streq(a->getOriginSection(), b->getOriginSection());
+}
+
+bool Configuration::reportAsUnaccessed(const Entry *entry, bool postsimulation) const
+{
+    //
+    // Common causes of an entry being unused are:
+    // 1. Mistyped or otherwise bogus key -- this is the type we primarily want to detect and report
+    // 2. Accidental shadowing by another entry -- to be reported too
+    // 3. Intentional shadowing (i.e. override) from a derived section
+    // 4. Parameter is to be used by a future (dynamically created) module
+    // 5. Per-object config options that refer to result names are not used until a matching result is recorded
+    // 6. Some config options like "description", "extends" or "repeat" are not consumed via cConfiguration
+    //
+
+    // If shadowed by another entry, it can never be accessed.
+    // However, if shadowed from a derived section, that's probably an
+    // intentional override and should NOT be reported.
+    const Entry *shadowedBy = findFirstEntryThatShadows(entry);
+    if (shadowedBy != nullptr)
+        return fromSameSection(shadowedBy, entry);
+
+    // Some config options like "description", "extends" or "repeat" are not
+    // accessed, so don't report them. Mistyping of option names is detected
+    // anyway.
+    bool isOption = strchr(entry->getKey(), '.') == nullptr;
+    if (isOption)
+        return false;
+
+    // Don't report result recording related keys, only at end of simulation
+    bool isPerObjectOption = strchr(entry->getKey(), '-') != nullptr;  // noteworthy exception: "**.typename"
+    if (!postsimulation && isPerObjectOption)  // rudimentary check
+        return false;
+
+    return true;
+}
+
+const Configuration::Entry *Configuration::findFirstEntryThatShadows(const Entry *entry) const
+{
+    for (auto e : entries)
+        if (e == entry)
+            break;
+        else if (PatternMatcher(e->getKey(), true, true, true).covers(entry->getKey()))
+            return e;
+    return nullptr;
 }
 
 void Configuration::clearUsageInfo()

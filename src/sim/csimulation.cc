@@ -819,7 +819,8 @@ void cSimulation::callFinish()
 
 void cSimulation::printUnusedConfigEntriesIfAny(std::ostream& out)
 {
-    auto unusedEntries = getConfig()->getUnusedEntries();
+    bool postsimulation = (getState() == SIM_FINISHCALLED);
+    auto unusedEntries = getConfig()->getUnusedEntries(false, postsimulation);
     if (!unusedEntries.empty()) {
         out << "Note: There were unused entries in the configuration after network setup:\n";
         for (auto entry : unusedEntries)

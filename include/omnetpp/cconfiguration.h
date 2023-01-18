@@ -396,11 +396,11 @@ class SIM_API cConfiguration : public cObject
     /**
      * Returns the list of entries that have not been accessed. This can be
      * useful for detecting entries in the configuration that take no effect.
-     * By default, config options (i.e. keys that don't contain a dot) are
-     * are omitted from the result because they are checked anyway; specify
-     * all=true to include them as well.
+     * The method tries to be clever about which entries to report, unless all=true
+     * is specified. The postsimulation flag indicates whether it is invoked after
+     * completing the simulation (=true) or earlier (=false).
      */
-    virtual std::vector<const KeyValue*> getUnusedEntries(bool all=false) const {return std::vector<const KeyValue*>();}
+    virtual std::vector<const KeyValue*> getUnusedEntries(bool all=false, bool postsimulation=false) const {return std::vector<const KeyValue*>();}
 
     /**
      * Resets usage info on all config entries, i.e. mark them as having been

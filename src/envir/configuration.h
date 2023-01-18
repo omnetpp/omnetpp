@@ -143,6 +143,8 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
     static bool isPredefinedVariable(const char *varname);
     virtual bool isEssentialOption(const char *key) const;
     virtual std::string substituteVariables(const char *text, const StringMap& variables) const;
+    virtual bool reportAsUnaccessed(const Entry *entry, bool postsimulation) const;
+    const Entry *findFirstEntryThatShadows(const Entry *entry) const;
 
   public:
     Configuration() {}
@@ -163,11 +165,9 @@ class ENVIR_API Configuration : public cConfiguration  //TODO rename Configurati
     virtual std::map<std::string,std::string> getIterationVariables() const override;
     virtual const char *getVariable(const char *varname) const override;
     virtual const char *substituteVariables(const char *value) const override;
-    virtual std::vector<const KeyValue*> getUnusedEntries(bool all=false) const override;
+    virtual std::vector<const KeyValue*> getUnusedEntries(bool all, bool postsimulation) const override;
     virtual void clearUsageInfo() override;
     virtual void dump() const;
-    virtual void dumpUnusedEntries() const;
-
 };
 
 }  // namespace envir
