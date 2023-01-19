@@ -15,6 +15,7 @@ network = Test
 record-eventlog = true
 cmdenv-express-mode = true
 cmdenv-performance-display= false
+print-unused-config = false  # entries in [General] of  _defaults.ini
 
 %contains-regex: stdout
 Running simulation...

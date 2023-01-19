@@ -9,7 +9,7 @@ for (int i = 0; i < 10; i++) {
 
 %inifile: omnetpp.ini
 [General]
-network = Test
+#network = Test
 record-eventlog = true
 eventlog-recording-intervals = ..1, 3..5, 7..
 
