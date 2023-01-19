@@ -104,7 +104,8 @@ Register_GlobalConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHEC
 Register_GlobalConfigOption(CFGID_PARAMETER_MUTABILITY_CHECK, "parameter-mutability-check", CFG_BOOL, "true", "Setting to false will disable errors raised when trying to change the values of module/channel parameters not marked as @mutable. This is primarily a compatibility setting intended to facilitate running simulation models that were not yet annotated with @mutable.");
 Register_GlobalConfigOption(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "allow-object-stealing-on-deletion", CFG_BOOL, "false", "Setting it to true disables the \"Context component is deleting an object it doesn't own\" error message. This option exists primarily for backward compatibility with pre-6.0 versions that were more permissive during object deletion.");
 Register_GlobalConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
-Register_GlobalConfigOption(CFGID_PRINT_UNUSED_CONFIG, "print-unused-config", CFG_BOOL, "true", "Enables listing unused configuration entries after network setup. Note that the listed entries are not necessarily redundant, e.g. they may be needed by modules created dynamically during simulation. Entries that are overridden from a derived section (keys must be identical) are not reported as unused.");
+Register_GlobalConfigOption(CFGID_PRINT_UNUSED_CONFIG, "print-unused-config", CFG_BOOL, "true", "Enables listing of unused configuration entries after network setup. Note that the reported entries are not necessarily redundant, e.g. they may be needed by modules created dynamically during simulation. It tries to be smart about which entries to report, e.g. entries overridden from a derived section, likely intentionally, are not reported.");
+Register_GlobalConfigOption(CFGID_PRINT_UNUSED_CONFIG_ON_COMPLETION, "print-unused-config-on-completion", CFG_BOOL, "false", "Enables listing of unused configuration entries after the simulation has successfully completed. It tries to be smart about which entries to report, e.g. entries overridden from a derived section, likely intentionally, are not reported.");
 
 
 #ifdef DEVELOPER_DEBUG
@@ -813,6 +814,10 @@ void cSimulation::callFinish()
         gotoState(SIM_ERROR);
         notifyLifecycleListenersOnErrorThenRethrow(e);
     }
+
+    bool printUnusedConfig = getConfig()->getAsBool(CFGID_PRINT_UNUSED_CONFIG_ON_COMPLETION);
+    if (printUnusedConfig)
+        printUnusedConfigEntriesIfAny(EV_INFO);
 
     checkFingerprint();
 }
