@@ -38,7 +38,7 @@ network Test
 
 %inifile: test.ini
 [General]
-network = Test
+#network = Test
 debug-statistics-recording = true
 
 %subst: /omnetpp:://

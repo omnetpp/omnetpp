@@ -39,7 +39,7 @@ Define_Module(Node);
 
 %inifile: omnetpp.ini
 [General]
-network = Test
+#network = Test
 record-eventlog = true
 sim-time-limit = 3s
 *.enabled.module-eventlog-recording = true

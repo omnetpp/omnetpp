@@ -222,7 +222,7 @@ bool Node::publicSilent2Method(const char *arg1, int arg2)
 
 %inifile: omnetpp.ini
 [General]
-network = Test
+#network = Test
 record-eventlog = true
 
 %subst: /^SB .*/SB .../m
