@@ -1,0 +1,24 @@
+%description:
+Check assignment among XML parameters
+
+%file: test.ned
+import testlib.Dump;
+
+network Test
+{
+    parameters:
+        xml foo = default(xml("<root><child/></root>"));
+        xml bar = foo; // note: this will make a copy
+    submodules:
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        foo = <root>...</root> at content:1
+        bar = <root>...</root> at content:1
+    submodules:
+}
+
