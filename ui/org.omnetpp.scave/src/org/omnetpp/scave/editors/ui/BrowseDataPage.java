@@ -181,10 +181,10 @@ public class BrowseDataPage extends FormEditorPage {
         addToToolbar(actions.showFieldsAsScalarsAction);
         addSeparatorToToolbar();
 
-        addToToolbar(new OpenQuantityFormatterConfigurationDialogAction());
-        addToToolbar(enableQuantityFormatterAction = new EnableQuantityFormatterAction());
         addToToolbar(new IncreaseDecimalPlacesAction());
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
+        addToToolbar(enableQuantityFormatterAction = new EnableQuantityFormatterAction());
+        addToToolbar(new OpenQuantityFormatterConfigurationDialogAction());
         addSeparatorToToolbar();
 
         addToToolbar(actions.refreshResultFilesAction);
