@@ -81,6 +81,7 @@ public class BrowseDataPage extends FormEditorPage {
     private DropdownAction treeLevelsAction;
     private FlatModuleTreeAction flatModuleTreeAction;
     private ChooseTableColumnsAction chooseTableColumnsAction;
+    private EnableQuantityFormatterAction enableQuantityFormatterAction;
 
     public BrowseDataPage(Composite parent, ScaveEditor editor) {
         super(parent, SWT.NONE, editor);
@@ -153,8 +154,6 @@ public class BrowseDataPage extends FormEditorPage {
         // set up contents
         tabFolder.setResultFileManager(scaveEditor.getResultFileManager());
 
-        setNumericPrecision(getNumericPrecision()); // make sure it takes effect
-
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
 
@@ -183,7 +182,7 @@ public class BrowseDataPage extends FormEditorPage {
         addSeparatorToToolbar();
 
         addToToolbar(new OpenQuantityFormatterConfigurationDialogAction());
-        addToToolbar(new EnableQuantityFormatterAction());
+        addToToolbar(enableQuantityFormatterAction = new EnableQuantityFormatterAction());
         addToToolbar(new IncreaseDecimalPlacesAction());
         addToToolbar(new DecreaseDecimalPlacesAction());  //TODO get these refreshed when min/max precision is reached
         addSeparatorToToolbar();
@@ -195,10 +194,15 @@ public class BrowseDataPage extends FormEditorPage {
 
         // show/hide actions that are specific to tab pages
         tabFolder.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 updateIconVisibility();
             }
         });
+
+        setNumericPrecision(getNumericPrecision()); // make sure it takes effect
+        setNumberFormattingEnabled(getNumberFormattingEnabled());
+
         updateIconVisibility();
     }
 
@@ -418,6 +422,7 @@ public class BrowseDataPage extends FormEditorPage {
 
     public void setNumberFormattingEnabled(boolean enabled) {
         this.numberFormattingEnabled = enabled;
+        enableQuantityFormatterAction.setChecked(enabled);
         getAllPanel().getDataControl().setNumberFormattingEnabled(enabled);
         getScalarsPanel().getDataControl().setNumberFormattingEnabled(enabled);
         getParametersPanel().getDataControl().setNumberFormattingEnabled(enabled);
@@ -453,6 +458,7 @@ public class BrowseDataPage extends FormEditorPage {
     public void saveState(IMemento memento) {
         super.saveState(memento);
         memento.putInteger("activeTab", tabFolder.getSelectionIndex());
+        memento.putBoolean("formatNumbers", getNumberFormattingEnabled());
         memento.putInteger("numericPrecision", getNumericPrecision());
         memento.putBoolean("showFieldsAsScalars", getAllPanel().getShowFieldsAsScalars());
         //TODO contents of filter combos  (note: table columns are magically saved somehow)
@@ -466,6 +472,10 @@ public class BrowseDataPage extends FormEditorPage {
 
         // show/hide actions that are specific to tab pages
         updateIconVisibility();
+
+        Boolean formatNumbers = memento.getBoolean("formatNumbers");
+        if (formatNumbers != null)
+            setNumberFormattingEnabled(formatNumbers);
 
         Integer prec = memento.getInteger("numericPrecision");
         if (prec != null)

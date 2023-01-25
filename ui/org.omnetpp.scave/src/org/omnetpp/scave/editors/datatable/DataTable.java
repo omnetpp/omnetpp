@@ -303,6 +303,10 @@ public class DataTable extends LargeTable implements IDataControl {
         }
     }
 
+    public boolean getNumberFormattingEnabled() {
+        return numberFormattingEnabled;
+    }
+
     public void setNumericPrecision(int numericPrecision) {
         if (this.numericPrecision != numericPrecision) {
             this.numericPrecision = numericPrecision;
