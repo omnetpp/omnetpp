@@ -747,7 +747,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = vector.getStatistics().getVariance();
                     String unitSquared = unit;
-                    if (!unit.isEmpty())
+                    if (unit != null)
                         unitSquared = unit + "\u00B2"; // "Superscript Two"
                     return Double.isNaN(variance) ? NA : formatNumber(result, column.text, variance, unitSquared, gc, width);
                 }
@@ -796,7 +796,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 else if (COL_VARIANCE.equals(column)) {
                     double variance = stats.getStatistics().getVariance();
                     String unitSquared = unit;
-                    if (!unit.isEmpty())
+                    if (unit != null)
                         unitSquared = unit + "\u00B2"; // "Superscript Two"
                     return Double.isNaN(variance) ? NA : formatNumber(result, column.text, variance, unitSquared, gc, width);
                 }
@@ -829,9 +829,8 @@ public class DataTable extends LargeTable implements IDataControl {
             }
         }
         catch (RuntimeException e) {
-            e.printStackTrace();
-            // stale ID?
-            return new StyledString("");
+            ScavePlugin.logError(e);
+            return new StyledString("<error>", makeColorStyler(ColorFactory.RED));
         }
 
         return new StyledString("");
@@ -900,12 +899,17 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     protected void setStyleStringColor(StyledString styledString, int index, int length, Color color) {
-        styledString.setStyle(index, length, new StyledString.Styler() {
+        StyledString.Styler styler = makeColorStyler(color);
+        styledString.setStyle(index, length, styler);
+    }
+
+    protected StyledString.Styler makeColorStyler(Color color) {
+        return new StyledString.Styler() {
             @Override
             public void applyStyles(TextStyle textStyle) {
                 textStyle.foreground = color;
             }
-        });
+        };
     }
 
     protected StyledString formatNumber(ResultItem result, String column, BigDecimal d, GC gc, int width) {
