@@ -1,20 +1,12 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2022 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
-package org.omnetpp.scave.editors.ui;
+package org.omnetpp.scave.preferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -30,27 +22,32 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.common.CommonPlugin;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.omnetpp.common.engine.QuantityFormatter;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ui.QuantityFormatterOptionsConfigurationDialog;
+import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry;
 import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry.Mapping;
 
-public class QunatityFormatterConfigurationDialog extends TitleAreaDialog {
-    private static final int BUTTON_TOP         = IDialogConstants.CLIENT_ID;
-    private static final int BUTTON_UP          = IDialogConstants.CLIENT_ID + 1;
-    private static final int BUTTON_DOWN        = IDialogConstants.CLIENT_ID + 2;
-    private static final int BUTTON_BOTTOM      = IDialogConstants.CLIENT_ID + 3;
-    private static final int BUTTON_ADD         = IDialogConstants.CLIENT_ID + 4;
-    private static final int BUTTON_COPY        = IDialogConstants.CLIENT_ID + 5;
-    private static final int BUTTON_REMOVE      = IDialogConstants.CLIENT_ID + 6;
-    private static final int BUTTON_EDIT        = IDialogConstants.CLIENT_ID + 7;
+/**
+ * Preference page for Scave.
+ */
+public class QuantityFormattersPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+    private static final int BUTTON_TOP         = 0;
+    private static final int BUTTON_UP          = 1;
+    private static final int BUTTON_DOWN        = 2;
+    private static final int BUTTON_BOTTOM      = 3;
+    private static final int BUTTON_ADD         = 4;
+    private static final int BUTTON_COPY        = 5;
+    private static final int BUTTON_REMOVE      = 6;
+    private static final int BUTTON_EDIT        = 7;
 
     private List<QuantityFormatterRegistry.Mapping> originalMappings;
     private List<QuantityFormatterRegistry.Mapping> mappings;
@@ -59,20 +56,18 @@ public class QunatityFormatterConfigurationDialog extends TitleAreaDialog {
     private int widthInChars = 150;
     private int heightInChars = 15;
 
-    public QunatityFormatterConfigurationDialog(Shell parent) {
-        super(parent);
+    public QuantityFormattersPreferencePage() {
+        setPreferenceStore(ScavePlugin.getDefault().getPreferenceStore());
+        setTitle("OMNeT++/Number Formats");
+        setDescription("Number Formats for the OMNeT++ Result Analysis editor.");
     }
 
     @Override
-    protected IDialogSettings getDialogBoundsSettings() {
-        return UIUtils.getDialogSettings(CommonPlugin.getDefault(), getClass().getName());
+    public void init(IWorkbench workbench) {
+        setMappings(QuantityFormatterRegistry.getInstance().getMappings());
     }
 
-    public void setContentProvider(IStructuredContentProvider sp) {
-        contentProvider = sp;
-    }
-
-    public void setMappings(List<QuantityFormatterRegistry.Mapping> originalMappings) {
+    protected void setMappings(List<QuantityFormatterRegistry.Mapping> originalMappings) {
         this.originalMappings = originalMappings;
         mappings = new ArrayList<QuantityFormatterRegistry.Mapping>();
         for (QuantityFormatterRegistry.Mapping mapping : originalMappings)
@@ -80,24 +75,7 @@ public class QunatityFormatterConfigurationDialog extends TitleAreaDialog {
     }
 
     @Override
-    protected void configureShell(Shell newShell) {
-        newShell.setText("Quantity Formatting Configuration");
-        super.configureShell(newShell);
-    }
-
-    @Override
-    public boolean isHelpAvailable() {
-        return false;
-    }
-
-    @Override
-    protected int getShellStyle() {
-        return super.getShellStyle() | SWT.RESIZE;
-    }
-
-    @Override
-    protected Control createDialogArea(Composite container) {
-        Composite parent = (Composite) super.createDialogArea(container);
+    protected Control createContents(Composite parent) {
         setTitle("Modify quantity formatting configuration");
         setMessage("Please update the ordered list of quantity formatting options.\nThe first matching options will be used when formatting a quantity.");
 
@@ -117,6 +95,8 @@ public class QunatityFormatterConfigurationDialog extends TitleAreaDialog {
         addTableColumn(table, "Filter expression", 600);
         addTableColumn(table, "Test input", 160);
         addTableColumn(table, "Test output", 160);
+        contentProvider = new ArrayContentProvider();
+        tableViewer.setContentProvider(contentProvider);
 
         tableViewer.setColumnProperties(new String[] {"expression", "input", "output"});
         final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {new TableTextCellEditor(tableViewer, 0), new TableTextCellEditor(tableViewer, 1), null};
@@ -192,7 +172,7 @@ public class QunatityFormatterConfigurationDialog extends TitleAreaDialog {
         gd.heightHint = convertHeightInCharsToPixels(heightInChars);
         gd.widthHint = convertWidthInCharsToPixels(widthInChars);
         table.setLayoutData(gd);
-        table.setFont(container.getFont());
+        table.setFont(parent.getFont());
 
         // buttons
         Composite buttonsArea = new Composite(tableArea, SWT.NONE);
@@ -274,83 +254,77 @@ public class QunatityFormatterConfigurationDialog extends TitleAreaDialog {
     }
 
     @Override
-    protected void okPressed() {
+    public boolean performOk() {
         originalMappings.clear();
         for (Mapping mapping : mappings)
             originalMappings.add(mapping);
-        super.okPressed();
+        return true;
     }
 
-    @Override
     protected void buttonPressed(int buttonId) {
-        if (buttonId < IDialogConstants.CLIENT_ID) {
-            super.buttonPressed(buttonId);
-        }
-        else {
-            StructuredSelection selection = (StructuredSelection)tableViewer.getSelection();
-            List<?> selectionAsList = selection.toList();
-            Object firstSelectionElement = selection.isEmpty() ? null : selectionAsList.get(0);
-            Object lastSelectionElement = selection.isEmpty() ? null : selectionAsList.get(selectionAsList.size() - 1);
-            switch (buttonId) {
-                case BUTTON_TOP:
-                    if (!selection.isEmpty())
-                        move(selectionAsList, -mappings.indexOf(firstSelectionElement));
-                    tableViewer.getTable().setFocus();
-                    tableViewer.refresh();
-                    break;
-                case BUTTON_UP:
-                    if (!selection.isEmpty() && mappings.indexOf(firstSelectionElement) > 0)
-                        move(selectionAsList, -1);
-                    tableViewer.getTable().setFocus();
-                    tableViewer.refresh();
-                    break;
-                case BUTTON_DOWN:
-                    if (!selection.isEmpty() && mappings.indexOf(lastSelectionElement) < mappings.size() - 1)
-                        move(selectionAsList, 1);
-                    tableViewer.getTable().setFocus();
-                    tableViewer.refresh();
-                    break;
-                case BUTTON_BOTTOM:
-                    if (!selection.isEmpty())
-                        move(selectionAsList, mappings.size() - mappings.indexOf(lastSelectionElement) - 1);
-                    tableViewer.getTable().setFocus();
-                    tableViewer.refresh();
-                    break;
-                case BUTTON_REMOVE:
-                    int index = mappings.indexOf(selection.getFirstElement());
-                    for (var selected : selectionAsList)
-                        mappings.remove(selected);
-                    if (index != -1 && !mappings.isEmpty())
-                        tableViewer.setSelection(new StructuredSelection(mappings.get(Math.max(0, Math.min(index, mappings.size() - 1)))));
-                    tableViewer.getTable().setFocus();
-                    tableViewer.refresh();
-                    break;
-                case BUTTON_COPY: {
-                    if (selection.size() == 1) {
-                        QuantityFormatterRegistry.Mapping selectedMapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
-                        QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping(selectedMapping.expression, new QuantityFormatter.Options(selectedMapping.options), selectedMapping.testInput);
-                        mappings.add(mapping);
-                        tableViewer.refresh();
-                        tableViewer.setSelection(new StructuredSelection(mapping), true);
-                    }
-                    break;
-                }
-                case BUTTON_ADD: {
-                    QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping("*", new QuantityFormatter.Options(), null);
+        StructuredSelection selection = (StructuredSelection)tableViewer.getSelection();
+        List<?> selectionAsList = selection.toList();
+        Object firstSelectionElement = selection.isEmpty() ? null : selectionAsList.get(0);
+        Object lastSelectionElement = selection.isEmpty() ? null : selectionAsList.get(selectionAsList.size() - 1);
+        switch (buttonId) {
+            case BUTTON_TOP:
+                if (!selection.isEmpty())
+                    move(selectionAsList, -mappings.indexOf(firstSelectionElement));
+                tableViewer.getTable().setFocus();
+                tableViewer.refresh();
+                break;
+            case BUTTON_UP:
+                if (!selection.isEmpty() && mappings.indexOf(firstSelectionElement) > 0)
+                    move(selectionAsList, -1);
+                tableViewer.getTable().setFocus();
+                tableViewer.refresh();
+                break;
+            case BUTTON_DOWN:
+                if (!selection.isEmpty() && mappings.indexOf(lastSelectionElement) < mappings.size() - 1)
+                    move(selectionAsList, 1);
+                tableViewer.getTable().setFocus();
+                tableViewer.refresh();
+                break;
+            case BUTTON_BOTTOM:
+                if (!selection.isEmpty())
+                    move(selectionAsList, mappings.size() - mappings.indexOf(lastSelectionElement) - 1);
+                tableViewer.getTable().setFocus();
+                tableViewer.refresh();
+                break;
+            case BUTTON_REMOVE:
+                int index = mappings.indexOf(selection.getFirstElement());
+                for (var selected : selectionAsList)
+                    mappings.remove(selected);
+                if (index != -1 && !mappings.isEmpty())
+                    tableViewer.setSelection(new StructuredSelection(mappings.get(Math.max(0, Math.min(index, mappings.size() - 1)))));
+                tableViewer.getTable().setFocus();
+                tableViewer.refresh();
+                break;
+            case BUTTON_COPY: {
+                if (selection.size() == 1) {
+                    QuantityFormatterRegistry.Mapping selectedMapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
+                    QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping(selectedMapping.expression, new QuantityFormatter.Options(selectedMapping.options), selectedMapping.testInput);
                     mappings.add(mapping);
                     tableViewer.refresh();
                     tableViewer.setSelection(new StructuredSelection(mapping), true);
-                    break;
                 }
-                case BUTTON_EDIT:
-                    if (selection.size() == 1) {
-                        QuantityFormatterOptionsConfigurationDialog dialog = new QuantityFormatterOptionsConfigurationDialog(Display.getCurrent().getActiveShell());
-                        QuantityFormatterRegistry.Mapping mapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
-                        dialog.setOptions(mapping.options);
-                        dialog.open();
-                    }
-                    break;
+                break;
             }
+            case BUTTON_ADD: {
+                QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping("*", new QuantityFormatter.Options(), null);
+                mappings.add(mapping);
+                tableViewer.refresh();
+                tableViewer.setSelection(new StructuredSelection(mapping), true);
+                break;
+            }
+            case BUTTON_EDIT:
+                if (selection.size() == 1) {
+                    QuantityFormatterOptionsConfigurationDialog dialog = new QuantityFormatterOptionsConfigurationDialog(Display.getCurrent().getActiveShell());
+                    QuantityFormatterRegistry.Mapping mapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
+                    dialog.setOptions(mapping.options);
+                    dialog.open();
+                }
+                break;
         }
     }
 
@@ -394,4 +368,6 @@ public class QunatityFormatterConfigurationDialog extends TitleAreaDialog {
             column.setWidth(width);
         return column;
     }
+
+
 }

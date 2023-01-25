@@ -8,15 +8,18 @@
 package org.omnetpp.scave.actions.ui;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.preference.IPreferenceNode;
+import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.jface.preference.PreferenceManager;
+import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.actions.AbstractScaveAction;
 import org.omnetpp.scave.editors.ScaveEditor;
-import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry;
-import org.omnetpp.scave.editors.ui.QunatityFormatterConfigurationDialog;
+import org.omnetpp.scave.preferences.QuantityFormattersPreferencePage;
 
 public class OpenQuantityFormatterConfigurationDialogAction extends AbstractScaveAction {
     public OpenQuantityFormatterConfigurationDialogAction() {
@@ -26,9 +29,17 @@ public class OpenQuantityFormatterConfigurationDialogAction extends AbstractScav
 
     @Override
     protected void doRun(ScaveEditor scaveEditor, ISelection selection) throws CoreException {
-        QunatityFormatterConfigurationDialog dialog = new QunatityFormatterConfigurationDialog(Display.getCurrent().getActiveShell());
-        dialog.setContentProvider(new ArrayContentProvider());
-        dialog.setMappings(QuantityFormatterRegistry.getInstance().getMappings());
+        // code based on MemoryViewPrefAction
+
+        PreferenceManager prefManager = new PreferenceManager();
+
+        QuantityFormattersPreferencePage page = new QuantityFormattersPreferencePage();
+        page.init(PlatformUI.getWorkbench()); // normally done by WorkbenchPreferenceDialog
+        IPreferenceNode node = new PreferenceNode("org.omnetpp.scave.preferences.QuantityFormattersPreferencePage", page); //$NON-NLS-1$
+        prefManager.addToRoot(node);
+
+        PreferenceDialog dialog = new PreferenceDialog(Display.getCurrent().getActiveShell(), prefManager);
+        dialog.create();
         dialog.open();
     }
 
