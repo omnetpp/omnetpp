@@ -18,7 +18,7 @@ public class EnableQuantityFormatterAction extends AbstractScaveAction {
     public EnableQuantityFormatterAction() {
         super(AS_CHECK_BOX);
         setText("Format Numbers");
-        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COLLAPSE));
+        setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_FORMAT_NUMBERS));
     }
 
     @Override
