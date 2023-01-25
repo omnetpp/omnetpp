@@ -189,6 +189,12 @@
            id="org.omnetpp.scave.preferences.ScavePreferencePage"
            name="Result Analysis">
      </page>
+     <page
+           category="org.omnetpp.main.OmnetppPreferencePage"
+           class="org.omnetpp.scave.preferences.QuantityFormattersPreferencePage"
+           id="org.omnetpp.scave.preferences.QuantityFormattersPreferencePage"
+           name="Number Format">
+     </page>
   </extension>
   <extension
         id="charttemplateproblem"
