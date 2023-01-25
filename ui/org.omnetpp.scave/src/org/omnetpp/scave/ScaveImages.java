@@ -38,6 +38,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_EXPORT = "icons/full/etool16/export.png";
     public static final String IMG_ETOOL16_SAVEIMAGE = "icons/full/etool16/saveimage.png";
     public static final String IMG_ETOOL16_FLATMODULETREE = "icons/full/etool16/flatmoduletree.png";
+    public static final String IMG_ETOOL16_FORMAT_NUMBERS = "icons/full/etool16/formatnumbers.png";
     public static final String IMG_ETOOL16_GOTOITEMDEFINITION = "icons/full/etool16/gotoitemdefinition.png";
     public static final String IMG_ETOOL16_HZOOMIN = "icons/full/etool16/hzoomin.png";
     public static final String IMG_ETOOL16_HZOOMOUT = "icons/full/etool16/hzoomout.png";
