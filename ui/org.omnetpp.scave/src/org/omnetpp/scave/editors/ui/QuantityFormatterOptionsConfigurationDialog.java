@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.engine.QuantityFormatter;
 import org.omnetpp.common.engine.QuantityFormatter.NotationMode;
+import org.omnetpp.common.engine.QuantityFormatter.Options;
 import org.omnetpp.common.engine.QuantityFormatter.OutputUnitMode;
 import org.omnetpp.common.engine.QuantityFormatter.ScientificExponentMode;
 import org.omnetpp.common.engine.QuantityFormatter.SignMode;
@@ -35,7 +36,8 @@ import org.omnetpp.common.util.UIUtils;
 
 public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 {
-    private QuantityFormatter.Options options;
+    private QuantityFormatterRegistry.Mapping mapping;
+
     private Text approximationMark;
     private Text groupSeparator;
     private Text decimalSeparator;
@@ -64,8 +66,8 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         super(parentShell);
     }
 
-    public void setOptions(QuantityFormatter.Options options) {
-        this.options = options;
+    public void setOptions(QuantityFormatterRegistry.Mapping mapping) {
+        this.mapping = mapping;
     }
 
     @Override
@@ -96,6 +98,8 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         setHelpAvailable(false);
         setTitle("Select quantity formatting options");
         setMessage("Please select among the various operation modes, numeric limits, allowed units, separators and markers.");
+
+        Options options = mapping.options;
 
         Group group = createGroup(container, "Notation mode", 1, 1);
         notationModeAutoButton = createRadioButton(group, "Automatic", "Select regular or scientific notation automatically", 1);
@@ -243,7 +247,7 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
     @Override
     protected void okPressed() {
-        unparseOptions(options);
+        unparseOptions(mapping.options);
         super.okPressed();
     }
 
@@ -289,7 +293,7 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
     protected void test() {
         if (testInput != null) {
-            QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping("*", options, testInput.getText());
+            mapping.testInput = testInput.getText();
             testOutput.setText(StringUtils.nullToEmpty(mapping.computeTestOutput()));
         }
     }
