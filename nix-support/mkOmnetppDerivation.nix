@@ -2,7 +2,7 @@
   pname, version, src ? ./.,                 # direct parameters
   lib, stdenv, bintools, which,
   perl, flex, bison, python3,                # dependencies
-  ccache, writeText,
+  ccache, xdg-utils, writeText,
   MODE ? "release",                          # build parameters
 }:
 
@@ -13,11 +13,12 @@ let
     enableParallelBuilding = true;
     strictDeps = true;
 
+    # external OMNeT++ dependencies
+    oppDependencies = [ perl bison flex bintools which ccache xdg-utils
+       (python3.withPackages(ps: with ps; [ numpy pandas matplotlib scipy seaborn posix_ipc ]))];
+
     # tools required for build only (needed in derivations)
-    propagatedNativeBuildInputs = [
-      stdenv perl bison flex bintools which ccache
-      (python3.withPackages(ps: with ps; [ numpy pandas matplotlib scipy seaborn ]))
-    ];
+    propagatedNativeBuildInputs = [ stdenv ] ++ oppDependencies;
 
     patches = [ ./flake-support-on-6.0.1.patch ];
 

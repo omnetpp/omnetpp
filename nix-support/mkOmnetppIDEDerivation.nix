@@ -1,6 +1,6 @@
-{ 
+{
   pname, version, src ? ./.,                   # direct parameters
-  stdenv, lib,
+  stdenv, lib, python3,
   omnetpp
 }:
 
@@ -21,7 +21,10 @@ let
     dontConfigure = true;
     dontBuild = true;
 
-    propagatedNaviveBuildInputs = [ omnetpp ];
+    # external OMNeT++ dependencies
+    oppDependencies = [ ];
+
+    propagatedNaviveBuildInputs = [ omnetpp ] ++ oppDependencies;
 
     installPhase = ''
       runHook preInstall

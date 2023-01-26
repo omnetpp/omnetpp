@@ -83,14 +83,20 @@
         default = oppPkgs.stdenv.mkDerivation {
           name = "${pname}-${sversion} dependencies";
           buildInputs =
-              self.packages.${system}."${pname}-runtime".buildInputs ++
-              self.packages.${system}."${pname}-qtenv".buildInputs;
-          propagatedNativeBuildInputs =
-              self.packages.${system}."${pname}-runtime".propagatedNativeBuildInputs ++
-              self.packages.${system}."${pname}-qtenv".propagatedNativeBuildInputs;
+              self.packages.${system}."${pname}-ide".oppDependencies ++
+              self.packages.${system}."${pname}-runtime".oppDependencies ++
+              self.packages.${system}."${pname}-qtenv".oppDependencies;
 
           shellHook = ''
-            source setenv
+            export QT_PLUGIN_PATH=${oppPkgs.qtbase.bin}/${oppPkgs.qtbase.qtPluginPrefix}:${oppPkgs.qtsvg.bin}/${oppPkgs.qtbase.qtPluginPrefix}
+            # disable GL support as NIX does not play nicely with OpenGL (except on nixOS)
+            export QT_XCB_GL_INTEGRATION=''${QT_XCB_GL_INTEGRATION:-none}
+            # source the setenv script if we are standing right in an OMNET installation
+            export DISPLAY=''${DISPLAY:=:0}
+            export XDG_RUNTIME_DIR=''${XDG_RUNTIME_DIR:=$TMPDIR/xdg_runtime}
+            export HOME=''${HOME:=$TMPDIR/xdg_home}
+
+            test -f setenv && source setenv
           '';
         };
 

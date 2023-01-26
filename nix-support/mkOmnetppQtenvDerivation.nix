@@ -15,16 +15,19 @@ let
     strictDeps = true;
     dontWrapQtApps = true;
 
-    buildInputs = [ qtbase omnetpp ];
+    # external OMNeT++ dependencies
+    oppDependencies = [ qtbase ];
 
-    propagatedNativeBuildInputs = [ autoPatchelfHook perl python3 bison flex lld bintools qtbase omnetpp ];
+    buildInputs = [ omnetpp ] ++ oppDependencies;
+
+    propagatedNativeBuildInputs = [ autoPatchelfHook omnetpp ] ++ omnetpp.oppDependencies ++ oppDependencies;
 
     patches = [ ./flake-support-on-6.0.1.patch ];
 
     postPatch = ''
       # variables used as a replacement in the setup-hook
       export ldLibraryPathVar=${if stdenv.isDarwin then "DYLD_FALLBACK_LIBRARY_PATH" else "LD_LIBRARY_PATH"}
-      export ldLibraryPath="$out/lib" 
+      export ldLibraryPath="$out/lib"
       export qtPluginPath="${qtbase.bin}/${qtbase.qtPluginPrefix}:${qtsvg.bin}/${qtbase.qtPluginPrefix}"
     '';
 
