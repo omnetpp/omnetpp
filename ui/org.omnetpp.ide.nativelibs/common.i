@@ -31,6 +31,24 @@ using namespace omnetpp::common;
 %include "std_vector.i"
 
 namespace std {
+   %typemap(javacode) vector<string> %{
+       public String[] toArray() {
+           int sz = (int) size();
+           String[] array = new String[sz];
+           for (int i=0; i<sz; i++)
+               array[i] = get(i);
+           return array;
+       }
+       public static StringVector fromArray(String[] array) {
+           StringVector vector = new StringVector();
+           for (int i=0; i<array.length; i++)
+               vector.add(array[i]);
+           return vector;
+       }
+   %}
+}
+
+namespace std {
    %template(StringVector) vector<string>;
    %template(PStringVector) vector<const char *>;
 }
