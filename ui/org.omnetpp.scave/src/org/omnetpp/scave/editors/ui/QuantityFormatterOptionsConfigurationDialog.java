@@ -38,6 +38,9 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 {
     private QuantityFormatterRegistry.Mapping mapping;
 
+    private Text nameText;
+    private Text matchExpressionText;
+    private Button enablementCheckbox;
     private Text approximationMark;
     private Text groupSeparator;
     private Text decimalSeparator;
@@ -61,6 +64,8 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
     private Button signModeForceButton;
     private Button exponentSignModeAutoButton;
     private Button exponentSignModeForceButton;
+
+
 
     public QuantityFormatterOptionsConfigurationDialog(Shell parentShell) {
         super(parentShell);
@@ -101,7 +106,27 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
         Options options = mapping.options;
 
-        Group group = createGroup(container, "Notation mode", 1, 1);
+        Group group = createGroup(container, "Main", 1, 2);
+        Label label = createLabel(group, "Name or label:", "", 1);
+        nameText = createText(group, label.getToolTipText(), 1);
+        nameText.setText(StringUtils.defaultString(mapping.name));
+
+        label = createLabel(group, "Match expression:", "", 1);
+        matchExpressionText = createText(group, label.getToolTipText(), 1);
+        matchExpressionText.setText(StringUtils.defaultString(mapping.expression));
+
+        enablementCheckbox = createCheckbox(group, "Enabled", label.getToolTipText(), 2);
+        enablementCheckbox.setSelection(mapping.enabled);
+
+        group = createGroup(container, "Test", 1, 2);
+        label = createLabel(group, "Input", "Quantity formating test input", 1);
+        testInput = createText(group, label.getToolTipText(), 1);
+        label = createLabel(group, "Output", "Quantity formating test output", 1);
+        testOutput = createText(group, label.getToolTipText(), 1);
+        testOutput.setEnabled(false);
+        testInput.setText(StringUtils.defaultString(mapping.testInput)); // must be after testOutput is created
+
+        group = createGroup(container, "Notation mode", 1, 1);
         notationModeAutoButton = createRadioButton(group, "Automatic", "Select regular or scientific notation automatically", 1);
         notationModeAutoButton.setSelection(options.getNotationMode() == QuantityFormatter.NotationMode.AUTO);
         notationModeRegularButton = createRadioButton(group, "Regular", "Always use regular notation", 1);
@@ -137,7 +162,7 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
         group = createGroup(container, "Limits", 2, 2);
 
-        Label label = createLabel(group, "Minimum significant digits:", "Determines the minimum number of significant (non-zero) digits", 1);
+        label = createLabel(group, "Minimum significant digits:", "Determines the minimum number of significant (non-zero) digits", 1);
         minSignificantDigits = createText(group, label.getToolTipText(), 1);
         minSignificantDigits.setText(String.valueOf(options.getMinSignificantDigits()));
         label = createLabel(group, "Maximum significant digits:", "Determines the maximum number of significant (non-zero) digits", 1);
@@ -181,13 +206,6 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         if (options.getUnitSeparator() != null)
             unitSeparator.setText(options.getUnitSeparator());
 
-        group = createGroup(container, "Test", 2, 2);
-        label = createLabel(group, "Input", "Quantity formating test input", 1);
-        testInput = createText(group, label.getToolTipText(), 1);
-        label = createLabel(group, "Output", "Quantity formating test output", 1);
-        testOutput = createText(group, label.getToolTipText(), 1);
-        testOutput.setEnabled(false);
-
         return container;
     }
 
@@ -215,6 +233,14 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
                 test();
             }
         });
+        return button;
+    }
+
+    protected Button createCheckbox(Composite parent, String text, String tooltip, int hspan) {
+        Button button = new Button(parent, SWT.CHECK);
+        button.setText(text);
+        button.setToolTipText(tooltip);
+        button.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, hspan, 1));
         return button;
     }
 
@@ -247,11 +273,17 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
     @Override
     protected void okPressed() {
-        unparseOptions(mapping.options);
+        unparseOptions(mapping);
         super.okPressed();
     }
 
-    protected void unparseOptions(QuantityFormatter.Options options) {
+    protected void unparseOptions(QuantityFormatterRegistry.Mapping mapping) {
+        mapping.name = nameText.getText();
+        mapping.setExpression(matchExpressionText.getText());
+        mapping.enabled = enablementCheckbox.getSelection();
+        mapping.testInput = testInput.getText();
+
+        QuantityFormatter.Options options = mapping.options;
         if (notationModeAutoButton.getSelection())
             options.setNotationMode(NotationMode.AUTO);
         else if (notationModeRegularButton.getSelection())

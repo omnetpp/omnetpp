@@ -30,12 +30,16 @@ public class QuantityFormatterRegistry
     }
 
     public static class Mapping {
+        public String name;
+        public boolean enabled = true;
         public String expression;
         public MatchExpression matcher;
         public QuantityFormatter.Options options;
         public String testInput;
 
-        public Mapping(String expression, QuantityFormatter.Options options, String testInput) {
+        public Mapping(String name, boolean enabled, String expression, QuantityFormatter.Options options, String testInput) {
+            this.name = name;
+            this.enabled = enabled;
             this.options = options;
             this.testInput = testInput;
             setExpression(expression);
@@ -52,7 +56,7 @@ public class QuantityFormatterRegistry
         }
 
         public Mapping getCopy() {
-            return new Mapping(expression, new QuantityFormatter.Options(options), testInput);
+            return new Mapping(name, enabled, expression, new QuantityFormatter.Options(options), testInput);
         }
 
         public String computeTestOutput() {
@@ -95,9 +99,8 @@ public class QuantityFormatterRegistry
     public QuantityFormatter getQuantityFormatter(IMatchableObject matchableObject) {
         javaMatchableObject.setJavaObject(matchableObject);
         QuantityFormatter.Options quantityFormatterOptions = null;
-        for (int i = 0; i < mappings.size(); i++) {
-            Mapping mapping = mappings.get(i);
-            if (mapping.matcher.matches(javaMatchableObject)) {
+        for (Mapping mapping : mappings) {
+            if (mapping.enabled && mapping.matcher.matches(javaMatchableObject)) {
                 quantityFormatterOptions = mapping.options;
                 break;
             }
@@ -114,6 +117,8 @@ public class QuantityFormatterRegistry
     public void save(IPreferenceStore store) {
         int index = 0;
         for (Mapping mapping : mappings) {
+            store.setValue(index + ".name", mapping.name);
+            store.setValue(index + ".enabled", mapping.enabled);
             store.setValue(index + ".matchExpression", mapping.expression);
             store.setValue(index + ".testInput", StringUtils.defaultString(mapping.testInput));
             QuantityFormatterUtils.saveToPreferenceStore(store, index + ".", mapping.options);
@@ -126,10 +131,12 @@ public class QuantityFormatterRegistry
         mappings.clear();
         int numItems = store.getInt("numItems");
         for (int index = 0; index < numItems; index++) {
+            String name = store.getString(index + ".name");
+            boolean enabled = store.getBoolean(index + ".enabled");
             String matchExpression = store.getString(index + ".matchExpression");
             String testInput = store.getString(index + ".testInput");
             QuantityFormatter.Options options = QuantityFormatterUtils.loadFromPreferenceStore(store, index + ".", new QuantityFormatter.Options());
-            mappings.add(new Mapping(matchExpression, options, testInput));
+            mappings.add(new Mapping(name, enabled, matchExpression, options, testInput));
         }
     }
 
