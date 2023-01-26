@@ -8,6 +8,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -93,7 +94,16 @@ public class QuantityFormatterRegistry
     private JavaMatchableObject javaMatchableObject = new JavaMatchableObject();
 
     private QuantityFormatterRegistry() {
-        load(ScavePlugin.getDefault().getPreferenceStore());
+        try {
+            load(ScavePlugin.getDefault().getPreferenceStore());
+        }
+        catch (Exception e) {
+            ScavePlugin.logError("Could not restore quantity formatting rules", e);
+        }
+        if (mappings.isEmpty()) {
+            // add at least a catch-all rule
+            mappings.add(new Mapping("Default", true, "", new QuantityFormatter.Options(), "12345.678912"));
+        }
     }
 
     public QuantityFormatter getQuantityFormatter(IMatchableObject matchableObject) {
@@ -110,8 +120,13 @@ public class QuantityFormatterRegistry
         return new QuantityFormatter(quantityFormatterOptions);
     }
 
-    public ArrayList<Mapping> getMappings() {
-        return mappings;
+    public List<Mapping> getMappings() {
+        return new ArrayList<Mapping>(mappings);
+    }
+
+    public void setMappings(List<Mapping> newMappings) {
+        mappings.clear();
+        mappings.addAll(newMappings);
     }
 
     public void save(IPreferenceStore store) {
