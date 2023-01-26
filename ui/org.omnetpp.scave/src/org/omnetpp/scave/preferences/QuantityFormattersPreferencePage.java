@@ -71,7 +71,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         this.originalMappings = originalMappings;
         mappings = new ArrayList<QuantityFormatterRegistry.Mapping>();
         for (QuantityFormatterRegistry.Mapping mapping : originalMappings)
-            mappings.add(new QuantityFormatterRegistry.Mapping(mapping.expression, new QuantityFormatter.Options(mapping.options), mapping.testInput));
+            mappings.add(mapping.getCopy());
     }
 
     @Override

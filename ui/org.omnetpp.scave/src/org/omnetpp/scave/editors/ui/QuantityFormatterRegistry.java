@@ -43,7 +43,16 @@ public class QuantityFormatterRegistry
 
         public void setExpression(String expression) {
             this.expression = expression;
-            this.matcher = new MatchExpression(expression, false, false, false);
+            try {
+                this.matcher = new MatchExpression(expression, false, false, false);
+            } catch (Exception e) {
+                //TODO
+                this.matcher = new MatchExpression("", false, false, false);;
+            }
+        }
+
+        public Mapping getCopy() {
+            return new Mapping(expression, new QuantityFormatter.Options(options), testInput);
         }
 
         public String computeTestOutput() {
