@@ -322,7 +322,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 if (selection.size() == 1) {
                     QuantityFormatterOptionsConfigurationDialog dialog = new QuantityFormatterOptionsConfigurationDialog(Display.getCurrent().getActiveShell());
                     QuantityFormatterRegistry.Mapping mapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
-                    dialog.setOptions(mapping.options);
+                    dialog.setOptions(mapping);
                     dialog.open();
                 }
                 break;
