@@ -11,11 +11,13 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.omnetpp.common.engine.JavaMatchableObject;
 import org.omnetpp.common.engine.MatchExpression;
 import org.omnetpp.common.engine.QuantityFormatter;
-import org.omnetpp.common.engine.StringVector;
 import org.omnetpp.common.engineext.IMatchableObject;
+import org.omnetpp.scave.ScavePlugin;
 
 public class QuantityFormatterRegistry
 {
@@ -77,6 +79,10 @@ public class QuantityFormatterRegistry
     private ArrayList<Mapping> mappings = new ArrayList<Mapping>();
     private JavaMatchableObject javaMatchableObject = new JavaMatchableObject();
 
+    private QuantityFormatterRegistry() {
+        load(ScavePlugin.getDefault().getPreferenceStore());
+    }
+
     public QuantityFormatter getQuantityFormatter(IMatchableObject matchableObject) {
         javaMatchableObject.setJavaObject(matchableObject);
         QuantityFormatter.Options quantityFormatterOptions = null;
@@ -95,4 +101,27 @@ public class QuantityFormatterRegistry
     public ArrayList<Mapping> getMappings() {
         return mappings;
     }
+
+    public void save(IPreferenceStore store) {
+        int index = 0;
+        for (Mapping mapping : mappings) {
+            store.setValue(index + ".matchExpression", mapping.expression);
+            store.setValue(index + ".testInput", StringUtils.defaultString(mapping.testInput));
+            QuantityFormatterUtils.saveToPreferenceStore(store, index + ".", mapping.options);
+            index++;
+        }
+        store.setValue("numItems", index);
+    }
+
+    public void load(IPreferenceStore store) {
+        mappings.clear();
+        int numItems = store.getInt("numItems");
+        for (int index = 0; index < numItems; index++) {
+            String matchExpression = store.getString(index + ".matchExpression");
+            String testInput = store.getString(index + ".testInput");
+            QuantityFormatter.Options options = QuantityFormatterUtils.loadFromPreferenceStore(store, index + ".", new QuantityFormatter.Options());
+            mappings.add(new Mapping(matchExpression, options, testInput));
+        }
+    }
+
 }

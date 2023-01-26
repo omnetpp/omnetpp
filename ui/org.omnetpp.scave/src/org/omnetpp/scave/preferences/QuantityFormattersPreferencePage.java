@@ -258,6 +258,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         originalMappings.clear();
         for (Mapping mapping : mappings)
             originalMappings.add(mapping);
+        QuantityFormatterRegistry.getInstance().save(getPreferenceStore());
         return true;
     }
 
