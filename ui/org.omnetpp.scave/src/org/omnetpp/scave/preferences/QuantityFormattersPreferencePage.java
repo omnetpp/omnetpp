@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.ICheckStateProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -40,6 +44,9 @@ import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry.Mapping;
  * Preference page for Scave.
  */
 public class QuantityFormattersPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+    private static final String P_TESTER = "tester";
+    private static final String P_EXPRESSION = "expression";
+    private static final String P_NAME = "name";
     private static final String DEFAULT_NAME = "New";
     private static final String DEFAULT_MATCHEXPRESSION = "*";
     private static final String DEFAULT_TESTINPUT = "1234.5678ms";
@@ -53,17 +60,16 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     private static final int BUTTON_REMOVE      = 6;
     private static final int BUTTON_EDIT        = 7;
 
-    private List<QuantityFormatterRegistry.Mapping> originalMappings;
     private List<QuantityFormatterRegistry.Mapping> mappings;
     private IStructuredContentProvider contentProvider;
-    private TableViewer tableViewer;
+    private CheckboxTableViewer tableViewer;
     //private int widthInChars = 150;
     private int heightInChars = 15;
 
     public QuantityFormattersPreferencePage() {
         setPreferenceStore(ScavePlugin.getDefault().getPreferenceStore());
-        setTitle("OMNeT++/Number Formats");
-        setDescription("Number Formats for the OMNeT++ Result Analysis editor.");
+        setTitle("Number Formats for the OMNeT++ Result Analysis editor");
+        setDescription("Multiple formatting rules can be specified, and the first one whose filter matches the item will be used to format it.");
     }
 
     @Override
@@ -72,7 +78,6 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     }
 
     protected void setMappings(List<QuantityFormatterRegistry.Mapping> originalMappings) {
-        this.originalMappings = originalMappings;
         mappings = new ArrayList<QuantityFormatterRegistry.Mapping>();
         for (QuantityFormatterRegistry.Mapping mapping : originalMappings)
             mappings.add(mapping.getCopy());
@@ -80,43 +85,46 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
 
     @Override
     protected Control createContents(Composite parent) {
-        setTitle("Modify quantity formatting configuration");
-        setMessage("Please update the ordered list of quantity formatting options.\nThe first matching options will be used when formatting a quantity.");
-
-// TODO This expression is matched against the context object related to the quantity that is being formatted. Available fields are: display, column, unit, module, name, file, run, config, experiment, measurement, replication, etc. Available columns are: value, count, mean, min, max, stddev, variance, etc.
-//        Composite panel = createPanel(parent, "Filter expression for quantity formatting options", "Here you can specify the filter expression for the selected quantity formatting options.\nYou can use object field names, boolean operators (and/or/not), and optional wildcards.\nFor example, 'unit=~bps and column=~min and module=~*.transmitter'.\nSee the tooltip on the text field for the complete list of available fields.", 2);
-
         Composite tableArea = new Composite(parent, SWT.NONE);
         tableArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         GridLayout layout = new GridLayout(2, false);
         layout.marginWidth = layout.marginHeight = 0;
         tableArea.setLayout(layout);
 
-        tableViewer = new TableViewer(tableArea, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-        Table table = tableViewer.getTable();
+        Table table = new Table(tableArea, SWT.CHECK | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        tableViewer = new CheckboxTableViewer(table);
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
+        addTableColumn(table, "Enabled", 20);
         addTableColumn(table, "Name", 200);
         addTableColumn(table, "Applies where", 200);
         addTableColumn(table, "Example output", 200);
         contentProvider = new ArrayContentProvider();
         tableViewer.setContentProvider(contentProvider);
 
-        tableViewer.setColumnProperties(new String[] {"name", "expression", "output"});
-        final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {new TableTextCellEditor(tableViewer, 0), new TableTextCellEditor(tableViewer, 1), null};
+        tableViewer.setColumnProperties(new String[] {"", P_NAME, P_EXPRESSION, P_TESTER});
+        final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {
+                null,
+                new TableTextCellEditor(tableViewer, 1),
+                new TableTextCellEditor(tableViewer, 2),
+                new TableTextCellEditor(tableViewer, 3),
+                null
+        };
         tableViewer.setCellEditors(cellEditors);
 
         tableViewer.setCellModifier(new ICellModifier() {
             public boolean canModify(Object element, String property) {
-                return property.equals("expression") || property.equals("name");
+                return property.equals(P_NAME) || property.equals(P_EXPRESSION) || property.equals(P_TESTER);
             }
 
             public Object getValue(Object element, String property) {
                 QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
-                if (property.equals("expression"))
-                    return mapping.expression;
-                else if (property.equals("name"))
+                if (property.equals(P_NAME))
                     return mapping.name;
+                else if (property.equals(P_EXPRESSION))
+                    return mapping.expression;
+                else if (property.equals(P_TESTER))
+                    return mapping.testInput;
                 else
                     throw new IllegalArgumentException();
             }
@@ -125,13 +133,41 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 if (element instanceof Item)
                     element = ((Item) element).getData(); // workaround, see super's comment
                 QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
-                if (property.equals("expression"))
-                    mapping.setExpression(value.toString());
-                else if (property.equals("name"))
+                if (property.equals(P_NAME))
                     mapping.name = value.toString();
+                else if (property.equals(P_EXPRESSION))
+                    mapping.setExpression(value.toString());
+                else if (property.equals(P_TESTER))
+                    mapping.testInput = value.toString();
                 else
                     throw new IllegalArgumentException();
                 tableViewer.refresh();
+            }
+        });
+
+        tableViewer.setCheckStateProvider(new ICheckStateProvider() {
+            @Override
+            public boolean isGrayed(Object element) {
+                return false;
+            }
+
+            @Override
+            public boolean isChecked(Object element) {
+                if (element instanceof Item)
+                    element = ((Item) element).getData(); // workaround, see super's comment
+                QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
+                return mapping.enabled;
+            }
+        });
+
+        tableViewer.addCheckStateListener(new ICheckStateListener() {
+            @Override
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                Object element = event.getElement();
+                if (element instanceof Item)
+                    element = ((Item) element).getData(); // workaround, see super's comment
+                QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
+                mapping.enabled = event.getChecked();
             }
         });
 
@@ -160,10 +196,12 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
                 switch (columnIndex) {
                     case 0:
-                        return StringUtils.nullToEmpty(mapping.name);
+                        return ""; // the dummy "enabled" column
                     case 1:
-                        return mapping.expression;
+                        return StringUtils.nullToEmpty(mapping.name);
                     case 2:
+                        return mapping.expression;
+                    case 3:
                         return StringUtils.nullToEmpty(mapping.computeTestOutput());
                     default:
                         throw new RuntimeException();
@@ -183,15 +221,15 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         buttonsArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         buttonsArea.setLayout(new GridLayout(1, false));
 
-        createSideButton(buttonsArea, BUTTON_TOP, "&Top");
-        createSideButton(buttonsArea, BUTTON_UP, "&Up");
-        createSideButton(buttonsArea, BUTTON_DOWN, "&Down");
-        createSideButton(buttonsArea, BUTTON_BOTTOM, "&Bottom");
-        new Label(buttonsArea, SWT.NONE);
         createSideButton(buttonsArea, BUTTON_ADD, "&Add");
+        createSideButton(buttonsArea, BUTTON_EDIT, "&Edit");
         createSideButton(buttonsArea, BUTTON_COPY, "&Copy");
         createSideButton(buttonsArea, BUTTON_REMOVE, "&Remove");
-        createSideButton(buttonsArea, BUTTON_EDIT, "&Edit");
+        new Label(buttonsArea, SWT.NONE);
+        //createSideButton(buttonsArea, BUTTON_TOP, "&Top");
+        createSideButton(buttonsArea, BUTTON_UP, "&Up");
+        createSideButton(buttonsArea, BUTTON_DOWN, "&Down");
+        //createSideButton(buttonsArea, BUTTON_BOTTOM, "&Bottom");
 
         return parent;
     }
@@ -259,11 +297,31 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
 
     @Override
     public boolean performOk() {
-        originalMappings.clear();
-        for (Mapping mapping : mappings)
-            originalMappings.add(mapping);
+        int catchAllIndex = findFirstCatchAll(mappings);
+        if (catchAllIndex == -1) {
+            MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that a catch-all rule was added at the last position.");
+            mappings.add(new Mapping("Default", true, "", new QuantityFormatter.Options(), DEFAULT_TESTINPUT));
+            tableViewer.refresh(); // in case we are invoked on Apply
+        }
+        else if (catchAllIndex < mappings.size()-1) {
+            MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that rules that follow the catch-all rule "
+                    + "\"" + mappings.get(catchAllIndex).name + "\" will never be used.");
+        }
+
+        QuantityFormatterRegistry.getInstance().setMappings(mappings);
         QuantityFormatterRegistry.getInstance().save(getPreferenceStore());
         return true;
+    }
+
+    private static boolean isCatchAll(Mapping mapping) {
+        return mapping.enabled && (StringUtils.isEmpty(mapping.expression) || mapping.expression.equals("*"));
+    }
+
+    private static int findFirstCatchAll(List<Mapping> mappings) {
+        for (int i = 0; i < mappings.size(); i++)
+            if (isCatchAll(mappings.get(i)))
+                return i;
+        return -1;
     }
 
     protected void buttonPressed(int buttonId) {
@@ -335,20 +393,20 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     }
 
     private void move(List<?> selection, int delta) {
-        QuantityFormatterRegistry.Mapping[] movedCurrentAxisModuleOrder = new QuantityFormatterRegistry.Mapping[mappings.size()];
+        QuantityFormatterRegistry.Mapping[] movedMappings = new QuantityFormatterRegistry.Mapping[mappings.size()];
 
         for (int i = 0; i < mappings.size(); i++) {
             QuantityFormatterRegistry.Mapping element = mappings.get(i);
 
             if (selection.contains(element))
-                movedCurrentAxisModuleOrder[i + delta] = element;
+                movedMappings[i + delta] = element;
         }
 
         for (QuantityFormatterRegistry.Mapping element : mappings) {
             if (!selection.contains(element)) {
-                for (int j = 0; j < movedCurrentAxisModuleOrder.length; j++) {
-                    if (movedCurrentAxisModuleOrder[j] == null) {
-                        movedCurrentAxisModuleOrder[j] = element;
+                for (int j = 0; j < movedMappings.length; j++) {
+                    if (movedMappings[j] == null) {
+                        movedMappings[j] = element;
                         break;
                     }
                 }
@@ -356,7 +414,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         }
 
         mappings.clear();
-        mappings.addAll(Arrays.asList(movedCurrentAxisModuleOrder));
+        mappings.addAll(Arrays.asList(movedMappings));
 
         tableViewer.refresh();
 
