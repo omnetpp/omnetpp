@@ -40,6 +40,10 @@ import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry.Mapping;
  * Preference page for Scave.
  */
 public class QuantityFormattersPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+    private static final String DEFAULT_NAME = "New";
+    private static final String DEFAULT_MATCHEXPRESSION = "*";
+    private static final String DEFAULT_TESTINPUT = "1234.5678ms";
+
     private static final int BUTTON_TOP         = 0;
     private static final int BUTTON_UP          = 1;
     private static final int BUTTON_DOWN        = 2;
@@ -53,7 +57,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     private List<QuantityFormatterRegistry.Mapping> mappings;
     private IStructuredContentProvider contentProvider;
     private TableViewer tableViewer;
-    private int widthInChars = 150;
+    //private int widthInChars = 150;
     private int heightInChars = 15;
 
     public QuantityFormattersPreferencePage() {
@@ -92,27 +96,27 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         Table table = tableViewer.getTable();
         table.setLinesVisible(true);
         table.setHeaderVisible(true);
-        addTableColumn(table, "Filter expression", 600);
-        addTableColumn(table, "Test input", 160);
-        addTableColumn(table, "Test output", 160);
+        addTableColumn(table, "Name", 200);
+        addTableColumn(table, "Applies where", 200);
+        addTableColumn(table, "Example output", 200);
         contentProvider = new ArrayContentProvider();
         tableViewer.setContentProvider(contentProvider);
 
-        tableViewer.setColumnProperties(new String[] {"expression", "input", "output"});
+        tableViewer.setColumnProperties(new String[] {"name", "expression", "output"});
         final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {new TableTextCellEditor(tableViewer, 0), new TableTextCellEditor(tableViewer, 1), null};
         tableViewer.setCellEditors(cellEditors);
 
         tableViewer.setCellModifier(new ICellModifier() {
             public boolean canModify(Object element, String property) {
-                return property.equals("expression") || property.equals("input");
+                return property.equals("expression") || property.equals("name");
             }
 
             public Object getValue(Object element, String property) {
                 QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
                 if (property.equals("expression"))
                     return mapping.expression;
-                else if (property.equals("input"))
-                    return mapping.testInput;
+                else if (property.equals("name"))
+                    return mapping.name;
                 else
                     throw new IllegalArgumentException();
             }
@@ -123,8 +127,8 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
                 if (property.equals("expression"))
                     mapping.setExpression(value.toString());
-                else if (property.equals("input"))
-                    mapping.testInput = value.toString();
+                else if (property.equals("name"))
+                    mapping.name = value.toString();
                 else
                     throw new IllegalArgumentException();
                 tableViewer.refresh();
@@ -156,9 +160,9 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
                 switch (columnIndex) {
                     case 0:
-                        return mapping.expression;
+                        return StringUtils.nullToEmpty(mapping.name);
                     case 1:
-                        return StringUtils.nullToEmpty(mapping.testInput);
+                        return mapping.expression;
                     case 2:
                         return StringUtils.nullToEmpty(mapping.computeTestOutput());
                     default:
@@ -170,7 +174,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         tableViewer.setInput(mappings);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.heightHint = convertHeightInCharsToPixels(heightInChars);
-        gd.widthHint = convertWidthInCharsToPixels(widthInChars);
+        gd.widthHint = 600 + convertWidthInCharsToPixels(10); // sum of column widths and then some
         table.setLayoutData(gd);
         table.setFont(parent.getFont());
 
@@ -304,7 +308,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
             case BUTTON_COPY: {
                 if (selection.size() == 1) {
                     QuantityFormatterRegistry.Mapping selectedMapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
-                    QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping(selectedMapping.expression, new QuantityFormatter.Options(selectedMapping.options), selectedMapping.testInput);
+                    QuantityFormatterRegistry.Mapping mapping = selectedMapping.getCopy();
                     mappings.add(mapping);
                     tableViewer.refresh();
                     tableViewer.setSelection(new StructuredSelection(mapping), true);
@@ -312,7 +316,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 break;
             }
             case BUTTON_ADD: {
-                QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping("*", new QuantityFormatter.Options(), null);
+                QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping(DEFAULT_NAME, true, DEFAULT_MATCHEXPRESSION, new QuantityFormatter.Options(), DEFAULT_TESTINPUT);
                 mappings.add(mapping);
                 tableViewer.refresh();
                 tableViewer.setSelection(new StructuredSelection(mapping), true);
@@ -324,6 +328,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                     QuantityFormatterRegistry.Mapping mapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
                     dialog.setOptions(mapping);
                     dialog.open();
+                    tableViewer.refresh();
                 }
                 break;
         }
