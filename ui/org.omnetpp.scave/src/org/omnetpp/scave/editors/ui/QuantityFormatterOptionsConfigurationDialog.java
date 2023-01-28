@@ -36,7 +36,7 @@ import org.omnetpp.common.util.UIUtils;
 
 public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 {
-    private QuantityFormatterRegistry.Mapping mapping;
+    private QuantityFormattingRule rule;
 
     private Text nameText;
     private Text matchExpressionText;
@@ -71,8 +71,8 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         super(parentShell);
     }
 
-    public void setOptions(QuantityFormatterRegistry.Mapping mapping) {
-        this.mapping = mapping;
+    public void setOptions(QuantityFormattingRule rule) {
+        this.rule = rule;
     }
 
     @Override
@@ -104,19 +104,19 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         setTitle("Select quantity formatting options");
         setMessage("Please select among the various operation modes, numeric limits, allowed units, separators and markers.");
 
-        Options options = mapping.options;
+        Options options = rule.options;
 
         Group group = createGroup(container, "Main", 1, 2);
         Label label = createLabel(group, "Name or label:", "", 1);
         nameText = createText(group, label.getToolTipText(), 1);
-        nameText.setText(StringUtils.defaultString(mapping.name));
+        nameText.setText(StringUtils.defaultString(rule.name));
 
         label = createLabel(group, "Match expression:", "", 1);
         matchExpressionText = createText(group, label.getToolTipText(), 1);
-        matchExpressionText.setText(StringUtils.defaultString(mapping.expression));
+        matchExpressionText.setText(StringUtils.defaultString(rule.expression));
 
         enablementCheckbox = createCheckbox(group, "Enabled", label.getToolTipText(), 2);
-        enablementCheckbox.setSelection(mapping.enabled);
+        enablementCheckbox.setSelection(rule.enabled);
 
         group = createGroup(container, "Test", 1, 2);
         label = createLabel(group, "Input", "Quantity formating test input", 1);
@@ -124,7 +124,7 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         label = createLabel(group, "Output", "Quantity formating test output", 1);
         testOutput = createText(group, label.getToolTipText(), 1);
         testOutput.setEnabled(false);
-        testInput.setText(StringUtils.defaultString(mapping.testInput)); // must be after testOutput is created
+        testInput.setText(StringUtils.defaultString(rule.testInput)); // must be after testOutput is created
 
         group = createGroup(container, "Notation mode", 1, 1);
         notationModeAutoButton = createRadioButton(group, "Automatic", "Select regular or scientific notation automatically", 1);
@@ -273,17 +273,17 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
     @Override
     protected void okPressed() {
-        unparseOptions(mapping);
+        unparseOptions(rule);
         super.okPressed();
     }
 
-    protected void unparseOptions(QuantityFormatterRegistry.Mapping mapping) {
-        mapping.name = nameText.getText();
-        mapping.setExpression(matchExpressionText.getText());
-        mapping.enabled = enablementCheckbox.getSelection();
-        mapping.testInput = testInput.getText();
+    protected void unparseOptions(QuantityFormattingRule rule) {
+        rule.name = nameText.getText();
+        rule.setExpression(matchExpressionText.getText());
+        rule.enabled = enablementCheckbox.getSelection();
+        rule.testInput = testInput.getText();
 
-        QuantityFormatter.Options options = mapping.options;
+        QuantityFormatter.Options options = rule.options;
         if (notationModeAutoButton.getSelection())
             options.setNotationMode(NotationMode.AUTO);
         else if (notationModeRegularButton.getSelection())
@@ -325,8 +325,8 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
     protected void test() {
         if (testInput != null) {
-            mapping.testInput = testInput.getText();
-            testOutput.setText(StringUtils.nullToEmpty(mapping.computeTestOutput()));
+            rule.testInput = testInput.getText();
+            testOutput.setText(StringUtils.nullToEmpty(rule.computeTestOutput()));
         }
     }
 }
