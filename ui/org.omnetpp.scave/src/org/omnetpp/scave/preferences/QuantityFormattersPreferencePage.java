@@ -36,9 +36,9 @@ import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
+import org.omnetpp.scave.editors.ui.QuantityFormattingRule;
 import org.omnetpp.scave.editors.ui.QuantityFormatterOptionsConfigurationDialog;
 import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry;
-import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry.Mapping;
 
 /**
  * Preference page for Scave.
@@ -60,7 +60,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     private static final int BUTTON_REMOVE      = 6;
     private static final int BUTTON_EDIT        = 7;
 
-    private List<QuantityFormatterRegistry.Mapping> mappings;
+    private List<QuantityFormattingRule> rules;
     private IStructuredContentProvider contentProvider;
     private CheckboxTableViewer tableViewer;
     //private int widthInChars = 150;
@@ -74,13 +74,13 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
 
     @Override
     public void init(IWorkbench workbench) {
-        setMappings(QuantityFormatterRegistry.getInstance().getMappings());
+        setRules(QuantityFormatterRegistry.getInstance().getRules());
     }
 
-    protected void setMappings(List<QuantityFormatterRegistry.Mapping> originalMappings) {
-        mappings = new ArrayList<QuantityFormatterRegistry.Mapping>();
-        for (QuantityFormatterRegistry.Mapping mapping : originalMappings)
-            mappings.add(mapping.getCopy());
+    protected void setRules(List<QuantityFormattingRule> originalRules) {
+        rules = new ArrayList<QuantityFormattingRule>();
+        for (QuantityFormattingRule rule : originalRules)
+            rules.add(rule.getCopy());
     }
 
     @Override
@@ -118,13 +118,13 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
             }
 
             public Object getValue(Object element, String property) {
-                QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
+                QuantityFormattingRule rule = (QuantityFormattingRule)element;
                 if (property.equals(P_NAME))
-                    return mapping.name;
+                    return rule.name;
                 else if (property.equals(P_EXPRESSION))
-                    return mapping.expression;
+                    return rule.expression;
                 else if (property.equals(P_TESTER))
-                    return mapping.testInput;
+                    return rule.testInput;
                 else
                     throw new IllegalArgumentException();
             }
@@ -132,13 +132,13 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
             public void modify(Object element, String property, Object value) {
                 if (element instanceof Item)
                     element = ((Item) element).getData(); // workaround, see super's comment
-                QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
+                QuantityFormattingRule rule = (QuantityFormattingRule)element;
                 if (property.equals(P_NAME))
-                    mapping.name = value.toString();
+                    rule.name = value.toString();
                 else if (property.equals(P_EXPRESSION))
-                    mapping.setExpression(value.toString());
+                    rule.setExpression(value.toString());
                 else if (property.equals(P_TESTER))
-                    mapping.testInput = value.toString();
+                    rule.testInput = value.toString();
                 else
                     throw new IllegalArgumentException();
                 tableViewer.refresh();
@@ -155,8 +155,8 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
             public boolean isChecked(Object element) {
                 if (element instanceof Item)
                     element = ((Item) element).getData(); // workaround, see super's comment
-                QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
-                return mapping.enabled;
+                QuantityFormattingRule rule = (QuantityFormattingRule)element;
+                return rule.enabled;
             }
         });
 
@@ -166,8 +166,8 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 Object element = event.getElement();
                 if (element instanceof Item)
                     element = ((Item) element).getData(); // workaround, see super's comment
-                QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
-                mapping.enabled = event.getChecked();
+                QuantityFormattingRule rule = (QuantityFormattingRule)element;
+                rule.enabled = event.getChecked();
             }
         });
 
@@ -193,23 +193,23 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         tableViewer.setLabelProvider(new TableLabelProvider() {
             @Override
             public String getColumnText(Object element, int columnIndex) {
-                QuantityFormatterRegistry.Mapping mapping = (QuantityFormatterRegistry.Mapping)element;
+                QuantityFormattingRule rule = (QuantityFormattingRule)element;
                 switch (columnIndex) {
                     case 0:
                         return ""; // the dummy "enabled" column
                     case 1:
-                        return StringUtils.nullToEmpty(mapping.name);
+                        return StringUtils.nullToEmpty(rule.name);
                     case 2:
-                        return mapping.expression;
+                        return rule.expression;
                     case 3:
-                        return StringUtils.nullToEmpty(mapping.computeTestOutput());
+                        return StringUtils.nullToEmpty(rule.computeTestOutput());
                     default:
                         throw new RuntimeException();
                 }
             }
         });
 
-        tableViewer.setInput(mappings);
+        tableViewer.setInput(rules);
         GridData gd = new GridData(GridData.FILL_BOTH);
         gd.heightHint = convertHeightInCharsToPixels(heightInChars);
         gd.widthHint = 600 + convertWidthInCharsToPixels(10); // sum of column widths and then some
@@ -297,29 +297,29 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
 
     @Override
     public boolean performOk() {
-        int catchAllIndex = findFirstCatchAll(mappings);
+        int catchAllIndex = findFirstCatchAll(rules);
         if (catchAllIndex == -1) {
             MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that a catch-all rule was added at the last position.");
-            mappings.add(new Mapping("Default", true, "", new QuantityFormatter.Options(), DEFAULT_TESTINPUT));
+            rules.add(new QuantityFormattingRule("Default", true, "", new QuantityFormatter.Options(), DEFAULT_TESTINPUT));
             tableViewer.refresh(); // in case we are invoked on Apply
         }
-        else if (catchAllIndex < mappings.size()-1) {
+        else if (catchAllIndex < rules.size()-1) {
             MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that rules that follow the catch-all rule "
-                    + "\"" + mappings.get(catchAllIndex).name + "\" will never be used.");
+                    + "\"" + rules.get(catchAllIndex).name + "\" will never be used.");
         }
 
-        QuantityFormatterRegistry.getInstance().setMappings(mappings);
+        QuantityFormatterRegistry.getInstance().setRules(rules);
         QuantityFormatterRegistry.getInstance().save(getPreferenceStore());
         return true;
     }
 
-    private static boolean isCatchAll(Mapping mapping) {
-        return mapping.enabled && (StringUtils.isEmpty(mapping.expression) || mapping.expression.equals("*"));
+    private static boolean isCatchAll(QuantityFormattingRule rule) {
+        return rule.enabled && (StringUtils.isEmpty(rule.expression) || rule.expression.equals("*"));
     }
 
-    private static int findFirstCatchAll(List<Mapping> mappings) {
-        for (int i = 0; i < mappings.size(); i++)
-            if (isCatchAll(mappings.get(i)))
+    private static int findFirstCatchAll(List<QuantityFormattingRule> rules) {
+        for (int i = 0; i < rules.size(); i++)
+            if (isCatchAll(rules.get(i)))
                 return i;
         return -1;
     }
@@ -332,59 +332,59 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         switch (buttonId) {
             case BUTTON_TOP:
                 if (!selection.isEmpty())
-                    move(selectionAsList, -mappings.indexOf(firstSelectionElement));
+                    move(selectionAsList, -rules.indexOf(firstSelectionElement));
                 tableViewer.getTable().setFocus();
                 tableViewer.refresh();
                 break;
             case BUTTON_UP:
-                if (!selection.isEmpty() && mappings.indexOf(firstSelectionElement) > 0)
+                if (!selection.isEmpty() && rules.indexOf(firstSelectionElement) > 0)
                     move(selectionAsList, -1);
                 tableViewer.getTable().setFocus();
                 tableViewer.refresh();
                 break;
             case BUTTON_DOWN:
-                if (!selection.isEmpty() && mappings.indexOf(lastSelectionElement) < mappings.size() - 1)
+                if (!selection.isEmpty() && rules.indexOf(lastSelectionElement) < rules.size() - 1)
                     move(selectionAsList, 1);
                 tableViewer.getTable().setFocus();
                 tableViewer.refresh();
                 break;
             case BUTTON_BOTTOM:
                 if (!selection.isEmpty())
-                    move(selectionAsList, mappings.size() - mappings.indexOf(lastSelectionElement) - 1);
+                    move(selectionAsList, rules.size() - rules.indexOf(lastSelectionElement) - 1);
                 tableViewer.getTable().setFocus();
                 tableViewer.refresh();
                 break;
             case BUTTON_REMOVE:
-                int index = mappings.indexOf(selection.getFirstElement());
+                int index = rules.indexOf(selection.getFirstElement());
                 for (var selected : selectionAsList)
-                    mappings.remove(selected);
-                if (index != -1 && !mappings.isEmpty())
-                    tableViewer.setSelection(new StructuredSelection(mappings.get(Math.max(0, Math.min(index, mappings.size() - 1)))));
+                    rules.remove(selected);
+                if (index != -1 && !rules.isEmpty())
+                    tableViewer.setSelection(new StructuredSelection(rules.get(Math.max(0, Math.min(index, rules.size() - 1)))));
                 tableViewer.getTable().setFocus();
                 tableViewer.refresh();
                 break;
             case BUTTON_COPY: {
                 if (selection.size() == 1) {
-                    QuantityFormatterRegistry.Mapping selectedMapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
-                    QuantityFormatterRegistry.Mapping mapping = selectedMapping.getCopy();
-                    mappings.add(mapping);
+                    QuantityFormattingRule selectedRule = ((QuantityFormattingRule)selection.getFirstElement());
+                    QuantityFormattingRule rule = selectedRule.getCopy();
+                    rules.add(rule);
                     tableViewer.refresh();
-                    tableViewer.setSelection(new StructuredSelection(mapping), true);
+                    tableViewer.setSelection(new StructuredSelection(rule), true);
                 }
                 break;
             }
             case BUTTON_ADD: {
-                QuantityFormatterRegistry.Mapping mapping = new QuantityFormatterRegistry.Mapping(DEFAULT_NAME, true, DEFAULT_MATCHEXPRESSION, new QuantityFormatter.Options(), DEFAULT_TESTINPUT);
-                mappings.add(mapping);
+                QuantityFormattingRule rule = new QuantityFormattingRule(DEFAULT_NAME, true, DEFAULT_MATCHEXPRESSION, new QuantityFormatter.Options(), DEFAULT_TESTINPUT);
+                rules.add(rule);
                 tableViewer.refresh();
-                tableViewer.setSelection(new StructuredSelection(mapping), true);
+                tableViewer.setSelection(new StructuredSelection(rule), true);
                 break;
             }
             case BUTTON_EDIT:
                 if (selection.size() == 1) {
                     QuantityFormatterOptionsConfigurationDialog dialog = new QuantityFormatterOptionsConfigurationDialog(Display.getCurrent().getActiveShell());
-                    QuantityFormatterRegistry.Mapping mapping = ((QuantityFormatterRegistry.Mapping)selection.getFirstElement());
-                    dialog.setOptions(mapping);
+                    QuantityFormattingRule rule = ((QuantityFormattingRule)selection.getFirstElement());
+                    dialog.setOptions(rule);
                     dialog.open();
                     tableViewer.refresh();
                 }
@@ -393,28 +393,28 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     }
 
     private void move(List<?> selection, int delta) {
-        QuantityFormatterRegistry.Mapping[] movedMappings = new QuantityFormatterRegistry.Mapping[mappings.size()];
+        QuantityFormattingRule[] movedRules = new QuantityFormattingRule[rules.size()];
 
-        for (int i = 0; i < mappings.size(); i++) {
-            QuantityFormatterRegistry.Mapping element = mappings.get(i);
+        for (int i = 0; i < rules.size(); i++) {
+            QuantityFormattingRule element = rules.get(i);
 
             if (selection.contains(element))
-                movedMappings[i + delta] = element;
+                movedRules[i + delta] = element;
         }
 
-        for (QuantityFormatterRegistry.Mapping element : mappings) {
+        for (QuantityFormattingRule element : rules) {
             if (!selection.contains(element)) {
-                for (int j = 0; j < movedMappings.length; j++) {
-                    if (movedMappings[j] == null) {
-                        movedMappings[j] = element;
+                for (int j = 0; j < movedRules.length; j++) {
+                    if (movedRules[j] == null) {
+                        movedRules[j] = element;
                         break;
                     }
                 }
             }
         }
 
-        mappings.clear();
-        mappings.addAll(Arrays.asList(movedMappings));
+        rules.clear();
+        rules.addAll(Arrays.asList(movedRules));
 
         tableViewer.refresh();
 
