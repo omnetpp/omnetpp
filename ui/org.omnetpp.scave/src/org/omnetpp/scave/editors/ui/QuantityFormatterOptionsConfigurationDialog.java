@@ -31,7 +31,6 @@ import org.omnetpp.common.engine.QuantityFormatter.OutputUnitMode;
 import org.omnetpp.common.engine.QuantityFormatter.ScientificExponentMode;
 import org.omnetpp.common.engine.QuantityFormatter.SignMode;
 import org.omnetpp.common.engine.StringVector;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 
 public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
@@ -104,19 +103,19 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         setTitle("Select quantity formatting options");
         setMessage("Please select among the various operation modes, numeric limits, allowed units, separators and markers.");
 
-        Options options = rule.options;
+        Options options = rule.getOptions();
 
         Group group = createGroup(container, "Main", 1, 2);
         Label label = createLabel(group, "Name or label:", "", 1);
         nameText = createText(group, label.getToolTipText(), 1);
-        nameText.setText(StringUtils.defaultString(rule.name));
+        nameText.setText(rule.getName());
 
         label = createLabel(group, "Match expression:", "", 1);
         matchExpressionText = createText(group, label.getToolTipText(), 1);
-        matchExpressionText.setText(StringUtils.defaultString(rule.expression));
+        matchExpressionText.setText(rule.getExpression());
 
         enablementCheckbox = createCheckbox(group, "Enabled", label.getToolTipText(), 2);
-        enablementCheckbox.setSelection(rule.enabled);
+        enablementCheckbox.setSelection(rule.isEnabled());
 
         group = createGroup(container, "Test", 1, 2);
         label = createLabel(group, "Input", "Quantity formating test input", 1);
@@ -124,7 +123,7 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
         label = createLabel(group, "Output", "Quantity formating test output", 1);
         testOutput = createText(group, label.getToolTipText(), 1);
         testOutput.setEnabled(false);
-        testInput.setText(StringUtils.defaultString(rule.testInput)); // must be after testOutput is created
+        testInput.setText(rule.getTestInput()); // must be after testOutput is created
 
         group = createGroup(container, "Notation mode", 1, 1);
         notationModeAutoButton = createRadioButton(group, "Automatic", "Select regular or scientific notation automatically", 1);
@@ -278,12 +277,12 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
     }
 
     protected void unparseOptions(QuantityFormattingRule rule) {
-        rule.name = nameText.getText();
+        rule.setName(nameText.getText());
         rule.setExpression(matchExpressionText.getText());
-        rule.enabled = enablementCheckbox.getSelection();
-        rule.testInput = testInput.getText();
+        rule.setEnabled(enablementCheckbox.getSelection());
+        rule.setTestInput(testInput.getText());
 
-        QuantityFormatter.Options options = rule.options;
+        QuantityFormatter.Options options = rule.getOptions();
         if (notationModeAutoButton.getSelection())
             options.setNotationMode(NotationMode.AUTO);
         else if (notationModeRegularButton.getSelection())
@@ -325,8 +324,8 @@ public class QuantityFormatterOptionsConfigurationDialog extends TitleAreaDialog
 
     protected void test() {
         if (testInput != null) {
-            rule.testInput = testInput.getText();
-            testOutput.setText(StringUtils.nullToEmpty(rule.computeTestOutput()));
+            rule.setTestInput(testInput.getText());
+            testOutput.setText(rule.computeTestOutput());
         }
     }
 }
