@@ -19,16 +19,18 @@ import org.omnetpp.scave.ScavePlugin;
 
 public class QuantityFormatterRegistry
 {
+    private static final QuantityFormatter FALLBACK_FORMATTER = new QuantityFormatter(new QuantityFormatter.Options());
+
     private static QuantityFormatterRegistry instance;
+
+    private JavaMatchableObject javaMatchableObject = new JavaMatchableObject();
+    private ArrayList<QuantityFormattingRule> rules = new ArrayList<QuantityFormattingRule>();
 
     public static QuantityFormatterRegistry getInstance() {
         if (instance == null)
             instance = new QuantityFormatterRegistry();
         return instance;
     }
-
-    private ArrayList<QuantityFormattingRule> rules = new ArrayList<QuantityFormattingRule>();
-    private JavaMatchableObject javaMatchableObject = new JavaMatchableObject();
 
     private QuantityFormatterRegistry() {
         try {
@@ -45,16 +47,10 @@ public class QuantityFormatterRegistry
 
     public QuantityFormatter getQuantityFormatter(IMatchableObject matchableObject) {
         javaMatchableObject.setJavaObject(matchableObject);
-        QuantityFormatter.Options quantityFormatterOptions = null;
-        for (QuantityFormattingRule rule : rules) {
-            if (rule.enabled && rule.matcher.matches(javaMatchableObject)) {
-                quantityFormatterOptions = rule.options;
-                break;
-            }
-        }
-        if (quantityFormatterOptions == null)
-            quantityFormatterOptions = new QuantityFormatter.Options();
-        return new QuantityFormatter(quantityFormatterOptions);
+        for (QuantityFormattingRule rule : rules)
+            if (rule.matches(javaMatchableObject))
+                return new QuantityFormatter(rule.getOptions());
+        return FALLBACK_FORMATTER;
     }
 
     public List<QuantityFormattingRule> getRules() {
@@ -69,11 +65,11 @@ public class QuantityFormatterRegistry
     public void save(IPreferenceStore store) {
         int index = 0;
         for (QuantityFormattingRule rule : rules) {
-            store.setValue(index + ".name", rule.name);
-            store.setValue(index + ".enabled", rule.enabled);
-            store.setValue(index + ".matchExpression", rule.expression);
-            store.setValue(index + ".testInput", StringUtils.defaultString(rule.testInput));
-            QuantityFormatterUtils.saveToPreferenceStore(store, index + ".", rule.options);
+            store.setValue(index + ".name", rule.getName());
+            store.setValue(index + ".enabled", rule.isEnabled());
+            store.setValue(index + ".matchExpression", rule.getExpression());
+            store.setValue(index + ".testInput", StringUtils.defaultString(rule.getTestInput()));
+            QuantityFormatterUtils.saveToPreferenceStore(store, index + ".", rule.getOptions());
             index++;
         }
         store.setValue("numItems", index);

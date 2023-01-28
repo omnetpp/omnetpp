@@ -120,11 +120,11 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
             public Object getValue(Object element, String property) {
                 QuantityFormattingRule rule = (QuantityFormattingRule)element;
                 if (property.equals(P_NAME))
-                    return rule.name;
+                    return rule.getName();
                 else if (property.equals(P_EXPRESSION))
-                    return rule.expression;
+                    return rule.getExpression();
                 else if (property.equals(P_TESTER))
-                    return rule.testInput;
+                    return rule.getTestInput();
                 else
                     throw new IllegalArgumentException();
             }
@@ -134,11 +134,11 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                     element = ((Item) element).getData(); // workaround, see super's comment
                 QuantityFormattingRule rule = (QuantityFormattingRule)element;
                 if (property.equals(P_NAME))
-                    rule.name = value.toString();
+                    rule.setName(value.toString());
                 else if (property.equals(P_EXPRESSION))
                     rule.setExpression(value.toString());
                 else if (property.equals(P_TESTER))
-                    rule.testInput = value.toString();
+                    rule.setTestInput(value.toString());
                 else
                     throw new IllegalArgumentException();
                 tableViewer.refresh();
@@ -156,7 +156,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 if (element instanceof Item)
                     element = ((Item) element).getData(); // workaround, see super's comment
                 QuantityFormattingRule rule = (QuantityFormattingRule)element;
-                return rule.enabled;
+                return rule.isEnabled();
             }
         });
 
@@ -167,7 +167,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 if (element instanceof Item)
                     element = ((Item) element).getData(); // workaround, see super's comment
                 QuantityFormattingRule rule = (QuantityFormattingRule)element;
-                rule.enabled = event.getChecked();
+                rule.setEnabled(event.getChecked());
             }
         });
 
@@ -198,9 +198,9 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                     case 0:
                         return ""; // the dummy "enabled" column
                     case 1:
-                        return StringUtils.nullToEmpty(rule.name);
+                        return StringUtils.nullToEmpty(rule.getName());
                     case 2:
-                        return rule.expression;
+                        return rule.getExpression();
                     case 3:
                         return StringUtils.nullToEmpty(rule.computeTestOutput());
                     default:
@@ -305,7 +305,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         }
         else if (catchAllIndex < rules.size()-1) {
             MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that rules that follow the catch-all rule "
-                    + "\"" + rules.get(catchAllIndex).name + "\" will never be used.");
+                    + "\"" + rules.get(catchAllIndex).getName() + "\" will never be used.");
         }
 
         QuantityFormatterRegistry.getInstance().setRules(rules);
@@ -314,7 +314,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     }
 
     private static boolean isCatchAll(QuantityFormattingRule rule) {
-        return rule.enabled && (StringUtils.isEmpty(rule.expression) || rule.expression.equals("*"));
+        return rule.isEnabled() && (StringUtils.isEmpty(rule.getExpression()) || rule.getExpression().equals("*"));
     }
 
     private static int findFirstCatchAll(List<QuantityFormattingRule> rules) {
