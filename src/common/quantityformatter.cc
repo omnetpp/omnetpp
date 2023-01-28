@@ -223,7 +223,7 @@ const char *QuantityFormatter::getBestUnit(double value, const char *unit, const
         const char *bestUnit = *(allowedUnits.begin() + (it - scores.begin()));
         // give the original unit a chance to win too (so we don't pointlessly convert e.g. 1cm to 10mm);
         // also, do not change the unit if it wouldn't change the value (e.g. don't change 1As to 1C)
-        if (!opp_streq(bestUnit, unit) && (calculateUnitScore(value, unit, unit) >= bestScore || UnitConversion::convertUnit(1, unit, bestUnit) == 1))
+        if (options.allowOriginalUnit && !opp_streq(bestUnit, unit) && (calculateUnitScore(value, unit, unit) >= bestScore || UnitConversion::convertUnit(1, unit, bestUnit) == 1))
             return unit;
         else
             return bestUnit;

@@ -111,6 +111,7 @@ class COMMON_API QuantityFormatter
         // output unit
         OutputUnitMode outputUnitMode = OutputUnitMode::AUTO;
         std::vector<std::string> allowedOutputUnits;
+        bool allowOriginalUnit = false; // if allowedOutputUnits is not empty
 
         // separators and marks
         std::string groupSeparator = ",";
