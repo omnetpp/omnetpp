@@ -13,6 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include "quantityformatter.h"
+#include "stlutil.h"
 
 using namespace std;
 
@@ -207,7 +208,7 @@ const char *QuantityFormatter::getBestUnit(double value, const char *unit, const
         return nullptr;
     else if (value == 0 || !std::isfinite(value) || allowedUnits.empty()) {
         const char *preferredBaseUnit = getUnitSpecificOptions(unit).preferredBaseUnit;
-        if (std::find(allowedUnits.begin(), allowedUnits.end(), preferredBaseUnit) != allowedUnits.end())
+        if (contains(allowedUnits, preferredBaseUnit))
             return preferredBaseUnit;
         else
             return unit;
@@ -239,10 +240,10 @@ void QuantityFormatter::determineOutputUnit(const Input& input, State& state)
             if (input.unit) {
                 state.allowedOutputUnits = getUnitSpecificOptions(input.unit).allowedOutputUnits;
                 if (!options.allowedOutputUnits.empty()) {
-                    auto it = std::remove_if(state.allowedOutputUnits.begin(), state.allowedOutputUnits.end(), [&] (const std::string& unit) {
-                        return std::find(options.allowedOutputUnits.begin(), options.allowedOutputUnits.end(), unit) == options.allowedOutputUnits.end();
+                    auto newEnd = std::remove_if(state.allowedOutputUnits.begin(), state.allowedOutputUnits.end(), [&] (const std::string& unit) {
+                        return !contains(options.allowedOutputUnits, unit);
                     });
-                    state.allowedOutputUnits.erase(it, state.allowedOutputUnits.end());
+                    state.allowedOutputUnits.erase(newEnd, state.allowedOutputUnits.end());
                 }
                 state.outputUnit = getBestUnit(input.value, input.unit, state.allowedOutputUnits);
             }
