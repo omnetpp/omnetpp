@@ -300,6 +300,8 @@ class COMMON_API QuantityFormatter
     void formatScientificNotation(State& state);
     void formatUnit(State& state);
 
+    void format(State& state, const std::string& str, const char part);
+
     template <typename T>
     void format(State& state, const T& t, const char part);
 
