@@ -561,6 +561,16 @@ void QuantityFormatter::formatUnit(State& state)
     format(state, state.outputUnit, 'u');
 }
 
+void QuantityFormatter::format(State& state, const std::string& str, const char part)
+{
+    state.textStream << str;
+    int len = 0;
+    for (char b : str)
+        if ((b&0xc0) != 0x80) // utf8: count multibyte unicode characters (more precisely, code points) as one character
+            len++;
+    state.roleStream << std::string(len, part);
+}
+
 template <typename T>
 void QuantityFormatter::format(State& state, const T& t, const char part)
 {
