@@ -825,7 +825,7 @@ public class DataTable extends LargeTable implements IDataControl {
                             return NA;
                         double lo = bins.getBinEdge(0);
                         double up = bins.getBinEdge(bins.getNumBins());
-                        return formatNumber(result, column.text, lo, "", gc, width).append(" .. ").append(formatNumber(result, column.text, up, unit, gc, width));
+                        return formatNumber(result, column.text, lo, unit, gc, width).append(" .. ").append(formatNumber(result, column.text, up, unit, gc, width));
                     }
                     else
                         return NA;
