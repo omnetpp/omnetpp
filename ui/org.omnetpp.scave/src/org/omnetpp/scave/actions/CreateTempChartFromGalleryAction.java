@@ -29,7 +29,7 @@ public class CreateTempChartFromGalleryAction extends AbstractScaveAction {
     private int selectionItemTypes;
 
     public CreateTempChartFromGalleryAction(int selectionItemTypes) {
-        setText("Choose from Template Gallery...");
+        setText("Choose from Chart Template Gallery...");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_NEWBARCHART));
         this.selectionItemTypes = selectionItemTypes;
     }
