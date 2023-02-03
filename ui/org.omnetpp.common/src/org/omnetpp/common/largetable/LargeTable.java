@@ -26,6 +26,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
@@ -47,6 +49,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -189,6 +192,11 @@ public class LargeTable extends Composite
      * Context for running long operations (e.g. iterating selection elements) with a progress monitor.
      */
     protected IRunnableContext runnableContext;
+
+    /**
+     * When a context menu is opened for the table header, this field stores the table column that the menu was brought up for.
+     */
+    private TableColumn lastContextMenuHeaderColumn;
 
     // Colors. Default colors (focused table, unselected row) are taken from the widget fg/bg colors
     protected Color unfocusedForeground = null; // null = same as for focused table
@@ -382,6 +390,49 @@ public class LargeTable extends Composite
         });
 
         table.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
+        table.setHeaderVisible(true);
+
+        addContextMenu();
+    }
+
+    private void addContextMenu() {
+        Menu contextMenu = new Menu(table);
+
+        contextMenu.addMenuListener(new MenuAdapter() {
+            @Override
+            public void menuShown(MenuEvent e) {
+                Display display = Display.getCurrent();
+                Point p = display.map(null, table, display.getCursorLocation());
+                int columnIndex = getColumnIndexAt(p.x);
+                lastContextMenuHeaderColumn = columnIndex < 0 ? null : getColumn(columnIndex);
+           }
+        });
+
+        fillContextMenu(contextMenu);
+        table.setMenu(contextMenu);
+    }
+
+    protected void fillContextMenu(Menu contextMenu) {
+        addColumnAlignmentMenuItem(contextMenu, "Align Left", SWT.LEFT);
+        addColumnAlignmentMenuItem(contextMenu, "Align Right", SWT.RIGHT);
+    }
+
+    protected TableColumn getLastContextMenuHeaderColumn() {
+        return lastContextMenuHeaderColumn;
+    }
+
+    protected void addColumnAlignmentMenuItem(Menu contextMenu, String label, int alignment) {
+        MenuItem item = new MenuItem(contextMenu, SWT.NONE);
+        item.setText(label);
+        item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            TableColumn column = getLastContextMenuHeaderColumn();
+            if (column != null) {
+                column.setAlignment(alignment);
+                table.redraw();
+                saveState();
+            }
+        }));
     }
 
     public TableColumn createColumn(int style) {
