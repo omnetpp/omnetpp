@@ -74,7 +74,8 @@ public abstract class AbstractLargeTableRowRenderer implements ILargeTableRowRen
             }
         }
 
-        textLayout.draw(gc, x + Math.max(0, alignmentOffset), y);
+        //textLayout.draw(gc, x + Math.max(0, alignmentOffset), y);
+        textLayout.draw(gc, x + alignmentOffset, y);
         textLayout.dispose();
     }
 }
