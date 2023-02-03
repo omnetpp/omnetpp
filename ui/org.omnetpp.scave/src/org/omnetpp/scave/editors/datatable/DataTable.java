@@ -30,14 +30,15 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
@@ -524,38 +525,55 @@ public class DataTable extends LargeTable implements IDataControl {
                 saveState();
             }
         });
-        Listener autoResizeListener = new Listener() {
-            private boolean mouseDown;
 
-            @Override
-            public void handleEvent(Event event) {
-                System.out.println(event);
-                switch (event.type) {
-                    case SWT.DragDetect:
-                        break;
-                    case SWT.MouseDown:
-                        mouseDown = true;
-                        break;
-                    case SWT.MouseUp:
-                        mouseDown = false;
-                        break;
-                    case SWT.Resize:
-                        if (!mouseDown) {
-//                            System.out.println("HERE: " + mouseDown + " " + event);
-//                            tableColumn.setWidth(getAutoColumnWidth(newColumn));
-                        }
-                        break;
-                }
-            }
-        };
-//        tableColumn.addListener(SWT.DragDetect, autoResizeListener);
-//        tableColumn.addListener(SWT.MouseDown, autoResizeListener);
-//        tableColumn.addListener(SWT.MouseUp, autoResizeListener);
-//        tableColumn.addListener(SWT.Resize, autoResizeListener);
         return tableColumn;
     }
 
-    private int getAutoColumnWidth(ColumnRole column) {
+    @Override
+    protected void fillContextMenu(Menu contextMenu) {
+        addAdjustWidthMenuItem(contextMenu);
+        super.fillContextMenu(contextMenu); // original context menu
+        new MenuItem(contextMenu, SWT.SEPARATOR);
+        addChooseTableColumnsMenuItem(contextMenu);
+    }
+
+    protected void addChooseTableColumnsMenuItem(Menu contextMenu) {
+        MenuItem item = new MenuItem(contextMenu, SWT.NONE);
+        final ChooseTableColumnsAction action = new ChooseTableColumnsAction(this);
+        item.setText(action.getText());
+        item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            action.run();
+        }));
+    }
+
+    protected void addAdjustWidthMenuItem(Menu contextMenu) {
+        //
+        // NOTE: This would optimally be triggered by a double-click on the column separator in the header.
+        // However, that's pretty much impossible to implement, due to the following factors:
+        //
+        // - Mouse events are NOT delivered to the TableColumn or Table at all
+        // - Resize events are delivered to the TableColumn, but it's nearly impossible
+        //   to distinguish a double-click from resize-by-dragging
+        // - There are no overridable methods on Table/TableColumn to influence the resizing or width computation
+        //
+        // Two possible but ugly workarounds:
+        // - Global event filter hooked on Display for intercepting double-clicks
+        // - An invisible row in the table, with tweaked content to force the appropriate width
+        //
+        // Hence, we stick with the context menu item.
+        //
+
+        MenuItem item = new MenuItem(contextMenu, SWT.NONE);
+        item.setText("Fit Column Width to Content");
+        item.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            TableColumn column = getLastContextMenuHeaderColumn();
+            if (column != null)
+                column.setWidth(getAutoColumnWidth(column));
+        }));
+    }
+
+    protected int getAutoColumnWidth(TableColumn tableColumn) {
+        ColumnRole column = (ColumnRole)tableColumn.getData(COLUMNROLE_KEY);
         int width = 0;
         GC gc = new GC(this);
         for (int row = getTopIndex(); row <= getBottomIndex(); row++) {
@@ -563,7 +581,8 @@ public class DataTable extends LargeTable implements IDataControl {
             width = Math.max(width, gc.textExtent(text).x);
         }
         gc.dispose();
-        return width;
+        int paddingWidth = 10;
+        return width + paddingWidth;
     }
 
     private void ensureMinimumColumnWidths() {
