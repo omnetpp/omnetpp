@@ -1,0 +1,17 @@
+%description:
+Test JSON-style object parameters.
+
+%file: test.ned
+
+
+network Test {
+  parameters:
+    object foo = { "a": 1, "b": 2, "c": 3, "a": 4, "d": 5};
+}
+
+%exitcode: 1
+%contains: stderr
+<!> Error setting up parameter 'foo': Duplicate key "a" in object literal
+
+%not-contains: stdout
+undisposed object
