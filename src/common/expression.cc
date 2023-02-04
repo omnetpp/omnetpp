@@ -398,6 +398,8 @@ ExprNode *Expression::BasicAstTranslator::translateToExpressionTree(AstNode *ast
         for (AstNode *child : astNode->children) {
             if (child->type != AstNode::KEYVALUE)
                 throw opp_runtime_error("Expression AST: unexpected node type under OBJECT, must be KEYVALUE");
+            if (contains(keys, child->name))
+                throw opp_runtime_error("Duplicate key \"%s\" in object literal", child->name.c_str());
             keys.push_back(child->name);
         }
         ExprNode *node = createObjectNode(name, keys);
