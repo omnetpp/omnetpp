@@ -299,7 +299,8 @@ public class DataTreeContentProvider {
                     ResultItem.DataType type = resultItem.getDataType();
                     boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
                     add(nodeIdsMap, new ResultItemAttributeNode("Module name", resultItem.getModuleName()), id);
-                    add(nodeIdsMap, new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
+                    if (type != ResultItem.DataType.TYPE_NA)
+                        add(nodeIdsMap, new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
                     if (resultItem instanceof ScalarResult) {
                         ScalarResult scalar = (ScalarResult)resultItem;
                         add(nodeIdsMap, new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);

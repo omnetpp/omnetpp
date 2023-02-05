@@ -70,7 +70,7 @@ class SCAVE_API ResultItem
     friend class SqliteResultFileLoader;
 
   public:
-    enum DataType { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
+    enum DataType { TYPE_NA, TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
     enum class FieldNum { NONE=0, COUNT, SUM, SUMWEIGHTS, MEAN, STDDEV, MIN, MAX, NUMBINS, RANGEMIN, RANGEMAX, UNDERFLOWS, OVERFLOWS, STARTTIME, ENDTIME };
 
   protected:
@@ -113,10 +113,16 @@ class SCAVE_API ResultItem
     const char *getProperty(const char *propertyName) const; // propertyName: "name", "module", "itervar:numHosts", etc
 
     /**
-     * Returns the data type of this result item (INT,DOUBLE,ENUM).
-     * If neither "type" nor "enum" attribute is given it returns DOUBLE.
+     * Returns a hint on how to interpret C++ `double` values in this result item:
+     * as integers (INT), as enum values (ENUM), or as real numbers (DOUBLE).
+     * The hint is computed from the "type" and "enum" result attributes.
+     * If neither is given, DOUBLE is assumed.
+     *
+     * If the result item does not contain such double value, namely
+     * ParameterResult which stores the value textually (i.e. in string),
+     * this method returns NA (not applicable).
      */
-    DataType getDataType() const;
+    virtual DataType getDataType() const;
 
     /**
      * Returns a pointer to the enum type described by the "enum" attribute
@@ -163,6 +169,7 @@ class SCAVE_API ParameterResult : public ResultItem
   public:
     virtual int getItemType() const;
     const std::string& getValue() const {return value;}
+    virtual DataType getDataType() const {return TYPE_NA;}
     virtual double getScalarField(FieldNum fieldId) const;
 };
 
