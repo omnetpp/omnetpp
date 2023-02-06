@@ -1395,7 +1395,7 @@ def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level=None):
         to_append = pd.DataFrame.from_dict({"name": [name], "x": [np.array(xs)], "y": [np.array(df[c].values)]})
         if errors_df is not None:
             to_append["error"] = [np.array(errors_df[c].values)]
-        newdf = newdf.append(to_append)
+        newdf = pd.concat([newdf, to_append])
 
     return newdf
 
@@ -1543,7 +1543,8 @@ def _apply_vector_op(df, op_str, operation, *args, **kwargs):
         clone = pd.DataFrame()
         for _, row in df.iterrows():
             if condition is None or condition(row):
-                clone = clone.append(process(row), ignore_index=True)
+                pr = process(row)
+                clone = pd.concat([clone, pr.to_frame().T], ignore_index=True)
         return clone
 
 
@@ -1551,7 +1552,7 @@ def _compute_vector_op(df, op_str, operation, *args, **kwargs):
     """
     Process a vector operation with the `compute` prefix. Helper for `perform_vector_ops()`.
     """
-    return df.append(_apply_vector_op(df, op_str, operation, *args, **kwargs), sort=False)
+    return pd.concat([df, _apply_vector_op(df, op_str, operation, *args, **kwargs)])
 
 
 def set_plot_title(title, suggested_chart_name=None):
