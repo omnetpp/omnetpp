@@ -1220,7 +1220,7 @@ def _initialize_cycles(props):
 
     ml = list("osv^<>pDd")
     if seed != 0:
-        random.shuffle(ml, r.random)
+        random.shuffle(ml)
     _marker_cycle = it.cycle(ml)
 
     prop_cycler = plt.rcParams['axes.prop_cycle']
@@ -1232,7 +1232,7 @@ def _initialize_cycles(props):
 
     cl = ["C" + str(i) for i in range(num_colors)]
     if seed != 0:
-        random.shuffle(cl, r.random)
+        random.shuffle(cl)
     _color_cycle = it.cycle(cl)
 
 
