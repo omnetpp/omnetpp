@@ -393,7 +393,7 @@ class Analysis:
             return None
         return " / ".join([ segment.name for segment in path[1:] ])
 
-    def run_chart(self, chart, wd, workspace, extra_props=dict(), show=False):
+    def run_chart(self, chart, wd, workspace, extra_props=dict(), show=False, suppress_print=False):
         """
         Runs a chart script with the given working directory, workspace, and extra
         properties in addition to the chart's properties. If `show=True`, it calls
@@ -431,7 +431,13 @@ class Analysis:
             for rp in refprojs:
                 sys.path.insert(1, workspace.get_project_location(rp) + "/python")
 
-            exec(chart.script, { "exit": sys.exit })
+            context = { "exit": sys.exit }
+            if suppress_print:
+                def noop(*args, **kwargs):
+                    pass
+                context["print"] = noop
+
+            exec(chart.script, context)
             if show and not _show_called:
                 plt.show()
         except SystemExit as se:
@@ -444,7 +450,7 @@ class Analysis:
             mpl.rcParams.update(orig_rcparams)
 
 
-    def export_image(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra_props=dict()):
+    def export_image(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra_props=dict(), suppress_print=False):
         """
         Runs a chart script for image export. This method just calls `run_chart()`
         with extra properties that instruct the chart script to perform image export.
@@ -475,13 +481,13 @@ class Analysis:
         importlib.reload(plt)
         mpl.use(utils._get_mpl_backend_for_image_format(str(format)))
 
-        self.run_chart(chart, wd, workspace, extra_props=props, show=False)
+        self.run_chart(chart, wd, workspace, extra_props=props, show=False, suppress_print=suppress_print)
 
         fname = utils.get_image_export_filepath(props)
         fname = os.path.join(wd, fname)
         return self._check_file_created(fname, "image", enforce)
 
-    def export_data(self, chart, wd, workspace, format="csv", target_folder=None, filename=None, enforce=True, extra_props=dict()):
+    def export_data(self, chart, wd, workspace, format="csv", target_folder=None, filename=None, enforce=True, extra_props=dict(), suppress_print=False):
         """
         Runs a chart script for data export. This method just calls `run_chart()`
         with extra properties that instruct the chart script to perform data export.
@@ -499,7 +505,7 @@ class Analysis:
         if filename:
             props['data_export_filename'] = str(filename)
 
-        self.run_chart(chart, wd, workspace, extra_props=props, show=False)
+        self.run_chart(chart, wd, workspace, extra_props=props, show=False, suppress_print=suppress_print)
 
         fname = utils.get_data_export_filepath(props)
         fname = os.path.join(wd, fname)
