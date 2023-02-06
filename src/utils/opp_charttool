@@ -44,6 +44,7 @@ if __name__ == "__main__":
     common_parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default=[None], help='The workspace directory. Acts as a fallback after -p. The input patterns are relative to this')
     common_parser.add_argument('-D', metavar='properties', dest='properties', type=str, nargs='*', default=[], help='Extra properties to pass to the chart script, format: key=value')
     common_parser.add_argument('-v', dest="verbose", default=False, action='store_true', help='Verbose operation')
+    common_parser.add_argument('-s', dest="suppress_print", default=False, action='store_true', help='Suppress `print` from chart scripts')
     common_parser.add_argument('anf_file', type=str, nargs=1, default="", help='The Analysis (.anf) file')
 
     info_parser = subparsers.add_parser('info', help='(default) Info about the analysis file', parents=[common_parser], add_help=False)
@@ -167,18 +168,18 @@ if __name__ == "__main__":
             try:
                 if args.command == 'run':
                     print("Running " + chart.name + "...")
-                    analysis.run_chart(chart, anf_dir, workspace, show=args.show, extra_props=props)
+                    analysis.run_chart(chart, anf_dir, workspace, show=args.show, extra_props=props, suppress_print=args.suppress_print)
                 elif args.command == 'imageexport':
                     print("Exporting " + chart.name + "...")
                     analysis.export_image(chart, anf_dir, workspace, enforce=False,
                                           format=args.format, target_folder=args.target_folder, filename=args.out_file,
                                           width=args.width, height=args.height, dpi=args.dpi,
-                                          extra_props=props) is not None
+                                          extra_props=props, suppress_print=args.suppress_print)
                 elif args.command == 'dataexport':
                     print("Exporting " + chart.name + "...")
                     analysis.export_data(chart, anf_dir, workspace, enforce=False,
                                          format=args.format, target_folder=args.target_folder, filename=args.out_file,
-                                         extra_props=props) is not None
+                                         extra_props=props, suppress_print=args.suppress_print)
             except Exception as e:
                 print("\nError in chart " + chart.name + ": " + str(e), file = sys.stderr)
                 print(traceback.format_exc(), file = sys.stderr)
