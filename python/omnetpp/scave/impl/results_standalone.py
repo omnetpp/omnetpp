@@ -23,10 +23,12 @@ def add_inputs(input_patterns):
     inputfiles = list(set(inputfiles + input_patterns))  # make unique
 
 def _parse_int(s):
-    return int(s) if s else np.nan
+    # empty strings should become NaN, zeroes should stay zeroes, hence the type check
+    return int(s) if (s or type(s) in [int, float]) else np.nan
 
 def _parse_float(s):
-    return float(s) if s else np.nan
+    # empty strings should become NaN, zeroes should stay zeroes, hence the type check
+    return float(s) if (s or type(s) in [int, float]) else np.nan
 
 def _parse_ndarray(s):
     return np.fromstring(s, sep=' ') if s else None
