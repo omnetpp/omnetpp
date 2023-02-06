@@ -109,6 +109,8 @@ public class ScaveImages {
     public static final String IMG_OBJ16_VECTOR = "icons/full/obj16/vector.png";
     public static final String IMG_OBJ16_STATISTIC = "icons/full/obj16/statistic.png";
     public static final String IMG_OBJ16_HISTOGRAM = "icons/full/obj16/histogram.png";
+    public static final String IMG_OBJ16_FIELD = "icons/full/obj16/field.png";
+    public static final String IMG_OBJ16_ATTRIBUTE = "icons/full/obj16/attribute.png";
     public static final String IMG_OBJ16_SYM_CROSS = "icons/full/obj16/sym_cross.png";
     public static final String IMG_OBJ16_SYM_DIAMOND = "icons/full/obj16/sym_diamond.png";
     public static final String IMG_OBJ16_SYM_DOT = "icons/full/obj16/sym_dot.png";

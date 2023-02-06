@@ -352,7 +352,7 @@ public class DataTreeContentProvider {
                                         name += toIntegerAwareString(upperBound-1, isIntegerType) + "]";
                                     else
                                         name += formatNumber(upperBound) + ")";
-                                    list.add(new NameValueNode(name, toIntegerAwareString(value, true)));
+                                    list.add(new HistogramBinNode(name, toIntegerAwareString(value, true)));
                                 }
                                 binsNode.children = list.toArray(new Node[0]);
                                 add(nodeIdsMap, binsNode, id);
@@ -370,7 +370,7 @@ public class DataTreeContentProvider {
                     StringVector keys = attributes.keys();
                     for (int j = 0; j < keys.size(); j++) {
                         String key = keys.get(j);
-                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode(key, attributes.get(key), true), id);
                     }
                 }
                 else
@@ -615,7 +615,7 @@ public class DataTreeContentProvider {
         }
     }
 
-    public static class NameValueNode extends Node {
+    public static abstract class NameValueNode extends Node {
         public String name;
 
         public NameValueNode(String name, String value) {
@@ -634,11 +634,6 @@ public class DataTreeContentProvider {
         }
 
         @Override
-        public Image getImage() {
-            return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES);
-        }
-
-        @Override
         public int hashCode() {
             return 31*name.hashCode() + value.hashCode();
         }
@@ -653,6 +648,17 @@ public class DataTreeContentProvider {
                 return false;
             NameValueNode other = (NameValueNode) obj;
             return name.equals(other.name) && value.equals(other.value);
+        }
+    }
+
+    public static class HistogramBinNode extends NameValueNode {
+        public HistogramBinNode(String name, String value) {
+            super(name, value);
+        }
+
+        @Override
+        public Image getImage() {
+            return null;
         }
     }
 
@@ -1239,7 +1245,7 @@ public class DataTreeContentProvider {
                 else if (allType == ResultFileManager.HISTOGRAM)
                     return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_HISTOGRAM);
                 else if (allType == ResultFileManager.PARAMETER)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES); // TODO: which icon? new one?
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_PARAMASSIGNMENT);
                 else
                     return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
             }
@@ -1254,7 +1260,7 @@ public class DataTreeContentProvider {
                 else if (resultItem instanceof StatisticsResult)
                     return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_STATISTIC);
                 else if (resultItem instanceof ParameterResult)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES); // TODO: which icon? new one?
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_PARAMASSIGNMENT);
                 else
                     return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
             }
@@ -1292,10 +1298,21 @@ public class DataTreeContentProvider {
 
     public static class ResultItemFieldOrAttributeNode extends NameValueNode {
         private String methodName;
+        private boolean isAttribute;
 
         public ResultItemFieldOrAttributeNode(String name, String value) {
+            this(name, value, false);
+        }
+
+        public ResultItemFieldOrAttributeNode(String name, String value, boolean isAttribute) {
             super(name, value);
+            this.isAttribute = isAttribute;
             methodName = "get" + WordUtils.capitalize(name.toLowerCase()).replaceAll(" ", "");
+        }
+
+        @Override
+        public Image getImage() {
+            return ScavePlugin.getCachedImage(isAttribute ? ScaveImages.IMG_OBJ16_ATTRIBUTE : ScaveImages.IMG_OBJ16_FIELD);
         }
 
         public static String getLevelName() {
