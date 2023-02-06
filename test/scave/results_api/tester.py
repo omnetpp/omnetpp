@@ -80,6 +80,7 @@ def addMissingNewLine(str):
 def sanitize_and_compare_csv(df, ref_filename):
     df = sanitize(df)
     actual = str([str(n) + ": " + str(t) for n, t in zip(df.columns.values, df.dtypes.values)]) + "\n"
+    # TODO: use lineterminator instead, once Pandas 1.5.0 is required
     actual += df.to_csv(None, index=False, quoting=QUOTE_NONNUMERIC, line_terminator="\n")
 
     os.makedirs("actual_output", exist_ok=True)
