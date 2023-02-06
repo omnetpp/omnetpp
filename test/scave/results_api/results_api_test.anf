@@ -205,14 +205,14 @@ def test_unused_columns():
 def test_result_filter():
     df = results.get_results("type =~ scalar")
     _assert_sequential_index(df)
-    # in all 6 runs: 20 lines of metadata, and 4 lines (1 scalar and 3 attrs) for all 8 scalars
-    return df.shape == (312, 7)
+    # in all 6 runs: 20 lines of metadata, and 4 lines (1 scalar and 3 attrs) for all 12 scalars
+    return df.shape == (408, 7)
 
 def test_row_type_filter_1():
     df = results.get_results("*", row_types=["scalar"])
     _assert_sequential_index(df)
-    # two recorded values from two sources of two submodules in all six runs
-    return df.shape == (48, 5)
+    # three recorded values from two sources of two submodules in all six runs
+    return df.shape == (72, 5)
 
 def test_row_type_filter_2():
     df = results.get_results("run =~ *General-0* AND module =~ Test.node1 AND name =~ foo1*", row_types=["scalar", "attr"])
@@ -228,7 +228,7 @@ def test_row_type_filter_3():
     return df.empty
 
 def test_vector_data():
-    df = results.get_results("type =~ vector AND run =~ General-0*", row_types=["vector"])
+    df = results.get_results("type =~ vector AND run =~ General-0* AND NOT name =~ zero:vector", row_types=["vector"])
     _assert_sequential_index(df)
     return df["vectime"].map(lambda a: a.shape == (100,)).all()
 
