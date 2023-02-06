@@ -42,6 +42,7 @@ import org.omnetpp.scave.actions.ReloadResultFilesAction;
 import org.omnetpp.scave.actions.SaveChartAsTemplateAction;
 import org.omnetpp.scave.actions.SaveImageAction;
 import org.omnetpp.scave.actions.ShowOutputVectorViewAction;
+import org.omnetpp.scave.actions.analysismodel.CompareToTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.CopyAction;
 import org.omnetpp.scave.actions.analysismodel.CutAction;
 import org.omnetpp.scave.actions.analysismodel.EditInputFileAction;
@@ -77,6 +78,7 @@ public class ScaveEditorActions {
     public final ExportChartsAction exportChartsAction = registerAction(new ExportChartsAction());
     public final NewChartFromTemplateGalleryAction newChartFromTemplateGalleryAction = registerAction(new NewChartFromTemplateGalleryAction());
     public final ResetChartToTemplateAction resetToTemplateAction = registerAction(new ResetChartToTemplateAction());
+    public final CompareToTemplateAction compareToTemplateAction = registerAction(new CompareToTemplateAction());
     public final SaveChartAsTemplateAction saveChartAsTemplateAction = registerAction(new SaveChartAsTemplateAction());
     public final RemoveAction removeAction = registerAction(new RemoveAction());
     public final RefreshResultFilesAction refreshResultFilesAction = registerAction(new RefreshResultFilesAction());
@@ -185,10 +187,12 @@ public class ScaveEditorActions {
         menuManager.add(new ActionContributionItem(cutAction));
         menuManager.add(new ActionContributionItem(copyAction));
         menuManager.add(new ActionContributionItem(pasteAction));
-        menuManager.add(new Separator());
+        menuManager.add(new ActionContributionItem(removeAction));
+
+        menuManager.add(new Separator("templates"));
+        menuManager.add(new ActionContributionItem(compareToTemplateAction));
         menuManager.add(new ActionContributionItem(resetToTemplateAction));
         menuManager.add(new ActionContributionItem(saveChartAsTemplateAction));
-        menuManager.add(new ActionContributionItem(removeAction));
         menuManager.add(new Separator());
 
         menuManager.add(new Separator("additions"));

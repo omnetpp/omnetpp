@@ -87,6 +87,40 @@ public class TextDifferenceUtils {
             offset += difference.rightLength() - difference.leftLength();
         }
     }
+
+    /**
+     * Returns a patch-like string for turning leftText into rightText.
+     * Lines to be removed are prefixed with "-", lines to be added are prefixed with "+".
+     */
+    public static String computeDiff(String leftText, String rightText) {
+        LineRangeComparator leftLines = new LineRangeComparator(leftText);
+        LineRangeComparator rightLines = new LineRangeComparator(rightText);
+        RangeDifference[] differences = RangeDifferencer.findDifferences(leftLines, rightLines);
+
+        Arrays.sort(differences, 0, differences.length, new Comparator<RangeDifference>() {
+            public int compare(RangeDifference o1, RangeDifference o2) {
+                return o1.leftStart() - o2.leftStart();
+            }}
+        );
+
+        StringBuilder result = new StringBuilder();
+        for (RangeDifference difference : differences) {
+            int leftStart = difference.leftStart();
+            int leftEnd = difference.leftEnd();
+            int rightStart = difference.rightStart();
+            int rightEnd = difference.rightEnd();
+
+            String linesRemoved = leftStart == leftEnd ? "" : StringUtils.indentLines(leftLines.getLineRange(leftStart, leftEnd), "- ");
+            String linesAdded = rightStart == rightEnd ? "" : StringUtils.indentLines(rightLines.getLineRange(rightStart, rightEnd), "+ ");
+
+            result.append(String.format("@@ -%d,%d +%d,%d @@\n", leftStart, leftEnd-leftStart, rightStart, rightEnd-rightStart));
+            result.append(linesRemoved);
+            result.append(linesAdded);
+            result.append("\n");
+        }
+        return result.toString().trim() + "\n";
+    }
+
 }
 
 class LineRangeComparator implements IRangeComparator {

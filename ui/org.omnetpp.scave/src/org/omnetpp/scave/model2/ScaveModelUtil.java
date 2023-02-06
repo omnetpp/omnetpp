@@ -9,6 +9,8 @@ package org.omnetpp.scave.model2;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.OmnetppDirs;
+import org.omnetpp.common.editor.text.TextDifferenceUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.engine.IDList;
@@ -334,6 +337,76 @@ public class ScaveModelUtil {
         buf.append("\n\n");
 
         return buf.toString();
+    }
+
+    public static String compareChartToTemplate(Chart chart, ChartTemplate template) {
+        StringWriter buffer = new StringWriter();
+        PrintWriter report = new PrintWriter(buffer);
+
+        // compare Python scripts
+        String chartScript = chart.getScript();
+        String templateScript = template.getPythonScript();
+        if (!chartScript.equals(templateScript)) {
+            report.println("Python script in chart differs from template:");
+            report.println(TextDifferenceUtils.computeDiff(templateScript, chartScript));
+        }
+
+        // "list of pages differs"
+        List<String> chartIds = getPageIds(chart.getDialogPages());
+        List<String> templateIds = getPageIds(template.getDialogPages());
+        if (!chartIds.equals(templateIds)) {
+            report.println("List of dialog pages (identified by IDs) differs between chart and template:");
+            report.println("* Template: " + StringUtils.join(templateIds, ", "));
+            report.println("* Chart: " + StringUtils.join(chartIds, ", "));
+            report.println();
+        }
+
+        // compare page labels and contents
+        for (DialogPage templatePage : template.getDialogPages()) {
+            DialogPage chartPage = findPageByApproximateId(chart.getDialogPages(), templatePage.id);
+            if (chartPage == null)
+                report.format("Dialog page `%s` is missing from the chart.\n\n", templatePage.id);
+        }
+
+        for (DialogPage chartPage : chart.getDialogPages()) {
+            DialogPage templatePage = findPageByApproximateId(template.getDialogPages(), chartPage.id);
+            if (templatePage == null) {
+                report.format("Dialog page `%s` is new in the chart.\n\n", chartPage.id);
+                continue;
+            }
+
+            if (!chartPage.id.equals(templatePage.id))
+                report.format("Letter case mismatch between dialog page IDs: `%s` (chart) vs `%s` (template).\n\n", chartPage.id, templatePage.id);
+
+            if (!chartPage.label.equals(templatePage.label))
+                report.format("Dialog page label mismatch: \"%s\" (chart) vs \"%s\" (template).\n\n", chartPage.label, templatePage.label);
+
+            String chartXswt = chartPage.xswtForm;
+            String templateXswt = templatePage.xswtForm;
+            if (!chartXswt.equals(templateXswt)) {
+                report.format("XSWT form of dialog page `%s` differs from template:\n", chartPage.id);
+                report.println(TextDifferenceUtils.computeDiff(chartXswt, templateXswt));
+            }
+        }
+        return buffer.toString();
+    }
+
+    private static List<String> getPageIds(List<DialogPage> pages) {
+        List<String> ids = new ArrayList<>();
+        for (DialogPage page : pages)
+            ids.add(page.id);
+        return ids;
+    }
+
+    private static DialogPage findPageByApproximateId(List<DialogPage> pages, String id) {
+        for (DialogPage page : pages)
+            if (sanitizeId(page.id).equals(sanitizeId(id)))
+                return page;
+        return null;
+    }
+
+    private static String sanitizeId(String id) {
+        return id.replaceAll("[^a-zA-Z0-9]", "").toUpperCase();
     }
 
 }
