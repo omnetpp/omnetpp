@@ -145,13 +145,18 @@ void MessageAnimator::redrawMessages()
                     && showIn == moduleInsp->getObject()
                     && msg->getArrivalGateId() >= 0) {
                 cGate *arrivalGate = msg->getArrivalGate();
+                cGate *previousGate = arrivalGate->getPreviousGate();
+
+                // skip any degenerate connections made dynamically at runtime (crossing module boundaries without gates)
+                if (previousGate && !(previousGate->getOwnerModule() == showIn || previousGate->getOwnerModule()->getParentModule() == showIn))
+                    continue;
 
                 auto messageItem = new SymbolMessageItem(moduleInsp->getAnimationLayer());
                 MessageItemUtil::setupSymbolFromDisplayString(messageItem, msg, moduleInsp->getImageSizeFactor());
 
                 // if arrivalGate is connected, msg arrived on a connection, otherwise via sendDirect()
-                messageItem->setPos(arrivalGate->getPreviousGate()
-                             ? moduleInsp->getConnectionLine(arrivalGate->getPreviousGate()).p2()
+                messageItem->setPos(previousGate
+                             ? moduleInsp->getConnectionLine(previousGate).p2()
                              : moduleInsp->getSubmodCoords(arrivalMod));
                 messageItems[std::make_pair(moduleInsp, msg)] = messageItem;
             }

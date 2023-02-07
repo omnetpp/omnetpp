@@ -1163,6 +1163,11 @@ QLineF DeliveryAnimation::getLine(ModuleInspector *mi) const
 
     QPointF srcPos = connLine.p2();
     cModule *dest = gate->getNextGate()->getOwnerModule();
+
+    // handle degenerate connections (crossing module boundaries without gates) gracefully
+    if (dest->getParentModule() != mi->getObject())
+        return QLineF(srcPos, srcPos);
+
     QPointF destCenterPos = mi->getSubmodCoords(dest);
     QPointF fromEdgeToCenter = destCenterPos - connLine.p2();
     double length = std::sqrt(fromEdgeToCenter.x() * fromEdgeToCenter.x() + fromEdgeToCenter.y() * fromEdgeToCenter.y());
