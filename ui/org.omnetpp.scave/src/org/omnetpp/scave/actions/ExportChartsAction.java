@@ -29,7 +29,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class ExportChartsAction extends AbstractScaveAction {
 
     public ExportChartsAction() {
-        setText("Export Charts...");
+        setText("Export Chart Graphics/Data...");
         setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_EXPORT));
     }
 
