@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ListenerList;
@@ -87,124 +86,108 @@ public class DataTable extends LargeTable implements IDataControl {
     private static final Color GREYED_OUT_COLOR = isLightTheme ? ColorFactory.GREY60 : ColorFactory.GREY40;
     private static final Color QUANTITY_UNIT_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.LIGHT_SKY_BLUE;
 
-    /**
-     * Keys used in getData(),setData()
-     */
-    public static final String COLUMN_KEY = "DataTable.Column";
-    public static final String ITEM_KEY = "DataTable.Item";
+    private static final String COLUMNROLE_KEY = "role";
 
     private static final StyledString NA = new StyledString("-"); // "not applicable"
 
-    static class Column {
+    private enum ColumnRole {
+        COL_DIRECTORY("Folder", null, 60, false, false, false),
+        COL_FILE("File", Scave.FILE, 120, false, false, false),
+        COL_CONFIG("Config", Scave.RUNATTR_PREFIX + Scave.CONFIGNAME, 120, false, false, false),
+        COL_RUNNUMBER("Run number", Scave.RUNATTR_PREFIX + Scave.RUNNUMBER, 60, false, false, false),
+        COL_RUN_ID("RunId", Scave.RUN, 100, false, false, false),
+        COL_EXPERIMENT("Experiment", Scave.RUNATTR_PREFIX + Scave.EXPERIMENT, 120, true, false, false),
+        COL_MEASUREMENT("Measurement", Scave.RUNATTR_PREFIX + Scave.MEASUREMENT, 160, true, false, false),
+        COL_REPLICATION("Replication", Scave.RUNATTR_PREFIX + Scave.REPLICATION, 60, true, false, false),
+        COL_MODULE("Module", Scave.MODULE, 160, true, false, false),
+        COL_NAME("Name", Scave.NAME, 120, true, false, false),
+        COL_PARAM_VALUE("Value", null, 120, true, true, false),
+        COL_SCALAR_VALUE("Value", null, 120, true, true, true),
+        COL_KIND("Kind", null, 40, true, false, false),
+        COL_COUNT("Count", null, 80, true, true, true),
+        COL_SUMWEIGHTS("SumWeights", null, 120, true, true, true),
+        COL_MEAN("Mean", null, 120, true, true, true),
+        COL_STDDEV("StdDev", null, 120, true, true, true),
+        COL_VARIANCE("Variance", null, 120, true, true, true),
+        COL_MIN("Min", null, 120, false, true, true),
+        COL_MAX("Max", null, 120, false, true, true),
+        COL_NUMBINS("#Bins", null, 40, true, true, true),
+        COL_HISTOGRAMRANGE("Hist. Range", null, 120, true, true, true),
+        COL_VECTOR_ID("Vector id", null, 40, false, true, true),
+        COL_MIN_TIME("Min time", null, 120, false, true, true),
+        COL_MAX_TIME("Max time", null, 120, false, true, true);
 
-        private String text;
-        private String fieldName;
-        private int defaultWidth;
-        private boolean defaultVisible;
-        private boolean rightAligned;
-        private boolean maskTooLongValues;
+        private final String label;
+        private final String fieldName;
+        private final int defaultWidth;
+        private final boolean defaultVisible;
+        private final boolean defaultRightAligned;
+        private final boolean maskTooLongValues;  //TODO seems to be unused
 
-        public Column(String text, String fieldName, int defaultWidth, boolean defaultVisible, boolean rightAligned, boolean maskTooLongValues) {
-            this.text = text;
+        ColumnRole(String text, String fieldName, int defaultWidth, boolean defaultVisible, boolean rightAligned, boolean maskTooLongValues) {
+            this.label = text;
             this.fieldName = fieldName;
             this.defaultWidth = defaultWidth;
             this.defaultVisible = defaultVisible;
-            this.rightAligned = rightAligned;
+            this.defaultRightAligned = rightAligned;
             this.maskTooLongValues = maskTooLongValues;
         }
 
-        @Override
-        public Column clone() {
-            return new Column(this.text, this.fieldName, this.defaultWidth, this.defaultVisible, this.rightAligned, this.maskTooLongValues);
+        public String getLabel() {
+            return label;
         }
 
-        @Override
-        public boolean equals(Object other) {
-            if (other == this)
-                return true;
-            if (!(other instanceof Column))
-                return false;
-            Column o = (Column)other;
-
-            return StringUtils.equals(text, o.text)
-                && StringUtils.equals(fieldName, o.fieldName)
-                //&& defaultWidth == o.defaultWidth
-                //&& defaultVisible == o.defaultVisible
-                && rightAligned == o.rightAligned
-                && maskTooLongValues == o.maskTooLongValues;
+        public String getFieldName() {
+            return fieldName;
         }
 
-        @Override
-        public int hashCode() {
-            HashCodeBuilder hashBuilder = new HashCodeBuilder();
-
-            hashBuilder.append(text);
-            hashBuilder.append(fieldName);
-            //hashBuilder.append(defaultWidth);
-            //hashBuilder.append(defaultVisible);
-            hashBuilder.append(rightAligned);
-            hashBuilder.append(maskTooLongValues);
-
-            return hashBuilder.toHashCode();
+        public int getDefaultWidth() {
+            return defaultWidth;
         }
-    }
 
-    private static final Column
-        COL_DIRECTORY = new Column("Folder", null, 60, false, false, false),
-        COL_FILE = new Column("File", Scave.FILE, 120, false, false, false),
-        COL_CONFIG = new Column("Config", Scave.RUNATTR_PREFIX + Scave.CONFIGNAME, 120, false, false, false),
-        COL_RUNNUMBER = new Column("Run number", Scave.RUNATTR_PREFIX + Scave.RUNNUMBER, 60, false, false, false),
-        COL_RUN_ID = new Column("RunId", Scave.RUN, 100, false, false, false),
-        COL_EXPERIMENT = new Column("Experiment", Scave.RUNATTR_PREFIX + Scave.EXPERIMENT, 120, true, false, false),
-        COL_MEASUREMENT = new Column("Measurement", Scave.RUNATTR_PREFIX + Scave.MEASUREMENT, 160, true, false, false),
-        COL_REPLICATION = new Column("Replication", Scave.RUNATTR_PREFIX + Scave.REPLICATION, 60, true, false, false),
-        COL_MODULE = new Column("Module", Scave.MODULE, 160, true, false, false),
-        COL_NAME = new Column("Name", Scave.NAME, 120, true, false, false),
-        COL_PARAM_VALUE = new Column("Value", null, 120, true, true, false),
-        COL_SCALAR_VALUE = new Column("Value", null, 120, true, true, true),
-        COL_KIND = new Column("Kind", null, 40, true, false, false),
-        COL_COUNT = new Column("Count", null, 80, true, true, true),
-        COL_SUMWEIGHTS = new Column("SumWeights", null, 120, true, true, true),
-        COL_MEAN = new Column("Mean", null, 120, true, true, true),
-        COL_STDDEV = new Column("StdDev", null, 120, true, true, true),
-        COL_VARIANCE = new Column("Variance", null, 120, true, true, true),
-        COL_MIN = new Column("Min", null, 120, false, true, true),
-        COL_MAX = new Column("Max", null, 120, false, true, true),
-        COL_NUMBINS = new Column("#Bins", null, 40, true, true, true),
-        COL_HISTOGRAMRANGE = new Column("Hist. Range", null, 120, true, true, true),
-        COL_VECTOR_ID = new Column("Vector id", null, 40, false, true, true),
-        COL_MIN_TIME = new Column("Min time", null, 120, false, true, true),
-        COL_MAX_TIME = new Column("Max time", null, 120, false, true, true);
+        public boolean isDefaultVisible() {
+            return defaultVisible;
+        }
 
-    private static final Column[] allScalarColumns = new Column[] {
-        COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
-        COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-        COL_MODULE, COL_NAME,
-        COL_SCALAR_VALUE
+        public boolean isDefaultRightAligned() {
+            return defaultRightAligned;
+        }
+
+        public boolean getMaskTooLongValues() {
+            return maskTooLongValues;
+        }
+
+        public static final ColumnRole[] ALL_SCALAR_COLUMNS = new ColumnRole[] {
+                COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
+                COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+                COL_MODULE, COL_NAME,
+                COL_SCALAR_VALUE
+        };
+
+        public static final ColumnRole[] ALL_PARAMETER_COLUMNS = new ColumnRole[] {
+                COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
+                COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+                COL_MODULE, COL_NAME,
+                COL_PARAM_VALUE
+        };
+
+        public static final ColumnRole[] ALL_VECTOR_COLUMNS = new ColumnRole[] {
+                COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
+                COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+                COL_MODULE, COL_NAME,
+                COL_VECTOR_ID,
+                COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
+        };
+
+        public static final ColumnRole[] ALL_HISTOGRAM_COLUMNS = new ColumnRole[] {
+                COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
+                COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
+                COL_MODULE, COL_NAME, COL_KIND,
+                COL_COUNT, COL_SUMWEIGHTS, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX,
+                COL_NUMBINS, COL_HISTOGRAMRANGE
+        };
     };
 
-    private static final Column[] allParameterColumns = new Column[] {
-        COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
-        COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-        COL_MODULE, COL_NAME,
-        COL_PARAM_VALUE
-    };
-
-    private static final Column[] allVectorColumns = new Column[] {
-        COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
-        COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-        COL_MODULE, COL_NAME,
-        COL_VECTOR_ID,
-        COL_COUNT, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX, COL_MIN_TIME, COL_MAX_TIME
-    };
-
-    private static final Column[] allHistogramColumns = new Column[] {
-        COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
-        COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-        COL_MODULE, COL_NAME, COL_KIND,
-        COL_COUNT, COL_SUMWEIGHTS, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX,
-        COL_NUMBINS, COL_HISTOGRAMRANGE
-    };
 
     private PanelType type;
     private ResultFileManagerEx manager;
@@ -213,7 +196,7 @@ public class DataTable extends LargeTable implements IDataControl {
     private int numericPrecision = 6;
     private ListenerList<IDataListener> listeners;
     private int minColumnWidth = 5; // for usability
-    private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
+    private List<ColumnRole> visibleColumns = new ArrayList<>(); // list of visible columns, this list will be saved and restored
     private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
 
     private boolean showNetworkNames = true;
@@ -234,8 +217,13 @@ public class DataTable extends LargeTable implements IDataControl {
         Assert.isTrue(type==PanelType.SCALARS || type==PanelType.PARAMETERS || type==PanelType.VECTORS || type==PanelType.HISTOGRAMS);
         this.type = type;
         setLinesVisible(true);
-        initDefaultState();
-        initColumns();
+
+        // add a last, blank column, otherwise the right edge of the last column sticks to the table's right border which is often inconvenient
+        TableColumn blankColumn = createColumn(SWT.NONE);
+        blankColumn.setWidth(minColumnWidth);
+
+        loadState();
+
         setRowRenderer(new AbstractLargeTableRowRenderer() {
             @Override
             public String getText(int rowIndex, int columnIndex) {
@@ -246,7 +234,7 @@ public class DataTable extends LargeTable implements IDataControl {
             public StyledString getStyledText(int rowIndex, int columnIndex, GC gc, int alignment) {
                 // the last, blank column is not included in visibleColumns
                 if (columnIndex < visibleColumns.size()) {
-                    Column column = visibleColumns.get(columnIndex);
+                    ColumnRole column = visibleColumns.get(columnIndex);
                     return getCellValue(rowIndex, column, gc, (getColumn(columnIndex).getWidth() - CELL_HORIZONTAL_MARGIN*2));
                 }
                 else
@@ -410,28 +398,28 @@ public class DataTable extends LargeTable implements IDataControl {
         return contextMenuManager;
     }
 
-    protected Column[] getAllColumns() {
+    protected ColumnRole[] getAllColumns() {
         switch (type) {
-        case SCALARS:     return allScalarColumns;
-        case PARAMETERS:  return allParameterColumns;
-        case VECTORS:     return allVectorColumns;
-        case HISTOGRAMS:  return allHistogramColumns;
+        case SCALARS:     return ColumnRole.ALL_SCALAR_COLUMNS;
+        case PARAMETERS:  return ColumnRole.ALL_PARAMETER_COLUMNS;
+        case VECTORS:     return ColumnRole.ALL_VECTOR_COLUMNS;
+        case HISTOGRAMS:  return ColumnRole.ALL_HISTOGRAM_COLUMNS;
         default: return null;
         }
     }
 
     public String[] getAllColumnNames() {
-        Column[] columns = getAllColumns();
+        ColumnRole[] columns = getAllColumns();
         String[] columnNames = new String[columns.length];
         for (int i = 0; i < columns.length; ++i)
-            columnNames[i] = columns[i].text;
+            columnNames[i] = columns[i].label;
         return columnNames;
     }
 
     public String[] getVisibleColumnNames() {
         String[] columnNames = new String[visibleColumns.size()];
         for (int i = 0; i < visibleColumns.size(); ++i)
-            columnNames[i] = visibleColumns.get(i).text;
+            columnNames[i] = visibleColumns.get(i).label;
         return columnNames;
     }
 
@@ -440,8 +428,8 @@ public class DataTable extends LargeTable implements IDataControl {
             c.dispose();
         visibleColumns.clear();
 
-        for (Column column : getAllColumns()) {
-            boolean requestedVisible = ArrayUtils.indexOf(columnTexts, column.text) != -1;
+        for (ColumnRole column : getAllColumns()) {
+            boolean requestedVisible = ArrayUtils.indexOf(columnTexts, column.label) != -1;
             if (requestedVisible)
                 addColumn(column);
         }
@@ -485,44 +473,40 @@ public class DataTable extends LargeTable implements IDataControl {
         return items;
     }
 
-    protected void initColumns() {
-        // add a last, blank column, otherwise the right edge of the last column sticks to the table's right border which is often inconvenient
-        TableColumn blankColumn = createColumn(SWT.NONE);
-        blankColumn.setWidth(minColumnWidth);
-
-        visibleColumns = new ArrayList<>();
-        loadState();
-    }
-
     public TableColumn[] getColumnsExceptLastBlank() {
         TableColumn[] columns = super.getColumns();
-        Assert.isTrue(columns[columns.length-1].getData(COLUMN_KEY) == null);
+        Assert.isTrue(columns[columns.length-1].getData(COLUMNROLE_KEY) == null);
         return Arrays.copyOfRange(columns, 0, columns.length-1);
     }
 
-    protected TableColumn getTableColumn(Column column) {
+    protected TableColumn getTableColumn(ColumnRole column) {
         for (TableColumn tableColumn : getColumnsExceptLastBlank())
-            if (tableColumn.getData(COLUMN_KEY).equals(column))
+            if (tableColumn.getData(COLUMNROLE_KEY).equals(column))
                 return tableColumn;
         return null;
     }
 
-    protected int getTableColumnIndex(Column column) {
+    protected int getTableColumnIndex(ColumnRole column) {
         TableColumn[] columns = getColumnsExceptLastBlank();
         for (int index = 0; index < columns.length; index++) {
             TableColumn tableColumn = columns[index];
-            if (tableColumn.getData(COLUMN_KEY).equals(column))
+            if (tableColumn.getData(COLUMNROLE_KEY).equals(column))
                 return index;
         }
         return -1;
     }
 
-    protected TableColumn addColumn(Column newColumn) {
-        visibleColumns.add(newColumn);
-        TableColumn tableColumn = createColumn(newColumn.rightAligned ? SWT.RIGHT : SWT.NONE, getColumnsExceptLastBlank().length);
-        tableColumn.setText(newColumn.text);
-        tableColumn.setWidth(newColumn.defaultWidth);
-        tableColumn.setData(COLUMN_KEY, newColumn);
+    protected TableColumn addColumn(ColumnRole column) {
+        visibleColumns.add(column);
+
+        int width = getPreference(getPreferenceStoreKey(column, "width"), column.getDefaultWidth());
+        boolean rightAlign = getPreference(getPreferenceStoreKey(column, "rightAlign"), column.isDefaultRightAligned());
+
+        TableColumn tableColumn = createColumn(rightAlign ? SWT.RIGHT : SWT.NONE, getColumnsExceptLastBlank().length);
+        tableColumn.setText(column.getLabel());
+        tableColumn.setWidth(width);
+        tableColumn.setData(COLUMNROLE_KEY, column);
+
         tableColumn.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -571,7 +555,7 @@ public class DataTable extends LargeTable implements IDataControl {
         return tableColumn;
     }
 
-    private int getAutoColumnWidth(Column column) {
+    private int getAutoColumnWidth(ColumnRole column) {
         int width = 0;
         GC gc = new GC(this);
         for (int row = getTopIndex(); row <= getBottomIndex(); row++) {
@@ -607,7 +591,7 @@ public class DataTable extends LargeTable implements IDataControl {
         if (manager == null || idList.isEmpty()) // no/empty input
             return;
 
-        Column column = (Column)sortColumn.getData(COLUMN_KEY);
+        ColumnRole column = (ColumnRole)sortColumn.getData(COLUMNROLE_KEY);
         if (column == null) // requested column has no sort key
             return;
 
@@ -629,100 +613,118 @@ public class DataTable extends LargeTable implements IDataControl {
         setFocusedID(focusID);
     }
 
-    protected void sortBy(IDList idList, IntVector selectionIndices, Column column, int direction, InterruptedFlag interrupted) {
+    protected void sortBy(IDList idList, IntVector selectionIndices, ColumnRole column, int direction, InterruptedFlag interrupted) {
         boolean ascending = direction == SWT.UP;
-        if (COL_DIRECTORY.equals(column))
+        switch (column) {
+        case COL_DIRECTORY:
             idList.sortByDirectory(manager, ascending, selectionIndices, interrupted);
-        else if (COL_FILE.equals(column))
+            break;
+        case COL_FILE:
             idList.sortByFileName(manager, ascending, selectionIndices, interrupted);
-        else if (COL_CONFIG.equals(column))
+            break;
+        case COL_CONFIG:
             idList.sortByRunAttribute(manager, Scave.CONFIGNAME, ascending, selectionIndices, interrupted);
-        else if (COL_RUNNUMBER.equals(column))
+            break;
+        case COL_RUNNUMBER:
             idList.sortByRunAttribute(manager, Scave.RUNNUMBER, ascending, selectionIndices, interrupted);
-        else if (COL_RUN_ID.equals(column))
+            break;
+        case COL_RUN_ID:
             idList.sortByRun(manager, ascending, selectionIndices, interrupted);
-        else if (COL_MODULE.equals(column))
+            break;
+        case COL_MODULE:
             idList.sortByModule(manager, ascending, selectionIndices, interrupted);
-        else if (COL_NAME.equals(column))
+            break;
+        case COL_NAME:
             idList.sortByName(manager, ascending, selectionIndices, interrupted);
-        else if (COL_PARAM_VALUE.equals(column))
+            break;
+        case COL_PARAM_VALUE:
             idList.sortParametersByValue(manager, ascending, selectionIndices, interrupted);
-        else if (COL_SCALAR_VALUE.equals(column))
+            break;
+        case COL_SCALAR_VALUE:
             idList.sortScalarsByValue(manager, ascending, selectionIndices, interrupted);
-        else if (COL_VECTOR_ID.equals(column))
+            break;
+        case COL_VECTOR_ID:
             idList.sortVectorsByVectorId(manager, ascending, selectionIndices, interrupted);
-        else if (COL_KIND.equals(column))
+            break;
+        case COL_KIND:
             ; //TODO
-        else if (COL_COUNT.equals(column)) {
+            break;
+        case COL_COUNT:
             if (idList.areAllStatistics())
                 idList.sortStatisticsByCount(manager, ascending, selectionIndices, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByCount(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_SUMWEIGHTS.equals(column)) {
+            break;
+        case COL_SUMWEIGHTS:
             if (idList.areAllStatistics())
                 idList.sortStatisticsBySumWeights(manager, ascending, selectionIndices, interrupted);
             else if (idList.areAllVectors())
                 idList.sortStatisticsBySumWeights(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_MEAN.equals(column)) {
+            break;
+        case COL_MEAN:
             if (idList.areAllStatistics())
                 idList.sortStatisticsByMean(manager, ascending, selectionIndices, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByMean(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_STDDEV.equals(column)) {
+            break;
+        case COL_STDDEV:
             if (idList.areAllStatistics())
                 idList.sortStatisticsByStdDev(manager, ascending, selectionIndices, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByStdDev(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_MIN.equals(column)) {
+            break;
+        case COL_MIN:
             if (idList.areAllStatistics())
                 idList.sortStatisticsByMin(manager, ascending, selectionIndices, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByMin(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_MAX.equals(column)) {
+            break;
+        case COL_MAX:
             if (idList.areAllStatistics())
                 idList.sortStatisticsByMax(manager, ascending, selectionIndices, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByMax(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_VARIANCE.equals(column)) {
+            break;
+        case COL_VARIANCE:
             if (idList.areAllStatistics())
                 idList.sortStatisticsByVariance(manager, ascending, selectionIndices, interrupted);
             else if (idList.areAllVectors())
                 idList.sortVectorsByVariance(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_NUMBINS.equals(column)) {
-            if (idList.areAllHistograms())
+            break;
+        case COL_NUMBINS:
+            if (idList.areAllHistograms()) //TODO areAllStatistics(), and sorting should not crash
                 idList.sortHistogramsByNumBins(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_HISTOGRAMRANGE.equals(column)) {
-            if (idList.areAllHistograms())
+            break;
+        case COL_HISTOGRAMRANGE:
+            if (idList.areAllHistograms()) //TODO areAllStatistics(), and sorting should not crash
                 idList.sortHistogramsByHistogramRange(manager, ascending, selectionIndices, interrupted);
-        }
-        else if (COL_EXPERIMENT.equals(column))
+            break;
+        case COL_EXPERIMENT:
             idList.sortByRunAttribute(manager, Scave.EXPERIMENT, ascending, selectionIndices, interrupted);
-        else if (COL_MEASUREMENT.equals(column))
+            break;
+        case COL_MEASUREMENT:
             idList.sortByRunAttribute(manager, Scave.MEASUREMENT, ascending, selectionIndices, interrupted);
-        else if (COL_REPLICATION.equals(column))
+            break;
+        case COL_REPLICATION:
             idList.sortByRunAttribute(manager, Scave.REPLICATION, ascending, selectionIndices, interrupted);
-        else if (COL_MIN_TIME.equals(column))
+            break;
+        case COL_MIN_TIME:
             idList.sortVectorsByStartTime(manager, ascending, selectionIndices, interrupted);
-        else if (COL_MAX_TIME.equals(column))
+            break;
+        case COL_MAX_TIME:
             idList.sortVectorsByEndTime(manager, ascending, selectionIndices, interrupted);
+            break;
+        }
     }
 
     protected StyledString getCellValue(int rowIndex, int columnIndex, GC gc, int width) {
         if (columnIndex >= visibleColumns.size())
             return new StyledString("");
-        Column column = visibleColumns.get(columnIndex);
+        ColumnRole column = visibleColumns.get(columnIndex);
         return getCellValue(rowIndex, column, gc, width);
     }
 
-    protected StyledString getCellValue(int row, Column column, GC gc, int width) {
+    protected StyledString getCellValue(int row, ColumnRole column, GC gc, int width) {
         if (manager == null)
             return new StyledString("");
 
@@ -735,21 +737,22 @@ public class DataTable extends LargeTable implements IDataControl {
             if (unit.equals(""))
                 unit = null;
 
-            if (COL_DIRECTORY.equals(column))
+            switch (column) {
+            case COL_DIRECTORY:
                 return new StyledString(result.getFile().getDirectory());
-            else if (COL_FILE.equals(column))
+            case COL_FILE:
                 return new StyledString(result.getFile().getFileName());
-            else if (COL_CONFIG.equals(column)) {
+            case COL_CONFIG: {
                 String config = result.getFileRun().getRun().getAttribute(Scave.CONFIGNAME);
                 return config != null ? new StyledString(config) : NA;
             }
-            else if (COL_RUNNUMBER.equals(column)) {
+            case COL_RUNNUMBER: {
                 String runNumber = result.getFileRun().getRun().getAttribute(Scave.RUNNUMBER);
                 return runNumber != null ? new StyledString(runNumber) : NA;
             }
-            else if (COL_RUN_ID.equals(column))
+            case COL_RUN_ID:
                 return new StyledString(result.getFileRun().getRun().getRunName());
-            else if (COL_MODULE.equals(column)) {
+            case COL_MODULE: {
                 String name = result.getModuleName();
                 if (!showNetworkNames) {
                     int index = name.indexOf('.');
@@ -763,7 +766,7 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 return styledString;
             }
-            else if (COL_NAME.equals(column)) {
+            case COL_NAME: {
                 String name = result.getName();
                 StyledString styledString = new StyledString(name);
                 if (colorResultSuffixes) {
@@ -773,125 +776,132 @@ public class DataTable extends LargeTable implements IDataControl {
                 }
                 return styledString;
             }
-            else if (COL_EXPERIMENT.equals(column)) {
+            case COL_EXPERIMENT: {
                 String experiment = result.getFileRun().getRun().getAttribute(Scave.EXPERIMENT);
                 return experiment != null ? new StyledString(experiment) : NA;
             }
-            else if (COL_MEASUREMENT.equals(column)) {
+            case COL_MEASUREMENT: {
                 String measurement = result.getFileRun().getRun().getAttribute(Scave.MEASUREMENT);
                 return measurement != null ? new StyledString(measurement) : NA;
             }
-            else if (COL_REPLICATION.equals(column)) {
+            case COL_REPLICATION: {
                 String replication = result.getFileRun().getRun().getAttribute(Scave.REPLICATION);
                 return replication != null ? new StyledString(replication) : NA;
             }
-            else if (COL_PARAM_VALUE.equals(column)) {
+            case COL_PARAM_VALUE: {
                 ParameterResult parameter = (ParameterResult)result;
                 return new StyledString(parameter.getValue());
             }
-            else if (COL_SCALAR_VALUE.equals(column)) {
+            case COL_SCALAR_VALUE: {
                 ScalarResult scalar = (ScalarResult)result;
-                return formatNumber(result, column.text, scalar.getValue(), unit, gc, width);
+                return formatNumber(result, column.label, scalar.getValue(), unit, gc, width);
             }
-            else if (type == PanelType.VECTORS) {
-                VectorResult vector = (VectorResult)result;
-                if (COL_VECTOR_ID.equals(column)) {
-                    return new StyledString(String.valueOf(vector.getVectorId()));
-                }
-                else if (COL_COUNT.equals(column)) {
-                    long count = vector.getStatistics().getCount();
-                    return count >= 0 ? formatNumber(result, column.text, count, null, gc, width) : NA;
-                }
-                else if (COL_MEAN.equals(column)) {
-                    double mean = vector.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(result, column.text, mean, unit, gc, width);
-                }
-                else if (COL_STDDEV.equals(column)) {
-                    double stddev = vector.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(result, column.text, stddev, unit, gc, width);
-                }
-                else if (COL_VARIANCE.equals(column)) {
-                    double variance = vector.getStatistics().getVariance();
-                    String unitSquared = unit;
-                    if (unit != null)
-                        unitSquared = unit + "\u00B2"; // "Superscript Two"
-                    return Double.isNaN(variance) ? NA : formatNumber(result, column.text, variance, unitSquared, gc, width);
-                }
-                else if (COL_MIN.equals(column)) {
-                    double min = vector.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(result, column.text, min, unit, gc, width);
-                }
-                else if (COL_MAX.equals(column)) {
-                    double max = vector.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(result, column.text, max, unit, gc, width);
-                }
-                else if (COL_MIN_TIME.equals(column)) {
-                    BigDecimal minTime = vector.getStartTime();
-                    return minTime == null || minTime.isNaN() ? NA : formatNumber(result, column.text, minTime, gc, width);
-                }
-                else if (COL_MAX_TIME.equals(column)) {
-                    BigDecimal maxTime = vector.getEndTime();
-                    return maxTime == null || maxTime.isNaN() ? NA : formatNumber(result, column.text, maxTime, gc, width);
-                }
-            }
-            else if (type == PanelType.HISTOGRAMS) {
-                StatisticsResult stats = (StatisticsResult)result;
-                if (COL_KIND.equals(column)) {
-                    boolean isHistogram = result instanceof HistogramResult;
-                    boolean isWeighted = stats.getStatistics().isWeighted();
-                    return new StyledString(isHistogram ? (isWeighted ? "wh" : "h") : (isWeighted ? "ws" : "s"));
-                }
-                else if (COL_COUNT.equals(column)) {
-                    long count = stats.getStatistics().getCount();
-                    return count >= 0 ? formatNumber(result, column.text, count, null, gc, width) : NA;
-                }
-                else if (COL_SUMWEIGHTS.equals(column)) {
-                    if (!stats.getStatistics().isWeighted())
-                        return NA;
-                    double sumWeights = stats.getStatistics().getSumWeights();
-                    return sumWeights >= 0 ? formatNumber(result, column.text, sumWeights, "", gc, width) : NA;
-                }
-                else if (COL_MEAN.equals(column)) {
-                    double mean = stats.getStatistics().getMean();
-                    return Double.isNaN(mean) ? NA : formatNumber(result, column.text, mean, unit, gc, width);
-                }
-                else if (COL_STDDEV.equals(column)) {
-                    double stddev = stats.getStatistics().getStddev();
-                    return Double.isNaN(stddev) ? NA : formatNumber(result, column.text, stddev, unit, gc, width);
-                }
-                else if (COL_VARIANCE.equals(column)) {
-                    double variance = stats.getStatistics().getVariance();
-                    String unitSquared = unit;
-                    if (unit != null)
-                        unitSquared = unit + "\u00B2"; // "Superscript Two"
-                    return Double.isNaN(variance) ? NA : formatNumber(result, column.text, variance, unitSquared, gc, width);
-                }
-                else if (COL_MIN.equals(column)) {
-                    double min = stats.getStatistics().getMin();
-                    return Double.isNaN(min) ? NA : formatNumber(result, column.text, min, unit, gc, width);
-                }
-                else if (COL_MAX.equals(column)) {
-                    double max = stats.getStatistics().getMax();
-                    return Double.isNaN(max) ? NA : formatNumber(result, column.text, max, unit, gc, width);
-                }
-                else if (COL_NUMBINS.equals(column)) {
-                    if (result instanceof HistogramResult)
-                        return new StyledString(String.valueOf(((HistogramResult)result).getHistogram().getNumBins()));
-                    else
-                        return NA;
-                }
-                else if (COL_HISTOGRAMRANGE.equals(column)) {
-                    if (result instanceof HistogramResult) {
-                        Histogram bins = ((HistogramResult)result).getHistogram();
-                        if (bins.getNumBins() == 0)
-                            return NA;
-                        double lo = bins.getBinEdge(0);
-                        double up = bins.getBinEdge(bins.getNumBins());
-                        return formatNumber(result, column.text, lo, unit, gc, width).append(" .. ").append(formatNumber(result, column.text, up, unit, gc, width));
+            default: {
+                if (type == PanelType.VECTORS) {
+                    VectorResult vector = (VectorResult)result;
+                    switch (column) {
+                    case COL_VECTOR_ID: {
+                        return new StyledString(String.valueOf(vector.getVectorId()));
                     }
-                    else
-                        return NA;
+                    case COL_COUNT: {
+                        long count = vector.getStatistics().getCount();
+                        return count >= 0 ? formatNumber(result, column.label, count, null, gc, width) : NA;
+                    }
+                    case COL_MEAN: {
+                        double mean = vector.getStatistics().getMean();
+                        return Double.isNaN(mean) ? NA : formatNumber(result, column.label, mean, unit, gc, width);
+                    }
+                    case COL_STDDEV: {
+                        double stddev = vector.getStatistics().getStddev();
+                        return Double.isNaN(stddev) ? NA : formatNumber(result, column.label, stddev, unit, gc, width);
+                    }
+                    case COL_VARIANCE: {
+                        double variance = vector.getStatistics().getVariance();
+                        String unitSquared = unit;
+                        if (unit != null)
+                            unitSquared = unit + "\u00B2"; // "Superscript Two"
+                        return Double.isNaN(variance) ? NA : formatNumber(result, column.label, variance, unitSquared, gc, width);
+                    }
+                    case COL_MIN: {
+                        double min = vector.getStatistics().getMin();
+                        return Double.isNaN(min) ? NA : formatNumber(result, column.label, min, unit, gc, width);
+                    }
+                    case COL_MAX: {
+                        double max = vector.getStatistics().getMax();
+                        return Double.isNaN(max) ? NA : formatNumber(result, column.label, max, unit, gc, width);
+                    }
+                    case COL_MIN_TIME: {
+                        BigDecimal minTime = vector.getStartTime();
+                        return minTime == null || minTime.isNaN() ? NA : formatNumber(result, column.label, minTime, gc, width);
+                    }
+                    case COL_MAX_TIME: {
+                        BigDecimal maxTime = vector.getEndTime();
+                        return maxTime == null || maxTime.isNaN() ? NA : formatNumber(result, column.label, maxTime, gc, width);
+                    }
+                    }
                 }
+                else if (type == PanelType.HISTOGRAMS) {
+                    StatisticsResult stats = (StatisticsResult)result;
+                    switch(column) {
+                    case COL_KIND: {
+                        boolean isHistogram = result instanceof HistogramResult;
+                        boolean isWeighted = stats.getStatistics().isWeighted();
+                        return new StyledString(isHistogram ? (isWeighted ? "wh" : "h") : (isWeighted ? "ws" : "s"));
+                    }
+                    case COL_COUNT: {
+                        long count = stats.getStatistics().getCount();
+                        return count >= 0 ? formatNumber(result, column.label, count, null, gc, width) : NA;
+                    }
+                    case COL_SUMWEIGHTS: {
+                        if (!stats.getStatistics().isWeighted())
+                            return NA;
+                        double sumWeights = stats.getStatistics().getSumWeights();
+                        return sumWeights >= 0 ? formatNumber(result, column.label, sumWeights, "", gc, width) : NA;
+                    }
+                    case COL_MEAN: {
+                        double mean = stats.getStatistics().getMean();
+                        return Double.isNaN(mean) ? NA : formatNumber(result, column.label, mean, unit, gc, width);
+                    }
+                    case COL_STDDEV: {
+                        double stddev = stats.getStatistics().getStddev();
+                        return Double.isNaN(stddev) ? NA : formatNumber(result, column.label, stddev, unit, gc, width);
+                    }
+                    case COL_VARIANCE: {
+                        double variance = stats.getStatistics().getVariance();
+                        String unitSquared = unit;
+                        if (unit != null)
+                            unitSquared = unit + "\u00B2"; // "Superscript Two"
+                        return Double.isNaN(variance) ? NA : formatNumber(result, column.label, variance, unitSquared, gc, width);
+                    }
+                    case COL_MIN: {
+                        double min = stats.getStatistics().getMin();
+                        return Double.isNaN(min) ? NA : formatNumber(result, column.label, min, unit, gc, width);
+                    }
+                    case COL_MAX: {
+                        double max = stats.getStatistics().getMax();
+                        return Double.isNaN(max) ? NA : formatNumber(result, column.label, max, unit, gc, width);
+                    }
+                    case COL_NUMBINS: {
+                        if (result instanceof HistogramResult)
+                            return new StyledString(String.valueOf(((HistogramResult)result).getHistogram().getNumBins()));
+                        else
+                            return NA;
+                    }
+                    case COL_HISTOGRAMRANGE: {
+                        if (result instanceof HistogramResult) {
+                            Histogram bins = ((HistogramResult)result).getHistogram();
+                            if (bins.getNumBins() == 0)
+                                return NA;
+                            double lo = bins.getBinEdge(0);
+                            double up = bins.getBinEdge(bins.getNumBins());
+                            return formatNumber(result, column.label, lo, unit, gc, width).append(" .. ").append(formatNumber(result, column.label, up, unit, gc, width));
+                        }
+                        else
+                            return NA;
+                    }
+                    }
+                }
+            }
             }
         }
         catch (RuntimeException e) {
@@ -995,8 +1005,8 @@ public class DataTable extends LargeTable implements IDataControl {
             CsvWriter writer = new CsvWriter('\t');
 
             // add header
-            for (Column column : visibleColumns)
-                writer.addField(column.text);
+            for (ColumnRole column : visibleColumns)
+                writer.addField(column.label);
             writer.endRecord();
 
             // add selected lines
@@ -1006,7 +1016,7 @@ public class DataTable extends LargeTable implements IDataControl {
 
             int count = 0;
             for (int rowIndex : selection) {
-                for (Column column : visibleColumns)
+                for (ColumnRole column : visibleColumns)
                     writer.addField(getCellValue(rowIndex, column, null, -1).getString());
                 writer.endRecord();
 
@@ -1046,51 +1056,37 @@ public class DataTable extends LargeTable implements IDataControl {
                 listener.contentChanged(this);
     }
 
-    protected String getPreferenceStoreKey(Column column, String field) {
-        return "DataTable." + type + "." + column.text + "." + field;
-    }
-
-    protected void initDefaultState() {
-        if (preferences != null) {
-            for (Column column : getAllColumns()) {
-                preferences.setDefault(getPreferenceStoreKey(column, "visible"), column.defaultVisible);
-                preferences.setDefault(getPreferenceStoreKey(column, "width"), column.defaultWidth);
-            }
-        }
+    protected String getPreferenceStoreKey(ColumnRole column, String field) {
+        return "DataTable." + type + "." + column.label + "." + field;
     }
 
     protected void loadState() {
         if (preferences != null) {
             visibleColumns.clear();
-            for (Column column : getAllColumns()) {
-                boolean visible = preferences.getBoolean(getPreferenceStoreKey(column, "visible"));
-                if (visible) {
-                    Column clone = column.clone();
-                    clone.defaultWidth = preferences.getInt(getPreferenceStoreKey(column, "width"));
-                    addColumn(clone);
-                }
+            for (ColumnRole column : getAllColumns()) {
+                boolean visible = getPreference(getPreferenceStoreKey(column, "visible"), column.isDefaultVisible());
+                if (visible)
+                    addColumn(column);
             }
 
-            if (preferences.contains("showNetworkNames"))
-                showNetworkNames = preferences.getBoolean("showNetworkNames");
-            if (preferences.contains("colorNetworkNames"))
-                colorNetworkNames = preferences.getBoolean("colorNetworkNames");
-            if (preferences.contains("colorResultSuffixes"))
-                colorResultSuffixes = preferences.getBoolean("colorResultSuffixes");
-            if (preferences.contains("colorNumberSeparators"))
-                colorNumberSeparators = preferences.getBoolean("colorNumberSeparators");
-            if (preferences.contains("showNetworkNames"))
-                colorMeasurementUnits = preferences.getBoolean("colorMeasurementUnits");
+            showNetworkNames = getPreference("showNetworkNames", showNetworkNames); //TODO prefix these keys too
+            colorNetworkNames = getPreference("colorNetworkNames", colorNetworkNames);
+            colorResultSuffixes = getPreference("colorResultSuffixes", colorResultSuffixes);
+            colorNumberSeparators = getPreference("colorNumberSeparators", colorNumberSeparators);
+            colorMeasurementUnits = getPreference("colorMeasurementUnits", colorMeasurementUnits);
         }
     }
 
+    @Override
     protected void saveState() {
         if (preferences != null) {
-            for (Column column : getAllColumns()) {
+            for (ColumnRole column : getAllColumns()) {
                 boolean visible = visibleColumns.indexOf(column) >= 0;
                 preferences.setValue(getPreferenceStoreKey(column, "visible"), visible);
-                if (visible)
+                if (visible) {
                     preferences.setValue(getPreferenceStoreKey(column, "width"), getTableColumn(column).getWidth());
+                    preferences.setValue(getPreferenceStoreKey(column, "rightAlign"), getTableColumn(column).getAlignment() == SWT.RIGHT);
+                }
             }
 
             preferences.setValue("showNetworkNames", showNetworkNames);
@@ -1099,6 +1095,14 @@ public class DataTable extends LargeTable implements IDataControl {
             preferences.setValue("colorNumberSeparators", colorNumberSeparators);
             preferences.setValue("colorMeasurementUnits", colorMeasurementUnits);
         }
+    }
+
+    private int getPreference(String key, int defaultValue) {
+        return preferences.contains(key) ? preferences.getInt(key) : defaultValue;
+    }
+
+    private boolean getPreference(String key, boolean defaultValue) {
+        return preferences.contains(key) ? preferences.getBoolean(key) : defaultValue;
     }
 
     private void handleMouseDown(MouseEvent event) {
@@ -1111,7 +1115,7 @@ public class DataTable extends LargeTable implements IDataControl {
 
     public String getSelectedField() {
         if (selectedColumn != null && !selectedColumn.isDisposed()) {
-            Column column = (Column)selectedColumn.getData(COLUMN_KEY);
+            ColumnRole column = (ColumnRole)selectedColumn.getData(COLUMNROLE_KEY);
             if (column != null)
                 return column.fieldName;
         }
@@ -1121,7 +1125,7 @@ public class DataTable extends LargeTable implements IDataControl {
     public String getSelectedCell() {
         if (getItemCount() == 0 || selectedColumn == null || selectedColumn.isDisposed())
             return null;
-        Column column = (Column)selectedColumn.getData(COLUMN_KEY);
+        ColumnRole column = (ColumnRole)selectedColumn.getData(COLUMNROLE_KEY);
         return column == null ? null : getCellValue(getFocusIndex(), column, null, -1).getString();
     }
 
@@ -1132,9 +1136,9 @@ public class DataTable extends LargeTable implements IDataControl {
     }
 
     public void setSelectedIDs(IDList selectedIDList, InterruptedFlag interrupted) throws InterruptedException {
-            int[] indices = getIndices(selectedIDList, interrupted);
-            Arrays.sort(indices);
-            setSelectionIndices(indices);
+        int[] indices = getIndices(selectedIDList, interrupted);
+        Arrays.sort(indices);
+        setSelectionIndices(indices);
     }
 
     public int[] getIndices(IDList selectedIDList, InterruptedFlag interrupted) throws InterruptedException {

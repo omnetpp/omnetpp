@@ -467,6 +467,10 @@ public class LargeTable extends Composite
         selectionListeners.remove(listener);
     }
 
+    protected void saveState() {
+        // override to add code
+    }
+
     protected Event newEvent() {
         Event event = new Event();
         event.display = getDisplay();
