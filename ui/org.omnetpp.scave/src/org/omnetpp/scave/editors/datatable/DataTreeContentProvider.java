@@ -55,12 +55,12 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class DataTreeContentProvider {
-    public final static Class[] LEVELS1 = new Class[] { ExperimentNode.class, MeasurementNode.class, ReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
-    public final static Class[] LEVELS2 = new Class[] { ExperimentMeasurementReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
-    public final static Class[] LEVELS3 = new Class[] { ConfigNode.class, RunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
-    public final static Class[] LEVELS4 = new Class[] { ConfigRunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
-    public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
-    public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemAttributeNode.class};
+    public final static Class[] LEVELS1 = new Class[] { ExperimentNode.class, MeasurementNode.class, ReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemFieldOrAttributeNode.class};
+    public final static Class[] LEVELS2 = new Class[] { ExperimentMeasurementReplicationNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemFieldOrAttributeNode.class};
+    public final static Class[] LEVELS3 = new Class[] { ConfigNode.class, RunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemFieldOrAttributeNode.class};
+    public final static Class[] LEVELS4 = new Class[] { ConfigRunNumberNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemFieldOrAttributeNode.class};
+    public final static Class[] LEVELS5 = new Class[] { FileNameNode.class, RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemFieldOrAttributeNode.class};
+    public final static Class[] LEVELS6 = new Class[] { RunIdNode.class, ModulePathNode.class, ResultItemNode.class, ResultItemFieldOrAttributeNode.class};
 
     public final static int GROUPSIZE = 1000;
 
@@ -182,7 +182,7 @@ public class DataTreeContentProvider {
         // determine collector, whatever TF it is
         boolean collector = false;
         for (int j = nextLevelIndex + 1; j < levels.length; j++)
-            if (!levels[j].equals(ResultItemAttributeNode.class))
+            if (!levels[j].equals(ResultItemFieldOrAttributeNode.class))
                 collector = true;
 
         // this is how we want the IDList to split up
@@ -196,7 +196,7 @@ public class DataTreeContentProvider {
 
         // get nodes[] from keyset, sort if necessary
         Node[] nodes = nodeIdsMap.keySet().toArray(new Node[0]);
-        boolean shouldSort = !nextLevelClass.equals(ResultItemAttributeNode.class);
+        boolean shouldSort = !nextLevelClass.equals(ResultItemFieldOrAttributeNode.class);
         if (shouldSort) {
             Arrays.sort(nodes, new Comparator<Node>() {
                 public int compare(Node o1, Node o2) {
@@ -294,54 +294,54 @@ public class DataTreeContentProvider {
                     else
                         add(nodeIdsMap, new ResultItemNode(manager, id, null), id);
                 }
-                else if (nextLevelClass.equals(ResultItemAttributeNode.class)) {
+                else if (nextLevelClass.equals(ResultItemFieldOrAttributeNode.class)) {
                     ResultItem resultItem = matchContext.getResultItem();
                     ResultItem.DataType type = resultItem.getDataType();
                     boolean isIntegerType = type == ResultItem.DataType.TYPE_INT;
-                    add(nodeIdsMap, new ResultItemAttributeNode("Module name", resultItem.getModuleName()), id);
+                    add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Module name", resultItem.getModuleName()), id);
                     if (type != ResultItem.DataType.TYPE_NA)
-                        add(nodeIdsMap, new ResultItemAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Type", type.toString().replaceAll("TYPE_", "").toLowerCase()), id);
                     if (resultItem instanceof ScalarResult) {
                         ScalarResult scalar = (ScalarResult)resultItem;
-                        add(nodeIdsMap, new ResultItemAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Value", toIntegerAwareString(scalar.getValue(), isIntegerType)), id);
                     }
                     else if (resultItem instanceof VectorResult) {
                         VectorResult vector = (VectorResult)resultItem;
                         Statistics stat = vector.getStatistics();
-                        add(nodeIdsMap, new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
                         //add(nodeIdsMap, new ResultItemAttributeNode("Variance", formatNumber(stat.getVariance())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Start time", formatNumber(vector.getStartTime())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("End time", formatNumber(vector.getEndTime())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Start time", formatNumber(vector.getStartTime())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("End time", formatNumber(vector.getEndTime())), id);
                     }
                     else if (resultItem instanceof StatisticsResult) {
                         StatisticsResult statistics = (StatisticsResult)resultItem;
                         Statistics stat = statistics.getStatistics();
-                        add(nodeIdsMap, new ResultItemAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Sum of weights", formatNumber(stat.getSumWeights())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Mean", formatNumber(stat.getMean())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
-                        add(nodeIdsMap, new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Kind", (stat.isWeighted() ? "weighted" : "unweighted")), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Sum of weights", formatNumber(stat.getSumWeights())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Mean", formatNumber(stat.getMean())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("StdDev", formatNumber(stat.getStddev())), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
 
                         if (resultItem instanceof HistogramResult) {
                             HistogramResult histogram = (HistogramResult)resultItem;
                             Histogram hist = histogram.getHistogram();
 
-                            add(nodeIdsMap, new ResultItemAttributeNode("Underflows", toIntegerAwareString(hist.getUnderflows(), isIntegerType)), id);
-                            add(nodeIdsMap, new ResultItemAttributeNode("Overflows", toIntegerAwareString(hist.getOverflows(), isIntegerType)), id);
+                            add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Underflows", toIntegerAwareString(hist.getUnderflows(), isIntegerType)), id);
+                            add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Overflows", toIntegerAwareString(hist.getOverflows(), isIntegerType)), id);
 
                             DoubleVector binEdges = hist.getBinEdges();
                             DoubleVector binValues = hist.getBinValues();
                             if (binEdges.size() > 0 && binValues.size() > 0) {
                                 int numBins = hist.getNumBins();
-                                ResultItemAttributeNode binsNode = new ResultItemAttributeNode("Bins", String.valueOf(numBins));
+                                ResultItemFieldOrAttributeNode binsNode = new ResultItemFieldOrAttributeNode("Bins", String.valueOf(numBins));
                                 List<Node> list = new ArrayList<Node>();
                                 for (int j = 0; j < numBins; j++) {
                                     double lowerBound = binEdges.get(j);
@@ -361,7 +361,7 @@ public class DataTreeContentProvider {
                     }
                     else if (resultItem instanceof ParameterResult) {
                         ParameterResult parameter = (ParameterResult)resultItem;
-                        add(nodeIdsMap, new ResultItemAttributeNode("Value", parameter.getValue()), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode("Value", parameter.getValue()), id);
                     }
                     else {
                         throw new IllegalArgumentException();
@@ -370,7 +370,7 @@ public class DataTreeContentProvider {
                     StringVector keys = attributes.keys();
                     for (int j = 0; j < keys.size(); j++) {
                         String key = keys.get(j);
-                        add(nodeIdsMap, new ResultItemAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
+                        add(nodeIdsMap, new ResultItemFieldOrAttributeNode(StringUtils.capitalize(key), attributes.get(key)), id);
                     }
                 }
                 else
@@ -532,7 +532,7 @@ public class DataTreeContentProvider {
             ModulePathNode.class,
             ModuleNameNode.class,
             ResultItemNode.class,
-            ResultItemAttributeNode.class};
+            ResultItemFieldOrAttributeNode.class};
     }
 
     private static final Map<Class,String> LEVELNAMES = new HashMap<>();
@@ -551,7 +551,7 @@ public class DataTreeContentProvider {
         LEVELNAMES.put(ModulePathNode.class, "Module Path");
         LEVELNAMES.put(ModuleNameNode.class, "Module Name");
         LEVELNAMES.put(ResultItemNode.class, "Result Item");
-        LEVELNAMES.put(ResultItemAttributeNode.class, "Result Item Attribute");
+        LEVELNAMES.put(ResultItemFieldOrAttributeNode.class, "Result Item Attribute");
     }
 
     public static String getLevelName(Class levelClass) {
@@ -1290,10 +1290,10 @@ public class DataTreeContentProvider {
         }
     }
 
-    public static class ResultItemAttributeNode extends NameValueNode {
+    public static class ResultItemFieldOrAttributeNode extends NameValueNode {
         private String methodName;
 
-        public ResultItemAttributeNode(String name, String value) {
+        public ResultItemFieldOrAttributeNode(String name, String value) {
             super(name, value);
             methodName = "get" + WordUtils.capitalize(name.toLowerCase()).replaceAll(" ", "");
         }
