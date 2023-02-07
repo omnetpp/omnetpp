@@ -100,14 +100,14 @@ public class CompareToTemplateAction extends AbstractScaveAction {
         for (Chart chart : charts) {
             ChartTemplate template = scaveEditor.getChartTemplateRegistry().findTemplateByID(chart.getTemplateID());
             if (template == null) {
-                if (!builder.isEmpty())
+                if (!builder.toString().isEmpty())
                     builder.append("\n" + StringUtils.repeat("-", 100) + "\n\n");
                 builder.append("Chart " + chart.getName() + ": Chart template `" + chart.getTemplateID() + "` is not available.");
             }
             else {
                 String report = ScaveModelUtil.compareChartToTemplate(chart, template);
                 if (!report.isBlank()) {
-                    if (!builder.isEmpty())
+                    if (!builder.toString().isEmpty())
                         builder.append("\n" + StringUtils.repeat("-", 100) + "\n\n");
                     builder.append("Chart \"" + chart.getName() + "\": Differences from template `" + chart.getTemplateID() + "` found, see details below.\n\n");
                     builder.append(report);
