@@ -178,9 +178,19 @@ public class ScaveEditorActions {
     }
 
     public void populateContextMenu(IMenuManager menuManager, boolean showNewSubmenu) {
-        menuManager.add(new Separator("edit"));
+        if (showNewSubmenu) {
+            MenuManager submenuManager = new MenuManager("New");
+            for (ChartTemplate t : editor.getChartTemplateRegistry().getAllTemplates())
+                submenuManager.add(new NewChartFromTemplateAction(t, false));
+            menuManager.add(submenuManager);
 
-        // Add the edit menu actions.
+            menuManager.add(newFolderAction);
+        }
+        menuManager.add(openAction);
+        menuManager.add(editAction);
+        menuManager.add(renameChartAction);
+
+        menuManager.add(new Separator("edit")); // standard marker
         menuManager.add(new ActionContributionItem(undoAction));
         menuManager.add(new ActionContributionItem(redoAction));
         menuManager.add(new Separator());
@@ -195,35 +205,12 @@ public class ScaveEditorActions {
         menuManager.add(new ActionContributionItem(saveChartAsTemplateAction));
         menuManager.add(new Separator());
 
-        menuManager.add(new Separator("additions"));
-        menuManager.add(new Separator());
-
-        // Add our other standard marker.
-        menuManager.add(new Separator("additions-end"));
-
-        addGlobalActions(menuManager);
-
-        if (showNewSubmenu) {
-            MenuManager submenuManager = new MenuManager("New");
-            for (ChartTemplate t : editor.getChartTemplateRegistry().getAllTemplates())
-                submenuManager.add(new NewChartFromTemplateAction(t, false));
-            menuManager.insertBefore("edit", submenuManager);
-
-            menuManager.insertBefore("edit", newFolderAction);
-        }
-
-        menuManager.insertBefore("edit", openAction);
-        menuManager.insertBefore("edit", editAction);
-        menuManager.insertBefore("edit", renameChartAction);
-
-        menuManager.insertAfter("additions-end", new Separator());
-        menuManager.insertAfter("additions-end", createExportDataMenu("Export Chart Input As"));
-        menuManager.insertAfter("additions-end", exportChartsAction);
-    }
-
-    protected void addGlobalActions(IMenuManager menuManager) {
+        menuManager.add(new Separator("additions")); // standard marker
+        menuManager.add(new Separator("additions-end")); // standard marker
         menuManager.insertAfter("additions-end", new Separator("ui-actions"));
-        //menuManager.insertAfter("ui-actions", showPropertiesViewAction);
+
+        menuManager.add(createExportDataMenu("Export Chart Input As"));
+        menuManager.add(exportChartsAction);
     }
 
     public IMenuManager createExportDataMenu(String label) {
