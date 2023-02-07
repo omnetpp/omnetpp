@@ -199,6 +199,10 @@ public class ScaveEditorActions {
         menuManager.add(new ActionContributionItem(pasteAction));
         menuManager.add(new ActionContributionItem(removeAction));
 
+        menuManager.add(new Separator("export"));
+        menuManager.add(exportChartsAction);
+        menuManager.add(createExportDataMenu("Export Chart Input As"));
+
         menuManager.add(new Separator("templates"));
         menuManager.add(new ActionContributionItem(compareToTemplateAction));
         menuManager.add(new ActionContributionItem(resetToTemplateAction));
@@ -209,8 +213,6 @@ public class ScaveEditorActions {
         menuManager.add(new Separator("additions-end")); // standard marker
         menuManager.insertAfter("additions-end", new Separator("ui-actions"));
 
-        menuManager.add(createExportDataMenu("Export Chart Input As"));
-        menuManager.add(exportChartsAction);
     }
 
     public IMenuManager createExportDataMenu(String label) {
