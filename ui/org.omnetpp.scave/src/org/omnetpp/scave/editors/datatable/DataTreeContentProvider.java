@@ -1231,33 +1231,32 @@ public class DataTreeContentProvider {
             if (name != null) {
                 int allType = ids.getItemTypes();
                 if (allType == ResultFileManager.SCALAR)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS); //TODO why toolbar icons???
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_SCALAR);
                 else if (allType == ResultFileManager.VECTOR)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_VECTOR);
                 else if (allType == ResultFileManager.STATISTICS)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSTATISTICS);
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_STATISTIC);
                 else if (allType == ResultFileManager.HISTOGRAM)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_HISTOGRAM);
                 else if (allType == ResultFileManager.PARAMETER)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES); // TODO: which icon? new one?
                 else
-                    //return ImageFactory.global().getIconImage(ImageFactory.DEFAULT);
                     return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
             }
             else {
                 ResultItem resultItem = manager.getItem(id);
                 if (resultItem instanceof ScalarResult)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS);
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_SCALAR);
                 else if (resultItem instanceof VectorResult)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS);
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_VECTOR);
                 else if (resultItem instanceof HistogramResult)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS);
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_HISTOGRAM);
                 else if (resultItem instanceof StatisticsResult)
-                    return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_SHOWSTATISTICS);
+                    return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_STATISTIC);
                 else if (resultItem instanceof ParameterResult)
                     return ImageFactory.global().getIconImage(ImageFactory.TOOLBAR_IMAGE_PROPERTIES); // TODO: which icon? new one?
                 else
-                    return ImageFactory.global().getIconImage(ImageFactory.DEFAULT);
+                    return ImageFactory.global().getIconImage(ImageFactory.MODEL_IMAGE_FOLDER);
             }
         }
 
