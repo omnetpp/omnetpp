@@ -57,7 +57,14 @@ class SCAVE_API IDList
         void checkIntegrityAllScalars(ResultFileManager *mgr) const;
         void checkIntegrityAllParameters(ResultFileManager *mgr) const;
         void checkIntegrityAllVectors(ResultFileManager *mgr) const;
+        void checkIntegrityAllStatistics(ResultFileManager *mgr) const;
         void checkIntegrityAllHistograms(ResultFileManager *mgr) const;
+
+        void assertAllParameters() const;
+        void assertAllScalars() const;
+        void assertAllVectors() const;
+        void assertAllStatistics() const;
+        void assertAllHistograms() const;
 
         static void sort(/*non-*/const V& cv) {V& v = const_cast<V&>(cv); std::sort(v.begin(), v.end());}
 

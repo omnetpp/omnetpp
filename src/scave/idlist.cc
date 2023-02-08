@@ -146,32 +146,64 @@ void IDList::checkIntegrity(ResultFileManager *mgr) const
         mgr->getItem(id, buffer);  // this will throw exception if id is not valid
 }
 
+void IDList::assertAllParameters() const
+{
+    if (!areAllParameters())
+        throw opp_runtime_error("These items are not all parameters");
+}
+
+void IDList::assertAllScalars() const
+{
+    if (!areAllScalars())
+        throw opp_runtime_error("These items are not all scalars");
+}
+
+void IDList::assertAllVectors() const
+{
+    if (!areAllVectors())
+        throw opp_runtime_error("These items are not all vectors");
+}
+
+void IDList::assertAllStatistics() const
+{
+    if (!areAllStatistics())
+        throw opp_runtime_error("These items are not all statistics");
+}
+
+void IDList::assertAllHistograms() const
+{
+    if (!areAllHistograms())
+        throw opp_runtime_error("These items are not all histograms");
+}
+
 void IDList::checkIntegrityAllScalars(ResultFileManager *mgr) const
 {
     checkIntegrity(mgr);
-    if (!areAllScalars())
-        throw opp_runtime_error("These items are not all scalars");
+    assertAllScalars();
 }
 
 void IDList::checkIntegrityAllParameters(ResultFileManager *mgr) const
 {
     checkIntegrity(mgr);
-    if (!areAllParameters())
-        throw opp_runtime_error("These items are not all parameters");
+    assertAllParameters();
 }
 
 void IDList::checkIntegrityAllVectors(ResultFileManager *mgr) const
 {
     checkIntegrity(mgr);
-    if (!areAllVectors())
-        throw opp_runtime_error("These items are not all vectors");
+    assertAllVectors();
+}
+
+void IDList::checkIntegrityAllStatistics(ResultFileManager *mgr) const
+{
+    checkIntegrity(mgr);
+    assertAllStatistics();
 }
 
 void IDList::checkIntegrityAllHistograms(ResultFileManager *mgr) const
 {
     checkIntegrity(mgr);
-    if (!areAllHistograms())
-        throw opp_runtime_error("These items are not all histograms");
+    assertAllHistograms();
 }
 
 inline void check(InterruptedFlag *interrupted) {if (interrupted->flag) throw InterruptedException();}
@@ -294,117 +326,140 @@ void IDList::sortByName(ResultFileManager *mgr, bool ascending, std::vector<int>
 
 void IDList::sortScalarsByValue(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllScalars();
     ScalarResult tmp;
     doSort<double>([mgr,&tmp](ID id) {return mgr->uncheckedGetScalar(id, tmp)->getValue();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortParametersByValue(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllParameters();
     doSort<const char *>([mgr](ID id) {return mgr->uncheckedGetParameter(id)->getValue().c_str();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByVectorId(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<int>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getVectorId();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByCount(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<int64_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getCount();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByMean(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getMean();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByStdDev(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getStddev();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByMin(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getMin();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByMax(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getMax();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByVariance(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getVariance();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsBySum(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getSum();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsBySumWeights(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStatistics().getSumWeights();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByStartTime(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<simultime_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getStartTime();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortVectorsByEndTime(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllVectors();
     doSort<simultime_t>([mgr](ID id) {return mgr->uncheckedGetVector(id)->getEndTime();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsByCount(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<int64_t>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getCount();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsByMean(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getMean();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsByStdDev(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getStddev();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsByMin(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getMin();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsByMax(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getMax();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsByVariance(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getVariance();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsBySum(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getSum();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortStatisticsBySumWeights(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllStatistics();
     doSort<double>([mgr](ID id) {return mgr->uncheckedGetStatistics(id)->getStatistics().getSumWeights();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortHistogramsByNumBins(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllHistograms();
     doSort<int>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getHistogram().getNumBins();}, mgr, ascending, selectionIndices, interrupted);
 }
 
 void IDList::sortHistogramsByHistogramRange(ResultFileManager *mgr, bool ascending, std::vector<int>& selectionIndices, InterruptedFlag *interrupted)
 {
+    assertAllHistograms();
     doSort<int>([mgr](ID id) {return mgr->uncheckedGetHistogram(id)->getHistogram().getBinEdge(0);}, mgr, ascending, selectionIndices, interrupted); // actually, lower edge of histogram range
 }
 
