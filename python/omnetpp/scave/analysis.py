@@ -304,6 +304,11 @@ class Analysis:
             if version != "2":
                 raise RuntimeError(f"Unsupported analysis file version: \"{version}\" (only \"2\" is supported).")
 
+
+            if analysis.tag == '{http://www.omnetpp.org/omnetpp/scave}Analysis':
+                raise RuntimeError(f"This file was created with an older version of OMNeT++ (one before 6.0) and cannot be "
+                                  + "loaded by this tool. The IDE might be able to open it and convert it to the new format.")
+
             def make_folder(folder_elem):
                 items = list()
                 for child_elem in folder_elem:
