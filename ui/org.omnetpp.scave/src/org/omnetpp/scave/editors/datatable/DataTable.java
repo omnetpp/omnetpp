@@ -500,8 +500,9 @@ public class DataTable extends LargeTable implements IDataControl {
     protected TableColumn addColumn(ColumnRole column) {
         visibleColumns.add(column);
 
-        int width = getPreference(getPreferenceStoreKey(column, "width"), column.getDefaultWidth());
-        boolean rightAlign = getPreference(getPreferenceStoreKey(column, "rightAlign"), column.isDefaultRightAligned());
+        String columnPrefix = getPreferenceKeyPrefix(column);
+        int width = getPreference(columnPrefix + "width", column.getDefaultWidth());
+        boolean rightAlign = getPreference(columnPrefix + "rightAlign", column.isDefaultRightAligned());
 
         TableColumn tableColumn = createColumn(rightAlign ? SWT.RIGHT : SWT.NONE, getColumnsExceptLastBlank().length);
         tableColumn.setText(column.getLabel());
@@ -1075,52 +1076,56 @@ public class DataTable extends LargeTable implements IDataControl {
                 listener.contentChanged(this);
     }
 
-    protected String getPreferenceStoreKey(ColumnRole column, String field) {
-        return "DataTable." + type + "." + column.label + "." + field;
-    }
-
     protected void loadState() {
-        if (preferences != null) {
-            visibleColumns.clear();
-            for (ColumnRole column : getAllColumns()) {
-                boolean visible = getPreference(getPreferenceStoreKey(column, "visible"), column.isDefaultVisible());
-                if (visible)
-                    addColumn(column);
-            }
-
-            showNetworkNames = getPreference("showNetworkNames", showNetworkNames); //TODO prefix these keys too
-            colorNetworkNames = getPreference("colorNetworkNames", colorNetworkNames);
-            colorResultSuffixes = getPreference("colorResultSuffixes", colorResultSuffixes);
-            colorNumberSeparators = getPreference("colorNumberSeparators", colorNumberSeparators);
-            colorMeasurementUnits = getPreference("colorMeasurementUnits", colorMeasurementUnits);
+        String prefix = getPreferenceKeyPrefix();
+        visibleColumns.clear();
+        for (ColumnRole column : getAllColumns()) {
+            String columnPrefix = getPreferenceKeyPrefix(column);
+            boolean visible = getPreference(columnPrefix + "visible", column.isDefaultVisible());
+            if (visible)
+                addColumn(column);
         }
+
+        showNetworkNames = getPreference(prefix + "showNetworkNames", showNetworkNames);
+        colorNetworkNames = getPreference(prefix + "colorNetworkNames", colorNetworkNames);
+        colorResultSuffixes = getPreference(prefix + "colorResultSuffixes", colorResultSuffixes);
+        colorNumberSeparators = getPreference(prefix + "colorNumberSeparators", colorNumberSeparators);
+        colorMeasurementUnits = getPreference(prefix + "colorMeasurementUnits", colorMeasurementUnits);
     }
 
     @Override
     protected void saveState() {
-        if (preferences != null) {
-            for (ColumnRole column : getAllColumns()) {
-                boolean visible = visibleColumns.indexOf(column) >= 0;
-                preferences.setValue(getPreferenceStoreKey(column, "visible"), visible);
-                if (visible) {
-                    preferences.setValue(getPreferenceStoreKey(column, "width"), getTableColumn(column).getWidth());
-                    preferences.setValue(getPreferenceStoreKey(column, "rightAlign"), getTableColumn(column).getAlignment() == SWT.RIGHT);
-                }
+        String prefix = getPreferenceKeyPrefix();
+        for (ColumnRole column : getAllColumns()) {
+            String columnPrefix = getPreferenceKeyPrefix(column);
+            boolean visible = visibleColumns.indexOf(column) >= 0;
+            preferences.setValue(columnPrefix + "visible", visible);
+            if (visible) {
+                preferences.setValue(columnPrefix + "width", getTableColumn(column).getWidth());
+                preferences.setValue(columnPrefix + "rightAlign", getTableColumn(column).getAlignment() == SWT.RIGHT);
             }
-
-            preferences.setValue("showNetworkNames", showNetworkNames);
-            preferences.setValue("colorNetworkNames", colorNetworkNames);
-            preferences.setValue("colorResultSuffixes", colorResultSuffixes);
-            preferences.setValue("colorNumberSeparators", colorNumberSeparators);
-            preferences.setValue("colorMeasurementUnits", colorMeasurementUnits);
         }
+
+        preferences.setValue(prefix + "showNetworkNames", showNetworkNames);
+        preferences.setValue(prefix + "colorNetworkNames", colorNetworkNames);
+        preferences.setValue(prefix + "colorResultSuffixes", colorResultSuffixes);
+        preferences.setValue(prefix + "colorNumberSeparators", colorNumberSeparators);
+        preferences.setValue(prefix + "colorMeasurementUnits", colorMeasurementUnits);
     }
 
-    private int getPreference(String key, int defaultValue) {
+    protected String getPreferenceKeyPrefix() {
+        return "DataTable." + type + ".";
+    }
+
+    protected String getPreferenceKeyPrefix(ColumnRole column) {
+        return "DataTable." + type + "." + column.label + ".";
+    }
+
+    protected int getPreference(String key, int defaultValue) {
         return preferences.contains(key) ? preferences.getInt(key) : defaultValue;
     }
 
-    private boolean getPreference(String key, boolean defaultValue) {
+    protected boolean getPreference(String key, boolean defaultValue) {
         return preferences.contains(key) ? preferences.getBoolean(key) : defaultValue;
     }
 
