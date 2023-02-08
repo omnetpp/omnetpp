@@ -344,7 +344,7 @@ public class ScaveModelUtil {
         PrintWriter report = new PrintWriter(buffer);
 
         // compare Python scripts
-        String chartScript = chart.getScript();
+        String chartScript = chart.getUpToDateScript();
         String templateScript = template.getPythonScript();
         if (!chartScript.equals(templateScript)) {
             report.println("Python script in chart differs from template:");
