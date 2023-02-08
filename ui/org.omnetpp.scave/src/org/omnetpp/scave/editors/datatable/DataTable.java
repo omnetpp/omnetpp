@@ -92,46 +92,44 @@ public class DataTable extends LargeTable implements IDataControl {
     private static final StyledString NA = new StyledString("-"); // "not applicable"
 
     private enum ColumnRole {
-        COL_DIRECTORY("Folder", null, 60, false, false, false),
-        COL_FILE("File", Scave.FILE, 120, false, false, false),
-        COL_CONFIG("Config", Scave.RUNATTR_PREFIX + Scave.CONFIGNAME, 120, false, false, false),
-        COL_RUNNUMBER("Run number", Scave.RUNATTR_PREFIX + Scave.RUNNUMBER, 60, false, false, false),
-        COL_RUN_ID("RunId", Scave.RUN, 100, false, false, false),
-        COL_EXPERIMENT("Experiment", Scave.RUNATTR_PREFIX + Scave.EXPERIMENT, 120, true, false, false),
-        COL_MEASUREMENT("Measurement", Scave.RUNATTR_PREFIX + Scave.MEASUREMENT, 160, true, false, false),
-        COL_REPLICATION("Replication", Scave.RUNATTR_PREFIX + Scave.REPLICATION, 60, true, false, false),
-        COL_MODULE("Module", Scave.MODULE, 160, true, false, false),
-        COL_NAME("Name", Scave.NAME, 120, true, false, false),
-        COL_PARAM_VALUE("Value", null, 120, true, true, false),
-        COL_SCALAR_VALUE("Value", null, 120, true, true, true),
-        COL_KIND("Kind", null, 40, true, false, false),
-        COL_COUNT("Count", null, 80, true, true, true),
-        COL_SUMWEIGHTS("SumWeights", null, 120, true, true, true),
-        COL_MEAN("Mean", null, 120, true, true, true),
-        COL_STDDEV("StdDev", null, 120, true, true, true),
-        COL_VARIANCE("Variance", null, 120, true, true, true),
-        COL_MIN("Min", null, 120, false, true, true),
-        COL_MAX("Max", null, 120, false, true, true),
-        COL_NUMBINS("#Bins", null, 40, true, true, true),
-        COL_HISTOGRAMRANGE("Hist. Range", null, 120, true, true, true),
-        COL_VECTOR_ID("Vector id", null, 40, false, true, true),
-        COL_MIN_TIME("Min time", null, 120, false, true, true),
-        COL_MAX_TIME("Max time", null, 120, false, true, true);
+        COL_DIRECTORY("Folder", null, 60, false, false),
+        COL_FILE("File", Scave.FILE, 120, false, false),
+        COL_CONFIG("Config", Scave.RUNATTR_PREFIX + Scave.CONFIGNAME, 120, false, false),
+        COL_RUNNUMBER("Run number", Scave.RUNATTR_PREFIX + Scave.RUNNUMBER, 60, false, false),
+        COL_RUN_ID("RunId", Scave.RUN, 100, false, false),
+        COL_EXPERIMENT("Experiment", Scave.RUNATTR_PREFIX + Scave.EXPERIMENT, 120, true, false),
+        COL_MEASUREMENT("Measurement", Scave.RUNATTR_PREFIX + Scave.MEASUREMENT, 160, true, false),
+        COL_REPLICATION("Replication", Scave.RUNATTR_PREFIX + Scave.REPLICATION, 60, true, false),
+        COL_MODULE("Module", Scave.MODULE, 160, true, false),
+        COL_NAME("Name", Scave.NAME, 120, true, false),
+        COL_PARAM_VALUE("Value", null, 120, true, true),
+        COL_SCALAR_VALUE("Value", null, 120, true, true),
+        COL_KIND("Kind", null, 40, true, false),
+        COL_COUNT("Count", null, 80, true, true),
+        COL_SUMWEIGHTS("SumWeights", null, 120, true, true),
+        COL_MEAN("Mean", null, 120, true, true),
+        COL_STDDEV("StdDev", null, 120, true, true),
+        COL_VARIANCE("Variance", null, 120, true, true),
+        COL_MIN("Min", null, 120, false, true),
+        COL_MAX("Max", null, 120, false, true),
+        COL_NUMBINS("#Bins", null, 40, true, true),
+        COL_HISTOGRAMRANGE("Hist. Range", null, 120, true, true),
+        COL_VECTOR_ID("Vector id", null, 40, false, true),
+        COL_MIN_TIME("Min time", null, 120, false, true),
+        COL_MAX_TIME("Max time", null, 120, false, true);
 
         private final String label;
         private final String fieldName;
         private final int defaultWidth;
         private final boolean defaultVisible;
         private final boolean defaultRightAligned;
-        private final boolean maskTooLongValues;  //TODO seems to be unused
 
-        ColumnRole(String text, String fieldName, int defaultWidth, boolean defaultVisible, boolean rightAligned, boolean maskTooLongValues) {
+        ColumnRole(String text, String fieldName, int defaultWidth, boolean defaultVisible, boolean rightAligned) {
             this.label = text;
             this.fieldName = fieldName;
             this.defaultWidth = defaultWidth;
             this.defaultVisible = defaultVisible;
             this.defaultRightAligned = rightAligned;
-            this.maskTooLongValues = maskTooLongValues;
         }
 
         public String getLabel() {
@@ -152,10 +150,6 @@ public class DataTable extends LargeTable implements IDataControl {
 
         public boolean isDefaultRightAligned() {
             return defaultRightAligned;
-        }
-
-        public boolean getMaskTooLongValues() {
-            return maskTooLongValues;
         }
 
         public static final ColumnRole[] ALL_SCALAR_COLUMNS = new ColumnRole[] {
@@ -858,6 +852,7 @@ public class DataTable extends LargeTable implements IDataControl {
                         BigDecimal maxTime = vector.getEndTime();
                         return maxTime == null || maxTime.isNaN() ? NA : formatNumber(result, column.label, maxTime, gc, width);
                     }
+                    default: // silence warning
                     }
                 }
                 else if (type == PanelType.HISTOGRAMS) {
@@ -919,6 +914,7 @@ public class DataTable extends LargeTable implements IDataControl {
                         else
                             return NA;
                     }
+                    default: // silence warning
                     }
                 }
             }
@@ -1141,7 +1137,7 @@ public class DataTable extends LargeTable implements IDataControl {
         if (selectedColumn != null && !selectedColumn.isDisposed()) {
             ColumnRole column = (ColumnRole)selectedColumn.getData(COLUMNROLE_KEY);
             if (column != null)
-                return column.fieldName;
+                return column.getFieldName();
         }
         return null;
     }
