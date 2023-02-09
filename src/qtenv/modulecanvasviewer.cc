@@ -715,8 +715,33 @@ QLineF ModuleCanvasViewer::getConnectionLine(cGate *gate)
         }
     }
 
-    return arrowcoords(getSubmodRect(gate->getOwnerModule()), getSubmodRect(nextGate->getOwnerModule()),
-                       src_i, src_n, dest_i, dest_n, mode, srcAnch, destAnch);
+    cModule *owner = gate->getOwnerModule();
+    cModule *nextOwner = nextGate->getOwnerModule();
+
+    QRectF ownerRect = getSubmodRect(owner);
+    QRectF nextRect = getSubmodRect(nextOwner);
+
+    QLineF line = arrowcoords(ownerRect, nextRect, src_i, src_n, dest_i, dest_n, mode, srcAnch, destAnch);
+
+    // Handling degenerate connections (those crossing compound module boundaries without a gate).
+    cModule *parent = owner->getParentModule();
+    cModule *nextParent = nextOwner->getParentModule();
+
+    bool isIn = gate->getType() == cGate::INPUT;
+    bool isOut = gate->getType() == cGate::OUTPUT;
+    bool nextIsIn = nextGate->getType() == cGate::INPUT;
+    bool nextIsOut = nextGate->getType() == cGate::OUTPUT;
+
+    if ( !(parent == nextParent && isOut && nextIsIn)   // connection is not to sibling
+      && !( owner == nextParent && isIn  && nextIsIn)   // connection is not to parent
+      && !(parent == nextOwner  && isOut && nextIsOut)) // connection is not to child
+    {
+        // The connection is degenerate, so only drawing a half length line
+        // to not make a false impression about where it actually ends.
+        line.setP2(line.pointAt(0.5));
+    }
+
+    return line;
 }
 
 void ModuleCanvasViewer::setLayoutingScene(QGraphicsScene *layoutingScene)
