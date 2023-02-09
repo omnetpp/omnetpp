@@ -218,7 +218,7 @@ public class DataTable extends LargeTable implements IDataControl {
 
         // add a last, blank column, otherwise the right edge of the last column sticks to the table's right border which is often inconvenient
         TableColumn blankColumn = createColumn(SWT.NONE);
-        blankColumn.setWidth(minColumnWidth);
+        blankColumn.setWidth(10); // should be wider than the overlay scrollbar so as not to be obscured by it!
 
         loadState();
 
