@@ -95,8 +95,14 @@ static void testQuantityFormatter(QuantityFormatter& formatter, std::string text
         errorMessage = "Too few significant digits";
     else if (!integer && numSignificantDigits > formatter.getOptions().maxSignificantDigits)
         errorMessage = "Too many significant digits";
-    std::cout << std::setw(24) << std::left << text << std::setw(40) << std::left << valuestream.str() << std::setw(18) << std::left << output.text
-              << std::setw(18) << std::left << parsed << std::setw(18) << std::left << absoluteError << std::setw(18) << std::left << relativeError << (errorMessage ? "!!! " : "") << (errorMessage ? errorMessage : "") << std::endl;
+    std::cout << std::setw(24) << std::left << text \
+              << std::setw(40) << std::left << valuestream.str()
+              << std::setw(18) << std::left << output.text
+              << std::setw(18) << std::left << parsed
+              << std::setw(18) << std::left << absoluteError
+              << std::setw(18) << std::left << relativeError
+              << (errorMessage ? "!!! " : "") << (errorMessage ? errorMessage : "")
+              << std::endl;
 }
 
 static void testQuantityFormatter(QuantityFormatter& formatter, int maxDigits, int minScale, int maxScale, const char *unit, std::vector<std::function<std::string(int)>> computeDigits) {
