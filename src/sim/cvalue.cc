@@ -220,9 +220,8 @@ std::string cValue::str() const
         case BOOL: return bl ? "true" : "false";
         case INT: snprintf(buf, sizeof(buf), "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit.c_str())); return buf;
         case DOUBLE: {
-            if (unit.empty()) {
-                opp_dtoa(buf, "%g", dbl);
-            }
+            if (unit.empty())
+                return opp_dtoa(buf, "%g", dbl);
             else {
                 double value = dbl;
                 const char *displayUnit = unit.c_str();
@@ -230,12 +229,8 @@ std::string cValue::str() const
                     displayUnit = UnitConversion::getBestUnit(value, displayUnit);
                     value = UnitConversion::convertUnit(value, unit.c_str(), displayUnit);
                 }
-                opp_dtoa(buf, "%g", value);
-                if (!std::isfinite(value))
-                    strcat(buf, " ");
-                strcat(buf, displayUnit);
+                return UnitConversion::formatQuantity(value, displayUnit);
             }
-            return buf;
         }
         case STRING: return opp_quotestr(s);
         case POINTER: return ptr.contains<cObject>() ? objectInfo(ptr.get<cObject>()) : ptr.str();
