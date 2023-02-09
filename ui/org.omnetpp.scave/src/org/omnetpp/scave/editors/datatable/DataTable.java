@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.MeasureTextFunctor;
 import org.omnetpp.common.engine.QuantityFormatter;
@@ -86,6 +87,8 @@ public class DataTable extends LargeTable implements IDataControl {
     private static final boolean isLightTheme = !DisplayUtils.isDarkTheme();
     private static final Color GREYED_OUT_COLOR = isLightTheme ? ColorFactory.GREY60 : ColorFactory.GREY40;
     private static final Color QUANTITY_UNIT_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.LIGHT_SKY_BLUE;
+    private static final Color BOOLCONSTANT_COLOR = SyntaxHighlightHelper.ECLIPSE_PURPLE;
+    private static final Color STRINGLITERAL_COLOR = isLightTheme ? Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN) : ColorFactory.PALE_GREEN3; // also from SyntaxHighlightHelper
 
     private static final String COLUMNROLE_KEY = "role";
 
@@ -804,7 +807,13 @@ public class DataTable extends LargeTable implements IDataControl {
             }
             case COL_PARAM_VALUE: {
                 ParameterResult parameter = (ParameterResult)result;
-                return new StyledString(parameter.getValue());
+                String value = parameter.getValue();
+                if (value.equals("true") || value.equals("false"))
+                    return new StyledString(value, makeColorStyler(BOOLCONSTANT_COLOR));
+                else if (!value.isEmpty() && value.charAt(0) == '"' && value.charAt(value.length()-1) == '"')
+                    return new StyledString(value, makeColorStyler(STRINGLITERAL_COLOR));
+                else
+                    return new StyledString(value); // quantity or expression
             }
             case COL_SCALAR_VALUE: {
                 ScalarResult scalar = (ScalarResult)result;
