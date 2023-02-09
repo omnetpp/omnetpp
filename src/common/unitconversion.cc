@@ -330,7 +330,14 @@ double UnitConversion::parseQuantity(const char *str, std::string& unit)
 
 std::string UnitConversion::formatQuantity(double value, const char *unit)
 {
-    return opp_stringf("%g%s", value, opp_nulltoempty(unit));
+    char buf[32];
+    opp_dtoa(buf, "%g", value);
+    if (!opp_isempty(unit)) {
+        if (!std::isfinite(value))
+            strcat(buf, " ");
+        strcat(buf, unit);
+    }
+    return buf;
 }
 
 std::string UnitConversion::getUnitDescription(const char *unit)
