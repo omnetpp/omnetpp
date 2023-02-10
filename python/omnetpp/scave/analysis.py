@@ -298,49 +298,53 @@ class Analysis:
         """
         Reads the given anf file and returns its content as an `Analysis` object.
         """
-        analysis = ET.parse(anf_file_name).getroot()
-        version = analysis.get('version')
-        if version != "2":
-            raise RuntimeError(f"Unsupported analysis file version: \"{version}\" (only \"2\" is supported).")
+        try:
+            analysis = ET.parse(anf_file_name).getroot()
+            version = analysis.get('version')
+            if version != "2":
+                raise RuntimeError(f"Unsupported analysis file version: \"{version}\" (only \"2\" is supported).")
 
-        def make_folder(folder_elem):
-            items = list()
-            for child_elem in folder_elem:
-                if child_elem.tag == 'folder':
-                    items.append(make_folder(child_elem))
-                elif child_elem.tag == 'chart':
-                    items.append(make_chart(child_elem))
-                else:
-                    pass
-            return Folder(
-                id = folder_elem.get('id'),
-                name = folder_elem.get('name'),
-                items = items)
+            def make_folder(folder_elem):
+                items = list()
+                for child_elem in folder_elem:
+                    if child_elem.tag == 'folder':
+                        items.append(make_folder(child_elem))
+                    elif child_elem.tag == 'chart':
+                        items.append(make_chart(child_elem))
+                    else:
+                        pass
+                return Folder(
+                    id = folder_elem.get('id'),
+                    name = folder_elem.get('name'),
+                    items = items)
 
-        def make_chart(chart_elem):
-            def content(element):
-                if element is not None and element.text is not None:
-                    return element.text.strip()+"\n" # should get the CDATA contents instead, but shouldn't matter much
-                return ""
+            def make_chart(chart_elem):
+                def content(element):
+                    if element is not None and element.text is not None:
+                        return element.text.strip()+"\n" # should get the CDATA contents instead, but shouldn't matter much
+                    return ""
 
-            script = content(chart_elem.find('script'))
-            dialog_pages = [ DialogPage(id = dp.get('id'), label = dp.get('label'), content = content(dp)) for dp in chart_elem.findall('dialogPage') ]
-            props = { p.get('name') : p.get('value') for p in chart_elem.findall('property') }
+                script = content(chart_elem.find('script'))
+                dialog_pages = [ DialogPage(id = dp.get('id'), label = dp.get('label'), content = content(dp)) for dp in chart_elem.findall('dialogPage') ]
+                props = { p.get('name') : p.get('value') for p in chart_elem.findall('property') }
 
-            return Chart(
-                id = chart_elem.get('id'),
-                type = chart_elem.get('type'),
-                name = chart_elem.get('name'),
-                template = chart_elem.get('template'),
-                icon = chart_elem.get('icon'),
-                script = script,
-                dialog_pages = dialog_pages,
-                properties = props,
-                created_with = chart_elem.get('createdWith'))
+                return Chart(
+                    id = chart_elem.get('id'),
+                    type = chart_elem.get('type'),
+                    name = chart_elem.get('name'),
+                    template = chart_elem.get('template'),
+                    icon = chart_elem.get('icon'),
+                    script = script,
+                    dialog_pages = dialog_pages,
+                    properties = props,
+                    created_with = chart_elem.get('createdWith'))
 
-        inputs = [input_elem.get('pattern') for input_elem in analysis.findall("inputs/input")]
-        items = make_folder(analysis.find('charts')).items
-        return Analysis(inputs, items)
+            inputs = [input_elem.get('pattern') for input_elem in analysis.findall("inputs/input")]
+            items = make_folder(analysis.find('charts')).items
+            return Analysis(inputs, items)
+
+        except Exception as e:
+            raise RuntimeError(f"Error loading analysis file \"{anf_file_name}\"") from e
 
     def collect_charts(self, folder=None):
         """
