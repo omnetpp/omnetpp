@@ -104,77 +104,77 @@ EV << ".\n";
 62.5Tbps --> unchanged
 0.0023Tbps --> 2.3Gbps
 
-15200B --> unchanged
+15200B --> 14.8438KiB
 62.5B --> unchanged
 0.0023B --> unchanged
 
-15200KiB --> unchanged
+15200KiB --> 14.8438MiB
 62.5KiB --> unchanged
-0.0023KiB --> unchanged
+0.0023KiB --> 2.3552B
 
-15200MiB --> unchanged
+15200MiB --> 14.8438GiB
 62.5MiB --> unchanged
-0.0023MiB --> unchanged
+0.0023MiB --> 2.3552KiB
 
-15200GiB --> unchanged
+15200GiB --> 14.8438TiB
 62.5GiB --> unchanged
-0.0023GiB --> unchanged
+0.0023GiB --> 2.3552MiB
 
 15200TiB --> unchanged
 62.5TiB --> unchanged
-0.0023TiB --> unchanged
+0.0023TiB --> 2.3552GiB
 
-15200kB --> unchanged
+15200kB --> 15.2MB
 62.5kB --> unchanged
-0.0023kB --> unchanged
+0.0023kB --> 2.3B
 
-15200MB --> unchanged
+15200MB --> 15.2GB
 62.5MB --> unchanged
-0.0023MB --> unchanged
+0.0023MB --> 2.3kB
 
-15200GB --> unchanged
+15200GB --> 15.2TB
 62.5GB --> unchanged
-0.0023GB --> unchanged
+0.0023GB --> 2.3MB
 
 15200TB --> unchanged
 62.5TB --> unchanged
-0.0023TB --> unchanged
+0.0023TB --> 2.3GB
 
 15200b --> unchanged
 62.5b --> unchanged
 0.0023b --> unchanged
 
-15200Kib --> unchanged
+15200Kib --> 14.8438Mib
 62.5Kib --> unchanged
-0.0023Kib --> unchanged
+0.0023Kib --> 2.3552b
 
-15200Mib --> unchanged
+15200Mib --> 14.8438Gib
 62.5Mib --> unchanged
-0.0023Mib --> unchanged
+0.0023Mib --> 2.3552Kib
 
-15200Gib --> unchanged
+15200Gib --> 14.8438Tib
 62.5Gib --> unchanged
-0.0023Gib --> unchanged
+0.0023Gib --> 2.3552Mib
 
 15200Tib --> unchanged
 62.5Tib --> unchanged
-0.0023Tib --> unchanged
+0.0023Tib --> 2.3552Gib
 
-15200kb --> unchanged
+15200kb --> 15.2Mb
 62.5kb --> unchanged
-0.0023kb --> unchanged
+0.0023kb --> 2.3b
 
-15200Mb --> unchanged
+15200Mb --> 15.2Gb
 62.5Mb --> unchanged
-0.0023Mb --> unchanged
+0.0023Mb --> 2.3kb
 
-15200Gb --> unchanged
+15200Gb --> 15.2Tb
 62.5Gb --> unchanged
-0.0023Gb --> unchanged
+0.0023Gb --> 2.3Mb
 
 15200Tb --> unchanged
 62.5Tb --> unchanged
-0.0023Tb --> unchanged
+0.0023Tb --> 2.3Gb
 
 15200rad --> unchanged
 62.5rad --> unchanged
