@@ -30,7 +30,16 @@ class COMMON_API UnitConversion
 {
   protected:
     enum Mapping { LINEAR, LOG10 };
-    struct UnitDesc { const char *unit; double mult; Mapping mapping; const char *baseUnit; const char *longName; const char *bestUnitCandidatesStr=""; const UnitDesc *baseUnitDesc; std::vector<const UnitDesc*> bestUnitCandidates;};
+    struct UnitDesc {
+        const char *unit;
+        double mult;
+        Mapping mapping;
+        const char *baseUnit;
+        const char *longName;
+        const char *bestUnitCandidatesStr="";
+        const UnitDesc *baseUnitDesc;
+        std::vector<const UnitDesc*> bestUnitCandidates;
+    };
     static const UnitDesc unitTable[];
 
     static const int HASHTABLESIZE = 2048; // must be power of 2
