@@ -26,10 +26,9 @@ QuantityFormatter::Output QuantityFormatter::formatQuantity(double value, const 
     checkInput(input);
     checkOptions();
     State state;
-    determineSign(input, state);
-    determineOutputUnit(input, state);
     computeValueInOutputUnit(input, state);
-    if (std::isfinite(value) && value != 0) {
+    determineSign(state);
+    if (std::isfinite(state.valueInOutputUnit) && state.valueInOutputUnit != 0) {
         do {
             clearDigitGroups(state);
             clearStreams(state);
@@ -82,7 +81,7 @@ void QuantityFormatter::checkOptions()
         throw opp_runtime_error("Option maxSignificantDigits must be less than numAccurateDigits");
 
     if (options.decimalSeparator.empty())
-        throw opp_runtime_error("Option decimalSeparator must be specified");
+        throw opp_runtime_error("Option decimalSeparator must be specified"); //TODO ???
     if (options.exponentMark.empty())
         throw opp_runtime_error("Option exponentMark must be specified");
 
@@ -92,35 +91,6 @@ void QuantityFormatter::checkOptions()
         throw opp_runtime_error("Option minusSign must be specified");
 }
 
-std::vector<const char *> QuantityFormatter::getDefaultAllowedOutputUnits(const char *unit) const
-{
-    std::vector<const char *> units;
-    const char *baseUnit = UnitConversion::getBaseUnit(unit);
-    for (auto unit : UnitConversion::getKnownUnits())
-        if (opp_streq(baseUnit, UnitConversion::getBaseUnit(unit)))
-            units.push_back(unit);
-    return units;
-}
-
-const QuantityFormatter::UnitSpecificOptions& QuantityFormatter::getUnitSpecificOptions(const char *unit)
-{
-    if (unitSpecificOptions.empty()) {
-        unitSpecificOptions = {
-           {"s", UnitSpecificOptions(1, std::numeric_limits<int>::max(), "s", getDefaultAllowedOutputUnits("s"))},
-           {"b", UnitSpecificOptions(1, 10000, "B", getDefaultAllowedOutputUnits("b"))},
-           {"B", UnitSpecificOptions(1, 10000, "B", getDefaultAllowedOutputUnits("b"))},
-        };
-    }
-    auto it = unitSpecificOptions.find(unit);
-    if (it != unitSpecificOptions.end())
-        return it->second;
-    else {
-        const char *baseUnit = UnitConversion::getBaseUnit(unit);
-        const char *preferredBaseUnit = baseUnit ? baseUnit : unit;
-        auto it = unitSpecificOptions.insert({unit, UnitSpecificOptions(1, 1000, preferredBaseUnit, getDefaultAllowedOutputUnits(unit))});
-        return it.first->second;
-    }
-}
 
 void QuantityFormatter::clearDigitGroups(State& state)
 {
@@ -134,15 +104,15 @@ void QuantityFormatter::clearStreams(State& state)
     state.roleStream.str("");
 }
 
-void QuantityFormatter::determineSign(const Input& input, State& state)
+void QuantityFormatter::determineSign(State& state)
 {
-    int inputSign = (input.value > 0) - (input.value < 0);
+    int sign = int(state.valueInOutputUnit > 0) - int(state.valueInOutputUnit < 0);
     switch (options.signMode) {
         case SignMode::FORCE:
-            state.sign = inputSign < 0 ? options.minusSign.c_str() : (inputSign > 0 ? options.plusSign.c_str() : nullptr);
+            state.sign = sign < 0 ? options.minusSign.c_str() : (sign > 0 ? options.plusSign.c_str() : nullptr);
             break;
         case SignMode::AUTO:
-            state.sign = inputSign < 0 ? options.minusSign.c_str() : nullptr;
+            state.sign = sign < 0 ? options.minusSign.c_str() : nullptr;
             break;
         default:
             throw opp_runtime_error("Unknown signMode: %d", options.signMode);
@@ -156,112 +126,15 @@ int64_t QuantityFormatter::shiftScore(int64_t score, int64_t increment, int numD
     return score * scale + increment;
 }
 
-/**
- * Calculate score for a given unit conversion.
- *
- * Parameters for each candidate unit:
- *   - base unit (e.g. b)
- *   - preferred base unit for human consumption (e.g. B)
- *   - preferred lower limit for human consumption (e.g. 1)
- *   - preferred upper limit for human consumption (e.g. 1000)
- *
- * For each candidate unit calculate:
- *   - value
- *   - is integer (e.g. 123)
- *   - greater than or equal to lower limit (e.g. >=1)
- *   - smaller than upper limit (e.g. <1000)
- *   - unit multiplier to preferred base unit (e.g. 1000)
- *   - is decimal multiplier (e.g. 1000000 vs 8192)
- *   - score based on the above
- */
-int64_t QuantityFormatter::calculateUnitScore(double originalValue, const char *originalUnit, const char *unit)
-{
-    originalValue = std::fabs(originalValue);
-    bool isOriginalValueInteger = std::floor(originalValue) == originalValue;
-    const auto& unitSpecificOptions = getUnitSpecificOptions(unit);
-    double multiplier = UnitConversion::convertUnit(1, unit, getUnitSpecificOptions(originalUnit).preferredBaseUnit);
-    double multiplierScale = std::log10(multiplier);
-    double value = UnitConversion::convertUnit(originalValue, originalUnit, unit);
-    double roundedValue = std::round(value);
-    // sometimes unit conversion returns non-integers when it should really be an integer value
-    bool isValueInteger = roundedValue == value || (roundedValue != 0 && std::abs(roundedValue - value) / value < 1e-12);
-    bool isGreaterThanLowerLimit = value >= unitSpecificOptions.lowerLimit;
-    bool isSmallerThanUpperLimit = value < unitSpecificOptions.upperLimit;
-    bool isDecimalMultiplier = std::fmod(multiplierScale, 1.0) == 0.0;
-    bool areBothIntegers = isOriginalValueInteger && isValueInteger;
-    int64_t score = 0;
-    score = shiftScore(score, 8, 1); // always make the score the same length for visual debugging
-    score = shiftScore(score, areBothIntegers && isSmallerThanUpperLimit ? 2 : (!areBothIntegers && isSmallerThanUpperLimit ? 1 : 0), 1);
-    score = shiftScore(score, isGreaterThanLowerLimit ? 1 : 0, 1);
-    score = shiftScore(score, isDecimalMultiplier ? 1 : 0, 1);
-    score = shiftScore(score, isGreaterThanLowerLimit ? std::floor((multiplierScale + 18)) : std::floor(3000 / (multiplierScale + 18)), 3);
-    score = shiftScore(score, areBothIntegers && !isSmallerThanUpperLimit ? 2 : (areBothIntegers && isSmallerThanUpperLimit ? 1 : 0), 1);
-//        std::cout << "Calculated unit score: value = " << value << ", unit = " << unit << " score = " << score << std::endl;
-    return score;
-}
-
-const char *QuantityFormatter::getBestUnit(double value, const char *unit, const std::vector<const char *>& allowedUnits)
-{
-    // We do not touch the unit (return the original unit) in a number of cases:
-    // if value is zero, infinite or NaN; if we don't know about the unit.
-    if (unit == nullptr)
-        return nullptr;
-    else if (value == 0 || !std::isfinite(value) || allowedUnits.empty()) {
-        const char *preferredBaseUnit = getUnitSpecificOptions(unit).preferredBaseUnit;
-        if (contains(allowedUnits, preferredBaseUnit))
-            return preferredBaseUnit;
-        else
-            return unit;
-    }
-    else {
-        std::vector<int64_t> scores;
-        for (auto& allowedUnit : allowedUnits)
-            scores.push_back(calculateUnitScore(value, unit, allowedUnit));
-        // pick best one
-        auto it = std::max_element(scores.begin(), scores.end());
-        int64_t bestScore = *it;
-        const char *bestUnit = *(allowedUnits.begin() + (it - scores.begin()));
-        // give the original unit a chance to win too (so we don't pointlessly convert e.g. 1cm to 10mm);
-        // also, do not change the unit if it wouldn't change the value (e.g. don't change 1As to 1C)
-        if (options.allowOriginalUnit && !opp_streq(bestUnit, unit) && (calculateUnitScore(value, unit, unit) >= bestScore || UnitConversion::convertUnit(1, unit, bestUnit) == 1))
-            return unit;
-        else
-            return bestUnit;
-    }
-}
-
-void QuantityFormatter::determineOutputUnit(const Input& input, State& state)
-{
-    switch (options.outputUnitMode) {
-        case OutputUnitMode::KEEP:
-            state.outputUnit = input.unit;
-            break;
-        case OutputUnitMode::AUTO:
-            if (input.unit) {
-                state.allowedOutputUnits = getUnitSpecificOptions(input.unit).allowedOutputUnits;
-                if (!options.allowedOutputUnits.empty()) {
-                    auto newEnd = std::remove_if(state.allowedOutputUnits.begin(), state.allowedOutputUnits.end(), [&] (const std::string& unit) {
-                        return !contains(options.allowedOutputUnits, unit);
-                    });
-                    state.allowedOutputUnits.erase(newEnd, state.allowedOutputUnits.end());
-                }
-                state.outputUnit = getBestUnit(input.value, input.unit, state.allowedOutputUnits);
-            }
-            else
-                state.outputUnit = nullptr;
-            break;
-        default:
-            throw opp_runtime_error("Unknown outputUnitMode: %d", options.outputUnitMode);
-    }
-}
-
 void QuantityFormatter::computeValueInOutputUnit(const Input& input, State& state)
 {
     switch (options.outputUnitMode) {
         case OutputUnitMode::KEEP:
+            state.outputUnit = input.unit;
             state.valueInOutputUnit = input.value;
             break;
         case OutputUnitMode::AUTO:
+            state.outputUnit = input.unit ? UnitConversion::getBestUnit(input.value, input.unit, opp_cstrings(options.allowedOutputUnits), options.unitConversionOptions) : nullptr;
             state.valueInOutputUnit = UnitConversion::convertUnit(input.value, input.unit, state.outputUnit);
             break;
         default:
@@ -293,7 +166,7 @@ bool QuantityFormatter::roundDigits(State& state, char *start, int length)
 
 void QuantityFormatter::printAbsoluteValueInOutputUnit(State& state)
 {
-    Assert(state.valueInOutputUnit != 0);
+    //Assert(state.valueInOutputUnit != 0);  -- WRONG, e.g. 1W = 0dBW
     // print from offset 1
     *state.digits = '0';
     char *printStart = state.digits + 1;
@@ -481,6 +354,17 @@ void QuantityFormatter::computeFractionalPart(State& state)
             state.fractionalPartDigitGroups.push_back(std::string(startDigit, endDigit - startDigit));
             index += 3;
         }
+        // eliminate trailing zeros, TODO could be done above if lastNonZeroDigit would be maintained in roundDigits
+        for (int j = state.fractionalPartDigitGroups.size() - 1; j >= 0; j--) {
+            auto& x = state.fractionalPartDigitGroups[j];
+            for (int i = x.size() - 1; i >= 0; i--) {
+                if (x[i] == '0')
+                    x.erase(x.begin() + i);
+                else
+                    return;
+            }
+            state.fractionalPartDigitGroups.erase(state.fractionalPartDigitGroups.begin() + j);
+        }
     }
 }
 
@@ -501,8 +385,8 @@ void QuantityFormatter::formatQuantity(const Input& input, State& state)
 // Value = ApproximationMark? Sign? (RegularNotation | ScientificNotation)
 void QuantityFormatter::formatValue(const Input& input, State& state)
 {
-    if (input.value == 0 || !std::isfinite(input.value))
-        format(state, input.value, 'd');
+    if (state.valueInOutputUnit == 0 || !std::isfinite(state.valueInOutputUnit))
+        format(state, state.valueInOutputUnit, 'd');
     else {
         if (state.isRoundedValue)
             format(state, options.approximationMark, '~');
@@ -559,7 +443,10 @@ void QuantityFormatter::formatScientificNotation(State& state)
 // Unit = [a-zA-Z]+
 void QuantityFormatter::formatUnit(State& state)
 {
-    format(state, state.outputUnit, 'u');
+    if (options.useUnitLongName)
+        format(state, UnitConversion::getLongName(state.outputUnit, state.valueInOutputUnit != 1), 'u');
+    else
+        format(state, state.outputUnit, 'u');
 }
 
 void QuantityFormatter::format(State& state, const std::string& str, const char part)
@@ -570,6 +457,22 @@ void QuantityFormatter::format(State& state, const std::string& str, const char 
         if ((b&0xc0) != 0x80) // utf8: count multibyte unicode characters (more precisely, code points) as one character
             len++;
     state.roleStream << std::string(len, part);
+}
+
+void QuantityFormatter::format(State& state, double d, const char part)
+{
+    auto positionBefore = state.textStream.tellp();
+    if (std::isfinite(d))
+        state.textStream << d;
+    else if (std::isnan(d))
+        state.textStream << options.nanText;
+    else { // inf
+        if (d < 0)
+            state.textStream << "-";
+        state.textStream << options.infText;
+    }
+    auto positionAfter = state.textStream.tellp();
+    state.roleStream << std::string(positionAfter - positionBefore, part);
 }
 
 template <typename T>
