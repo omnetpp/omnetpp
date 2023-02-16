@@ -151,7 +151,7 @@ public final class NedCompletionHelper {
     public final static Template[] proposedNedUnitTempl;
 
     static {
-        PStringVector units = UnitConversion.getAllUnits();
+        PStringVector units = UnitConversion.getKnownUnits();
         proposedNedUnitTempl = new Template[(int)units.size()];
         for (int i = 0; i < units.size(); i++) {
             String shortName = units.get(i);

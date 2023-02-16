@@ -480,11 +480,11 @@ ExprNode *StdMathAstTranslator::createFunctionNode(const char *functionName, int
 ExprNode *UnitConversionAstTranslator::createFunctionNode(const char *functionName, int argCount)
 {
     if (argCount == 1) {
-        if (UnitConversion::isUnit(functionName))
+        if (UnitConversion::isKnownUnit(functionName))
             return new UnitConversionNode(functionName);
         if (strchr(functionName, '_')) { // some unit names contain hyphen or slash, the corresponding functions use underscore and "_per_"
             std::string unitName = opp_replacesubstring(opp_replacesubstring(functionName, "_per_", "/", true), "_", "-", true);
-            if (UnitConversion::isUnit(unitName.c_str()))
+            if (UnitConversion::isKnownUnit(unitName.c_str()))
                 return new UnitConversionNode(unitName.c_str());
         }
     }

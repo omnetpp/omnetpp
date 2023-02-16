@@ -301,7 +301,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
                 "convert from a compatible unit or a dimensionless number. Substitute "
                 "underscore for any hyphen in the name, and '_per_' for any slash: "
                 "milliampere-hour --> milliampere_hour(), meter/sec --> meter_per_sec().\n\n";
-        for (const char *unit : UnitConversion::getAllUnits()) {
+        for (const char *unit : UnitConversion::getKnownUnits()) {
             std::string longName = opp_replacesubstring(opp_replacesubstring(UnitConversion::getLongName(unit), "-", "_", true), "/", "_per_", true);
             tmp << unit << "(), " << longName << "(), ";
         }
@@ -329,7 +329,7 @@ void EnvirUtils::dumpComponentList(std::ostream& out, const char *category, bool
             out << "Recognized measurement units (note: other units can be used as well, only\n";
             out << "no automatic conversion will be available for them):\n";
         }
-        std::vector<const char *> units = UnitConversion::getAllUnits();
+        std::vector<const char *> units = UnitConversion::getKnownUnits();
         for (auto u : units) {
             const char *bu = UnitConversion::getBaseUnit(u);
             out << "  " << u << "\t" << UnitConversion::getLongName(u);

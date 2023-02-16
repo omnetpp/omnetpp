@@ -153,7 +153,7 @@ class COMMON_API UnitConversion
     /**
      * Returns true if the given string is a recognized measurement unit.
      */
-    static bool isUnit(const char *unit) {return lookupUnit(unit) != nullptr;}
+    static bool isKnownUnit(const char *unit) {return lookupUnit(unit) != nullptr;}
 
     /**
      * Returns true if the given unit is linear (e.g. W and KiB), and false
@@ -164,7 +164,7 @@ class COMMON_API UnitConversion
     /**
      * Produces the list of all recognized units, with their short names.
      */
-    static std::vector<const char *> getAllUnits();
+    static std::vector<const char *> getKnownUnits();
 };
 
 }  // namespace common
