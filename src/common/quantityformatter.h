@@ -111,12 +111,12 @@ class COMMON_API QuantityFormatter
         // output unit
         OutputUnitMode outputUnitMode = OutputUnitMode::AUTO;
         std::vector<std::string> allowedOutputUnits;
-        bool allowOriginalUnit = false; // if allowedOutputUnits is not empty
+        UnitConversion::Options unitConversionOptions;
 
         // separators and marks
-        std::string groupSeparator = ",";
+        std::string groupSeparator = ","; // or apostrophe (for being visually distinct from '.' and never used as decimal separator), or space
         std::string decimalSeparator = ".";
-        std::string approximationMark = "~";
+        std::string approximationMark = "~"; // usually "", "~", or U+2248 "almost equal to"
         std::string exponentMark = "e";
 
         // sign
@@ -125,14 +125,27 @@ class COMMON_API QuantityFormatter
         std::string plusSign = "+";
         std::string minusSign = "-";
 
+        // special values
+        std::string nanText = "nan";
+        std::string infText = "inf";
+
         // unit
         bool includeUnit = true;
+        bool useUnitLongName = false;
         std::string unitSeparator = " ";
 
         // measures text width in pixels
         std::function<int(const char *)> measureText;
 
-        Options() { }
+        Options() {
+            unitConversionOptions.allowOriginalUnit = true;
+            unitConversionOptions.convertZeroToBaseUnit = true;
+            unitConversionOptions.bitBasedUnitsPolicy = UnitConversion::AVOID;
+            unitConversionOptions.binaryPrefixPolicy = UnitConversion::AVOID;
+            unitConversionOptions.kilobyteThreshold = 10000;
+            unitConversionOptions.logarithmicUnitsPolicy = UnitConversion::KEEP;
+        }
+
         Options(const Options& other) = default;
 
         void setMeasureTextFromJava(std::function<int(const char *)> f) {
@@ -165,17 +178,6 @@ class COMMON_API QuantityFormatter
     };
 
   protected:
-    struct UnitSpecificOptions
-    {
-        double lowerLimit = 1;
-        double upperLimit = 1000;
-        const char *preferredBaseUnit = nullptr;
-        std::vector<const char *> allowedOutputUnits;
-
-        UnitSpecificOptions(double lowerLimit, double upperLimit, const char *preferredBaseUnit, std::vector<const char *> allowedOutputUnits) :
-            lowerLimit(lowerLimit), upperLimit(upperLimit), preferredBaseUnit(preferredBaseUnit), allowedOutputUnits(allowedOutputUnits)
-        { }
-    };
 
     struct State
     {
@@ -202,7 +204,6 @@ class COMMON_API QuantityFormatter
         char *lastNonZeroDigit = nullptr;
 
         // value converted to output unit
-        std::vector<const char *> allowedOutputUnits;
         double valueInOutputUnit = std::numeric_limits<double>::quiet_NaN();
         const char *outputUnit = nullptr;
 
@@ -226,7 +227,6 @@ class COMMON_API QuantityFormatter
 
   protected:
     const Options options;
-    std::map<std::string, UnitSpecificOptions> unitSpecificOptions;
 
   public:
     QuantityFormatter() { }
@@ -255,35 +255,10 @@ class COMMON_API QuantityFormatter
   protected:
     void checkInput(const Input& input);
     void checkOptions();
-    std::vector<const char *> getDefaultAllowedOutputUnits(const char *unit) const;
-    const UnitSpecificOptions& getUnitSpecificOptions(const char *unit);
     void clearDigitGroups(State& state);
     void clearStreams(State& state);
-    void determineSign(const Input& input, State& state);
+    void determineSign(State& state);
     int64_t shiftScore(int64_t score, int64_t increment, int numDigits);
-
-    /**
-     * Calculate score for a given unit conversion.
-     *
-     * Parameters for each candidate unit:
-     *   - base unit (e.g. b)
-     *   - preferred base unit for human consumption (e.g. B)
-     *   - preferred lower limit for human consumption (e.g. 1)
-     *   - preferred upper limit for human consumption (e.g. 1000)
-     *
-     * For each candidate unit calculate:
-     *   - value
-     *   - is integer (e.g. 123)
-     *   - greater than or equal to lower limit (e.g. >=1)
-     *   - smaller than upper limit (e.g. <1000)
-     *   - unit multiplier to preferred base unit (e.g. 1000)
-     *   - is decimal multiplier (e.g. 1000000 vs 8192)
-     *   - score based on the above
-     */
-    int64_t calculateUnitScore(double originalValue, const char *originalUnit, const char *unit);
-
-    const char *getBestUnit(double value, const char *unit, const std::vector<const char *>& allowedUnits);
-    void determineOutputUnit(const Input& input, State& state);
     void computeValueInOutputUnit(const Input& input, State& state);
     bool roundDigits(State& state, char *start, int length);
     void printAbsoluteValueInOutputUnit(State& state);
@@ -302,6 +277,7 @@ class COMMON_API QuantityFormatter
     void formatUnit(State& state);
 
     void format(State& state, const std::string& str, const char part);
+    void format(State& state, double d, const char part);
 
     template <typename T>
     void format(State& state, const T& t, const char part);
