@@ -31,7 +31,7 @@ static void print(double d, const char *unit)
 }
 
 %activity:
-for (std::string unit : UnitConversion::getAllUnits()) {
+for (std::string unit : UnitConversion::getKnownUnits()) {
     if (unit != UnitConversion::getBestUnit(0, unit.c_str()))
         throw cRuntimeError("Shouldn't change unit for a zero value!");
     for (double d : std::vector<double>({15200, 62.5, 0.0023}))

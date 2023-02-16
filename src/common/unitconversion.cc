@@ -539,7 +539,7 @@ bool UnitConversion::isLinearUnit(const char *unit)
     return unitDesc ? unitDesc->mapping == LINEAR : true;
 }
 
-std::vector<const char *> UnitConversion::getAllUnits()
+std::vector<const char *> UnitConversion::getKnownUnits()
 {
     std::vector<const char *> result;
     for (int i = 0; unitTable[i].unit; i++)

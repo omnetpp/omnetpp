@@ -96,7 +96,7 @@ std::vector<const char *> QuantityFormatter::getDefaultAllowedOutputUnits(const 
 {
     std::vector<const char *> units;
     const char *baseUnit = UnitConversion::getBaseUnit(unit);
-    for (auto unit : UnitConversion::getAllUnits())
+    for (auto unit : UnitConversion::getKnownUnits())
         if (opp_streq(baseUnit, UnitConversion::getBaseUnit(unit)))
             units.push_back(unit);
     return units;

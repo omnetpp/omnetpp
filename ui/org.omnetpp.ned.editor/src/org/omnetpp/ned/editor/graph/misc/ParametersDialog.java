@@ -989,7 +989,7 @@ public class ParametersDialog extends TitleAreaDialog {
 
     private String[] getUnitNames() {
         Set<String> unitNames = new HashSet<String>();
-        PStringVector units =  UnitConversion.getAllUnits();
+        PStringVector units =  UnitConversion.getKnownUnits();
         unitNames.add("");
 
         for (int i = 0; i < units.size(); i++) {
