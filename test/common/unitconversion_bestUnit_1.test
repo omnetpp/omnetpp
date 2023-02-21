@@ -14,9 +14,12 @@ using namespace omnetpp::common;
 static void print(double d, const char *unit)
 {
     const char *bestUnit = UnitConversion::getBestUnit(d, unit);
-    const char *bestUnit2 = UnitConversion::getBestUnit(-d, unit);
-    if (bestUnit != bestUnit2)
-        throw cRuntimeError("Behavior differs for negative numbers!");
+
+    if (UnitConversion::isLinearUnit(unit)) {
+        const char *bestUnit2 = UnitConversion::getBestUnit(-d, unit);
+        if (bestUnit != bestUnit2)
+            throw cRuntimeError("Behavior differs for negative numbers!");
+    }
 
     EV << d << unit << " --> ";
     if (strcmp(bestUnit,unit) == 0)
@@ -278,6 +281,10 @@ EV << ".\n";
 62.5g --> unchanged
 0.0023g --> unchanged
 
+15200t --> 1.52e+07kg
+62.5t --> 62500kg
+0.0023t --> 2.3kg
+
 15200K --> unchanged
 62.5K --> unchanged
 0.0023K --> unchanged
@@ -354,13 +361,13 @@ EV << ".\n";
 62.5mps --> unchanged
 0.0023mps --> unchanged
 
-15200kmps --> unchanged
-62.5kmps --> unchanged
-0.0023kmps --> unchanged
+15200kmps --> 1.52e+07mps
+62.5kmps --> 62500mps
+0.0023kmps --> 2.3mps
 
-15200kmph --> unchanged
-62.5kmph --> unchanged
-0.0023kmph --> unchanged
+15200kmph --> 4222.22mps
+62.5kmph --> 17.3611mps
+0.0023kmph --> 0.000638889mps
 
 15200C --> unchanged
 62.5C --> unchanged
@@ -382,13 +389,9 @@ EV << ".\n";
 62.5mAh --> unchanged
 0.0023mAh --> unchanged
 
-15200ratio --> unchanged
-62.5ratio --> unchanged
-0.0023ratio --> unchanged
-
-15200pct --> unchanged
-62.5pct --> unchanged
-0.0023pct --> unchanged
+15200x --> unchanged
+62.5x --> unchanged
+0.0023x --> unchanged
 
 -34dBW --> -4dBmW
 -18dBW --> 12dBmW
@@ -408,8 +411,8 @@ EV << ".\n";
 -18dBmW --> unchanged
 1dBmW --> unchanged
 11dBmW --> unchanged
-35dBmW --> unchanged
-70dBmW --> unchanged
+35dBmW --> 5dBW
+70dBmW --> 40dBW
 
 -34dBV --> 26dBmV
 -18dBV --> 42dBmV
@@ -423,7 +426,7 @@ EV << ".\n";
 1dBmV --> unchanged
 11dBmV --> unchanged
 35dBmV --> unchanged
-70dBmV --> unchanged
+70dBmV --> 10dBV
 
 -34dBA --> 26dBmA
 -18dBA --> 42dBmA
@@ -437,7 +440,7 @@ EV << ".\n";
 1dBmA --> unchanged
 11dBmA --> unchanged
 35dBmA --> unchanged
-70dBmA --> unchanged
+70dBmA --> 10dBA
 
 -34dB --> unchanged
 -18dB --> unchanged

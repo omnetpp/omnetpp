@@ -38,16 +38,16 @@ const double K8 = 8192.0;
 
 const UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
 #define _ LINEAR
-    { "d",   86400, _, "s",    "day",         "s ms us ns ps fs as" },
-    { "h",    3600, _, "s",    "hour",        "s ms us ns ps fs as" },
-    { "min",    60, _, "s",    "minute",      "s ms us ns ps fs as" }, // "m" is reserved for meter
-    { "s",       1, _, "s",    "second",      "s ms us ns ps fs as" },
-    { "ms",   1e-3, _, "s",    "millisecond", "s ms us ns ps fs as" },
-    { "us",   1e-6, _, "s",    "microsecond", "s ms us ns ps fs as" },
-    { "ns",   1e-9, _, "s",    "nanosecond",  "s ms us ns ps fs as" },
-    { "ps",  1e-12, _, "s",    "picosecond",  "s ms us ns ps fs as" },
-    { "fs",  1e-15, _, "s",    "femtosecond", "s ms us ns ps fs as" },
-    { "as",  1e-18, _, "s",    "attosecond",  "s ms us ns ps fs as" },
+    { "d",   86400, _, "s",    "day",         "d h min s ms us ns ps fs as" },
+    { "h",    3600, _, "s",    "hour",        "d h min s ms us ns ps fs as" },
+    { "min",    60, _, "s",    "minute",      "d h min s ms us ns ps fs as" }, // "m" is reserved for meter
+    { "s",       1, _, "s",    "second",      "d h min s ms us ns ps fs as" },
+    { "ms",   1e-3, _, "s",    "millisecond", "d h min s ms us ns ps fs as" },
+    { "us",   1e-6, _, "s",    "microsecond", "d h min s ms us ns ps fs as" },
+    { "ns",   1e-9, _, "s",    "nanosecond",  "d h min s ms us ns ps fs as" },
+    { "ps",  1e-12, _, "s",    "picosecond",  "d h min s ms us ns ps fs as" },
+    { "fs",  1e-15, _, "s",    "femtosecond", "d h min s ms us ns ps fs as" },
+    { "as",  1e-18, _, "s",    "attosecond",  "d h min s ms us ns ps fs as" },
     { "bps",     1, _, "bps",  "bit/sec",     "bps kbps Mbps Gbps Tbps" },
     { "kbps",  1e3, _, "bps",  "kilobit/sec", "bps kbps Mbps Gbps Tbps" },
     { "Mbps",  1e6, _, "bps",  "megabit/sec", "bps kbps Mbps Gbps Tbps" },
@@ -74,6 +74,7 @@ const UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial un
     { "rad",   1,   _, "rad",  "radian"  },
     { "deg",M_PI/180,_,"rad",  "degree"  },
     { "m",       1, _, "m",    "meter",      "km m mm um nm" },
+    { "dm",   1e-1, _, "m",    "decimeter",  "km m mm um nm" },
     { "cm",   1e-2, _, "m",    "centimeter", "km m mm um nm" },
     { "mm",   1e-3, _, "m",    "millimeter", "km m mm um nm" },
     { "um",   1e-6, _, "m",    "micrometer", "km m mm um nm" },
@@ -95,6 +96,7 @@ const UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial un
     { "THz",  1e12, _, "Hz",   "terahertz",  "Hz kHz MHz GHz THz" },
     { "kg",      1, _, "kg",   "kilogram",   "kg g" },
     { "g",    1e-3, _, "kg",   "gram",       "kg g" },
+    { "t",     1e3, _, "kg",   "tonne",      "kg g" },
     { "K",      1, _,  "K",    "kelvin" },
     { "J",       1, _, "J",    "joule",         "J kJ MJ" },
     { "kJ",    1e3, _, "J",    "kilojoule",     "J kJ MJ" },
@@ -114,24 +116,23 @@ const UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial un
     { "kOhm",  1e3, _, "Ohm",  "kiloohm",   "Ohm mOhm kOhm MOhm" },
     { "MOhm",  1e6, _, "Ohm",  "megaohm",   "Ohm mOhm kOhm MOhm" },
     { "mps",     1, _, "mps",  "meter/sec" },
-    { "kmps",  1e3, _, "mps",  "kilometer/sec" },
-    { "kmph",1/3.6, _, "mps",  "kilometer/hour" },
+    { "kmps",  1e3, _, "mps",  "kilometer/sec",  "mps" },
+    { "kmph",1/3.6, _, "mps",  "kilometer/hour", "mps" },
     { "C",       1, _, "As",   "coulomb" },
     { "As",      1, _, "As",   "ampere-second",      "As mAs" },
     { "mAs",  1e-3, _, "As",   "milliampere-second", "As mAs" },
     { "Ah",   3600, _, "As",   "ampere-hour",        "Ah mAh" },
     { "mAh",   3.6, _, "As",   "milliampere-hour",   "Ah mAh" },
-    { "ratio",   1, _, "ratio","ratio" },
-    { "pct",  0.01, _, "ratio","percent" },
+    { "x",       1, _, "x",    "times" },
     // logarithmic
-    { "dBW",    10, LOG10, "W",  "decibel-watt" },  // y = 10*log10(x)
-    { "dBm",    10, LOG10, "mW", "decibel-milliwatt" },
-    { "dBmW",   10, LOG10, "mW", "decibel-milliwatt" },
-    { "dBV",    20, LOG10, "V",  "decibel-volt" },
-    { "dBmV",   20, LOG10, "mV", "decibel-millivolt" },
-    { "dBA",    20, LOG10, "A",  "decibel-ampere" },
-    { "dBmA",   20, LOG10, "mA", "decibel-milliampere" },
-    { "dB",     20, LOG10, "ratio", "decibel" },
+    { "dBW",    10, LOG10, "W",  "decibel-watt",       "dBW dBmW" },  // y = 10*log10(x)
+    { "dBm",    10, LOG10, "mW", "decibel-milliwatt",  "dBW dBmW" },
+    { "dBmW",   10, LOG10, "mW", "decibel-milliwatt",  "dBW dBmW" },
+    { "dBV",    20, LOG10, "V",  "decibel-volt",       "dBV dBmV" },
+    { "dBmV",   20, LOG10, "mV", "decibel-millivolt",  "dBV dBmV" },
+    { "dBA",    20, LOG10, "A",  "decibel-ampere",     "dBA dBmA" },
+    { "dBmA",   20, LOG10, "mA", "decibel-milliampere","dBA dBmA" },
+    { "dB",     20, LOG10, "x",  "decibel" },
     { nullptr,  0,  _, nullptr, nullptr }
 #undef _
 };
