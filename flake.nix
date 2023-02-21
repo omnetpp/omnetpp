@@ -2,7 +2,8 @@
   description = "OMNeT++ Discrete Event Simulator";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-22.11";
+    #nixpkgs.url = "nixpkgs/nixos-22.11";
+    nixpkgs.url = "nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
