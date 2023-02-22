@@ -19,7 +19,6 @@
 #include "envirdefs.h"
 #include "omnetpp/ceventlooprunner.h"
 #include "omnetpp/csimulation.h"
-#include "stopwatch.h"
 #include "speedometer.h"
 
 namespace omnetpp {

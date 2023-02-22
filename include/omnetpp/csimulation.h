@@ -52,7 +52,7 @@ class cINedLoader;
 class cIRngManager;
 class cIEventLoopRunner;
 
-namespace envir {
+namespace internal {
 class Stopwatch;
 }
 
@@ -147,7 +147,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     simtime_t simTimeLimit = 0;         // simulation time limit (0 -> no limit)
     cEvent *endSimulationEvent = nullptr; // only present if simulation time limit is set
-    envir::Stopwatch *stopwatch;        // elapsed time, CPU usage time, and related time limits
+    internal::Stopwatch *stopwatch;        // elapsed time, CPU usage time, and related time limits
 
     State state = SIM_NONETWORK;        // simulation state
     Stage stage = STAGE_NONE;           // what the simulation is currently doing

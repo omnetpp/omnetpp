@@ -21,6 +21,7 @@
 #include <list>
 #include "envir/appbase.h"
 #include "envir/speedometer.h"
+#include "sim/stopwatch.h"
 #include "envir/inifilecontents.h"
 #include "omnetpp/cchannel.h"
 #include "omnetpp/cmodule.h"
@@ -160,7 +161,7 @@ class QTENV_API QtenvApp : public QObject, public AppBase
       bool doNextEventInStep = false;// true if the next event should be executed in STEP mode, or we should stop before
       Speedometer speedometer;
 
-      Stopwatch stopwatch;      // CPU and real time limit checking --TODO already in cSimulation, eliminate!!!
+      internal::Stopwatch stopwatch;      // CPU and real time limit checking --TODO already in cSimulation, eliminate!!!
       simtime_t simulatedTime;  // sim. time after finishing simulation
 
       bool insideIdle = false;      // set to true while the idle() callback method is on the call stack

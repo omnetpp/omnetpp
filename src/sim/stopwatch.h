@@ -13,21 +13,21 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OMNETPP_ENVIR_STOPWATCH_H
-#define __OMNETPP_ENVIR_STOPWATCH_H
+#ifndef __OMNETPP_STOPWATCH_H
+#define __OMNETPP_STOPWATCH_H
 
 #include <ctime>  // clock_t
-#include "envirdefs.h"
+#include "omnetpp/simkerneldefs.h"
 
 namespace omnetpp {
-namespace envir {
+namespace internal {
 
 /**
  * Internal class for keeping track of simulation elapsed time and CPU usage,
  * and implementing corresponding time limits. Modeled after a stopwatch with
  * Start/Stop/Reset buttons.
  */
-class ENVIR_API Stopwatch
+class SIM_API Stopwatch
 {
 private:
     // configuration
@@ -68,7 +68,7 @@ public:
     double getCPUUsageSecs();
 };
 
-}  // namespace envir
+}  // namespace internal
 }  // namespace omnetpp
 
 #endif

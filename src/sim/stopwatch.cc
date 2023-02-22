@@ -19,7 +19,7 @@
 #include "omnetpp/simutil.h"
 
 namespace omnetpp {
-namespace envir {
+namespace internal {
 
 Stopwatch::Stopwatch()
 {
@@ -124,6 +124,6 @@ double Stopwatch::getCPUUsageSecs()
     return elapsedClocks / (double)CLOCKS_PER_SEC;
 }
 
-}  // namespace envir
+}  // namespace internal
 }  // namespace omnetpp
 

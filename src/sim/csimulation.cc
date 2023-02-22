@@ -58,7 +58,7 @@
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 #include "sim/netbuilder/cnedloader.h"
 #include "envir/genericenvir.h"
-#include "envir/stopwatch.h"
+#include "stopwatch.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"

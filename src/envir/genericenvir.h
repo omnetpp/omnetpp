@@ -34,7 +34,6 @@
 #include "logformatter.h"
 #include "args.h"
 #include "envirdefs.h"
-#include "stopwatch.h"
 
 namespace omnetpp {
 
