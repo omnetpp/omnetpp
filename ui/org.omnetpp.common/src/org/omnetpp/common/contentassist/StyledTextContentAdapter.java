@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Control;
 /**
  * Implementation of <code>IControlContentAdapterEx</code> for StyledText widgets.
  * A copy of JFace's TextContentAdapter, adapted for StyledText widgets, and new method added.
- * 
+ *
  * @author andras
  */
 public class StyledTextContentAdapter implements IControlContentAdapter,
@@ -68,11 +68,10 @@ public class StyledTextContentAdapter implements IControlContentAdapter,
     }
 
     public void replaceControlContents(Control control, int start, int end, String text, int cursorPosition) {
-        System.out.println("StyledTextContentAdapter.replaceControlContents(" + control + ", start=" + start + ", end=" + end + ", '" + text + "', " + cursorPosition + ")");
         StyledText textControl = (StyledText)control;
         textControl.setSelection(start, end);
         textControl.insert(text);
         textControl.setSelection(start + cursorPosition, start + cursorPosition);
     }
-    
+
 }
