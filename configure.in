@@ -913,7 +913,7 @@ if test "$WITH_QTENV" = "yes"; then
         QT_CFLAGS=${QT_CFLAGS:-"-isystem $QT_INSTALL_HEADERS"}
         QT_LIBS=${QT_LIBS:-"-lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL $LDFLAG_LIBPATH$QT_INSTALL_LIBS"}
         if test -z "$RPATH_UNSUPPORTED"; then
-            QTENV_LDFLAGS="-Wl,-rpath=$QT_INSTALL_LIBS"
+            QTENV_LDFLAGS="-Wl,-rpath,$QT_INSTALL_LIBS"
         fi
 
 QT_VERSIONCHECK_CODE=$(cat <<-EOT
