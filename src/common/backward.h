@@ -359,8 +359,8 @@ typedef int ssize_t;
 #endif
 
 #ifdef _MSC_VER
-#pragma comment(lib, "psapi.lib")
-#pragma comment(lib, "dbghelp.lib")
+#pragma comment(lib, "psapi")
+#pragma comment(lib, "dbghelp")
 #endif
 
 // Comment / packing is from stackoverflow:

@@ -63,6 +63,13 @@ distributed under the MIT License (https://opensource.org/licenses/MIT).
 
 sgr_macro.h is part of the OMNEST/OMNeT++ source code.
 
+backward-cpp
+------------
+A stack trace pretty printer for C++ (https://github.com/bombela/backward-cpp)
+distributed under the MIT License (https://opensource.org/licenses/MIT).
+
+backward.h is part of the OMNEST/OMNeT++ source code.
+
 
 Fira Code font
 --------------
