@@ -213,15 +213,19 @@ unsigned cCoroutine::getStackUsage() const
 OPP_THREAD_LOCAL unsigned cCoroutine::totalStack;
 OPP_THREAD_LOCAL unsigned cCoroutine::mainStack;
 
-void cCoroutine::init(unsigned totalStackReq, unsigned mainStackReq)
+void cCoroutine::init(unsigned totalStackRequested, unsigned mainStackRequested)
 {
-    if (totalStack != 0)
-        return; // already initialized
-    if (totalStack != totalStackReq || mainStack != mainStackReq)
-        throw cRuntimeError("cCoroutine::init(): Cannot change total stack size or main stack size after first the initialization (original size=%u/%u, new size=%u/%u)", totalStack, mainStack, totalStackReq, mainStackReq);
-    totalStack = totalStackReq;
-    mainStack = mainStackReq;
-    task_init(totalStack, mainStack);
+    if (totalStack == 0) {
+        // first call
+        totalStack = totalStackRequested;
+        mainStack = mainStackRequested;
+        task_init(totalStack, mainStack);
+    }
+    else {
+        // subsequent calls
+        if (totalStack < totalStackRequested || mainStack < mainStackRequested)
+            throw cRuntimeError("cCoroutine::init(): Cannot increase total stack size or main stack size after the first initialization (original size=%u/%u, new size=%u/%u)", totalStack, mainStack, totalStackRequested, mainStackRequested);
+    }
 }
 
 void cCoroutine::switchTo(cCoroutine *cor)
