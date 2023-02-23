@@ -107,6 +107,11 @@ PREFER_SQLITE_RESULT_FILES=no
 WITH_SYSTEMC=no
 
 #
+# Set to "no" to disable backtrace printing on exceptions.
+#
+WITH_BACKTRACE=yes
+
+#
 # Set to no if you want to create static OMNeT++ libraries. Can be overriden
 # with "make SHARED_LIBS=no" but then simulation models also need to be built
 # with "make SHARED_LIBS=no"

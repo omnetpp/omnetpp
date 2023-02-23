@@ -197,9 +197,9 @@ LIB_PREFIX="lib"
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-SANITIZE_FLAGS=${SANITIZE_FLAGS:- -fsanitize=leak,address,undefined}
+SANITIZE_FLAGS=${SANITIZE_FLAGS:- -g1 -fsanitize=leak,address,undefined}
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -O0 -Wall}
-CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1 -ffp-contract=off}
+CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1 -g1 -ffp-contract=off}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
 CXXFLAGS=${CXXFLAGS:-}
@@ -721,6 +721,21 @@ fi
 
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
+#----------------------
+# Check for libraries allowing stack unwinding and debug info parsing to create backtraces
+#----------------------
+BACKWARD_LDFLAGS=
+if test $WITH_BACKTRACE = "yes"; then
+  OPP_CHECK_LIB(libdw for backward stacktrace, elfutils/libdw.h, , ,-ldw, bw_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -ldw" DEFINES="$DEFINES -DBACKWARD_HAS_DW=1",)
+  if test "$bw_found" != "yes"; then
+    OPP_CHECK_LIB(libelf and libdwarf for backward stacktrace, libdwarf/dwarf.h, , ,-lelf -ldwarf, bw_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lelf -ldwarf" DEFINES="$DEFINES -DBACKWARD_HAS_DWARF=1",)
+  fi
+
+  # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
+  if test "$bw_found" != "yes"; then
+    OPP_CHECK_LIB(psapi and dbghelp for backward stacktrace, windows.h, , ,-lpsapi -ldbghelp, psapi_dbghelp_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp",)
+  fi
+fi
 
 #----------------------
 # Check for rpath
@@ -881,11 +896,13 @@ if test "$TOOLCHAIN_NAME" != "clang-msabi"; then
   fi
 
   # Check for standard C++ library
-  OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
-  # standard C++ library for clang on Mac
+  OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lc++, stdcpp_ok, SYS_LIBS="-lc++ $SYS_LIBS")
+
+  # standard C++ library for GCC (stdc++)
   if test $stdcpp_ok = no; then
-      OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lc++, stdcpp_ok, SYS_LIBS="-lc++ $SYS_LIBS")
+    OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lstdc++, stdcpp_ok, SYS_LIBS="-lstdc++ $SYS_LIBS")
   fi
+  
   # standard C++ library for the intel compiler
   if test $stdcpp_ok = no; then
       OPP_CHECK_LIB(standard C++ lib, iostream, /**/, $CFLAGS, -lcxa, stdcpp_ok, SYS_LIBS="-lcxa $SYS_LIBS")
@@ -1299,6 +1316,7 @@ AC_SUBST(HAVE_SWAPCONTEXT)
 AC_SUBST(QT_CFLAGS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QTENV_LDFLAGS)
+AC_SUBST(BACKWARD_LDFLAGS)
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
 AC_SUBST(OSG_CFLAGS)
@@ -1324,6 +1342,7 @@ AC_SUBST(WITH_OSG)
 AC_SUBST(WITH_OSGEARTH)
 AC_SUBST(WITH_AKAROA)
 AC_SUBST(WITH_SYSTEMC)
+AC_SUBST(WITH_BACKTRACE)
 AC_SUBST(PREFER_SQLITE_RESULT_FILES)
 
 AC_SUBST(SWIG)

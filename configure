@@ -618,6 +618,7 @@ LIBOBJS
 ARCH
 PLATFORM
 PREFER_SQLITE_RESULT_FILES
+WITH_BACKTRACE
 WITH_SYSTEMC
 WITH_AKAROA
 WITH_OSGEARTH
@@ -642,6 +643,7 @@ OSG_LIBS
 OSG_CFLAGS
 LIBXML_LIBS
 LIBXML_CFLAGS
+BACKWARD_LDFLAGS
 QTENV_LDFLAGS
 QT_LIBS
 QT_CFLAGS
@@ -2847,9 +2849,9 @@ LIB_PREFIX="lib"
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-SANITIZE_FLAGS=${SANITIZE_FLAGS:- -fsanitize=leak,address,undefined}
+SANITIZE_FLAGS=${SANITIZE_FLAGS:- -g1 -fsanitize=leak,address,undefined}
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -O0 -Wall}
-CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1 -ffp-contract=off}
+CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1 -g1 -ffp-contract=off}
 CFLAGS=${CFLAGS:-}
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
 CXXFLAGS=${CXXFLAGS:-}
@@ -3862,11 +3864,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++11 features" >&5
 printf %s "checking for $CXX option to enable C++11 features... " >&6; }
-if test ${ac_cv_prog_cxx_11+y}
+if test ${ac_cv_prog_cxx_cxx11+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_11=no
+  ac_cv_prog_cxx_cxx11=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -3908,11 +3910,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++98 features" >&5
 printf %s "checking for $CXX option to enable C++98 features... " >&6; }
-if test ${ac_cv_prog_cxx_98+y}
+if test ${ac_cv_prog_cxx_cxx98+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_98=no
+  ac_cv_prog_cxx_cxx98=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4939,6 +4941,123 @@ fi
 
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
+#----------------------
+# Check for libraries allowing stack unwinding and debug info parsing to create backtraces
+#----------------------
+BACKWARD_LDFLAGS=
+if test $WITH_BACKTRACE = "yes"; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
+   LIBS="-ldw"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libdw for backward stacktrace with CFLAGS=\"\" LIBS=\"-ldw\"" >&5
+printf %s "checking for libdw for backward stacktrace with CFLAGS=\"\" LIBS=\"-ldw\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <elfutils/libdw.h>
+int
+main (void)
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; bw_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -ldw" DEFINES="$DEFINES -DBACKWARD_HAS_DW=1"
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; bw_found=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+  if test "$bw_found" != "yes"; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
+   LIBS="-lelf -ldwarf"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libelf and libdwarf for backward stacktrace with CFLAGS=\"\" LIBS=\"-lelf -ldwarf\"" >&5
+printf %s "checking for libelf and libdwarf for backward stacktrace with CFLAGS=\"\" LIBS=\"-lelf -ldwarf\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <libdwarf/dwarf.h>
+int
+main (void)
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; bw_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lelf -ldwarf" DEFINES="$DEFINES -DBACKWARD_HAS_DWARF=1"
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; bw_found=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+  fi
+
+  # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
+  if test "$bw_found" != "yes"; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
+   LIBS="-lpsapi -ldbghelp"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"" >&5
+printf %s "checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <windows.h>
+int
+main (void)
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; psapi_dbghelp_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp"
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; psapi_dbghelp_found=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+  fi
+fi
 
 #----------------------
 # Check for rpath
@@ -5626,43 +5745,6 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
    save_LIBS=$LIBS
 
    CXXFLAGS="$CFLAGS"
-   LIBS="-lstdc++"
-
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lstdc++\"" >&5
-printf %s "checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lstdc++\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <iostream>
-int
-main (void)
-{
-/**/;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; stdcpp_ok=yes; SYS_LIBS="-lstdc++ $SYS_LIBS"
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }; stdcpp_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-  # standard C++ library for clang on Mac
-  if test $stdcpp_ok = no; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS"
    LIBS="-lc++"
 
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lc++\"" >&5
@@ -5693,7 +5775,46 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
    CXXFLAGS=$save_CXXFLAGS
    LIBS=$save_LIBS
 
+
+  # standard C++ library for GCC (stdc++)
+  if test $stdcpp_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$CFLAGS"
+   LIBS="-lstdc++"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lstdc++\"" >&5
+printf %s "checking for standard C++ lib with CFLAGS=\"$CFLAGS\" LIBS=\"-lstdc++\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <iostream>
+int
+main (void)
+{
+/**/;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; stdcpp_ok=yes; SYS_LIBS="-lstdc++ $SYS_LIBS"
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; stdcpp_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
   fi
+
   # standard C++ library for the intel compiler
   if test $stdcpp_ok = no; then
 
@@ -7278,6 +7399,8 @@ ac_config_headers="$ac_config_headers include/omnetpp/platdep/config.h"
 #----------------------
 # Substitutions.
 #----------------------
+
+
 
 
 

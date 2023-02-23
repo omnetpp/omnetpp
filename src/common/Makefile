@@ -28,6 +28,7 @@ INCL_FLAGS= -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)"
 
 COPTS=-Wno-unused-function $(CFLAGS) $(LIBXML_CFLAGS) $(INCL_FLAGS)
 
+LDFLAGS+= $(BACKWARD_LDFLAGS)
 IMPLIBS= $(LIBXML_LIBS)
 
 OBJS= $O/lcgrandom.o $O/filelock.o $O/filereader.o $O/linetokenizer.o \
@@ -42,6 +43,10 @@ OBJS= $O/lcgrandom.o $O/filelock.o $O/filereader.o $O/linetokenizer.o \
       $O/omnetppscalarfilewriter.o $O/omnetppvectorfilewriter.o \
       $O/exprnode.o $O/exprnodes.o $O/exprvalue.o $O/intutil.o $O/any_ptr.o \
       $O/saxparser_default.o $O/saxparser_libxml.o $O/saxparser_yxml.o $O/yxml.o
+
+ifeq ($(WITH_BACKTRACE),yes)
+  OBJS+= $O/backward.o
+endif
 
 GENERATED_SOURCES= expression.tab.h expression.tab.cc expression.lex.cc expression.lex.h \
                    matchexpression.tab.h matchexpression.tab.cc
