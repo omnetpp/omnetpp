@@ -44,6 +44,8 @@ using namespace omnetpp::common;
 
 namespace omnetpp {
 
+static std::recursive_mutex signalRegistrationsMutex;
+
 Register_PerObjectConfigOption(CFGID_DISPLAY_STRING, "display-string", KIND_COMPONENT, CFG_STRING, nullptr, "Additional display string for the module/channel; it will be merged into the display string given via `@display` properties, and override its content.");
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you will need for result analysis.");
 
@@ -504,8 +506,6 @@ int cComponent::SignalListenerList::findListener(cIListener *l) const
             return k;
     return -1;
 }
-
-static std::recursive_mutex signalRegistrationsMutex;
 
 simsignal_t cComponent::registerSignal(const char *name)
 {
