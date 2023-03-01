@@ -382,6 +382,14 @@ public class DataTable extends LargeTable implements IDataControl {
 
         saveState();
         refresh();
+
+        // Workaround: Without the following, the right ~80% of the table disappears after OKing the
+        // "Choose table columns" dialog, because the width of the ScrolledComposite's Composite child
+        // becomes too small.
+        //UIUtils.dumpLayout(this); // for debugging the layout
+
+        composite.setSize(composite.computeSize(-1, -1));
+        composite.layout(true);
     }
 
     public IDList getSelectedIDs() {
