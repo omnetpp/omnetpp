@@ -1194,37 +1194,32 @@ public class VirtualTable<T>
     }
 }
 
+/**
+ * The layout for the Composite that contains the Table (draws header row)
+ * and the Canvas (draws table content).
+ */
 class VirtualTableCompositeLayout extends Layout {
-    private final static boolean debug = false;
-
     @Override
     protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
+        Composite scrolledComposite = composite.getParent();
         Table table = (Table)composite.getChildren()[1];
-        Rectangle r = composite.getParent().getClientArea();
-
-        return new Point(table.getSize().x, r.height);
+        int height = scrolledComposite.getClientArea().height; // about the LargeTable widget's height (note: NOT rowHeight*numRows!)
+        int width = table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x; // about the sum of the column widths
+        return new Point(width, height);
     }
 
     @Override
     protected void layout(Composite composite, boolean flushCache) {
-        if (composite.getChildren().length == 2) {
-            Canvas canvas = (Canvas)composite.getChildren()[0];
-            Table table = (Table)composite.getChildren()[1];
+        Composite scrolledComposite = composite.getParent();
+        Assert.isTrue(composite.getChildren().length == 2);
+        Canvas canvas = (Canvas)composite.getChildren()[0]; // content (rows)
+        Table table = (Table)composite.getChildren()[1]; // header
 
-            Rectangle r = composite.getParent().getClientArea();
-            int headerHeight = table.getHeaderHeight();
+        int height = scrolledComposite.getClientArea().height;
+        int width = table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+        int headerHeight = table.getHeaderHeight();
 
-            if (debug)
-                Debug.println("Relayouting virtual table: " + r.height);
-
-            canvas.setBounds(0, headerHeight, table.getSize().x, r.height - headerHeight);
-
-            int sumColumnWidth = 0;
-            for (int i = 0; i < table.getColumnCount(); i++)
-                sumColumnWidth += table.getColumn(i).getWidth();
-
-            if (r.width > sumColumnWidth)
-                table.setSize(r.width, table.getSize().y);
-        }
+        table.setBounds(0, 0, width, headerHeight);
+        canvas.setBounds(0, headerHeight, width, height - headerHeight);
     }
 }
