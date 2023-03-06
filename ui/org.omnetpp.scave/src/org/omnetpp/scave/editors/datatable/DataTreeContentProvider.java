@@ -587,6 +587,7 @@ public class DataTreeContentProvider {
             return index == 0 ? label : "";
         }
 
+        @Override
         public Image getImage() {
             return image;
         }
@@ -673,6 +674,7 @@ public class DataTreeContentProvider {
             return index == 0 ? name + " (experiment)" : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_EXPERIMENT);
         }
@@ -712,6 +714,7 @@ public class DataTreeContentProvider {
             return index == 0 ? StringUtils.defaultIfEmpty(name, "default")  + " (measurement)" : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_MEASUREMENT);
         }
@@ -751,6 +754,7 @@ public class DataTreeContentProvider {
             return index == 0 ? name + " (replication)" : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_REPLICATION);
         }
@@ -796,6 +800,7 @@ public class DataTreeContentProvider {
             return index == 0 ? experiment + (StringUtils.isEmpty(measurement) ? "" : " : " + measurement) + " : " + replication : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
@@ -858,6 +863,7 @@ public class DataTreeContentProvider {
             return index == 0 ? name + " (config)" : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CONFIGURATION);
         }
@@ -897,6 +903,7 @@ public class DataTreeContentProvider {
             return index == 0 ? runNumber + " (run number)" : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUNNUMBER);
         }
@@ -939,6 +946,7 @@ public class DataTreeContentProvider {
             return index == 0 ? config + " - #" + runNumber : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
@@ -989,6 +997,7 @@ public class DataTreeContentProvider {
             return index == 0 ? fileName + " (file name)" : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(fileName.endsWith(".vec") ? ScaveImages.IMG_VECFILE : ScaveImages.IMG_SCAFILE);
         }
@@ -1028,6 +1037,7 @@ public class DataTreeContentProvider {
             return index == 0 ? runId + " (run id)" : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
@@ -1070,6 +1080,7 @@ public class DataTreeContentProvider {
             return index == 0 ? fileName + " : " + runId : value;
         }
 
+        @Override
         public Image getImage() {
             return ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_RUN);
         }
