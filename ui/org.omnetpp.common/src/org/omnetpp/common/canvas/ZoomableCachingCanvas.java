@@ -144,12 +144,12 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
 
     public long toVirtualX(double xCoord) {
         double x = (xCoord - minX)*zoomX;
-        return (long)x;
+        return (long)Math.round(x);
     }
 
     public long toVirtualY(double yCoord) {
         double y = (maxY - yCoord)*zoomY;
-        return (long)y;
+        return (long)Math.round(y);
     }
 
     public double fromVirtualX(long x) {
@@ -213,6 +213,18 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
         }
     }
 
+    public void setZoomX(double zoomX, int aroundCanvasX) {
+        double newZoomX = Math.min(Math.max(zoomX, getMinZoomX()), getMaxZoomX());
+        if (newZoomX != this.zoomX) {
+            double aroundX = fromCanvasX(aroundCanvasX);
+            double oldZoomX = this.zoomX;
+            this.zoomX = newZoomX;
+            updateVirtualSize(); // includes clearCache + redraw
+            scrollHorizontalTo(toVirtualX(aroundX) - aroundCanvasX + getLeftInset());
+            firePropertyChangeEvent(PROP_ZOOM_X, oldZoomX, newZoomX);
+        }
+    }
+
     public double getMinZoomY() {
         checkAreaAndViewPort();
         return getViewportHeight() / (maxY - minY);
@@ -232,6 +244,18 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
             this.zoomY = newZoomY;
             updateVirtualSize(); // includes clearCache + redraw
             centerYOn(oldY);
+            firePropertyChangeEvent(PROP_ZOOM_Y, oldZoomY, newZoomY);
+        }
+    }
+
+    public void setZoomY(double zoomY, int aroundCanvasY) {
+        double newZoomY = Math.min(Math.max(zoomY, getMinZoomY()), getMaxZoomY());
+        if (newZoomY != this.zoomY) {
+            double oldY = fromCanvasY(aroundCanvasY);
+            double oldZoomY = this.zoomY;
+            this.zoomY = newZoomY;
+            updateVirtualSize(); // includes clearCache + redraw
+            scrollVerticalTo(toVirtualY(oldY) - aroundCanvasY + getTopInset());
             firePropertyChangeEvent(PROP_ZOOM_Y, oldZoomY, newZoomY);
         }
     }
@@ -258,13 +282,11 @@ public abstract class ZoomableCachingCanvas extends CachingCanvas implements ICo
     }
 
     public void zoomXBy(double zoomFactor, int canvasX) {
-        zoomXBy(zoomFactor);
-        centerXOn(fromCanvasX(canvasX));
+        setZoomX(zoomX * zoomFactor, canvasX);
     }
 
     public void zoomYBy(double zoomFactor, int canvasY) {
-        zoomYBy(zoomFactor);
-        centerYOn(fromCanvasY(canvasY));
+        setZoomY(zoomY * zoomFactor, canvasY);
     }
 
     public void zoomBy(double zoomFactor, int canvasX, int canvasY) {
