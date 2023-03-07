@@ -13,6 +13,7 @@
 #undef WITH_AKAROA
 #undef WITH_SYSTEMC
 
+#undef WITH_SHARED_LIBS
 
 // Detected properties of the platform:
 #undef HAVE_DLOPEN

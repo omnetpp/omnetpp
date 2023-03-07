@@ -74,7 +74,14 @@
 #  endif
 #endif
 
-#define OPP_THREAD_LOCAL  thread_local
+// When building a shared library on Windows, some static thread_local variables would be exported with __declspec(dllexport)
+// which is not allowed by Windows. We do NOT support multithreaded execution of the simulation on Windows when the
+// simulation libarary is built as a shared lib.
+#if defined(_WIN32) && defined(WITH_SHARED_LIBS)
+#  define OPP_THREAD_LOCAL  /**/
+#else
+#  define OPP_THREAD_LOCAL  thread_local
+#endif
 
 #endif
 

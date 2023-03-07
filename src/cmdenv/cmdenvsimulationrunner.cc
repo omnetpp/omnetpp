@@ -124,6 +124,11 @@ CmdenvSimulationRunner::BatchResult CmdenvSimulationRunner::runParameterStudy(In
 
     bool threaded = numThreads != 1;
 
+#if defined(_WIN32) && defined(WITH_SHARED_LIBS)
+    if (threaded)
+        throw cRuntimeError("Multi-threaded execution is not supported on Windows when the simulation library is built as a DLL.");
+#endif
+
     BatchResult result;
     result.numRuns = (int)runNumbers.size();
 

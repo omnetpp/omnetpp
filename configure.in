@@ -1187,6 +1187,9 @@ if test "$WITH_SYSTEMC" = "yes"; then
   AC_DEFINE([WITH_SYSTEMC], [], [])
 fi
 
+if test "$SHARED_LIBS" = "yes"; then
+  AC_DEFINE([WITH_SHARED_LIBS], [], [])
+fi
 
 if test "$HAVE_DLOPEN" = "1"; then
   AC_DEFINE([HAVE_DLOPEN], [1], [])

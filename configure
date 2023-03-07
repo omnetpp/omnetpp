@@ -7210,6 +7210,10 @@ if test "$WITH_SYSTEMC" = "yes"; then
 
 fi
 
+if test "$SHARED_LIBS" = "yes"; then
+  printf "%s\n" "#define WITH_SHARED_LIBS /**/" >>confdefs.h
+
+fi
 
 if test "$HAVE_DLOPEN" = "1"; then
   printf "%s\n" "#define HAVE_DLOPEN 1" >>confdefs.h
