@@ -144,11 +144,22 @@ public class ZoomableCanvasMouseSupport {
 
             int modifier = event.stateMask & SWT.MODIFIER_MASK;
             if ((mouseMode==ZOOM_MODE && modifier==SWT.NONE) || (mouseMode==PAN_MODE && modifier==SWT.MOD1)) {
+                boolean isOverPlotArea = canvas.getViewportRectangle().contains(event.x, event.y);
+                boolean isOverXAxis = event.y < canvas.getViewportRectangle().y || event.y > canvas.getViewportRectangle().bottom();
+                boolean isOverYAxis = event.x < canvas.getViewportRectangle().x || event.x > canvas.getViewportRectangle().right();
                 // zoom in/out
-                for (int i = 0; i < event.count; i++)
-                    canvas.zoomBy(1.1);
-                for (int i = 0; i < -event.count; i++)
-                    canvas.zoomBy(1.0 / 1.1);
+                if (isOverPlotArea) {
+                    canvas.zoomBy(Math.pow(1.1, event.count), event.x, event.y);
+                    event.doit = false;
+                }
+                else if (isOverXAxis) {
+                    canvas.zoomXBy(Math.pow(1.1, event.count), event.x);
+                    event.doit = false;
+                }
+                else if (isOverYAxis) {
+                    canvas.zoomYBy(Math.pow(1.1, event.count), event.y);
+                    event.doit = false;
+                }
             }
             else if (modifier==SWT.SHIFT) {
                 // if not zooming: shift+wheel does horizontal scroll
