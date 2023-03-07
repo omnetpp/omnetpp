@@ -18,6 +18,7 @@
 
 #include "simkerneldefs.h" // for WITH_PYTHONSIM
 
+#include <atomic>
 #include <functional>
 #include <map>
 
@@ -126,6 +127,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     static OPP_THREAD_LOCAL cEnvir *activeEnvir;
     static OPP_THREAD_LOCAL cEnvir *staticEnvir; // the environment to activate when activeSimulation becomes nullptr
 
+    typedef cEnvir *(*EnvirFactoryFunction)();
+    static std::atomic<EnvirFactoryFunction> envirFactoryFunction;
+
     // variables of the module vector
     int size = 0;                       // size of componentv[]
     int delta = 32;                     // if needed, grows by delta
@@ -214,6 +218,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
   public:
     // internal
+    static void setEnvirFactoryFunction(EnvirFactoryFunction f);
     void setParameterMutabilityCheck(bool b) {parameterMutabilityCheck = b;}
     bool getParameterMutabilityCheck() const {return parameterMutabilityCheck;}
     void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}

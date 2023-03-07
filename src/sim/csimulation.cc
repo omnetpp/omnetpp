@@ -57,7 +57,6 @@
 #include "omnetpp/clog.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
 #include "sim/netbuilder/cnedloader.h"
-#include "envir/genericenvir.h"
 #include "stopwatch.h"
 
 #ifdef WITH_PARSIM
@@ -76,7 +75,6 @@
 #endif
 
 using namespace omnetpp::common;
-using namespace omnetpp::envir;
 using namespace omnetpp::internal;
 
 namespace omnetpp {
@@ -153,7 +151,10 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
     nedLoader = loader ? loader : new cNedLoader();
     nedLoaderOwned = (loader == nullptr); // only owned if we created it
 
-    envir = env ? env : new GenericEnvir();
+    EnvirFactoryFunction creator = envirFactoryFunction.load();
+    envir = env ? env : creator ? creator() : nullptr;
+    if (!envir)
+        throw cRuntimeError("cSimulation constructor: No environment (cEnvir) object passed in, and could not create a default one (missing or incorrect factory function?)");
     envir->setSimulation(this);
 
     stopwatch = new Stopwatch;
@@ -239,6 +240,11 @@ void cSimulation::setStaticEnvir(cEnvir *env)
     if (!env)
         throw cRuntimeError("cSimulation::setStaticEnvir(): Argument cannot be nullptr");
     staticEnvir = env;
+}
+
+void cSimulation::setEnvirFactoryFunction(EnvirFactoryFunction f)
+{
+    envirFactoryFunction.store(f);
 }
 
 void cSimulation::forEachChild(cVisitor *v)
@@ -1593,6 +1599,8 @@ OPP_THREAD_LOCAL StaticEnv staticEnv;
 OPP_THREAD_LOCAL cEnvir *cSimulation::activeEnvir = &staticEnv;
 OPP_THREAD_LOCAL cEnvir *cSimulation::staticEnvir = &staticEnv;
 OPP_THREAD_LOCAL cSimulation *cSimulation::activeSimulation = nullptr;
+
+std::atomic<cSimulation::EnvirFactoryFunction> cSimulation::envirFactoryFunction;
 
 }  // namespace omnetpp
 
