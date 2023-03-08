@@ -28,6 +28,8 @@
 #undef min
 #undef max
 
+#include "platdefs.h"
+
 // Winsock prefixes error codes with "WS"
 #define SOCKETERR(x)  WS#x
 inline int sock_errno()  {return WSAGetLastError();}

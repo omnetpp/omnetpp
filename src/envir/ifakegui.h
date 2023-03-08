@@ -29,7 +29,7 @@ class cGate;
 
 namespace envir {
 
-class IFakeGUI
+class ENVIR_API IFakeGUI
 {
   public:
     IFakeGUI() {}

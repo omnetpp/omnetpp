@@ -33,7 +33,7 @@ namespace envir {
 typedef std::map<std::string, std::string> StringMap;
 typedef std::vector<std::pair<std::string, std::string>> OrderedKeyValueList;
 
-class ResultFileUtils
+class ENVIR_API ResultFileUtils
 {
   private:
     cConfiguration *cfg;
