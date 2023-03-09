@@ -19,7 +19,6 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.DoubleVector;
 import org.omnetpp.scave.engine.FileRun;
 import org.omnetpp.scave.engine.Histogram;
@@ -394,7 +393,7 @@ public class DataTreeContentProvider {
         ids.append(values);
     }
 
-    protected String toIntegerAwareString(double value, boolean isIntegerType) {
+    protected String toIntegerAwareString(double value, boolean isIntegerType) { //????
         if (!isIntegerType || Double.isInfinite(value) || Double.isNaN(value) || Math.floor(value) != value)
             return formatNumber(value);
         else
@@ -402,11 +401,11 @@ public class DataTreeContentProvider {
     }
 
     protected String formatNumber(double d) {
-        return ScaveUtil.formatNumber(d, getNumericPrecision());
+        return StringUtils.formatNumber(d); //TODO
     }
 
     protected String formatNumber(BigDecimal d) {
-        return ScaveUtil.formatNumber(d, getNumericPrecision());
+        return StringUtils.formatNumber(d);  //TODO
     }
 
     protected static String getModulePrefix(final List<Node> path, Node nodeLimit) {
