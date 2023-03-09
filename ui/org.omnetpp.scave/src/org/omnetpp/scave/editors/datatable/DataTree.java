@@ -391,4 +391,59 @@ public class DataTree extends Tree implements IDataControl {
         }
         preferenceStore.setValue(DATA_TREE_LEVELS, levelClassNames.toString());
     }
+
+    @Override
+    public boolean getShowNetworkNames() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setShowNetworkNames(boolean showNetworkName) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean getColorNetworkNames() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setColorNetworkNames(boolean colorNetworkNames) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean getColorResultSuffixes() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setColorResultSuffixes(boolean colorResultSuffixes) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean getColorNumberSeparators() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setColorNumberSeparators(boolean colorNumberSeparators) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public boolean getColorMeasurementUnits() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void setColorMeasurementUnits(boolean colorMeasurementUnits) {
+        // TODO Auto-generated method stub
+    }
 }
