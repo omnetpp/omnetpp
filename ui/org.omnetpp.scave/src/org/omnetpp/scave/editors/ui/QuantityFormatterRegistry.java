@@ -8,6 +8,7 @@
 package org.omnetpp.scave.editors.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,10 +40,13 @@ public class QuantityFormatterRegistry
         catch (Exception e) {
             ScavePlugin.logError("Could not restore quantity formatting rules", e);
         }
-        if (rules.isEmpty()) {
-            // add at least a catch-all rule
-            rules.add(new QuantityFormattingRule("Default", true, "", new QuantityFormatter.Options(), "12345.678912"));
-        }
+        if (rules.isEmpty())
+            setRules(makeDefaults());
+    }
+
+    public List<QuantityFormattingRule> makeDefaults() {
+        QuantityFormattingRule defaultRule = new QuantityFormattingRule("Default formatting", true, "*", new QuantityFormatter.Options(), "10ms, -0.123456, 100200300400.5");
+        return Arrays.asList(new QuantityFormattingRule[] { defaultRule });
     }
 
     public QuantityFormatter getQuantityFormatter(IMatchableObject matchableObject) {
