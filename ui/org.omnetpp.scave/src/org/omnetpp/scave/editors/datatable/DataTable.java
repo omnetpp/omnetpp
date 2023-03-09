@@ -112,11 +112,12 @@ public class DataTable extends LargeTable implements IDataControl {
         COL_PARAM_VALUE("Value", null, 120, true, true),
         COL_SCALAR_VALUE("Value", null, 120, true, true),
         COL_KIND("Kind", null, 40, true, false),
+        COL_ISWEIGHTED("Weighted", null, 80, true, true),
         COL_COUNT("Count", null, 80, true, true),
-        COL_SUMWEIGHTS("SumWeights", null, 120, true, true),
+        COL_SUMWEIGHTS("Sum Weights", null, 120, false, true),
         COL_MEAN("Mean", null, 120, true, true),
         COL_STDDEV("StdDev", null, 120, true, true),
-        COL_VARIANCE("Variance", null, 120, true, true),
+        COL_VARIANCE("Variance", null, 120, false, true),
         COL_MIN("Min", null, 120, false, true),
         COL_MAX("Max", null, 120, false, true),
         COL_NUMBINS("#Bins", null, 40, true, true),
@@ -184,7 +185,7 @@ public class DataTable extends LargeTable implements IDataControl {
         public static final ColumnRole[] ALL_HISTOGRAM_COLUMNS = new ColumnRole[] {
                 COL_DIRECTORY, COL_FILE, COL_CONFIG, COL_RUNNUMBER, COL_RUN_ID,
                 COL_EXPERIMENT, COL_MEASUREMENT, COL_REPLICATION,
-                COL_MODULE, COL_NAME, COL_KIND,
+                COL_MODULE, COL_NAME, COL_KIND, COL_ISWEIGHTED,
                 COL_COUNT, COL_SUMWEIGHTS, COL_MEAN, COL_STDDEV, COL_VARIANCE, COL_MIN, COL_MAX,
                 COL_NUMBINS, COL_HISTOGRAMRANGE
         };
@@ -700,6 +701,9 @@ public class DataTable extends LargeTable implements IDataControl {
             else if (idList.areAllVectors())
                 idList.sortStatisticsBySumWeights(manager, ascending, selectionIndices, interrupted);
             break;
+        case COL_ISWEIGHTED:
+            //TODO
+            break;
         case COL_MEAN:
             if (idList.areAllStatistics())
                 idList.sortStatisticsByMean(manager, ascending, selectionIndices, interrupted);
@@ -864,7 +868,7 @@ public class DataTable extends LargeTable implements IDataControl {
                         double variance = vector.getStatistics().getVariance();
                         String unitSquared = unit;
                         if (unit != null)
-                            unitSquared = unit + "\u00B2"; // "Superscript Two"
+                            unitSquared = UnitConversion.getShortName(unit) + "\u00B2"; // "Superscript Two"
                         return Double.isNaN(variance) ? NA : formatNumber(result, column.label, variance, unitSquared, gc, width);
                     }
                     case COL_MIN: {
@@ -892,7 +896,8 @@ public class DataTable extends LargeTable implements IDataControl {
                     case COL_KIND: {
                         boolean isHistogram = result instanceof HistogramResult;
                         boolean isWeighted = stats.getStatistics().isWeighted();
-                        return new StyledString(isHistogram ? (isWeighted ? "wh" : "h") : (isWeighted ? "ws" : "s"));
+                        String text = (isHistogram ? "histogram" : "statistics") + (isWeighted ? " (weighted)" : "");
+                        return new StyledString(text);
                     }
                     case COL_COUNT: {
                         long count = stats.getStatistics().getCount();
@@ -903,6 +908,9 @@ public class DataTable extends LargeTable implements IDataControl {
                             return NA;
                         double sumWeights = stats.getStatistics().getSumWeights();
                         return sumWeights >= 0 ? formatNumber(result, column.label, sumWeights, "", gc, width) : NA;
+                    }
+                    case COL_ISWEIGHTED: {
+                        return new StyledString(stats.getStatistics().isWeighted() ? "true" : "false");
                     }
                     case COL_MEAN: {
                         double mean = stats.getStatistics().getMean();
@@ -916,7 +924,7 @@ public class DataTable extends LargeTable implements IDataControl {
                         double variance = stats.getStatistics().getVariance();
                         String unitSquared = unit;
                         if (unit != null)
-                            unitSquared = unit + "\u00B2"; // "Superscript Two"
+                            unitSquared = UnitConversion.getShortName(unit) + "\u00B2"; // "Superscript Two"
                         return Double.isNaN(variance) ? NA : formatNumber(result, column.label, variance, unitSquared, gc, width);
                     }
                     case COL_MIN: {
