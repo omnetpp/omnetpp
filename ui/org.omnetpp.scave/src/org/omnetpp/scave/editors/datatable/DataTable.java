@@ -84,8 +84,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 //TODO use s/histogram/statistics/ in the whole file
 public class DataTable extends LargeTable implements IDataControl {
     private static final boolean isLightTheme = !DisplayUtils.isDarkTheme();
-    private static final Color SEPARATOR_COLOR = ColorFactory.GREY;
-    private static final Color RESULT_TYPE_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.LIGHT_SKY_BLUE;
+    private static final Color GREYED_OUT_COLOR = isLightTheme ? ColorFactory.GREY60 : ColorFactory.GREY40;
     private static final Color QUANTITY_UNIT_COLOR = isLightTheme ? ColorFactory.BLUE3 : ColorFactory.LIGHT_SKY_BLUE;
 
     /**
@@ -217,6 +216,12 @@ public class DataTable extends LargeTable implements IDataControl {
     private List<Column> visibleColumns; // list of visible columns, this list will be saved and restored
     private IPreferenceStore preferences = ScavePlugin.getDefault().getPreferenceStore();
 
+    private boolean showNetworkNames = true;
+    private boolean colorNetworkNames = true;
+    private boolean colorResultSuffixes = true;
+    private boolean colorNumberSeparators = true;
+    private boolean colorMeasurementUnits = true;
+
     // holds actions for the context menu for this data table
     private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
@@ -316,6 +321,51 @@ public class DataTable extends LargeTable implements IDataControl {
 
     public int getNumericPrecision() {
         return numericPrecision;
+    }
+
+    public boolean getShowNetworkNames() {
+        return showNetworkNames;
+    }
+
+    public void setShowNetworkNames(boolean showNetworkName) {
+        this.showNetworkNames = showNetworkName;
+        refresh();
+    }
+
+    public boolean getColorNetworkNames() {
+        return colorNetworkNames;
+    }
+
+    public void setColorNetworkNames(boolean colorNetworkNames) {
+        this.colorNetworkNames = colorNetworkNames;
+        refresh();
+    }
+
+    public boolean getColorResultSuffixes() {
+        return colorResultSuffixes;
+    }
+
+    public void setColorResultSuffixes(boolean colorResultSuffixes) {
+        this.colorResultSuffixes = colorResultSuffixes;
+        refresh();
+    }
+
+    public boolean getColorNumberSeparators() {
+        return colorNumberSeparators;
+    }
+
+    public void setColorNumberSeparators(boolean colorNumberSeparators) {
+        this.colorNumberSeparators = colorNumberSeparators;
+        refresh();
+    }
+
+    public boolean getColorMeasurementUnits() {
+        return colorMeasurementUnits;
+    }
+
+    public void setColorMeasurementUnits(boolean colorMeasurementUnits) {
+        this.colorMeasurementUnits = colorMeasurementUnits;
+        refresh();
     }
 
     public void setIDList(IDList newIdList) {
@@ -699,15 +749,27 @@ public class DataTable extends LargeTable implements IDataControl {
             }
             else if (COL_RUN_ID.equals(column))
                 return new StyledString(result.getFileRun().getRun().getRunName());
-            else if (COL_MODULE.equals(column))
-                return new StyledString(result.getModuleName());
+            else if (COL_MODULE.equals(column)) {
+                String name = result.getModuleName();
+                if (!showNetworkNames) {
+                    int index = name.indexOf('.');
+                    return new StyledString(name.substring(index+1));
+                }
+                StyledString styledString = new StyledString(name);
+                if (colorNetworkNames) {
+                    int index = name.indexOf('.');
+                    if (index != -1)
+                        setStyleStringColor(styledString, 0, index, GREYED_OUT_COLOR);
+                }
+                return styledString;
+            }
             else if (COL_NAME.equals(column)) {
                 String name = result.getName();
-                int index = name.indexOf(':');
                 StyledString styledString = new StyledString(name);
-                if (index != -1) {
-                    setStyleStringColor(styledString, index, 1, SEPARATOR_COLOR);
-                    setStyleStringColor(styledString, index + 1, name.length() - index - 1, RESULT_TYPE_COLOR);
+                if (colorResultSuffixes) {
+                    int index = name.lastIndexOf(':');
+                    if (index != -1)
+                        setStyleStringColor(styledString, index, name.length() - index, GREYED_OUT_COLOR);
                 }
                 return styledString;
             }
@@ -887,17 +949,20 @@ public class DataTable extends LargeTable implements IDataControl {
             int numChars = output.getText().length();
             if (!output.getFitsIntoAvailableSpace()) {
                 StyledString styledString = new StyledString("#".repeat(numChars));
-                setStyleStringColor(styledString, 0, numChars, SEPARATOR_COLOR);
+                setStyleStringColor(styledString, 0, numChars, GREYED_OUT_COLOR);
                 return styledString;
             }
             else {
                 StyledString styledString = new StyledString(output.getText());
-                String role = output.getRole();
-                for (int i = 0; i < numChars; i++) {
-                    char c = role.charAt(i);
-                    Color color = c == ',' || c == '~' ? SEPARATOR_COLOR : (c == 'u' ? QUANTITY_UNIT_COLOR : null);
-                    if (color != null)
-                        setStyleStringColor(styledString, i, 1, color);
+                if (colorNumberSeparators || colorMeasurementUnits) {
+                    String role = output.getRole();
+                    for (int i = 0; i < numChars; i++) {
+                        char c = role.charAt(i);
+                        if (colorNumberSeparators && (c == ',' || c == '~'))
+                            setStyleStringColor(styledString, i, 1, GREYED_OUT_COLOR);
+                        else if (colorMeasurementUnits && c == 'u')
+                            setStyleStringColor(styledString, i, 1, QUANTITY_UNIT_COLOR);
+                    }
                 }
                 return styledString;
             }
@@ -1005,6 +1070,17 @@ public class DataTable extends LargeTable implements IDataControl {
                     addColumn(clone);
                 }
             }
+
+            if (preferences.contains("showNetworkNames"))
+                showNetworkNames = preferences.getBoolean("showNetworkNames");
+            if (preferences.contains("colorNetworkNames"))
+                colorNetworkNames = preferences.getBoolean("colorNetworkNames");
+            if (preferences.contains("colorResultSuffixes"))
+                colorResultSuffixes = preferences.getBoolean("colorResultSuffixes");
+            if (preferences.contains("colorNumberSeparators"))
+                colorNumberSeparators = preferences.getBoolean("colorNumberSeparators");
+            if (preferences.contains("showNetworkNames"))
+                colorMeasurementUnits = preferences.getBoolean("colorMeasurementUnits");
         }
     }
 
@@ -1016,6 +1092,12 @@ public class DataTable extends LargeTable implements IDataControl {
                 if (visible)
                     preferences.setValue(getPreferenceStoreKey(column, "width"), getTableColumn(column).getWidth());
             }
+
+            preferences.setValue("showNetworkNames", showNetworkNames);
+            preferences.setValue("colorNetworkNames", colorNetworkNames);
+            preferences.setValue("colorResultSuffixes", colorResultSuffixes);
+            preferences.setValue("colorNumberSeparators", colorNumberSeparators);
+            preferences.setValue("colorMeasurementUnits", colorMeasurementUnits);
         }
     }
 

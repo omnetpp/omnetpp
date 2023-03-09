@@ -28,6 +28,26 @@ public interface IDataControl {
 
     public int getNumericPrecision();
 
+    public boolean getShowNetworkNames();
+
+    public void setShowNetworkNames(boolean showNetworkName);
+
+    public boolean getColorNetworkNames();
+
+    public void setColorNetworkNames(boolean colorNetworkNames);
+
+    public boolean getColorResultSuffixes();
+
+    public void setColorResultSuffixes(boolean colorResultSuffixes);
+
+    public boolean getColorNumberSeparators();
+
+    public void setColorNumberSeparators(boolean colorNumberSeparators);
+
+    public boolean getColorMeasurementUnits();
+
+    public void setColorMeasurementUnits(boolean colorMeasurementUnits);
+
     public IDList getIDList();
 
     public void setIDList(IDList list);

@@ -9,7 +9,10 @@ package org.omnetpp.scave.editors.ui;
 
 
 import java.util.List;
+import java.util.function.Consumer;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -77,6 +80,11 @@ public class BrowseDataPage extends FormEditorPage {
 
     private boolean numberFormattingEnabled = true;
     private int numericPrecision = 6;
+    private boolean showNetworkNames = true;
+    private boolean colorNetworkNames = true;
+    private boolean colorResultSuffixes = true;
+    private boolean colorNumberSeparators = true;
+    private boolean colorMeasurementUnits = true;
 
     private DropdownAction treeLevelsAction;
     private FlatModuleTreeAction flatModuleTreeAction;
@@ -219,6 +227,7 @@ public class BrowseDataPage extends FormEditorPage {
         // populate the popup menu of the panel
         IMenuManager contextMenuManager = panel.getDataControl().getContextMenuManager();
         contextMenuManager.removeAll();
+        System.out.println("configureContextMenu");
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
@@ -260,13 +269,35 @@ public class BrowseDataPage extends FormEditorPage {
 
         if (panel.getDataControl() instanceof DataTable)
             contextMenuManager.add(new ChooseTableColumnsAction((DataTable)panel.getDataControl()));
+
+        if (panel.getDataControl() instanceof DataTable) { // TODO just temporarily, until tree full supports these options
+            MenuManager submenu = new MenuManager("Appearance");
+            submenu.setImageDescriptor(ScavePlugin.getImageDescriptor(ScaveImages.IMG_ETOOL16_COGWHEEL));
+            contextMenuManager.add(submenu);
+            // To make it per-panel:
+            // DataTable dataTable = (DataTable)panel.getDataControl();
+            // submenu.add(makeCheckItem("Hide Network Names", !dataTable.getShowNetworkNames(), (b) -> {dataTable.setShowNetworkNames(!b);}));
+            submenu.add(makeCheckItem("Hide Network Names", !getShowNetworkNames(), (b) -> {setShowNetworkNames(!b);}));
+            submenu.add(makeCheckItem("Color Network Names", getColorNetworkNames(), (b) -> {setColorNetworkNames(b);}));
+            submenu.add(makeCheckItem("Color Result Suffixes", getColorResultSuffixes(), (b) -> {setColorResultSuffixes(b);}));
+            submenu.add(makeCheckItem("Color Number Separators", getColorNumberSeparators(), (b) -> {setColorNumberSeparators(b);}));
+            submenu.add(makeCheckItem("Color Measurement Units", getColorMeasurementUnits(), (b) -> {setColorMeasurementUnits(b);}));
+        }
+
         if (panel.getDataControl() instanceof DataTree)
             ((DataTree)panel.getDataControl()).contributeToContextMenu(contextMenuManager);
+
         if (PanelType.VECTORS.equals(panel.getType())) {
             contextMenuManager.add(new Separator());
             contextMenuManager.add(actions.showOutputVectorViewAction);
         }
-        // XXX call getSite().registerContexMenu() ?
+    }
+
+    private IAction makeCheckItem(String name, boolean checked, Consumer<Boolean> action) {
+        return new Action(name, IAction.AS_CHECK_BOX) {
+            /*ctor*/ { setChecked(checked); }
+            @Override public void run() { action.accept(isChecked()); }
+        };
     }
 
     /**
@@ -420,14 +451,15 @@ public class BrowseDataPage extends FormEditorPage {
         }
     }
 
+    private FilteredDataPanel[] getAllPanels() {
+        return new FilteredDataPanel[] { getAllPanel(), getScalarsPanel(), getParametersPanel(), getVectorsPanel(), getHistogramsPanel() };
+    }
+
     public void setNumberFormattingEnabled(boolean enabled) {
         this.numberFormattingEnabled = enabled;
         enableQuantityFormatterAction.setChecked(enabled);
-        getAllPanel().getDataControl().setNumberFormattingEnabled(enabled);
-        getScalarsPanel().getDataControl().setNumberFormattingEnabled(enabled);
-        getParametersPanel().getDataControl().setNumberFormattingEnabled(enabled);
-        getVectorsPanel().getDataControl().setNumberFormattingEnabled(enabled);
-        getHistogramsPanel().getDataControl().setNumberFormattingEnabled(enabled);
+        for (FilteredDataPanel panel : getAllPanels())
+            panel.getDataControl().setNumberFormattingEnabled(enabled);
     }
 
     public boolean getNumberFormattingEnabled() {
@@ -436,15 +468,62 @@ public class BrowseDataPage extends FormEditorPage {
 
     public void setNumericPrecision(int prec) {
         this.numericPrecision = prec;
-        getAllPanel().getDataControl().setNumericPrecision(prec);
-        getScalarsPanel().getDataControl().setNumericPrecision(prec);
-        getParametersPanel().getDataControl().setNumericPrecision(prec);
-        getVectorsPanel().getDataControl().setNumericPrecision(prec);
-        getHistogramsPanel().getDataControl().setNumericPrecision(prec);
+        for (FilteredDataPanel panel : getAllPanels())
+            panel.getDataControl().setNumericPrecision(prec);
     }
 
     public int getNumericPrecision() {
         return numericPrecision;
+    }
+
+    public boolean getShowNetworkNames() {
+        return showNetworkNames;
+    }
+
+    public void setShowNetworkNames(boolean showNetworkNames) {
+        this.showNetworkNames = showNetworkNames;
+        for (FilteredDataPanel panel : getAllPanels())
+            panel.getDataControl().setShowNetworkNames(showNetworkNames);
+    }
+
+    public boolean getColorNetworkNames() {
+        return colorNetworkNames;
+    }
+
+    public void setColorNetworkNames(boolean colorNetworkNames) {
+        this.colorNetworkNames = colorNetworkNames;
+        for (FilteredDataPanel panel : getAllPanels())
+            panel.getDataControl().setColorNetworkNames(colorNetworkNames);
+    }
+
+    public boolean getColorResultSuffixes() {
+        return colorResultSuffixes;
+    }
+
+    public void setColorResultSuffixes(boolean colorResultSuffixes) {
+        this.colorResultSuffixes = colorResultSuffixes;
+        for (FilteredDataPanel panel : getAllPanels())
+            panel.getDataControl().setColorResultSuffixes(colorResultSuffixes);
+    }
+
+    public boolean getColorNumberSeparators() {
+        return colorNumberSeparators;
+    }
+
+    public void setColorNumberSeparators(boolean colorNumberSeparators) {
+        this.colorNumberSeparators = colorNumberSeparators;
+        for (FilteredDataPanel panel : getAllPanels())
+            panel.getDataControl().setColorNumberSeparators(colorNumberSeparators);
+    }
+
+    public boolean getColorMeasurementUnits() {
+        return colorMeasurementUnits;
+    }
+
+    public void setColorMeasurementUnits(boolean colorMeasurementUnits) {
+        this.colorMeasurementUnits = colorMeasurementUnits;
+        for (FilteredDataPanel panel : getAllPanels())
+            panel.getDataControl().setColorMeasurementUnits(colorMeasurementUnits);
     }
 
     public void setShowFieldsAsScalars(boolean show) {
