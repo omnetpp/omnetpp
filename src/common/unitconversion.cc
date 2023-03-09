@@ -573,10 +573,34 @@ const char *UnitConversion::getBestUnit(double d, const char *unitName)
     return bestUnit->name;
 }
 
+const char *UnitConversion::getShortName(const char *unitName)
+{
+    const Unit *unit = lookupUnit(unitName);
+    return unit ? unit->name : unitName;
+}
+
 const char *UnitConversion::getLongName(const char *unitName)
 {
     const Unit *unit = lookupUnit(unitName);
-    return unit ? unit->longName : nullptr;
+    return unit ? unit->longName : unitName;
+}
+
+std::string UnitConversion::getLongName(const char *unitName, bool plural)
+{
+    const Unit *unit = lookupUnit(unitName);
+    const char *s = unit ? unit->longName : unitName;
+    if (!plural || s[strlen(s)-1] == 's')
+        return s;
+    else {
+        // meter -> meters, meter/sec -> meters/sec (not meter/secs!)
+        const char *slash = strchr(s, '/');
+        if (slash == nullptr || slash == s)
+            return std::string(s) + "s";
+        else if (slash[-1] == 's')
+            return s;
+        else
+            return std::string(s,slash-s) + "s" + std::string(slash);
+    }
 }
 
 const char *UnitConversion::getBaseUnit(const char *unitName)

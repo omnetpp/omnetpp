@@ -156,14 +156,27 @@ class COMMON_API UnitConversion
     static const char *getBestUnit(double d, const char *unit);
 
     /**
-     * Returns the long name for the given unit, or nullptr if it is unrecognized.
-     * See getAllUnits().
+     * Returns the short name for the given unit, or the same pointer if the unit is unrecognized.
+     * See getKnownUnits().
+     */
+    static const char *getShortName(const char *unit);
+
+    /**
+     * Returns the long name for the given unit, or the same pointer if the unit is unrecognized.
+     * See getKnownUnits().
      */
     static const char *getLongName(const char *unit);
 
     /**
+     * Returns the long name for the given unit, either in singular or in plural form.
+     * Returns the unit itself (in best-effort plural form if plural=true is requested)
+     * if it is unrecognized. See getKnownUnits().
+     */
+    static std::string getLongName(const char *unitName, bool plural);
+
+    /**
      * Returns the base unit for the given unit, or nullptr if the unit is unrecognized.
-     * See getAllUnits().
+     * See getKnownUnits().
      */
     static const char *getBaseUnit(const char *unit);
 
