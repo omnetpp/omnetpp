@@ -17,12 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ObjectUtils;
+
 /**
  * Yet another CollectionUtils class.
  *
  * @author Levy, Andras
  */
-public class CollectionUtils {
+public class CollectionUtils extends org.apache.commons.collections.CollectionUtils {
     public static <T> List<T> toSorted(Collection<T> collection) {
         return toSorted(collection, new Comparator<T>() {
             public int compare(T o1, T o2) {
@@ -62,6 +64,13 @@ public class CollectionUtils {
         for (T value : list)
             result.add(deepCopyOf(value));
         return result;
+    }
+
+    public static <K,V> K findFirstKeyForValue(Map<K,V> map, V value) {
+        for (K key : map.keySet())
+            if (ObjectUtils.equals(map.get(key), value))
+                return key;
+        return null;
     }
 
     @SuppressWarnings("unchecked")
