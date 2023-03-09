@@ -11,15 +11,23 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
+import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.engine.MeasureTextFunctor;
+import org.omnetpp.common.engine.QuantityFormatter;
+import org.omnetpp.common.engine.QuantityFormatter.Options;
+import org.omnetpp.common.engine.QuantityFormatter.Output;
+import org.omnetpp.common.engine.UnitConversion;
+import org.omnetpp.common.engineext.IMatchableObject;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.scave.charting.properties.PlotProperty;
 import org.w3c.dom.Attr;
@@ -60,27 +68,46 @@ public class ScaveUtil {
         return properties;
     }
 
-
-    /**
-     * Convert the given double to string, printing at most the given number
-     * of significant digits.
-     */
-    public static String formatNumber(double d, int numSignificantDigits) {
-        return (d == Math.floor(d)) ? String.format(Locale.US, "%,.0f", d) : String.format(Locale.US, "%,." + numSignificantDigits + "f", d);
-        //return new DecimalFormat("###,###,###,###,###,###,###,##0." + repeat('0', numSignificantDigits)).format(d);
-        //return Common.formatDouble(d, numSignificantDigits);
-        //return String.format(Locale.US, "%." + numSignificantDigits + "g", d); // differs from C's printf because this one leaves trailing zeros in
+    public static StyledString formatQuantity(double d, String unit, IMatchableObject matchableObject, int preferredPrecision, GC gc, int width, Styler unitStyler, Styler separatorStyler, Styler greyedoutStyler) {
+        QuantityFormatter quantityFormatter = QuantityFormatterRegistry.getInstance().getQuantityFormatter(matchableObject);
+        QuantityFormatter.Options options = quantityFormatter.getOptions();
+        options.setNumAvailablePixels(gc != null ? width : Integer.MAX_VALUE);
+        options.setMeasureTextFromJava(new MeasureTextFunctor() {
+            @Override
+            public int call(String text) {
+                return gc.textExtent(text).x;
+            }
+        });
+        int maxDigits = Math.max(options.getMinSignificantDigits(), Math.min(options.getNumAccurateDigits(), preferredPrecision));
+        options.setMaxSignificantDigits(maxDigits);
+        QuantityFormatter.Output output = quantityFormatter.formatQuantity(d, unit);
+        int numChars = output.getText().length();
+        if (!output.getFitsIntoAvailableSpace()) {
+            return new StyledString("#".repeat(numChars), greyedoutStyler);
+        }
+        else {
+            StyledString styledString = new StyledString(output.getText());
+            if (unitStyler != null || separatorStyler != null) {
+                String role = output.getRole();
+                for (int i = 0; i < numChars; i++) {
+                    char c = role.charAt(i);
+                    if (separatorStyler != null && (c == ',' || c == '~'))
+                        styledString.setStyle(i, 1, separatorStyler);
+                    else if (unitStyler != null && c == 'u')
+                        styledString.setStyle(i, 1, unitStyler);
+                }
+            }
+            return styledString;
+        }
     }
 
-    /**
-     * Convert the given double to string, printing at most the given number
-     * of significant digits. See formatNumber(double d, int numSignificantDigits).
-     */
-    public static String formatNumber(BigDecimal d, int numSignificantDigits) {
-        // Workaround: BigDecimal can only convert itself to string with full precision, so we
-        // convert it via double. Double has ~15..17 digits of precision, so if numSignificantDigits
-        // is near that, we use BigDecimal's full-precision toString() method.
-        return numSignificantDigits < 15 ? formatNumber(d.doubleValue(), numSignificantDigits) : d.toString();
+    public static StyledString formatRaw(double d, String unit, GC gc, int width, Styler unitStyler, Styler greyedoutStyler) {
+        StyledString result = new StyledString(StringUtils.formatNumber(d));
+        if (!StringUtils.isEmpty(unit))
+            result.append(" " + UnitConversion.getShortName(unit), unitStyler);
+        if (gc != null && gc.textExtent(result.getString()).x > width)
+            return new StyledString("#".repeat(result.length()), greyedoutStyler);
+        return result;
     }
 
 }

@@ -432,7 +432,7 @@ public class LargeTable extends Composite
             if (column != null) {
                 column.setAlignment(alignment);
                 table.redraw();
-                saveState();
+                settingsChanged();
             }
         }));
     }
@@ -516,7 +516,7 @@ public class LargeTable extends Composite
         selectionListeners.remove(listener);
     }
 
-    protected void saveState() {
+    protected void settingsChanged() {
         // override to add code
     }
 

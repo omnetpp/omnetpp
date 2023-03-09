@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IXYDataset;
-import org.omnetpp.scave.editors.ui.ScaveUtil;
 import org.omnetpp.scave.engine.ScaveEngine;
 
 import net.razorvine.pickle.PickleException;
@@ -238,10 +238,7 @@ public class XYDataset implements IXYDataset {
     }
 
     private static String formatNumber(double number) {
-        String result = ScaveUtil.formatNumber(number, 16);
-        if (result.contains(".") && !result.toUpperCase().contains("E"))
-            result = result.replaceFirst("\\.?0+$", "");
-        return result;
+        return StringUtils.formatNumber(number);
     }
 
 
