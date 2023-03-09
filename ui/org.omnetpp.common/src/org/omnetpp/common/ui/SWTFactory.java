@@ -1,6 +1,9 @@
 package org.omnetpp.common.ui;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.PixelConverter;
@@ -32,6 +35,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.wizard.support.InfoLink;
 
 /**
@@ -47,6 +51,8 @@ public class SWTFactory {
     public static int GRAB_AND_FILL_BOTH = GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL| GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL;
     public static int GRAB_AND_FILL_HORIZONTAL = GridData.VERTICAL_ALIGN_BEGINNING | GridData.HORIZONTAL_ALIGN_FILL| GridData.GRAB_HORIZONTAL;
     private static Font smallFont = null;
+
+    private static final String COMBO_MAP_KEY = "itemValues";
 
     /**
      * Returns a width hint for a button control.
@@ -785,6 +791,40 @@ public class SWTFactory {
         c.setVisibleItemCount(30);
         c.select(0);
         return c;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static void addComboItemWithValue(Combo combo, String item, Object value) {
+        combo.add(item);
+        Map map = (Map)combo.getData(COMBO_MAP_KEY);
+        if (map == null) {
+            map = new HashMap();
+            combo.setData(COMBO_MAP_KEY, map);
+        }
+        map.put(item,  value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void setSelectedComboValue(Combo combo, Object value) {
+        Map map = (Map)combo.getData(COMBO_MAP_KEY);
+        if (map == null)
+            throw new IllegalArgumentException("missing data item in Combo");
+        String item = (String)CollectionUtils.findFirstKeyForValue(map, value);
+        if (item == null)
+            throw new IllegalArgumentException("missing data item in Combo");
+        combo.select(combo.indexOf(item));
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static Object getSelectedComboValue(Combo combo) {
+        Map map = (Map)combo.getData(COMBO_MAP_KEY);
+        if (map == null)
+            throw new IllegalArgumentException("missing data item in Combo");
+        int index = combo.getSelectionIndex();
+        if (index == -1)
+            return null;
+        String item = combo.getItem(index);
+        return map.containsKey(item) ? map.get(item) : null;
     }
 
     public static Spinner createSpinner(Composite parent, int style, int hspan) {

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -975,6 +976,25 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         if (str.startsWith(prefix))
             str = str.substring(prefix.length());
         return str;
+    }
+
+    public static String formatNumber(double d) {
+        if (!Double.isFinite(d)) {
+            // return "nan" / "inf" as C/C++ does, instead the default "NaN" / "Inf"
+            return Double.isNaN(d) ? "nan" : "inf";
+        }
+        else {
+            // print with full precision of double (17 digits); "%g" leaves trailing zeroes in, remove them using regex
+            return String.format(Locale.US, "%.17g", d).replaceAll("\\.?0+$", "").replaceAll("\\.?0+e", "e");
+        }
+    }
+
+    public static String formatNumber(BigDecimal d) {
+        return d.toString();
+    }
+
+    public static String formatNumber(org.omnetpp.common.engine.BigDecimal d) {
+        return d.toString();
     }
 
 }

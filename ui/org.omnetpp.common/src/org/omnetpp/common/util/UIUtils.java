@@ -117,6 +117,21 @@ public class UIUtils {
                 dumpWidgetHierarchy(child, level+1);
     }
 
+    public static void dumpLayout(Control control) {
+        dumpLayout(control, 0);
+    }
+
+    protected static void dumpLayout(Control control, int level) {
+        String info = "bounds=" + control.getBounds();
+        if (control instanceof Composite)
+            info += " clientArea=" + ((Composite)control).getClientArea();
+        System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : "") + " " + info);
+
+        if (control instanceof Composite)
+            for (Control child : ((Composite)control).getChildren())
+                dumpLayout(child, level+1);
+    }
+
     /**
      * Wraps existing listeners of the widget (control) with code that measures
      * and prints their execution time.
