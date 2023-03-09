@@ -847,8 +847,10 @@ public class DataTable extends LargeTable implements IDataControl {
             QuantityFormatter quantityFormatter = QuantityFormatterRegistry.getInstance().getQuantityFormatter(new IMatchableObject() {
                 @Override
                 public String getAsString(String name) {
-                    if ("display".equals(name))
+                    if ("editor".equals(name))
                         return "scave";
+                    if ("context".equals(name))
+                        return "datatable";
                     else if ("column".equals(name))
                         return column;
                     else if ("unit".equals(name))
