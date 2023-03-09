@@ -503,6 +503,15 @@ std::vector<std::string> opp_splitpath(const std::string& path)
     return items;
 }
 
+std::vector<const char *> opp_cstrings(const std::vector<std::string>& v)
+{
+    std::vector<const char *> result;
+    result.reserve(v.size());
+    for (const std::string& s : v)
+        result.push_back(s.c_str());
+    return result;
+}
+
 std::string opp_abbreviate(const std::string& text, int maxlen)
 {
     return text.size() <= maxlen ? text : text.substr(0, maxlen-3) + "...";

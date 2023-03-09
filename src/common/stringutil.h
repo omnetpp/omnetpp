@@ -273,6 +273,11 @@ COMMON_API std::vector<std::string> opp_splitandtrim(const std::string& text, co
 COMMON_API std::vector<std::string> opp_splitpath(const std::string& path);
 
 /**
+ * Returns a vector of C strings that point to c_str() of the strings in the input vector.
+ */
+COMMON_API std::vector<const char *> opp_cstrings(const std::vector<std::string>& v);
+
+/**
  * Ensure that the string is not longer than maxlen. If it is, it is truncated
  * and "..." is added.
  */
