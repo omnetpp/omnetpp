@@ -20,7 +20,14 @@ import org.omnetpp.scave.ScavePlugin;
 
 public class QuantityFormatterRegistry
 {
-    private static final QuantityFormatter FALLBACK_FORMATTER = new QuantityFormatter(new QuantityFormatter.Options());
+    private static final String PREFIX = "QuantityFormattingRule.";
+    private static final String NUM_ITEMS = "numItems";
+    private static final String NAME = "name";
+    private static final String ENABLED = "enabled";
+    private static final String MATCH_EXPRESSION = "matchExpression";
+    private static final String TEST_INPUT = "testInput";
+
+    private static final QuantityFormatter FALLBACK_FORMATTER = new QuantityFormatter(QuantityFormattingRule.makeDefaultOptions());
 
     private static QuantityFormatterRegistry instance;
 
@@ -45,8 +52,7 @@ public class QuantityFormatterRegistry
     }
 
     public List<QuantityFormattingRule> makeDefaults() {
-        QuantityFormattingRule defaultRule = new QuantityFormattingRule("Default formatting", true, "*", new QuantityFormatter.Options(), "10ms, -0.123456, 100200300400.5");
-        return Arrays.asList(new QuantityFormattingRule[] { defaultRule });
+        return Arrays.asList(new QuantityFormattingRule[] { QuantityFormattingRule.makeDefaultRule() });
     }
 
     public QuantityFormatter getQuantityFormatter(IMatchableObject matchableObject) {
@@ -69,25 +75,27 @@ public class QuantityFormatterRegistry
     public void save(IPreferenceStore store) {
         int index = 0;
         for (QuantityFormattingRule rule : rules) {
-            store.setValue(index + ".name", rule.getName());
-            store.setValue(index + ".enabled", rule.isEnabled());
-            store.setValue(index + ".matchExpression", rule.getExpression());
-            store.setValue(index + ".testInput", StringUtils.defaultString(rule.getTestInput()));
-            QuantityFormatterUtils.saveToPreferenceStore(store, index + ".", rule.getOptions());
+            String prefix = PREFIX + index + ".";
+            store.setValue(prefix + NAME, rule.getName());
+            store.setValue(prefix + ENABLED, rule.isEnabled());
+            store.setValue(prefix + MATCH_EXPRESSION, rule.getExpression());
+            store.setValue(prefix + TEST_INPUT, StringUtils.defaultString(rule.getTestInput()));
+            QuantityFormatterUtils.saveToPreferenceStore(store, prefix, rule.getOptions());
             index++;
         }
-        store.setValue("numItems", index);
+        store.setValue(NUM_ITEMS, index);
     }
 
     public void load(IPreferenceStore store) {
         rules.clear();
-        int numItems = store.getInt("numItems");
+        int numItems = store.getInt(NUM_ITEMS);
         for (int index = 0; index < numItems; index++) {
-            String name = store.getString(index + ".name");
-            boolean enabled = store.getBoolean(index + ".enabled");
-            String matchExpression = store.getString(index + ".matchExpression");
-            String testInput = store.getString(index + ".testInput");
-            QuantityFormatter.Options options = QuantityFormatterUtils.loadFromPreferenceStore(store, index + ".", new QuantityFormatter.Options());
+            String prefix = PREFIX + index + ".";
+            String name = store.getString(prefix + NAME);
+            boolean enabled = store.getBoolean(prefix + ENABLED);
+            String matchExpression = store.getString(prefix + MATCH_EXPRESSION);
+            String testInput = store.getString(prefix + TEST_INPUT);
+            QuantityFormatter.Options options = QuantityFormatterUtils.loadFromPreferenceStore(store, prefix, QuantityFormattingRule.makeDefaultOptions());
             rules.add(new QuantityFormattingRule(name, enabled, matchExpression, options, testInput));
         }
     }
