@@ -1,0 +1,366 @@
+%description:
+Tests UnitConversion::getBestUnit() with various options.
+
+%includes:
+#include <common/unitconversion.h>
+#include <common/stringutil.h>
+
+%global:
+using namespace omnetpp::common;
+
+static void print(double d, const char *unit, const std::vector<const char *>& allowedUnits, const UnitConversion::Options& options)
+{
+    const char *bestUnit = UnitConversion::getBestUnit(d, unit, allowedUnits, options);
+    EV << d << unit << " --> ";
+    if (strcmp(bestUnit,unit) == 0)
+        EV << "unchanged";
+    else {
+        double res = UnitConversion::convertUnit(d, unit, bestUnit);
+        EV << res << bestUnit;
+    }
+    EV << endl;
+}
+
+static void print(const char *items, const char *allowedUnits, const UnitConversion::Options& options)
+{
+    auto allowedUnitsArray = common::opp_splitandtrim(allowedUnits);
+    if (!allowedUnitsArray.empty())
+        EV << "\nallowedUnits: " << allowedUnits << endl;
+    for (auto item : common::opp_splitandtrim(items)) {
+        std::string unit;
+        double d = UnitConversion::parseQuantity(item.c_str(), unit);
+        print(d, unit.c_str(), opp_cstrings(allowedUnitsArray), options);
+    }
+}
+
+%activity:
+
+UnitConversion::Options options;
+const UnitConversion::Options defaults;
+
+#define P(items)  print(#items, "", options)
+#define P2(items, allowedUnits)  print(#items, #allowedUnits, options)
+#define L(stmt)  EV << std::endl << #stmt << std::endl; stmt
+
+// convertZeroToBaseUnit
+
+L(options.convertZeroToBaseUnit = false); // default
+P(0km 0g 0MiB 0kJ 0Ws);
+
+L(options.convertZeroToBaseUnit = true);
+P(0kg 0g 0km 0MiB 0deg 0mW 0kJ 0Wh 0dBmW);
+
+L(options.convertZeroToBaseUnit = true; options.bitBasedUnitsPolicy = UnitConversion::PREFER);
+P(0B 0MiB 0b 0Mib);
+
+L(options.convertZeroToBaseUnit = true; options.bitBasedUnitsPolicy = UnitConversion::AVOID);
+P(0B 0MiB 0b 0Mib);
+
+// allowNonmetricTimeUnits
+
+L(options = defaults;)
+L(options.allowNonmetricTimeUnits = false); // default
+P(1h);
+
+L(options.allowNonmetricTimeUnits = true);
+P(1h 1.5min 0.5d 90s 7200s 7236s);
+
+// logarithmicUnitsPolicy
+
+L(options = defaults;)
+L(options.logarithmicUnitsPolicy = UnitConversion::KEEP); // default
+P(1mW 0dBmW);
+
+L(options.logarithmicUnitsPolicy = UnitConversion::PREFER);
+P(1mW 0dBmW);
+
+L(options.logarithmicUnitsPolicy = UnitConversion::AVOID);
+P(1mW 0dBmW);
+
+// bitBasedUnitsPolicy
+
+L(options = defaults;)
+L(options.bitBasedUnitsPolicy = UnitConversion::KEEP); // default
+P(8b 8B 8kb 8.5kb 8kB 8.5kB);
+
+L(options.bitBasedUnitsPolicy = UnitConversion::PREFER);
+P(8b 8B 8kb 8.5kb 8kB 8.5kB);
+
+L(options.bitBasedUnitsPolicy = UnitConversion::AVOID);
+P(8b 8B 8kb 8.5kb 8kB 8.5kB);
+P(16b 10b 10.5b); // only convert to bytes if it doesn't turn an integer into a fraction
+
+// binaryPrefixPolicy
+
+L(options = defaults;)
+L(options.binaryPrefixPolicy = UnitConversion::KEEP);
+P(12345B 10000B 10240B);
+P(12345b 10000b 10240b);
+
+L(options.binaryPrefixPolicy = UnitConversion::PREFER);
+P(12345B 10000B 10240B);
+P(12345b 10000b 10240b);
+
+L(options.binaryPrefixPolicy = UnitConversion::AVOID);
+P(12345B 10000B 10240B);
+P(12345b 10000b 10240b);
+
+// kilobyteThreshold
+
+L(options = defaults;)
+L(options.kilobyteThreshold = 10240; options.binaryPrefixPolicy = UnitConversion::PREFER);
+P(1000B 1001B 10239B 10240B 71234B);
+P(1000b 1001b 10239b 10240b 71234b);
+
+L(options.kilobyteThreshold = 10000; options.binaryPrefixPolicy = UnitConversion::AVOID);
+P(1000B 1001B 10239B 10240B 71234B);
+P(1000b 1001b 10239b 10240b 71234b);
+
+// preferSmallWholeNumbersForBitByte
+
+L(options = defaults;)
+L(options.preferSmallWholeNumbersForBitByte = true; options.binaryPrefixPolicy = UnitConversion::KEEP);
+P(1000B 1024B 1011B 20kB 20KiB 20100B);
+
+L(options.preferSmallWholeNumbersForBitByte = true; options.binaryPrefixPolicy = UnitConversion::AVOID);
+P(1000B 1024B 1011B 20kB 20KiB 20100B);
+
+L(options.preferSmallWholeNumbersForBitByte = false; options.binaryPrefixPolicy = UnitConversion::KEEP);
+P(1000B 1024B 1011B 20kB 20KiB 20100B);
+
+// allowedUnits
+
+L(options = defaults);
+L(options.allowOriginalUnit = false);
+P( 10kg 10t 6min 1hour 1mW 0dBmW 256B);
+P2(10kg 10t 6min 1hour 1mW 0dBmW 256B, t h dBmW KiB);
+P2(10kg 10t 6min 1hour 1mW 0dBmW 256B, kg t s h W dBmW KiB B);
+
+L(options.allowOriginalUnit = true);
+P( 10kg 10t 6min 1hour 1mW 0dBmW 256B);
+P2(10kg 10t 6min 1hour 1mW 0dBmW 256B, t h dBmW KiB);
+P2(10kg 10t 6min 1hour 1mW 0dBmW 256B, kg t s h W dBmW KiB B);
+
+EV << ".\n";
+
+%contains: stdout
+options.convertZeroToBaseUnit = false
+0km --> unchanged
+0g --> unchanged
+0MiB --> unchanged
+0kJ --> unchanged
+0Ws --> unchanged
+
+options.convertZeroToBaseUnit = true
+0kg --> unchanged
+0g --> 0kg
+0km --> 0m
+0MiB --> 0B
+0deg --> 0rad
+0mW --> 0W
+0kJ --> 0J
+0Wh --> 0J
+0dBmW --> unchanged
+
+options.convertZeroToBaseUnit = true; options.bitBasedUnitsPolicy = UnitConversion::PREFER
+0B --> 0b
+0MiB --> 0b
+0b --> unchanged
+0Mib --> 0b
+
+options.convertZeroToBaseUnit = true; options.bitBasedUnitsPolicy = UnitConversion::AVOID
+0B --> unchanged
+0MiB --> 0B
+0b --> 0B
+0Mib --> 0B
+
+options = defaults;
+
+options.allowNonmetricTimeUnits = false
+1h --> 3600s
+
+options.allowNonmetricTimeUnits = true
+1h --> unchanged
+1.5min --> unchanged
+0.5d --> 12h
+90s --> 1.5min
+7200s --> 2h
+7236s --> 2.01h
+
+options = defaults;
+
+options.logarithmicUnitsPolicy = UnitConversion::KEEP
+1mW --> unchanged
+0dBmW --> unchanged
+
+options.logarithmicUnitsPolicy = UnitConversion::PREFER
+1mW --> 0dBm
+0dBmW --> unchanged
+
+options.logarithmicUnitsPolicy = UnitConversion::AVOID
+1mW --> unchanged
+0dBmW --> 1mW
+
+options = defaults;
+
+options.bitBasedUnitsPolicy = UnitConversion::KEEP
+8b --> unchanged
+8B --> unchanged
+8kb --> unchanged
+8.5kb --> 8500b
+8kB --> unchanged
+8.5kB --> 8500B
+
+options.bitBasedUnitsPolicy = UnitConversion::PREFER
+8b --> unchanged
+8B --> 64b
+8kb --> unchanged
+8.5kb --> 8500b
+8kB --> 64kb
+8.5kB --> 68kb
+
+options.bitBasedUnitsPolicy = UnitConversion::AVOID
+8b --> 1B
+8B --> unchanged
+8kb --> 1kB
+8.5kb --> 1062.5B
+8kB --> unchanged
+8.5kB --> 8500B
+16b --> 2B
+10b --> unchanged
+10.5b --> 1.3125B
+
+options = defaults;
+
+options.binaryPrefixPolicy = UnitConversion::KEEP
+12345B --> 12.0557KiB
+10000B --> 10kB
+10240B --> 10KiB
+12345b --> 12.0557Kib
+10000b --> 10kb
+10240b --> 10Kib
+
+options.binaryPrefixPolicy = UnitConversion::PREFER
+12345B --> 12.0557KiB
+10000B --> 10kB
+10240B --> 10KiB
+12345b --> 12.0557Kib
+10000b --> 10kb
+10240b --> 10Kib
+
+options.binaryPrefixPolicy = UnitConversion::AVOID
+12345B --> 12.345kB
+10000B --> 10kB
+10240B --> 10KiB
+12345b --> 12.345kb
+10000b --> 10kb
+10240b --> 10Kib
+
+options = defaults;
+
+options.kilobyteThreshold = 10240; options.binaryPrefixPolicy = UnitConversion::PREFER
+1000B --> 1kB
+1001B --> unchanged
+10239B --> unchanged
+10240B --> 10KiB
+71234B --> 69.5645KiB
+1000b --> 1kb
+1001b --> unchanged
+10239b --> unchanged
+10240b --> 10Kib
+71234b --> 69.5645Kib
+
+options.kilobyteThreshold = 10000; options.binaryPrefixPolicy = UnitConversion::AVOID
+1000B --> 1kB
+1001B --> unchanged
+10239B --> 10.239kB
+10240B --> 10KiB
+71234B --> 71.234kB
+1000b --> 1kb
+1001b --> unchanged
+10239b --> 10.239kb
+10240b --> 10Kib
+71234b --> 71.234kb
+
+options = defaults;
+
+options.preferSmallWholeNumbersForBitByte = true; options.binaryPrefixPolicy = UnitConversion::KEEP
+1000B --> 1kB
+1024B --> 1KiB
+1011B --> unchanged
+20kB --> unchanged
+20KiB --> unchanged
+20100B --> 19.6289KiB
+
+options.preferSmallWholeNumbersForBitByte = true; options.binaryPrefixPolicy = UnitConversion::AVOID
+1000B --> 1kB
+1024B --> 1KiB
+1011B --> unchanged
+20kB --> unchanged
+20KiB --> unchanged
+20100B --> 20.1kB
+
+options.preferSmallWholeNumbersForBitByte = false; options.binaryPrefixPolicy = UnitConversion::KEEP
+1000B --> unchanged
+1024B --> unchanged
+1011B --> unchanged
+20kB --> unchanged
+20KiB --> unchanged
+20100B --> 19.6289KiB
+
+options = defaults
+
+options.allowOriginalUnit = false
+10kg --> unchanged
+10t --> 10000kg
+6min --> 360s
+1hour --> 3600s
+1mW --> unchanged
+0dBmW --> unchanged
+256B --> unchanged
+
+allowedUnits: t h dBmW KiB
+10kg --> 0.01t
+10t --> unchanged
+6min --> 0.1h
+1hour --> 1h
+1mW --> 0dBmW
+0dBmW --> unchanged
+256B --> 0.25KiB
+
+allowedUnits: kg t s h W dBmW KiB B
+10kg --> unchanged
+10t --> unchanged
+6min --> 360s
+1hour --> 1h
+1mW --> 0dBmW
+0dBmW --> unchanged
+256B --> unchanged
+
+options.allowOriginalUnit = true
+10kg --> unchanged
+10t --> 10000kg
+6min --> 360s
+1hour --> 3600s
+1mW --> unchanged
+0dBmW --> unchanged
+256B --> unchanged
+
+allowedUnits: t h dBmW KiB
+10kg --> unchanged
+10t --> unchanged
+6min --> unchanged
+1hour --> 1h
+1mW --> unchanged
+0dBmW --> unchanged
+256B --> unchanged
+
+allowedUnits: kg t s h W dBmW KiB B
+10kg --> unchanged
+10t --> unchanged
+6min --> unchanged
+1hour --> 1h
+1mW --> unchanged
+0dBmW --> unchanged
+256B --> unchanged
+.

@@ -1,0 +1,81 @@
+%description:
+Tests UnitConversion::getBestUnit() for bits/bytes using various options.
+
+%includes:
+#include <algorithm>
+#include <common/unitconversion.h>
+#include "../lib/testutil.h"
+
+
+%global:
+using namespace omnetpp::common;
+
+#define UC UnitConversion
+
+inline char lastChar(const char *s) {return s[strlen(s)-1];}
+inline bool contains(const char *s, char c) {return strchr(s,c)!=nullptr;}
+inline char isWholeNumber(double d) {return d == floor(d);}
+inline bool in(std::string s, std::vector<std::string> v) {return std::find(v.begin(), v.end(), s) != v.end();}
+inline bool streq(const char *a, const char *b) {return strcmp(a,b)==0;}
+
+static void testUnit(double originalValue, const char *originalUnit, const UC::Options& options)
+{
+    const char *bestUnit = UnitConversion::getBestUnit(originalValue, originalUnit, {}, options);
+    double value = UnitConversion::convertUnit(originalValue, originalUnit, bestUnit);
+
+    std::cout << originalValue << originalUnit << " -> " << value << bestUnit << ", " << options.str() << std::endl;
+
+    if (value == 0) {
+        //TODO obey bitBasedUnitsPolicy?
+        TEST_ASSERT(!options.convertZeroToBaseUnit ? strcmp(originalUnit, bestUnit)==0 : strcmp(UC::getBaseUnit(originalUnit), bestUnit)==0);
+    }
+    else {
+        TEST_ASSERT(value >= 1 || in(bestUnit, {"b", "B"}));
+        TEST_ASSERT(value < 1024 || in(bestUnit, {"Tb", "Tib", "TB", "TiB"}) || (in(bestUnit, {"B", "b"}) && value < options.kilobyteThreshold));
+
+        if (options.preferSmallWholeNumbersForBitByte)
+            return;   // test not prepared for this option, as it may prefer a different unit, prefix type, violate kilobyteThreshold etc, to keep the result integer
+
+        switch (options.bitBasedUnitsPolicy) {
+            case UC::PREFER: TEST_ASSERT(lastChar(bestUnit) == 'b' || value==0); break;
+            case UC::AVOID:  TEST_ASSERT(lastChar(bestUnit) == 'B' || !isWholeNumber(originalValue/8) || value==0); break;
+            case UC::KEEP:   TEST_ASSERT(lastChar(bestUnit) == lastChar(originalUnit)); break;
+        }
+
+        switch (options.binaryPrefixPolicy) {
+            case UC::PREFER: TEST_ASSERT(contains(bestUnit, 'i') || in(bestUnit, {"b", "B"})); break;
+            case UC::AVOID:  TEST_ASSERT(!contains(bestUnit, 'i')); break;
+            case UC::KEEP:   TEST_ASSERT(contains(bestUnit, 'i') == contains(originalUnit, 'i') || in(bestUnit, {"b", "B"}) || in(originalUnit, {"b", "B"})); break;
+        }
+
+        // kilobyteThreshold
+        if (lastChar(bestUnit) == 'B') {
+            double valueInBytes = UnitConversion::convertUnit(originalValue, originalUnit, "B");
+            TEST_ASSERT(streq(bestUnit, "B") || valueInBytes >= options.kilobyteThreshold);
+        }
+        if (lastChar(bestUnit) == 'b') {
+            double valueInBits = UnitConversion::convertUnit(originalValue, originalUnit, "b");
+            TEST_ASSERT(streq(bestUnit, "b") || valueInBits >= options.kilobyteThreshold);
+        }
+    }
+
+}
+
+%activity:
+
+UC::Options options;
+
+for (const char *unit : UC::getKnownUnits())
+    if (UC::areCompatibleUnits(unit, "b"))
+        for (double value : {0., 0.23, 1., 80., 81., 1000., 1030., 9000., 11000.})
+            for (UC::Preference bitBasedUnitsPolicy : {UC::PREFER, UC::AVOID, UC::KEEP})
+                for (UC::Preference binaryPrefixPolicy : {UC::PREFER, UC::AVOID, UC::KEEP})
+                    for (bool preferSmallWholeNumbersForBitByte : {true, false})
+                        for (double kilobyteThreshold : {0, 1000, 10000, 100000}) {
+                            options.bitBasedUnitsPolicy = bitBasedUnitsPolicy;
+                            options.binaryPrefixPolicy = binaryPrefixPolicy;
+                            options.kilobyteThreshold = kilobyteThreshold;
+                            options.preferSmallWholeNumbersForBitByte = preferSmallWholeNumbersForBitByte;
+                            testUnit(value, unit, options);
+                        }
+EV << ".\n";

@@ -1,11 +1,9 @@
 %description:
-Tests UnitConversion::getBestUnit().
+Tests UnitConversion::getBestUnit() in the default configuration.
 
-Units to watch (they are tricky): min/hour/day; deg/rad; cm; As/mAs; pct/ratio; dB/dBm
+Units to watch (they are tricky): min/hour/day; deg/rad; cm; As/mAs; pct/ratio; dB/dBm, bit/byte-related
 
 Treatment of zero and negative numbers are checked programmatically.
-
-There's some issue: tends to change "mAs" to "C" (and not to "As")
 
 %includes:
 #include <common/unitconversion.h>
@@ -31,11 +29,15 @@ static void print(double d, const char *unit)
 }
 
 %activity:
-for (std::string unit : UnitConversion::getKnownUnits()) {
-    if (unit != UnitConversion::getBestUnit(0, unit.c_str()))
-        throw cRuntimeError("Shouldn't change unit for a zero value!");
-    for (double d : std::vector<double>({15200, 62.5, 0.0023}))
-        print(d, unit.c_str());
+std::vector<double> linearTestValues {15200, 62.5, 0.0023};
+std::vector<double> logTestValues {-34, -18, 1, 11, 35, 70};
+
+for (const char *unit : UnitConversion::getKnownUnits()) {
+    if (UnitConversion::isLinearUnit(unit) && unit != UnitConversion::getBestUnit(0, unit))
+        throw cRuntimeError("Shouldn't change unit for a zero value! unit=%s", unit);
+
+    for (double d : UnitConversion::isLinearUnit(unit) ? linearTestValues : logTestValues)
+        print(d, unit);
     EV << endl;
 }
 EV << ".\n";
@@ -44,16 +46,16 @@ EV << ".\n";
 %subst: /e\-0(\d\d)/e-$1/
 
 %contains: stdout
-15200d --> unchanged
-62.5d --> unchanged
+15200d --> 1.31328e+09s
+62.5d --> 5.4e+06s
 0.0023d --> 198.72s
 
-15200h --> unchanged
-62.5h --> unchanged
+15200h --> 5.472e+07s
+62.5h --> 225000s
 0.0023h --> 8.28s
 
-15200min --> unchanged
-62.5min --> unchanged
+15200min --> 912000s
+62.5min --> 3750s
 0.0023min --> 138ms
 
 15200s --> unchanged
@@ -114,7 +116,7 @@ EV << ".\n";
 
 15200MiB --> 14.8438GiB
 62.5MiB --> unchanged
-0.0023MiB --> 2.3552KiB
+0.0023MiB --> 2411.72B
 
 15200GiB --> 14.8438TiB
 62.5GiB --> unchanged
@@ -130,7 +132,7 @@ EV << ".\n";
 
 15200MB --> 15.2GB
 62.5MB --> unchanged
-0.0023MB --> 2.3kB
+0.0023MB --> 2300B
 
 15200GB --> 15.2TB
 62.5GB --> unchanged
@@ -140,7 +142,7 @@ EV << ".\n";
 62.5TB --> unchanged
 0.0023TB --> 2.3GB
 
-15200b --> unchanged
+15200b --> 14.8438Kib
 62.5b --> unchanged
 0.0023b --> unchanged
 
@@ -150,7 +152,7 @@ EV << ".\n";
 
 15200Mib --> 14.8438Gib
 62.5Mib --> unchanged
-0.0023Mib --> 2.3552Kib
+0.0023Mib --> 2411.72b
 
 15200Gib --> 14.8438Tib
 62.5Gib --> unchanged
@@ -166,7 +168,7 @@ EV << ".\n";
 
 15200Mb --> 15.2Gb
 62.5Mb --> unchanged
-0.0023Mb --> 2.3kb
+0.0023Mb --> 2300b
 
 15200Gb --> 15.2Tb
 62.5Gb --> unchanged
@@ -188,8 +190,12 @@ EV << ".\n";
 62.5m --> unchanged
 0.0023m --> 2.3mm
 
+15200dm --> 1.52km
+62.5dm --> 6.25m
+0.0023dm --> 230um
+
 15200cm --> 152m
-62.5cm --> unchanged
+62.5cm --> 625mm
 0.0023cm --> 23um
 
 15200mm --> 15.2m
@@ -384,37 +390,61 @@ EV << ".\n";
 62.5pct --> unchanged
 0.0023pct --> unchanged
 
-15200dBW --> unchanged
-62.5dBW --> unchanged
-0.0023dBW --> unchanged
+-34dBW --> -4dBmW
+-18dBW --> 12dBmW
+1dBW --> unchanged
+11dBW --> unchanged
+35dBW --> unchanged
+70dBW --> unchanged
 
-15200dBm --> unchanged
-62.5dBm --> unchanged
-0.0023dBm --> unchanged
+-34dBm --> -34dBmW
+-18dBm --> -18dBmW
+1dBm --> 1dBmW
+11dBm --> 11dBmW
+35dBm --> 5dBW
+70dBm --> 40dBW
 
-15200dBmW --> unchanged
-62.5dBmW --> unchanged
-0.0023dBmW --> unchanged
+-34dBmW --> unchanged
+-18dBmW --> unchanged
+1dBmW --> unchanged
+11dBmW --> unchanged
+35dBmW --> unchanged
+70dBmW --> unchanged
 
-15200dBV --> unchanged
-62.5dBV --> unchanged
-0.0023dBV --> unchanged
+-34dBV --> 26dBmV
+-18dBV --> 42dBmV
+1dBV --> unchanged
+11dBV --> unchanged
+35dBV --> unchanged
+70dBV --> unchanged
 
-15200dBmV --> unchanged
-62.5dBmV --> unchanged
-0.0023dBmV --> unchanged
+-34dBmV --> unchanged
+-18dBmV --> unchanged
+1dBmV --> unchanged
+11dBmV --> unchanged
+35dBmV --> unchanged
+70dBmV --> unchanged
 
-15200dBA --> unchanged
-62.5dBA --> unchanged
-0.0023dBA --> unchanged
+-34dBA --> 26dBmA
+-18dBA --> 42dBmA
+1dBA --> unchanged
+11dBA --> unchanged
+35dBA --> unchanged
+70dBA --> unchanged
 
-15200dBmA --> unchanged
-62.5dBmA --> unchanged
-0.0023dBmA --> unchanged
+-34dBmA --> unchanged
+-18dBmA --> unchanged
+1dBmA --> unchanged
+11dBmA --> unchanged
+35dBmA --> unchanged
+70dBmA --> unchanged
 
-15200dB --> unchanged
-62.5dB --> unchanged
-0.0023dB --> unchanged
+-34dB --> unchanged
+-18dB --> unchanged
+1dB --> unchanged
+11dB --> unchanged
+35dB --> unchanged
+70dB --> unchanged
 
 .
 

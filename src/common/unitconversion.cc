@@ -31,6 +31,8 @@ using namespace std;
 namespace omnetpp {
 namespace common {
 
+const bool debugScoring = false;
+
 const double K = 1024.0;
 const double K8 = 8192.0;
 
@@ -137,9 +139,35 @@ const UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial un
 const UnitConversion::Unit *UnitConversion::hashTable[HASHTABLESIZE];
 int UnitConversion::numCollisions = 0;
 
+const UnitConversion::Unit *UnitConversion::bitsUnit;
+const UnitConversion::Unit *UnitConversion::bytesUnit;
+const UnitConversion::Unit *UnitConversion::secondsUnit;
+
 static struct Initializer {
     Initializer() {UnitConversion::init();}
 } dummy;
+
+static const char *preferenceName(UnitConversion::Preference p)
+{
+    switch (p) {
+        case UnitConversion::PREFER: return "PREFER";
+        case UnitConversion::AVOID: return "AVOID";
+        case UnitConversion::KEEP: return "KEEP";
+        default: return "???";
+    }
+}
+std::string UnitConversion::Options::str() const
+{
+    std::stringstream os;
+    os << "useBaseUnitForZero=" << convertZeroToBaseUnit;
+    os << " allowOriginalUnit=" << allowOriginalUnit;
+    os << " allowNonmetricTimeUnits=" << allowNonmetricTimeUnits;
+    os << " logarithmicUnitsPolicy=" << preferenceName(logarithmicUnitsPolicy);
+    os << " bitBasedUnitsPolicy=" << preferenceName(bitBasedUnitsPolicy);
+    os << " binaryPrefixPolicy=" << preferenceName(binaryPrefixPolicy);
+    os << " kilobyteThreshold=" << kilobyteThreshold;
+    return os.str();
+}
 
 bool UnitConversion::matches(const Unit *unit, const char *unitName)
 {
@@ -263,6 +291,10 @@ void UnitConversion::fillUnitData()
             }
         }
     }
+
+    bitsUnit = getUnit("b");
+    bytesUnit = getUnit("B");
+    secondsUnit = getUnit("s");
 }
 
 bool UnitConversion::readNumber(const char *& s, double& number)
@@ -533,43 +565,178 @@ const std::vector<const char *>& UnitConversion::getCompatibleKnownUnits(const c
     return unit ? unit->compatibleUnitNames : emptyList;
 }
 
+inline void bump(double& score, double amount, const char *note)
+{
+    score += amount;
+    if (debugScoring)
+        std::cout << "  " << (amount>0 ? "+" : "") << amount << ", reason: " << note << " -> score=" << score << endl;
+}
+
+double UnitConversion::calculateUnitScore(double originalValue, const Unit *originalUnit, const Unit *unit, const Options& options, bool considerPreferences)
+{
+    Assert(unit);
+    Assert(originalUnit);
+
+    if (originalValue < 0 && originalUnit->mapping == LINEAR) {
+        if (unit->mapping == LOG10)
+            return NaN; // negative quantities cannot be represent with logarithmic units
+        else
+            originalValue = std::fabs(originalValue);
+    }
+
+    double value = tryConvert(originalValue, originalUnit, unit);
+    Assert(!std::isnan(value)); // conversion successful
+
+    if (debugScoring)
+        std::cout << "\n" << originalValue << originalUnit->name << " -> " << value << unit->name << " ?\n";
+
+    double score = 0;
+
+    // handle bit-byte-related units separately
+    if (unit->baseUnit == bitsUnit) {
+        switch (options.bitBasedUnitsPolicy) {
+            case PREFER: if (!unit->isByteBased) bump(score, 1, "prefer bits"); break;
+            case AVOID:  if (unit->isByteBased) bump(score, 1, "prefer bytes"); break;
+            case KEEP:   if (unit->isByteBased == originalUnit->isByteBased) bump(score, 10, "keep bit/byte"); break;
+        }
+        if (unit == bitsUnit || unit == bytesUnit)
+            bump(score, 1, "B/b qualifies both as DECIMAL and BINARY prefix");  // bit and byte are both DECIMAL and BINARY prefixes, so collect the bonus for matching prefixTypePreference
+        else {
+            switch (options.binaryPrefixPolicy) {
+                case PREFER: if (unit->prefixType == BINARY) bump(score, 1, "prefer binary prefixes for bits/bytes"); break;
+                case AVOID:  if (unit->prefixType != BINARY) bump(score, 1, "prefer decimal prefixes for bits/bytes"); break;
+                case KEEP:   if (unit->prefixType == originalUnit->prefixType) bump(score, 1, "keep prefix type of bit/byte unit"); break;
+            }
+        }
+        if ((unit == bytesUnit || unit == bitsUnit) && value >= 1000 && value < options.kilobyteThreshold)
+            bump(score, 1, "below kilobyteThreshold");
+
+        // prevent a whole number of bits from being converted into a fractional number of bytes, at least under a certain threshold
+        if (unit == bitsUnit && originalUnit == bitsUnit && isWholeNumber(originalValue) && !isWholeNumber(originalValue/8) && originalValue < options.kilobyteThreshold)
+            bump(score, 5, "to prevent conversion into fractional bytes");
+
+        if (options.preferSmallWholeNumbersForBitByte && isWholeNumber(originalValue) && isWholeNumber(value) && value < 1000)  // the isWholeNumber(originalValue) is somewhat questionable, and the limit of 1000 is somewhat arbirary
+            bump(score, 5, "for keeping the result a whole number for bit/byte quantity");
+
+    }
+    else if (considerPreferences) {
+        // reward units that are listed among the best-unitName candidates
+        if (contains(originalUnit->bestUnitCandidates, unit))
+            bump(score, 20, "among bestUnitCandidates");
+
+        if (unit->baseUnit == secondsUnit) {
+            if (unit->prefixType == TRADITIONAL && !options.allowNonmetricTimeUnits)
+                bump(score, -1, "penalize nonmetric time unit");
+        }
+        else if (unit->prefixType == TRADITIONAL) {
+            bump(score, -1, "penalize TRADITIONAL prefix");
+        }
+
+        switch (options.logarithmicUnitsPolicy) {
+            case PREFER: if (unit->mapping == LOG10) bump(score, 30, "prefer logarithmic units"); break;
+            case AVOID:  if (unit->mapping != LOG10) bump(score, 30, "avoid logarithmic units"); break;
+            case KEEP:   if (unit->mapping == originalUnit->mapping) bump(score, 30, "keep unit logarithmic/linear"); break;
+        }
+
+    }
+
+    if (unit->mapping == LINEAR) {
+        // compress value into range 0..1
+        // note: double's exponent range is about -308..+308, overestimate it with 620
+        double compressedValue01 = log10(value) / 620 + 0.5;
+
+        bump(score, 1, "using linear unit");
+
+        if (value >= 1) {
+            bump(score, 10, "value >= 1");
+            bump(score, -compressedValue01, "-1*compressedValue (for value >= 1)"); // smaller values preferred
+        }
+        else {
+            bump(score, compressedValue01, "compressedValue01 (for value < 1)"); // greater (closer-to-1) values preferred
+        }
+    }
+    else { // LOG10
+        double compressedValue01 = atan(value/10) / 3.1416 + 0.5;
+
+        if (value >= 0) {
+            bump(score, 10, "value >= 0");
+            bump(score, -compressedValue01, "-1*compressedValue (for value >= 0)"); // smaller values preferred
+        }
+        else {
+            bump(score, compressedValue01, "compressedValue01 (for value < 0)"); // greater (closer-to-1) values preferred
+        }
+    }
+
+    return score;
+}
+
+static const std::vector<const char *> emptyNameList;
+static const UnitConversion::Options defaultOptions;
+
 const char *UnitConversion::getBestUnit(double d, const char *unitName)
 {
-    // We do not touch the unit (return the original unit) in a number of cases:
-    // if value is zero, infinite or NaN; if we don't know about the unit.
+    return getBestUnit(d, unitName, emptyNameList, defaultOptions);
+}
+
+const char *UnitConversion::getBestUnit(double value, const char *unitName, const std::vector<const char *>& allowedUnitNames, const Options& options)
+{
     const Unit *unit = lookupUnit(unitName);
-    if (d == 0 || !std::isfinite(d) || unit == nullptr)
+    if (unit == nullptr)
         return unitName;
 
-    auto& candidates = unit->bestUnitCandidates;
-    if (candidates.empty())
-        return unitName;
+    // filter list to all compatible units
+    std::vector<const Unit *> allowedCompatibleUnits;
+    for (const char *name : allowedUnitNames) {
+        const Unit *u = lookupUnit(name);
+        if (u && (u->baseUnit == unit->baseUnit || contains(unit->compatibleUnits, u))) {
+            bool isIllegal = u->mapping == LOG10 && unit->mapping == LINEAR && value < 0; // cannot represent negative quantities in logarithmic units
+            if (!isIllegal)
+                allowedCompatibleUnits.push_back(u);
+        }
+    }
+    bool considerPreferences = allowedCompatibleUnits.empty();
+
+    // empty allowedCompatibleUnits means "all compatible units"
+    if (allowedCompatibleUnits.empty())
+        allowedCompatibleUnits = unit->compatibleUnits;
+
+    if (options.allowOriginalUnit && !contains(allowedCompatibleUnits, unit))
+        allowedCompatibleUnits.push_back(unit);
+
+    return getBestUnit(value, unit, allowedCompatibleUnits, options, considerPreferences);
+}
+
+const char *UnitConversion::getBestUnit(double value, const Unit *unit, const std::vector<const Unit *>& candidates, const Options& options, bool considerPreferences)
+{
+    Assert(unit != nullptr);
+
+    // if value is zero, infinite and NaN are special cases; return either the original unit or its base unit
+    if ((value == 0 && unit->mapping == LINEAR) || !std::isfinite(value)) {
+        if (!options.convertZeroToBaseUnit)
+            return unit->name;
+        if (unit->baseUnit == bitsUnit) {
+            switch (options.bitBasedUnitsPolicy) {
+                case PREFER: return bitsUnit->name;
+                case AVOID: return bytesUnit->name;
+                case KEEP: return unit->isByteBased ? bytesUnit->name : bitsUnit->name;
+            }
+        }
+        else {
+            return unit->baseUnit->name;
+        }
+    }
+
+    Assert(!candidates.empty());
+
+    // score the candidates
+    std::vector<double> scores;
+    for (const Unit *u : candidates)
+        scores.push_back(calculateUnitScore(value, unit, u, options, considerPreferences));
 
     // pick best one
-    d = fabs(d);
-    double valueInBaseUnit = d * unit->mult;
-    auto better = [=](const Unit *a, const Unit *b) {
-        // take slow path if base units are different
-        double valueInBaseUnitA = strcmp(a->baseUnitName, unit->baseUnitName) ? convertUnit(d, unitName, a->name) : valueInBaseUnit / a->mult;
-        double valueInBaseUnitB = strcmp(b->baseUnitName, unit->baseUnitName) ? convertUnit(d, unitName, b->name) : valueInBaseUnit / b->mult;
-        // return true if "a" is better than "b", false otherwise
-        bool greaterThanOneInUnitA = valueInBaseUnitA >= 1.0;
-        bool greaterThanOneInUnitB = valueInBaseUnitB >= 1.0;
-        if (greaterThanOneInUnitA && greaterThanOneInUnitB)
-            return a->mult > b->mult; // prefer bigger unit (results in smaller value)
-        else if (!greaterThanOneInUnitA && !greaterThanOneInUnitB)
-            return a->mult < b->mult; // prefer smaller unit (value will be < 1.0 but to closer to 1.0)
-        else
-            return greaterThanOneInUnitA; // prefer the one that results in >= 1.0 value
-    };
-    auto it = std::min_element(candidates.begin(), candidates.end(), better);
-    const Unit *bestUnit = *it;
-
-    // give the original unit a chance to win too (so we don't pointlessly convert e.g. 1cm to 10mm);
-    // also, do not change the unit if it wouldn't change the value (e.g. don't change 1As to 1C)
-    if (bestUnit != unit && (better(unit, bestUnit) || bestUnit->mult == unit->mult))
-        bestUnit = unit;
-
+    auto it = std::max_element(scores.begin(), scores.end());
+    int index = it - scores.begin();
+    const Unit *bestUnit = candidates[index];
     return bestUnit->name;
 }
 

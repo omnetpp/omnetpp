@@ -49,9 +49,34 @@ class COMMON_API UnitConversion
     };
     static const Unit unitTable[];
 
+    static const Unit *bitsUnit;
+    static const Unit *bytesUnit;
+    static const Unit *secondsUnit;
+
     static const int HASHTABLESIZE = 2048; // must be power of 2
     static const Unit *hashTable[HASHTABLESIZE];
     static int numCollisions;
+
+  public:
+    enum Preference { PREFER, AVOID, KEEP };
+
+    /**
+     * Options for getBestUnit(). It contains options for the most commonly
+     * used preferences; more control over which units to choose as best unit,
+     * such as degrees or radians for angle, or m/s or km/h for speed, can be
+     * achieved via the allowedCompatibleUnits parameter of getBestUnit().
+     */
+    struct Options {
+        bool convertZeroToBaseUnit = false; // as opposed to keeping it
+        bool allowOriginalUnit = true; // i.e. implicitly add to allowedCompatibleUnits
+        bool allowNonmetricTimeUnits = false;
+        Preference logarithmicUnitsPolicy = KEEP;
+        Preference bitBasedUnitsPolicy = KEEP;
+        Preference binaryPrefixPolicy = KEEP;
+        bool preferSmallWholeNumbersForBitByte = true; // note: may beat kilobyteThreshold
+        double kilobyteThreshold = 10240;  // don't use kilobytes/kibibytes under this many bytes; ditto for bits
+        std::string str() const;
+    };
 
   public:
     // internal
@@ -75,6 +100,8 @@ class COMMON_API UnitConversion
     static void cannotConvert(const char *unit, const char *targetUnit);
     static bool areCompatibleUnits(const Unit *unit1, const Unit *unit2);
     static double tryGetConversionFactor(const Unit *unit, const Unit *targetUnit);
+    static const char *getBestUnit(double value, const Unit *unit, const std::vector<const Unit *>& allowedCompatibleUnits, const Options& options, bool considerBestUnitCandidates);
+    static double calculateUnitScore(double originalValue, const Unit *originalUnit, const Unit *unit, const Options& options, bool considerBestUnitCandidates);
 
   private:
     // all methods are static, no reason to instantiate
@@ -154,6 +181,14 @@ class COMMON_API UnitConversion
      * the unit in which the value is closest to 1.0 but >= 1.0 if at all possible.
      */
     static const char *getBestUnit(double d, const char *unit);
+
+    /**
+     * Returns the best unit for human consumption for the given quantity, chosen from
+     * the list passed in via the allowedUnits parameter. If allowedUnits is empty or
+     * does not contain any compatible units, the set of all known compatible units
+     * will be used instead. Further preferences can be passed in via the Options structure.
+     */
+    static const char *getBestUnit(double value, const char *unit, const std::vector<const char *>& allowedUnits, const Options& options);
 
     /**
      * Returns the short name for the given unit, or the same pointer if the unit is unrecognized.
