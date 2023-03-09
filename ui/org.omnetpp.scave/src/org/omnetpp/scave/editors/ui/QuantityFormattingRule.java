@@ -13,8 +13,6 @@ import org.omnetpp.common.util.StringUtils;
  * and potentially elsewhere.
  */
 public class QuantityFormattingRule {
-    private static final String DEFAULT_TESTINPUT = "1234567.8, 12.34567ms";
-
     private static int lastRuleNumber = 0;
 
     private String name = "";
@@ -22,7 +20,7 @@ public class QuantityFormattingRule {
     private String expression = "";
     private boolean isExpressionBogus = false;
     private MatchExpression matcher = null;
-    private Options options = new Options();
+    private Options options = null;
     private String testInput = "";
 
     public QuantityFormattingRule() {
@@ -30,7 +28,7 @@ public class QuantityFormattingRule {
     }
 
     public QuantityFormattingRule(String name) {
-        this(name, true, "", new Options(), DEFAULT_TESTINPUT);
+        this(name, true, "", makeDefaultOptions(), "");
     }
 
     public QuantityFormattingRule(String name, boolean enabled, String expression, Options options, String testInput) {
@@ -39,6 +37,20 @@ public class QuantityFormattingRule {
         setExpression(expression);
         setOptions(options);
         setTestInput(testInput);
+    }
+
+    public static QuantityFormattingRule makeDefaultRule() {
+        return new QuantityFormattingRule("Default", true, "*", makeDefaultOptions(), "8192b, 0.0000000123s, 0.123456");
+    }
+
+    public static Options makeDefaultOptions() {
+        Options options = new Options();
+        String THINSPACE = "\u2009";
+        //String HAIRSPACE = "\u200a";
+        options.setGroupSeparator(THINSPACE);
+        options.setUnitSeparator(THINSPACE);
+        options.setApproximationMark("~" + THINSPACE);
+        return options;
     }
 
     public String getName() {

@@ -96,7 +96,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         addTableColumn(table, "Enabled", 20);
         addTableColumn(table, "Name", 200);
         addTableColumn(table, "Applies where", 200);
-        addTableColumn(table, "Example output", 200);
+        addTableColumn(table, "Tester (click to edit input)", 200);
 
         IContentProvider contentProvider = new ArrayContentProvider();
         tableViewer.setContentProvider(contentProvider);
@@ -321,10 +321,10 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
 
     @Override
     public boolean performOk() {
-        int catchAllIndex = findFirstCatchAll(rules, true);
+        int catchAllIndex = findFirstCatchAll(rules, false);
         if (catchAllIndex == -1) {
             MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that a catch-all rule was added at the last position.");
-            rules.add(new QuantityFormattingRule("Default"));
+            rules.add(QuantityFormattingRule.makeDefaultRule());
             tableViewer.refresh(); // in case we are invoked on Apply
         }
         else if (catchAllIndex < rules.size()-1) {
