@@ -13,11 +13,14 @@ import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.ICheckStateProvider;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -31,25 +34,20 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.omnetpp.common.engine.QuantityFormatter;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
-import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.ScavePlugin;
-import org.omnetpp.scave.editors.ui.QuantityFormattingRule;
 import org.omnetpp.scave.editors.ui.QuantityFormatterOptionsConfigurationDialog;
 import org.omnetpp.scave.editors.ui.QuantityFormatterRegistry;
+import org.omnetpp.scave.editors.ui.QuantityFormattingRule;
 
 /**
  * Preference page for Scave.
  */
 public class QuantityFormattersPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
-    private static final String P_TESTER = "tester";
-    private static final String P_EXPRESSION = "expression";
-    private static final String P_NAME = "name";
-    private static final String DEFAULT_NAME = "New";
-    private static final String DEFAULT_MATCHEXPRESSION = "*";
-    private static final String DEFAULT_TESTINPUT = "1234.5678ms";
+    private static final String COL_TESTER = "tester";
+    private static final String COL_EXPRESSION = "expression";
+    private static final String COL_NAME = "name";
 
     private static final int BUTTON_TOP         = 0;
     private static final int BUTTON_UP          = 1;
@@ -60,11 +58,16 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
     private static final int BUTTON_REMOVE      = 6;
     private static final int BUTTON_EDIT        = 7;
 
-    private List<QuantityFormattingRule> rules;
-    private IStructuredContentProvider contentProvider;
+    private final List<QuantityFormattingRule> rules = new ArrayList<QuantityFormattingRule>();
     private CheckboxTableViewer tableViewer;
-    //private int widthInChars = 150;
-    private int heightInChars = 15;
+
+    @SuppressWarnings("unused")
+    private Button addButton;
+    private Button editButton;
+    private Button copyButton;
+    private Button removeButton;
+    private Button upButton;
+    private Button downButton;
 
     public QuantityFormattersPreferencePage() {
         setPreferenceStore(ScavePlugin.getDefault().getPreferenceStore());
@@ -74,12 +77,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
 
     @Override
     public void init(IWorkbench workbench) {
-        setRules(QuantityFormatterRegistry.getInstance().getRules());
-    }
-
-    protected void setRules(List<QuantityFormattingRule> originalRules) {
-        rules = new ArrayList<QuantityFormattingRule>();
-        for (QuantityFormattingRule rule : originalRules)
+        for (QuantityFormattingRule rule : QuantityFormatterRegistry.getInstance().getRules())
             rules.add(rule.getCopy());
     }
 
@@ -99,51 +97,61 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         addTableColumn(table, "Name", 200);
         addTableColumn(table, "Applies where", 200);
         addTableColumn(table, "Example output", 200);
-        contentProvider = new ArrayContentProvider();
+
+        IContentProvider contentProvider = new ArrayContentProvider();
         tableViewer.setContentProvider(contentProvider);
 
-        tableViewer.setColumnProperties(new String[] {"", P_NAME, P_EXPRESSION, P_TESTER});
-        final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {
-                null,
-                new TableTextCellEditor(tableViewer, 1),
-                new TableTextCellEditor(tableViewer, 2),
-                new TableTextCellEditor(tableViewer, 3),
-                null
-        };
-        tableViewer.setCellEditors(cellEditors);
+        boolean supportCellEditing = true;
+        if (supportCellEditing) {
+            tableViewer.setColumnProperties(new String[] {
+                    "",
+                    COL_NAME,
+                    COL_EXPRESSION,
+                    COL_TESTER
+            });
+            tableViewer.setCellEditors(new TableTextCellEditor[] {
+                    null,
+                    new TableTextCellEditor(tableViewer, 1),
+                    new TableTextCellEditor(tableViewer, 2),
+                    new TableTextCellEditor(tableViewer, 3),
+                    null
+            });
 
-        tableViewer.setCellModifier(new ICellModifier() {
-            public boolean canModify(Object element, String property) {
-                return property.equals(P_NAME) || property.equals(P_EXPRESSION) || property.equals(P_TESTER);
-            }
+            tableViewer.setCellModifier(new ICellModifier() {
+                public boolean canModify(Object element, String property) {
+                    // NOTE: don't set up cell editing on all columns, because it makes it difficult to open an entry by double-clicking
+                    //return property.equals(COL_NAME) || property.equals(COL_EXPRESSION) || property.equals(COL_TESTER);
+                    return property.equals(COL_TESTER);
+                }
 
-            public Object getValue(Object element, String property) {
-                QuantityFormattingRule rule = (QuantityFormattingRule)element;
-                if (property.equals(P_NAME))
-                    return rule.getName();
-                else if (property.equals(P_EXPRESSION))
-                    return rule.getExpression();
-                else if (property.equals(P_TESTER))
-                    return rule.getTestInput();
-                else
-                    throw new IllegalArgumentException();
-            }
+                public Object getValue(Object element, String property) {
+                    QuantityFormattingRule rule = (QuantityFormattingRule)element;
+                    if (property.equals(COL_NAME))
+                        return rule.getName();
+                    else if (property.equals(COL_EXPRESSION))
+                        return rule.getExpression();
+                    else if (property.equals(COL_TESTER))
+                        return rule.getTestInput();
+                    else
+                        throw new IllegalArgumentException();
+                }
 
-            public void modify(Object element, String property, Object value) {
-                if (element instanceof Item)
-                    element = ((Item) element).getData(); // workaround, see super's comment
-                QuantityFormattingRule rule = (QuantityFormattingRule)element;
-                if (property.equals(P_NAME))
-                    rule.setName(value.toString());
-                else if (property.equals(P_EXPRESSION))
-                    rule.setExpression(value.toString());
-                else if (property.equals(P_TESTER))
-                    rule.setTestInput(value.toString());
-                else
-                    throw new IllegalArgumentException();
-                tableViewer.refresh();
-            }
-        });
+                public void modify(Object element, String property, Object value) {
+                    if (element instanceof Item)
+                        element = ((Item) element).getData(); // workaround, see super's comment
+                    QuantityFormattingRule rule = (QuantityFormattingRule)element;
+                    if (property.equals(COL_NAME))
+                        rule.setName(value.toString());
+                    else if (property.equals(COL_EXPRESSION))
+                        rule.setExpression(value.toString());
+                    else if (property.equals(COL_TESTER))
+                        rule.setTestInput(value.toString());
+                    else
+                        throw new IllegalArgumentException();
+                    tableViewer.refresh();
+                }
+            });
+        }
 
         tableViewer.setCheckStateProvider(new ICheckStateProvider() {
             @Override
@@ -189,7 +197,6 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
 //        };
 //        ContentAssistUtil.configureTableColumnContentAssist(tableViewer, 0, valueProposalProvider, null, true);
 
-        tableViewer.setContentProvider(contentProvider);
         tableViewer.setLabelProvider(new TableLabelProvider() {
             @Override
             public String getColumnText(Object element, int columnIndex) {
@@ -198,20 +205,24 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                     case 0:
                         return ""; // the dummy "enabled" column
                     case 1:
-                        return StringUtils.nullToEmpty(rule.getName());
+                        return rule.getName();
                     case 2:
-                        return rule.getExpression();
+                        return rule.getExpression() + (rule.isExpressionBogus() ? "  <invalid syntax>" : "");
                     case 3:
-                        return StringUtils.nullToEmpty(rule.computeTestOutput());
+                        return rule.computeTestOutput();
                     default:
                         throw new RuntimeException();
                 }
             }
         });
 
+        table.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(e -> {
+            buttonPressed(BUTTON_EDIT);
+        }));
+
         tableViewer.setInput(rules);
         GridData gd = new GridData(GridData.FILL_BOTH);
-        gd.heightHint = convertHeightInCharsToPixels(heightInChars);
+        gd.heightHint = convertHeightInCharsToPixels(15);
         gd.widthHint = 600 + convertWidthInCharsToPixels(10); // sum of column widths and then some
         table.setLayoutData(gd);
         table.setFont(parent.getFont());
@@ -221,15 +232,18 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         buttonsArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         buttonsArea.setLayout(new GridLayout(1, false));
 
-        createSideButton(buttonsArea, BUTTON_ADD, "&Add");
-        createSideButton(buttonsArea, BUTTON_EDIT, "&Edit");
-        createSideButton(buttonsArea, BUTTON_COPY, "&Copy");
-        createSideButton(buttonsArea, BUTTON_REMOVE, "&Remove");
+        addButton = createSideButton(buttonsArea, BUTTON_ADD, "&Add");
+        editButton = createSideButton(buttonsArea, BUTTON_EDIT, "&Edit");
+        copyButton = createSideButton(buttonsArea, BUTTON_COPY, "&Copy");
+        removeButton = createSideButton(buttonsArea, BUTTON_REMOVE, "&Remove");
         new Label(buttonsArea, SWT.NONE);
-        //createSideButton(buttonsArea, BUTTON_TOP, "&Top");
-        createSideButton(buttonsArea, BUTTON_UP, "&Up");
-        createSideButton(buttonsArea, BUTTON_DOWN, "&Down");
-        //createSideButton(buttonsArea, BUTTON_BOTTOM, "&Bottom");
+        upButton = createSideButton(buttonsArea, BUTTON_UP, "&Up");
+        downButton = createSideButton(buttonsArea, BUTTON_DOWN, "&Down");
+
+        tableViewer.addSelectionChangedListener(e -> updateButtons());
+
+        if (!rules.isEmpty())
+            tableViewer.setSelection(new StructuredSelection(rules.get(0)));
 
         return parent;
     }
@@ -295,17 +309,30 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         return text;
     }
 
+    protected void updateButtons() {
+        ISelection selection = tableViewer.getSelection();
+        List<?> selectedElements = ((IStructuredSelection)selection).toList();
+        editButton.setEnabled(!selection.isEmpty());
+        removeButton.setEnabled(!selection.isEmpty());
+        copyButton.setEnabled(!selection.isEmpty());
+        upButton.setEnabled(!selection.isEmpty() && !selectedElements.contains(rules.get(0)));
+        downButton.setEnabled(!selection.isEmpty() && !selectedElements.contains(rules.get(rules.size()-1)));
+    }
+
     @Override
     public boolean performOk() {
-        int catchAllIndex = findFirstCatchAll(rules);
+        int catchAllIndex = findFirstCatchAll(rules, true);
         if (catchAllIndex == -1) {
             MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that a catch-all rule was added at the last position.");
-            rules.add(new QuantityFormattingRule("Default", true, "", new QuantityFormatter.Options(), DEFAULT_TESTINPUT));
+            rules.add(new QuantityFormattingRule("Default"));
             tableViewer.refresh(); // in case we are invoked on Apply
         }
         else if (catchAllIndex < rules.size()-1) {
-            MessageDialog.openInformation(getShell(), "Note", "Rules saved. Note that rules that follow the catch-all rule "
-                    + "\"" + rules.get(catchAllIndex).getName() + "\" will never be used.");
+            int numUnused =  rules.size()-1 - catchAllIndex;
+            MessageDialog.openInformation(getShell(), "Note", String.format("Rules saved. Note that the %s that follow%s the catch-all rule \"%s\" will never take effect.",
+                    numUnused == 1 ? "rule" : numUnused + " rules",
+                    numUnused == 1 ? "s" : "",
+                    rules.get(catchAllIndex).getName()));
         }
 
         QuantityFormatterRegistry.getInstance().setRules(rules);
@@ -313,15 +340,19 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
         return true;
     }
 
-    private static boolean isCatchAll(QuantityFormattingRule rule) {
-        return rule.isEnabled() && (StringUtils.isEmpty(rule.getExpression()) || rule.getExpression().equals("*"));
-    }
-
-    private static int findFirstCatchAll(List<QuantityFormattingRule> rules) {
+    private static int findFirstCatchAll(List<QuantityFormattingRule> rules, boolean ignoreDisabledRules) {
         for (int i = 0; i < rules.size(); i++)
-            if (isCatchAll(rules.get(i)))
+            if (rules.get(i).isCatchAll() && (ignoreDisabledRules || rules.get(i).isEnabled()))
                 return i;
         return -1;
+    }
+
+    @Override
+    public void performDefaults() {
+        rules.clear();
+        rules.addAll(QuantityFormatterRegistry.getInstance().makeDefaults());
+        tableViewer.refresh();
+        super.performDefaults();
     }
 
     protected void buttonPressed(int buttonId) {
@@ -366,16 +397,19 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
             case BUTTON_COPY: {
                 if (selection.size() == 1) {
                     QuantityFormattingRule selectedRule = ((QuantityFormattingRule)selection.getFirstElement());
+                    int pos = rules.indexOf(selectedRule);
                     QuantityFormattingRule rule = selectedRule.getCopy();
-                    rules.add(rule);
+                    rules.add(pos, rule);
                     tableViewer.refresh();
                     tableViewer.setSelection(new StructuredSelection(rule), true);
                 }
                 break;
             }
             case BUTTON_ADD: {
-                QuantityFormattingRule rule = new QuantityFormattingRule(DEFAULT_NAME, true, DEFAULT_MATCHEXPRESSION, new QuantityFormatter.Options(), DEFAULT_TESTINPUT);
-                rules.add(rule);
+                QuantityFormattingRule selectedRule = ((QuantityFormattingRule)selection.getFirstElement());
+                int pos = selectedRule == null ? 0 : rules.indexOf(selectedRule);
+                QuantityFormattingRule rule = new QuantityFormattingRule();
+                rules.add(pos, rule);
                 tableViewer.refresh();
                 tableViewer.setSelection(new StructuredSelection(rule), true);
                 break;
@@ -390,6 +424,7 @@ public class QuantityFormattersPreferencePage extends PreferencePage implements 
                 }
                 break;
         }
+        updateButtons();
     }
 
     private void move(List<?> selection, int delta) {
