@@ -24,6 +24,7 @@
 #include "stringutil.h"
 #include "unitconversion.h"
 #include "stringtokenizer.h"
+#include "stlutil.h"
 
 using namespace std;
 
@@ -184,6 +185,21 @@ const UnitConversion::Unit *UnitConversion::lookupUnit(const char *unitName)
     return nullptr;
 }
 
+const UnitConversion::Unit *UnitConversion::getUnit(const char *unitName)
+{
+    const Unit *unit = lookupUnit(unitName);
+    Assert(unit);
+    return unit;
+}
+
+std::vector<const UnitConversion::Unit *> UnitConversion::lookupUnits(const std::vector<const char *>& unitNames)
+{
+    std::vector<const Unit *> result;
+    for (const char *unitName : unitNames)
+        result.push_back(getUnit(unitName));
+    return result;
+}
+
 void UnitConversion::insert(const char *key, const Unit *unit)
 {
     int localCollisions = 0;
@@ -211,13 +227,41 @@ void UnitConversion::fillHashtable()
     Assert(numCollisions <= 25); // 21 collisions observed at the time of writing
 }
 
+inline bool isWholeNumber(double x) { return fabs(x - floor(x+0.5)) < 1e-15; }
+
 void UnitConversion::fillUnitData()
 {
     for (const Unit *p = unitTable; p->name; p++) {
-        Unit *pmut = const_cast<Unit *>(p);
-        pmut->baseUnit = lookupUnit(p->baseUnitName);
-        for (std::string unitName : opp_splitandtrim(p->bestUnitCandidatesList))
-            pmut->bestUnitCandidates.push_back(lookupUnit(unitName.c_str()));
+        Unit *unit = const_cast<Unit *>(p);
+
+        unit->baseUnit = getUnit(p->baseUnitName);
+        unit->isByteBased = strstr(unit->longName, "byte") != nullptr;
+
+        for (std::string unitName : opp_splitandtrim(opp_emptytodefault(p->bestUnitCandidatesList, p->name))) {  // at least itself is a candidate if candidates are not explicitly listed
+            unit->bestUnitCandidateNames.push_back(unitName.c_str());
+            unit->bestUnitCandidates.push_back(getUnit(unitName.c_str()));
+        }
+
+        const char *n = unit->name;
+        if (unit->mapping == LOG10)
+            unit->prefixType = DECIMAL;
+        else if (opp_stringbeginswith(n, "Ki") || opp_stringbeginswith(n, "Mi") || opp_stringbeginswith(n, "Gi") || opp_stringbeginswith(n, "Ti") || opp_streq(n, "b") || opp_streq(n, "B"))
+            unit->prefixType = BINARY;
+        else if (isWholeNumber(log10(unit->isByteBased ? unit->mult/8 : unit->mult)))
+            unit->prefixType = DECIMAL;
+        else
+            unit->prefixType = TRADITIONAL;
+    }
+
+    // filling in compatibleUnits depends on baseUnit pointers already being filled in
+    for (const Unit *p = unitTable; p->name; p++) {
+        Unit *unit = const_cast<Unit *>(p);
+        for (const Unit *candidate = unitTable; candidate->name; candidate++) {
+            if (areCompatibleUnits(candidate, unit)) {
+                unit->compatibleUnitNames.push_back(candidate->name);
+                unit->compatibleUnits.push_back(candidate);
+            }
+        }
     }
 }
 
@@ -481,6 +525,14 @@ double UnitConversion::tryConvert(double value, const Unit *unit, const Unit *ta
     return NaN;
 }
 
+static std::vector<const char *> emptyList; // note: cannot be moved into the function for thread safety
+
+const std::vector<const char *>& UnitConversion::getCompatibleKnownUnits(const char *unitName)
+{
+    const Unit *unit = lookupUnit(unitName);
+    return unit ? unit->compatibleUnitNames : emptyList;
+}
+
 const char *UnitConversion::getBestUnit(double d, const char *unitName)
 {
     // We do not touch the unit (return the original unit) in a number of cases:
@@ -537,6 +589,30 @@ bool UnitConversion::isLinearUnit(const char *unitName)
 {
     const Unit *unit = lookupUnit(unitName);
     return unit ? unit->mapping == LINEAR : true;
+}
+
+bool UnitConversion::areCompatibleUnits(const char *unit1Name, const char *unit2Name)
+{
+    if (opp_streq(unit1Name, unit2Name))
+        return true;
+
+    const Unit *unit1 = lookupUnit(unit1Name);
+    const Unit *unit2 = lookupUnit(unit2Name);
+    if (unit1 == nullptr || unit2 == nullptr)
+        return false;
+
+    return areCompatibleUnits(unit1, unit2);
+}
+
+bool UnitConversion::areCompatibleUnits(const Unit *unit1, const Unit *unit2)
+{
+    if (unit1->baseUnit == unit2->baseUnit)
+        return true;
+    if (unit1->baseUnit != unit1)
+        return areCompatibleUnits(unit1->baseUnit, unit2);
+    if (unit2->baseUnit != unit2)
+        return areCompatibleUnits(unit1, unit2->baseUnit);
+    return false;
 }
 
 std::vector<const char *> UnitConversion::getKnownUnits()

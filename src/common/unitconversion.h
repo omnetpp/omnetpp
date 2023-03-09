@@ -30,6 +30,7 @@ class COMMON_API UnitConversion
 {
   protected:
     enum Mapping { LINEAR, LOG10 };
+    enum PrefixType { DECIMAL, BINARY, TRADITIONAL };
     struct Unit {
         const char *name;
         double mult;
@@ -37,8 +38,14 @@ class COMMON_API UnitConversion
         const char *baseUnitName;
         const char *longName;
         const char *bestUnitCandidatesList="";
+        // ---- computed fields: ----
+        PrefixType prefixType;
+        bool isByteBased;
         const Unit *baseUnit;
+        std::vector<const char *> bestUnitCandidateNames;
+        std::vector<const char *> compatibleUnitNames;
         std::vector<const Unit*> bestUnitCandidates;
+        std::vector<const Unit*> compatibleUnits;
     };
     static const Unit unitTable[];
 
@@ -58,12 +65,15 @@ class COMMON_API UnitConversion
     static void fillUnitData();
 
     static const Unit *lookupUnit(const char *unit);
+    static const Unit *getUnit(const char *unit);
+    static std::vector<const Unit *> lookupUnits(const std::vector<const char *>& unitNames);
     static bool readNumber(const char *&s, double& number);
     static bool readUnit(const char *&s, std::string& unit);
     static double convertToBase(double value, const Unit *unit);
     static double convertFromBase(double value, const Unit *unit);
     static double tryConvert(double d, const Unit *unit, const Unit *targetUnit);
     static void cannotConvert(const char *unit, const char *targetUnit);
+    static bool areCompatibleUnits(const Unit *unit1, const Unit *unit2);
     static double tryGetConversionFactor(const Unit *unit, const Unit *targetUnit);
 
   private:
@@ -133,6 +143,13 @@ class COMMON_API UnitConversion
     static double convertUnit(double d, const char *unit, const char *targetUnit);
 
     /**
+     * Returns the list of known units that the given one may be converted into, i.e.
+     * the ones for which convertUnit() will not raise an error. For unknown
+     * units it returns an empty list.
+     */
+    static const std::vector<const char *>& getCompatibleKnownUnits(const char *unit);
+
+    /**
      * Returns the best unit for human consumption for the given quantity. Returns
      * the unit in which the value is closest to 1.0 but >= 1.0 if at all possible.
      */
@@ -160,6 +177,11 @@ class COMMON_API UnitConversion
      * if not (dBm, dbW). Unknown (custom) units are assumed to be linear.
      */
     static bool isLinearUnit(const char *unit);
+
+    /**
+     * Returns true if the two units can be converted into each other.
+     */
+    static bool areCompatibleUnits(const char *unit1, const char *unit2);
 
     /**
      * Produces the list of all recognized units, with their short names.
