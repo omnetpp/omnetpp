@@ -109,6 +109,20 @@ class _DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
         return ""
 
 
+def _check_same_unit(df):
+    if df is None or len(df) == 0 or "unit" not in df.columns:
+        return None
+    units = list(df["unit"].unique())
+    if not units:
+        return None
+    nonunits = [None, math.nan, np.nan, ""]
+    units = [None if u in nonunits else u for u in units]
+    if len(units) > 1:
+        units = ["<none>" if u is None else u for u in units]
+        raise chart.ChartScriptError("The data frame contains multiple units: " + ", ".join(units))
+    return units[0]
+
+
 # Note: must be at the top, because it appears in other functions' arg list as default
 def make_legend_label(legend_cols, row, props={}):
     """
@@ -234,7 +248,9 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}):
     - `xlabel_rotation`: Amount of counter-clockwise rotation of x axis labels a.k.a. group names, in degrees.
     - `title`: Plot title (autocomputed if missing).
     - `cycle_seed`: Alters the sequence in which colors are assigned to series.
+    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
     """
+    unit = _check_same_unit(meta_df)
     p = ideplot if ideplot.is_native_plot() else plt
 
     def get_prop(k):
@@ -335,6 +351,8 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}):
         ylabel = title_names[0]
         if len(title_names) > 1:
             ylabel += ", etc."
+        if unit is not None and len(unit) > 0:
+            ylabel += f" [{unit}]"
         p.ylabel(ylabel)
 
         if title is None:
@@ -378,7 +396,9 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     - `drawstyle`: Matplotlib draw style; if present, it overrides the draw style derived from `interpolationmode`.
     - `linestyle`, `linecolor`, `linewidth`, `marker`, `markersize`: styling
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
+    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
     """
+    unit = _check_same_unit(df)
     p = ideplot if chart.is_native_chart() else plt
 
     def get_prop(k):
@@ -394,7 +414,10 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
 
-    p.ylabel(make_chart_title(df, ["title"]))
+    ylabel = make_chart_title(df, ["title"])
+    if unit is not None:
+        ylabel += f" [{unit}]"
+    p.ylabel(ylabel)
 
 
 def plot_vectors_separate(df, props, legend_func=make_legend_label):
@@ -473,7 +496,9 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     - `drawstyle`: Selects whether to fill the area below the histogram line.
     - `linestyle`, `linecolor`, `linewidth`: Styling.
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
+    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic x axis label.
     """
+    unit = _check_same_unit(df)
     p = ideplot if chart.is_native_chart() else plt
 
     has_overflow_columns = "min" in df and "max" in df and "underflows" in df and "overflows" in df
@@ -523,6 +548,9 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
 
+    if unit is not None:
+        p.xlabel(f"[{unit}]")
+
 
 def plot_lines(df, props, legend_func=make_legend_label):
     """
@@ -563,7 +591,9 @@ def plot_lines(df, props, legend_func=make_legend_label):
     - `error_style`: If `error` is present, controls how the error is shown.
        Accepted values: "Error bars", "Error band"
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
+    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
     """
+    unit = _check_same_unit(df)
     p = ideplot if chart.is_native_chart() else plt
 
     def get_prop(k):
@@ -591,6 +621,9 @@ def plot_lines(df, props, legend_func=make_legend_label):
 
     title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
+
+    if unit is not None:
+        p.ylabel(f"[{unit}]")
 
 
 def plot_boxwhiskers(df, props, legend_func=make_legend_label):
@@ -627,7 +660,9 @@ def plot_boxwhiskers(df, props, legend_func=make_legend_label):
 
     - `title`: Plot title (autocomputed if missing).
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
+    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
     """
+    unit = _check_same_unit(df)
     title_cols, legend_cols = extract_label_columns(df, props)
     df.sort_values(by=legend_cols, axis='index', inplace=True)
 
@@ -645,6 +680,9 @@ def plot_boxwhiskers(df, props, legend_func=make_legend_label):
     if "title" in props and props["title"]:
         title = props["title"]
     set_plot_title(title)
+
+    if unit is not None:
+        plt.ylabel(f"[{unit}]")
 
 
 # source: https://stackoverflow.com/a/39789718/635587
