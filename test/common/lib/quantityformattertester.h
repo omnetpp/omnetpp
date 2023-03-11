@@ -105,8 +105,8 @@ static void testQuantityFormatter(QuantityFormatter& formatter, std::string text
               << std::endl;
 }
 
-static void testQuantityFormatter(QuantityFormatter& formatter, int maxDigits, int minScale, int maxScale, const char *unit, std::vector<std::function<std::string(int)>> computeDigits) {
-    std::cout << "Text input, printf-ed double, formatted quantity, parsed formatted quantity, absolute error, relative error" << std::endl;
+static std::vector<std::string> generateNumbers(int maxDigits, int minScale, int maxScale, std::vector<std::function<std::string(int)>> computeDigits) {
+    std::vector<std::string> result;
     for (auto sign : {"", "-"}) {
         for (int numDigits = 1; numDigits <= maxDigits; numDigits++) {
             for (int scale = minScale; scale <= maxScale; scale++) {
@@ -123,15 +123,26 @@ static void testQuantityFormatter(QuantityFormatter& formatter, int maxDigits, i
                         digits = digits.substr(0, digits.size() + shift) + "." + digits.substr(digits.size() + shift);
                     }
                     digits = sign + digits;
-                    testQuantityFormatter(formatter, digits.c_str(), unit);
+                    result.push_back(digits);
                 }
             }
         }
     }
+    return result;
+}
+
+static void testQuantityFormatter(QuantityFormatter& formatter, const std::vector<std::string>& numbers, const char *unit) {
+    std::cout << "Text input, printf-ed double, formatted quantity, parsed formatted quantity, absolute error, relative error" << std::endl;
+    for (std::string number : numbers)
+        testQuantityFormatter(formatter, number.c_str(), unit);
+}
+
+static void testQuantityFormatter(QuantityFormatter& formatter, int maxDigits, int minScale, int maxScale, const char *unit, std::vector<std::function<std::string(int)>> computeDigits) {
+    testQuantityFormatter(formatter, generateNumbers(maxDigits, minScale, maxScale, computeDigits), unit);
 }
 
 static void testQuantityFormatter(QuantityFormatter& formatter, int size, const char *unit, std::vector<std::function<std::string(int)>> computeDigits) {
-    testQuantityFormatter(formatter, size, -size, size, unit, computeDigits);
+    testQuantityFormatter(formatter, generateNumbers(size, -size, size, computeDigits), unit);
 }
 
 #endif
