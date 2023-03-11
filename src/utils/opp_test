@@ -768,6 +768,12 @@ Supported .test file entry types:
         self.writefile(retestfile, "#! /bin/sh\ncd ../.. && ./runtest "+testfilename+"\n")
         os.chmod(retestfile, 0o755) # make it executable
 
+        def quote(label, txt, limit, filename):
+            if (len(txt) <= limit):
+                return f"{label}:\n>>>>{txt}<<<<"
+            else:
+                return f"{label} too long to dump, see file `{filename}' in work directory"
+
         # check output files
         for key,value in self.values.items():
             if 'contains' in key:  # any form of "...contains..."
@@ -853,22 +859,21 @@ Supported .test file entry types:
 
                     if (key.startswith('contains-regex(') and not match):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
-                        if (len(txt) <= maxPrintableSize):
-                            self.lprint(1, "expected pattern:\n>>>>{}<<<<\nactual output:\n>>>>{}<<<<\n".format(pattern, txt))
-                        else:
-                            self.lprint(1, "expected pattern:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
+
+                        self.lprint(1, quote("expected pattern", pattern, maxPrintableSize, patternfilename))
+                        self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
+
                         self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
                     elif (key.startswith('not-contains-regex(') and match):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
-                        if (len(txt) <= maxPrintableSize):
-                            self.lprint(1, "unexpected pattern:\n>>>>{}<<<<\nactual output:\n>>>>{}<<<<\n".format(pattern, txt))
-                            self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match.start())+1))
-                        else:
-                            self.lprint(1, "unexpected pattern:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
-                            self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match.start())+1))
+
+                        self.lprint(1, quote("unexpected pattern", pattern, maxPrintableSize, patternfilename))
+                        self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
+                        self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match.start())+1))
+
                         self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
@@ -889,19 +894,20 @@ Supported .test file entry types:
                         if (len(difftxt) <= maxPrintableSize):
                             self.lprint(1, "\n" + difftxt)
                         else:
-                            self.lprint(1, "expected substring:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
+                            self.lprint(1, quote("expected substring", pattern, maxPrintableSize, patternfilename))
+                            self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
+
                         self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
                     elif (key.startswith('not-contains(') and match != -1):
                         self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
-                        if (len(txt) <= maxPrintableSize):
-                            self.lprint(1, "unexpected substring:\n>>>>{}<<<<\nactual output:\n>>>>{}<<<<\n".format(pattern, txt))
-                            self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match)+1))
-                        else:
-                            self.lprint(1, "unexpected substring:\n>>>>{}<<<<\nactual output too long to dump, see file `{}' in work directory\n".format(pattern, realinfname))
-                            self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match)+1))
+
+                        self.lprint(1, quote("unexpected substring", pattern, maxPrintableSize, patternfilename))
+                        self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
+                        self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match)+1))
+
                         self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
