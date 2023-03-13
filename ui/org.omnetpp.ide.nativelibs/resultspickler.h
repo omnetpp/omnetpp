@@ -44,7 +44,7 @@ protected:
 
     std::pair<ShmSendBufferPtr, ShmSendBufferPtr> readVectorIntoShm(const ID& id, double simTimeStart = -INFINITY, double simTimeEnd = INFINITY);
 
-    void pickleResultAttrs(Pickler& p, const IDList& resultIDs);
+    void pickleResultAttrs(Pickler& p, const IDList& resultIDs, bool onlyUnit);
 
 public:
     ResultsPickler(ResultFileManager *rfm, ShmSendBufferManager *shmManager, InterruptedFlag *interrupted=nullptr) : rfm(rfm), shmManager(shmManager), interrupted(interrupted?interrupted:&dummy) {}
