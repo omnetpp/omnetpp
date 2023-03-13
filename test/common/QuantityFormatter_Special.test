@@ -40,8 +40,8 @@ inf s                   inf s                                   inf s           
 -inf s                  -inf s                                  -inf s            -inf              -nan              nan
 nan                     nan                                     nan               nan               nan               nan
 nan s                   nan s                                   nan s             nan               nan               nan
--nan                    -nan                                    -nan              -nan              -nan              nan
--nan s                  -nan s                                  -nan s            -nan              -nan              nan
+-nan                    -nan                                    nan               nan               -nan              nan
+-nan s                  -nan s                                  nan s             nan               -nan              nan
 
 %not-contains: stdout
 !!!
