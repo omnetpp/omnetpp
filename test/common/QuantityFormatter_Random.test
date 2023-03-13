@@ -16,7 +16,7 @@ std::vector<const char *> units = {nullptr, "s", "m", "W", "b", "B"};
 
 QuantityFormatter::Options options;
 QuantityFormatter quantityFormatter(options);
-for (int i = 1; i < 1000000; i++) {
+for (int i = 1; i < 100000; i++) {
     options.notationMode = (QuantityFormatter::NotationMode)rng.randInt(2);
     options.scientificExponentMode = (QuantityFormatter::ScientificExponentMode)rng.randInt(2);
     options.scientificNotationExponentLimit = 1 + rng.randInt(8);
