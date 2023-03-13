@@ -59,7 +59,7 @@ size_t ResultsPickler::getSizeLimit()
     return getAvailableMemoryBytes() / 3;
 }
 
-void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs)
+void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs, bool onlyUnit)
 {
     p.startList();
 
@@ -67,7 +67,20 @@ void ResultsPickler::pickleResultAttrs(Pickler& p, const IDList& resultIDs)
     for (int i = 0; i < resultIDs.size(); ++i) {
         const ResultItem *result = rfm->getItem(resultIDs.get(i), buffer);
         const StringMap& attrs = result->getAttributes();
-        for (const auto & a : attrs) {
+
+        auto begin = attrs.begin();
+        auto end = attrs.end();
+
+        if (onlyUnit) {
+            begin = attrs.find("unit");
+            end = begin;
+            if (begin != attrs.end())
+                ++end;
+        }
+
+        for (auto it = begin; it != end; ++it) {
+            const auto &a = *it;
+
             p.startTuple();
 
             p.pushString(result->getRun()->getRunName());
@@ -413,8 +426,8 @@ ShmSendBufferPtr ResultsPickler::getScalarsPickle(const IDList& scalars, bool in
 
     p.endList();
 
-    if (!scalars.isEmpty() && includeAttrs)
-        pickleResultAttrs(p, scalars);
+    if (!scalars.isEmpty())
+        pickleResultAttrs(p, scalars, !includeAttrs);
     else
         p.pushNone();
 
@@ -461,8 +474,8 @@ std::vector<ShmSendBufferPtr> ResultsPickler::getVectorsPickle(const IDList& vec
 
     p.endList();
 
-    if (!vectors.isEmpty() && includeAttrs)
-        pickleResultAttrs(p, vectors);
+    if (!vectors.isEmpty())
+        pickleResultAttrs(p, vectors, !includeAttrs);
     else
         p.pushNone();
 
@@ -501,8 +514,8 @@ ShmSendBufferPtr ResultsPickler::getParamValuesPickle(const IDList& params, bool
 
     p.endList();
 
-    if (!params.isEmpty() && includeAttrs)
-        pickleResultAttrs(p, params);
+    if (!params.isEmpty())
+        pickleResultAttrs(p, params, !includeAttrs);
     else
         p.pushNone();
 
@@ -550,8 +563,8 @@ ShmSendBufferPtr ResultsPickler::getStatisticsPickle(const IDList& statistics, b
 
     p.endList();
 
-    if (!statistics.isEmpty() && includeAttrs)
-        pickleResultAttrs(p, statistics);
+    if (!statistics.isEmpty())
+        pickleResultAttrs(p, statistics, !includeAttrs);
     else
         p.pushNone();
 
@@ -605,8 +618,8 @@ ShmSendBufferPtr ResultsPickler::getHistogramsPickle(const IDList& histograms, b
 
     p.endList();
 
-    if (!histograms.isEmpty() && includeAttrs)
-        pickleResultAttrs(p, histograms);
+    if (!histograms.isEmpty())
+        pickleResultAttrs(p, histograms, !includeAttrs);
     else
         p.pushNone();
 

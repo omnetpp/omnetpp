@@ -2197,11 +2197,20 @@ def _pivot_results(df, include_attrs, include_runattrs, include_itervars, includ
     itervars, runattrs, configs, attrs, df = _split_by_types(df, ["itervar", "runattr", "config", "attr"])
     params = _select_param_assignments(configs)
 
-    if include_attrs and attrs is not None and not attrs.empty:
+    if attrs is not None and not attrs.empty:
         attrs = pd.pivot_table(attrs, columns="attrname", aggfunc='first', index=["runID", "module", "name"], values="attrvalue")
-        # this column is no longer needed, and it collided with the commonly used "type" result attribute in `merge`
-        df.drop(["type"], axis=1, inplace=True, errors="ignore")
-        df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left', suffixes=(None, "_attr"))
+
+        if attrs is not None and not include_attrs:
+            if "unit" in attrs:
+                attrs = attrs[["unit"]]
+            else:
+                attrs = attrs[[]]
+
+        if not attrs.empty:
+            # this column is no longer needed, and it collided with the commonly used "type" result attribute in `merge`
+            df.drop(["type"], axis=1, inplace=True, errors="ignore")
+
+            df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left', suffixes=(None, "_attr"))
 
     if include_itervars:
         df = _append_metadata_columns(df, itervars, "_itervar")
