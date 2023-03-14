@@ -414,6 +414,7 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
 
+    p.xlabel("Simulation Time [s]")
     ylabel = make_chart_title(df, ["title"])
     if unit is not None:
         ylabel += f" [{unit}]"
@@ -449,6 +450,8 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label):
 
     title = get_prop("title") or make_chart_title(df, title_cols)
     set_plot_title(title)
+
+    plt.xlabel("Simulation Time [s]")
 
 
 def plot_histograms(df, props, legend_func=make_legend_label):
