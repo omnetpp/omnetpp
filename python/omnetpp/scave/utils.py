@@ -27,25 +27,25 @@ from omnetpp.scave import chart, ideplot, vectorops
 
 from ._version import __version__
 
+def _parse_version(v: str):
+    import re
+    m = re.search(R"(\d+)\.(\d+)\.(\d+).*", v)
+    return int(m.group(1)), int(m.group(2)), int(m.group(3))
+
+def _version_less_than(actual, required):
+    major, minor, patch = _parse_version(actual)
+    rmajor, rminor, rpatch = _parse_version(required)
+
+    if major != rmajor:
+        return major < rmajor
+
+    if minor != rminor:
+        return minor < rminor
+
+    return patch < rpatch
+
 def _check_version(module, required):
-    def parse_version(v: str):
-        import re
-        m = re.search(R"(\d+)\.(\d+)\.(\d+).*", v)
-        return int(m.group(1)), int(m.group(2)), int(m.group(3))
-
-    def too_old(actual, required):
-        major, minor, patch = parse_version(actual)
-        rmajor, rminor, rpatch = parse_version(required)
-
-        if major != rmajor:
-            return major < rmajor
-
-        if minor != rminor:
-            return minor < rminor
-
-        return patch < rpatch
-
-    if too_old(module.__version__, required):
+    if _version_less_than(module.__version__, required):
         print("WARNING: '" + module.__name__ + "' is too old, some analysis tool functionality may be broken. "
               "Required: " + required + ", present: " + module.__version__ + ". "
               "Try running `python3 -m pip install --user --upgrade " + module.__name__ + "` to upgrade."

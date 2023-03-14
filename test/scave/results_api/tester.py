@@ -1,9 +1,10 @@
-from omnetpp.scave import chart, ideplot
+from omnetpp.scave import chart, ideplot, utils
 import os
 import sys
 from csv import QUOTE_NONNUMERIC
 import difflib
 import numpy as np
+import pandas as pd
 
 def sanitize_row(row):
     if "attrname" in row and row["attrname"] in ["datetime", "datetimef", "processid"]:
@@ -80,8 +81,13 @@ def addMissingNewLine(str):
 def sanitize_and_compare_csv(df, ref_filename):
     df = sanitize(df)
     actual = str([str(n) + ": " + str(t) for n, t in zip(df.columns.values, df.dtypes.values)]) + "\n"
-    # TODO: use lineterminator instead, once Pandas 1.5.0 is required
-    actual += df.to_csv(None, index=False, quoting=QUOTE_NONNUMERIC, line_terminator="\n")
+
+    # The line_terminator parameter was renamed in Pandas 1.5.0 - in a backwards-compatible way,
+    # but with an annoying FutureWarning; and the old name was removed in Pandas 2.0.0.
+    if utils._version_less_than(pd.__version__, "1.5.0"):
+        actual += df.to_csv(None, index=False, quoting=QUOTE_NONNUMERIC, line_terminator="\n")
+    else:
+        actual += df.to_csv(None, index=False, quoting=QUOTE_NONNUMERIC, lineterminator="\n")
 
     os.makedirs("actual_output", exist_ok=True)
     with open("actual_output/" + ref_filename, "wt") as f2:
