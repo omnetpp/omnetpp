@@ -144,8 +144,12 @@ def test_result_filter():
     filtered = results.read_result_files(RESULT_FILES, "type =~ scalar")
     df = results.get_results(filtered)
     _assert_sequential_index(df)
-    # in all 6 runs: 20 lines of metadata, and 4 lines (1 scalar and 3 attrs) for all 12 scalars
-    return df.shape == (408, 7)
+    # in all 6 runs:
+    #  20 lines of metadata
+    #  5 lines (1 scalar and 4 attrs) for 8 scalars (with unit)
+    #  4 lines (1 scalar and 3 attrs) for 4 scalars (without unit)
+    # 6 * (20 + 5*8 + 4*4) = 456
+    return df.shape == (456, 7)
 
 def test_row_type_filter_1():
     df = results.get_results(r, row_types=["scalar"])
@@ -158,9 +162,11 @@ def test_row_type_filter_2():
     filtered = results.read_result_files(RESULT_FILES, "run =~ *General-0* AND module =~ Test.node1 AND name =~ foo1*")
     df = results.get_results(filtered, row_types=["scalar", "attr"])
     _assert_sequential_index(df)
-    # 2 times 4 rows for scalars (incl. value), and 3 times 3 rows for the vector, stats, and histogram (only attr)
-    # since we only filtered for row types, not result types, we get the attrs for the other kinds of results too, just not the results themselves
-    return df.shape == (17, 7)
+    # 2 times 5 rows for scalars (incl. value)
+    # 3 times 4 rows for the vector, stats, and histogram (only attr)
+    # since we only filtered for row types, not result types, we get the attrs
+    # for the other kinds of results too, just not the results themselves
+    return df.shape == (22, 7)
 
 def test_row_type_filter_3():
     filtered = results.read_result_files(RESULT_FILES, "type =~ param")

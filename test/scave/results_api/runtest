@@ -10,6 +10,8 @@ make -j6 MODE=debug
 
 ./scave_dbg -u Cmdenv
 
+echo "==== testing via opp_charttool ===="
 opp_charttool run results_api_test.anf --no-show
 
+echo "==== testing via standalone.py ===="
 python3 standalone.py
