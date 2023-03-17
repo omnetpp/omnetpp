@@ -65,26 +65,45 @@ def _read_csv(reader):
     },
     low_memory=False) # This is here just to silence a DtypeWarning, should not have any other effect.
 
-    def _transform(row):
-        if row["type"] == "scalar" and "value" in row:
-            row["value"] = _parse_float(row["value"])
-        if row["type"] == "vector":
-            if "vectime" in row and row["vectime"] is None:
-                row["vectime"] = np.array([])
-            if "vecvalue" in row and row["vecvalue"] is None:
-                row["vecvalue"] = np.array([])
-        if row["type"] == "histogram":
-            if "binedges" in row and row["binedges"] is None:
-                row["binedges"] = np.array([])
-            if "binvalues" in row and row["binvalues"] is None:
-                row["binvalues"] = np.array([])
-
-        return row
-
     if not df.empty:
         if "type" in df:
             # CSV-style results
-            df = df.transform(_transform, axis=1)
+
+            column_names = list(df.columns)
+            def index_of(val):
+                try:
+                    return column_names.index(val)
+                except ValueError:
+                    return -1
+
+            # Can't use name lookup in nones2arrays due to the `raw=True` parameter below,
+            # basically for performance reasons.
+            type_index = index_of("type")
+            value_index = index_of("value")
+            vectime_index = index_of("vectime")
+            vecvalue_index = index_of("vecvalue")
+            binedges_index = index_of("binedges")
+            binvalues_index = index_of("binvalues")
+
+            def nones2arrays(row):
+                def none2array(i):
+                    if i >= 0 and row[i] is None:
+                        row[i] = np.array([])
+
+                if row[type_index] == "scalar":
+                    row[value_index] = _parse_float(row[value_index])
+                elif row[type_index] == "vector":
+                    none2array(vectime_index)
+                    none2array(vecvalue_index)
+                elif row[type_index] == "histogram":
+                    none2array(binedges_index)
+                    none2array(binvalues_index)
+
+                return row
+
+            # The `raw=True` parameter resulted in a significant (7x) performance improvement.
+            # See https://stackoverflow.com/questions/19798153/difference-between-apply-and-applymap-for-a-pandas-dataframe
+            df = df.apply(nones2arrays, axis=1, raw=True)
 
     df.rename(columns={"run": "runID"}, inplace=True) # oh, inconsistencies...
 
