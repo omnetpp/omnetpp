@@ -5,7 +5,7 @@ LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 RUN apt-get update && \
     apt-get upgrade -yy && \
     apt-get install --no-install-recommends -yy \
-        bison flex default-jdk swig doxygen graphviz inkscape \
+        bison flex openjdk-17-jdk swig doxygen graphviz inkscape \
         pkg-config python3 python3-dev python3-pip python3-setuptools \
         texlive texlive-latex-extra latexmk \
         txt2html maven ssh zip p7zip-full git \
