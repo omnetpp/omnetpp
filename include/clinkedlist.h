@@ -37,6 +37,11 @@ NAMESPACE_BEGIN
 #define CLINKEDLIST_DEPRECATED  _OPPDEPRECATED
 #endif
 
+#if defined __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 /**
  * Use of this class is DISCOURAGED, it is provided for backward compatibility
  * only. Use std::deque or std::list instead.
@@ -301,10 +306,13 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
     //@}
 };
 
+#if defined __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
-
 
 NAMESPACE_END
 
