@@ -27,6 +27,10 @@ cplusplus
 #  pragma warning(disable:4996)  // deprecation (cLinkedList)
 #endif
 
+#if defined __GNUC__
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 USING_NAMESPACE
 
 //
