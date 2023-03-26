@@ -419,6 +419,10 @@ NAMESPACE_END
 
 USING_NAMESPACE
 
+#if defined __GNUC__
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 //void _dummy_for_env();
 void std_sim_descriptor_dummy();
 void nedfunctions_dummy();
