@@ -422,7 +422,8 @@ void IndexedVectorFileWriterNode::writeRecordsToBuffer(VectorInputPort *port)
                     if (a.xp.isNil())
                         bufferPrintf(port,"%.*g", prec, a.x);
                     else
-                        bufferPrintf(port,"%s", BigDecimal::ttoa(buf, a.xp, endp)); break;
+                        bufferPrintf(port,"%s", BigDecimal::ttoa(buf, a.xp, endp));
+                    break;
                 case 'V': bufferPrintf(port,"%.*g", prec, a.y); break;
                 case 'E': bufferPrintf(port,"%" LL "d", a.eventNumber); break;
                 default: throw opp_runtime_error("unknown column type: '%c'", columns[j]);
