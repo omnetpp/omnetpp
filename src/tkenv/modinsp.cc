@@ -536,7 +536,7 @@ void TGraphicalModWindow::redrawModules()
             cGate *dest_gate = gate->toGate();
             if (gate->type()==(parent?'I':'O') && dest_gate!=NULL)
             {
-                char gateptr[32], srcptr[32], destptr[32], indices[32];
+                char gateptr[32], srcptr[32], destptr[32], indices[64];
                 ptrToStr(gate, gateptr);
                 ptrToStr(mod, srcptr);
                 ptrToStr(dest_gate->ownerModule(), destptr);

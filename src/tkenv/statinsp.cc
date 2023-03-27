@@ -422,7 +422,7 @@ void TOutVectorWindow::update()
 
        if (x>=0)
        {
-           char tag[16];
+           char tag[32];
            sprintf(tag,"value%d",pos);
 
            const int d = 2;
