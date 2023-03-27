@@ -268,7 +268,7 @@ class DataTableIterator
 		DataTableIterator(const vector<DataTable*> &tables, int keyColumn)
 			: cells(tables.size()), currentRows(tables.size())
 		{
-			for (int i = 0; i < tables.size(); ++i)
+			for (int i = 0; i < (int)tables.size(); ++i)
 			{
 				this->cells[i] = DataTable::CellPtr(tables[i], 0, keyColumn);
 				currentRows[i] = -1;
@@ -355,7 +355,7 @@ JoinedDataTable::JoinedDataTable(const string name, const string description,
 	   Assert(iterator.hasNext());
 	   iterator.next();
 
-	   for (int j = 0; j < joinedTables.size(); ++j)
+	   for (int j = 0; j < (int)joinedTables.size(); ++j)
 		   rowMap[row*tableCount+j]=iterator.currentRow(j);
    }
 }
@@ -417,7 +417,7 @@ double JoinedDataTable::getDoubleValue(int row, int col) const
 
 void JoinedDataTable::mapTableCell(int row, int col, DataTable* &table, int &tableRow, int &tableCol) const
 {
-	Assert(0 <= row && row < rowCount && 0 <= col && col < columnMap.size());
+	Assert(0 <= row && row < rowCount && 0 <= col && col < (int)columnMap.size());
 
 	if (col == 0)
 	{
@@ -484,10 +484,10 @@ void ScaveExport::saveVector(const string &name, const string &description,
 void ScaveExport::saveVectors(const string &name, const string &description,
                              const IDList &vectors, const vector<XYArray*> xyArrays, const ResultFileManager &manager)
 {
-	Assert(vectors.size() == xyArrays.size());
+	Assert(vectors.size() == (int)xyArrays.size());
 
 	vector<DataTable*> tables;
-	for (int i = 0; i < xyArrays.size(); ++i)
+	for (int i = 0; i < (int)xyArrays.size(); ++i)
 	{
 		const VectorResult& vector = manager.getVector(vectors.get(i));
 		std::string yColumnName = *vector.moduleNameRef + "/" + *vector.nameRef; // fix column names
