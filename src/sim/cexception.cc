@@ -143,7 +143,7 @@ void cException::init(const cObject *where, OppErrorCode errorcode, const char *
     }
 
     vsnprintf(buffer+strlen(buffer), BUFLEN-strlen(buffer), fmt, va);
-    buffer[BUFLEN] = '\0';
+    buffer[BUFLEN-1] = '\0';
     msg = buffer;
 
     // store context
