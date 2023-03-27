@@ -60,7 +60,7 @@ class SCAVE_API DataTable
 				int column;
 			public:
 				CellPtr() :table(NULL), row(-1), column(-1) {}
-				CellPtr(DataTable *table, int row, int column) : table(table), column(column), row(row) {}
+				CellPtr(DataTable *table, int row, int column) : table(table), row(row), column(column) {}
 				bool isNull() const { return table == NULL || row < 0 || row >= table->getNumRows() || column < 0 || column >= table->getNumColumns(); }
 				int getRow() const {return row; }
 				int getColumn() const { return column; }
