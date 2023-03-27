@@ -166,9 +166,9 @@ bool SAXParser::parseContent(const char *content)
 
     if (!XML_Parse(parser, content, strlen(content), true))
     {
-        sprintf(errortext, "Parse error: %s at line %d",
+        sprintf(errortext, "Parse error: %s at line %ld",
                 XML_ErrorString(XML_GetErrorCode(parser)),
-                XML_GetCurrentLineNumber(parser));
+                (long)XML_GetCurrentLineNumber(parser));
         err = true;
     }
     if (hasDTD)
