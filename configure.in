@@ -214,6 +214,10 @@ AC_PROG_RANLIB
 
 
 #----------------------
+# check if swapcontext() call is available (used for coroutines)
+#----------------------
+AC_CHECK_FUNCS(swapcontext, [CFLAGS="$CFLAGS -DHAVE_SWAPCONTEXT"])
+
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
 #----------------------
 # To test, we try to compile the following code into a shared library:

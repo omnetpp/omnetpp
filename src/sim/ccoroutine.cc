@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <new>  //bad::alloc
 #include "ccoroutine.h"
 
 
@@ -53,14 +54,94 @@ cCoroutine::~cCoroutine()
         DeleteFiber(lpFiber);
 }
 
-bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size )
+bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
 {
     // stack_size sets the *committed* stack size; *reserved* (=available)
     // stack size is 1MB by default; this allows ~2048 coroutines in a
     // 2GB address space
     stacksize = stack_size;
+
+    // XXX: CreateFiberEx() does not seem to work any better than CreateFiber(),
+    // it appears to have the same limit for the number of fibers that can be created.
+    // lpFiber = CreateFiberEx(stackSize, stackSize, 0, (LPFIBER_START_ROUTINE)fnp, arg);
     lpFiber = CreateFiber(stack_size, (LPFIBER_START_ROUTINE)fnp, arg);
     return lpFiber!=NULL;
+}
+
+bool cCoroutine::stackOverflow() const
+{
+    return false;
+}
+
+unsigned cCoroutine::stackSize() const
+{
+    return stacksize;
+}
+
+#endif
+
+#ifdef USE_POSIX_COROUTINES
+
+ucontext_t cCoroutine::mainContext;
+ucontext_t *cCoroutine::curContextPtr;
+unsigned cCoroutine::totalStackUsage;
+unsigned cCoroutine::totalStackLimit;
+
+void cCoroutine::init(unsigned total_stack, unsigned main_stack)
+{
+    curContextPtr = &mainContext;
+    totalStackUsage = 0;
+    totalStackLimit = total_stack;
+}
+
+void cCoroutine::switchTo(cCoroutine *cor)
+{
+    ucontext_t *oldContextPtr = curContextPtr;
+    curContextPtr = &(cor->context);
+    swapcontext(oldContextPtr, curContextPtr);
+}
+
+void cCoroutine::switchToMain()
+{
+    if (curContextPtr == &mainContext)
+        return;
+    ucontext_t *oldContextPtr = curContextPtr;
+    curContextPtr = &mainContext;
+    swapcontext(oldContextPtr, curContextPtr);
+}
+
+cCoroutine::cCoroutine()
+{
+    stacksize = 0;
+    stackPtr = NULL;
+}
+
+cCoroutine::~cCoroutine()
+{
+    totalStackUsage -= stacksize;
+    delete [] stackPtr;
+}
+
+bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size)
+{
+    if (totalStackLimit != 0 && totalStackUsage + stack_size >= totalStackLimit)
+        return false;
+
+    try {
+        stackPtr = new char[stack_size];
+        stacksize = stack_size;
+    } catch (std::bad_alloc& e) {
+        return false;
+    }
+
+    context.uc_stack.ss_sp = stackPtr;
+    context.uc_stack.ss_size = stacksize;
+    context.uc_link = &mainContext;
+    totalStackUsage += stacksize;
+    if (getcontext(&context) != 0)
+        return false;
+    makecontext(&context, (void (*)(void)) fnp, 1, arg);
+    return true;
 }
 
 bool cCoroutine::stackOverflow() const

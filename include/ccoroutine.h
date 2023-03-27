@@ -20,9 +20,13 @@
 
 // select coroutine library
 #ifdef _WIN32
-#define USE_WIN32_FIBERS
+#  define USE_WIN32_FIBERS
 #else
-#define USE_PORTABLE_COROUTINES
+#  ifdef HAVE_SWAPCONTEXT
+#    define USE_POSIX_COROUTINES
+#  else
+#    define USE_PORTABLE_COROUTINES
+#  endif
 #endif
 
 #include "defs.h"
@@ -38,6 +42,10 @@
 // their min() and max() macros interfere with us
 #undef min
 #undef max
+#endif
+
+#ifdef USE_POSIX_COROUTINES
+#include <ucontext.h>
 #endif
 
 #ifdef USE_PORTABLE_COROUTINES
@@ -60,11 +68,14 @@ typedef void (*CoroutineFnp)( void * );
  * cCoroutine has platform-dependent implementation:
  *
  * On Windows, it uses the Win32 Fiber API.
-
- * On other platforms, the implementation a portable coroutine library,
- * first described by Stig Kofoed ("Portable coroutines", see the Manual
- * for a better reference). It creates all coroutine stacks within the main
- * stack, and uses setjmp()/longjmp() for context switching. This
+ *
+ * On Unix-like systems, it uses POSIX coroutines (setcontext()/switchcontext())
+ * if they are available.
+ *
+ * Otherwise, it uses a portable coroutine library first described
+ * by Stig Kofoed ("Portable coroutines", see the Manual for a better
+ * reference). It creates all coroutine stacks within the main stack,
+ * and uses setjmp()/longjmp() for context switching. This
  * implies that the maximum stack space allowed by the operating system
  * for the \opp process must be sufficiently high (several,
  * maybe several hundred megabytes), otherwise a segmentation fault
@@ -79,6 +90,15 @@ class SIM_API cCoroutine
     LPVOID lpFiber;
     static LPVOID lpMainFiber;
     unsigned stacksize;
+#endif
+#ifdef USE_POSIX_COROUTINES
+    static ucontext_t mainContext;
+    static ucontext_t *curContextPtr;
+    static unsigned totalStackLimit;
+    static unsigned totalStackUsage;
+    unsigned stacksize;
+    char *stackPtr;
+    ucontext_t context;
 #endif
 #ifdef USE_PORTABLE_COROUTINES
     _Task *task;
@@ -135,7 +155,7 @@ class SIM_API cCoroutine
      * Returns true if there was a stack overflow during execution of the
      * coroutine.
      *
-     * Windows/Fiber API: Not implemented: always returns false.
+     * Windows/Fiber API, POSIX coroutines: Not implemented: always returns false.
      *
      * Portable coroutines: it checks the intactness of a predefined byte pattern
      * (0xdeadbeef) at the stack boundary, and report stack overflow
@@ -155,7 +175,7 @@ class SIM_API cCoroutine
     /**
      * Returns the amount of stack actually used by the coroutine.
      *
-     * Windows/Fiber API: Not implemented, always returns 0.
+     * Windows/Fiber API, POSIX coroutines: Not implemented, always returns 0.
      *
      * Portable coroutines: It works by checking the intactness of
      * predefined byte patterns (0xdeadbeef) placed in the stack.
