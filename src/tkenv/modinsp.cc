@@ -666,7 +666,7 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
     cModule *mod = gate->getOwnerModule();
     cGate *dest_gate = gate->getNextGate();
 
-    char gateptr[32], srcptr[32], destptr[32], indices[32];
+    char gateptr[32], srcptr[32], destptr[32], indices[64];
     ptrToStr(gate, gateptr);
     ptrToStr(mod, srcptr);
     ptrToStr(dest_gate->getOwnerModule(), destptr);
