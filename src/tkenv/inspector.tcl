@@ -34,7 +34,7 @@ proc create_inspector_toplevel {w geom} {
 
     toplevel $w -class Toplevel
     wm focusmodel $w passive
-    if {$geom != ""} {wm geometry $w $geom}
+    if {$geom != ""} {catch { wm geometry $w $geom} }
     #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
