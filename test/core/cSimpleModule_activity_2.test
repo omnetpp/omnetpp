@@ -1,0 +1,86 @@
+%description:
+Dynamically creates an activity based  module and tests whether the 
+coroutine library works correctly.
+
+%file: test.ned
+
+simple Simple
+{
+}
+
+simple Shadow
+{
+}
+
+network Test
+{
+    submodules:
+        a: Simple;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+Define_Module(Simple);
+
+void Simple::activity()
+{
+    ASSERT(cSimulation::getActiveSimulation()->getActivityModule() == this);
+    ev << "hello from " << getFullName() << endl;
+    wait(1);
+    cModuleType::get("Shadow")->createScheduleInit("b", getParentModule());
+    ev << "module 'b' created from " << getFullName() << endl;
+    wait(2);
+    ev << "good bye from " << getFullName() << endl;
+    receive();
+}
+
+class Shadow : public cSimpleModule
+{
+  public:
+    Shadow() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+Define_Module(Shadow);
+
+void Shadow::activity()
+{
+    ASSERT(cSimulation::getActiveSimulation()->getActivityModule() == this);
+    ev << "hello from " << getFullName() << endl;
+    wait(3);
+    ev << "good bye from " << getFullName() << endl;
+    receive();
+}
+
+}; //namespace
+
+%exitcode: 0
+
+%contains: stdout
+Initializing...
+Initializing module Test, stage 0
+Initializing module Test.a, stage 0
+
+Running simulation...
+** Event #1  T=0   Test.a (Simple, id=2)
+hello from a
+** Event #2  T=1   Test.a (Simple, id=2)
+Initializing module Test.b, stage 0
+module 'b' created from a
+** Event #3  T=1   Test.b (Shadow, id=3)
+hello from b
+** Event #4  T=3   Test.a (Simple, id=2)
+good bye from a
+** Event #5  T=4   Test.b (Shadow, id=3)
+good bye from b
+
+<!> No more events -- simulation ended at event #6, t=4.

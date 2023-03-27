@@ -377,6 +377,10 @@ AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-st
 AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector")
 
 #----------------------
+# check if swapcontext() call is available (used for coroutines)
+#----------------------
+AC_CHECK_FUNCS(swapcontext, [CFLAGS_RELEASE="$CFLAGS_RELEASE -DHAVE_SWAPCONTEXT" CFLAGS_DEBUG="$CFLAGS_DEBUG -DHAVE_SWAPCONTEXT"])
+
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
 #----------------------
 # To test, we try to compile the following code into a shared library:
