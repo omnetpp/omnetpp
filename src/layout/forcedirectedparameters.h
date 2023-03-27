@@ -600,7 +600,7 @@ class LeastExpandedSpring : public AbstractForceProvider {
             for (std::vector<AbstractSpring *>::iterator it = springs.begin(); it != springs.end(); it++) {
                 AbstractSpring *spring = *it;
                 double distance;
-                Pt vector = spring->getDistanceAndVector(distance);
+                spring->getDistanceAndVector(distance);
                 double expansion = fabs(distance - spring->getReposeLength());
 
                 if (expansion < leastExpansion) {
