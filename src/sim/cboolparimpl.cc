@@ -135,7 +135,7 @@ cXMLElement *cBoolParImpl::xmlValue(cComponent *) const
 
 cExpression *cBoolParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : NULL;
+    return (flags & FL_ISEXPR) ? expr : NULL;
 }
 
 void cBoolParImpl::deleteOld()
