@@ -127,7 +127,7 @@ cXMLElement *cLongParImpl::xmlValue(cComponent *) const
 
 cExpression *cLongParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : NULL;
+    return (flags & FL_ISEXPR) ? expr : NULL;
 }
 
 long cLongParImpl::evaluate(cComponent *context) const
