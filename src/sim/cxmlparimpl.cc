@@ -128,7 +128,7 @@ cXMLElement *cXMLParImpl::xmlValue(cComponent *context) const
 
 cExpression *cXMLParImpl::getExpression() const
 {
-    return (flags | FL_ISEXPR) ? expr : NULL;
+    return (flags & FL_ISEXPR) ? expr : NULL;
 }
 
 cXMLElement *cXMLParImpl::evaluate(cComponent *context) const
