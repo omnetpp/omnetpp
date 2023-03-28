@@ -315,6 +315,11 @@ else
     AC_PROG_RANLIB
 fi
 
+# Historically, we define AR as "ar cr". However, when external parties such as Nix define AR,
+# it likely won't contain the "cr" args, so we need to add it. The following line appends "cr"
+# to the AR variable if not already part of it (the % syntax removes the suffix).
+AR="${AR% cr} cr"
+
 # toolchain name: compiler ($CC) without path
 # note: doubling the brackets is needed, otherwise M4 swallows them!
 TOOLCHAIN_NAME=`echo $CC | sed 's!^.*/!!g' | sed 's![[ :]]!_!'g`
