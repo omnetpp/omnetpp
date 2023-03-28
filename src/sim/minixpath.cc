@@ -21,6 +21,7 @@
 #include "platmisc.h"
 #include "minixpath.h"
 #include "cexception.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
@@ -213,6 +214,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && steplen==(int)tagname.length())
     {
+        tagname = opp_trim(tagname.c_str());
         for (cXMLElement *child=getNthSibling(node->getFirstChild(), tagname.c_str(), 0);
              child;
              child=getNthSibling(child->getNextSibling(), tagname.c_str(), 0))
@@ -225,6 +227,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedNum(n, stepexpr+tagname.length(), steplen-tagname.length()))
     {
+        tagname = opp_trim(tagname.c_str());
         cXMLElement *nthnode = getNthSibling(node->getFirstChild(), tagname.c_str(), n);
         if (!nthnode)
             return NULL;
@@ -232,6 +235,7 @@ cXMLElement *MiniXPath::matchStep(cXMLElement *node, const char *pathexpr)
     }
     else if (parseTagNameFromStepExpr(tagname, stepexpr, steplen) && parseBracketedAttrEquals(attr, value, stepexpr+tagname.length(), steplen-tagname.length()))
     {
+        tagname = opp_trim(tagname.c_str());
         for (cXMLElement *child=getFirstSiblingWithAttribute(node->getFirstChild(), tagname.c_str(), attr.c_str(), value.c_str());
              child;
              child=getFirstSiblingWithAttribute(child->getNextSibling(), tagname.c_str(), attr.c_str(), value.c_str()))
