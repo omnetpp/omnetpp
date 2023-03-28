@@ -284,6 +284,11 @@ else
     AC_PROG_RANLIB
 fi
 
+# Historically, we define AR as "ar cr". However, when external parties such as Nix define AR,
+# it likely won't contain the "cr" args, so we need to add it. The following line appends "cr"
+# to the AR variable if not already part of it (the % syntax removes the suffix).
+AR="${AR% cr} cr"
+
 # determine toolchain name, used in opp_makemake-generated Makefiles as part of the linker path
 if test "$CC" = "clang" -a "$($CC --version | grep windows-msvc)" != ""; then
     # detect if we happen to have Microsoft's Clang/C2 compiler detected
