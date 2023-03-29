@@ -38,6 +38,16 @@ Register_Class(cQueue);
 //=========================================================================
 //=== cQueue - member functions
 
+cQueue::Iterator::Iterator(const cQueue& q, bool athead)
+{
+    p = &q ? (athead ? q.headp : q.tailp) : NULL;
+}
+
+void cQueue::Iterator::init(const cQueue& q, bool athead)
+{
+    p = &q ? (athead ? q.headp : q.tailp) : NULL;
+}
+
 cQueue::cQueue(const cQueue& queue) : cObject()
 {
     headp = tailp = NULL; n = 0;

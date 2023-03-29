@@ -69,14 +69,11 @@ class SIM_API cQueue : public cObject
          * The current object will be the first (if athead==true) or
          * the last (athead==false) object in the queue.
          */
-        Iterator(const cQueue& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
-
+        Iterator(const cQueue& q, bool athead=true);
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cQueue& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+        void init(const cQueue& q, bool athead=true);
 
         /**
          * DEPRECATED. Use operator () instead.

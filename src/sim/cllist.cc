@@ -34,6 +34,16 @@ Register_Class(cLinkedList);
 //=========================================================================
 //=== cLinkedList - member functions
 
+cLinkedList::Iterator::Iterator(const cLinkedList& q, bool athead)
+{
+    p = &q ? (athead ? q.headp : q.tailp) : NULL;
+}
+
+void cLinkedList::Iterator::init(const cLinkedList& q, bool athead)
+{
+    p = &q ? (athead ? q.headp : q.tailp) : NULL;
+}
+
 cLinkedList::cLinkedList(const cLinkedList& llist) : cObject()
 {
     headp = tailp = NULL; n = 0;
