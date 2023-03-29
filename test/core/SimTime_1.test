@@ -21,7 +21,7 @@ for (int i=-18; i<=0; i++)
     if (SimTime::getScaleExp()==SimTime::SCALEEXP_NS) u = "ns";
     if (SimTime::getScaleExp()==SimTime::SCALEEXP_PS) u = "ps";
     if (SimTime::getScaleExp()==SimTime::SCALEEXP_FS) u = "fs";
-    ev.printf("%d: scale=%"INT64_PRINTF_FORMAT"d %s\n", i, SimTime::getScale(), u);
+    ev.printf("%d: scale=%" INT64_PRINTF_FORMAT "d %s\n", i, SimTime::getScale(), u);
 }
 ev << ".\n";
 
