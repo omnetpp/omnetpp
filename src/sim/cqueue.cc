@@ -37,6 +37,16 @@ using std::ostream;
 
 Register_Class(cQueue);
 
+cQueue::Iterator::Iterator(const cQueue& q, bool reverse)
+{
+    p = &q ? (reverse ? q.backp : q.frontp) : NULL;
+}
+
+void cQueue::Iterator::init(const cQueue& q, bool reverse)
+{
+    p = &q ? (reverse ? q.backp : q.frontp) : NULL;
+}
+
 
 cQueue::cQueue(const cQueue& queue) : cOwnedObject()
 {
