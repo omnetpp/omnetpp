@@ -146,7 +146,7 @@ void cException::exitIfStartupError()
 void cException::init(const cObject *where, OppErrorCode errorcode, const char *fmt, va_list va)
 {
     // store error code
-    errorcode = errorcode;
+    this->errorcode = errorcode;
 
     // prefix message with "where" object conditionally, as "(%s)%s:"
     //  - if object is the module itself: skip
