@@ -84,14 +84,12 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
          * The current item will be the first (if athead==true, default) or the last
          * (if athead==false) item in the list.
          */
-        Iterator(const cLinkedList& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+        Iterator(const cLinkedList& q, bool athead=true);
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cLinkedList& q, bool athead=true)
-                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+        void init(const cLinkedList& q, bool athead=true);
 
         /**
          * Returns the current item.

@@ -78,14 +78,12 @@ class SIM_API cQueue : public cOwnedObject
          * The iterator can be initialized for forward (front-to-back, using
          * <tt>++</tt>) or reverse (back-to-front, using <tt>--</tt>) iteration.
          */
-        Iterator(const cQueue& q, bool reverse=false)
-                {p=&q ? (reverse ? q.backp : q.frontp) : NULL;}
+        Iterator(const cQueue& q, bool reverse=false);
 
         /**
          * Reinitializes the iterator object.
          */
-        void init(const cQueue& q, bool reverse=false)
-                {p=&q ? (reverse ? q.backp : q.frontp) : NULL;}
+        void init(const cQueue& q, bool reverse=false);
 
         /**
          * Returns the current object.
