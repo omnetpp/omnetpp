@@ -23,7 +23,7 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-const std::string NULLSTRING = "";
+const SCAVE_API std::string NULLSTRING = "";
 
 ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs):
     fileRunRef(fileRun)

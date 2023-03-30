@@ -42,7 +42,7 @@ namespace scave {
 /**
  * Returned by reference for missing values. It has value "".
  */
-extern const std::string NULLSTRING;
+extern const SCAVE_API std::string NULLSTRING;
 
 class Run;
 class ResultFile;
