@@ -129,7 +129,7 @@ Node *ExpressionFilterNodeType::create(DataflowManager *mgr, StringMap& attrs) c
     return node;
 }
 
-void ExpressionFilterNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void ExpressionFilterNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     attrs["type"] = "double";
 }
