@@ -216,7 +216,7 @@ void cPSquare::doMergeCellValues(const cDensityEstBase *other)
 double cPSquare::draw() const
 {
     double s;
-    int k = 0, l;
+    int k = 0, l = 0;
     cRNG *rng = getRNG();
 
     if (numObs < numCells+1)
