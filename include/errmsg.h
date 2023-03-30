@@ -22,10 +22,17 @@
 
 NAMESPACE_BEGIN
 
+//
+// Note: OppErrorCode should be the name of the enum below, but that causes problems when using it 
+// in the varags list of cException constructor, in 'va_start(va, errorcode)' lines:
+// "warning: passing an object that undergoes default arg`ument promotion to 'va_start' has undefined behavior [-Wvarargs]"
+//
+typedef int OppErrorCode;
+
 /**
  * Error codes
  */
-enum OppErrorCode
+enum OppErrorCodeEnum
 {
     eOK = 0,  // eOK must have zero numeric value
     eBACKSCHED,
