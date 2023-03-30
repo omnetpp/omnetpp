@@ -36,9 +36,17 @@ class SIM_API cPacketQueue : public cQueue
   private:
     int64 bitlength;
 
+  private:
+    void copy(const cPacketQueue& other);
+    virtual void insert(cObject *obj);
+    virtual void insertBefore(cObject *where, cObject *obj);
+    virtual void insertAfter(cObject *where, cObject *obj);
+    virtual cObject *remove(cObject *obj);
+
   protected:
     // internal
-    void addLen(cPacket *pkt);
+    void addLength(cPacket *pkt);
+    cPacket *checkPacket(cObject *obj);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -133,6 +141,12 @@ class SIM_API cPacketQueue : public cQueue
      * is empty, cRuntimeError is thrown.
      */
     virtual cPacket *pop();
+
+    /**
+     * Empties the container. Contained objects that were owned by the
+     * queue (see getTakeOwnership()) will be deleted.
+     */
+    virtual void clear();
     //@}
 
     /** @name Query functions. */
