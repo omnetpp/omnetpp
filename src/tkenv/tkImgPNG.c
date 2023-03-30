@@ -509,7 +509,7 @@ PNGRead(Tcl_Interp* interp, PNGImage* pPNG,
 	{
 		while (destSz)
 		{
-			int	 blockSz = Tcl_Read(pPNG -> mFile, pDest, destSz);
+			int	 blockSz = Tcl_Read(pPNG -> mFile, (char*)pDest, destSz);
 
 			if (blockSz < 0)
 			{

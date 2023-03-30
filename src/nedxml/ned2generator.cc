@@ -588,7 +588,7 @@ void NED2Generator::doConnection(ConnectionElement *node, const char *indent, bo
         case NED_ARROWDIR_L2R:   arrow = " -->"; srcfirst = true; break;
         case NED_ARROWDIR_R2L:   arrow = " <--"; srcfirst = false; break;
         case NED_ARROWDIR_BIDIR: arrow = " <-->"; srcfirst = true; break;
-        default: INTERNAL_ERROR0(node, "wrong arrow-dir");
+        default: INTERNAL_ERROR0(node, "wrong arrow-dir"); return;
     }
 
     OUT << getBannerComment(node, indent);
