@@ -155,6 +155,9 @@ long IndexedVectorFileReaderNode::readBlock(const Block *blockPtr, const PortDat
 
 //    printf("read: %ldms tokenize: %ldms parse: %ldms\n",
 //          readTime/1000, tokenizeTime/1000, parseTime/1000);
+    (void)readTime;
+    (void)tokenizeTime;
+    (void)parseTime;
 
     return blockPtr->size;
 }
