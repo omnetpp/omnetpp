@@ -237,7 +237,7 @@ void cPSquare::clear()
 double cPSquare::draw() const
 {
     double s;
-    int k = 0, l;
+    int k = 0, l = 0;
     cRNG *rng = getRNG();
 
     if (numObs < numBins+1)
