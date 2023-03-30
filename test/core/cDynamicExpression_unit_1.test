@@ -75,6 +75,9 @@ test("3km != 3000m");
 
 ev << ".\n";
 
+%subst: /4\.29.*e\+?0*?9/LONGMAX/
+%subst: /1\.84.*e\+?0*?19/LONGMAX/
+
 %contains: stdout
 2m ==> 2m
 2 meter ==> 2meter
@@ -87,7 +90,7 @@ ev << ".\n";
 -(1m+1m) ==> -2m
 -(1km+1km) ==> -2km
 
-~(1+1) ==> 4.29497e+009
+~(1+1) ==> LONGMAX
 ~(1m+1m) ==> Error in expression: `~': argument(s) must be dimensionless
 ~(1km+1km) ==> Error in expression: `~': argument(s) must be dimensionless
 
