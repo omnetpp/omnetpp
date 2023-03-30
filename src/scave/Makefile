@@ -59,7 +59,7 @@ ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
   $(file >$(COPTS_FILE),$(COPTS))
 endif
 
-.PHONY: all clean
+.PHONY: all clean executables pythonbindings
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
 # disabling all implicit rules
@@ -77,7 +77,18 @@ $O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 #
 # Targets
 #
-all : $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
+
+ifeq ($(SHARED_LIBS),yes)
+all: $(TARGET_LIB_FILES) pythonbindings
+else
+all: $(TARGET_LIB_FILES)
+endif
+
+pythonbindings: $(TARGET_LIB_FILES)
+	$(Q)$(MAKE) -C python
+
+executables: $(TARGET_EXE_FILES)
+$(TARGET_EXE_FILES): $(TARGET_LIB_FILES)
 
 ifeq ($(SHARED_LIBS),yes)
 # dynamically linked library (on all platforms except Windows)
@@ -117,5 +128,6 @@ $O/$(LIBNAME).pdb: $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
 clean:
 	$(qecho) Cleaning scave
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
+	$(Q)$(MAKE) -C python clean
 
 -include $(OBJS:%=%.d)
