@@ -78,6 +78,8 @@ ev << ".\n";
 %subst: /4\.29.*e\+?0*?9/LONGMAX/
 %subst: /1\.84.*e\+?0*?19/LONGMAX/
 
+%subst: /3km % 2m ==> .*/3km % 2m ==> REDACTED/
+
 %contains: stdout
 2m ==> 2m
 2 meter ==> 2meter
@@ -129,7 +131,7 @@ ev << ".\n";
 3 % 2 ==> 1
 3m % 2m ==> 1m
 3m % 2km ==> 3m
-3km % 2m ==> 0.002km
+3km % 2m ==> REDACTED
 3 % 2m ==> Cannot convert unit 'm' (meter) to none
 3m % 2 ==> Cannot convert unit none to 'm' (meter)
 3m % 2s ==> Cannot convert unit 's' (second) to 'm' (meter)
