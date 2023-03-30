@@ -93,7 +93,7 @@ Node *SlidingWindowAverageNodeType::create(DataflowManager *mgr, StringMap& attr
     return node;
 }
 
-void SlidingWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs) const
+void SlidingWindowAverageNodeType::mapVectorAttributes(/*inout*/StringMap &attrs, /*out*/StringVector &warnings) const
 {
     attrs["type"] = "double";
 }
