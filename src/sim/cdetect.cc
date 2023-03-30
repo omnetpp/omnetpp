@@ -247,7 +247,7 @@ cADByStddev& cADByStddev::operator=(const cADByStddev& res)
    // setHostObject(res.hostObject());
    go=res.go; resaccval=res.resaccval;
    accuracy=res.accuracy; sctr=res.sctr;
-   ssum=res.ssum; sqrsum=sqrsum;
+   ssum=res.ssum; sqrsum=res.sqrsum;
    repeats=res.repeats; detreps=res.detreps;
    pdf=res.pdf; pdfdata=res.pdfdata;
    return *this;
