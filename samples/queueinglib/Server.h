@@ -28,7 +28,6 @@ class QUEUEING_API Server : public cSimpleModule, public IServer
     private:
         cWeightedStdDev scalarUtilizationStats;
 
-        int numQueues;
         SelectionStrategy *selectionStrategy;
 
         simtime_t prevEventTimeStamp;
