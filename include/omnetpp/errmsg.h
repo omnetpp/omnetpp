@@ -20,10 +20,17 @@
 
 namespace omnetpp {
 
+//
+// Note: OppErrorCode should be the name of the enum below, but that causes problems when using it
+// in the varags list of cException constructor, in 'va_start(va, errorcode)' lines:
+// "warning: passing an object that undergoes default arg`ument promotion to 'va_start' has undefined behavior [-Wvarargs]"
+//
+typedef int OppErrorCode;
+
 /**
- * @brief Error codes
+ * Error codes
  */
-enum OppErrorCode
+enum OppErrorCodeEnum
 {
     E_OK = 0,  // E_OK must have zero numeric value
     E_BACKSCHED,
