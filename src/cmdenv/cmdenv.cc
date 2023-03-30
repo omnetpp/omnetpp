@@ -201,8 +201,9 @@ void Cmdenv::run()
     if (opt_runstoexec.empty())
     {
         int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
-        char buf[32];
-        sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0..%d"), n-1);
+        char buf[32] = "";
+        if (n > 0)
+            sprintf(buf, (n==1 ? "%d" : "0..%d"), n-1);
         opt_runstoexec = buf;
     }
 
