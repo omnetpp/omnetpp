@@ -392,8 +392,7 @@ void TOutVectorWindow::update()
 
    int y_zero = Y(0);   // so that we don't have to calculate it each time
    int next_x=-1;
-   int next_y2=0; // values won't be used (they're there just to prevent warning)
-   int next_y1=next_y2; // next_y2 is just used to prevent unused variable warning.
+   int next_y1=0; // value won't be used (they're there just to prevent warning)
    int x, y1;
    int pos;
    int next_pos = (circbuf.headPos()-circbuf.items()+circbuf.size())%circbuf.size();
@@ -413,7 +412,6 @@ void TOutVectorWindow::update()
            CircBuffer::CBEntry& p = circbuf.entry(next_pos);
            next_x =  X(p.t);
            next_y1 = Y(p.value1);
-           next_y2 = Y(p.value2);
        }
 
        if (x>=0)
