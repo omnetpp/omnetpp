@@ -1,18 +1,63 @@
-#! /bin/sh
+#!/usr/bin/env -S sh -c "echo >&2 \"Error: You are running this script instead of sourcing it. Make sure to use it as 'source setenv' or '. setenv', otherwise its settings won't take effect.\"; exit 1"
 
-case "$-" in
-*i*) ;;
-*)  echo "Error: not a login shell -- run this script as 'source setenv' or '. setenv'"
-    exit 1
-esac
+# first argument can be (e.g. 'source setenv -q'):
+# -q : do not show banner text on configuration success
+# -r : remove an already configured environment
 
-if [ ! -f configure.user -o ! -f include/omnetpp.h ]; then
-    echo "Error: current working directory does not look like an OMNeT++ root directory"
-    # no exit -- it would close the shell
-else
-    omnetpp_root=`pwd`
-    echo $omnetpp_root
-    export PATH=$omnetpp_root/bin:$PATH
-    export LD_LIBRARY_PATH=$omnetpp_root/lib:$LD_LIBRARY_PATH
+# Get the directory where this script reside using a trick (works differently on bash and zsh)
+# On bash, the current script's name is in 'BASH_SOURCE[0]'
+if [ "$BASH_VERSION" != "" ]; then # for BASH
+  dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+elif [ "$ZSH_VERSION" != "" ]; then # on zsh the script name is in '$0'
+  dir=$(cd $(dirname $0) && pwd)
+else # on any other SH compatible shell we assume that the current working directory is the OMNeT++ root directory
+  dir=$(pwd)
+fi
+
+# check if dir is really pointing to an omnet++ installation dir
+if [ ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
+    echo "Error: '$dir' does not look like an OMNeT++ root directory"
+    return 1
+fi
+
+# remove previous environment to prevent the accumulation of path elements
+if [ -n "$__omnetpp_root_dir" ]; then
+  if [ "$1" = "-r" ]; then
+    echo "Removed previous environment for '$__omnetpp_root_dir'."
+    dir=
+  else
+    echo "Warning: overwriting previous environment for '$__omnetpp_root_dir'."
+  fi
+  export PATH=${PATH#$__omnetpp_root_dir/bin:}
+  export LD_LIBRARY_PATH=${LD_LIBRARY_PATH#$__omnetpp_root_dir/lib:}
+  export __omnetpp_root_dir=
+  export OMNETPP_RELEASE=
+fi
+
+# do not continue if removal was requested
+if [ "$1" = "-r" ]; then
+    return 0
+fi
+
+export PATH=$dir/bin:$PATH
+export LD_LIBRARY_PATH=$dir/lib:$LD_LIBRARY_PATH
+export HOSTNAME
+export HOST
+
+export OMNETPP_RELEASE=$(cat $dir/Version)
+export __omnetpp_root_dir=$dir
+dir=
+
+# source user specific script if present
+if [ -f "$__omnetpp_root_dir/setenv_local" ] ; then
+  source $__omnetpp_root_dir/setenv_local
+fi
+
+if [ "$1" != "-q" ]; then
+  echo "Environment for '$OMNETPP_RELEASE' in directory '$__omnetpp_root_dir' is ready."
+
+  if [ ! -f $__omnetpp_root_dir/Makefile.inc ]; then
+    echo 'Type "./configure" and "make" to build the simulation libraries.'
+  fi
 fi
 
