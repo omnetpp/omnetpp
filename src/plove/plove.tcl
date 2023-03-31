@@ -50,8 +50,9 @@ if [catch {package require BLT} err] {
     puts "*** The BLT Tcl/Tk extension is required by this program -- please make sure it is installed, and TCL_LIBRARY is set properly."
     exit
 }
-if {$blt_patchLevel!="2.4z"} {
-    puts "*** BLT version 2.4z required, yours is $blt_patchLevel. Sorry..."
+
+if {$blt_patchLevel!="2.4z" && ![string match "2.5.*" $blt_patchLevel]} {
+    puts "*** BLT version 2.4z or 2.5.x required, yours is $blt_patchLevel. Sorry..."
     exit
 }
 
