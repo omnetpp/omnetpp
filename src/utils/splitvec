@@ -1,4 +1,4 @@
-#!/usr/bin/awk -f
+#!/bin/env awk -f
 #
 # Splits an output vector (.vec) file into files with one vector in each
 #   ie: foo.vec --> foo-1.vec, foo-2.vec, foo-3.vec,...
