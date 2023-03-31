@@ -34,7 +34,7 @@ components: libs progs samples
 #=====================================================================
 
 LIBS=nedxml sim envir cmdenv tkenv
-PROGS=utils nedc
+PROGS=utils nedc gned # plove, scalars omitted -- they'd need BLT; plove-old is available (can be run from its source dir)
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
 #
