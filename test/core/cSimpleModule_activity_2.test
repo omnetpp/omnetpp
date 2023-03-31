@@ -1,0 +1,79 @@
+%description:
+Dynamically creates an activity based  module and tests whether the
+coroutine library works correctly.
+
+%file: {}.ned
+
+simple {Simple}
+endsimple
+
+simple {Shadow}
+endsimple
+
+module {Test}
+    submodules:
+        a: {Simple};
+endmodule
+
+network {network} : {Test}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class {Simple} : public cSimpleModule
+{
+  public:
+    {Simple}() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    ev << "hello from " << fullName() << endl;
+    wait(1);
+    findModuleType("{Shadow}")->createScheduleInit("b", parentModule());
+    ev << "module 'b' created from " << fullName() << endl;
+    wait(2);
+    ev << "good bye from " << fullName() << endl;
+    receive();
+}
+
+class {Shadow} : public cSimpleModule
+{
+  public:
+    {Shadow}() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+Define_Module({Shadow});
+
+void {Shadow}::activity()
+{
+    ev << "hello from " << fullName() << endl;
+    wait(3);
+    ev << "good bye from " << fullName() << endl;
+    receive();
+}
+
+}; //namespace
+
+%exitcode: 0
+
+%contains-regex: stdout
+\*\* Event #0  T=0\.0000000 .*
+hello from a
+\*\* Event #1  T=       1 .*
+module 'b' created from a
+\*\* Event #2  T=       1 .*
+hello from b
+\*\* Event #3  T=       3 .*
+good bye from a
+\*\* Event #4  T=       4 .*
+good bye from b
+
+<!> No more events
+
