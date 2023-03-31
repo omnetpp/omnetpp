@@ -230,7 +230,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
    //
    if (argc<1) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
 
-   std::auto_ptr<cStructDescriptor> sd(object->createDescriptor());
+   std::unique_ptr<cStructDescriptor> sd(object->createDescriptor());
 
    if (strcmp(argv[0],"count")==0)   // 'opp_inspectorcommand <inspector> fieldcount ...'
    {
