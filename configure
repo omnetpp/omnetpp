@@ -2214,6 +2214,22 @@ OMNETPP_BUILDID="internal"
 # Edition identifier in banner: Academic / Commercial / Evaluation
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
+# check if 'setenv' was correctly sourced
+OMNETPP_ROOT_DIR=$(cd $(dirname "$0"); pwd)
+if test "$__omnetpp_root_dir" = "$OMNETPP_ROOT_DIR" -a -z "${PATH##*${OMNETPP_ROOT_DIR}/bin:*}" -a -z "${LD_LIBRARY_PATH##*${OMNETPP_ROOT_DIR}/lib*}"; then  # this uses magic substring matching with parameter expansion
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Environment variables (PATH and LD_LIBRARY_PATH) are correctly set." >&5
+printf "%s\n" "$as_me: Environment variables (PATH and LD_LIBRARY_PATH) are correctly set." >&6;}
+else
+  as_fn_error $? "Before running 'configure', please use 'source setenv' to set up your environment." "$LINENO" 5
+fi
+
+# Check if configure.user exists. If not, copy the default one there.
+if test ! -f ./configure.user ; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: 'configure.user' is not present in the installation root. Creating a default version." >&5
+printf "%s\n" "$as_me: WARNING: 'configure.user' is not present in the installation root. Creating a default version." >&2;}
+  cp ./configure.user.dist ./configure.user
+fi
+
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
 
@@ -7885,64 +7901,6 @@ fi
 
 
 #----------------------
-# Check if the path contains omnetpp/bin (it should)
-# Note: the method used here also works with Cygwin, but requires
-# write permission to $OMNETPP_BIN_DIR.
-#----------------------
-
-# first we need to expand the ${HOME} variable and make sure the dir exists..
-omnetpp_bin_dir=`eval echo $OMNETPP_BIN_DIR`
-if test ! -d $omnetpp_bin_dir; then
-   echo "PROBLEM: the $OMNETPP_BIN_DIR directory does not exist!"
-else
-  # ...then we create a small tmp file to check if the dir is in the path
-  probefile=__probe__
-  echo '' >$omnetpp_bin_dir/$probefile
-  chmod +x  $omnetpp_bin_dir/$probefile
-  if ($probefile) >/dev/null 2>/dev/null; then
-    echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
-  else
-    if test "$cygwin" = yes; then
-      opp_bin_dir=`cygpath -u $OMNETPP_BIN_DIR`
-      if test -z "$opp_bin_dir"; then opp_bin_dir=$OMNETPP_BIN_DIR; fi
-      cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $opp_bin_dir!
-Add the following line to your startup file, $HOME/.bash_profile:
-  export PATH=\$PATH:$opp_bin_dir
-
-EOT
-    else
-      cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $OMNETPP_BIN_DIR!
-Add the following line to your .profile or .bash_profile (provided you use bash):
-  export PATH=\$PATH:$OMNETPP_BIN_DIR
-
-EOT
-    fi
-  fi
-  rm $omnetpp_bin_dir/$probefile
-fi
-
-#----------------------
-# Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
-#----------------------
-if test -n "$RPATH_UNSUPPORTED"; then
-
-    cat 1>&2 << EOT
-
-WARNING: Your linker does not support the -rpath option.
-  You must set the LD_LIBRARY_PATH environment variable to point
-  to the directory where your shared libraries can be found.
-
-Add the following line to your .profile or .bash_profile (provided you use bash):
-  export LD_LIBRARY_PATH=$OMNETPP_ROOT/lib:\$LD_LIBRARY_PATH
-EOT
-
-fi
-
-#----------------------
 # Check if TCL_LIBRARY is set.
 #----------------------
 
@@ -7979,8 +7937,10 @@ WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there is no
 init.tcl or tclConfig.sh file in that directory. (Usual TCL_LIBRARY is /usr/lib/tcl8.4.)
 EOT
 
-else
-    echo
-    echo "TCL_LIBRARY is set. Good!"
 fi
+
+cat << EOT
+
+Configuration phase finished. Use 'make' to build $OMNETPP_PRODUCT.
+EOT
 
