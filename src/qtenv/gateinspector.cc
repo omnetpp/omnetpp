@@ -77,6 +77,7 @@ void GateInspector::redraw()
             xsiz += (g->getType() == cGate::OUTPUT) ? 1 : -1;
         else
             prevdir = g->getType();
+        (void)xsiz; // fake usage
 
         /*TCLKILL char modptr[32], gateptr[32], kstr[16], xstr[16], dir[2];
         ptrToStr(g->getOwnerModule(), modptr);
