@@ -26,7 +26,7 @@ L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
 IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS) $(OSG_LIBS) $(OSGEARTH_LIBS)
 # disable warnings for cleaner output on MinGW/clang
-CFLAGS+=$(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override
+CFLAGS+=$(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override -Wno-deprecated-declarations -DQT_NO_DEPRECATED_WARNINGS
 
 all: $(QTENV_IF_POSSIBLE)
 
