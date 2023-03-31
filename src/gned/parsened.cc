@@ -62,7 +62,7 @@ int NEDParser::parseFile(Tcl_Interp *intrp, const char *fname, int nedfilekey,
 
     // load whole file into memory
     if (!nedsource->readFile(newfilename))
-        {interp->result =  const_cast<char*>("unable to load file");return TCL_ERROR;}
+        {Tcl_SetResult(interp, TCLCONST("unable to load file"), TCL_STATIC);return TCL_ERROR;}
 
     // get file comment
     set(nedfile_key, "banner-comment", nedsource->getFileComment());
@@ -71,12 +71,14 @@ int NEDParser::parseFile(Tcl_Interp *intrp, const char *fname, int nedfilekey,
     yyout = stdout;
     yyin = fopen(newfilename,"r");
     if (!yyin)
-        {interp->result =  const_cast<char*>("unable to open file");return TCL_ERROR;}
+        {Tcl_SetResult(interp, TCLCONST("unable to open file"), TCL_STATIC);return TCL_ERROR;}
     runparse();
     fclose(yyin);
 
     // return value: number of errors
-    sprintf(interp->result, "%d", num_errors);
+    char buf[16];
+    sprintf(buf, "%d", num_errors);
+    Tcl_SetResult(interp, buf, TCL_VOLATILE);
 
     return TCL_OK;
 }
@@ -95,7 +97,7 @@ int NEDParser::parseText(Tcl_Interp *intrp, const char *nedtext, int nedfilekey,
 
     // load whole file into memory
     if (!nedsource->setData(nedtext))
-        {interp->result =  const_cast<char*>("unable to allocate work memory");return TCL_ERROR;}
+        {Tcl_SetResult(interp, TCLCONST("unable to allocate work memory"), TCL_STATIC);return TCL_ERROR;}
 
     // get file comment
     set(nedfile_key, "banner-comment", nedsource->getFileComment());
@@ -105,12 +107,14 @@ int NEDParser::parseText(Tcl_Interp *intrp, const char *nedtext, int nedfilekey,
     yyout = stdout;
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-        {interp->result =  const_cast<char*>("unable to allocate work memory");return TCL_ERROR;}
+        {Tcl_SetResult(interp, TCLCONST("unable to allocate work memory"), TCL_STATIC);return TCL_ERROR;}
     runparse();
     yy_delete_buffer(handle);
 
     // return value: number of errors
-    sprintf(interp->result, "%d", num_errors);
+    char buf[16];
+    sprintf(buf, "%d", num_errors);
+    Tcl_SetResult(interp, buf, TCL_VOLATILE);
 
     return TCL_OK;
 }
@@ -134,7 +138,7 @@ int NEDParser::create(const char *type, int parentkey)
     sprintf(pkey,"%d", parentkey);
     CHK(Tcl_VarEval(interp, "NedParser_createNedElement ", tmp_ned, " ",
                         type, " ", pkey, NULL));
-    int keyv = atoi(interp->result);
+    int keyv = atoi(Tcl_GetStringResult(interp));
     // should free the result...?
     return keyv;
 }
@@ -190,12 +194,13 @@ int NEDParser::findChild(int parentkey, const char *attr, const char *value)
     CHK(Tcl_VarEval(interp, "NedParser_findChild ", tmp_ned, " ",
                          pkey, " ", attr, " ", value, NULL));
     int ret;
-    if (!interp->result[0])
+    const char *result = Tcl_GetStringResult(interp);
+    if (!result[0])
         ret = -1; // not found
-    else if (interp->result[0] == 'n')  // result is "not unique"
+    else if (result[0] == 'n')  // result is "not unique"
         ret = -2; // not unique
     else
-        ret = atoi(interp->result);
+        ret = atoi(result);
     // should free the result...?
 
     return ret;

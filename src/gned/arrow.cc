@@ -362,8 +362,9 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
          }
       }
 
-      // sprintf(interp->result, "%g %g %g %g",
-      //                         src_x, src_y, dest_x, dest_y);
+      char buf[80];
+      sprintf(buf, "%g %g %g %g", src_x, src_y, dest_x, dest_y);
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
 }
 
