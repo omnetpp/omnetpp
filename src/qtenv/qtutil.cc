@@ -540,7 +540,7 @@ const char *getObjectBaseClass(cObject *object)
         return object->getClassName();  // return itself as base class
 }
 
-const char *getMessageShortInfoString(cMessage *msg)
+QString getMessageShortInfoString(cMessage *msg)
 {
     cModule *tomodp = msg->getArrivalModule();
     cModule *frommodp = msg->getSenderModule();

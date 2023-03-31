@@ -259,14 +259,14 @@ void FilteredObjectListDialog::done(int r)
 void FilteredObjectListDialog::refresh()
 {
     // resolve root object
-    const char *fullPath = ui->searchEdit->text().toStdString().c_str();
+    std::string fullPath = ui->searchEdit->text().toStdString();
 
-    cFindByPathVisitor visitor(fullPath, nullptr, -1);
+    cFindByPathVisitor visitor(fullPath.c_str(), nullptr, -1);
     visitor.process(getSimulation());
     if(visitor.getArraySize() == 0)
     {
         QMessageBox::warning(this, "Error",
-                QString("Object to search in (\"") + fullPath + "\") could not be resolved.",
+                QString("Object to search in (\"") + fullPath.c_str() + "\") could not be resolved.",
                 QMessageBox::StandardButton::Ok);
         return;
     }
