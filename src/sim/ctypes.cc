@@ -60,7 +60,8 @@ Define_Function( sqrt, 1 )
 Define_Function( fabs, 1 )
 Define_Function( fmod, 2 )
 
-Define_Function( hypot, 2 )
+static double _wrap_hypot(double x, double y) {return hypot(x,y);}
+Define_Function2(hypot, _wrap_hypot, 2);
 
 Define_Function( log,   1 )
 Define_Function( log10, 1 )
