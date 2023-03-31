@@ -2803,8 +2803,26 @@ case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 #
 # OMNeT++/OMNEST version number
 #
+OMNETPP_PRODUCT="OMNeT++"
+OMNETPP_RELEASE=`cat Version`
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
 OMNETPP_EDITION="Academic Public License"
+
+# check if 'setenv' was correctly sourced
+OMNETPP_ROOT_DIR=$(cd $(dirname "$0"); pwd)
+if test "$__omnetpp_root_dir" = "$OMNETPP_ROOT_DIR" -a -z "${PATH##*${OMNETPP_ROOT_DIR}/bin:*}" -a -z "${LD_LIBRARY_PATH##*${OMNETPP_ROOT_DIR}/lib*}"; then  # this uses magic substring matching with parameter expansion
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Environment variables (PATH and LD_LIBRARY_PATH) are correctly set." >&5
+printf "%s\n" "$as_me: Environment variables (PATH and LD_LIBRARY_PATH) are correctly set." >&6;}
+else
+  as_fn_error $? "Before running 'configure', please use 'source setenv' to set up your environment." "$LINENO" 5
+fi
+
+# Check if configure.user exists. If not, copy the default one there.
+if test ! -f ./configure.user ; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: 'configure.user' is not present in the installation root. Creating a default version." >&5
+printf "%s\n" "$as_me: WARNING: 'configure.user' is not present in the installation root. Creating a default version." >&2;}
+  cp ./configure.user.dist ./configure.user
+fi
 
 #
 #  Set system/arch specific values
@@ -8310,85 +8328,9 @@ Scroll up to see the warning messages (use shift+PgUp key), and see config.log
 for more details. While you can use OMNeT++/OMNEST in the current
 configuration, please be aware that some functionality may be unavailable
 or incomplete.
-
-
 EOT
 fi
 
-
-#----------------------
-# Check if the path contains omnetpp/bin (it should)
-# Note: the method used here also works with Cygwin, but requires
-# write permission to $OMNETPP_BIN_DIR.
-#----------------------
-
-# first we need to expand the ${HOME} variable and make sure the dir exists..
-omnetpp_bin_dir=`eval echo $OMNETPP_BIN_DIR`
-if test ! -d $omnetpp_bin_dir; then
-   echo "PROBLEM: the $OMNETPP_BIN_DIR directory does not exist!"
-else
-  # ...then we create a small tmp file to check if the dir is in the path
-  probefile=__probe__
-  echo '' >$omnetpp_bin_dir/$probefile
-  chmod +x  $omnetpp_bin_dir/$probefile
-  if ($probefile) >/dev/null 2>/dev/null; then
-    echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
-  else
-    if test "$cygwin" = yes; then
-      opp_bin_dir=`cygpath -u $OMNETPP_BIN_DIR`
-      if test -z "$opp_bin_dir"; then opp_bin_dir=$OMNETPP_BIN_DIR; fi
-      cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $opp_bin_dir!
-Add the following line to your startup file, $HOME/.bash_profile:
-  export PATH=\$PATH:$opp_bin_dir
-
-EOT
-    else
-      cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $OMNETPP_BIN_DIR!
-Add the following line to your startup file:
-  export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
-  setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
-
-EOT
-    fi
-  fi
-  rm $omnetpp_bin_dir/$probefile
-fi
-
-#----------------------
-# Check LD_LIBRARY path if we're building shared libs. This is not necessary
-# with Cygwin because Windows locates DLLs another way.
-#----------------------
-
-if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
-  if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
-    echo "Your LD_LIBRARY_PATH is set. Good!"
-  else
-    cat 1>&2 << EOT
-
-WARNING: You selected shared libraries in configure.user, but your
-LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
-
-So that the dynamic linker can find the OMNeT++/OMNEST shared libs, you either
-have to create symbolic links from /usr/lib to the OMNeT++/OMNEST shared
-libraries (you can do it as root), or better, set the LD_LIBRARY_PATH
-environment variable.
-
-Add the corresponding line to your startup file:
-  export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
-         # into .(bash_)profile if you use bash or other sh-like shell
-  setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
-         # into .cshrc if you use tcsh or other csh-like shell
-
-If you prefer static libraries, edit configure.user and change the
-build_shared_libs=yes line to build_shared_libs=no, then delete the shared
-libraries, re-run configure and make.
-EOT
-  fi
-fi
 
 #----------------------
 # Check if TCL_LIBRARY is set.
@@ -8429,9 +8371,10 @@ WARNING: Your TCL_LIBRARY variable seems to be set incorrectly: there's no
 init.tcl file in that directory! (Usual location is /usr/lib/tcl8.4.)
 EOT
 
-else
-    echo
-    echo "TCL_LIBRARY is set. Good!"
 fi
 
+cat << EOT
+
+Configuration phase finished. Use 'make' to build $OMNETPP_PRODUCT.
+EOT
 
