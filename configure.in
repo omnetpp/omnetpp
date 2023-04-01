@@ -137,6 +137,12 @@ else
   AC_MSG_ERROR([Before running 'configure', please use 'source setenv' to set up your environment.])
 fi
 
+# Check if configure.user exists. If not, copy the default one there.
+if test ! -f ./configure.user ; then
+  AC_MSG_WARN(['configure.user' is not present in the installation root. Creating a default version.])
+  cp ./configure.user.dist ./configure.user
+fi
+
 #----------------------
 # Read user settings (and allow override the above settings)
 #----------------------
@@ -1337,7 +1343,6 @@ EOT
   fi
 fi
 
-
 #----------------------
 # Check if TCL_LIBRARY is set.
 #----------------------
@@ -1398,3 +1403,8 @@ and re-run configure.
 EOT
   fi
 fi
+
+cat << EOT
+
+Configuration phase finished. Use 'make' to build $OMNETPP_PRODUCT.
+EOT

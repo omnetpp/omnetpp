@@ -15,7 +15,7 @@ else # on any other SH compatible shell we assume that the current working direc
 fi
 
 # check if dir is really pointing to an omnet++ installation dir
-if [ ! -f $dir/configure.user -o ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
+if [ ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
     echo "Error: '$dir' does not look like an OMNeT++ root directory"
     return 1
 fi
@@ -65,6 +65,15 @@ export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
 export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some annoying qt logging
 dir=
 
+# source user specific script if present
+if [ -f "$__omnetpp_root_dir/setenv_local" ] ; then
+  source $__omnetpp_root_dir/setenv_local
+fi
+
 if [ "$1" != "-q" ]; then
   echo "Environment for '$OMNETPP_RELEASE' in directory '$__omnetpp_root_dir' is ready."
+
+  if [ ! -f $__omnetpp_root_dir/Makefile.inc ]; then
+    echo 'Type "./configure" and "make" to build the simulation libraries.'
+  fi
 fi
