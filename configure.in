@@ -137,6 +137,20 @@ else
     OMNETPP_IDE_EXECUTABLE="omnest"
 fi
 
+# check if 'setenv' was correctly sourced
+OMNETPP_ROOT_DIR=$(cd $(dirname "$0"); pwd)
+if test "$__omnetpp_root_dir" = "$OMNETPP_ROOT_DIR" -a -z "${PATH##*${OMNETPP_ROOT_DIR}/bin:*}"; then  # this uses magic substring matching with parameter expansion
+  AC_MSG_NOTICE([Environment variables (PATH) are correctly set.])
+else
+  AC_MSG_ERROR([Before running 'configure', please use 'source setenv' to set up your environment.])
+fi
+
+# Check if configure.user exists. If not, copy the default one there.
+if test ! -f ./configure.user ; then
+  AC_MSG_WARN(['configure.user' is not present in the installation root. Creating a default version.])
+  cp ./configure.user.dist ./configure.user
+fi
+
 # We'll collect in this variable the components we've detected problems with
 OPP_PROBLEM_PACKAGES=
 
@@ -1308,34 +1322,6 @@ EOT
   fi
 fi
 
-
-#----------------------
-# Check if the path contains omnetpp/bin (it should)
-#----------------------
-
-# first we need to expand the ${HOME} variable and make sure the dir exists..
-omnetpp_bin_dir=$OMNETPP_ROOT/bin
-if test ! -d $omnetpp_bin_dir; then
-   echo "PROBLEM: the $omnetpp_bin_dir directory does not exist!"
-else
-  # ...then we create a small tmp file to check if the dir is in the path
-  probefile=__probe__
-  echo '' >$omnetpp_bin_dir/$probefile
-  chmod +x  $omnetpp_bin_dir/$probefile
-  if ($probefile) >/dev/null 2>/dev/null; then
-    echo "Your PATH contains $omnetpp_bin_dir. Good!"
-  else
-    cat 1>&2 << EOT
-
-WARNING: your PATH doesn't contain $omnetpp_bin_dir!
-Add the following line to your .profile or .bash_profile (provided you use bash):
-  export PATH=\$PATH:$omnetpp_bin_dir
-
-EOT
-  fi
-  rm $omnetpp_bin_dir/$probefile
-fi
-
 #----------------------
 # Check if the rpath option is unsupported. in this warn the user to provide the LD_LIBRARY_PATH variable
 # (we do not care about this if we are using the clangc2 toolchan)
@@ -1394,3 +1380,8 @@ runtime environment (Qtenv) will not be available.
 EOT
 
 fi
+
+cat << EOT
+
+Configuration phase finished. Use 'make' to build $OMNETPP_PRODUCT.
+EOT
