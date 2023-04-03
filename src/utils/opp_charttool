@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 from omnetpp.scave.analysis import *
 from omnetpp.scave.charttemplate import *
 from omnetpp.scave.chart import ChartScriptError
+import omnetpp.scave.utils as utils
 
 
 def parse_command_line():
@@ -194,6 +195,8 @@ def main():
         if args.command == 'templates':
             do_templates_command(args.templates_path, args.print_properties, args.verbose)
             exit(0)
+
+        utils.set_verbose_export(args.verbose)
 
         anf_file = args.anf_file[0]
         anf_dir = os.path.dirname(os.path.abspath(anf_file))

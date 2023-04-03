@@ -27,6 +27,18 @@ from omnetpp.scave import chart, ideplot, vectorops
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
 
+verbose_export = os.getenv("WITHIN_OMNETPP_IDE") == "yes" # use False as default, but we want verbose export in IDE
+
+def set_verbose_export(v):
+    """
+    Sets the `verbose_export` flag, which controls whether the
+    export_image_if_needed() and export_data_if_needed() functions
+    will print an "Exported <filename>" message after the export.
+    The default setting is `False`.
+    """
+    global verbose_export
+    verbose_export = v
+
 def _import_scave_bindings():
     module_suffixes = ["", "_dbg", "_sanitize"]
 
@@ -1234,7 +1246,7 @@ def export_image_if_needed(props):
         height = float(get_prop("image_export_height") or 4)
         dpi = float(get_prop("image_export_dpi") or "96")
 
-        print("exporting image to: '" + filepath + "' as " + format)
+        #print("exporting image to: '" + filepath + "' as " + format)
 
         os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
@@ -1356,6 +1368,9 @@ def export_image_if_needed(props):
             # an ugly error message ("During handling of the above exception, another
             # exception occurred") if this fails too, e.g. due to an invalid "format" parameter
             plt.savefig(filepath, format=format, dpi=dpi, backend=backend)
+        global verbose_export
+        if verbose_export:
+            print(f'Exported image to: "{filepath}" as {format}')
 
 def get_image_export_filepath(props):
     """
@@ -1488,7 +1503,7 @@ def export_data_if_needed(df, props, **kwargs):
         format = get_prop("data_export_format") or "csv"
         filepath = get_data_export_filepath(props)
 
-        print("exporting data to: '" + filepath + "' as " + format)
+        #print("exporting data to: '" + filepath + "' as " + format)
 
         os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
@@ -1499,6 +1514,9 @@ def export_data_if_needed(df, props, **kwargs):
             pd.set_option('display.max_columns', None)
             pd.set_option('display.max_colwidth', None)
             _export_df_as(df, format, filepath, **kwargs)
+            global verbose_export
+            if verbose_export:
+                print(f'Exported data to: "{filepath}" as {format}')
         finally:
             np.set_string_function(None, False)
             np.set_printoptions(**old_opts)
