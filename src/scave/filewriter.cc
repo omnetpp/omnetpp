@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stdio.h>
 #include <locale.h>
 #include "channel.h"
 #include "filewriter.h"

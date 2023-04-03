@@ -14,6 +14,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <stdio.h>
 #include <assert.h>
 #include <locale.h>
 #include "opp_ctype.h"

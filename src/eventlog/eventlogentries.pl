@@ -164,6 +164,7 @@ print ENTRIES_H_FILE
 #ifndef __EVENTLOGENTRIES_H_
 #define __EVENTLOGENTRIES_H_
 
+#include <stdio.h>
 #include \"eventlogdefs.h\"
 #include \"eventlogentry.h\"
 
@@ -232,6 +233,7 @@ print ENTRIES_CC_FILE
 //
 //=========================================================================
 
+#include <stdio.h>
 #include \"event.h\"
 #include \"eventlogentries.h\"
 #include \"stringutil.h\"
@@ -420,6 +422,7 @@ print FACTORY_CC_FILE
 //
 //=========================================================================
 
+#include <stdio.h>
 #include \"event.h\"
 #include \"eventlogentryfactory.h\"
 
