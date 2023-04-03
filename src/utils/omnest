@@ -5,9 +5,9 @@
 IDEDIR=`dirname $0`/../ide                                                                                        
 cd $IDEDIR                                                                                                        
 PLATFORM=`uname -sm`
-LAUNCHER=omnest
+LAUNCHER=omnetpp
 
-echo Starting the OMNEST IDE...
+echo Starting the OMNeT++ IDE...
 
 if java -version 2>&1 | grep -i "libgcj" >/dev/null 2>/dev/null; then
   echo "A compatible JRE is required to run the IDE. "
@@ -19,6 +19,8 @@ fi
 
 # set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
+# to fix GTK issues in eclipse 3.5.x
+export GDK_NATIVE_WINDOWS=1
 
 case $PLATFORM in 
 *MINGW*)
@@ -34,7 +36,7 @@ case $PLATFORM in
 	open ${LAUNCHER}.app
         ;; 
 *) 
-	echo OMNEST IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel/PPC
+	echo OMNeT++ IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel/PPC
 	exit 1
         ;; 
 esac

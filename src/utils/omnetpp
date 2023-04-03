@@ -19,6 +19,8 @@ fi
 
 #set default language so GCC will report errors in english. see bug #3
 export LANG=en_US.UTF-8
+# to fix GTK issues in eclipse 3.5.x
+export GDK_NATIVE_WINDOWS=1
 
 case $PLATFORM in 
 *MINGW*)
