@@ -71,7 +71,6 @@ clean:
 $O/cmdenv.o: cmdenv.cc \
   ../../include/regmacros.h \
   ../envir/args.h \
-  ../../include/ccoroutine.h \
   cmdenv.h \
   ../../include/platdep/platdefs.h \
   ../envir/envirdefs.h \
@@ -101,8 +100,8 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/errmsg.h \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
-  ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/cstringpool.h \
@@ -114,9 +113,9 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/csimplemodule.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
-  ../../include/simutil.h \
-  ../../include/cmessageheap.h \
   ../../include/cexception.h \
+  ../../include/cmessageheap.h \
+  ../../include/simutil.h \
   ../../include/cproperty.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h

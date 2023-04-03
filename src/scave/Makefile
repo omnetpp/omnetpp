@@ -218,8 +218,8 @@ $O/export.o: export.cc \
   scaveutils.h \
   ../common/stringutil.h \
   ../common/patternmatcher.h \
-  ../common/commonutil.h \
   ../common/exception.h \
+  ../common/commonutil.h \
   resultfilemanager.h \
   enumtype.h \
   ../common/bigdecimal.h \
@@ -474,8 +474,8 @@ $O/scavetool.o: scavetool.cc \
   ../common/progressmonitor.h \
   enumtype.h \
   resultfilemanager.h \
-  ../common/linetokenizer.h \
   dataflowmanager.h \
+  ../common/linetokenizer.h \
   arraybuilder.h \
   statistics.h \
   filternodes.h \
