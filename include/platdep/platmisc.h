@@ -30,9 +30,16 @@
 #define getpid _getpid
 #define getcwd _getcwd
 #define chdir  _chdir
-#define usleep(x) _sleep((x)/1000)
 #define mkdir(x,y) _mkdir(x)
 #define gcvt _gcvt
+
+// unistd.h contains usleep only on mingw 4.4 or later (minor version 16)
+#if __MINGW32_MINOR_VERSION >= 16
+#include <unistd.h>  // getpid(), getcwd(), etc
+#else
+#define usleep(x) _sleep((x)/1000)
+#endif
+
 #else
 
 #include <sys/types.h>

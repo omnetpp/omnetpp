@@ -33,7 +33,7 @@
 #  define DBG(x)
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #ifndef vsnprintf
 #define vsnprintf _vsnprintf
 #endif
