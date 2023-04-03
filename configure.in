@@ -93,7 +93,7 @@ AC_CANONICAL_HOST()
 OMNETPP_PRODUCT="OMNeT++"
 OMNETPP_RELEASE=`cat Version`
 OMNETPP_VERSION=`cat Version | sed 's/^.*-//'`
-OMNETPP_BUILDID=internal
+OMNETPP_BUILDID="090310-10709"
 OMNETPP_EDITION="Academic Public License -- NOT FOR COMMERCIAL USE"
 
 # We'll collect in this variable the components we've detected problems with

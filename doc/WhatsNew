@@ -1,6 +1,18 @@
 What's New
 ==========
 
+OMNeT++ 4.0p1 (Nov 2009)
+------------------------
+Simulation kernel:
+  - Fixed compilation problems on systems with GCC 4.4.x
+  
+IDE:
+  - Fixed compatibility problems with the xulrunner package on certain
+    GNU/Linux systems. (Problem caused lockups on first start after 
+    installation)
+  - Fixed compatibility problems with newer versions of GTK. (Problem 
+    caused buttons not to respond to mouse clicks.)
+
 OMNeT++ 4.0 (March 2009)
 -------------------------
 This is a major revision of the whole simulation platform, with fundamental
