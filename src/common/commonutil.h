@@ -53,6 +53,9 @@ inline bool isNegativeInfinity(double d) { return d==NEGATIVE_INFINITY; }
 #endif
 #endif
 
+#ifdef panic  // Tcl/Tk headers to that
+#undef panic
+#endif
 
 #define VSNPRINTF(buffer, buflen, formatarg) \
     VSNPRINTF2(buffer, buflen, formatarg, formatarg)
@@ -75,6 +78,18 @@ COMMON_API void setPosixLocale();
  * A more convenient gethostname(). Does its best, but when it fails the result will be nullptr.
  */
 COMMON_API const char *opp_gethostname();
+
+/**
+ * For handling unrecoverable errors. It prints the given message and aborts.
+ */
+COMMON_API void panic(const char *message);
+
+/**
+ * For handling unrecoverable errors. It prints the exception's message and aborts.
+ * Often used in destructors instead of throw, because throwing from destructors is
+ * not allowed by C++ rules.
+ */
+inline void panic(const std::exception& e) {panic(e.what());}
 
 /**
  * Debugging aid: prints a message on entering/leaving methods; message
