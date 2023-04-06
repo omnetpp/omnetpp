@@ -31,6 +31,7 @@
 #include "stringtokenizer.h"
 #include "exception.h"
 #include "platmisc.h"  //mkdir
+#include "commonutil.h"
 
 NAMESPACE_BEGIN
 
@@ -273,7 +274,7 @@ PushDir::~PushDir()
     if (!olddir.empty())
     {
         if (chdir(olddir.c_str()))
-            throw opp_runtime_error("cannot change back to directory `%s'", olddir.c_str());
+            panic(opp_runtime_error("cannot change back to directory `%s'", olddir.c_str()));
     }
 }
 
