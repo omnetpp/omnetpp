@@ -179,9 +179,8 @@ cSimulation::~cSimulation()
 #endif
 
 //    if (this == activeSimulation) {
-//        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
-//        getEnvir()->alert(cRuntimeError(this, "Cannot delete the active simulation manager object, ABORTING").getFormattedMessage().c_str());
-//        abort();
+//         // Note: cannot throw from destructors
+//        panic(cRuntimeError(this, "Cannot delete the active simulation manager object, ABORTING").getFormattedMessage().c_str());
 //    }
 
     try {

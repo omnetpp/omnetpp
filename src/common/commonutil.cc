@@ -66,6 +66,15 @@ const char *opp_gethostname()
 
 //----
 
+void panic(const char *message)
+{
+    fprintf(stderr, "<!> %s\n", message);
+    fprintf(stderr, "Note: This is an unrecoverable error due to technical reasons, aborting.\n");
+    abort();
+}
+
+//----
+
 OPP_THREAD_LOCAL int CallTracer::depth;
 
 CallTracer::CallTracer(const char *fmt, ...)
