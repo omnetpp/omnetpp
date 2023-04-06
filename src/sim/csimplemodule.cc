@@ -31,6 +31,7 @@
 #include "cpar.h"
 #include "cenvir.h"
 #include "cexception.h"
+#include "util.h"
 
 
 bool cSimpleModule::stack_cleanup_requested;
@@ -198,7 +199,8 @@ cSimpleModule::cSimpleModule(unsigned stksize)
 cSimpleModule::~cSimpleModule()
 {
     if (simulation.contextModule()==this)
-        throw new cRuntimeError(this, "cannot delete itself, only via deleteModule()");
+        // NOTE: throwing from destructors is not allowed in C++
+        panic(cRuntimeError(this, "cannot delete itself, only via deleteModule()"));
 
     if (usesActivity())
     {
@@ -207,7 +209,7 @@ cSimpleModule::~cSimpleModule()
         {                    // FIXME is this a good place?
             stack_cleanup_requested = true;
             after_cleanup_transfer_to = simulation.runningModule();
-            assert(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
+            ASSERT_DTOR(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
             simulation.transferTo(this);
             stack_cleanup_requested = false;
         }

@@ -25,6 +25,7 @@
 
 // forward declarations
 class cModule;
+class cException;
 
 // logically belongs to csimul.h but must be here because of declaration order
 enum {CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_FINISH};
@@ -312,6 +313,22 @@ SIM_API void opp_terminate(int errcode,...);
  */
 SIM_API void opp_terminate(const char *msg,...);
 //@}
+
+#ifdef panic  // Tcl/Tk headers to that
+#undef panic
+#endif
+
+//
+// INTERNAL: For handling unrecoverable errors. It prints the given message and aborts.
+//
+SIM_API void panic(const char *message);
+
+//
+// INTERNAL: For handling unrecoverable errors. It prints the exception's message and aborts.
+// Often used in destructors instead of throw, because throwing from destructors is
+// not allowed by C++ rules.
+//
+SIM_API void panic(const cException& e);
 
 //
 // INTERNAL: return name of a C++ type -- correcting quirks of various compilers...

@@ -107,6 +107,11 @@
 #define ASSERT(expr)  ((void)0)
 #endif
 
+/**
+ * The version of ASSERT to be used in destructors. ASSERT() cannot be used, because
+ * it throws, and C++ does not allow throwing from destructors.
+ */
+#define ASSERT_DTOR(expr) assert(expr)
 
 /**
  * Modelled time.

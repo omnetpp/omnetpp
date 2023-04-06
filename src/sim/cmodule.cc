@@ -102,7 +102,8 @@ cModule::~cModule()
     {
         if (submod() == (cModule *)simulation.runningModule())
         {
-            throw new cRuntimeError("Cannot delete a compound module from one of its submodules!");
+            // NOTE: throwing from destructors is not allowed in C++
+            panic(cRuntimeError("Cannot delete a compound module from one of its submodules!"));
             // The reason is that deleteModule() of the currently executing
             // module does not return -- for obvious reasons (we would
             // execute with an already deallocated stack etc).

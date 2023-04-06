@@ -22,6 +22,7 @@
 #include "platdep/loadlib.h"
 #include "onstartup.h"
 #include "cexception.h"
+#include "util.h"
 
 PushDir::PushDir(const char *changetodir)
 {
@@ -39,7 +40,7 @@ PushDir::~PushDir()
     if (!olddir.empty())
     {
         if (chdir(olddir.c_str()))
-            throw new cRuntimeError("Cannot change back to directory `%s'", olddir.c_str());
+            panic(cRuntimeError("Cannot change back to directory `%s'", olddir.c_str()));
     }
 }
 

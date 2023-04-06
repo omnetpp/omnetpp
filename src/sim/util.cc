@@ -450,6 +450,19 @@ void opp_terminate(const char *msgformat...)
     throw new cTerminationException(message);
 }
 
+void panic(const char *message)
+{
+    fprintf(stderr, "<!> %s\n", message);
+    fprintf(stderr, "Note: This is an unrecoverable error due to technical reasons, aborting.\n");
+    abort();
+}
+
+void panic(const cException& e)
+{
+    cException *nce = (cException*)(&e);
+    panic(nce->message());
+}
+
 //==========================================================================
 
 const char *opp_typename(const std::type_info& t)
