@@ -31,6 +31,7 @@
 #include "stringutil.h"
 #include "stringtokenizer.h"
 #include "exception.h"
+#include "commonutil.h"
 
 namespace omnetpp {
 namespace common {
@@ -470,7 +471,7 @@ PushDir::~PushDir() noexcept(false)
 {
     if (!olddir.empty()) {
         if (chdir(olddir.c_str()))
-            throw opp_runtime_error("Cannot change back to directory '%s': %s", olddir.c_str(), strerror(errno));
+            panic(opp_runtime_error("Cannot change back to directory '%s': %s", olddir.c_str(), strerror(errno)));
     }
 }
 

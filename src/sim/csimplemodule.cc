@@ -223,18 +223,16 @@ cSimpleModule::cSimpleModule(unsigned stackSize)
 cSimpleModule::~cSimpleModule()
 {
     // ensure we are invoked from deleteModule()
-    if (componentId !=-1 && (flags&FL_DELETING) == 0) {
+    if (componentId !=-1 && (flags&FL_DELETING) == 0)
         // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
-        getEnvir()->alert(cRuntimeError(this, "Fatal: Direct deletion of a module is illegal, use deleteModule() instead; ABORTING").getFormattedMessage().c_str());
-        abort();
-    }
+        panic(cRuntimeError(this, "Direct deletion of a module is illegal, use deleteModule() instead"));
 
     if (usesActivity()) {
         // clean up user's objects on coroutine stack by forcing an exception inside the coroutine
         if ((flags & FL_STACKALREADYUNWOUND) == 0) {
             stackCleanupRequested = true;
             cSimpleModule *currentActivityModule = getSimulation()->getActivityModule();
-            assert(this != currentActivityModule); // ensured by deleteModule()
+            ASSERT_DTOR(this != currentActivityModule); // ensured by deleteModule()
             afterCleanupTransferTo = currentActivityModule;
             getSimulation()->transferTo(this);
             stackCleanupRequested = false;

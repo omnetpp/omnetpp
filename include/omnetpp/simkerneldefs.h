@@ -64,6 +64,12 @@ namespace omnetpp {
 #endif
 
 /**
+ * The version of ASSERT to be used in destructors. ASSERT() cannot be used, because
+ * it throws, and C++ does not allow throwing from destructors.
+ */
+#define ASSERT_DTOR(expr) assert(expr)
+
+/**
  * @brief Sequence number of events during the simulation. Events are numbered from one.
  * (Event number zero is reserved for network setup and initialization.)
  *

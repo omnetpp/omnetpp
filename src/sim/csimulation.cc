@@ -103,11 +103,9 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 
 cSimulation::~cSimulation()
 {
-    if (this == activeSimulation) {
-        // note: C++ forbids throwing in a destructor, and noexcept(false) is not workable
-        getEnvir()->alert(cRuntimeError(this, "Cannot delete the active simulation manager object, ABORTING").getFormattedMessage().c_str());
-        abort();
-    }
+    if (this == activeSimulation)
+        // Note: cannot throw from destructors
+        panic(cRuntimeError(this, "Cannot delete the active simulation manager object"));
 
     deleteNetwork();
 

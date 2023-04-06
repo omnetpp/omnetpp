@@ -99,7 +99,7 @@ cComponent::~cComponent()
     if (componentId != -1)
         simulation->deregisterComponent(this);
 
-    ASSERT_SOFT(signalTable == nullptr);  // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
+    ASSERT_DTOR(signalTable == nullptr);  // note: releaseLocalListeners() gets called in subclasses, ~cModule and ~cChannel
 
     delete[] rngMap;
     delete[] parArray;
