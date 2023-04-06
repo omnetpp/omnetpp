@@ -33,6 +33,11 @@ void {Simple}::activity()
 
 %exitcode: 1
 
+%inifile: {test.ini}
+[General]
+network=@TESTNAME@_network
+total-stack-kb = 1000
+
 %contains-regex: stdout
 Error in module .*: Cannot create coroutine
 
