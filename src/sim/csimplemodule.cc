@@ -214,8 +214,8 @@ cSimpleModule::cSimpleModule(unsigned stackSize)
 cSimpleModule::~cSimpleModule()
 {
     if (getSimulation()->getContext() == this)
-        // NOTE: subclass destructors will not be called, but the simulation will stop anyway
-        throw cRuntimeError(this, "cannot delete itself, only via deleteModule()");
+        // NOTE: cannot throw from destructor
+        panic(cRuntimeError(this, "cannot delete itself, only via deleteModule()"));
 
     if (usesActivity()) {
         // clean up user's objects on coroutine stack by forcing an exception inside the coroutine
@@ -223,7 +223,7 @@ cSimpleModule::~cSimpleModule()
             //FIXME: check this is OK for brand new modules too (no transferTo() yet)
             stackCleanupRequested = true;
             afterCleanupTransferTo = getSimulation()->getActivityModule();
-            ASSERT(!afterCleanupTransferTo || afterCleanupTransferTo->usesActivity());
+            ASSERT_DTOR(!afterCleanupTransferTo || afterCleanupTransferTo->usesActivity());
             getSimulation()->transferTo(this);
             stackCleanupRequested = false;
         }
