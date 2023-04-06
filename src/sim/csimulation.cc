@@ -95,8 +95,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, fal
 cSimulation::~cSimulation()
 {
     if (this==simPtr)
-        // NOTE: subclass destructors will not be called, but the simulation will stop anyway
-        throw cRuntimeError(this, "cannot delete the active simulation manager object");
+        panic(cRuntimeError(this, "cannot delete the active simulation manager object"));
 
     deleteNetwork();
 
