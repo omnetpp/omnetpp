@@ -294,7 +294,7 @@ void cPSquare::collectTransformed(double val)
 double cPSquare::random() const
 {
     double s;
-    int k, l;
+    int k=0, l=0;
 
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
