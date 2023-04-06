@@ -1,12 +1,14 @@
-/* A Bison parser, made by GNU Bison 2.1.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
-/* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+/* Bison interface for Yacc-like parsers in C
 
-   This program is free software; you can redistribute it and/or modify
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
+
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,109 +16,137 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-/* As a special exception, when this file is copied by Bison into a
-   Bison output file, you may use that output file without restriction.
-   This special exception was added by the Free Software Foundation
-   in version 1.24 of Bison.  */
+/* As a special exception, you may create a larger work that contains
+   part or all of the Bison parser skeleton and distribute that work
+   under terms of your choice, so long as that work isn't itself a
+   parser generator using the skeleton or a modified version thereof
+   as a parser skeleton.  Alternatively, if you modify or redistribute
+   the parser skeleton itself, you may (at your option) remove this
+   special exception, which will cause the skeleton and the resulting
+   Bison output files to be licensed under the GNU General Public
+   License without this special exception.
 
-/* Tokens.  */
+   This special exception was added by the Free Software Foundation in
+   version 2.2 of Bison.  */
+
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
+#ifndef YY_NEDYY_NED_TAB_H_INCLUDED
+# define YY_NEDYY_NED_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int nedyydebug;
+#endif
+
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     INCLUDE = 258,
-     SIMPLE = 259,
-     CHANNEL = 260,
-     MODULE = 261,
-     PARAMETERS = 262,
-     GATES = 263,
-     GATESIZES = 264,
-     SUBMODULES = 265,
-     CONNECTIONS = 266,
-     DISPLAY = 267,
-     IN = 268,
-     OUT = 269,
-     NOCHECK = 270,
-     LEFT_ARROW = 271,
-     RIGHT_ARROW = 272,
-     FOR = 273,
-     TO = 274,
-     DO = 275,
-     IF = 276,
-     LIKE = 277,
-     NETWORK = 278,
-     ENDSIMPLE = 279,
-     ENDMODULE = 280,
-     ENDCHANNEL = 281,
-     ENDNETWORK = 282,
-     ENDFOR = 283,
-     MACHINES = 284,
-     ON = 285,
-     CHANATTRNAME = 286,
-     INTCONSTANT = 287,
-     REALCONSTANT = 288,
-     NAME = 289,
-     STRINGCONSTANT = 290,
-     CHARCONSTANT = 291,
-     TRUE_ = 292,
-     FALSE_ = 293,
-     INPUT_ = 294,
-     XMLDOC = 295,
-     REF = 296,
-     ANCESTOR = 297,
-     CONSTDECL = 298,
-     NUMERICTYPE = 299,
-     STRINGTYPE = 300,
-     BOOLTYPE = 301,
-     XMLTYPE = 302,
-     ANYTYPE = 303,
-     CPLUSPLUS = 304,
-     CPLUSPLUSBODY = 305,
-     MESSAGE = 306,
-     CLASS = 307,
-     STRUCT = 308,
-     ENUM = 309,
-     NONCOBJECT = 310,
-     EXTENDS = 311,
-     FIELDS = 312,
-     PROPERTIES = 313,
-     ABSTRACT = 314,
-     READONLY = 315,
-     CHARTYPE = 316,
-     SHORTTYPE = 317,
-     INTTYPE = 318,
-     LONGTYPE = 319,
-     DOUBLETYPE = 320,
-     UNSIGNED_ = 321,
-     SIZEOF = 322,
-     SUBMODINDEX = 323,
-     PLUSPLUS = 324,
-     EQ = 325,
-     NE = 326,
-     GT = 327,
-     GE = 328,
-     LS = 329,
-     LE = 330,
-     AND = 331,
-     OR = 332,
-     XOR = 333,
-     NOT = 334,
-     BIN_AND = 335,
-     BIN_OR = 336,
-     BIN_XOR = 337,
-     BIN_COMPL = 338,
-     SHIFT_LEFT = 339,
-     SHIFT_RIGHT = 340,
-     INVALID_CHAR = 341,
-     UMIN = 342
-   };
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    INCLUDE = 258,                 /* INCLUDE  */
+    SIMPLE = 259,                  /* SIMPLE  */
+    CHANNEL = 260,                 /* CHANNEL  */
+    MODULE = 261,                  /* MODULE  */
+    PARAMETERS = 262,              /* PARAMETERS  */
+    GATES = 263,                   /* GATES  */
+    GATESIZES = 264,               /* GATESIZES  */
+    SUBMODULES = 265,              /* SUBMODULES  */
+    CONNECTIONS = 266,             /* CONNECTIONS  */
+    DISPLAY = 267,                 /* DISPLAY  */
+    IN = 268,                      /* IN  */
+    OUT = 269,                     /* OUT  */
+    NOCHECK = 270,                 /* NOCHECK  */
+    LEFT_ARROW = 271,              /* LEFT_ARROW  */
+    RIGHT_ARROW = 272,             /* RIGHT_ARROW  */
+    FOR = 273,                     /* FOR  */
+    TO = 274,                      /* TO  */
+    DO = 275,                      /* DO  */
+    IF = 276,                      /* IF  */
+    LIKE = 277,                    /* LIKE  */
+    NETWORK = 278,                 /* NETWORK  */
+    ENDSIMPLE = 279,               /* ENDSIMPLE  */
+    ENDMODULE = 280,               /* ENDMODULE  */
+    ENDCHANNEL = 281,              /* ENDCHANNEL  */
+    ENDNETWORK = 282,              /* ENDNETWORK  */
+    ENDFOR = 283,                  /* ENDFOR  */
+    MACHINES = 284,                /* MACHINES  */
+    ON = 285,                      /* ON  */
+    CHANATTRNAME = 286,            /* CHANATTRNAME  */
+    INTCONSTANT = 287,             /* INTCONSTANT  */
+    REALCONSTANT = 288,            /* REALCONSTANT  */
+    NAME = 289,                    /* NAME  */
+    STRINGCONSTANT = 290,          /* STRINGCONSTANT  */
+    CHARCONSTANT = 291,            /* CHARCONSTANT  */
+    TRUE_ = 292,                   /* TRUE_  */
+    FALSE_ = 293,                  /* FALSE_  */
+    INPUT_ = 294,                  /* INPUT_  */
+    XMLDOC = 295,                  /* XMLDOC  */
+    REF = 296,                     /* REF  */
+    ANCESTOR = 297,                /* ANCESTOR  */
+    CONSTDECL = 298,               /* CONSTDECL  */
+    NUMERICTYPE = 299,             /* NUMERICTYPE  */
+    STRINGTYPE = 300,              /* STRINGTYPE  */
+    BOOLTYPE = 301,                /* BOOLTYPE  */
+    XMLTYPE = 302,                 /* XMLTYPE  */
+    ANYTYPE = 303,                 /* ANYTYPE  */
+    CPLUSPLUS = 304,               /* CPLUSPLUS  */
+    CPLUSPLUSBODY = 305,           /* CPLUSPLUSBODY  */
+    MESSAGE = 306,                 /* MESSAGE  */
+    CLASS = 307,                   /* CLASS  */
+    STRUCT = 308,                  /* STRUCT  */
+    ENUM = 309,                    /* ENUM  */
+    NONCOBJECT = 310,              /* NONCOBJECT  */
+    EXTENDS = 311,                 /* EXTENDS  */
+    FIELDS = 312,                  /* FIELDS  */
+    PROPERTIES = 313,              /* PROPERTIES  */
+    ABSTRACT = 314,                /* ABSTRACT  */
+    READONLY = 315,                /* READONLY  */
+    CHARTYPE = 316,                /* CHARTYPE  */
+    SHORTTYPE = 317,               /* SHORTTYPE  */
+    INTTYPE = 318,                 /* INTTYPE  */
+    LONGTYPE = 319,                /* LONGTYPE  */
+    DOUBLETYPE = 320,              /* DOUBLETYPE  */
+    UNSIGNED_ = 321,               /* UNSIGNED_  */
+    SIZEOF = 322,                  /* SIZEOF  */
+    SUBMODINDEX = 323,             /* SUBMODINDEX  */
+    PLUSPLUS = 324,                /* PLUSPLUS  */
+    EQ = 325,                      /* EQ  */
+    NE = 326,                      /* NE  */
+    GT = 327,                      /* GT  */
+    GE = 328,                      /* GE  */
+    LS = 329,                      /* LS  */
+    LE = 330,                      /* LE  */
+    AND = 331,                     /* AND  */
+    OR = 332,                      /* OR  */
+    XOR = 333,                     /* XOR  */
+    NOT = 334,                     /* NOT  */
+    BIN_AND = 335,                 /* BIN_AND  */
+    BIN_OR = 336,                  /* BIN_OR  */
+    BIN_XOR = 337,                 /* BIN_XOR  */
+    BIN_COMPL = 338,               /* BIN_COMPL  */
+    SHIFT_LEFT = 339,              /* SHIFT_LEFT  */
+    SHIFT_RIGHT = 340,             /* SHIFT_RIGHT  */
+    INVALID_CHAR = 341,            /* INVALID_CHAR  */
+    UMIN = 342                     /* UMIN  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
+/* Token kinds.  */
+#define YYEMPTY -2
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
 #define INCLUDE 258
 #define SIMPLE 259
 #define CHANNEL 260
@@ -203,31 +233,32 @@
 #define INVALID_CHAR 341
 #define UMIN 342
 
-
-
-
-#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
 #endif
 
-extern YYSTYPE nedyylval;
-
-#if ! defined (YYLTYPE) && ! defined (YYLTYPE_IS_DECLARED)
-typedef struct YYLTYPE
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
 {
   int first_line;
   int first_column;
   int last_line;
   int last_column;
-} YYLTYPE;
-# define yyltype YYLTYPE /* obsolescent; will be withdrawn */
+};
 # define YYLTYPE_IS_DECLARED 1
 # define YYLTYPE_IS_TRIVIAL 1
 #endif
 
+
+extern YYSTYPE nedyylval;
 extern YYLTYPE nedyylloc;
 
+int nedyyparse (void);
 
+
+#endif /* !YY_NEDYY_NED_TAB_H_INCLUDED  */

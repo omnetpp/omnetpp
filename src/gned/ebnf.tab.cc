@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -33,6 +34,10 @@
 /* C LALR(1) parser skeleton written by Richard Stallman, by
    simplifying the original so-called "semantic" parser.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
 /* All symbols defined below should begin with yy or YY, to avoid
    infringing on user name space.  This should be done even for local
    variables, as they might otherwise be expanded by user macros.
@@ -40,11 +45,11 @@
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
-/* Identify Bison output.  */
-#define YYBISON 1
+/* Identify Bison output, and Bison version.  */
+#define YYBISON 30802
 
-/* Bison version.  */
-#define YYBISON_VERSION "3.0.4"
+/* Bison version string.  */
+#define YYBISON_VERSION "3.8.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -61,8 +66,8 @@
 
 
 
-/* Copy the first part of user declarations.  */
-#line 75 "ebnf.y" /* yacc.c:339  */
+/* First part of user prologue.  */
+#line 75 "ebnf.y"
 
 
 /*
@@ -117,7 +122,7 @@
 
 int yylex (void);
 void yyrestart(FILE *);
-void yyerror (char *s);
+void yyerror (const char *s);
 
 
 //
@@ -176,7 +181,7 @@ void setRightComment(int key, YYLTYPE tokenpos);
 void setTrailingComment(int key, YYLTYPE tokenpos);
 void setComments(int key, YYLTYPE pos);
 void setComments(int key, YYLTYPE firstpos, YYLTYPE lastpos);
-int addChanAttr(int channel_key, char *attrname, YYLTYPE valuepos);
+int addChanAttr(int channel_key, const char *attrname, YYLTYPE valuepos);
 int addParameter(int params_key, YYLTYPE namepos, int type);
 int addGate(int gates_key, YYLTYPE namepos, int is_in, int is_vector );
 int addSubmodule(int submods_key, YYLTYPE namepos, YYLTYPE vectorpos,
@@ -184,7 +189,7 @@ int addSubmodule(int submods_key, YYLTYPE namepos, YYLTYPE vectorpos,
 int addGateSize(int gatesizes_key, YYLTYPE namepos, YYLTYPE vectorpos);
 int addSubstparam(int substparams_key, YYLTYPE namepos, YYLTYPE valuepos);
 int addSubstmachine(int substmachines_key, YYLTYPE namepos);
-int addConnAttr(int conn_key, char *attrname, YYLTYPE valuepos);
+int addConnAttr(int conn_key, const char *attrname, YYLTYPE valuepos);
 int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE topos);
 int addNetwork(int nedfile_key, YYLTYPE namepos, YYLTYPE typepos, YYLTYPE likepos);
 int findSubmoduleKey(YYLTYPE modulenamepos);
@@ -195,253 +200,349 @@ void setDisplayString(int key, YYLTYPE dispstrpos);
 #endif
 
 
-#line 199 "ebnf.tab.c" /* yacc.c:339  */
+#line 204 "ebnf.tab.c"
 
-# ifndef YY_NULLPTR
-#  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULLPTR nullptr
+# ifndef YY_CAST
+#  ifdef __cplusplus
+#   define YY_CAST(Type, Val) static_cast<Type> (Val)
+#   define YY_REINTERPRET_CAST(Type, Val) reinterpret_cast<Type> (Val)
 #  else
-#   define YY_NULLPTR 0
+#   define YY_CAST(Type, Val) ((Type) (Val))
+#   define YY_REINTERPRET_CAST(Type, Val) ((Type) (Val))
+#  endif
+# endif
+# ifndef YY_NULLPTR
+#  if defined __cplusplus
+#   if 201103L <= __cplusplus
+#    define YY_NULLPTR nullptr
+#   else
+#    define YY_NULLPTR 0
+#   endif
+#  else
+#   define YY_NULLPTR ((void*)0)
 #  endif
 # endif
 
-/* Enabling verbose error messages.  */
-#ifdef YYERROR_VERBOSE
-# undef YYERROR_VERBOSE
-# define YYERROR_VERBOSE 1
-#else
-# define YYERROR_VERBOSE 0
-#endif
-
-/* In a future release of Bison, this section will be replaced
-   by #include "ebnf.tab.h".  */
-#ifndef YY_YY_EBNF_TAB_H_INCLUDED
-# define YY_YY_EBNF_TAB_H_INCLUDED
-/* Debug traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int yydebug;
-#endif
-
-/* Token type.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
-    INCLUDE = 258,
-    SIMPLE = 259,
-    CHANNEL = 260,
-    DELAY = 261,
-    ERROR = 262,
-    DATARATE = 263,
-    MODULE = 264,
-    PARAMETERS = 265,
-    GATES = 266,
-    GATESIZES = 267,
-    SUBMODULES = 268,
-    CONNECTIONS = 269,
-    DISPLAY = 270,
-    IN = 271,
-    OUT = 272,
-    NOCHECK = 273,
-    LEFT_ARROW = 274,
-    RIGHT_ARROW = 275,
-    FOR = 276,
-    TO = 277,
-    DO = 278,
-    IF = 279,
-    LIKE = 280,
-    NETWORK = 281,
-    ENDSIMPLE = 282,
-    ENDMODULE = 283,
-    ENDCHANNEL = 284,
-    ENDNETWORK = 285,
-    ENDFOR = 286,
-    MACHINES = 287,
-    ON = 288,
-    IO_INTERFACES = 289,
-    IFPAIR = 290,
-    INTCONSTANT = 291,
-    REALCONSTANT = 292,
-    NAME = 293,
-    STRING = 294,
-    _TRUE = 295,
-    _FALSE = 296,
-    INPUT = 297,
-    REF = 298,
-    ANCESTOR = 299,
-    NED_CONST = 300,
-    NUMERICTYPE = 301,
-    STRINGTYPE = 302,
-    BOOLTYPE = 303,
-    XMLTYPE = 304,
-    ANYTYPE = 305,
-    PLUS = 306,
-    MIN = 307,
-    MUL = 308,
-    DIV = 309,
-    MOD = 310,
-    EXP = 311,
-    SIZEOF = 312,
-    SUBMODINDEX = 313,
-    PLUSPLUS = 314,
-    EQ = 315,
-    NE = 316,
-    GT = 317,
-    GE = 318,
-    LS = 319,
-    LE = 320,
-    AND = 321,
-    OR = 322,
-    XOR = 323,
-    NOT = 324,
-    BIN_AND = 325,
-    BIN_OR = 326,
-    BIN_XOR = 327,
-    BIN_COMPL = 328,
-    SHIFT_LEFT = 329,
-    SHIFT_RIGHT = 330,
-    INVALID_CHAR = 331,
-    UMIN = 332
-  };
-#endif
-/* Tokens.  */
-#define INCLUDE 258
-#define SIMPLE 259
-#define CHANNEL 260
-#define DELAY 261
-#define ERROR 262
-#define DATARATE 263
-#define MODULE 264
-#define PARAMETERS 265
-#define GATES 266
-#define GATESIZES 267
-#define SUBMODULES 268
-#define CONNECTIONS 269
-#define DISPLAY 270
-#define IN 271
-#define OUT 272
-#define NOCHECK 273
-#define LEFT_ARROW 274
-#define RIGHT_ARROW 275
-#define FOR 276
-#define TO 277
-#define DO 278
-#define IF 279
-#define LIKE 280
-#define NETWORK 281
-#define ENDSIMPLE 282
-#define ENDMODULE 283
-#define ENDCHANNEL 284
-#define ENDNETWORK 285
-#define ENDFOR 286
-#define MACHINES 287
-#define ON 288
-#define IO_INTERFACES 289
-#define IFPAIR 290
-#define INTCONSTANT 291
-#define REALCONSTANT 292
-#define NAME 293
-#define STRING 294
-#define _TRUE 295
-#define _FALSE 296
-#define INPUT 297
-#define REF 298
-#define ANCESTOR 299
-#define NED_CONST 300
-#define NUMERICTYPE 301
-#define STRINGTYPE 302
-#define BOOLTYPE 303
-#define XMLTYPE 304
-#define ANYTYPE 305
-#define PLUS 306
-#define MIN 307
-#define MUL 308
-#define DIV 309
-#define MOD 310
-#define EXP 311
-#define SIZEOF 312
-#define SUBMODINDEX 313
-#define PLUSPLUS 314
-#define EQ 315
-#define NE 316
-#define GT 317
-#define GE 318
-#define LS 319
-#define LE 320
-#define AND 321
-#define OR 322
-#define XOR 323
-#define NOT 324
-#define BIN_AND 325
-#define BIN_OR 326
-#define BIN_XOR 327
-#define BIN_COMPL 328
-#define SHIFT_LEFT 329
-#define SHIFT_RIGHT 330
-#define INVALID_CHAR 331
-#define UMIN 332
-
-/* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
-#endif
-
-/* Location type.  */
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
-typedef struct YYLTYPE YYLTYPE;
-struct YYLTYPE
+#include "ebnf.tab.h"
+/* Symbol kind.  */
+enum yysymbol_kind_t
 {
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
+  YYSYMBOL_YYEMPTY = -2,
+  YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
+  YYSYMBOL_YYerror = 1,                    /* error  */
+  YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
+  YYSYMBOL_INCLUDE = 3,                    /* INCLUDE  */
+  YYSYMBOL_SIMPLE = 4,                     /* SIMPLE  */
+  YYSYMBOL_CHANNEL = 5,                    /* CHANNEL  */
+  YYSYMBOL_DELAY = 6,                      /* DELAY  */
+  YYSYMBOL_ERROR = 7,                      /* ERROR  */
+  YYSYMBOL_DATARATE = 8,                   /* DATARATE  */
+  YYSYMBOL_MODULE = 9,                     /* MODULE  */
+  YYSYMBOL_PARAMETERS = 10,                /* PARAMETERS  */
+  YYSYMBOL_GATES = 11,                     /* GATES  */
+  YYSYMBOL_GATESIZES = 12,                 /* GATESIZES  */
+  YYSYMBOL_SUBMODULES = 13,                /* SUBMODULES  */
+  YYSYMBOL_CONNECTIONS = 14,               /* CONNECTIONS  */
+  YYSYMBOL_DISPLAY = 15,                   /* DISPLAY  */
+  YYSYMBOL_IN = 16,                        /* IN  */
+  YYSYMBOL_OUT = 17,                       /* OUT  */
+  YYSYMBOL_NOCHECK = 18,                   /* NOCHECK  */
+  YYSYMBOL_LEFT_ARROW = 19,                /* LEFT_ARROW  */
+  YYSYMBOL_RIGHT_ARROW = 20,               /* RIGHT_ARROW  */
+  YYSYMBOL_FOR = 21,                       /* FOR  */
+  YYSYMBOL_TO = 22,                        /* TO  */
+  YYSYMBOL_DO = 23,                        /* DO  */
+  YYSYMBOL_IF = 24,                        /* IF  */
+  YYSYMBOL_LIKE = 25,                      /* LIKE  */
+  YYSYMBOL_NETWORK = 26,                   /* NETWORK  */
+  YYSYMBOL_ENDSIMPLE = 27,                 /* ENDSIMPLE  */
+  YYSYMBOL_ENDMODULE = 28,                 /* ENDMODULE  */
+  YYSYMBOL_ENDCHANNEL = 29,                /* ENDCHANNEL  */
+  YYSYMBOL_ENDNETWORK = 30,                /* ENDNETWORK  */
+  YYSYMBOL_ENDFOR = 31,                    /* ENDFOR  */
+  YYSYMBOL_MACHINES = 32,                  /* MACHINES  */
+  YYSYMBOL_ON = 33,                        /* ON  */
+  YYSYMBOL_IO_INTERFACES = 34,             /* IO_INTERFACES  */
+  YYSYMBOL_IFPAIR = 35,                    /* IFPAIR  */
+  YYSYMBOL_INTCONSTANT = 36,               /* INTCONSTANT  */
+  YYSYMBOL_REALCONSTANT = 37,              /* REALCONSTANT  */
+  YYSYMBOL_NAME = 38,                      /* NAME  */
+  YYSYMBOL_STRING = 39,                    /* STRING  */
+  YYSYMBOL__TRUE = 40,                     /* _TRUE  */
+  YYSYMBOL__FALSE = 41,                    /* _FALSE  */
+  YYSYMBOL_INPUT = 42,                     /* INPUT  */
+  YYSYMBOL_REF = 43,                       /* REF  */
+  YYSYMBOL_ANCESTOR = 44,                  /* ANCESTOR  */
+  YYSYMBOL_NED_CONST = 45,                 /* NED_CONST  */
+  YYSYMBOL_NUMERICTYPE = 46,               /* NUMERICTYPE  */
+  YYSYMBOL_STRINGTYPE = 47,                /* STRINGTYPE  */
+  YYSYMBOL_BOOLTYPE = 48,                  /* BOOLTYPE  */
+  YYSYMBOL_XMLTYPE = 49,                   /* XMLTYPE  */
+  YYSYMBOL_ANYTYPE = 50,                   /* ANYTYPE  */
+  YYSYMBOL_PLUS = 51,                      /* PLUS  */
+  YYSYMBOL_MIN = 52,                       /* MIN  */
+  YYSYMBOL_MUL = 53,                       /* MUL  */
+  YYSYMBOL_DIV = 54,                       /* DIV  */
+  YYSYMBOL_MOD = 55,                       /* MOD  */
+  YYSYMBOL_EXP = 56,                       /* EXP  */
+  YYSYMBOL_SIZEOF = 57,                    /* SIZEOF  */
+  YYSYMBOL_SUBMODINDEX = 58,               /* SUBMODINDEX  */
+  YYSYMBOL_PLUSPLUS = 59,                  /* PLUSPLUS  */
+  YYSYMBOL_EQ = 60,                        /* EQ  */
+  YYSYMBOL_NE = 61,                        /* NE  */
+  YYSYMBOL_GT = 62,                        /* GT  */
+  YYSYMBOL_GE = 63,                        /* GE  */
+  YYSYMBOL_LS = 64,                        /* LS  */
+  YYSYMBOL_LE = 65,                        /* LE  */
+  YYSYMBOL_AND = 66,                       /* AND  */
+  YYSYMBOL_OR = 67,                        /* OR  */
+  YYSYMBOL_XOR = 68,                       /* XOR  */
+  YYSYMBOL_NOT = 69,                       /* NOT  */
+  YYSYMBOL_BIN_AND = 70,                   /* BIN_AND  */
+  YYSYMBOL_BIN_OR = 71,                    /* BIN_OR  */
+  YYSYMBOL_BIN_XOR = 72,                   /* BIN_XOR  */
+  YYSYMBOL_BIN_COMPL = 73,                 /* BIN_COMPL  */
+  YYSYMBOL_SHIFT_LEFT = 74,                /* SHIFT_LEFT  */
+  YYSYMBOL_SHIFT_RIGHT = 75,               /* SHIFT_RIGHT  */
+  YYSYMBOL_INVALID_CHAR = 76,              /* INVALID_CHAR  */
+  YYSYMBOL_77_ = 77,                       /* '?'  */
+  YYSYMBOL_78_ = 78,                       /* ':'  */
+  YYSYMBOL_UMIN = 79,                      /* UMIN  */
+  YYSYMBOL_80_ = 80,                       /* ';'  */
+  YYSYMBOL_81_ = 81,                       /* ','  */
+  YYSYMBOL_82_ = 82,                       /* '['  */
+  YYSYMBOL_83_ = 83,                       /* ']'  */
+  YYSYMBOL_84_ = 84,                       /* '='  */
+  YYSYMBOL_85_ = 85,                       /* '.'  */
+  YYSYMBOL_86_ = 86,                       /* '('  */
+  YYSYMBOL_87_ = 87,                       /* ')'  */
+  YYSYMBOL_YYACCEPT = 88,                  /* $accept  */
+  YYSYMBOL_networkdescription = 89,        /* networkdescription  */
+  YYSYMBOL_somedefinitions = 90,           /* somedefinitions  */
+  YYSYMBOL_definition = 91,                /* definition  */
+  YYSYMBOL_import = 92,                    /* import  */
+  YYSYMBOL_93_1 = 93,                      /* $@1  */
+  YYSYMBOL_filenames = 94,                 /* filenames  */
+  YYSYMBOL_filename = 95,                  /* filename  */
+  YYSYMBOL_channeldefinition = 96,         /* channeldefinition  */
+  YYSYMBOL_channelheader = 97,             /* channelheader  */
+  YYSYMBOL_endchannel = 98,                /* endchannel  */
+  YYSYMBOL_99_2 = 99,                      /* $@2  */
+  YYSYMBOL_100_3 = 100,                    /* $@3  */
+  YYSYMBOL_cherror = 101,                  /* cherror  */
+  YYSYMBOL_chdelay = 102,                  /* chdelay  */
+  YYSYMBOL_chdatarate = 103,               /* chdatarate  */
+  YYSYMBOL_simpledefinition = 104,         /* simpledefinition  */
+  YYSYMBOL_simpleheader = 105,             /* simpleheader  */
+  YYSYMBOL_endsimple = 106,                /* endsimple  */
+  YYSYMBOL_moduledefinition = 107,         /* moduledefinition  */
+  YYSYMBOL_moduleheader = 108,             /* moduleheader  */
+  YYSYMBOL_endmodule = 109,                /* endmodule  */
+  YYSYMBOL_opt_machineblock = 110,         /* opt_machineblock  */
+  YYSYMBOL_opt_displayblock = 111,         /* opt_displayblock  */
+  YYSYMBOL_opt_paramblock = 112,           /* opt_paramblock  */
+  YYSYMBOL_opt_gateblock = 113,            /* opt_gateblock  */
+  YYSYMBOL_opt_submodblock = 114,          /* opt_submodblock  */
+  YYSYMBOL_opt_connblock = 115,            /* opt_connblock  */
+  YYSYMBOL_machineblock = 116,             /* machineblock  */
+  YYSYMBOL_117_4 = 117,                    /* $@4  */
+  YYSYMBOL_opt_machinelist = 118,          /* opt_machinelist  */
+  YYSYMBOL_machinelist = 119,              /* machinelist  */
+  YYSYMBOL_machine = 120,                  /* machine  */
+  YYSYMBOL_displayblock = 121,             /* displayblock  */
+  YYSYMBOL_paramblock = 122,               /* paramblock  */
+  YYSYMBOL_123_5 = 123,                    /* $@5  */
+  YYSYMBOL_opt_parameters = 124,           /* opt_parameters  */
+  YYSYMBOL_parameters = 125,               /* parameters  */
+  YYSYMBOL_parameter = 126,                /* parameter  */
+  YYSYMBOL_gateblock = 127,                /* gateblock  */
+  YYSYMBOL_128_6 = 128,                    /* $@6  */
+  YYSYMBOL_opt_gates = 129,                /* opt_gates  */
+  YYSYMBOL_gates = 130,                    /* gates  */
+  YYSYMBOL_gatesI = 131,                   /* gatesI  */
+  YYSYMBOL_gateI = 132,                    /* gateI  */
+  YYSYMBOL_gatesO = 133,                   /* gatesO  */
+  YYSYMBOL_gateO = 134,                    /* gateO  */
+  YYSYMBOL_submodblock = 135,              /* submodblock  */
+  YYSYMBOL_136_7 = 136,                    /* $@7  */
+  YYSYMBOL_opt_submodules = 137,           /* opt_submodules  */
+  YYSYMBOL_submodules = 138,               /* submodules  */
+  YYSYMBOL_submodule = 139,                /* submodule  */
+  YYSYMBOL_140_8 = 140,                    /* $@8  */
+  YYSYMBOL_141_9 = 141,                    /* $@9  */
+  YYSYMBOL_142_10 = 142,                   /* $@10  */
+  YYSYMBOL_143_11 = 143,                   /* $@11  */
+  YYSYMBOL_144_12 = 144,                   /* $@12  */
+  YYSYMBOL_145_13 = 145,                   /* $@13  */
+  YYSYMBOL_146_14 = 146,                   /* $@14  */
+  YYSYMBOL_147_15 = 147,                   /* $@15  */
+  YYSYMBOL_submodule_body = 148,           /* submodule_body  */
+  YYSYMBOL_149_16 = 149,                   /* $@16  */
+  YYSYMBOL_opt_on_blocks = 150,            /* opt_on_blocks  */
+  YYSYMBOL_on_blocks = 151,                /* on_blocks  */
+  YYSYMBOL_on_block = 152,                 /* on_block  */
+  YYSYMBOL_153_17 = 153,                   /* $@17  */
+  YYSYMBOL_154_18 = 154,                   /* $@18  */
+  YYSYMBOL_opt_on_list = 155,              /* opt_on_list  */
+  YYSYMBOL_on_list = 156,                  /* on_list  */
+  YYSYMBOL_on_mach = 157,                  /* on_mach  */
+  YYSYMBOL_opt_substparamblocks = 158,     /* opt_substparamblocks  */
+  YYSYMBOL_substparamblocks = 159,         /* substparamblocks  */
+  YYSYMBOL_substparamblock = 160,          /* substparamblock  */
+  YYSYMBOL_161_19 = 161,                   /* $@19  */
+  YYSYMBOL_162_20 = 162,                   /* $@20  */
+  YYSYMBOL_opt_substparameters = 163,      /* opt_substparameters  */
+  YYSYMBOL_substparameters = 164,          /* substparameters  */
+  YYSYMBOL_substparameter = 165,           /* substparameter  */
+  YYSYMBOL_opt_gatesizeblocks = 166,       /* opt_gatesizeblocks  */
+  YYSYMBOL_gatesizeblock = 167,            /* gatesizeblock  */
+  YYSYMBOL_168_21 = 168,                   /* $@21  */
+  YYSYMBOL_169_22 = 169,                   /* $@22  */
+  YYSYMBOL_opt_gatesizes = 170,            /* opt_gatesizes  */
+  YYSYMBOL_gatesizes = 171,                /* gatesizes  */
+  YYSYMBOL_gatesize = 172,                 /* gatesize  */
+  YYSYMBOL_opt_submod_displayblock = 173,  /* opt_submod_displayblock  */
+  YYSYMBOL_connblock = 174,                /* connblock  */
+  YYSYMBOL_175_23 = 175,                   /* $@23  */
+  YYSYMBOL_176_24 = 176,                   /* $@24  */
+  YYSYMBOL_opt_connections = 177,          /* opt_connections  */
+  YYSYMBOL_connections = 178,              /* connections  */
+  YYSYMBOL_connection = 179,               /* connection  */
+  YYSYMBOL_loopconnection = 180,           /* loopconnection  */
+  YYSYMBOL_181_25 = 181,                   /* $@25  */
+  YYSYMBOL_loopvarlist = 182,              /* loopvarlist  */
+  YYSYMBOL_loopvar = 183,                  /* loopvar  */
+  YYSYMBOL_opt_conn_condition = 184,       /* opt_conn_condition  */
+  YYSYMBOL_opt_conn_displaystr = 185,      /* opt_conn_displaystr  */
+  YYSYMBOL_notloopconnections = 186,       /* notloopconnections  */
+  YYSYMBOL_notloopconnection = 187,        /* notloopconnection  */
+  YYSYMBOL_gate_spec_L = 188,              /* gate_spec_L  */
+  YYSYMBOL_mod_L = 189,                    /* mod_L  */
+  YYSYMBOL_gate_L = 190,                   /* gate_L  */
+  YYSYMBOL_parentgate_L = 191,             /* parentgate_L  */
+  YYSYMBOL_gate_spec_R = 192,              /* gate_spec_R  */
+  YYSYMBOL_mod_R = 193,                    /* mod_R  */
+  YYSYMBOL_gate_R = 194,                   /* gate_R  */
+  YYSYMBOL_parentgate_R = 195,             /* parentgate_R  */
+  YYSYMBOL_channeldescr = 196,             /* channeldescr  */
+  YYSYMBOL_cdname = 197,                   /* cdname  */
+  YYSYMBOL_cddelay = 198,                  /* cddelay  */
+  YYSYMBOL_cderror = 199,                  /* cderror  */
+  YYSYMBOL_cddatarate = 200,               /* cddatarate  */
+  YYSYMBOL_network = 201,                  /* network  */
+  YYSYMBOL_202_26 = 202,                   /* $@26  */
+  YYSYMBOL_203_27 = 203,                   /* $@27  */
+  YYSYMBOL_204_28 = 204,                   /* $@28  */
+  YYSYMBOL_205_29 = 205,                   /* $@29  */
+  YYSYMBOL_206_30 = 206,                   /* $@30  */
+  YYSYMBOL_207_31 = 207,                   /* $@31  */
+  YYSYMBOL_endnetwork = 208,               /* endnetwork  */
+  YYSYMBOL_vector = 209,                   /* vector  */
+  YYSYMBOL_inputvalue_or_expression = 210, /* inputvalue_or_expression  */
+  YYSYMBOL_inputvalue = 211,               /* inputvalue  */
+  YYSYMBOL_expression = 212,               /* expression  */
+  YYSYMBOL_expr = 213,                     /* expr  */
+  YYSYMBOL_simple_expr = 214,              /* simple_expr  */
+  YYSYMBOL_parameter_expr = 215,           /* parameter_expr  */
+  YYSYMBOL_string_expr = 216,              /* string_expr  */
+  YYSYMBOL_boolconst_expr = 217,           /* boolconst_expr  */
+  YYSYMBOL_numconst_expr = 218,            /* numconst_expr  */
+  YYSYMBOL_special_expr = 219,             /* special_expr  */
+  YYSYMBOL_numconst = 220,                 /* numconst  */
+  YYSYMBOL_timeconstant = 221,             /* timeconstant  */
+  YYSYMBOL_opt_semicolon = 222,            /* opt_semicolon  */
+  YYSYMBOL_comma_or_semicolon = 223        /* comma_or_semicolon  */
 };
-# define YYLTYPE_IS_DECLARED 1
-# define YYLTYPE_IS_TRIVIAL 1
-#endif
+typedef enum yysymbol_kind_t yysymbol_kind_t;
 
 
-extern YYSTYPE yylval;
-extern YYLTYPE yylloc;
-int yyparse (void);
 
-#endif /* !YY_YY_EBNF_TAB_H_INCLUDED  */
-
-/* Copy the second part of user declarations.  */
-
-#line 418 "ebnf.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
 #endif
 
-#ifdef YYTYPE_UINT8
-typedef YYTYPE_UINT8 yytype_uint8;
-#else
-typedef unsigned char yytype_uint8;
+/* On compilers that do not define __PTRDIFF_MAX__ etc., make sure
+   <limits.h> and (if available) <stdint.h> are included
+   so that the code can choose integer types of a good width.  */
+
+#ifndef __PTRDIFF_MAX__
+# include <limits.h> /* INFRINGES ON USER NAME SPACE */
+# if defined __STDC_VERSION__ && 199901 <= __STDC_VERSION__
+#  include <stdint.h> /* INFRINGES ON USER NAME SPACE */
+#  define YY_STDINT_H
+# endif
 #endif
 
-#ifdef YYTYPE_INT8
-typedef YYTYPE_INT8 yytype_int8;
+/* Narrow types that promote to a signed type and that can represent a
+   signed or unsigned integer of at least N bits.  In tables they can
+   save space and decrease cache pressure.  Promoting to a signed type
+   helps avoid bugs in integer arithmetic.  */
+
+#ifdef __INT_LEAST8_MAX__
+typedef __INT_LEAST8_TYPE__ yytype_int8;
+#elif defined YY_STDINT_H
+typedef int_least8_t yytype_int8;
 #else
 typedef signed char yytype_int8;
 #endif
 
-#ifdef YYTYPE_UINT16
-typedef YYTYPE_UINT16 yytype_uint16;
+#ifdef __INT_LEAST16_MAX__
+typedef __INT_LEAST16_TYPE__ yytype_int16;
+#elif defined YY_STDINT_H
+typedef int_least16_t yytype_int16;
 #else
-typedef unsigned short int yytype_uint16;
+typedef short yytype_int16;
 #endif
 
-#ifdef YYTYPE_INT16
-typedef YYTYPE_INT16 yytype_int16;
+/* Work around bug in HP-UX 11.23, which defines these macros
+   incorrectly for preprocessor constants.  This workaround can likely
+   be removed in 2023, as HPE has promised support for HP-UX 11.23
+   (aka HP-UX 11i v2) only through the end of 2022; see Table 2 of
+   <https://h20195.www2.hpe.com/V2/getpdf.aspx/4AA4-7673ENW.pdf>.  */
+#ifdef __hpux
+# undef UINT_LEAST8_MAX
+# undef UINT_LEAST16_MAX
+# define UINT_LEAST8_MAX 255
+# define UINT_LEAST16_MAX 65535
+#endif
+
+#if defined __UINT_LEAST8_MAX__ && __UINT_LEAST8_MAX__ <= __INT_MAX__
+typedef __UINT_LEAST8_TYPE__ yytype_uint8;
+#elif (!defined __UINT_LEAST8_MAX__ && defined YY_STDINT_H \
+       && UINT_LEAST8_MAX <= INT_MAX)
+typedef uint_least8_t yytype_uint8;
+#elif !defined __UINT_LEAST8_MAX__ && UCHAR_MAX <= INT_MAX
+typedef unsigned char yytype_uint8;
 #else
-typedef short int yytype_int16;
+typedef short yytype_uint8;
+#endif
+
+#if defined __UINT_LEAST16_MAX__ && __UINT_LEAST16_MAX__ <= __INT_MAX__
+typedef __UINT_LEAST16_TYPE__ yytype_uint16;
+#elif (!defined __UINT_LEAST16_MAX__ && defined YY_STDINT_H \
+       && UINT_LEAST16_MAX <= INT_MAX)
+typedef uint_least16_t yytype_uint16;
+#elif !defined __UINT_LEAST16_MAX__ && USHRT_MAX <= INT_MAX
+typedef unsigned short yytype_uint16;
+#else
+typedef int yytype_uint16;
+#endif
+
+#ifndef YYPTRDIFF_T
+# if defined __PTRDIFF_TYPE__ && defined __PTRDIFF_MAX__
+#  define YYPTRDIFF_T __PTRDIFF_TYPE__
+#  define YYPTRDIFF_MAXIMUM __PTRDIFF_MAX__
+# elif defined PTRDIFF_MAX
+#  ifndef ptrdiff_t
+#   include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+#  endif
+#  define YYPTRDIFF_T ptrdiff_t
+#  define YYPTRDIFF_MAXIMUM PTRDIFF_MAX
+# else
+#  define YYPTRDIFF_T long
+#  define YYPTRDIFF_MAXIMUM LONG_MAX
+# endif
 #endif
 
 #ifndef YYSIZE_T
@@ -449,15 +550,28 @@ typedef short int yytype_int16;
 #  define YYSIZE_T __SIZE_TYPE__
 # elif defined size_t
 #  define YYSIZE_T size_t
-# elif ! defined YYSIZE_T
+# elif defined __STDC_VERSION__ && 199901 <= __STDC_VERSION__
 #  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
 #  define YYSIZE_T size_t
 # else
-#  define YYSIZE_T unsigned int
+#  define YYSIZE_T unsigned
 # endif
 #endif
 
-#define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
+#define YYSIZE_MAXIMUM                                  \
+  YY_CAST (YYPTRDIFF_T,                                 \
+           (YYPTRDIFF_MAXIMUM < YY_CAST (YYSIZE_T, -1)  \
+            ? YYPTRDIFF_MAXIMUM                         \
+            : YY_CAST (YYSIZE_T, -1)))
+
+#define YYSIZEOF(X) YY_CAST (YYPTRDIFF_T, sizeof (X))
+
+
+/* Stored state numbers (used for stacks). */
+typedef yytype_int16 yy_state_t;
+
+/* State numbers in computations.  */
+typedef int yy_state_fast_t;
 
 #ifndef YY_
 # if defined YYENABLE_NLS && YYENABLE_NLS
@@ -471,47 +585,43 @@ typedef short int yytype_int16;
 # endif
 #endif
 
-#ifndef YY_ATTRIBUTE
-# if (defined __GNUC__                                               \
-      && (2 < __GNUC__ || (__GNUC__ == 2 && 96 <= __GNUC_MINOR__)))  \
-     || defined __SUNPRO_C && 0x5110 <= __SUNPRO_C
-#  define YY_ATTRIBUTE(Spec) __attribute__(Spec)
+
+#ifndef YY_ATTRIBUTE_PURE
+# if defined __GNUC__ && 2 < __GNUC__ + (96 <= __GNUC_MINOR__)
+#  define YY_ATTRIBUTE_PURE __attribute__ ((__pure__))
 # else
-#  define YY_ATTRIBUTE(Spec) /* empty */
+#  define YY_ATTRIBUTE_PURE
 # endif
 #endif
 
-#ifndef YY_ATTRIBUTE_PURE
-# define YY_ATTRIBUTE_PURE   YY_ATTRIBUTE ((__pure__))
-#endif
-
 #ifndef YY_ATTRIBUTE_UNUSED
-# define YY_ATTRIBUTE_UNUSED YY_ATTRIBUTE ((__unused__))
-#endif
-
-#if !defined _Noreturn \
-     && (!defined __STDC_VERSION__ || __STDC_VERSION__ < 201112)
-# if defined _MSC_VER && 1200 <= _MSC_VER
-#  define _Noreturn __declspec (noreturn)
+# if defined __GNUC__ && 2 < __GNUC__ + (7 <= __GNUC_MINOR__)
+#  define YY_ATTRIBUTE_UNUSED __attribute__ ((__unused__))
 # else
-#  define _Noreturn YY_ATTRIBUTE ((__noreturn__))
+#  define YY_ATTRIBUTE_UNUSED
 # endif
 #endif
 
 /* Suppress unused-variable warnings by "using" E.  */
 #if ! defined lint || defined __GNUC__
-# define YYUSE(E) ((void) (E))
+# define YY_USE(E) ((void) (E))
 #else
-# define YYUSE(E) /* empty */
+# define YY_USE(E) /* empty */
 #endif
 
-#if defined __GNUC__ && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
 /* Suppress an incorrect diagnostic about yylval being uninitialized.  */
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN \
-    _Pragma ("GCC diagnostic push") \
-    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")\
+#if defined __GNUC__ && ! defined __ICC && 406 <= __GNUC__ * 100 + __GNUC_MINOR__
+# if __GNUC__ * 100 + __GNUC_MINOR__ < 407
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")
+# else
+#  define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                           \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
     _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
-# define YY_IGNORE_MAYBE_UNINITIALIZED_END \
+# endif
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
     _Pragma ("GCC diagnostic pop")
 #else
 # define YY_INITIAL_VALUE(Value) Value
@@ -524,8 +634,22 @@ typedef short int yytype_int16;
 # define YY_INITIAL_VALUE(Value) /* Nothing. */
 #endif
 
+#if defined __cplusplus && defined __GNUC__ && ! defined __ICC && 6 <= __GNUC__
+# define YY_IGNORE_USELESS_CAST_BEGIN                          \
+    _Pragma ("GCC diagnostic push")                            \
+    _Pragma ("GCC diagnostic ignored \"-Wuseless-cast\"")
+# define YY_IGNORE_USELESS_CAST_END            \
+    _Pragma ("GCC diagnostic pop")
+#endif
+#ifndef YY_IGNORE_USELESS_CAST_BEGIN
+# define YY_IGNORE_USELESS_CAST_BEGIN
+# define YY_IGNORE_USELESS_CAST_END
+#endif
 
-#if ! defined yyoverflow || YYERROR_VERBOSE
+
+#define YY_ASSERT(E) ((void) (0 && (E)))
+
+#if !defined yyoverflow
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -590,8 +714,7 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 # endif
-#endif /* ! defined yyoverflow || YYERROR_VERBOSE */
-
+#endif /* !defined yyoverflow */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
@@ -601,18 +724,19 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss_alloc;
+  yy_state_t yyss_alloc;
   YYSTYPE yyvs_alloc;
   YYLTYPE yyls_alloc;
 };
 
 /* The size of the maximum gap between one aligned stack and the next.  */
-# define YYSTACK_GAP_MAXIMUM (sizeof (union yyalloc) - 1)
+# define YYSTACK_GAP_MAXIMUM (YYSIZEOF (union yyalloc) - 1)
 
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE) + sizeof (YYLTYPE)) \
+     ((N) * (YYSIZEOF (yy_state_t) + YYSIZEOF (YYSTYPE) \
+             + YYSIZEOF (YYLTYPE)) \
       + 2 * YYSTACK_GAP_MAXIMUM)
 
 # define YYCOPY_NEEDED 1
@@ -625,11 +749,11 @@ union yyalloc
 # define YYSTACK_RELOCATE(Stack_alloc, Stack)                           \
     do                                                                  \
       {                                                                 \
-        YYSIZE_T yynewbytes;                                            \
+        YYPTRDIFF_T yynewbytes;                                         \
         YYCOPY (&yyptr->Stack_alloc, Stack, yysize);                    \
         Stack = &yyptr->Stack_alloc;                                    \
-        yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
-        yyptr += yynewbytes / sizeof (*yyptr);                          \
+        yynewbytes = yystacksize * YYSIZEOF (*Stack) + YYSTACK_GAP_MAXIMUM; \
+        yyptr += yynewbytes / YYSIZEOF (*yyptr);                        \
       }                                                                 \
     while (0)
 
@@ -641,12 +765,12 @@ union yyalloc
 # ifndef YYCOPY
 #  if defined __GNUC__ && 1 < __GNUC__
 #   define YYCOPY(Dst, Src, Count) \
-      __builtin_memcpy (Dst, Src, (Count) * sizeof (*(Src)))
+      __builtin_memcpy (Dst, Src, YY_CAST (YYSIZE_T, (Count)) * sizeof (*(Src)))
 #  else
 #   define YYCOPY(Dst, Src, Count)              \
       do                                        \
         {                                       \
-          YYSIZE_T yyi;                         \
+          YYPTRDIFF_T yyi;                      \
           for (yyi = 0; yyi < (Count); yyi++)   \
             (Dst)[yyi] = (Src)[yyi];            \
         }                                       \
@@ -669,17 +793,20 @@ union yyalloc
 /* YYNSTATES -- Number of states.  */
 #define YYNSTATES  511
 
-/* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
-   by yylex, with out-of-bounds checking.  */
-#define YYUNDEFTOK  2
+/* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   332
 
-#define YYTRANSLATE(YYX)                                                \
-  ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
+
+/* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
+   as returned by yylex, with out-of-bounds checking.  */
+#define YYTRANSLATE(YYX)                                \
+  (0 <= (YYX) && (YYX) <= YYMAXUTOK                     \
+   ? YY_CAST (yysymbol_kind_t, yytranslate[YYX])        \
+   : YYSYMBOL_YYUNDEF)
 
 /* YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to TOKEN-NUM
-   as returned by yylex, without out-of-bounds checking.  */
-static const yytype_uint8 yytranslate[] =
+   as returned by yylex.  */
+static const yytype_int8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -718,8 +845,8 @@ static const yytype_uint8 yytranslate[] =
 };
 
 #if YYDEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint16 yyrline[] =
+/* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+static const yytype_int16 yyrline[] =
 {
        0,   211,   211,   212,   216,   217,   221,   222,   223,   224,
      225,   230,   229,   238,   239,   243,   252,   255,   257,   259,
@@ -755,17 +882,24 @@ static const yytype_uint16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+/** Accessing symbol of state STATE.  */
+#define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
+
+#if YYDEBUG || 0
+/* The user-facing name of the symbol whose (internal) number is
+   YYSYMBOL.  No bounds checking.  */
+static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
+
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "INCLUDE", "SIMPLE", "CHANNEL", "DELAY",
-  "ERROR", "DATARATE", "MODULE", "PARAMETERS", "GATES", "GATESIZES",
-  "SUBMODULES", "CONNECTIONS", "DISPLAY", "IN", "OUT", "NOCHECK",
-  "LEFT_ARROW", "RIGHT_ARROW", "FOR", "TO", "DO", "IF", "LIKE", "NETWORK",
-  "ENDSIMPLE", "ENDMODULE", "ENDCHANNEL", "ENDNETWORK", "ENDFOR",
-  "MACHINES", "ON", "IO_INTERFACES", "IFPAIR", "INTCONSTANT",
+  "\"end of file\"", "error", "\"invalid token\"", "INCLUDE", "SIMPLE",
+  "CHANNEL", "DELAY", "ERROR", "DATARATE", "MODULE", "PARAMETERS", "GATES",
+  "GATESIZES", "SUBMODULES", "CONNECTIONS", "DISPLAY", "IN", "OUT",
+  "NOCHECK", "LEFT_ARROW", "RIGHT_ARROW", "FOR", "TO", "DO", "IF", "LIKE",
+  "NETWORK", "ENDSIMPLE", "ENDMODULE", "ENDCHANNEL", "ENDNETWORK",
+  "ENDFOR", "MACHINES", "ON", "IO_INTERFACES", "IFPAIR", "INTCONSTANT",
   "REALCONSTANT", "NAME", "STRING", "_TRUE", "_FALSE", "INPUT", "REF",
   "ANCESTOR", "NED_CONST", "NUMERICTYPE", "STRINGTYPE", "BOOLTYPE",
   "XMLTYPE", "ANYTYPE", "PLUS", "MIN", "MUL", "DIV", "MOD", "EXP",
@@ -801,37 +935,26 @@ static const char *const yytname[] =
   "boolconst_expr", "numconst_expr", "special_expr", "numconst",
   "timeconstant", "opt_semicolon", "comma_or_semicolon", YY_NULLPTR
 };
+
+static const char *
+yysymbol_name (yysymbol_kind_t yysymbol)
+{
+  return yytname[yysymbol];
+}
 #endif
 
-# ifdef YYPRINT
-/* YYTOKNUM[NUM] -- (External) token number corresponding to the
-   (internal) symbol number NUM (which must be that of a token).  */
-static const yytype_uint16 yytoknum[] =
-{
-       0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
-     305,   306,   307,   308,   309,   310,   311,   312,   313,   314,
-     315,   316,   317,   318,   319,   320,   321,   322,   323,   324,
-     325,   326,   327,   328,   329,   330,   331,    63,    58,   332,
-      59,    44,    91,    93,    61,    46,    40,    41
-};
-# endif
+#define YYPACT_NINF (-443)
 
-#define YYPACT_NINF -443
+#define yypact_value_is_default(Yyn) \
+  ((Yyn) == YYPACT_NINF)
 
-#define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-443)))
+#define YYTABLE_NINF (-305)
 
-#define YYTABLE_NINF -305
-
-#define yytable_value_is_error(Yytable_value) \
+#define yytable_value_is_error(Yyn) \
   0
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-     STATE-NUM.  */
+/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+   STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
      210,  -443,    62,    73,    81,    92,   150,   210,  -443,  -443,
@@ -888,10 +1011,10 @@ static const yytype_int16 yypact[] =
     -443
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
-     Performed when YYTABLE does not specify something else to do.  Zero
-     means the default is an error.  */
-static const yytype_uint16 yydefact[] =
+/* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+   Performed when YYTABLE does not specify something else to do.  Zero
+   means the default is an error.  */
+static const yytype_int16 yydefact[] =
 {
        3,    11,     0,     0,     0,     0,     0,     2,     5,     6,
        7,     0,     8,    49,     9,    49,    10,     0,   302,    32,
@@ -947,7 +1070,7 @@ static const yytype_uint16 yydefact[] =
      154
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+/* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
     -443,  -443,  -443,   542,  -443,  -443,  -443,   470,  -443,  -443,
@@ -966,10 +1089,10 @@ static const yytype_int16 yypgoto[] =
     -443,  -443,  -443,   266,   -12,  -407
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+/* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     6,     7,     8,     9,    17,    37,    38,    10,    11,
+       0,     6,     7,     8,     9,    17,    37,    38,    10,    11,
       28,   186,   128,    29,    30,    31,    12,    13,   200,    14,
       15,   282,    33,   250,    82,   144,   202,   226,    34,   141,
      194,   195,   196,   251,    83,   197,   218,   219,   220,   145,
@@ -985,9 +1108,9 @@ static const yytype_int16 yydefgoto[] =
       63,    64,    65,    66,    40,   342
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
-     positive, shift that token.  If negative, reduce the rule whose
-     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+/* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+   positive, shift that token.  If negative, reduce the rule whose
+   number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
       67,    68,    93,   283,   412,   376,  -222,  -222,    41,   395,
@@ -1132,8 +1255,8 @@ static const yytype_int16 yycheck[] =
       -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    74,    75
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-     symbol of state STATE-NUM.  */
+/* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
+   state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
        0,     3,     4,     5,     9,    26,    89,    90,    91,    92,
@@ -1190,7 +1313,7 @@ static const yytype_uint8 yystos[] =
      172
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+/* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_uint8 yyr1[] =
 {
        0,    88,    89,    89,    90,    90,    91,    91,    91,    91,
@@ -1226,8 +1349,8 @@ static const yytype_uint8 yyr1[] =
      221,   222,   222,   223,   223,   223
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
-static const yytype_uint8 yyr2[] =
+/* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
+static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     0,     2,     1,     1,     1,     1,     1,
        1,     0,     4,     3,     1,     1,     2,     3,     3,     3,
@@ -1263,39 +1386,39 @@ static const yytype_uint8 yyr2[] =
 };
 
 
+enum { YYENOMEM = -2 };
+
 #define yyerrok         (yyerrstatus = 0)
 #define yyclearin       (yychar = YYEMPTY)
-#define YYEMPTY         (-2)
-#define YYEOF           0
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
 #define YYERROR         goto yyerrorlab
+#define YYNOMEM         goto yyexhaustedlab
 
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
-#define YYBACKUP(Token, Value)                                  \
-do                                                              \
-  if (yychar == YYEMPTY)                                        \
-    {                                                           \
-      yychar = (Token);                                         \
-      yylval = (Value);                                         \
-      YYPOPSTACK (yylen);                                       \
-      yystate = *yyssp;                                         \
-      goto yybackup;                                            \
-    }                                                           \
-  else                                                          \
-    {                                                           \
-      yyerror (YY_("syntax error: cannot back up")); \
-      YYERROR;                                                  \
-    }                                                           \
-while (0)
+#define YYBACKUP(Token, Value)                                    \
+  do                                                              \
+    if (yychar == YYEMPTY)                                        \
+      {                                                           \
+        yychar = (Token);                                         \
+        yylval = (Value);                                         \
+        YYPOPSTACK (yylen);                                       \
+        yystate = *yyssp;                                         \
+        goto yybackup;                                            \
+      }                                                           \
+    else                                                          \
+      {                                                           \
+        yyerror (YY_("syntax error: cannot back up")); \
+        YYERROR;                                                  \
+      }                                                           \
+  while (0)
 
-/* Error token number */
-#define YYTERROR        1
-#define YYERRCODE       256
-
+/* Backward compatibility with an undocumented macro.
+   Use YYerror or YYUNDEF. */
+#define YYERRCODE YYUNDEF
 
 /* YYLLOC_DEFAULT -- Set CURRENT to span from RHS[1] to RHS[N].
    If N is 0, then set CURRENT to the empty location which ends
@@ -1339,20 +1462,27 @@ do {                                            \
 } while (0)
 
 
-/* YY_LOCATION_PRINT -- Print the location on the stream.
+/* YYLOCATION_PRINT -- Print the location on the stream.
    This macro was not mandated originally: define only if we know
    we won't break user code: when these are the locations we know.  */
 
-#ifndef YY_LOCATION_PRINT
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+# ifndef YYLOCATION_PRINT
+
+#  if defined YY_LOCATION_PRINT
+
+   /* Temporary convenience wrapper in case some people defined the
+      undocumented and private YY_LOCATION_PRINT macros.  */
+#   define YYLOCATION_PRINT(File, Loc)  YY_LOCATION_PRINT(File, *(Loc))
+
+#  elif defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
 
 /* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
 
 YY_ATTRIBUTE_UNUSED
-static unsigned
+static int
 yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
 {
-  unsigned res = 0;
+  int res = 0;
   int end_col = 0 != yylocp->last_column ? yylocp->last_column - 1 : 0;
   if (0 <= yylocp->first_line)
     {
@@ -1372,63 +1502,71 @@ yy_location_print_ (FILE *yyo, YYLTYPE const * const yylocp)
         res += YYFPRINTF (yyo, "-%d", end_col);
     }
   return res;
- }
+}
 
-#  define YY_LOCATION_PRINT(File, Loc)          \
-  yy_location_print_ (File, &(Loc))
+#   define YYLOCATION_PRINT  yy_location_print_
 
-# else
-#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-# endif
-#endif
+    /* Temporary convenience wrapper in case some people defined the
+       undocumented and private YY_LOCATION_PRINT macros.  */
+#   define YY_LOCATION_PRINT(File, Loc)  YYLOCATION_PRINT(File, &(Loc))
+
+#  else
+
+#   define YYLOCATION_PRINT(File, Loc) ((void) 0)
+    /* Temporary convenience wrapper in case some people defined the
+       undocumented and private YY_LOCATION_PRINT macros.  */
+#   define YY_LOCATION_PRINT  YYLOCATION_PRINT
+
+#  endif
+# endif /* !defined YYLOCATION_PRINT */
 
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)                    \
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
 do {                                                                      \
   if (yydebug)                                                            \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Type, Value, Location); \
+                  Kind, Value, Location); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
 
 
-/*----------------------------------------.
-| Print this symbol's value on YYOUTPUT.  |
-`----------------------------------------*/
+/*-----------------------------------.
+| Print this symbol's value on YYO.  |
+`-----------------------------------*/
 
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_value_print (FILE *yyo,
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
 {
-  FILE *yyo = yyoutput;
-  YYUSE (yyo);
-  YYUSE (yylocationp);
+  FILE *yyoutput = yyo;
+  YY_USE (yyoutput);
+  YY_USE (yylocationp);
   if (!yyvaluep)
     return;
-# ifdef YYPRINT
-  if (yytype < YYNTOKENS)
-    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# endif
-  YYUSE (yytype);
+  YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+  YY_USE (yykind);
+  YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
-/*--------------------------------.
-| Print this symbol on YYOUTPUT.  |
-`--------------------------------*/
+/*---------------------------.
+| Print this symbol on YYO.  |
+`---------------------------*/
 
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
+yy_symbol_print (FILE *yyo,
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep, YYLTYPE const * const yylocationp)
 {
-  YYFPRINTF (yyoutput, "%s %s (",
-             yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
+  YYFPRINTF (yyo, "%s %s (",
+             yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  YY_LOCATION_PRINT (yyoutput, *yylocationp);
-  YYFPRINTF (yyoutput, ": ");
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp);
-  YYFPRINTF (yyoutput, ")");
+  YYLOCATION_PRINT (yyo, yylocationp);
+  YYFPRINTF (yyo, ": ");
+  yy_symbol_value_print (yyo, yykind, yyvaluep, yylocationp);
+  YYFPRINTF (yyo, ")");
 }
 
 /*------------------------------------------------------------------.
@@ -1437,7 +1575,7 @@ yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, YYL
 `------------------------------------------------------------------*/
 
 static void
-yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
+yy_stack_print (yy_state_t *yybottom, yy_state_t *yytop)
 {
   YYFPRINTF (stderr, "Stack now");
   for (; yybottom <= yytop; yybottom++)
@@ -1460,21 +1598,22 @@ do {                                                            \
 `------------------------------------------------*/
 
 static void
-yy_reduce_print (yytype_int16 *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp, int yyrule)
+yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp, YYLTYPE *yylsp,
+                 int yyrule)
 {
-  unsigned long int yylno = yyrline[yyrule];
+  int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
   int yyi;
-  YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu):\n",
+  YYFPRINTF (stderr, "Reducing stack by rule %d (line %d):\n",
              yyrule - 1, yylno);
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr,
-                       yystos[yyssp[yyi + 1 - yynrhs]],
-                       &(yyvsp[(yyi + 1) - (yynrhs)])
-                       , &(yylsp[(yyi + 1) - (yynrhs)])                       );
+                       YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
+                       &yyvsp[(yyi + 1) - (yynrhs)],
+                       &(yylsp[(yyi + 1) - (yynrhs)]));
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -1489,8 +1628,8 @@ do {                                    \
    multiple parsers can coexist.  */
 int yydebug;
 #else /* !YYDEBUG */
-# define YYDPRINTF(Args)
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
+# define YYDPRINTF(Args) ((void) 0)
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
@@ -1513,250 +1652,31 @@ int yydebug;
 #endif
 
 
-#if YYERROR_VERBOSE
 
-# ifndef yystrlen
-#  if defined __GLIBC__ && defined _STRING_H
-#   define yystrlen strlen
-#  else
-/* Return the length of YYSTR.  */
-static YYSIZE_T
-yystrlen (const char *yystr)
-{
-  YYSIZE_T yylen;
-  for (yylen = 0; yystr[yylen]; yylen++)
-    continue;
-  return yylen;
-}
-#  endif
-# endif
 
-# ifndef yystpcpy
-#  if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
-#   define yystpcpy stpcpy
-#  else
-/* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
-   YYDEST.  */
-static char *
-yystpcpy (char *yydest, const char *yysrc)
-{
-  char *yyd = yydest;
-  const char *yys = yysrc;
 
-  while ((*yyd++ = *yys++) != '\0')
-    continue;
-
-  return yyd - 1;
-}
-#  endif
-# endif
-
-# ifndef yytnamerr
-/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
-   quotes and backslashes, so that it's suitable for yyerror.  The
-   heuristic is that double-quoting is unnecessary unless the string
-   contains an apostrophe, a comma, or backslash (other than
-   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
-   null, do not copy; instead, return the length of what the result
-   would have been.  */
-static YYSIZE_T
-yytnamerr (char *yyres, const char *yystr)
-{
-  if (*yystr == '"')
-    {
-      YYSIZE_T yyn = 0;
-      char const *yyp = yystr;
-
-      for (;;)
-        switch (*++yyp)
-          {
-          case '\'':
-          case ',':
-            goto do_not_strip_quotes;
-
-          case '\\':
-            if (*++yyp != '\\')
-              goto do_not_strip_quotes;
-            /* Fall through.  */
-          default:
-            if (yyres)
-              yyres[yyn] = *yyp;
-            yyn++;
-            break;
-
-          case '"':
-            if (yyres)
-              yyres[yyn] = '\0';
-            return yyn;
-          }
-    do_not_strip_quotes: ;
-    }
-
-  if (! yyres)
-    return yystrlen (yystr);
-
-  return yystpcpy (yyres, yystr) - yyres;
-}
-# endif
-
-/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
-   about the unexpected token YYTOKEN for the state stack whose top is
-   YYSSP.
-
-   Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
-   not large enough to hold the message.  In that case, also set
-   *YYMSG_ALLOC to the required number of bytes.  Return 2 if the
-   required number of bytes is too large to store.  */
-static int
-yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
-                yytype_int16 *yyssp, int yytoken)
-{
-  YYSIZE_T yysize0 = yytnamerr (YY_NULLPTR, yytname[yytoken]);
-  YYSIZE_T yysize = yysize0;
-  enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-  /* Internationalized format string. */
-  const char *yyformat = YY_NULLPTR;
-  /* Arguments of yyformat. */
-  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-  /* Number of reported tokens (one for the "unexpected", one per
-     "expected"). */
-  int yycount = 0;
-
-  /* There are many possibilities here to consider:
-     - If this state is a consistent state with a default action, then
-       the only way this function was invoked is if the default action
-       is an error action.  In that case, don't check for expected
-       tokens because there are none.
-     - The only way there can be no lookahead present (in yychar) is if
-       this state is a consistent state with a default action.  Thus,
-       detecting the absence of a lookahead is sufficient to determine
-       that there is no unexpected or expected token to report.  In that
-       case, just report a simple "syntax error".
-     - Don't assume there isn't a lookahead just because this state is a
-       consistent state with a default action.  There might have been a
-       previous inconsistent state, consistent state with a non-default
-       action, or user semantic action that manipulated yychar.
-     - Of course, the expected token list depends on states to have
-       correct lookahead information, and it depends on the parser not
-       to perform extra reductions after fetching a lookahead from the
-       scanner and before detecting a syntax error.  Thus, state merging
-       (from LALR or IELR) and default reductions corrupt the expected
-       token list.  However, the list is correct for canonical LR with
-       one exception: it will still contain any token that will not be
-       accepted due to an error action in a later state.
-  */
-  if (yytoken != YYEMPTY)
-    {
-      int yyn = yypact[*yyssp];
-      yyarg[yycount++] = yytname[yytoken];
-      if (!yypact_value_is_default (yyn))
-        {
-          /* Start YYX at -YYN if negative to avoid negative indexes in
-             YYCHECK.  In other words, skip the first -YYN actions for
-             this state because they are default actions.  */
-          int yyxbegin = yyn < 0 ? -yyn : 0;
-          /* Stay within bounds of both yycheck and yytname.  */
-          int yychecklim = YYLAST - yyn + 1;
-          int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-          int yyx;
-
-          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-            if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
-                && !yytable_value_is_error (yytable[yyx + yyn]))
-              {
-                if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-                  {
-                    yycount = 1;
-                    yysize = yysize0;
-                    break;
-                  }
-                yyarg[yycount++] = yytname[yyx];
-                {
-                  YYSIZE_T yysize1 = yysize + yytnamerr (YY_NULLPTR, yytname[yyx]);
-                  if (! (yysize <= yysize1
-                         && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
-                    return 2;
-                  yysize = yysize1;
-                }
-              }
-        }
-    }
-
-  switch (yycount)
-    {
-# define YYCASE_(N, S)                      \
-      case N:                               \
-        yyformat = S;                       \
-      break
-      YYCASE_(0, YY_("syntax error"));
-      YYCASE_(1, YY_("syntax error, unexpected %s"));
-      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
-      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
-      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
-      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
-# undef YYCASE_
-    }
-
-  {
-    YYSIZE_T yysize1 = yysize + yystrlen (yyformat);
-    if (! (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
-      return 2;
-    yysize = yysize1;
-  }
-
-  if (*yymsg_alloc < yysize)
-    {
-      *yymsg_alloc = 2 * yysize;
-      if (! (yysize <= *yymsg_alloc
-             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
-        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
-      return 1;
-    }
-
-  /* Avoid sprintf, as that infringes on the user's name space.
-     Don't have undefined behavior even if the translation
-     produced a string with the wrong number of "%s"s.  */
-  {
-    char *yyp = *yymsg;
-    int yyi = 0;
-    while ((*yyp = *yyformat) != '\0')
-      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
-        {
-          yyp += yytnamerr (yyp, yyarg[yyi++]);
-          yyformat += 2;
-        }
-      else
-        {
-          yyp++;
-          yyformat++;
-        }
-  }
-  return 0;
-}
-#endif /* YYERROR_VERBOSE */
 
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
 
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocationp)
+yydestruct (const char *yymsg,
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep, YYLTYPE *yylocationp)
 {
-  YYUSE (yyvaluep);
-  YYUSE (yylocationp);
+  YY_USE (yyvaluep);
+  YY_USE (yylocationp);
   if (!yymsg)
     yymsg = "Deleting";
-  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
+  YY_SYMBOL_PRINT (yymsg, yykind, yyvaluep, yylocationp);
 
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-  YYUSE (yytype);
+  YY_USE (yykind);
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
-
-
-/* The lookahead symbol.  */
+/* Lookahead token kind.  */
 int yychar;
 
 /* The semantic value of the lookahead symbol.  */
@@ -1771,6 +1691,8 @@ YYLTYPE yylloc
 int yynerrs;
 
 
+
+
 /*----------.
 | yyparse.  |
 `----------*/
@@ -1778,53 +1700,45 @@ int yynerrs;
 int
 yyparse (void)
 {
-    int yystate;
+    yy_state_fast_t yystate = 0;
     /* Number of tokens to shift before error messages enabled.  */
-    int yyerrstatus;
+    int yyerrstatus = 0;
 
-    /* The stacks and their tools:
-       'yyss': related to states.
-       'yyvs': related to semantic values.
-       'yyls': related to locations.
-
-       Refer to the stacks through separate pointers, to allow yyoverflow
+    /* Refer to the stacks through separate pointers, to allow yyoverflow
        to reallocate them elsewhere.  */
 
-    /* The state stack.  */
-    yytype_int16 yyssa[YYINITDEPTH];
-    yytype_int16 *yyss;
-    yytype_int16 *yyssp;
+    /* Their size.  */
+    YYPTRDIFF_T yystacksize = YYINITDEPTH;
 
-    /* The semantic value stack.  */
+    /* The state stack: array, bottom, top.  */
+    yy_state_t yyssa[YYINITDEPTH];
+    yy_state_t *yyss = yyssa;
+    yy_state_t *yyssp = yyss;
+
+    /* The semantic value stack: array, bottom, top.  */
     YYSTYPE yyvsa[YYINITDEPTH];
-    YYSTYPE *yyvs;
-    YYSTYPE *yyvsp;
+    YYSTYPE *yyvs = yyvsa;
+    YYSTYPE *yyvsp = yyvs;
 
-    /* The location stack.  */
+    /* The location stack: array, bottom, top.  */
     YYLTYPE yylsa[YYINITDEPTH];
-    YYLTYPE *yyls;
-    YYLTYPE *yylsp;
-
-    /* The locations where the error started and ended.  */
-    YYLTYPE yyerror_range[3];
-
-    YYSIZE_T yystacksize;
+    YYLTYPE *yyls = yylsa;
+    YYLTYPE *yylsp = yyls;
 
   int yyn;
+  /* The return value of yyparse.  */
   int yyresult;
-  /* Lookahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead symbol kind.  */
+  yysymbol_kind_t yytoken = YYSYMBOL_YYEMPTY;
   /* The variables used to return semantic value and location from the
      action routines.  */
   YYSTYPE yyval;
   YYLTYPE yyloc;
 
-#if YYERROR_VERBOSE
-  /* Buffer for error messages, and its allocated size.  */
-  char yymsgbuf[128];
-  char *yymsg = yymsgbuf;
-  YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
-#endif
+  /* The locations where the error started and ended.  */
+  YYLTYPE yyerror_range[3];
+
+
 
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N), yylsp -= (N))
 
@@ -1832,43 +1746,49 @@ yyparse (void)
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
 
-  yyssp = yyss = yyssa;
-  yyvsp = yyvs = yyvsa;
-  yylsp = yyls = yylsa;
-  yystacksize = YYINITDEPTH;
-
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yystate = 0;
-  yyerrstatus = 0;
-  yynerrs = 0;
   yychar = YYEMPTY; /* Cause a token to be read.  */
+
   yylsp[0] = yylloc;
   goto yysetstate;
 
+
 /*------------------------------------------------------------.
-| yynewstate -- Push a new state, which is found in yystate.  |
+| yynewstate -- push a new state, which is found in yystate.  |
 `------------------------------------------------------------*/
- yynewstate:
+yynewstate:
   /* In all cases, when you get here, the value and location stacks
      have just been pushed.  So pushing a state here evens the stacks.  */
   yyssp++;
 
- yysetstate:
-  *yyssp = yystate;
+
+/*--------------------------------------------------------------------.
+| yysetstate -- set current state (the top of the stack) to yystate.  |
+`--------------------------------------------------------------------*/
+yysetstate:
+  YYDPRINTF ((stderr, "Entering state %d\n", yystate));
+  YY_ASSERT (0 <= yystate && yystate < YYNSTATES);
+  YY_IGNORE_USELESS_CAST_BEGIN
+  *yyssp = YY_CAST (yy_state_t, yystate);
+  YY_IGNORE_USELESS_CAST_END
+  YY_STACK_PRINT (yyss, yyssp);
 
   if (yyss + yystacksize - 1 <= yyssp)
+#if !defined yyoverflow && !defined YYSTACK_RELOCATE
+    YYNOMEM;
+#else
     {
       /* Get the current used size of the three stacks, in elements.  */
-      YYSIZE_T yysize = yyssp - yyss + 1;
+      YYPTRDIFF_T yysize = yyssp - yyss + 1;
 
-#ifdef yyoverflow
+# if defined yyoverflow
       {
         /* Give user a chance to reallocate the stack.  Use copies of
            these so that the &'s don't force the real ones into
            memory.  */
+        yy_state_t *yyss1 = yyss;
         YYSTYPE *yyvs1 = yyvs;
-        yytype_int16 *yyss1 = yyss;
         YYLTYPE *yyls1 = yyls;
 
         /* Each stack pointer address is followed by the size of the
@@ -1876,32 +1796,29 @@ yyparse (void)
            conditional around just the two extra args, but that might
            be undefined if yyoverflow is a macro.  */
         yyoverflow (YY_("memory exhausted"),
-                    &yyss1, yysize * sizeof (*yyssp),
-                    &yyvs1, yysize * sizeof (*yyvsp),
-                    &yyls1, yysize * sizeof (*yylsp),
+                    &yyss1, yysize * YYSIZEOF (*yyssp),
+                    &yyvs1, yysize * YYSIZEOF (*yyvsp),
+                    &yyls1, yysize * YYSIZEOF (*yylsp),
                     &yystacksize);
-
-        yyls = yyls1;
         yyss = yyss1;
         yyvs = yyvs1;
+        yyls = yyls1;
       }
-#else /* no yyoverflow */
-# ifndef YYSTACK_RELOCATE
-      goto yyexhaustedlab;
-# else
+# else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-        goto yyexhaustedlab;
+        YYNOMEM;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
         yystacksize = YYMAXDEPTH;
 
       {
-        yytype_int16 *yyss1 = yyss;
+        yy_state_t *yyss1 = yyss;
         union yyalloc *yyptr =
-          (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
+          YY_CAST (union yyalloc *,
+                   YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
         if (! yyptr)
-          goto yyexhaustedlab;
+          YYNOMEM;
         YYSTACK_RELOCATE (yyss_alloc, yyss);
         YYSTACK_RELOCATE (yyvs_alloc, yyvs);
         YYSTACK_RELOCATE (yyls_alloc, yyls);
@@ -1910,31 +1827,32 @@ yyparse (void)
           YYSTACK_FREE (yyss1);
       }
 # endif
-#endif /* no yyoverflow */
 
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
       yylsp = yyls + yysize - 1;
 
-      YYDPRINTF ((stderr, "Stack size increased to %lu\n",
-                  (unsigned long int) yystacksize));
+      YY_IGNORE_USELESS_CAST_BEGIN
+      YYDPRINTF ((stderr, "Stack size increased to %ld\n",
+                  YY_CAST (long, yystacksize)));
+      YY_IGNORE_USELESS_CAST_END
 
       if (yyss + yystacksize - 1 <= yyssp)
         YYABORT;
     }
+#endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
 
-  YYDPRINTF ((stderr, "Entering state %d\n", yystate));
 
   if (yystate == YYFINAL)
     YYACCEPT;
 
   goto yybackup;
 
+
 /*-----------.
 | yybackup.  |
 `-----------*/
 yybackup:
-
   /* Do appropriate processing given the current state.  Read a
      lookahead token if we need one and don't already have one.  */
 
@@ -1945,17 +1863,29 @@ yybackup:
 
   /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+  /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
   if (yychar == YYEMPTY)
     {
-      YYDPRINTF ((stderr, "Reading a token: "));
+      YYDPRINTF ((stderr, "Reading a token\n"));
       yychar = yylex ();
     }
 
   if (yychar <= YYEOF)
     {
-      yychar = yytoken = YYEOF;
+      yychar = YYEOF;
+      yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
+    }
+  else if (yychar == YYerror)
+    {
+      /* The scanner already issued an error message, process directly
+         to error recovery.  But do not keep the error token as
+         lookahead, it is too special and may lead us to an endless
+         loop in error recovery. */
+      yychar = YYUNDEF;
+      yytoken = YYSYMBOL_YYerror;
+      yyerror_range[1] = yylloc;
+      goto yyerrlab1;
     }
   else
     {
@@ -1984,15 +1914,14 @@ yybackup:
 
   /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
-
-  /* Discard the shifted token.  */
-  yychar = YYEMPTY;
-
   yystate = yyn;
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   *++yyvsp = yylval;
   YY_IGNORE_MAYBE_UNINITIALIZED_END
   *++yylsp = yylloc;
+
+  /* Discard the shifted token.  */
+  yychar = YYEMPTY;
   goto yynewstate;
 
 
@@ -2007,7 +1936,7 @@ yydefault:
 
 
 /*-----------------------------.
-| yyreduce -- Do a reduction.  |
+| yyreduce -- do a reduction.  |
 `-----------------------------*/
 yyreduce:
   /* yyn is the number of a rule to reduce with.  */
@@ -2023,1344 +1952,1346 @@ yyreduce:
      GCC warning that YYVAL may be used uninitialized.  */
   yyval = yyvsp[1-yylen];
 
-  /* Default location.  */
+  /* Default location. */
   YYLLOC_DEFAULT (yyloc, (yylsp - yylen), yylen);
+  yyerror_range[1] = yyloc;
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 11:
-#line 230 "ebnf.y" /* yacc.c:1646  */
-    {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
+  case 11: /* $@1: %empty  */
+#line 230 "ebnf.y"
+                {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
                        setComments(IMPORTS_KEY,(yylsp[0])); )}
-#line 2036 "ebnf.tab.c" /* yacc.c:1646  */
+#line 1966 "ebnf.tab.c"
     break;
 
-  case 12:
-#line 233 "ebnf.y" /* yacc.c:1646  */
-    {/* GNED( setTrailingComment(IMPORTS_KEY,@3); )
+  case 12: /* import: INCLUDE $@1 filenames ';'  */
+#line 233 "ebnf.y"
+                {/* GNED( setTrailingComment(IMPORTS_KEY,@3); )
                   * comment already stored with last filename */}
-#line 2043 "ebnf.tab.c" /* yacc.c:1646  */
+#line 1973 "ebnf.tab.c"
     break;
 
-  case 15:
-#line 244 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_include ((yyvsp[0])); )
+  case 15: /* filename: STRING  */
+#line 244 "ebnf.y"
+                {NEDC( do_include (yyvsp[0]); )
                  GNED( IMPORT_KEY = np->create("import",IMPORTS_KEY);
                        np->set(IMPORT_KEY,"name",trimQuotes((yylsp[0])));
                        setComments(IMPORT_KEY,(yylsp[0])); )}
-#line 2052 "ebnf.tab.c" /* yacc.c:1646  */
+#line 1982 "ebnf.tab.c"
     break;
 
-  case 16:
-#line 253 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-1]), NULL, NULL, NULL); )}
-#line 2058 "ebnf.tab.c" /* yacc.c:1646  */
+  case 16: /* channeldefinition: channelheader endchannel  */
+#line 253 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-1], NULL, NULL, NULL); )}
+#line 1988 "ebnf.tab.c"
     break;
 
-  case 17:
-#line 256 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-2]), (yyvsp[-1]), NULL, NULL); )}
-#line 2064 "ebnf.tab.c" /* yacc.c:1646  */
+  case 17: /* channeldefinition: channelheader chdelay endchannel  */
+#line 256 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-2], yyvsp[-1], NULL, NULL); )}
+#line 1994 "ebnf.tab.c"
     break;
 
-  case 18:
-#line 258 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-2]), NULL, (yyvsp[-1]), NULL); )}
-#line 2070 "ebnf.tab.c" /* yacc.c:1646  */
+  case 18: /* channeldefinition: channelheader cherror endchannel  */
+#line 258 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-2], NULL, yyvsp[-1], NULL); )}
+#line 2000 "ebnf.tab.c"
     break;
 
-  case 19:
-#line 260 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-2]), NULL, NULL, (yyvsp[-1])); )}
-#line 2076 "ebnf.tab.c" /* yacc.c:1646  */
+  case 19: /* channeldefinition: channelheader chdatarate endchannel  */
+#line 260 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-2], NULL, NULL, yyvsp[-1]); )}
+#line 2006 "ebnf.tab.c"
     break;
 
-  case 20:
-#line 263 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1]), NULL); )}
-#line 2082 "ebnf.tab.c" /* yacc.c:1646  */
+  case 20: /* channeldefinition: channelheader chdelay cherror endchannel  */
+#line 263 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-3], yyvsp[-2], yyvsp[-1], NULL); )}
+#line 2012 "ebnf.tab.c"
     break;
 
-  case 21:
-#line 265 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-2]), NULL, (yyvsp[-1])); )}
-#line 2088 "ebnf.tab.c" /* yacc.c:1646  */
+  case 21: /* channeldefinition: channelheader chdelay chdatarate endchannel  */
+#line 265 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-3], yyvsp[-2], NULL, yyvsp[-1]); )}
+#line 2018 "ebnf.tab.c"
     break;
 
-  case 22:
-#line 267 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-2]), (yyvsp[-1])); )}
-#line 2094 "ebnf.tab.c" /* yacc.c:1646  */
+  case 22: /* channeldefinition: channelheader cherror chdatarate endchannel  */
+#line 267 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-3], NULL, yyvsp[-2], yyvsp[-1]); )}
+#line 2024 "ebnf.tab.c"
     break;
 
-  case 23:
-#line 269 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2]), NULL); )}
-#line 2100 "ebnf.tab.c" /* yacc.c:1646  */
+  case 23: /* channeldefinition: channelheader cherror chdelay endchannel  */
+#line 269 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-3], yyvsp[-1], yyvsp[-2], NULL); )}
+#line 2030 "ebnf.tab.c"
     break;
 
-  case 24:
-#line 271 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-3]), (yyvsp[-1]), NULL, (yyvsp[-2])); )}
-#line 2106 "ebnf.tab.c" /* yacc.c:1646  */
+  case 24: /* channeldefinition: channelheader chdatarate chdelay endchannel  */
+#line 271 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-3], yyvsp[-1], NULL, yyvsp[-2]); )}
+#line 2036 "ebnf.tab.c"
     break;
 
-  case 25:
-#line 273 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-3]), NULL, (yyvsp[-1]), (yyvsp[-2])); )}
-#line 2112 "ebnf.tab.c" /* yacc.c:1646  */
+  case 25: /* channeldefinition: channelheader chdatarate cherror endchannel  */
+#line 273 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-3], NULL, yyvsp[-1], yyvsp[-2]); )}
+#line 2042 "ebnf.tab.c"
     break;
 
-  case 26:
-#line 276 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-2]), (yyvsp[-1])); )}
-#line 2118 "ebnf.tab.c" /* yacc.c:1646  */
+  case 26: /* channeldefinition: channelheader chdelay cherror chdatarate endchannel  */
+#line 276 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1]); )}
+#line 2048 "ebnf.tab.c"
     break;
 
-  case 27:
-#line 278 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-3]), (yyvsp[-1]), (yyvsp[-2])); )}
-#line 2124 "ebnf.tab.c" /* yacc.c:1646  */
+  case 27: /* channeldefinition: channelheader chdelay chdatarate cherror endchannel  */
+#line 278 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-4], yyvsp[-3], yyvsp[-1], yyvsp[-2]); )}
+#line 2054 "ebnf.tab.c"
     break;
 
-  case 28:
-#line 280 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-3]), (yyvsp[-1])); )}
-#line 2130 "ebnf.tab.c" /* yacc.c:1646  */
+  case 28: /* channeldefinition: channelheader cherror chdelay chdatarate endchannel  */
+#line 280 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-4], yyvsp[-2], yyvsp[-3], yyvsp[-1]); )}
+#line 2060 "ebnf.tab.c"
     break;
 
-  case 29:
-#line 282 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-3]), (yyvsp[-2])); )}
-#line 2136 "ebnf.tab.c" /* yacc.c:1646  */
+  case 29: /* channeldefinition: channelheader cherror chdatarate chdelay endchannel  */
+#line 282 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-4], yyvsp[-1], yyvsp[-3], yyvsp[-2]); )}
+#line 2066 "ebnf.tab.c"
     break;
 
-  case 30:
-#line 284 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[-1]), (yyvsp[-3])); )}
-#line 2142 "ebnf.tab.c" /* yacc.c:1646  */
+  case 30: /* channeldefinition: channelheader chdatarate chdelay cherror endchannel  */
+#line 284 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-4], yyvsp[-2], yyvsp[-1], yyvsp[-3]); )}
+#line 2072 "ebnf.tab.c"
     break;
 
-  case 31:
-#line 286 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_channel ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-2]), (yyvsp[-3])); )}
-#line 2148 "ebnf.tab.c" /* yacc.c:1646  */
+  case 31: /* channeldefinition: channelheader chdatarate cherror chdelay endchannel  */
+#line 286 "ebnf.y"
+                {NEDC( do_channel (yyvsp[-4], yyvsp[-1], yyvsp[-2], yyvsp[-3]); )}
+#line 2078 "ebnf.tab.c"
     break;
 
-  case 32:
-#line 291 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[0]); inside_nonvoid_function=1;)
+  case 32: /* channelheader: CHANNEL NAME  */
+#line 291 "ebnf.y"
+                {NEDC( yyval = yyvsp[0]; inside_nonvoid_function=1;)
                  GNED( CHANNEL_KEY = np->create("channel",NEDFILE_KEY);
                        np->set(CHANNEL_KEY,"name",(yylsp[0]));
                        setComments(CHANNEL_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2157 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2087 "ebnf.tab.c"
     break;
 
-  case 33:
-#line 300 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( inside_nonvoid_function=0; )}
-#line 2163 "ebnf.tab.c" /* yacc.c:1646  */
+  case 33: /* $@2: %empty  */
+#line 300 "ebnf.y"
+                {NEDC( inside_nonvoid_function=0; )}
+#line 2093 "ebnf.tab.c"
     break;
 
-  case 34:
-#line 301 "ebnf.y" /* yacc.c:1646  */
-    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); )}
-#line 2169 "ebnf.tab.c" /* yacc.c:1646  */
+  case 34: /* endchannel: ENDCHANNEL NAME opt_semicolon $@2  */
+#line 301 "ebnf.y"
+                {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); )}
+#line 2099 "ebnf.tab.c"
     break;
 
-  case 35:
-#line 303 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( inside_nonvoid_function=0; )}
-#line 2175 "ebnf.tab.c" /* yacc.c:1646  */
+  case 35: /* $@3: %empty  */
+#line 303 "ebnf.y"
+                {NEDC( inside_nonvoid_function=0; )}
+#line 2105 "ebnf.tab.c"
     break;
 
-  case 36:
-#line 304 "ebnf.y" /* yacc.c:1646  */
-    {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); )}
-#line 2181 "ebnf.tab.c" /* yacc.c:1646  */
+  case 36: /* endchannel: ENDCHANNEL opt_semicolon $@3  */
+#line 304 "ebnf.y"
+                {GNED( setTrailingComment(CHANNEL_KEY,(yylsp[-2])); )}
+#line 2111 "ebnf.tab.c"
     break;
 
-  case 37:
-#line 310 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[-1]); )
+  case 37: /* cherror: ERROR expression opt_semicolon  */
+#line 310 "ebnf.y"
+                {NEDC( yyval = yyvsp[-1]; )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"error",(yylsp[-1]));
                        setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2189 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2119 "ebnf.tab.c"
     break;
 
-  case 38:
-#line 317 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[-1]); )
+  case 38: /* chdelay: DELAY expression opt_semicolon  */
+#line 317 "ebnf.y"
+                {NEDC( yyval = yyvsp[-1]; )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"delay",(yylsp[-1]));
                        setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2197 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2127 "ebnf.tab.c"
     break;
 
-  case 39:
-#line 324 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[-1]); )
+  case 39: /* chdatarate: DATARATE expression opt_semicolon  */
+#line 324 "ebnf.y"
+                {NEDC( yyval = yyvsp[-1]; )
                  GNED( CHANATTR_KEY = addChanAttr(CHANNEL_KEY,"datarate",(yylsp[-1]));
                        setComments(CHANATTR_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2205 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2135 "ebnf.tab.c"
     break;
 
-  case 41:
-#line 339 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_simple ((yyvsp[-1])); )
+  case 41: /* simpleheader: SIMPLE NAME opt_semicolon  */
+#line 339 "ebnf.y"
+                {NEDC( do_simple (yyvsp[-1]); )
                  GNED( MODULE_KEY = np->create("simple",NEDFILE_KEY);
                        np->set(MODULE_KEY,"name", (yylsp[-1]));
                        setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2214 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2144 "ebnf.tab.c"
     break;
 
-  case 42:
-#line 348 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_simple ((yyvsp[-1])); )
+  case 42: /* endsimple: ENDSIMPLE NAME opt_semicolon  */
+#line 348 "ebnf.y"
+                {NEDC( end_simple (yyvsp[-1]); )
                  GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
-#line 2221 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2151 "ebnf.tab.c"
     break;
 
-  case 43:
-#line 351 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_simple (NULL); )
+  case 43: /* endsimple: ENDSIMPLE opt_semicolon  */
+#line 351 "ebnf.y"
+                {NEDC( end_simple (NULL); )
                  GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
-#line 2228 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2158 "ebnf.tab.c"
     break;
 
-  case 45:
-#line 368 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_module ((yyvsp[-1])); )
+  case 45: /* moduleheader: MODULE NAME opt_semicolon  */
+#line 368 "ebnf.y"
+                {NEDC( do_module (yyvsp[-1]); )
                  GNED( MODULE_KEY = np->create("module",NEDFILE_KEY);
                        np->set(MODULE_KEY,"name", (yylsp[-1]));
                        setComments(MODULE_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2237 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2167 "ebnf.tab.c"
     break;
 
-  case 46:
-#line 376 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_module ((yyvsp[-1])); )
+  case 46: /* endmodule: ENDMODULE NAME opt_semicolon  */
+#line 376 "ebnf.y"
+                {NEDC( end_module (yyvsp[-1]); )
                  GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
-#line 2244 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2174 "ebnf.tab.c"
     break;
 
-  case 47:
-#line 379 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_module (NULL); )
+  case 47: /* endmodule: ENDMODULE opt_semicolon  */
+#line 379 "ebnf.y"
+                {NEDC( end_module (NULL); )
                  GNED( setTrailingComment(MODULE_KEY,(yylsp[-1])); )}
-#line 2251 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2181 "ebnf.tab.c"
     break;
 
-  case 49:
-#line 386 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_machine(jar_strdup("default")); )}
-#line 2257 "ebnf.tab.c" /* yacc.c:1646  */
+  case 49: /* opt_machineblock: %empty  */
+#line 386 "ebnf.y"
+             {NEDC( do_machine(jar_strdup("default")); )}
+#line 2187 "ebnf.tab.c"
     break;
 
-  case 60:
-#line 396 "ebnf.y" /* yacc.c:1646  */
-    {GNED( MACHINES_KEY = np->create("machines",MODULE_KEY);
+  case 60: /* $@4: %empty  */
+#line 396 "ebnf.y"
+                {GNED( MACHINES_KEY = np->create("machines",MODULE_KEY);
                        setComments(MACHINES_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2264 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2194 "ebnf.tab.c"
     break;
 
-  case 66:
-#line 413 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_machine ((yyvsp[0])); )
+  case 66: /* machine: NAME  */
+#line 413 "ebnf.y"
+                {NEDC( do_machine (yyvsp[0]); )
                  GNED( MACHINE_KEY = np->create("machine",MACHINES_KEY);
                        np->set(MACHINE_KEY,"name", (yylsp[0]));
                        setComments(MACHINE_KEY,(yylsp[0]),(yylsp[0])); )}
-#line 2273 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2203 "ebnf.tab.c"
     break;
 
-  case 67:
-#line 421 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_displaystr_enclosing ((yyvsp[-1])); )
+  case 67: /* displayblock: DISPLAY ':' STRING ';'  */
+#line 421 "ebnf.y"
+                {NEDC( do_displaystr_enclosing (yyvsp[-1]); )
                  GNED( setDisplayString(MODULE_KEY,(yylsp[-1])); )}
-#line 2280 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2210 "ebnf.tab.c"
     break;
 
-  case 68:
-#line 427 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameters (); )
+  case 68: /* $@5: %empty  */
+#line 427 "ebnf.y"
+                {NEDC( do_parameters (); )
                  GNED( PARAMS_KEY = np->create("params",MODULE_KEY);
                        setComments(PARAMS_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2288 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2218 "ebnf.tab.c"
     break;
 
-  case 72:
-#line 440 "ebnf.y" /* yacc.c:1646  */
-    {GNED( setComments(PARAM_KEY,(yylsp[0])); )}
-#line 2294 "ebnf.tab.c" /* yacc.c:1646  */
+  case 72: /* parameters: parameters ',' parameter  */
+#line 440 "ebnf.y"
+                {GNED( setComments(PARAM_KEY,(yylsp[0])); )}
+#line 2224 "ebnf.tab.c"
     break;
 
-  case 73:
-#line 443 "ebnf.y" /* yacc.c:1646  */
-    {GNED( setComments(PARAM_KEY,(yylsp[0])); )}
-#line 2300 "ebnf.tab.c" /* yacc.c:1646  */
+  case 73: /* parameters: parameter  */
+#line 443 "ebnf.y"
+                {GNED( setComments(PARAM_KEY,(yylsp[0])); )}
+#line 2230 "ebnf.tab.c"
     break;
 
-  case 74:
-#line 448 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[0]), TYPE_NUMERIC); )
+  case 74: /* parameter: NAME  */
+#line 448 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[0], TYPE_NUMERIC); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_NUMERIC); )}
-#line 2307 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2237 "ebnf.tab.c"
     break;
 
-  case 75:
-#line 451 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-2]), TYPE_NUMERIC); )
+  case 75: /* parameter: NAME ':' NUMERICTYPE  */
+#line 451 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-2], TYPE_NUMERIC); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_NUMERIC); )}
-#line 2314 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2244 "ebnf.tab.c"
     break;
 
-  case 76:
-#line 454 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[0]), TYPE_CONST_NUM); )
+  case 76: /* parameter: NED_CONST NAME  */
+#line 454 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[0], TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[0]),TYPE_CONST_NUM); )}
-#line 2321 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2251 "ebnf.tab.c"
     break;
 
-  case 77:
-#line 457 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-2]), TYPE_CONST_NUM); )
+  case 77: /* parameter: NAME ':' NED_CONST  */
+#line 457 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-2], TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_CONST_NUM); )}
-#line 2328 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2258 "ebnf.tab.c"
     break;
 
-  case 78:
-#line 460 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-3]), TYPE_CONST_NUM); )
+  case 78: /* parameter: NAME ':' NED_CONST NUMERICTYPE  */
+#line 460 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-3], TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); )}
-#line 2335 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2265 "ebnf.tab.c"
     break;
 
-  case 79:
-#line 463 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-3]), TYPE_CONST_NUM); )
+  case 79: /* parameter: NAME ':' NUMERICTYPE NED_CONST  */
+#line 463 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-3], TYPE_CONST_NUM); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-3]),TYPE_CONST_NUM); )}
-#line 2342 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2272 "ebnf.tab.c"
     break;
 
-  case 80:
-#line 466 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-2]), TYPE_STRING); )
+  case 80: /* parameter: NAME ':' STRINGTYPE  */
+#line 466 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-2], TYPE_STRING); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_STRING); )}
-#line 2349 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2279 "ebnf.tab.c"
     break;
 
-  case 81:
-#line 469 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-2]), TYPE_BOOL); )
+  case 81: /* parameter: NAME ':' BOOLTYPE  */
+#line 469 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-2], TYPE_BOOL); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_BOOL); )}
-#line 2356 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2286 "ebnf.tab.c"
     break;
 
-  case 82:
-#line 472 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-2]), TYPE_XML); )
+  case 82: /* parameter: NAME ':' XMLTYPE  */
+#line 472 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-2], TYPE_XML); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_XML); )}
-#line 2363 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2293 "ebnf.tab.c"
     break;
 
-  case 83:
-#line 475 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_parameter ((yyvsp[-2]), TYPE_ANYTYPE); )
+  case 83: /* parameter: NAME ':' ANYTYPE  */
+#line 475 "ebnf.y"
+                {NEDC( do_parameter (yyvsp[-2], TYPE_ANYTYPE); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,(yylsp[-2]),TYPE_ANYTYPE); )}
-#line 2370 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2300 "ebnf.tab.c"
     break;
 
-  case 84:
-#line 481 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gates (); )
+  case 84: /* $@6: %empty  */
+#line 481 "ebnf.y"
+                {NEDC( do_gates (); )
                  GNED( GATES_KEY = np->create("gates",MODULE_KEY);
                        setComments(GATES_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2378 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2308 "ebnf.tab.c"
     break;
 
-  case 94:
-#line 506 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gatedecl( (yyvsp[-2]), 1, 1 ); )
+  case 94: /* gateI: NAME '[' ']'  */
+#line 506 "ebnf.y"
+                {NEDC( do_gatedecl( yyvsp[-2], 1, 1 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[-2]), 1, 1 );
                        setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2386 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2316 "ebnf.tab.c"
     break;
 
-  case 95:
-#line 510 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gatedecl( (yyvsp[0]), 1, 0 ); )
+  case 95: /* gateI: NAME  */
+#line 510 "ebnf.y"
+                {NEDC( do_gatedecl( yyvsp[0], 1, 0 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[0]), 1, 0 );
                        setComments(GATE_KEY,(yylsp[0])); )}
-#line 2394 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2324 "ebnf.tab.c"
     break;
 
-  case 98:
-#line 522 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gatedecl( (yyvsp[-2]), 0, 1 ); )
+  case 98: /* gateO: NAME '[' ']'  */
+#line 522 "ebnf.y"
+                {NEDC( do_gatedecl( yyvsp[-2], 0, 1 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[-2]), 0, 1 );
                        setComments(GATE_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2402 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2332 "ebnf.tab.c"
     break;
 
-  case 99:
-#line 526 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gatedecl( (yyvsp[0]), 0, 0 ); )
+  case 99: /* gateO: NAME  */
+#line 526 "ebnf.y"
+                {NEDC( do_gatedecl( yyvsp[0], 0, 0 ); )
                  GNED( GATE_KEY=addGate(GATES_KEY,  (yylsp[0]), 0, 0 );
                        setComments(GATE_KEY,(yylsp[0])); )}
-#line 2410 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2340 "ebnf.tab.c"
     break;
 
-  case 100:
-#line 533 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodules (); )
+  case 100: /* $@7: %empty  */
+#line 533 "ebnf.y"
+                {NEDC( do_submodules (); )
                  GNED( SUBMODS_KEY = np->create("submods",MODULE_KEY);
                        setComments(SUBMODS_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2418 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2348 "ebnf.tab.c"
     break;
 
-  case 106:
-#line 551 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule1 ((yyvsp[-3]), NULL, (yyvsp[-1]), NULL); )
+  case 106: /* $@8: %empty  */
+#line 551 "ebnf.y"
+                {NEDC( do_submodule1 (yyvsp[-3], NULL, yyvsp[-1], NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-3]), NULLPOS, (yylsp[-1]), NULLPOS);
                        setComments(SUBMOD_KEY,(yylsp[-3]),(yylsp[0]));  )}
-#line 2426 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2356 "ebnf.tab.c"
     break;
 
-  case 107:
-#line 555 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule2 ((yyvsp[-5]), NULL, (yyvsp[-3]), NULL); )}
-#line 2432 "ebnf.tab.c" /* yacc.c:1646  */
+  case 107: /* $@9: %empty  */
+#line 555 "ebnf.y"
+                {NEDC( do_submodule2 (yyvsp[-5], NULL, yyvsp[-3], NULL); )}
+#line 2362 "ebnf.tab.c"
     break;
 
-  case 109:
-#line 558 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule1 ((yyvsp[-4]), (yyvsp[-1]), (yyvsp[-2]), NULL); )
+  case 109: /* $@10: %empty  */
+#line 558 "ebnf.y"
+                {NEDC( do_submodule1 (yyvsp[-4], yyvsp[-1], yyvsp[-2], NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-4]), (yylsp[-1]), (yylsp[-2]), NULLPOS);
                        setComments(SUBMOD_KEY,(yylsp[-4]),(yylsp[0]));  )}
-#line 2440 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2370 "ebnf.tab.c"
     break;
 
-  case 110:
-#line 562 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule2 ((yyvsp[-6]), (yyvsp[-3]), (yyvsp[-4]), NULL); )}
-#line 2446 "ebnf.tab.c" /* yacc.c:1646  */
+  case 110: /* $@11: %empty  */
+#line 562 "ebnf.y"
+                {NEDC( do_submodule2 (yyvsp[-6], yyvsp[-3], yyvsp[-4], NULL); )}
+#line 2376 "ebnf.tab.c"
     break;
 
-  case 112:
-#line 565 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule1 ((yyvsp[-5]), NULL, (yyvsp[-3]), (yyvsp[-1])); )
+  case 112: /* $@12: %empty  */
+#line 565 "ebnf.y"
+                {NEDC( do_submodule1 (yyvsp[-5], NULL, yyvsp[-3], yyvsp[-1]); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-5]), NULLPOS, (yylsp[-3]), (yylsp[-1]));
                        setComments(SUBMOD_KEY,(yylsp[-5]),(yylsp[0]));  )}
-#line 2454 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2384 "ebnf.tab.c"
     break;
 
-  case 113:
-#line 569 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule2 ((yyvsp[-7]), NULL, (yyvsp[-5]), (yyvsp[-3])); )}
-#line 2460 "ebnf.tab.c" /* yacc.c:1646  */
+  case 113: /* $@13: %empty  */
+#line 569 "ebnf.y"
+                {NEDC( do_submodule2 (yyvsp[-7], NULL, yyvsp[-5], yyvsp[-3]); )}
+#line 2390 "ebnf.tab.c"
     break;
 
-  case 115:
-#line 572 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule1 ((yyvsp[-6]), (yyvsp[-3]), (yyvsp[-4]), (yyvsp[-1])); )
+  case 115: /* $@14: %empty  */
+#line 572 "ebnf.y"
+                {NEDC( do_submodule1 (yyvsp[-6], yyvsp[-3], yyvsp[-4], yyvsp[-1]); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, (yylsp[-6]), (yylsp[-3]), (yylsp[-4]), (yylsp[-1]));
                        setComments(SUBMOD_KEY,(yylsp[-6]),(yylsp[0]));  )}
-#line 2468 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2398 "ebnf.tab.c"
     break;
 
-  case 116:
-#line 576 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_submodule2 ((yyvsp[-8]), (yyvsp[-5]), (yyvsp[-6]), (yyvsp[-3])); )}
-#line 2474 "ebnf.tab.c" /* yacc.c:1646  */
+  case 116: /* $@15: %empty  */
+#line 576 "ebnf.y"
+                {NEDC( do_submodule2 (yyvsp[-8], yyvsp[-5], yyvsp[-6], yyvsp[-3]); )}
+#line 2404 "ebnf.tab.c"
     break;
 
-  case 118:
-#line 582 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_readallparameters(); )}
-#line 2480 "ebnf.tab.c" /* yacc.c:1646  */
+  case 118: /* $@16: %empty  */
+#line 582 "ebnf.y"
+                {NEDC( do_readallparameters(); )}
+#line 2410 "ebnf.tab.c"
     break;
 
-  case 119:
-#line 585 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_submodule (); )}
-#line 2486 "ebnf.tab.c" /* yacc.c:1646  */
+  case 119: /* submodule_body: opt_substparamblocks $@16 opt_gatesizeblocks opt_submod_displayblock  */
+#line 585 "ebnf.y"
+                {NEDC( end_submodule (); )}
+#line 2416 "ebnf.tab.c"
     break;
 
-  case 121:
-#line 591 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_empty_onlist(); )}
-#line 2492 "ebnf.tab.c" /* yacc.c:1646  */
+  case 121: /* opt_on_blocks: %empty  */
+#line 591 "ebnf.y"
+            {NEDC( do_empty_onlist(); )}
+#line 2422 "ebnf.tab.c"
     break;
 
-  case 124:
-#line 601 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_onlist(); )
+  case 124: /* $@17: %empty  */
+#line 601 "ebnf.y"
+                {NEDC( do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
                        setComments(SUBSTMACHINES_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2500 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2430 "ebnf.tab.c"
     break;
 
-  case 126:
-#line 606 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( open_if((yyvsp[-1])); do_onlist(); )
+  case 126: /* $@18: %empty  */
+#line 606 "ebnf.y"
+                {NEDC( open_if(yyvsp[-1]); do_onlist(); )
                  GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
                        np->set(SUBSTMACHINES_KEY,"condition",(yylsp[-1]));
                        setComments(SUBSTMACHINES_KEY,(yylsp[-3]),(yylsp[0])); )}
-#line 2509 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2439 "ebnf.tab.c"
     break;
 
-  case 127:
-#line 611 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( close_if(); )}
-#line 2515 "ebnf.tab.c" /* yacc.c:1646  */
+  case 127: /* on_block: ON IF expression ':' $@18 opt_on_list  */
+#line 611 "ebnf.y"
+                {NEDC( close_if(); )}
+#line 2445 "ebnf.tab.c"
     break;
 
-  case 129:
-#line 617 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_empty_onlist(); )}
-#line 2521 "ebnf.tab.c" /* yacc.c:1646  */
+  case 129: /* opt_on_list: %empty  */
+#line 617 "ebnf.y"
+            {NEDC( do_empty_onlist(); )}
+#line 2451 "ebnf.tab.c"
     break;
 
-  case 132:
-#line 627 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_on_mach((yyvsp[0])); )
+  case 132: /* on_mach: NAME  */
+#line 627 "ebnf.y"
+                {NEDC( do_on_mach(yyvsp[0]); )
                  GNED( SUBSTMACHINE_KEY = addSubstmachine(SUBSTMACHINES_KEY,(yylsp[0]));
                        setComments(SUBSTMACHINE_KEY,(yylsp[0])); )}
-#line 2529 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2459 "ebnf.tab.c"
     break;
 
-  case 137:
-#line 644 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_substparams (); )
+  case 137: /* $@19: %empty  */
+#line 644 "ebnf.y"
+                {NEDC( do_substparams (); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
                        setComments(SUBSTPARAMS_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2537 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2467 "ebnf.tab.c"
     break;
 
-  case 139:
-#line 649 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( open_if((yyvsp[-1])); do_substparams(); )
+  case 139: /* $@20: %empty  */
+#line 649 "ebnf.y"
+                {NEDC( open_if(yyvsp[-1]); do_substparams(); )
                  GNED( SUBSTPARAMS_KEY = np->create("substparams",in_network?NETWORK_KEY:SUBMOD_KEY);
                        np->set(SUBSTPARAMS_KEY,"condition",(yylsp[-1]));
                        setComments(SUBSTPARAMS_KEY,(yylsp[-3]),(yylsp[0])); )}
-#line 2546 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2476 "ebnf.tab.c"
     break;
 
-  case 140:
-#line 654 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( close_if(); )}
-#line 2552 "ebnf.tab.c" /* yacc.c:1646  */
+  case 140: /* substparamblock: PARAMETERS IF expression ':' $@20 opt_substparameters  */
+#line 654 "ebnf.y"
+                {NEDC( close_if(); )}
+#line 2482 "ebnf.tab.c"
     break;
 
-  case 145:
-#line 669 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_substparameter ((yyvsp[-2]), (yyvsp[0]));)
+  case 145: /* substparameter: NAME '=' inputvalue_or_expression  */
+#line 669 "ebnf.y"
+                {NEDC( do_substparameter (yyvsp[-2], yyvsp[0]);)
                  GNED( SUBSTPARAM_KEY = addSubstparam(SUBSTPARAMS_KEY,(yylsp[-2]),(yylsp[0]));
                        setComments(SUBSTPARAM_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2560 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2490 "ebnf.tab.c"
     break;
 
-  case 148:
-#line 681 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gatesizes (); )
+  case 148: /* $@21: %empty  */
+#line 681 "ebnf.y"
+                {NEDC( do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
                        setComments(GATESIZES_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2568 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2498 "ebnf.tab.c"
     break;
 
-  case 150:
-#line 686 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( open_if((yyvsp[-1])); do_gatesizes (); )
+  case 150: /* $@22: %empty  */
+#line 686 "ebnf.y"
+                {NEDC( open_if(yyvsp[-1]); do_gatesizes (); )
                  GNED( GATESIZES_KEY = np->create("gatesizes",SUBMOD_KEY);
                        np->set(GATESIZES_KEY,"condition",(yylsp[-1]));
                        setComments(GATESIZES_KEY,(yylsp[-3]),(yylsp[0])); )}
-#line 2577 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2507 "ebnf.tab.c"
     break;
 
-  case 151:
-#line 691 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( close_if(); )}
-#line 2583 "ebnf.tab.c" /* yacc.c:1646  */
+  case 151: /* gatesizeblock: GATESIZES IF expression ':' $@22 opt_gatesizes  */
+#line 691 "ebnf.y"
+                {NEDC( close_if(); )}
+#line 2513 "ebnf.tab.c"
     break;
 
-  case 156:
-#line 706 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gatesize ((yyvsp[-1]), (yyvsp[0])); )
+  case 156: /* gatesize: NAME vector  */
+#line 706 "ebnf.y"
+                {NEDC( do_gatesize (yyvsp[-1], yyvsp[0]); )
                  GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,(yylsp[-1]),(yylsp[0]));
                        setComments(GATESIZE_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2591 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2521 "ebnf.tab.c"
     break;
 
-  case 157:
-#line 710 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gatesize ((yyvsp[0]), NULL); )
+  case 157: /* gatesize: NAME  */
+#line 710 "ebnf.y"
+                {NEDC( do_gatesize (yyvsp[0], NULL); )
                  GNED( GATESIZE_KEY = addGateSize(GATESIZES_KEY,(yylsp[0]),NULLPOS);
                        setComments(GATESIZE_KEY,(yylsp[0])); )}
-#line 2599 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2529 "ebnf.tab.c"
     break;
 
-  case 158:
-#line 717 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_displaystr_submod ((yyvsp[-1])); )
+  case 158: /* opt_submod_displayblock: DISPLAY ':' STRING ';'  */
+#line 717 "ebnf.y"
+                {NEDC( do_displaystr_submod (yyvsp[-1]); )
                  GNED( setDisplayString(SUBMOD_KEY,(yylsp[-1])); )}
-#line 2606 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2536 "ebnf.tab.c"
     break;
 
-  case 160:
-#line 724 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( set_checkconns(0); do_connections(); )
+  case 160: /* $@23: %empty  */
+#line 724 "ebnf.y"
+                {NEDC( set_checkconns(0); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","1");
                        setComments(CONNS_KEY,(yylsp[-2]),(yylsp[0])); )}
-#line 2615 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2545 "ebnf.tab.c"
     break;
 
-  case 162:
-#line 730 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( set_checkconns(1); do_connections(); )
+  case 162: /* $@24: %empty  */
+#line 730 "ebnf.y"
+                {NEDC( set_checkconns(1); do_connections(); )
                  GNED( CONNS_KEY = np->create("conns",MODULE_KEY);
                        np->set(CONNS_KEY,"nocheck","0");
                        setComments(CONNS_KEY,(yylsp[-1]),(yylsp[0])); )}
-#line 2624 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2554 "ebnf.tab.c"
     break;
 
-  case 170:
-#line 754 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_for (); )
+  case 170: /* $@25: %empty  */
+#line 754 "ebnf.y"
+                {NEDC( do_for (); )
                  GNED( FORLOOP_KEY = np->create("forloop",CONNS_KEY);
                        in_loop=1; setComments(FORLOOP_KEY,(yylsp[0])); )}
-#line 2632 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2562 "ebnf.tab.c"
     break;
 
-  case 171:
-#line 758 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_for (); )
+  case 171: /* loopconnection: FOR $@25 loopvarlist DO notloopconnections ENDFOR  */
+#line 758 "ebnf.y"
+                {NEDC( end_for (); )
                  GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,(yylsp[0])); )}
-#line 2639 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2569 "ebnf.tab.c"
     break;
 
-  case 174:
-#line 769 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_index ((yyvsp[-4]), (yyvsp[-2]), (yyvsp[0])); )
+  case 174: /* loopvar: NAME '=' expression TO expression  */
+#line 769 "ebnf.y"
+                {NEDC( do_index (yyvsp[-4], yyvsp[-2], yyvsp[0]); )
                  GNED( LOOPVAR_KEY=addLoopVar(FORLOOP_KEY,(yylsp[-4]),(yylsp[-2]),(yylsp[0]));
                        setComments(LOOPVAR_KEY,(yylsp[-4]),(yylsp[0])); )}
-#line 2647 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2577 "ebnf.tab.c"
     break;
 
-  case 175:
-#line 776 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_condition((yyvsp[0])); )
+  case 175: /* opt_conn_condition: IF expression  */
+#line 776 "ebnf.y"
+                {NEDC( do_condition(yyvsp[0]); )
                  GNED( np->set(CONN_KEY,"condition",(yylsp[0])); )}
-#line 2654 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2584 "ebnf.tab.c"
     break;
 
-  case 176:
-#line 779 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_condition(NULL); )}
-#line 2660 "ebnf.tab.c" /* yacc.c:1646  */
+  case 176: /* opt_conn_condition: %empty  */
+#line 779 "ebnf.y"
+                {NEDC( do_condition(NULL); )}
+#line 2590 "ebnf.tab.c"
     break;
 
-  case 177:
-#line 784 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[0]); )
+  case 177: /* opt_conn_displaystr: DISPLAY STRING  */
+#line 784 "ebnf.y"
+                {NEDC( yyval = yyvsp[0]; )
                  GNED( setDisplayString(CONN_KEY,(yylsp[0])); )}
-#line 2667 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2597 "ebnf.tab.c"
     break;
 
-  case 178:
-#line 787 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = NULL; )}
-#line 2673 "ebnf.tab.c" /* yacc.c:1646  */
+  case 178: /* opt_conn_displaystr: %empty  */
+#line 787 "ebnf.y"
+                {NEDC( yyval = NULL; )}
+#line 2603 "ebnf.tab.c"
     break;
 
-  case 181:
-#line 797 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_connection (NULL, 'R', (yyvsp[0])); )
+  case 181: /* notloopconnection: gate_spec_L RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr  */
+#line 797 "ebnf.y"
+                {NEDC( end_connection (NULL, 'R', yyvsp[0]); )
                  GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); )}
-#line 2680 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2610 "ebnf.tab.c"
     break;
 
-  case 182:
-#line 800 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_connection ((yyvsp[-4]), 'R', (yyvsp[0])); )
+  case 182: /* notloopconnection: gate_spec_L RIGHT_ARROW channeldescr RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr  */
+#line 800 "ebnf.y"
+                {NEDC( end_connection (yyvsp[-4], 'R', yyvsp[0]); )
                  GNED( np->set(CONN_KEY,"arrowdir-l2r",1L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); )}
-#line 2687 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2617 "ebnf.tab.c"
     break;
 
-  case 183:
-#line 803 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_connection (NULL, 'L', (yyvsp[0])); )
+  case 183: /* notloopconnection: gate_spec_L LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr  */
+#line 803 "ebnf.y"
+                {NEDC( end_connection (NULL, 'L', yyvsp[0]); )
                  GNED( swapConnection(CONN_KEY);
                        np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-4]),(yylsp[0])); )}
-#line 2695 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2625 "ebnf.tab.c"
     break;
 
-  case 184:
-#line 807 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_connection ((yyvsp[-4]), 'L', (yyvsp[0])); )
+  case 184: /* notloopconnection: gate_spec_L LEFT_ARROW channeldescr LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr  */
+#line 807 "ebnf.y"
+                {NEDC( end_connection (yyvsp[-4], 'L', yyvsp[0]); )
                  GNED( swapConnection(CONN_KEY);
                  np->set(CONN_KEY,"arrowdir-l2r",0L); setComments(CONN_KEY,(yylsp[-6]),(yylsp[0])); )}
-#line 2703 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2633 "ebnf.tab.c"
     break;
 
-  case 187:
-#line 819 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_L ((yyvsp[-1]), (yyvsp[0])); )
+  case 187: /* mod_L: NAME vector  */
+#line 819 "ebnf.y"
+                {NEDC( do_mod_L (yyvsp[-1], yyvsp[0]); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey((yylsp[-1])));
                        np->set(CONN_KEY, "src-mod-index", trimBrackets((yylsp[0]))); )}
-#line 2712 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2642 "ebnf.tab.c"
     break;
 
-  case 188:
-#line 824 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_L ((yyvsp[0]), NULL); )
+  case 188: /* mod_L: NAME  */
+#line 824 "ebnf.y"
+                {NEDC( do_mod_L (yyvsp[0], NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey((yylsp[0]))); )}
-#line 2720 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2650 "ebnf.tab.c"
     break;
 
-  case 189:
-#line 831 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gate_L ((yyvsp[-1]), (yyvsp[0])); )
+  case 189: /* gate_L: NAME vector  */
+#line 831 "ebnf.y"
+                {NEDC( do_gate_L (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "srcgate", (yylsp[-1]));
                        np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); )}
-#line 2728 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2658 "ebnf.tab.c"
     break;
 
-  case 190:
-#line 835 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gate_L ((yyvsp[0]), NULL); )
+  case 190: /* gate_L: NAME  */
+#line 835 "ebnf.y"
+                {NEDC( do_gate_L (yyvsp[0], NULL); )
                  GNED( np->set(CONN_KEY, "srcgate", (yylsp[0])); )}
-#line 2735 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2665 "ebnf.tab.c"
     break;
 
-  case 191:
-#line 838 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gate_L ((yyvsp[-1]), NULL); )
+  case 191: /* gate_L: NAME PLUSPLUS  */
+#line 838 "ebnf.y"
+                {NEDC( do_gate_L (yyvsp[-1], NULL); )
                  GNED( np->set(CONN_KEY, "srcgate", (yylsp[-1]));
                        np->set(CONN_KEY, "src-gate-plusplus", "1"); )}
-#line 2743 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2673 "ebnf.tab.c"
     break;
 
-  case 192:
-#line 845 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_L (NULL, NULL); do_gate_L ((yyvsp[-1]), (yyvsp[0])); )
+  case 192: /* parentgate_L: NAME vector  */
+#line 845 "ebnf.y"
+                {NEDC( do_mod_L (NULL, NULL); do_gate_L (yyvsp[-1], yyvsp[0]); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", (yylsp[-1]));
                        np->set(CONN_KEY, "src-gate-index", trimBrackets((yylsp[0]))); )}
-#line 2753 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2683 "ebnf.tab.c"
     break;
 
-  case 193:
-#line 851 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_L (NULL, NULL); do_gate_L ((yyvsp[0]), NULL); )
+  case 193: /* parentgate_L: NAME  */
+#line 851 "ebnf.y"
+                {NEDC( do_mod_L (NULL, NULL); do_gate_L (yyvsp[0], NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", (yylsp[0])); )}
-#line 2762 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2692 "ebnf.tab.c"
     break;
 
-  case 194:
-#line 856 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_L (NULL, NULL); do_gate_L ((yyvsp[-1]), NULL); )
+  case 194: /* parentgate_L: NAME PLUSPLUS  */
+#line 856 "ebnf.y"
+                {NEDC( do_mod_L (NULL, NULL); do_gate_L (yyvsp[-1], NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", (yylsp[-1]));
                        np->set(CONN_KEY, "src-gate-plusplus", "1");  )}
-#line 2772 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2702 "ebnf.tab.c"
     break;
 
-  case 197:
-#line 870 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_R ((yyvsp[-1]), (yyvsp[0])); )
+  case 197: /* mod_R: NAME vector  */
+#line 870 "ebnf.y"
+                {NEDC( do_mod_R (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey((yylsp[-1])));
                        np->set(CONN_KEY, "dest-mod-index", trimBrackets((yylsp[0]))); )}
-#line 2780 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2710 "ebnf.tab.c"
     break;
 
-  case 198:
-#line 874 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_R ((yyvsp[0]), NULL); )
+  case 198: /* mod_R: NAME  */
+#line 874 "ebnf.y"
+                {NEDC( do_mod_R (yyvsp[0], NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey((yylsp[0]))); )}
-#line 2787 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2717 "ebnf.tab.c"
     break;
 
-  case 199:
-#line 880 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gate_R ((yyvsp[-1]), (yyvsp[0])); )
+  case 199: /* gate_R: NAME vector  */
+#line 880 "ebnf.y"
+                {NEDC( do_gate_R (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "destgate", (yylsp[-1]));
                        np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); )}
-#line 2795 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2725 "ebnf.tab.c"
     break;
 
-  case 200:
-#line 884 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gate_R ((yyvsp[0]), NULL); )
+  case 200: /* gate_R: NAME  */
+#line 884 "ebnf.y"
+                {NEDC( do_gate_R (yyvsp[0], NULL); )
                  GNED( np->set(CONN_KEY, "destgate", (yylsp[0])); )}
-#line 2802 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2732 "ebnf.tab.c"
     break;
 
-  case 201:
-#line 887 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_gate_R ((yyvsp[-1]), NULL); )
+  case 201: /* gate_R: NAME PLUSPLUS  */
+#line 887 "ebnf.y"
+                {NEDC( do_gate_R (yyvsp[-1], NULL); )
                  GNED( np->set(CONN_KEY, "destgate", (yylsp[-1]));
                        np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
-#line 2810 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2740 "ebnf.tab.c"
     break;
 
-  case 202:
-#line 894 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[-1]), (yyvsp[0])); )
+  case 202: /* parentgate_R: NAME vector  */
+#line 894 "ebnf.y"
+                {NEDC( do_mod_R (NULL, NULL); do_gate_R (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", (yylsp[-1]));
                        np->set(CONN_KEY, "dest-gate-index", trimBrackets((yylsp[0]))); )}
-#line 2819 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2749 "ebnf.tab.c"
     break;
 
-  case 203:
-#line 899 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[0]), NULL); )
+  case 203: /* parentgate_R: NAME  */
+#line 899 "ebnf.y"
+                {NEDC( do_mod_R (NULL, NULL); do_gate_R (yyvsp[0], NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", (yylsp[0])); )}
-#line 2827 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2757 "ebnf.tab.c"
     break;
 
-  case 204:
-#line 903 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_mod_R (NULL, NULL); do_gate_R ((yyvsp[-1]), NULL); )
+  case 204: /* parentgate_R: NAME PLUSPLUS  */
+#line 903 "ebnf.y"
+                {NEDC( do_mod_R (NULL, NULL); do_gate_R (yyvsp[-1], NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", (yylsp[-1]));
                        np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
-#line 2836 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2766 "ebnf.tab.c"
     break;
 
-  case 205:
-#line 912 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, NULL); )}
-#line 2842 "ebnf.tab.c" /* yacc.c:1646  */
+  case 205: /* channeldescr: %empty  */
+#line 912 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, NULL, NULL, NULL); )}
+#line 2772 "ebnf.tab.c"
     break;
 
-  case 206:
-#line 914 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr((yyvsp[0]), NULL,NULL,NULL); )}
-#line 2848 "ebnf.tab.c" /* yacc.c:1646  */
+  case 206: /* channeldescr: cdname  */
+#line 914 "ebnf.y"
+                {NEDC( yyval = do_channeldescr(yyvsp[0], NULL,NULL,NULL); )}
+#line 2778 "ebnf.tab.c"
     break;
 
-  case 207:
-#line 916 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, NULL); )}
-#line 2854 "ebnf.tab.c" /* yacc.c:1646  */
+  case 207: /* channeldescr: cddelay  */
+#line 916 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], NULL, NULL); )}
+#line 2784 "ebnf.tab.c"
     break;
 
-  case 208:
-#line 918 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), NULL); )}
-#line 2860 "ebnf.tab.c" /* yacc.c:1646  */
+  case 208: /* channeldescr: cderror  */
+#line 918 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, NULL, yyvsp[0], NULL); )}
+#line 2790 "ebnf.tab.c"
     break;
 
-  case 209:
-#line 920 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, NULL, (yyvsp[0])); )}
-#line 2866 "ebnf.tab.c" /* yacc.c:1646  */
+  case 209: /* channeldescr: cddatarate  */
+#line 920 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, NULL, NULL, yyvsp[0]); )}
+#line 2796 "ebnf.tab.c"
     break;
 
-  case 210:
-#line 923 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), NULL); )}
-#line 2872 "ebnf.tab.c" /* yacc.c:1646  */
+  case 210: /* channeldescr: cddelay cderror  */
+#line 923 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], yyvsp[0], NULL); )}
+#line 2802 "ebnf.tab.c"
     break;
 
-  case 211:
-#line 925 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), NULL, (yyvsp[0])); )}
-#line 2878 "ebnf.tab.c" /* yacc.c:1646  */
+  case 211: /* channeldescr: cddelay cddatarate  */
+#line 925 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], NULL, yyvsp[0]); )}
+#line 2808 "ebnf.tab.c"
     break;
 
-  case 212:
-#line 927 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[-1]), (yyvsp[0])); )}
-#line 2884 "ebnf.tab.c" /* yacc.c:1646  */
+  case 212: /* channeldescr: cderror cddatarate  */
+#line 927 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, NULL, yyvsp[-1], yyvsp[0]); )}
+#line 2814 "ebnf.tab.c"
     break;
 
-  case 213:
-#line 929 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), NULL); )}
-#line 2890 "ebnf.tab.c" /* yacc.c:1646  */
+  case 213: /* channeldescr: cderror cddelay  */
+#line 929 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], yyvsp[-1], NULL); )}
+#line 2820 "ebnf.tab.c"
     break;
 
-  case 214:
-#line 931 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), NULL, (yyvsp[-1])); )}
-#line 2896 "ebnf.tab.c" /* yacc.c:1646  */
+  case 214: /* channeldescr: cddatarate cddelay  */
+#line 931 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], NULL, yyvsp[-1]); )}
+#line 2826 "ebnf.tab.c"
     break;
 
-  case 215:
-#line 933 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, NULL, (yyvsp[0]), (yyvsp[-1])); )}
-#line 2902 "ebnf.tab.c" /* yacc.c:1646  */
+  case 215: /* channeldescr: cddatarate cderror  */
+#line 933 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, NULL, yyvsp[0], yyvsp[-1]); )}
+#line 2832 "ebnf.tab.c"
     break;
 
-  case 216:
-#line 936 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[-1]), (yyvsp[0])); )}
-#line 2908 "ebnf.tab.c" /* yacc.c:1646  */
+  case 216: /* channeldescr: cddelay cderror cddatarate  */
+#line 936 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[-2], yyvsp[-1], yyvsp[0]); )}
+#line 2838 "ebnf.tab.c"
     break;
 
-  case 217:
-#line 938 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-2]), (yyvsp[0]), (yyvsp[-1])); )}
-#line 2914 "ebnf.tab.c" /* yacc.c:1646  */
+  case 217: /* channeldescr: cddelay cddatarate cderror  */
+#line 938 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[-2], yyvsp[0], yyvsp[-1]); )}
+#line 2844 "ebnf.tab.c"
     break;
 
-  case 218:
-#line 940 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[-2]), (yyvsp[0])); )}
-#line 2920 "ebnf.tab.c" /* yacc.c:1646  */
+  case 218: /* channeldescr: cderror cddelay cddatarate  */
+#line 940 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], yyvsp[-2], yyvsp[0]); )}
+#line 2850 "ebnf.tab.c"
     break;
 
-  case 219:
-#line 942 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-2]), (yyvsp[-1])); )}
-#line 2926 "ebnf.tab.c" /* yacc.c:1646  */
+  case 219: /* channeldescr: cderror cddatarate cddelay  */
+#line 942 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], yyvsp[-2], yyvsp[-1]); )}
+#line 2856 "ebnf.tab.c"
     break;
 
-  case 220:
-#line 944 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[-1]), (yyvsp[0]), (yyvsp[-2])); )}
-#line 2932 "ebnf.tab.c" /* yacc.c:1646  */
+  case 220: /* channeldescr: cddatarate cddelay cderror  */
+#line 944 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[-1], yyvsp[0], yyvsp[-2]); )}
+#line 2862 "ebnf.tab.c"
     break;
 
-  case 221:
-#line 946 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_channeldescr( NULL, (yyvsp[0]), (yyvsp[-1]), (yyvsp[-2])); )}
-#line 2938 "ebnf.tab.c" /* yacc.c:1646  */
+  case 221: /* channeldescr: cddatarate cderror cddelay  */
+#line 946 "ebnf.y"
+                {NEDC( yyval = do_channeldescr( NULL, yyvsp[0], yyvsp[-1], yyvsp[-2]); )}
+#line 2868 "ebnf.tab.c"
     break;
 
-  case 222:
-#line 951 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[0]); )
+  case 222: /* cdname: NAME  */
+#line 951 "ebnf.y"
+                {NEDC( yyval = yyvsp[0]; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"channel",(yylsp[0])); )}
-#line 2945 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2875 "ebnf.tab.c"
     break;
 
-  case 223:
-#line 957 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[0]); )
+  case 223: /* cddelay: DELAY expression  */
+#line 957 "ebnf.y"
+                {NEDC( yyval = yyvsp[0]; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"delay",(yylsp[0])); )}
-#line 2952 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2882 "ebnf.tab.c"
     break;
 
-  case 224:
-#line 963 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[0]); )
+  case 224: /* cderror: ERROR expression  */
+#line 963 "ebnf.y"
+                {NEDC( yyval = yyvsp[0]; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"error",(yylsp[0])); )}
-#line 2959 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2889 "ebnf.tab.c"
     break;
 
-  case 225:
-#line 969 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[0]); )
+  case 225: /* cddatarate: DATARATE expression  */
+#line 969 "ebnf.y"
+                {NEDC( yyval = yyvsp[0]; )
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"datarate",(yylsp[0])); )}
-#line 2966 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2896 "ebnf.tab.c"
     break;
 
-  case 226:
-#line 975 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_system ((yyvsp[-3])); )
+  case 226: /* $@26: %empty  */
+#line 975 "ebnf.y"
+                {NEDC( do_system (yyvsp[-3]); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,(yylsp[-3]),(yylsp[-1]),NULLPOS);
                        setComments(NETWORK_KEY,(yylsp[-4]),(yylsp[0])); in_network=1;)}
-#line 2974 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2904 "ebnf.tab.c"
     break;
 
-  case 227:
-#line 979 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_systemmodule ((yyvsp[-5]), (yyvsp[-3]), NULL); )}
-#line 2980 "ebnf.tab.c" /* yacc.c:1646  */
+  case 227: /* $@27: %empty  */
+#line 979 "ebnf.y"
+                {NEDC( do_systemmodule (yyvsp[-5], yyvsp[-3], NULL); )}
+#line 2910 "ebnf.tab.c"
     break;
 
-  case 228:
-#line 981 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_readallparameters(); )}
-#line 2986 "ebnf.tab.c" /* yacc.c:1646  */
+  case 228: /* $@28: %empty  */
+#line 981 "ebnf.y"
+                {NEDC( do_readallparameters(); )}
+#line 2916 "ebnf.tab.c"
     break;
 
-  case 229:
-#line 983 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_system (); )}
-#line 2992 "ebnf.tab.c" /* yacc.c:1646  */
+  case 229: /* network: NETWORK NAME ':' NAME opt_semicolon $@26 opt_on_blocks $@27 opt_substparamblocks $@28 endnetwork  */
+#line 983 "ebnf.y"
+                {NEDC( end_system (); )}
+#line 2922 "ebnf.tab.c"
     break;
 
-  case 230:
-#line 985 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_system ((yyvsp[-5])); )}
-#line 2998 "ebnf.tab.c" /* yacc.c:1646  */
+  case 230: /* $@29: %empty  */
+#line 985 "ebnf.y"
+                {NEDC( do_system (yyvsp[-5]); )}
+#line 2928 "ebnf.tab.c"
     break;
 
-  case 231:
-#line 987 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_systemmodule ((yyvsp[-7]), (yyvsp[-5]), (yyvsp[-3])); )
+  case 231: /* $@30: %empty  */
+#line 987 "ebnf.y"
+                {NEDC( do_systemmodule (yyvsp[-7], yyvsp[-5], yyvsp[-3]); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,(yylsp[-7]),(yylsp[-5]),(yylsp[-3]));
                        setComments(NETWORK_KEY,(yylsp[-8]),(yylsp[-2])); )}
-#line 3006 "ebnf.tab.c" /* yacc.c:1646  */
+#line 2936 "ebnf.tab.c"
     break;
 
-  case 232:
-#line 991 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( do_readallparameters(); )}
-#line 3012 "ebnf.tab.c" /* yacc.c:1646  */
+  case 232: /* $@31: %empty  */
+#line 991 "ebnf.y"
+                {NEDC( do_readallparameters(); )}
+#line 2942 "ebnf.tab.c"
     break;
 
-  case 233:
-#line 993 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( end_system (); )}
-#line 3018 "ebnf.tab.c" /* yacc.c:1646  */
+  case 233: /* network: NETWORK NAME ':' NAME LIKE NAME opt_semicolon $@29 opt_on_blocks $@30 opt_substparamblocks $@31 endnetwork  */
+#line 993 "ebnf.y"
+                {NEDC( end_system (); )}
+#line 2948 "ebnf.tab.c"
     break;
 
-  case 234:
-#line 998 "ebnf.y" /* yacc.c:1646  */
-    {GNED( setTrailingComment(NETWORK_KEY,(yylsp[-1])); in_network=0; )}
-#line 3024 "ebnf.tab.c" /* yacc.c:1646  */
+  case 234: /* endnetwork: ENDNETWORK opt_semicolon  */
+#line 998 "ebnf.y"
+                {GNED( setTrailingComment(NETWORK_KEY,(yylsp[-1])); in_network=0; )}
+#line 2954 "ebnf.tab.c"
     break;
 
-  case 235:
-#line 1003 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[-1]); )}
-#line 3030 "ebnf.tab.c" /* yacc.c:1646  */
+  case 235: /* vector: '[' expression ']'  */
+#line 1003 "ebnf.y"
+                {NEDC( yyval = yyvsp[-1]; )}
+#line 2960 "ebnf.tab.c"
     break;
 
-  case 238:
-#line 1013 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_inputvalue((yyvsp[-3]), (yyvsp[-1])); )}
-#line 3036 "ebnf.tab.c" /* yacc.c:1646  */
+  case 238: /* inputvalue: INPUT '(' expression ',' expression ')'  */
+#line 1013 "ebnf.y"
+                {NEDC( yyval = do_inputvalue(yyvsp[-3], yyvsp[-1]); )}
+#line 2966 "ebnf.tab.c"
     break;
 
-  case 239:
-#line 1015 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_inputvalue((yyvsp[-1]), NULL); )}
-#line 3042 "ebnf.tab.c" /* yacc.c:1646  */
+  case 239: /* inputvalue: INPUT '(' expression ')'  */
+#line 1015 "ebnf.y"
+                {NEDC( yyval = do_inputvalue(yyvsp[-1], NULL); )}
+#line 2972 "ebnf.tab.c"
     break;
 
-  case 240:
-#line 1017 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_inputvalue(NULL, NULL); )}
-#line 3048 "ebnf.tab.c" /* yacc.c:1646  */
+  case 240: /* inputvalue: INPUT '(' ')'  */
+#line 1017 "ebnf.y"
+                {NEDC( yyval = do_inputvalue(NULL, NULL); )}
+#line 2978 "ebnf.tab.c"
     break;
 
-  case 241:
-#line 1019 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_inputvalue(NULL, NULL); )}
-#line 3054 "ebnf.tab.c" /* yacc.c:1646  */
+  case 241: /* inputvalue: INPUT  */
+#line 1019 "ebnf.y"
+                {NEDC( yyval = do_inputvalue(NULL, NULL); )}
+#line 2984 "ebnf.tab.c"
     break;
 
-  case 242:
-#line 1025 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = end_expr( (yyvsp[0]) ); )}
-#line 3060 "ebnf.tab.c" /* yacc.c:1646  */
+  case 242: /* expression: expr  */
+#line 1025 "ebnf.y"
+                {NEDC( yyval = end_expr( yyvsp[0] ); )}
+#line 2990 "ebnf.tab.c"
     break;
 
-  case 243:
-#line 1030 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[0]); )}
-#line 3066 "ebnf.tab.c" /* yacc.c:1646  */
+  case 243: /* expr: simple_expr  */
+#line 1030 "ebnf.y"
+                {NEDC( yyval = yyvsp[0]; )}
+#line 2996 "ebnf.tab.c"
     break;
 
-  case 244:
-#line 1032 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = (yyvsp[-1]); )}
-#line 3072 "ebnf.tab.c" /* yacc.c:1646  */
+  case 244: /* expr: '(' expr ')'  */
+#line 1032 "ebnf.y"
+                {NEDC( yyval = yyvsp[-1]; )}
+#line 3002 "ebnf.tab.c"
     break;
 
-  case 245:
-#line 1035 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '+', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3078 "ebnf.tab.c" /* yacc.c:1646  */
+  case 245: /* expr: expr PLUS expr  */
+#line 1035 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '+', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3008 "ebnf.tab.c"
     break;
 
-  case 246:
-#line 1037 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '-', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3084 "ebnf.tab.c" /* yacc.c:1646  */
+  case 246: /* expr: expr MIN expr  */
+#line 1037 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '-', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3014 "ebnf.tab.c"
     break;
 
-  case 247:
-#line 1039 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '*', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3090 "ebnf.tab.c" /* yacc.c:1646  */
+  case 247: /* expr: expr MUL expr  */
+#line 1039 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '*', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3020 "ebnf.tab.c"
     break;
 
-  case 248:
-#line 1041 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '/', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3096 "ebnf.tab.c" /* yacc.c:1646  */
+  case 248: /* expr: expr DIV expr  */
+#line 1041 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '/', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3026 "ebnf.tab.c"
     break;
 
-  case 249:
-#line 1043 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '%', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3102 "ebnf.tab.c" /* yacc.c:1646  */
+  case 249: /* expr: expr MOD expr  */
+#line 1043 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '%', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3032 "ebnf.tab.c"
     break;
 
-  case 250:
-#line 1045 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '^', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3108 "ebnf.tab.c" /* yacc.c:1646  */
+  case 250: /* expr: expr EXP expr  */
+#line 1045 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '^', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3038 "ebnf.tab.c"
     break;
 
-  case 251:
-#line 1049 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_addminus((yyvsp[0])); )}
-#line 3114 "ebnf.tab.c" /* yacc.c:1646  */
+  case 251: /* expr: MIN expr  */
+#line 1049 "ebnf.y"
+                {NEDC( yyval = do_addminus(yyvsp[0]); )}
+#line 3044 "ebnf.tab.c"
     break;
 
-  case 252:
-#line 1052 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '=', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3120 "ebnf.tab.c" /* yacc.c:1646  */
+  case 252: /* expr: expr EQ expr  */
+#line 1052 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '=', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3050 "ebnf.tab.c"
     break;
 
-  case 253:
-#line 1054 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '!', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3126 "ebnf.tab.c" /* yacc.c:1646  */
+  case 253: /* expr: expr NE expr  */
+#line 1054 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '!', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3056 "ebnf.tab.c"
     break;
 
-  case 254:
-#line 1056 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '>', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3132 "ebnf.tab.c" /* yacc.c:1646  */
+  case 254: /* expr: expr GT expr  */
+#line 1056 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '>', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3062 "ebnf.tab.c"
     break;
 
-  case 255:
-#line 1058 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '}', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3138 "ebnf.tab.c" /* yacc.c:1646  */
+  case 255: /* expr: expr GE expr  */
+#line 1058 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '}', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3068 "ebnf.tab.c"
     break;
 
-  case 256:
-#line 1060 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '<', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3144 "ebnf.tab.c" /* yacc.c:1646  */
+  case 256: /* expr: expr LS expr  */
+#line 1060 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '<', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3074 "ebnf.tab.c"
     break;
 
-  case 257:
-#line 1062 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 2, '{', (yyvsp[-2]),(yyvsp[0]),NULL); )}
-#line 3150 "ebnf.tab.c" /* yacc.c:1646  */
+  case 257: /* expr: expr LE expr  */
+#line 1062 "ebnf.y"
+                {NEDC( yyval = do_op( 2, '{', yyvsp[-2],yyvsp[0],NULL); )}
+#line 3080 "ebnf.tab.c"
     break;
 
-  case 258:
-#line 1065 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("bool_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3156 "ebnf.tab.c" /* yacc.c:1646  */
+  case 258: /* expr: expr AND expr  */
+#line 1065 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("bool_and"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3086 "ebnf.tab.c"
     break;
 
-  case 259:
-#line 1067 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("bool_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3162 "ebnf.tab.c" /* yacc.c:1646  */
+  case 259: /* expr: expr OR expr  */
+#line 1067 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("bool_or"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3092 "ebnf.tab.c"
     break;
 
-  case 260:
-#line 1069 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("bool_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3168 "ebnf.tab.c" /* yacc.c:1646  */
+  case 260: /* expr: expr XOR expr  */
+#line 1069 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("bool_xor"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3098 "ebnf.tab.c"
     break;
 
-  case 261:
-#line 1072 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(1,jar_strdup("bool_not"), (yyvsp[0]),NULL,NULL,NULL); )}
-#line 3174 "ebnf.tab.c" /* yacc.c:1646  */
+  case 261: /* expr: NOT expr  */
+#line 1072 "ebnf.y"
+                {NEDC( yyval = do_func(1,jar_strdup("bool_not"), yyvsp[0],NULL,NULL,NULL); )}
+#line 3104 "ebnf.tab.c"
     break;
 
-  case 262:
-#line 1075 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("bin_and"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3180 "ebnf.tab.c" /* yacc.c:1646  */
+  case 262: /* expr: expr BIN_AND expr  */
+#line 1075 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("bin_and"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3110 "ebnf.tab.c"
     break;
 
-  case 263:
-#line 1077 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("bin_or"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3186 "ebnf.tab.c" /* yacc.c:1646  */
+  case 263: /* expr: expr BIN_OR expr  */
+#line 1077 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("bin_or"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3116 "ebnf.tab.c"
     break;
 
-  case 264:
-#line 1079 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("bin_xor"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3192 "ebnf.tab.c" /* yacc.c:1646  */
+  case 264: /* expr: expr BIN_XOR expr  */
+#line 1079 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("bin_xor"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3122 "ebnf.tab.c"
     break;
 
-  case 265:
-#line 1082 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(1,jar_strdup("bin_compl"), (yyvsp[0]),NULL,NULL,NULL); )}
-#line 3198 "ebnf.tab.c" /* yacc.c:1646  */
+  case 265: /* expr: BIN_COMPL expr  */
+#line 1082 "ebnf.y"
+                {NEDC( yyval = do_func(1,jar_strdup("bin_compl"), yyvsp[0],NULL,NULL,NULL); )}
+#line 3128 "ebnf.tab.c"
     break;
 
-  case 266:
-#line 1084 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("shift_left"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3204 "ebnf.tab.c" /* yacc.c:1646  */
+  case 266: /* expr: expr SHIFT_LEFT expr  */
+#line 1084 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("shift_left"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3134 "ebnf.tab.c"
     break;
 
-  case 267:
-#line 1086 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,jar_strdup("shift_right"), (yyvsp[-2]),(yyvsp[0]),NULL,NULL); )}
-#line 3210 "ebnf.tab.c" /* yacc.c:1646  */
+  case 267: /* expr: expr SHIFT_RIGHT expr  */
+#line 1086 "ebnf.y"
+                {NEDC( yyval = do_func(2,jar_strdup("shift_right"), yyvsp[-2],yyvsp[0],NULL,NULL); )}
+#line 3140 "ebnf.tab.c"
     break;
 
-  case 268:
-#line 1088 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_op( 3, '?', (yyvsp[-4]),(yyvsp[-2]),(yyvsp[0])); )}
-#line 3216 "ebnf.tab.c" /* yacc.c:1646  */
+  case 268: /* expr: expr '?' expr ':' expr  */
+#line 1088 "ebnf.y"
+                {NEDC( yyval = do_op( 3, '?', yyvsp[-4],yyvsp[-2],yyvsp[0]); )}
+#line 3146 "ebnf.tab.c"
     break;
 
-  case 269:
-#line 1090 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(0,(yyvsp[-2]), NULL,NULL,NULL,NULL); )}
-#line 3222 "ebnf.tab.c" /* yacc.c:1646  */
+  case 269: /* expr: NAME '(' ')'  */
+#line 1090 "ebnf.y"
+                {NEDC( yyval = do_func(0,yyvsp[-2], NULL,NULL,NULL,NULL); )}
+#line 3152 "ebnf.tab.c"
     break;
 
-  case 270:
-#line 1092 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(1,(yyvsp[-3]), (yyvsp[-1]),NULL,NULL,NULL); )}
-#line 3228 "ebnf.tab.c" /* yacc.c:1646  */
+  case 270: /* expr: NAME '(' expr ')'  */
+#line 1092 "ebnf.y"
+                {NEDC( yyval = do_func(1,yyvsp[-3], yyvsp[-1],NULL,NULL,NULL); )}
+#line 3158 "ebnf.tab.c"
     break;
 
-  case 271:
-#line 1094 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(2,(yyvsp[-5]), (yyvsp[-3]),(yyvsp[-1]),NULL,NULL); )}
-#line 3234 "ebnf.tab.c" /* yacc.c:1646  */
+  case 271: /* expr: NAME '(' expr ',' expr ')'  */
+#line 1094 "ebnf.y"
+                {NEDC( yyval = do_func(2,yyvsp[-5], yyvsp[-3],yyvsp[-1],NULL,NULL); )}
+#line 3164 "ebnf.tab.c"
     break;
 
-  case 272:
-#line 1096 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(3,(yyvsp[-7]), (yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1]),NULL); )}
-#line 3240 "ebnf.tab.c" /* yacc.c:1646  */
+  case 272: /* expr: NAME '(' expr ',' expr ',' expr ')'  */
+#line 1096 "ebnf.y"
+                {NEDC( yyval = do_func(3,yyvsp[-7], yyvsp[-5],yyvsp[-3],yyvsp[-1],NULL); )}
+#line 3170 "ebnf.tab.c"
     break;
 
-  case 273:
-#line 1098 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_func(3,(yyvsp[-9]), (yyvsp[-7]),(yyvsp[-5]),(yyvsp[-3]),(yyvsp[-1])); )}
-#line 3246 "ebnf.tab.c" /* yacc.c:1646  */
+  case 273: /* expr: NAME '(' expr ',' expr ',' expr ',' expr ')'  */
+#line 1098 "ebnf.y"
+                {NEDC( yyval = do_func(3,yyvsp[-9], yyvsp[-7],yyvsp[-5],yyvsp[-3],yyvsp[-1]); )}
+#line 3176 "ebnf.tab.c"
     break;
 
-  case 279:
-#line 1111 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,1); )}
-#line 3252 "ebnf.tab.c" /* yacc.c:1646  */
+  case 279: /* parameter_expr: NAME  */
+#line 1111 "ebnf.y"
+                {NEDC( yyval = do_parname (0,0,yyvsp[0],0,1); )}
+#line 3182 "ebnf.tab.c"
     break;
 
-  case 280:
-#line 1113 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),0,0); )}
-#line 3258 "ebnf.tab.c" /* yacc.c:1646  */
+  case 280: /* parameter_expr: REF NAME  */
+#line 1113 "ebnf.y"
+                {NEDC( yyval = do_parname (0,0,yyvsp[0],0,0); )}
+#line 3188 "ebnf.tab.c"
     break;
 
-  case 281:
-#line 1115 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,1); )}
-#line 3264 "ebnf.tab.c" /* yacc.c:1646  */
+  case 281: /* parameter_expr: ANCESTOR NAME  */
+#line 1115 "ebnf.y"
+                {NEDC( yyval = do_parname (0,0,yyvsp[0],1,1); )}
+#line 3194 "ebnf.tab.c"
     break;
 
-  case 282:
-#line 1117 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); )}
-#line 3270 "ebnf.tab.c" /* yacc.c:1646  */
+  case 282: /* parameter_expr: REF ANCESTOR NAME  */
+#line 1117 "ebnf.y"
+                {NEDC( yyval = do_parname (0,0,yyvsp[0],1,0); )}
+#line 3200 "ebnf.tab.c"
     break;
 
-  case 283:
-#line 1119 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname (0,0,(yyvsp[0]),1,0); )}
-#line 3276 "ebnf.tab.c" /* yacc.c:1646  */
+  case 283: /* parameter_expr: ANCESTOR REF NAME  */
+#line 1119 "ebnf.y"
+                {NEDC( yyval = do_parname (0,0,yyvsp[0],1,0); )}
+#line 3206 "ebnf.tab.c"
     break;
 
-  case 284:
-#line 1122 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,1); )}
-#line 3282 "ebnf.tab.c" /* yacc.c:1646  */
+  case 284: /* parameter_expr: NAME '.' NAME  */
+#line 1122 "ebnf.y"
+                {NEDC( yyval = do_parname (yyvsp[-2],0,yyvsp[0],0,1); )}
+#line 3212 "ebnf.tab.c"
     break;
 
-  case 285:
-#line 1124 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname ((yyvsp[-2]),0,(yyvsp[0]),0,0); )}
-#line 3288 "ebnf.tab.c" /* yacc.c:1646  */
+  case 285: /* parameter_expr: REF NAME '.' NAME  */
+#line 1124 "ebnf.y"
+                {NEDC( yyval = do_parname (yyvsp[-2],0,yyvsp[0],0,0); )}
+#line 3218 "ebnf.tab.c"
     break;
 
-  case 286:
-#line 1127 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,1); )}
-#line 3294 "ebnf.tab.c" /* yacc.c:1646  */
+  case 286: /* parameter_expr: NAME vector '.' NAME  */
+#line 1127 "ebnf.y"
+                {NEDC( yyval = do_parname (yyvsp[-3],yyvsp[-2],yyvsp[0],0,1); )}
+#line 3224 "ebnf.tab.c"
     break;
 
-  case 287:
-#line 1129 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_parname ((yyvsp[-3]),(yyvsp[-2]),(yyvsp[0]),0,0); )}
-#line 3300 "ebnf.tab.c" /* yacc.c:1646  */
+  case 287: /* parameter_expr: REF NAME vector '.' NAME  */
+#line 1129 "ebnf.y"
+                {NEDC( yyval = do_parname (yyvsp[-3],yyvsp[-2],yyvsp[0],0,0); )}
+#line 3230 "ebnf.tab.c"
     break;
 
-  case 288:
-#line 1134 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = make_literal_expr(TYPE_STRING,(yyvsp[0])); )}
-#line 3306 "ebnf.tab.c" /* yacc.c:1646  */
+  case 288: /* string_expr: STRING  */
+#line 1134 "ebnf.y"
+                {NEDC( yyval = make_literal_expr(TYPE_STRING,yyvsp[0]); )}
+#line 3236 "ebnf.tab.c"
     break;
 
-  case 289:
-#line 1139 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("true")); )}
-#line 3312 "ebnf.tab.c" /* yacc.c:1646  */
+  case 289: /* boolconst_expr: _TRUE  */
+#line 1139 "ebnf.y"
+                {NEDC( yyval = make_literal_expr(TYPE_BOOL,jar_strdup("true")); )}
+#line 3242 "ebnf.tab.c"
     break;
 
-  case 290:
-#line 1141 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = make_literal_expr(TYPE_BOOL,jar_strdup("false")); )}
-#line 3318 "ebnf.tab.c" /* yacc.c:1646  */
+  case 290: /* boolconst_expr: _FALSE  */
+#line 1141 "ebnf.y"
+                {NEDC( yyval = make_literal_expr(TYPE_BOOL,jar_strdup("false")); )}
+#line 3248 "ebnf.tab.c"
     break;
 
-  case 291:
-#line 1146 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,(yyvsp[0])); )}
-#line 3324 "ebnf.tab.c" /* yacc.c:1646  */
+  case 291: /* numconst_expr: numconst  */
+#line 1146 "ebnf.y"
+                {NEDC( yyval = make_literal_expr(TYPE_NUMERIC,yyvsp[0]); )}
+#line 3254 "ebnf.tab.c"
     break;
 
-  case 292:
-#line 1151 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = make_literal_expr(TYPE_NUMERIC,jar_strdup("(long)sub_i")); )}
-#line 3330 "ebnf.tab.c" /* yacc.c:1646  */
+  case 292: /* special_expr: SUBMODINDEX  */
+#line 1151 "ebnf.y"
+                {NEDC( yyval = make_literal_expr(TYPE_NUMERIC,jar_strdup("(long)sub_i")); )}
+#line 3260 "ebnf.tab.c"
     break;
 
-  case 293:
-#line 1153 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_sizeof ((yyvsp[-1])); )}
-#line 3336 "ebnf.tab.c" /* yacc.c:1646  */
+  case 293: /* special_expr: SIZEOF '(' NAME ')'  */
+#line 1153 "ebnf.y"
+                {NEDC( yyval = do_sizeof (yyvsp[-1]); )}
+#line 3266 "ebnf.tab.c"
     break;
 
-  case 297:
-#line 1164 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); )}
-#line 3342 "ebnf.tab.c" /* yacc.c:1646  */
+  case 297: /* timeconstant: INTCONSTANT NAME timeconstant  */
+#line 1164 "ebnf.y"
+                {NEDC( yyval = do_timeconstant(yyvsp[-2],yyvsp[-1],yyvsp[0]); )}
+#line 3272 "ebnf.tab.c"
     break;
 
-  case 298:
-#line 1166 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-2]),(yyvsp[-1]),(yyvsp[0])); )}
-#line 3348 "ebnf.tab.c" /* yacc.c:1646  */
+  case 298: /* timeconstant: REALCONSTANT NAME timeconstant  */
+#line 1166 "ebnf.y"
+                {NEDC( yyval = do_timeconstant(yyvsp[-2],yyvsp[-1],yyvsp[0]); )}
+#line 3278 "ebnf.tab.c"
     break;
 
-  case 299:
-#line 1168 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); )}
-#line 3354 "ebnf.tab.c" /* yacc.c:1646  */
+  case 299: /* timeconstant: INTCONSTANT NAME  */
+#line 1168 "ebnf.y"
+                {NEDC( yyval = do_timeconstant(yyvsp[-1],yyvsp[0],NULL); )}
+#line 3284 "ebnf.tab.c"
     break;
 
-  case 300:
-#line 1170 "ebnf.y" /* yacc.c:1646  */
-    {NEDC( (yyval) = do_timeconstant((yyvsp[-1]),(yyvsp[0]),NULL); )}
-#line 3360 "ebnf.tab.c" /* yacc.c:1646  */
+  case 300: /* timeconstant: REALCONSTANT NAME  */
+#line 1170 "ebnf.y"
+                {NEDC( yyval = do_timeconstant(yyvsp[-1],yyvsp[0],NULL); )}
+#line 3290 "ebnf.tab.c"
     break;
 
 
-#line 3364 "ebnf.tab.c" /* yacc.c:1646  */
+#line 3294 "ebnf.tab.c"
+
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3374,11 +3305,10 @@ yyreduce:
      case of YYERROR or YYBACKUP, subsequent parser actions might lead
      to an incorrect destructor call or verbose syntax error message
      before the lookahead is translated.  */
-  YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
+  YY_SYMBOL_PRINT ("-> $$ =", YY_CAST (yysymbol_kind_t, yyr1[yyn]), &yyval, &yyloc);
 
   YYPOPSTACK (yylen);
   yylen = 0;
-  YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
   *++yylsp = yyloc;
@@ -3386,14 +3316,13 @@ yyreduce:
   /* Now 'shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
      number reduced by.  */
-
-  yyn = yyr1[yyn];
-
-  yystate = yypgoto[yyn - YYNTOKENS] + *yyssp;
-  if (0 <= yystate && yystate <= YYLAST && yycheck[yystate] == *yyssp)
-    yystate = yytable[yystate];
-  else
-    yystate = yydefgoto[yyn - YYNTOKENS];
+  {
+    const int yylhs = yyr1[yyn] - YYNTOKENS;
+    const int yyi = yypgoto[yylhs] + *yyssp;
+    yystate = (0 <= yyi && yyi <= YYLAST && yycheck[yyi] == *yyssp
+               ? yytable[yyi]
+               : yydefgoto[yylhs]);
+  }
 
   goto yynewstate;
 
@@ -3404,50 +3333,15 @@ yyreduce:
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
-
+  yytoken = yychar == YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
       ++yynerrs;
-#if ! YYERROR_VERBOSE
       yyerror (YY_("syntax error"));
-#else
-# define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
-                                        yyssp, yytoken)
-      {
-        char const *yymsgp = YY_("syntax error");
-        int yysyntax_error_status;
-        yysyntax_error_status = YYSYNTAX_ERROR;
-        if (yysyntax_error_status == 0)
-          yymsgp = yymsg;
-        else if (yysyntax_error_status == 1)
-          {
-            if (yymsg != yymsgbuf)
-              YYSTACK_FREE (yymsg);
-            yymsg = (char *) YYSTACK_ALLOC (yymsg_alloc);
-            if (!yymsg)
-              {
-                yymsg = yymsgbuf;
-                yymsg_alloc = sizeof yymsgbuf;
-                yysyntax_error_status = 2;
-              }
-            else
-              {
-                yysyntax_error_status = YYSYNTAX_ERROR;
-                yymsgp = yymsg;
-              }
-          }
-        yyerror (yymsgp);
-        if (yysyntax_error_status == 2)
-          goto yyexhaustedlab;
-      }
-# undef YYSYNTAX_ERROR
-#endif
     }
 
   yyerror_range[1] = yylloc;
-
   if (yyerrstatus == 3)
     {
       /* If just tried and failed to reuse lookahead token after an
@@ -3476,14 +3370,12 @@ yyerrlab:
 | yyerrorlab -- error raised explicitly by YYERROR.  |
 `---------------------------------------------------*/
 yyerrorlab:
+  /* Pacify compilers when the user code never invokes YYERROR and the
+     label yyerrorlab therefore never appears in user code.  */
+  if (0)
+    YYERROR;
+  ++yynerrs;
 
-  /* Pacify compilers like GCC when the user code never invokes
-     YYERROR and the label yyerrorlab therefore never appears in user
-     code.  */
-  if (/*CONSTCOND*/ 0)
-     goto yyerrorlab;
-
-  yyerror_range[1] = yylsp[1-yylen];
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
   YYPOPSTACK (yylen);
@@ -3499,13 +3391,14 @@ yyerrorlab:
 yyerrlab1:
   yyerrstatus = 3;      /* Each real token shifted decrements this.  */
 
+  /* Pop stack until we find a state that shifts the error token.  */
   for (;;)
     {
       yyn = yypact[yystate];
       if (!yypact_value_is_default (yyn))
         {
-          yyn += YYTERROR;
-          if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR)
+          yyn += YYSYMBOL_YYerror;
+          if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYSYMBOL_YYerror)
             {
               yyn = yytable[yyn];
               if (0 < yyn)
@@ -3519,7 +3412,7 @@ yyerrlab1:
 
       yyerror_range[1] = *yylsp;
       yydestruct ("Error: popping",
-                  yystos[yystate], yyvsp, yylsp);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp, yylsp);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -3530,13 +3423,11 @@ yyerrlab1:
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
   yyerror_range[2] = yylloc;
-  /* Using YYLLOC is tempting, but would change the location of
-     the lookahead.  YYLOC is available though.  */
-  YYLLOC_DEFAULT (yyloc, yyerror_range, 2);
-  *++yylsp = yyloc;
+  ++yylsp;
+  YYLLOC_DEFAULT (*yylsp, yyerror_range, 2);
 
   /* Shift the error token.  */
-  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
+  YY_SYMBOL_PRINT ("Shifting", YY_ACCESSING_SYMBOL (yyn), yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -3547,26 +3438,30 @@ yyerrlab1:
 `-------------------------------------*/
 yyacceptlab:
   yyresult = 0;
-  goto yyreturn;
+  goto yyreturnlab;
+
 
 /*-----------------------------------.
 | yyabortlab -- YYABORT comes here.  |
 `-----------------------------------*/
 yyabortlab:
   yyresult = 1;
-  goto yyreturn;
+  goto yyreturnlab;
 
-#if !defined yyoverflow || YYERROR_VERBOSE
-/*-------------------------------------------------.
-| yyexhaustedlab -- memory exhaustion comes here.  |
-`-------------------------------------------------*/
+
+/*-----------------------------------------------------------.
+| yyexhaustedlab -- YYNOMEM (memory exhaustion) comes here.  |
+`-----------------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  /* Fall through.  */
-#endif
+  goto yyreturnlab;
 
-yyreturn:
+
+/*----------------------------------------------------------.
+| yyreturnlab -- parsing is finished, clean up and return.  |
+`----------------------------------------------------------*/
+yyreturnlab:
   if (yychar != YYEMPTY)
     {
       /* Make sure we have latest lookahead translation.  See comments at
@@ -3582,20 +3477,18 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-                  yystos[*yyssp], yyvsp, yylsp);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp, yylsp);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-#if YYERROR_VERBOSE
-  if (yymsg != yymsgbuf)
-    YYSTACK_FREE (yymsg);
-#endif
+
   return yyresult;
 }
-#line 1177 "ebnf.y" /* yacc.c:1906  */
+
+#line 1177 "ebnf.y"
 
 
 //----------------------------------------------------------------------
@@ -3628,7 +3521,7 @@ int runparse ()
 
 extern char current_fname[];
 
-void yyerror (char *s)
+void yyerror (const char *s)
 {
         fflush (stdout);
         if (strlen (s))
@@ -3650,7 +3543,7 @@ void yyerror (char *s)
 
 #ifdef DOING_GNED
 
-void yyerror (char *s)
+void yyerror (const char *s)
 {
         if (strlen (s))
                 strcpy (yyfailure, s);
@@ -3709,7 +3602,7 @@ void setComments(int key, YYLTYPE firstpos, YYLTYPE lastpos)
     setRightComment(key, pos);
 }
 
-int addChanAttr(int channel_key, char *attrname, YYLTYPE valuepos)
+int addChanAttr(int channel_key, const char *attrname, YYLTYPE valuepos)
 {
     int chanattr_key = np->create("chanattr", channel_key);
     np->set(chanattr_key,"name", attrname);
@@ -3719,7 +3612,7 @@ int addChanAttr(int channel_key, char *attrname, YYLTYPE valuepos)
 
 int addParameter(int params_key, YYLTYPE namepos, int type)
 {
-   char *s;
+   const char *s;
    switch (type)
    {
        case TYPE_NUMERIC:   s = "numeric"; break;
@@ -3798,7 +3691,7 @@ int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE top
    return loopvar_key;
 }
 
-int addConnAttr(int conn_key, char *attrname, YYLTYPE valuepos)
+int addConnAttr(int conn_key, const char *attrname, YYLTYPE valuepos)
 {
     int connattr_key = np->create("connattr", conn_key);
     np->set(connattr_key,"name", attrname);

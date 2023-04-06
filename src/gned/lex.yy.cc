@@ -1,5 +1,5 @@
 
-#line 3 "lex.yy.c"
+#line 2 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -691,8 +691,8 @@ LineColumn pos,prevpos;
 #define TEXTBUF_LEN 1024
 char textbuf[TEXTBUF_LEN];
 
+#line 694 "lex.yy.c"
 #line 695 "lex.yy.c"
-#line 696 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -911,7 +911,7 @@ YY_DECL
 	{
 #line 82 "ebnf.lex"
 
-#line 915 "lex.yy.c"
+#line 914 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1449,7 +1449,7 @@ YY_RULE_SETUP
 #line 206 "ebnf.lex"
 ECHO;
 	YY_BREAK
-#line 1453 "lex.yy.c"
+#line 1452 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 

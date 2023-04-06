@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -15,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -30,6 +31,10 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
+
 #ifndef YY_YY_EBNF_TAB_H_INCLUDED
 # define YY_YY_EBNF_TAB_H_INCLUDED
 /* Debug traces.  */
@@ -40,89 +45,98 @@
 extern int yydebug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    INCLUDE = 258,
-    SIMPLE = 259,
-    CHANNEL = 260,
-    DELAY = 261,
-    ERROR = 262,
-    DATARATE = 263,
-    MODULE = 264,
-    PARAMETERS = 265,
-    GATES = 266,
-    GATESIZES = 267,
-    SUBMODULES = 268,
-    CONNECTIONS = 269,
-    DISPLAY = 270,
-    IN = 271,
-    OUT = 272,
-    NOCHECK = 273,
-    LEFT_ARROW = 274,
-    RIGHT_ARROW = 275,
-    FOR = 276,
-    TO = 277,
-    DO = 278,
-    IF = 279,
-    LIKE = 280,
-    NETWORK = 281,
-    ENDSIMPLE = 282,
-    ENDMODULE = 283,
-    ENDCHANNEL = 284,
-    ENDNETWORK = 285,
-    ENDFOR = 286,
-    MACHINES = 287,
-    ON = 288,
-    IO_INTERFACES = 289,
-    IFPAIR = 290,
-    INTCONSTANT = 291,
-    REALCONSTANT = 292,
-    NAME = 293,
-    STRING = 294,
-    _TRUE = 295,
-    _FALSE = 296,
-    INPUT = 297,
-    REF = 298,
-    ANCESTOR = 299,
-    NED_CONST = 300,
-    NUMERICTYPE = 301,
-    STRINGTYPE = 302,
-    BOOLTYPE = 303,
-    XMLTYPE = 304,
-    ANYTYPE = 305,
-    PLUS = 306,
-    MIN = 307,
-    MUL = 308,
-    DIV = 309,
-    MOD = 310,
-    EXP = 311,
-    SIZEOF = 312,
-    SUBMODINDEX = 313,
-    PLUSPLUS = 314,
-    EQ = 315,
-    NE = 316,
-    GT = 317,
-    GE = 318,
-    LS = 319,
-    LE = 320,
-    AND = 321,
-    OR = 322,
-    XOR = 323,
-    NOT = 324,
-    BIN_AND = 325,
-    BIN_OR = 326,
-    BIN_XOR = 327,
-    BIN_COMPL = 328,
-    SHIFT_LEFT = 329,
-    SHIFT_RIGHT = 330,
-    INVALID_CHAR = 331,
-    UMIN = 332
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    INCLUDE = 258,                 /* INCLUDE  */
+    SIMPLE = 259,                  /* SIMPLE  */
+    CHANNEL = 260,                 /* CHANNEL  */
+    DELAY = 261,                   /* DELAY  */
+    ERROR = 262,                   /* ERROR  */
+    DATARATE = 263,                /* DATARATE  */
+    MODULE = 264,                  /* MODULE  */
+    PARAMETERS = 265,              /* PARAMETERS  */
+    GATES = 266,                   /* GATES  */
+    GATESIZES = 267,               /* GATESIZES  */
+    SUBMODULES = 268,              /* SUBMODULES  */
+    CONNECTIONS = 269,             /* CONNECTIONS  */
+    DISPLAY = 270,                 /* DISPLAY  */
+    IN = 271,                      /* IN  */
+    OUT = 272,                     /* OUT  */
+    NOCHECK = 273,                 /* NOCHECK  */
+    LEFT_ARROW = 274,              /* LEFT_ARROW  */
+    RIGHT_ARROW = 275,             /* RIGHT_ARROW  */
+    FOR = 276,                     /* FOR  */
+    TO = 277,                      /* TO  */
+    DO = 278,                      /* DO  */
+    IF = 279,                      /* IF  */
+    LIKE = 280,                    /* LIKE  */
+    NETWORK = 281,                 /* NETWORK  */
+    ENDSIMPLE = 282,               /* ENDSIMPLE  */
+    ENDMODULE = 283,               /* ENDMODULE  */
+    ENDCHANNEL = 284,              /* ENDCHANNEL  */
+    ENDNETWORK = 285,              /* ENDNETWORK  */
+    ENDFOR = 286,                  /* ENDFOR  */
+    MACHINES = 287,                /* MACHINES  */
+    ON = 288,                      /* ON  */
+    IO_INTERFACES = 289,           /* IO_INTERFACES  */
+    IFPAIR = 290,                  /* IFPAIR  */
+    INTCONSTANT = 291,             /* INTCONSTANT  */
+    REALCONSTANT = 292,            /* REALCONSTANT  */
+    NAME = 293,                    /* NAME  */
+    STRING = 294,                  /* STRING  */
+    _TRUE = 295,                   /* _TRUE  */
+    _FALSE = 296,                  /* _FALSE  */
+    INPUT = 297,                   /* INPUT  */
+    REF = 298,                     /* REF  */
+    ANCESTOR = 299,                /* ANCESTOR  */
+    NED_CONST = 300,               /* NED_CONST  */
+    NUMERICTYPE = 301,             /* NUMERICTYPE  */
+    STRINGTYPE = 302,              /* STRINGTYPE  */
+    BOOLTYPE = 303,                /* BOOLTYPE  */
+    XMLTYPE = 304,                 /* XMLTYPE  */
+    ANYTYPE = 305,                 /* ANYTYPE  */
+    PLUS = 306,                    /* PLUS  */
+    MIN = 307,                     /* MIN  */
+    MUL = 308,                     /* MUL  */
+    DIV = 309,                     /* DIV  */
+    MOD = 310,                     /* MOD  */
+    EXP = 311,                     /* EXP  */
+    SIZEOF = 312,                  /* SIZEOF  */
+    SUBMODINDEX = 313,             /* SUBMODINDEX  */
+    PLUSPLUS = 314,                /* PLUSPLUS  */
+    EQ = 315,                      /* EQ  */
+    NE = 316,                      /* NE  */
+    GT = 317,                      /* GT  */
+    GE = 318,                      /* GE  */
+    LS = 319,                      /* LS  */
+    LE = 320,                      /* LE  */
+    AND = 321,                     /* AND  */
+    OR = 322,                      /* OR  */
+    XOR = 323,                     /* XOR  */
+    NOT = 324,                     /* NOT  */
+    BIN_AND = 325,                 /* BIN_AND  */
+    BIN_OR = 326,                  /* BIN_OR  */
+    BIN_XOR = 327,                 /* BIN_XOR  */
+    BIN_COMPL = 328,               /* BIN_COMPL  */
+    SHIFT_LEFT = 329,              /* SHIFT_LEFT  */
+    SHIFT_RIGHT = 330,             /* SHIFT_RIGHT  */
+    INVALID_CHAR = 331,            /* INVALID_CHAR  */
+    UMIN = 332                     /* UMIN  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
+/* Token kinds.  */
+#define YYEMPTY -2
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
 #define INCLUDE 258
 #define SIMPLE 259
 #define CHANNEL 260
@@ -223,6 +237,8 @@ struct YYLTYPE
 
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
+
 int yyparse (void);
+
 
 #endif /* !YY_YY_EBNF_TAB_H_INCLUDED  */
