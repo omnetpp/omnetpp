@@ -13,7 +13,7 @@ import xml.dom.minidom as minidom # because ET cannot pretty-print
 from xml.parsers.expat import ExpatError
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import omnetpp.scave.impl.results_standalone as results_module
+import omnetpp.scave.impl.results_nativemodule as results_module
 import omnetpp.scave.impl.chart_charttool as chart_module
 import omnetpp.scave.utils as utils
 
