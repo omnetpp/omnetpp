@@ -775,12 +775,12 @@ class SIM_API cSubModIterator
     /**
      * Constructor. It takes the parent module.
      */
-    cSubModIterator(const cModule& h)  {p = &h ? h.firstsubmodp : NULL;}
+    cSubModIterator(const cModule& h)  {init(h);}
 
     /**
      * Reinitializes the iterator.
      */
-    void init(const cModule& h)  {p = &h ? h.firstsubmodp : NULL;}
+    void init(const cModule& h);
 
     /**
      * Returns pointer to the current module. The pointer then

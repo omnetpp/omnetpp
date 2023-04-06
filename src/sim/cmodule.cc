@@ -817,6 +817,14 @@ void cCompoundModule::scheduleStart(simtime_t t)
 }
 
 //==========================================================================
+//=== cSubModIterator - member functions
+
+void cSubModIterator::init(const cModule& h)
+{
+    p = &h ? h.firstsubmodp : NULL;
+}
+
+//==========================================================================
 //=== little helper functions...
 
 static void _connect(cModule *frm, int frg, cModule *tom, int tog)
