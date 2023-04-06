@@ -217,7 +217,7 @@ cSimpleModule::~cSimpleModule()
 {
     if (simulation.getContext()==this)
         // NOTE: subclass destructors will not be called, but the simulation will stop anyway
-        throw cRuntimeError(this, "cannot delete itself, only via deleteModule()");
+        panic(cRuntimeError(this, "cannot delete itself, only via deleteModule()"));
 
     if (usesActivity())
     {
@@ -227,7 +227,7 @@ cSimpleModule::~cSimpleModule()
             //FIXME: check this is OK for brand new modules too (no transferTo() yet)
             stack_cleanup_requested = true;
             after_cleanup_transfer_to = simulation.getActivityModule();
-            ASSERT(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
+            ASSERT_DTOR(!after_cleanup_transfer_to || after_cleanup_transfer_to->usesActivity());
             simulation.transferTo(this);
             stack_cleanup_requested = false;
         }
