@@ -39,7 +39,7 @@ Mersenne Twister is part of the OMNEST/OMNeT++ source code.
 YXML
 ----
 YXML (https://dev.yorhel.nl/yxml) is a small non-validating XML parser distributed
-under the MIT License (https://opensource.org/licenses/MIT). 
+under the MIT License (https://opensource.org/licenses/MIT).
 
 YXML is part of the OMNEST/OMNeT++ source code.
 
@@ -59,7 +59,7 @@ SQLite is part of the OMNEST/OMNeT++ source code.
 SGR macros
 ----------
 SGR macros for ANSI console color sequences, written by YOSHIOKA Takuma,
-distributed under the MIT License (https://opensource.org/licenses/MIT). 
+distributed under the MIT License (https://opensource.org/licenses/MIT).
 
 sgr_macro.h is part of the OMNEST/OMNeT++ source code.
 
@@ -71,10 +71,29 @@ distributed under the MIT License (https://opensource.org/licenses/MIT).
 backward.h is part of the OMNEST/OMNeT++ source code.
 
 
+nanobind
+--------
+nanobind (https://github.com/wjakob/nanobind) is a small binding library
+that exposes C++ types in Python and vice versa, distributed under
+the 3-clause BSD License (https://opensource.org/license/bsd-3-clause/).
+
+nanobind is part of the OMNEST/OMNeT++ source code.
+
+
+robin-map
+---------
+The robin-map library (https://github.com/Tessil/robin-map) is a C++
+implementation of a fast hash map and hash set using open-addressing and
+linear robin hood hashing with backward shift deletion to resolve collisions.
+It is distributed under the MIT License (https://opensource.org/licenses/MIT).
+
+robin-map is part of the OMNEST/OMNeT++ source code.
+
+
 Fira Code font
 --------------
 The Fira Code font (https://github.com/tonsky/FiraCode) is embedded in Qtenv
-for better readability and distributed under the SIL Open Font License 
+for better readability and distributed under the SIL Open Font License
 (https://scripts.sil.org/OFL).
 
 
@@ -142,7 +161,7 @@ can use this library to parse XML files that contain DTD definitions. If the mod
 does not make use of XML file validation, this library is not needed and
 OMNeT++/OMNEST can use its own built-in XML parser.
 
-On Linux, the user has to install LibXML2 from the repository; on macOS, 
+On Linux, the user has to install LibXML2 from the repository; on macOS,
 OMNEST/OMNeT++ can use the LibXML2 installation bundled with the OS.
 On Windows, it is bundled with OMNEST/OMNeT++.
 
@@ -180,13 +199,13 @@ Py4J (py4j.org) is part of the IDE and distributed under the BSD license
 
 Pickle
 ------
-Pickle is distributed under the MIT License (https://opensource.org/licenses/MIT). 
+Pickle is distributed under the MIT License (https://opensource.org/licenses/MIT).
 
 
 OpenJDK
 -------
 The IDE requires a Java runtime environment (JRE) to run which is
-distributed under GPLv2 with the Classpath Exception 
+distributed under GPLv2 with the Classpath Exception
 (http://openjdk.java.net/legal/gplv2+ce.html).
 
 The JRE part of OpenJDK is bundled with the OMNEST/OMNeT++ IDE.
