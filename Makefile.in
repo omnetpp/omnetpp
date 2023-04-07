@@ -24,7 +24,7 @@ OMNETPP_TEST_DIR =      @OMNETPP_TEST_DIR@
 
 all: check-env components
 
-components: libs progs samples
+components: libs progs samples_
 
 
 #=====================================================================
@@ -41,9 +41,13 @@ SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queu
 # Group targets. Note that utils has to be built BEFORE other libs and progs
 # because tcl2c might be needed to build tkenv or gned.
 #
-libs: utils $(LIBS)
-progs: libs $(PROGS)
-samples: libs progs $(SAMPLES)
+libs: $(LIBS)
+progs: $(PROGS)
+samples_: $(SAMPLES)
+
+$(LIBS) $(PROGS) makefiles: utils
+$(PROGS): libs
+$(SAMPLES): libs progs
 
 #
 # Libraries
