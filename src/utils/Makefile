@@ -41,7 +41,7 @@ all: $(CONFIGFILE)
 	$(Q)cp omnest $(OMNETPP_BIN_DIR)
 	$(Q)chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test  $(OMNETPP_BIN_DIR)/splitvec $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
 	@# next line is for samples/rundemo
-	$(Q)echo $(WISH) >$(HOME)/.wishname
+	$(Q)echo $(WISH) >$(OMNETPP_SAMPLES_DIR)/.wishname
 
 clean:
 	$(qecho) Cleaning utils
