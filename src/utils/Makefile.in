@@ -13,6 +13,7 @@ EXE_SUFFIX=@EXE_SUFFIX@
 COPTS=$(CFLAGS)
 
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
+OMNETPP_SAMPLES_DIR=@OMNETPP_SAMPLES_DIR@
 
 OMNETPP_VERSION=@OMNETPP_VERSION@
 OMNETPP_EDITION=@OMNETPP_EDITION@
@@ -28,7 +29,7 @@ all: seedtool tcl2c
 	cp neddocproc.pl $(OMNETPP_BIN_DIR)
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
 	# next line is for samples/rundemo
-	echo $(WISH) >$(HOME)/.wishname
+	echo $(WISH) >$(OMNETPP_SAMPLES_DIR)/.wishname
 
 seedtool : seedtool.cc
 	$(CXX) seedtool.cc -o seedtool
