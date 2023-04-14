@@ -49,7 +49,7 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog opp_lcg32_seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog abspath$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	@# next line is for samples/rundemo
-	echo $(WISH) >$(HOME)/.wishname
+	echo $(WISH) >$(OMNETPP_SAMPLES_DIR)/.wishname
 
 $O/opp_lcg32_seedtool$(EXE_SUFFIX) : opp_lcg32_seedtool.cc
 	@mkdir -p $O
