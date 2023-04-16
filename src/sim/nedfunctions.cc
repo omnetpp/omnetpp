@@ -62,7 +62,8 @@ Define_NED_Math_Function3(exp, 1,   "math", "Exponential; see standard C functio
 Define_NED_Math_Function3(pow, 2,   "math", "Power; see standard C function of the same name")
 Define_NED_Math_Function3(sqrt, 1,  "math", "Square root; see standard C function of the same name")
 
-Define_NED_Math_Function3(hypot, 2, "math", "Length of the hypotenuse; see standard C function of the same name")
+static double _wrap_hypot(double x, double y) {return hypot(x,y);} // disambiguate between two- and three-arg overloads
+Define_NED_Math_Function4(hypot, _wrap_hypot, 2, "math", "Length of the hypotenuse; see standard C function of the same name");
 
 Define_NED_Math_Function3(log, 1,   "math", "Natural logarithm; see standard C function of the same name")
 Define_NED_Math_Function3(log10, 1, "math", "Base-10 logarithm; see standard C function of the same name")
