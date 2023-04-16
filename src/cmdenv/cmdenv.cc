@@ -627,7 +627,8 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
     ::fflush(fout);
 
     {
-        ::fgets(buffer, 512, stdin);
+        if (!::fgets(buffer, 512, stdin))
+           throw cRuntimeError("Error reading from standard input: end-of-file or input error");
         buffer[strlen(buffer)-1] = '\0';  // chop LF
 
         if (buffer[0] == '\x1b')  // ESC?
@@ -646,7 +647,8 @@ bool Cmdenv::askyesno(const char *question)
         for (;;) {
             ::fprintf(fout, "%s (y/n) ", question);
             ::fflush(fout);
-            ::fgets(buffer, 512, stdin);
+            if (!::fgets(buffer, 512, stdin))
+               throw cRuntimeError("Error reading from standard input: end-of-file or input error");
             buffer[strlen(buffer)-1] = '\0';  // chop LF
             if (buffer[0] == '\x1b')  // ESC?
                 throw cRuntimeError(E_CANCEL);

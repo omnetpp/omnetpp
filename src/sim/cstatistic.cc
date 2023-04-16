@@ -154,7 +154,8 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
     char line[101];
 
     // read line and chop CR/LF
-    fgets(line, 101, f);
+    if (!fgets(line,101,f))
+        throw cRuntimeError(this, "loadFromFile(): cannot read line: end-of-file or input error");
     char *end = line + strlen(line) - 1;
     while (end >= line && (*end == '\n' || *end == '\r'))
         *end-- = '\0';
