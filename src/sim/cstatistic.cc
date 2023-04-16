@@ -106,7 +106,8 @@ void cStatistic::freadvarsf(FILE *f, const char *fmt, ...)
 
     // read a non-empty, non-comment line
     do {
-        fgets(line, 101, f);
+        if (!fgets(line,101,f))
+            throw cRuntimeError(this, "loadFromFile(): cannot read line: end-of-file or input error");
         // chop CR/LF
         char *lastp = line + strlen(line) - 1;
         while (lastp >= line && (*lastp == '\n' || *lastp == '\r'))
