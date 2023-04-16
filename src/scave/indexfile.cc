@@ -225,7 +225,8 @@ bool IndexFile::isExistingVectorFile(const char *filename)
     const char *signature = "version 2";
     char buf[20];
     memset(buf, 0, 20);
-    fread(buf, strlen(signature), 1, f);
+    if (fread(buf, 1, strlen(signature), f) != strlen(signature))
+        return false;
     fclose(f);
     bool matches = memcmp(buf, signature, strlen(signature)) == 0;
     return matches;
