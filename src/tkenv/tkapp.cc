@@ -843,7 +843,7 @@ void TOmnetTkApp::updateGraphicalInspectorsBeforeAnimation()
 
 void TOmnetTkApp::updateNetworkRunDisplay()
 {
-    char runnr[10];
+    char runnr[32];
     const char *networkname;
 
     if (simulation.runNumber()<=0)
