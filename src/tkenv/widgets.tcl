@@ -908,7 +908,8 @@ proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT B2 B3 fonts
     if {$HAVE_BLT} {
         blt::treeview $w -allowduplicates yes -flat yes -font $fonts(listbox)
-        $w column configure treeView -hide no -width 15 -state disabled
+        catch {$w column configure treeView -hide no -width 15 -state disabled};  # BLT 2.4z
+        catch {$w column configure #0 -hide no -width 15 -state disabled}; # BLT 2.5
         if {$args!=""} {
              eval $w config $args
         }
@@ -917,14 +918,14 @@ proc multicolumnlistbox {w columnlist args} {
             set name [lindex $i 0]
             set label [lindex $i 1]
             set width [lindex $i 2]
-            $w column insert end $name -text $label -justify left -edit no -pad 8 \
+            $w column insert end $name -title $label -justify left -edit no -pad 8 \
                 -command [list multicolumnlistbox_blt_sortcolumn $w $name]
             if {$width!=""} {
                 $w column config $name -width $width
             }
         }
         # eliminate "last column quirk" by adding a very wide dummy column:
-        $w column insert end "dummy" -text "" -edit no -width 1000
+        $w column insert end "dummy" -title "" -edit no -width 1000
         # right-click support: should select the item (unless already selected)
         bind $w <$B3> {%W selection clearall; %W select set [%W nearest %x %y]}
         #bind $w <Motion> {puts "[%W nearest %x %y] of [%W index view.top]..[%W index view.bottom] -- [%W find view.top view.bottom]"}
