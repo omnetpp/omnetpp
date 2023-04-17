@@ -722,22 +722,6 @@ fi
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 #----------------------
-# Check for libraries allowing stack unwinding and debug info parsing to create backtraces
-#----------------------
-BACKWARD_LDFLAGS=
-if test $WITH_BACKTRACE = "yes"; then
-  OPP_CHECK_LIB(libdw for backward stacktrace, elfutils/libdw.h, , ,-ldw, bw_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -ldw" DEFINES="$DEFINES -DBACKWARD_HAS_DW=1",)
-  if test "$bw_found" != "yes"; then
-    OPP_CHECK_LIB(libelf and libdwarf for backward stacktrace, libdwarf/dwarf.h, , ,-lelf -ldwarf, bw_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lelf -ldwarf" DEFINES="$DEFINES -DBACKWARD_HAS_DWARF=1",)
-  fi
-
-  # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
-  if test "$bw_found" != "yes"; then
-    OPP_CHECK_LIB(psapi and dbghelp for backward stacktrace, windows.h, , ,-lpsapi -ldbghelp, psapi_dbghelp_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp",)
-  fi
-fi
-
-#----------------------
 # Check for rpath
 #----------------------
 # add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
@@ -757,6 +741,13 @@ AC_LINK_IFELSE(
 #----------------------
 # Checks for programs.
 #----------------------
+
+# pkg-config is mandatory
+AC_CHECK_PROG(PKGCONFIG, pkg-config, pkg-config, not found)
+if test "$PKGCONFIG" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES pkg-config"
+   AC_MSG_ERROR([pkg-config program not found -- it is required to build OMNeT++/OMNEST, and also for model development.])
+fi
 
 AC_PROG_YACC
 if test "$YACC" = "yacc"; then
@@ -1021,6 +1012,28 @@ if test "$WITH_OSG" = "yes"; then
       fi # WITH_OSGEARTH
   fi
 fi # WITH_OSG
+
+#----------------------
+# Check for optional libraries allowing stack unwinding and debug info parsing to create backtraces
+#----------------------
+BACKWARD_LDFLAGS=
+if test $WITH_BACKTRACE = "yes"; then
+  
+  if test "$PLATFORM" = "win32"; then
+    # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
+    OPP_CHECK_LIB(psapi and dbghelp for backward stacktrace, windows.h, , ,-lpsapi -ldbghelp, psapi_dbghelp_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp",)
+  elif test "$PLATFORM" = "linux"; then
+    # on Linux  we will use libdw or fall back to libdwarf
+    LIBDW_LIBS="$(pkg-config --silence-errors --libs libdw)"
+    OPP_CHECK_LIB(libdw for enhanced backtrace support, elfutils/libdw.h, dwarf_errno(), , $LIBDW_LIBS, dw_found, BACKWARD_LDFLAGS="$LIBDW_LIBS" DEFINES="$DEFINES -DBACKWARD_HAS_DW=1",)
+
+    if test $dw_found != "yes"; then
+      AC_MSG_WARN([WITH_BACKTRACE is set to 'yes', but the 'libdw' library was not detected.])
+      AC_MSG_WARN([To get better stack traces on exceptions, please install the development package])
+      AC_MSG_WARN([for 'libdw' (i.e. libdw-dev, libdw-devel or elfutils).])
+    fi
+  fi
+fi
 
 #----------------------
 # Check for optional OpenMP compiler/linker flag.
