@@ -709,6 +709,7 @@ LEX_OUTPUT_ROOT
 LEX
 YFLAGS
 YACC
+PKGCONFIG
 RANLIB
 tmp_CXX
 ac_ct_CXX
@@ -4904,124 +4905,6 @@ fi
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 #----------------------
-# Check for libraries allowing stack unwinding and debug info parsing to create backtraces
-#----------------------
-BACKWARD_LDFLAGS=
-if test $WITH_BACKTRACE = "yes"; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS=""
-   LIBS="-ldw"
-
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libdw for backward stacktrace with CFLAGS=\"\" LIBS=\"-ldw\"" >&5
-printf %s "checking for libdw for backward stacktrace with CFLAGS=\"\" LIBS=\"-ldw\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <elfutils/libdw.h>
-int
-main (void)
-{
-;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; bw_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -ldw" DEFINES="$DEFINES -DBACKWARD_HAS_DW=1"
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }; bw_found=no;
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-  if test "$bw_found" != "yes"; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS=""
-   LIBS="-lelf -ldwarf"
-
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libelf and libdwarf for backward stacktrace with CFLAGS=\"\" LIBS=\"-lelf -ldwarf\"" >&5
-printf %s "checking for libelf and libdwarf for backward stacktrace with CFLAGS=\"\" LIBS=\"-lelf -ldwarf\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <libdwarf/dwarf.h>
-int
-main (void)
-{
-;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; bw_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lelf -ldwarf" DEFINES="$DEFINES -DBACKWARD_HAS_DWARF=1"
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }; bw_found=no;
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-  fi
-
-  # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
-  if test "$bw_found" != "yes"; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS=""
-   LIBS="-lpsapi -ldbghelp"
-
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"" >&5
-printf %s "checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <windows.h>
-int
-main (void)
-{
-;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; psapi_dbghelp_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp"
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }; psapi_dbghelp_found=no;
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-  fi
-fi
-
-#----------------------
 # Check for rpath
 #----------------------
 # add RUNTIME_PATH option if supported, so that setting LD_LIBRARY_PATH is no longer needed when using shared libs.
@@ -5056,6 +4939,55 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 #----------------------
 # Checks for programs.
 #----------------------
+
+# pkg-config is mandatory
+# Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_PKGCONFIG+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$PKGCONFIG"; then
+  ac_cv_prog_PKGCONFIG="$PKGCONFIG" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PKGCONFIG="pkg-config"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_PKGCONFIG" && ac_cv_prog_PKGCONFIG="not found"
+fi
+fi
+PKGCONFIG=$ac_cv_prog_PKGCONFIG
+if test -n "$PKGCONFIG"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PKGCONFIG" >&5
+printf "%s\n" "$PKGCONFIG" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+if test "$PKGCONFIG" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES pkg-config"
+   as_fn_error $? "pkg-config program not found -- it is required to build OMNeT++/OMNEST, and also for model development." "$LINENO" 5
+fi
 
 for ac_prog in 'bison -y' byacc
 do
@@ -6413,6 +6345,99 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
       fi # WITH_OSGEARTH
   fi
 fi # WITH_OSG
+
+#----------------------
+# Check for optional libraries allowing stack unwinding and debug info parsing to create backtraces
+#----------------------
+BACKWARD_LDFLAGS=
+if test $WITH_BACKTRACE = "yes"; then
+
+  if test "$PLATFORM" = "win32"; then
+    # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
+   LIBS="-lpsapi -ldbghelp"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"" >&5
+printf %s "checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <windows.h>
+int
+main (void)
+{
+;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; psapi_dbghelp_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp"
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; psapi_dbghelp_found=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+  elif test "$PLATFORM" = "linux"; then
+    # on Linux  we will use libdw or fall back to libdwarf
+    LIBDW_LIBS="$(pkg-config --silence-errors --libs libdw)"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS=""
+   LIBS="$LIBDW_LIBS"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for libdw for enhanced backtrace support with CFLAGS=\"\" LIBS=\"$LIBDW_LIBS\"" >&5
+printf %s "checking for libdw for enhanced backtrace support with CFLAGS=\"\" LIBS=\"$LIBDW_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <elfutils/libdw.h>
+int
+main (void)
+{
+dwarf_errno();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; dw_found=yes; BACKWARD_LDFLAGS="$LIBDW_LIBS" DEFINES="$DEFINES -DBACKWARD_HAS_DW=1"
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; dw_found=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+
+    if test $dw_found != "yes"; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: WITH_BACKTRACE is set to 'yes', but the 'libdw' library was not detected." >&5
+printf "%s\n" "$as_me: WARNING: WITH_BACKTRACE is set to 'yes', but the 'libdw' library was not detected." >&2;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: To get better stack traces on exceptions, please install the development package" >&5
+printf "%s\n" "$as_me: WARNING: To get better stack traces on exceptions, please install the development package" >&2;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: for 'libdw' (i.e. libdw-dev, libdw-devel or elfutils)." >&5
+printf "%s\n" "$as_me: WARNING: for 'libdw' (i.e. libdw-dev, libdw-devel or elfutils)." >&2;}
+    fi
+  fi
+fi
 
 #----------------------
 # Check for optional OpenMP compiler/linker flag.
