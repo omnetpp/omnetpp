@@ -661,6 +661,8 @@ NEDTOOL
 MSGC
 MYPWD
 TOOLCHAIN_NAME
+AS_NEEDED_OFF
+AS_NEEDED_ON
 WHOLE_ARCHIVE_OFF
 WHOLE_ARCHIVE_ON
 CFLAGS_RELEASE
@@ -4226,12 +4228,11 @@ main (void)
   return 0;
 }
 _ACEOF
-if ac_fn_cxx_try_compile "$LINENO"
+if ac_fn_cxx_try_link "$LINENO"
 then :
 
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
-
         CXX="$ac_save_CXX"
         CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector"
 
@@ -4243,7 +4244,8 @@ printf "%s\n" "no" >&6; }
 
 
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
 
 
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-stack-protector" >&5
@@ -4261,12 +4263,11 @@ main (void)
   return 0;
 }
 _ACEOF
-if ac_fn_cxx_try_compile "$LINENO"
+if ac_fn_cxx_try_link "$LINENO"
 then :
 
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
-
         CXX="$ac_save_CXX"
         CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector"
 
@@ -4278,7 +4279,8 @@ printf "%s\n" "no" >&6; }
 
 
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
 
 
 #----------------------
@@ -4296,6 +4298,84 @@ fi
 
 done
 
+#----------------------
+# check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib
+# if the program does not reference a symbol from the lib.
+#----------------------
+AS_NEEDED_OFF=-Wl,--no-as-needed
+
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $AS_NEEDED_OFF" >&5
+printf %s "checking whether $CXX supports $AS_NEEDED_OFF... " >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX $AS_NEEDED_OFF"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+        CXX="$ac_save_CXX"
+
+
+else $as_nop
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+        CXX="$ac_save_CXX"
+        AS_NEEDED_OFF=""
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+AS_NEEDED_ON=-Wl,--as-needed
+
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports $AS_NEEDED_ON" >&5
+printf %s "checking whether $CXX supports $AS_NEEDED_ON... " >&6; }
+    ac_save_CXX="$CXX"
+    CXX="$CXX $AS_NEEDED_ON"
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main (void)
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+        CXX="$ac_save_CXX"
+
+
+else $as_nop
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+        CXX="$ac_save_CXX"
+        AS_NEEDED_ON=""
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+
+#----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
 #----------------------
 # To test, we try to compile the following code into a shared library:
@@ -7493,6 +7573,8 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
+
 
 
 

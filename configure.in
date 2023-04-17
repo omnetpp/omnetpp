@@ -58,19 +58,15 @@ AC_DEFUN(OPP_CHECK_LIB_NOLINK,[
    CXXFLAGS=$save_CXXFLAGS
 ])
 
-# usage: AC_PROG_CC_OPTION(--compiler-option, if-supported, if-unsupported)
-# add this option to $(CC) if it is supported by the compiler
-# if no sc
-# Martin Waitz <tali@admingilde.org>
+# usage: AC_PROG_CXX_OPTION(--compiler-option, if-supported, if-unsupported)
 AC_DEFUN([AC_PROG_CXX_OPTION], [
     AC_MSG_CHECKING([whether $CXX supports $1])
     ac_save_CXX="$CXX"
     CXX="$CXX $1"
-    AC_COMPILE_IFELSE(AC_LANG_PROGRAM(),[
+    AC_LINK_IFELSE([AC_LANG_PROGRAM()],[
         AC_MSG_RESULT([yes])
-        ifelse($2, , [], [
         CXX="$ac_save_CXX"
-        $2])
+        $2
     ], [
         AC_MSG_RESULT([no])
         CXX="$ac_save_CXX"
@@ -348,6 +344,16 @@ AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-
 #----------------------
 AC_CHECK_FUNCS(swapcontext, [CFLAGS_RELEASE="$CFLAGS_RELEASE -DHAVE_SWAPCONTEXT" CFLAGS_DEBUG="$CFLAGS_DEBUG -DHAVE_SWAPCONTEXT"])
 
+#----------------------
+# check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib
+# if the program does not reference a symbol from the lib.
+#----------------------
+AS_NEEDED_OFF=-Wl,--no-as-needed
+AC_PROG_CXX_OPTION($AS_NEEDED_OFF, ,AS_NEEDED_OFF="")
+AS_NEEDED_ON=-Wl,--as-needed
+AC_PROG_CXX_OPTION($AS_NEEDED_ON, ,AS_NEEDED_ON="")
+
+#----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
 #----------------------
 # To test, we try to compile the following code into a shared library:
@@ -1085,6 +1091,8 @@ AC_SUBST(CFLAGS_RELEASE)
 AC_SUBST(LDFLAGS)
 AC_SUBST(WHOLE_ARCHIVE_ON)
 AC_SUBST(WHOLE_ARCHIVE_OFF)
+AC_SUBST(AS_NEEDED_ON)
+AC_SUBST(AS_NEEDED_OFF)
 AC_SUBST(TOOLCHAIN_NAME)
 AC_SUBST(MYPWD)
 AC_SUBST(MSGC)

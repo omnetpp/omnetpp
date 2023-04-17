@@ -64,6 +64,8 @@ CFLAGS_RELEASE = @CFLAGS_RELEASE@
 LDFLAGS = @LDFLAGS@
 WHOLE_ARCHIVE_ON = @WHOLE_ARCHIVE_ON@
 WHOLE_ARCHIVE_OFF = @WHOLE_ARCHIVE_OFF@
+AS_NEEDED_ON = @AS_NEEDED_ON@
+AS_NEEDED_OFF = @AS_NEEDED_OFF@
 MYPWD = @MYPWD@
 MSGC = @MSGC@
 NEDTOOL = @NEDTOOL@
@@ -127,8 +129,8 @@ PLATFORM = @PLATFORM@
 # Definitions for makemake-generated makefiles
 #
 ALL_ENV_LIBS = @ALL_ENV_LIBS@
-CMDENV_LIBS = -u _cmdenv_lib -loppcmdenv$D -loppenvir$D
-TKENV_LIBS = -u _tkenv_lib -lopptkenv$D -loppenvir$D -lopplayout$D
+CMDENV_LIBS = -u _cmdenv_lib $(AS_NEEDED_OFF) -loppcmdenv$D -loppenvir$D
+TKENV_LIBS = -u _tkenv_lib $(AS_NEEDED_OFF) -lopptkenv$D -loppenvir$D -lopplayout$D
 KERNEL_LIBS = -loppsim$D
 
 ifeq ($(SHARED_LIBS),yes)
