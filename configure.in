@@ -674,16 +674,20 @@ if test $blt_ok = no; then
     OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
 fi
 if test $blt_ok = no; then
-    bltlibs="-lBLT24"
+    bltlibs="-lBLT2.4"
     OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT25"
+    OPP_CHECK_LIB(BLT 2.5, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT2.5"
+    OPP_CHECK_LIB(BLT 2.5, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
 fi
 if test $blt_ok = no; then
     bltlibs="-lBLT"
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
-fi
-if test $blt_ok = no; then
-    bltlibs="-lBLT2.4"
-    OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
+    OPP_CHECK_LIB(BLT, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $bltlibs $TK_LIBS, blt_ok, BLT_LIBS=$bltlibs)
 fi
 if test $blt_ok = no; then
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  BLT"
@@ -701,8 +705,13 @@ fi
 # if we got through until here, enable building of the following progs:
 TKENV_IF_POSSIBLE=tkenv
 GNED_IF_POSSIBLE=gned
+if test $HAVE_BLT = yes; then
 SCALARS_IF_POSSIBLE=scalars
 PLOVE_IF_POSSIBLE=plove
+else
+SCALARS_IF_POSSIBLE=missing-library
+PLOVE_IF_POSSIBLE=missing-library
+fi
 
 # and build samples using Tkenv
 USERIF_LIBS='$(TKENV_LIBS)'

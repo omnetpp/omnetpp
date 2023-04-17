@@ -6410,7 +6410,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 
 fi
 if test $blt_ok = no; then
-    bltlibs="-lBLT24"
+    bltlibs="-lBLT2.4"
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
@@ -6420,6 +6420,82 @@ if test $blt_ok = no; then
 
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
 printf %s "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <blt.h>
+int
+main (void)
+{
+Blt_NameOfVector(0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; blt_ok=yes; BLT_LIBS=$bltlibs
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; blt_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT25"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$TK_CFLAGS"
+   LIBS="$bltlibs $TK_LIBS"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for BLT 2.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
+printf %s "checking for BLT 2.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... " >&6; }
+
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <blt.h>
+int
+main (void)
+{
+Blt_NameOfVector(0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }; blt_ok=yes; BLT_LIBS=$bltlibs
+else $as_nop
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }; blt_ok=no;
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $blt_ok = no; then
+    bltlibs="-lBLT2.5"
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$TK_CFLAGS"
+   LIBS="$bltlibs $TK_LIBS"
+
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for BLT 2.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
+printf %s "checking for BLT 2.5 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6456,46 +6532,8 @@ if test $blt_ok = no; then
    CXXFLAGS="$TK_CFLAGS"
    LIBS="$bltlibs $TK_LIBS"
 
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
-printf %s "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <blt.h>
-int
-main (void)
-{
-Blt_NameOfVector(0);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; blt_ok=yes; BLT_LIBS=$bltlibs
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }; blt_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-fi
-if test $blt_ok = no; then
-    bltlibs="-lBLT2.4"
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$TK_CFLAGS"
-   LIBS="$bltlibs $TK_LIBS"
-
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
-printf %s "checking for BLT 2.4 with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... " >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for BLT with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"" >&5
+printf %s "checking for BLT with CFLAGS=\"$TK_CFLAGS\" LIBS=\"$bltlibs $TK_LIBS\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6541,8 +6579,13 @@ fi
 # if we got through until here, enable building of the following progs:
 TKENV_IF_POSSIBLE=tkenv
 GNED_IF_POSSIBLE=gned
+if test $HAVE_BLT = yes; then
 SCALARS_IF_POSSIBLE=scalars
 PLOVE_IF_POSSIBLE=plove
+else
+SCALARS_IF_POSSIBLE=missing-library
+PLOVE_IF_POSSIBLE=missing-library
+fi
 
 # and build samples using Tkenv
 USERIF_LIBS='$(TKENV_LIBS)'
