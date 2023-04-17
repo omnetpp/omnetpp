@@ -75,7 +75,7 @@ void cDatarateChannel::rereadPars()
     bool hasDatarate = !std::isnan(datarate) && datarate != 0;
     if (delay < SIMTIME_ZERO)
         throw cRuntimeError(this, "Invalid delay %s", SIMTIME_STR(delay));
-    if (hasDatarate && (!std::isfinite(datarate) || datarate < 0))
+    if (hasDatarate && datarate < 0)
         throw cRuntimeError(this, "Invalid datarate %g", datarate);
     if (!std::isfinite(ber) || ber < 0 || ber > 1)
         throw cRuntimeError(this, "Invalid bit error rate %g", ber);
