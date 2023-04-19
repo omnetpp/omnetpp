@@ -4,7 +4,16 @@
 # without args, runs all *.test files in the current directory
 #
 
-MAKE="make -j6 MODE=debug"
+MODE=${MODE:-"debug"}
+MAKEOPTIONS="MODE=$MODE"
+MAKE=${MAKE:-"make"}
+MAKEFLAGS=${MAKEFLAGS:-"-j$(nproc)"}
+
+case "$MODE" in
+  "release") PROGSUFFIX="" ;;
+  "debug") PROGSUFFIX="_dbg" ;;
+  *) PROGSUFFIX="_$MODE" ;;
+esac
 
 TESTFILES=$*
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
@@ -19,9 +28,9 @@ $MAKE -C signalreg
 
 opp_test gen -v --args $OPT -- $TESTFILES || exit 1
 echo
-(cd work; opp_makemake -f -o work --deep --no-deep-includes -i ../makefrag $EXTRA_INCLUDES; $MAKE) || exit 1
+(cd work; opp_makemake -f -o work --deep --no-deep-includes -i ../makefrag $EXTRA_INCLUDES; $MAKE $MAKEOPTIONS) || exit 1
 echo
-opp_test run -p work_dbg -v --args $OPT -- $TESTFILES || exit 1
+opp_test run -p work$PROGSUFFIX -v --args $OPT -- $TESTFILES || exit 1
 echo
 echo Results can be found in ./work
 
