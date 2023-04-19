@@ -8,9 +8,18 @@ failure() {
     exit 1
 }
 
-MAKE=make
-TESTFILES=$*
+MODE=${MODE:-"debug"}
+MAKEOPTIONS="MODE=$MODE"
+MAKE=${MAKE:-"make"}
+MAKEFLAGS=${MAKEFLAGS:-"-j$(nproc)"}
 
+case "$MODE" in
+  "release") PROGSUFFIX="" ;;
+  "debug") PROGSUFFIX="d" ;;
+  *) PROGSUFFIX="_$MODE" ;;
+esac
+
+TESTFILES=$*
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
 if [ ! -d work ];  then mkdir work; fi
 opp_test $OPT -g -v $TESTFILES || exit 1
@@ -27,12 +36,12 @@ for i in * ""; do
 done
 
 echo Build...
-opp_makemake -f -r --nolink && $MAKE || failure BUILD
+opp_makemake -f -r --nolink && $MAKE $MAKEOPTIONS || failure BUILD
 
 # Run the tests
 echo
 cd ..
-PATH=.:$PATH opp_test $OPT -r -v $TESTFILES || exit 1
+PATH=.:$PATH opp_test $OPT -p work$PROGSUFFIX -r -v $TESTFILES || exit 1
 
 echo
 echo Results can be found in ./work
