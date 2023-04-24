@@ -28,6 +28,20 @@ IMPLIBS= -L$L -loppsim$D -loppenvir$D -lopplayout$D -loppcommon$D $(QT_LIBS) $(O
 # disable warnings for cleaner output on MinGW/clang
 CFLAGS+=$(QT_CFLAGS) -Wno-ignored-attributes -Wno-inconsistent-missing-override -Wno-deprecated-declarations -DQT_NO_DEPRECATED_WARNINGS
 
+ifeq ($(findstring linux,$(PLATFORM)),linux)
+  QMAKE_SPEC_OS=linux
+else ifeq ($(findstring linux,$(PLATFORM)),win32)
+  QMAKE_SPEC_OS=win32
+else ifeq ($(findstring linux,$(PLATFORM)),macosx)
+  QMAKE_SPEC_OS=macx
+endif
+
+ifeq ($(TOOLCHAIN_NAME), clang)
+  QMAKE_SPEC_COMPILER=clang
+else ifeq ($(TOOLCHAIN_NAME), gcc)
+  QMAKE_SPEC_COMPILER=g++
+endif
+
 all: $(QTENV_IF_POSSIBLE)
 
 qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
@@ -36,7 +50,7 @@ qtenv: $L/$(LIBNAME)$(LIB_SUFFIX)
 qmake:
 	@echo Invoking $(QMAKE) and building qtenv using qt$(QT_VERSION)
 	@mkdir -p $O
-	OPP_CFLAGS="$(CXXFLAGS) $(CFLAGS)" OPP_DEFINES="$(DEFINES)" $(QMAKE) "QMAKE_CXX=$(Q)echo $$<; $(CXX)" "QMAKE_CC=$(Q)echo $$<; $(CC)" "QMAKE_AR=$(AR)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
+	OPP_CFLAGS="$(CXXFLAGS) $(CFLAGS)" OPP_DEFINES="$(DEFINES)" $(QMAKE) -spec $(QMAKE_SPEC_OS)-$(QMAKE_SPEC_COMPILER) "QMAKE_AR=$(AR)" "CONFIG+=$(MODE)" -o $O/Makefile && (cd $O && $(MAKE))
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : qmake
 	@mkdir -p $L
