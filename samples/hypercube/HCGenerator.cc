@@ -18,7 +18,7 @@ void HCGenerator::activity()
     int my_address = par("address");
     cPar& iaTime = par("iaTime");  // take by ref since it can be random
 
-    for (int i = 0; ; i++) {
+    while (true) {
         // select destination randomly (but not the local station)
         int dest = intrand(numStations-1);
         if (dest >= my_address)

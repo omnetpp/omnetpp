@@ -70,7 +70,7 @@ void SqliteResultFileLoader::loadRuns()
     LOG << "runs " << std::flush;
     prepareStatement("SELECT runId, runName FROM run;");
 
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -91,7 +91,7 @@ void SqliteResultFileLoader::loadRunAttrs()
     LOG << "runattrs " << std::flush;
     prepareStatement("SELECT runId, attrName, attrValue FROM runAttr;");
 
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step (stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -115,7 +115,7 @@ void SqliteResultFileLoader::loadRunItervars()
     LOG << "itervars " << std::flush;
     prepareStatement("SELECT runId, itervarName, itervarValue FROM runItervar;");
 
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step (stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -139,7 +139,7 @@ void SqliteResultFileLoader::loadRunConfigEntries()
     LOG << "config " << std::flush;
     prepareStatement("SELECT runId, configKey, configValue FROM runConfig ORDER BY configOrder ASC;");
 
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step (stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -167,7 +167,7 @@ void SqliteResultFileLoader::loadScalars()
 
     LOG << "scalars " << std::flush;
     prepareStatement("SELECT scalarId, runId, moduleName, scalarName, scalarValue FROM scalar;");
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -183,7 +183,7 @@ void SqliteResultFileLoader::loadScalars()
     finalizeStatement();
 
     prepareStatement("SELECT scalarId, runId, attrName, attrValue FROM scalarAttr JOIN scalar USING (scalarId) ORDER BY runId, scalarId;");
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -209,7 +209,7 @@ void SqliteResultFileLoader::loadParameters()
 
     LOG << "params " << std::flush;
     prepareStatement("SELECT paramId, runId, moduleName, paramName, paramValue FROM parameter;");
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -225,7 +225,7 @@ void SqliteResultFileLoader::loadParameters()
     finalizeStatement();
 
     prepareStatement("SELECT paramId, runId, attrName, attrValue FROM paramAttr JOIN parameter USING (paramId) ORDER BY runId, paramId;");
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -265,7 +265,7 @@ void SqliteResultFileLoader::loadHistograms()
             "statCount, statMean, statStddev, statSum, statSqrsum, statMin, statMax, "
             "statWeights, statWeightedSum, statSqrSumWeights, statWeightedSqrSum "
             "FROM statistic;");
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -302,7 +302,7 @@ void SqliteResultFileLoader::loadHistograms()
     finalizeStatement();
 
     prepareStatement("SELECT statId, runId, attrName, attrValue FROM statisticAttr JOIN statistic USING (statId) ORDER BY statId;");
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -333,7 +333,7 @@ void SqliteResultFileLoader::loadHistograms()
     sqlite3_int64 currentStatId = -1;
     std::vector<double> binEdges;
     std::vector<double> binValues;
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE) {
             if (currentHistogram)
@@ -377,7 +377,7 @@ void SqliteResultFileLoader::loadVectors()
             "FROM vector LEFT JOIN run USING (runId);");
 
     const StringMap emptyAttrs;
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;
@@ -408,7 +408,7 @@ void SqliteResultFileLoader::loadVectors()
     finalizeStatement();
 
     prepareStatement("SELECT vectorId, runId, attrName, attrValue FROM vectorAttr JOIN vector USING (vectorId) ORDER BY runId, vectorId;");
-    for (int row=1; ; row++) {
+    while (true) {
         int resultCode = sqlite3_step(stmt);
         if (resultCode == SQLITE_DONE)
             break;

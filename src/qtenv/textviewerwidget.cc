@@ -425,7 +425,6 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
     int curX = horizontalMargin - horizontalScrollOffset + metrics.averageCharWidth()/2;
 
     int inColumn = 0;
-    int numVisibleChars = 0;
 
     Pos result(-1, -1);
 
@@ -441,8 +440,6 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
                 curX += gap;
 
             ++textPointer;
-
-            ++numVisibleChars;
         }
         else {
             // this is regular text, see how many characters until we hit a
@@ -473,8 +470,6 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
             }
 
             curX += width;
-
-            numVisibleChars += len;
         }
     }
 
