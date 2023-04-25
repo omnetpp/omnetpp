@@ -33,7 +33,7 @@ namespace common {
 
 std::string FileReader::staticBuffer;
 
-FileChangedError::FileChangedError(FileReader::FileChange change, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
+FileChangedError::FileChangedError(FileReader::FileChange change, const char *messagefmt, ...) : change(change)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, messagefmt);

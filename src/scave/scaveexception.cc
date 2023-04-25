@@ -20,7 +20,7 @@ namespace scave {
 
 
 ResultFileFormatException::ResultFileFormatException(const char *message, const char *file, int64_t line, file_offset_t offset)
-    : opp_runtime_error(""), file(file), line(line), offset(offset)
+    : file(file), line(line), offset(offset)
 {
     std::ostringstream msg;
     msg << message << ", file " << file;

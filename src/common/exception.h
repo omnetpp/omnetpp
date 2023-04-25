@@ -34,6 +34,8 @@ class COMMON_API opp_runtime_error : public std::runtime_error
   protected:
     std::string errormsg;
 
+    opp_runtime_error() : std::runtime_error("") {}
+
   public:
     /**
      * Constructor with a printf-like argument list.
