@@ -174,7 +174,6 @@ std::string Configuration::substituteVariables(const char *text, const StringMap
 {
     //TODO perhaps use opp_substitutevariables() here
     std::string result = opp_nulltoempty(text);
-    int k = 0;  // counts "${" occurrences
     size_t pos = 0;
     while ((pos = result.find("${", pos)) != std::string::npos) {
         std::string varName, dummy1, dummy2;
@@ -191,8 +190,6 @@ std::string Configuration::substituteVariables(const char *text, const StringMap
 
         result.replace(pos, len, value);
         pos += value.length(); // skip over contents just inserted
-
-        k++;
     }
     return result;
 }
