@@ -122,7 +122,7 @@ void QuantityFormatter::determineSign(State& state)
 int64_t QuantityFormatter::shiftScore(int64_t score, int64_t increment, int numDigits)
 {
     int64_t scale = std::pow(10, numDigits);
-    Assert(0 <= increment < scale);
+    Assert(0 <= increment && increment < scale);
     return score * scale + increment;
 }
 
