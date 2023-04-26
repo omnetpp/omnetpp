@@ -907,7 +907,7 @@ public class DataTable extends LargeTable implements IDataControl {
                         if (!stats.getStatistics().isWeighted())
                             return NA;
                         double sumWeights = stats.getStatistics().getSumWeights();
-                        return sumWeights >= 0 ? formatNumber(result, column.label, sumWeights, "", gc, width) : NA;
+                        return sumWeights >= 0 ? formatNumber(result, column.label, sumWeights, null, gc, width) : NA;
                     }
                     case COL_ISWEIGHTED: {
                         return new StyledString(stats.getStatistics().isWeighted() ? "true" : "false");
