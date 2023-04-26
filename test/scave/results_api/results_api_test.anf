@@ -273,6 +273,11 @@ def test_scalars():
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "scalars.csv"), "content mismatch")
 
+def test_scalars_with_fields():
+    df = results.get_scalars("*", include_fields=True)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "scalars_with_fields.csv"), "content mismatch")
+
 def test_scalars_with_attrs():
     df = results.get_scalars("*", include_attrs=True)
     _assert_sequential_index(df)

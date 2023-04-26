@@ -12,6 +12,7 @@ from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_co
 RESULT_FILES = ["results/General-*.vec", "results/General-*.sca"]
 
 r = results.read_result_files(RESULT_FILES)
+r_with_fields = results.read_result_files(RESULT_FILES, include_fields_as_scalars=True)
 
 def test_runs():
     df = results.get_runs(r)
@@ -225,6 +226,11 @@ def test_scalars():
     df = results.get_scalars(r)
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "scalars.csv"), "content mismatch")
+
+def test_scalars_with_fields():
+    df = results.get_scalars(r_with_fields)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "scalars_with_fields.csv"), "content mismatch")
 
 def test_scalars_with_attrs():
     df = results.get_scalars(r, include_attrs=True)
