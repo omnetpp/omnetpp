@@ -1,0 +1,3 @@
+
+Model for testing the GenericObjectInspector for cases where
+cObjectDescriptor throws exceptions from various methods.
