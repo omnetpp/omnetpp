@@ -269,7 +269,7 @@ double StatisticsResult::getScalarField(FieldNum fieldId) const
 ResultItem::FieldNum *StatisticsResult::getAvailableFields()
 {
     static FieldNum array[] = {
-            FieldNum::COUNT, FieldNum::SUM, FieldNum::SUMWEIGHTS, FieldNum::MEAN, FieldNum::STDDEV,
+            FieldNum::COUNT, FieldNum::SUMWEIGHTS, FieldNum::MEAN, FieldNum::STDDEV, // FieldNum::SUM is not supported in the weighted case
             FieldNum::MIN, FieldNum::MAX, FieldNum::NUMBINS, FieldNum::NONE
     };
     return array;
@@ -303,7 +303,7 @@ double HistogramResult::getScalarField(FieldNum fieldId) const
 ResultItem::FieldNum *HistogramResult::getAvailableFields()
 {
     static FieldNum array[] = {
-            FieldNum::COUNT, FieldNum::SUM, FieldNum::SUMWEIGHTS, FieldNum::MEAN, FieldNum::STDDEV, FieldNum::MIN, FieldNum::MAX,
+            FieldNum::COUNT, FieldNum::SUMWEIGHTS, FieldNum::MEAN, FieldNum::STDDEV, FieldNum::MIN, FieldNum::MAX, // FieldNum::SUM is not supported in the weighted case
             FieldNum::NUMBINS, FieldNum::RANGEMIN, FieldNum::RANGEMAX, FieldNum::UNDERFLOWS, FieldNum::OVERFLOWS, FieldNum::NONE
     };
     return array;
