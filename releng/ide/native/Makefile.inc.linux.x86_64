@@ -127,7 +127,7 @@ SANITIZE_FLAGS =  -fsanitize=leak,address,undefined
 CFLAGS_DEBUG =  -O0 -Wall -glldb -fstandalone-debug
 CFLAGS_RELEASE =  -O3 -DNDEBUG=1 -ffp-contract=off
 CFLAGS += $(CFLAGS_EXTRA)  -MMD -MP -MF $@.d  -fPIC  -Wno-deprecated-register -Wno-unused-function -fno-omit-frame-pointer -include $(OMNETPP_ROOT)/releng/ide/native/force_link_glibc_2.12.2.h $(DEFINES)
-CXXFLAGS = 
+CXXFLAGS = -std=c++17
 LDFLAG_LIBPATH = -L
 LDFLAG_INCLUDE = -Wl,-u,
 LDFLAG_LIB = -l
