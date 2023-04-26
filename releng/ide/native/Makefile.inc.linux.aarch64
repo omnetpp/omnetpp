@@ -126,7 +126,7 @@ SANITIZE_FLAGS =  -fsanitize=leak,address,undefined
 CFLAGS_DEBUG =  -O0 -Wall -glldb -fstandalone-debug
 CFLAGS_RELEASE =  -O3 -DNDEBUG=1
 CFLAGS += $(CFLAGS_EXTRA) -MMD -MP -MF $@.d -fPIC -Wno-unused-function -fno-omit-frame-pointer $(DEFINES)
-CXXFLAGS = 
+CXXFLAGS = -std=c++17
 LDFLAG_LIBPATH = -L
 LDFLAG_INCLUDE = -Wl,-u,
 LDFLAG_LIB = -l
