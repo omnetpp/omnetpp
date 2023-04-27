@@ -652,7 +652,7 @@ def timeavg(r, interpolation):
 
     integrated = _integrate_helper(t, v, interpolation)
 
-    r['vecvalue'] = integrated / t
+    r['vecvalue'] = np.divide(integrated, t, out=np.zeros_like(t), where=t!=0)
     if "title" in r:
         r['title'] = r['title'] + " timeavg"
 
