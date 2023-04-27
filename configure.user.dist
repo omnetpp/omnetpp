@@ -126,6 +126,15 @@ WITH_BACKTRACE=yes
 SHARED_LIBS=yes
 
 #
+# Adds the "ccache" prefix to the compiler commands ($CC,$CXX). This option
+# requires ccache to be installed on your system. It can significantly speed up
+# recompilations by caching already compiled object files. Note that turning
+# this option off does not necessarily disable ccache if it is installed to be
+# used system-wide.
+#
+USE_CCACHE_PREFIX=no
+
+#
 # Compiler and linker options for Qt
 #
 # If you wish to use a custom Qt bundle (for example downloaded from the

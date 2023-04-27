@@ -694,6 +694,7 @@ OMNETPP_BUILDID
 OMNETPP_VERSION
 OMNETPP_RELEASE
 OMNETPP_PRODUCT
+CCACHE
 MPICXX
 MPICPP
 OPENMP_CXXFLAGS
@@ -7354,6 +7355,62 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 fi
 
 #----------------------
+# Check for ccache support
+#----------------------
+if test "$USE_CCACHE_PREFIX" = "yes"; then
+  # Extract the first word of "ccache", so it can be a program name with args.
+set dummy ccache; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_prog_CCACHE+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if test -n "$CCACHE"; then
+  ac_cv_prog_CCACHE="$CCACHE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CCACHE="ccache"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_CCACHE" && ac_cv_prog_CCACHE="not found"
+fi
+fi
+CCACHE=$ac_cv_prog_CCACHE
+if test -n "$CCACHE"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $CCACHE" >&5
+printf "%s\n" "$CCACHE" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  if test "$CCACHE" = "not found"; then
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ccache"
+    as_fn_error $? "ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes)" "$LINENO" 5
+  else
+    CC="ccache $CC"
+    CXX="ccache $CXX"
+  fi
+fi
+
+#----------------------
 # set final CFLAGS and LDFLAGS variable to be used in Makefile.inc
 #----------------------
 CFLAGS="$DEPENDFLAGS $CFLAGS $CFLAGS_ARCH \$(DEFINES)"
@@ -8890,9 +8947,7 @@ if ccache -V >/dev/null 2>/dev/null; then
     cat << EOT
 
 Note: ccache is installed, but it is apparently not used by your current setup.
-To activate it, add /usr/lib/ccache at the front of your PATH, or prefix the
-compiler commands with "ccache" in configure.user (e.g., CXX="ccache clang++"),
-and re-run configure.
+To activate it, add set USE_CCACHE_PREFIX=yes in configure.user, and re-run configure.
 EOT
   fi
 fi
