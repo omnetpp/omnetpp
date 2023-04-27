@@ -114,6 +114,11 @@ WITH_SYSTEMC=no
 SHARED_LIBS=yes
 
 #
+# Set to yes and install ccache to speed up the repeated compilation of models.
+#
+USE_CCACHE=no
+
+#
 # Compiler and linker options for Qt
 #
 # If you wish to use a custom Qt bundle (for example downloaded from the
