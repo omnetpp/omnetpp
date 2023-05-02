@@ -136,6 +136,7 @@ class SIM_API ConstantFilter : public cResultFilter
     public:
         ConstantFilter(double c) {this->c = c;}
         double getConstant() const {return c;}
+        virtual double getInitialDoubleValue() const override {return c;}
         virtual std::string str() const override;
 };
 
