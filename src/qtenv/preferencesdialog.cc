@@ -170,7 +170,7 @@ void PreferencesDialog::accept()
         getQtenv()->opt->logFormat = logFormat.c_str();
     }
     catch (std::exception& e) {
-        getQtenv()->confirm(Qtenv::ERROR, (std::string("Error in log prefix format: ") + e.what()).c_str());
+        getQtenv()->confirm((std::string("Error in log prefix format: ") + e.what()).c_str());
     }
 
     // TODO: this conversion is fragile, it depends on the order of the enum which might change
