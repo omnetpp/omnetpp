@@ -593,6 +593,11 @@ OMNeT++ 5.3
         as well. (Note: intpar_t could not be added because it would conflict
         with "long" on most platforms.)
 
+(!)     cMessagePrinter: Extended with tags and column names. As part of that,
+        printMessage() argument list was extended with a const Options *options
+        argument. New methods: getSupportedTags(), getDefaultEnabledTags(),
+        getColumnNames().
+
 
 OMNeT++ 5.2
 ~~~~~~~~~~~
