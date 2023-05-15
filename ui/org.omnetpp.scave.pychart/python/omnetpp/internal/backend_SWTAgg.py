@@ -194,10 +194,10 @@ class FigureCanvasSWT(FigureCanvasBase):
             FigureCanvasBase.scroll_event(self, x, y, steps, guiEvent=event)
 
     def keyPressEvent(self, event):
-        FigureCanvasBase.key_press_event(self, key)
+        FigureCanvasBase.key_press_event(self, event.key)
 
     def keyReleaseEvent(self, event):
-        FigureCanvasBase.key_release_event(self, key)
+        FigureCanvasBase.key_release_event(self, event.key)
 
     def _resize(self, width, height):
         dpival = self.figure.dpi
