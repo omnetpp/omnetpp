@@ -16,11 +16,6 @@ __license__ = """
 """
 
 import os
-# posix_ipc is required for POSIX shm on Linux and Mac
-# Although on Python >=3.8 we could do without it.
-if os.name != 'nt':
-    import posix_ipc
-import mmap
 import functools
 
 from matplotlib.figure import Figure
@@ -28,6 +23,7 @@ from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, Naviga
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from omnetpp.internal import Gateway
+from omnetpp.internal.shmutil import shm_ctor_wrapper
 # from omnetpp.internal.TimeAndGuard import TimeAndGuard, for_all_methods
 
 # autoConvert doesn't seem to work with containers returned from Python
@@ -267,7 +263,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
     def __init__(self, figure, num):
         self.num = num
         self.useSharedMemory = True
-        self.shmMmap = None
+        self.shm = None
 
         super().__init__(figure)
         self._agg_draw_pending = False
@@ -275,8 +271,9 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         self.draw_idle()
 
     def __del__(self):
-        if self.shmMmap:
-            self.shmMmap.close()
+        if self.shm is not None:
+            self.shm.close()
+            self.shm.unlink()
 
     def getAxisLimits(self):
         limits = list()
@@ -333,6 +330,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
 
         buffer = self.buffer_rgba()
 
+        # older matplotlib versions return a bytes object, newer ones return a memoryview
         if isinstance(buffer, bytes):
             bl = len(buffer)
         else:
@@ -340,10 +338,7 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
             bl = buffer.nbytes
 
         if self.useSharedMemory:
-            if not self.shmMmap or self.shmMmap.size() < bl:
-                if self.shmMmap:
-                    self.shmMmap.close()
-
+            if self.shm is None or self.shm.size < bl:
                 global figure_counter
                 # The & 0xFFFF operations are there to make sure that name is not longer than 31 bytes,
                 # because macOS has silly limitations regarding this. The fixed part is 8 characters,
@@ -351,24 +346,19 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
                 name = "/plot-" + str(os.getpid() & 0xFFFF) + "-" + str(self.num & 0xFFFF) + "-" + str(figure_counter & 0xFFFF)
                 figure_counter += 1
 
-                if os.name == 'nt':
-                    # on Windows, the mmap module in itself provides shared memory functionality
-                    self.shmMmap = mmap.mmap(-1, bl, tagname=name)
+                oldshm = self.shm
+                name, self.shm = shm_ctor_wrapper(name, create=True, size=bl)
+                self.widget.setSharedMemoryNameAndSize(name, bl)
 
-                    self.widget.setSharedMemoryNameAndSize(name, bl)
-                else:
-                    shm = posix_ipc.SharedMemory(name, posix_ipc.O_CREAT, size=bl)
+                if oldshm is not None:
+                    oldshm.close()
+                    oldshm.unlink()
 
-                    self.shmMmap = mmap.mmap(shm.fd, bl)
+            # casting the buffer to a flat array if it's a memoryview, else using it as is
+            bc = buffer if isinstance(buffer, bytes) else buffer.cast("B", [bl])
+            # shm object may be oversized (after the widget is made smaller), hence the [:bl]
+            self.shm.buf[:bl] = bc[:]
 
-                    self.widget.setSharedMemoryNameAndSize(name, bl)
-
-                    # the mapping from Java will keep it alive until the async drawing occurs
-                    shm.close_fd()
-                    shm.unlink()
-
-            self.shmMmap.seek(0)
-            self.shmMmap.write(buffer)
             self.widget.setPixelsShared(w, h)
         else:
             self.widget.setPixels(buffer, w, h)
