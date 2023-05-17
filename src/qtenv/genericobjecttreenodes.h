@@ -203,6 +203,7 @@ class QTENV_API FieldNode : public TreeNode
 
     any_ptr object = any_ptr(nullptr);
     cClassDescriptor *desc = nullptr;
+    std::string errorText; // not empty if there was an error
 
     std::vector<TreeNode *> makeChildren() override;
     bool isSameAs(TreeNode *other) override;

@@ -80,6 +80,8 @@ int TreeNode::computeObjectChildCount(any_ptr obj, cClassDescriptor *desc, Mode 
     if (obj == nullptr || desc == nullptr)
         return 0;
 
+    DisableDebugOnErrors dummy;
+
     switch (mode) {
         case Mode::GROUPED: {
             std::set<std::string> groupNames;
@@ -106,7 +108,7 @@ int TreeNode::computeObjectChildCount(any_ptr obj, cClassDescriptor *desc, Mode 
             try {
                 visitor.process(fromAnyPtr<cObject>(obj));
             }
-            catch (std::exception &e) {
+            catch (std::exception& e) {
                 return 1; // the error marker
             }
 
@@ -136,6 +138,7 @@ std::vector<TreeNode *> TreeNode::makeObjectChildNodes(any_ptr obj, cClassDescri
     if (obj == nullptr || desc == nullptr)
         return {};
 
+    DisableDebugOnErrors dummy;
     std::vector<TreeNode *> result;
 
     switch (mode) {
@@ -199,13 +202,19 @@ std::vector<TreeNode *> TreeNode::makeObjectChildNodes(any_ptr obj, cClassDescri
 
 cClassDescriptor *TreeNode::getDescriptorForField(any_ptr obj, cClassDescriptor *desc, int fieldIndex, int arrayIndex)
 {
-    any_ptr fieldPtr = desc->getFieldStructValuePointer(obj, fieldIndex, arrayIndex);
-    if (fieldPtr == nullptr)
-        return nullptr;
+    DisableDebugOnErrors dummy;
+    try {
+        any_ptr fieldPtr = desc->getFieldStructValuePointer(obj, fieldIndex, arrayIndex);
+        if (fieldPtr == nullptr)
+            return nullptr;
 
-    if (desc->getFieldIsCObject(fieldIndex)) {
-        cObject *object = fromAnyPtr<cObject>(fieldPtr);
-        return object->getDescriptor();
+        if (desc->getFieldIsCObject(fieldIndex)) {
+            cObject *object = fromAnyPtr<cObject>(fieldPtr);
+            return object->getDescriptor();
+        }
+    }
+    catch (std::exception& _e) {
+        // In case dynamic descriptor lookup fails, no big deal, falling back to the static one.
     }
 
     if (desc->getFieldIsCompound(fieldIndex)) {
@@ -524,15 +533,31 @@ FieldNode::FieldNode(TreeNode *parent, int indexInParent, any_ptr contObject, cC
     : TreeNode(parent, indexInParent, contObject, contDesc, mode), fieldIndex(fieldIndex)
 {
     if (!contDesc->getFieldIsArray(fieldIndex) && contDesc->getFieldIsCompound(fieldIndex)) {
-        object = contDesc->getFieldStructValuePointer(contObject, fieldIndex, 0);
-        desc = getDescriptorForField(contObject, contDesc, fieldIndex);
+        DisableDebugOnErrors dummy;
+        try {
+            object = contDesc->getFieldStructValuePointer(contObject, fieldIndex, 0);
+            desc = getDescriptorForField(contObject, contDesc, fieldIndex);
+        }
+        catch (std::exception& e) {
+            object = any_ptr(nullptr);
+            desc = nullptr;
+            errorText = e.what();
+        }
     }
 }
 
 int FieldNode::computeChildCount()
 {
-    if (containingObject != nullptr && containingDesc != nullptr && containingDesc->getFieldIsArray(fieldIndex))
-        return containingDesc->getFieldArraySize(containingObject, fieldIndex);
+    if (containingObject != nullptr && containingDesc != nullptr && containingDesc->getFieldIsArray(fieldIndex)) {
+        DisableDebugOnErrors dummy;
+        try {
+            return containingDesc->getFieldArraySize(containingObject, fieldIndex);
+        }
+        catch (std::exception& e) {
+            errorText = e.what();
+            return 0;
+        }
+    }
     else
         return computeObjectChildCount(object, desc, mode);
 }
@@ -540,10 +565,19 @@ int FieldNode::computeChildCount()
 std::vector<TreeNode *> FieldNode::makeChildren()
 {
     if (containingObject != nullptr && containingDesc != nullptr && containingDesc->getFieldIsArray(fieldIndex)) {
+        DisableDebugOnErrors dummy;
         std::vector<TreeNode *> result;
-        int size = containingDesc->getFieldArraySize(containingObject, fieldIndex);
+        int size = 0;
+        try {
+            size = containingDesc->getFieldArraySize(containingObject, fieldIndex);
+        }
+        catch (std::exception& e) {
+            errorText = e.what();
+            return result;
+        }
         for (int i = 0; i < size; ++i)
             result.push_back(new ArrayElementNode(this, result.size(), containingObject, containingDesc, fieldIndex, i, mode));
+
         return result;
     }
     else {
@@ -588,7 +622,16 @@ QVariant FieldNode::computeData(int role)
     QString equals = " = ";
     QString editable = isEditable() ? " [...] " : "";
     QString fieldType = containingDesc->getFieldTypeString(fieldIndex);
-    any_ptr valuePointer = isCompound && !isCObject && !isArray ? containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0) : any_ptr(nullptr);
+    any_ptr valuePointer = any_ptr(nullptr);
+
+    if (isCompound && !isCObject && !isArray) {
+        try {
+            valuePointer = containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, 0);
+        }
+        catch (std::exception& e) {
+            errorText = e.what();
+        }
+    }
 
     if (isCompound && !isCObject && !isArray && valuePointer != nullptr) {
         // Even if it's not a CObject, it can have a different dynamic type
@@ -607,8 +650,8 @@ QVariant FieldNode::computeData(int role)
         try {
             fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, 0).c_str();
         }
-        catch (cRuntimeError& e) {
-            fieldValue = QString("<!> Error: ") + e.what();
+        catch (std::exception& e) {
+            errorText = e.what();
         }
     }
 
@@ -622,8 +665,15 @@ QVariant FieldNode::computeData(int role)
             fieldValue = "nullptr";
     }
 
-    if (isArray)
-        arraySize = QString("[") + QVariant::fromValue(containingDesc->getFieldArraySize(containingObject, fieldIndex)).toString() + "]";
+    if (isArray) {
+        try {
+            arraySize = QString("[") + QVariant::fromValue(containingDesc->getFieldArraySize(containingObject, fieldIndex)).toString() + "]";
+        }
+        catch (std::exception& e) {
+            errorText = e.what();
+            arraySize = QString("[?]");
+        }
+    }
 
     if (fieldType == "string" && !isArray)
         prefix = postfix = "'";
@@ -635,6 +685,9 @@ QVariant FieldNode::computeData(int role)
 
     if (fieldValue.contains("\n") || fieldValue.length() > 50)
         tooltip += "\n\n" + fieldValue;
+
+    if (!errorText.empty())
+        fieldValue += QString(" <!> Error: ") + errorText.c_str();
 
     switch (role) {
         case Qt::EditRole:
@@ -663,9 +716,9 @@ bool FieldNode::isEditable()
 
 bool FieldNode::setData(const QVariant& value, int role)
 {
-    DisableDebugOnErrors dummy;
     if (!containingDesc)
         return false;
+    DisableDebugOnErrors dummy;
     containingDesc->setFieldValueAsString(containingObject, fieldIndex, 0, value.toString().toStdString().c_str());
     return true;
 }
@@ -815,8 +868,16 @@ bool FieldGroupNode::matchesPropertyFilter(const QString &property)
 std::vector<TreeNode *> ArrayElementNode::makeChildren()
 {
     if (containingDesc->getFieldIsCompound(fieldIndex)) {
+        DisableDebugOnErrors dummy;
+        any_ptr fieldPtr;
+        try {
+            fieldPtr = containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex);
+        }
+        catch (std::exception& e) {
+            return {};
+        }
         cClassDescriptor *fieldDesc = getDescriptorForField(containingObject, containingDesc, fieldIndex, arrayIndex);
-        return makeObjectChildNodes(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex), fieldDesc);
+        return makeObjectChildNodes(fieldPtr, fieldDesc);
     }
     return {};
 }
@@ -838,8 +899,16 @@ ArrayElementNode::ArrayElementNode(TreeNode *parent, int indexInParent, any_ptr 
 int ArrayElementNode::computeChildCount()
 {
     if (containingDesc->getFieldIsCompound(fieldIndex)) {
+        DisableDebugOnErrors dummy;
+        any_ptr fieldPtr;
+        try {
+            fieldPtr = containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex);
+        }
+        catch (std::exception& e) {
+            return 0;
+        }
         cClassDescriptor *fieldDesc = getDescriptorForField(containingObject, containingDesc, fieldIndex, arrayIndex);
-        return computeObjectChildCount(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex), fieldDesc, mode);
+        return computeObjectChildCount(fieldPtr, fieldDesc, mode);
     }
     return 0;
 }
@@ -854,27 +923,36 @@ QVariant ArrayElementNode::computeData(int role)
     cObject *fieldObjectPointer = nullptr;
 
     if (containingDesc->getFieldIsCObject(fieldIndex)) {
-        fieldObjectPointer = fromAnyPtr<cObject>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
+        any_ptr elementPtr;
+        try {
+            elementPtr = containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex);
 
-        info += (fieldObjectPointer
-                        ? QString("(%1) %2")
-                          .arg(getObjectShortTypeName(fieldObjectPointer))
-                          .arg(getObjectFullNameOrPath(fieldObjectPointer))
-                         : "nullptr");
+            fieldObjectPointer = fromAnyPtr<cObject>(elementPtr);
 
-        std::string i = fieldObjectPointer ? fieldObjectPointer->str() : "";
-        if (!i.empty()) {
-            info += ": ";
-            value += i.c_str();
+            info += (fieldObjectPointer
+                            ? QString("(%1) %2")
+                            .arg(getObjectShortTypeName(fieldObjectPointer))
+                            .arg(getObjectFullNameOrPath(fieldObjectPointer))
+                            : "nullptr");
+
+            std::string i = fieldObjectPointer ? fieldObjectPointer->str() : "";
+            if (!i.empty()) {
+                info += ": ";
+                value += i.c_str();
+            }
+        }
+        catch (std::exception& e) {
+            value += QString("<!> Error: ") + e.what();
         }
     }
     else if (containingDesc->getFieldIsCompound(fieldIndex)) {
-        const char *fieldType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, arrayIndex);
+        const char *fieldType = "";
         std::string fieldValue;
         try {
+            fieldType = containingDesc->getFieldDynamicTypeString(containingObject, fieldIndex, arrayIndex);
             fieldValue = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex);
         }
-        catch (cRuntimeError& e) {
+        catch (std::exception& e) {
             fieldValue = std::string("<!> Error: ") + e.what();
         }
 
@@ -891,7 +969,7 @@ QVariant ArrayElementNode::computeData(int role)
         try {
             value = containingDesc->getFieldValueAsString(containingObject, fieldIndex, arrayIndex).c_str();
         }
-        catch (cRuntimeError& e) {
+        catch (std::exception& e) {
             value = QString("<!> Error: ") + e.what();
         }
     }
@@ -936,9 +1014,17 @@ QString ArrayElementNode::computeNodeIdentifier()
 
 cObject *ArrayElementNode::getCObjectPointer()
 {
-    return containingDesc->getFieldIsCObject(fieldIndex)
-            ? fromAnyPtr<cObject>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex))
-            : nullptr;
+    if (containingDesc->getFieldIsCObject(fieldIndex))
+    {
+        DisableDebugOnErrors dummy;
+        try {
+            return fromAnyPtr<cObject>(containingDesc->getFieldStructValuePointer(containingObject, fieldIndex, arrayIndex));
+        }
+        catch (std::exception& e) {
+            // not much we can do here
+        }
+    }
+    return nullptr;
 }
 
 bool ArrayElementNode::matchesPropertyFilter(const QString &property)
