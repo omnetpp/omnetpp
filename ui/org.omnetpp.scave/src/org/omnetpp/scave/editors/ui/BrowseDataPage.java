@@ -227,7 +227,6 @@ public class BrowseDataPage extends FormEditorPage {
         // populate the popup menu of the panel
         IMenuManager contextMenuManager = panel.getDataControl().getContextMenuManager();
         contextMenuManager.removeAll();
-        System.out.println("configureContextMenu");
 
         ScaveEditorActions actions = scaveEditor.getActions();
 
