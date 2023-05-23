@@ -1,15 +1,10 @@
 import math
 import pandas as pd
 import numpy as np
-import platform
 import pickle
 
-# posix_ipc is required for POSIX shm on Linux and Mac
-if platform.system() in ['Linux', 'Darwin']:
-    import posix_ipc
-import mmap
-
 from omnetpp.internal import Gateway
+from omnetpp.internal.shmutil import shm_ctor_wrapper
 
 import functools
 print = functools.partial(print, flush=True)
@@ -30,23 +25,12 @@ def _load_pickle_from_shm(name_and_size : str):
     if name == "<EMPTY>" and size == 0:
         return None
 
-    system = platform.system()
-    if system in ['Linux', 'Darwin']:
-        mem = posix_ipc.SharedMemory(name)
+    name, shm = shm_ctor_wrapper(name)
 
-        with mmap.mmap(mem.fd, mem.size) as mf:
-            mf.write_byte(1)
-            mf.seek(8)
-            p = pickle.load(mf)
-
-    elif system == 'Windows':
-        # on Windows, the mmap module in itself provides shared memory functionality
-        with mmap.mmap(-1, size, tagname=name) as mf:
-            mf.write_byte(1)
-            mf.seek(8)
-            p = pickle.load(mf)
-    else:
-        raise RuntimeError("unsupported platform")
+    p = pickle.loads(shm.buf[8:])
+    shm.buf[0] = 1 # signal that we have consumed it
+    shm.buf.release()
+    shm.close()
 
     return p
 
@@ -91,33 +75,12 @@ def _get_array_from_shm(name_and_size : str):
     if name == "<EMPTY>" and size == 0:
         return np.array([])
 
-    system = platform.system()
-    if system in ['Linux', 'Darwin']:
-        mem = posix_ipc.SharedMemory(name)
+    name, shm = shm_ctor_wrapper(name)
 
-        if system == 'Darwin':
-            # for some reason we can't directly np.memmap the shm file, because it is "unseekable"
-            # but the mmap module works with it, so we just copy the data into np, and release the shared memory
-            with mmap.mmap(mem.fd, length=mem.size) as mf:
-                mf.write_byte(1)
-                mf.seek(0)
-                arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int((size-8)/8))
-        else:
-            # on Linux, we can just continue to use the existing shm memory without copying
-            with open(mem.fd, 'wb') as mf:
-                mf.write(b"\1")
-                mf.seek(0)
-                arr = np.memmap(mf, dtype=np.double, offset=8, shape=(int((size-8)/8),))
-
-        # on Mac we are done with shm (data is copied), on Linux we can delete the name even though the mapping is still in use
-    elif system == 'Windows':
-        # on Windows, the mmap module in itself provides shared memory functionality. and we copy the data here as well.
-        with mmap.mmap(-1, size, tagname=name) as mf: # should NOT subtract the 8 bytes of the header from the size here!
-            mf.write_byte(1)
-            mf.seek(0)
-            arr = np.frombuffer(mf.read(), dtype=np.double, offset=8, count=int((size-8)/8))
-    else:
-        raise RuntimeError("unsupported platform")
+    arr = np.copy(np.frombuffer(shm.buf, dtype=np.double, offset=8))
+    shm.buf[0] = 1 # signal that we got it
+    shm.buf.release()
+    shm.close()
 
     return arr
 
