@@ -75,38 +75,24 @@ fi
 
 # macOS specific settings
 if [ $(uname) = "Darwin" ]; then
-  if [ $(arch) = "arm64" ]; then
+  if [ $(uname -m) = "arm64" ]; then
     if [ -d $dir/tools/macos.x86_64 ]; then
       echo "NOTE: We are running on Apple Silicon, but you have downloaded the x86_64 version of the installation package!"
       echo "Turning on x86_64 emulation by starting a new shell with 'arch -x86_64 /bin/zsh -i' ..."
       export dir; arch -x86_64 /bin/zsh -c 'source $dir/setenv; zsh -i'
       return 1
-    elif [ -d $dir/tools/macos.aarch64 ]; then
-      TOOLS_DIR=$dir/tools/macos.aarch64
-    else
-      echo "Error: We are running on macOS aarch64, but you seem to have downloaded the Linux or Windows version of the installation package!"
-      return 1
     fi
   else
-    if [ -d $dir/tools/macos.aarch64 ]; then
-      echo "Error: We are running on macOS x86_64, but you have downloaded the AARCH64 version of the installation package!"
-      echo "Please download and install the x86_64 compatible package."
-      return 1
-    elif [ -d $dir/tools/macos.x86_64 ]; then
+    if [ -d $dir/tools/macos.x86_64 ]; then
       TOOLS_DIR=$dir/tools/macos.x86_64
-    else
-      echo "Error: We are running on macOS x86_64, but you seem to have downloaded the Linux or Windows version of the installation package!"
-      return 1
+      export PATH=$TOOLS_DIR/bin:$PATH
+      export PIP_PREFIX=$TOOLS_DIR/lib/Python.framework/Versions/Current
+      export PYTHONNOUSERSITE=1
+      export BISON_PKGDATADIR=$TOOLS_DIR/share/bison
+      export QT_PLUGIN_PATH=$TOOLS_DIR/plugins
+      TOOLS_DIR=
     fi
   fi
-
-  # setup macOS specific variables
-  export PATH=$TOOLS_DIR/bin:$PATH
-  export PIP_PREFIX=$TOOLS_DIR/lib/Python.framework/Versions/Current
-  export PYTHONNOUSERSITE=1
-  export BISON_PKGDATADIR=$TOOLS_DIR/share/bison
-  export QT_PLUGIN_PATH=$TOOLS_DIR/plugins
-  TOOLS_DIR=
 fi
 
 # Windows/MinGW specifiy settings
