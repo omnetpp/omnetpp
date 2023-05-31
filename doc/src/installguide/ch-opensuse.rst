@@ -35,8 +35,7 @@ To install the required packages, type in the terminal:
    $ sudo zypper install make gcc gcc-c++ clang lld bison flex perl \
        python3 python3-pip libqt5-qtbase-devel libxml2-devel zlib-devel \
        doxygen graphviz xdg-utils
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy \
-       seaborn posix_ipc
+   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn
 
 .. note::
 

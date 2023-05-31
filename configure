@@ -5551,7 +5551,6 @@ try_import("pandas")
 try_import("matplotlib")
 
 if os.name == 'posix':
-  try_import("posix_ipc")
   try_import("fcntl")
 else:
   try_import("msvcrt")
