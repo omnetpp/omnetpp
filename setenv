@@ -30,6 +30,7 @@ if [ -n "$__omnetpp_root_dir" ]; then
   fi
   export PATH=${PATH#$__omnetpp_root_dir/bin:}
   export PYTHONPATH=${PYTHONPATH#$__omnetpp_root_dir/python}
+  export OMNETPP_IMAGE_PATH=${OMNETPP_IMAGE_PATH#$__omnetpp_root_dir/images}
   export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
   export QT_SELECT=
@@ -88,6 +89,7 @@ fi
 
 export PATH=$dir/bin:$PATH
 export PYTHONPATH=$dir/python:$PYTHONPATH && PYTHONPATH=${PYTHONPATH%:}  # required because colon at the end causes issues on Windows
+export OMNETPP_IMAGE_PATH=$dir/images:$OMNETPP_IMAGE_PATH
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
