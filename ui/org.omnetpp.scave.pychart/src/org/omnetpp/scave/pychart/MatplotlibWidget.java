@@ -493,7 +493,7 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
             PyChartPlugin.logError("Unknown cursor type: " + cursor, e);
             cursorType = SWT.CURSOR_ARROW;
         };
-        Display.getDefault().asyncExec(() -> { if (!isDisposed()) setCursor(new Cursor(getDisplay(), cursorType)); });
+        Display.getDefault().asyncExec(() -> { if (!isDisposed()) setCursor(getDisplay().getSystemCursor(cursorType)); });
     }
 
     @Override
