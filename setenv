@@ -33,6 +33,8 @@ if [ -n "$__omnetpp_root_dir" ]; then
     export QT_PLUGIN_PATH=${QT_PLUGIN_PATH#$__omnetpp_root_dir/tools/macosx/plugins:}
   fi
   export PATH=${PATH#$__omnetpp_root_dir/bin:}
+  export LD_LIBRARY_PATH=${LD_LIBRARY_PATH#$__omnetpp_root_dir/lib:}
+  export OMNETPP_IMAGE_PATH=${OMNETPP_IMAGE_PATH#$__omnetpp_root_dir/images}
   export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
 fi
@@ -48,6 +50,7 @@ if [ `uname` = "Darwin" -a -d $__omnetpp_root_dir/tools/macosx ]; then
 fi
 export PATH=$dir/bin:$PATH
 export LD_LIBRARY_PATH=$dir/lib:$LD_LIBRARY_PATH
+export OMNETPP_IMAGE_PATH=$dir/images:$OMNETPP_IMAGE_PATH
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
