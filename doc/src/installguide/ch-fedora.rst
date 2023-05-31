@@ -36,7 +36,7 @@ To install the required packages, type in the terminal:
        python3 python3-pip qt5-devel libxml2-devel \
        zlib-devel doxygen graphviz webkitgtk
    $ python3 -m pip install --user --upgrade numpy pandas \
-       matplotlib scipy seaborn posix_ipc
+       matplotlib scipy seaborn
 
 To use 3D visualization support in Qtenv, you should install OpenSceneGraph 3.2 or later and osgEarth 2.7 or later
 (recommended):
@@ -86,5 +86,4 @@ Open a terminal and enter the following command to install the required Python p
 
 .. code::
 
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy \
-       seaborn posix_ipc
+   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn

@@ -40,8 +40,7 @@ To install the required packages, type in the terminal:
    $ su -c 'yum install make gcc gcc-c++ clang lld bison flex perl \
        python3 python3-pip qt-devel libxml2-devel zlib-devel doxygen \
        graphviz xdg-utils'
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy \
-       seaborn posix_ipc
+   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn
 
 To use 3D visualization support in Qtenv (recommended), you should install the OpenSceneGraph-devel (3.2 or later) and
 osgEarth-devel (2.7 or later) packages. These packages are not available from the official RedHat repository so you may
