@@ -30,6 +30,7 @@ if [ -n "$__omnetpp_root_dir" ]; then
   fi
   export PATH=${PATH#$__omnetpp_root_dir/bin:}
   export LD_LIBRARY_PATH=${LD_LIBRARY_PATH#$__omnetpp_root_dir/lib:}
+  export OMNETPP_IMAGE_PATH=${OMNETPP_IMAGE_PATH#$__omnetpp_root_dir/images}
   export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
 fi
@@ -41,6 +42,7 @@ fi
 
 export PATH=$dir/bin:$PATH
 export LD_LIBRARY_PATH=$dir/lib:$LD_LIBRARY_PATH
+export OMNETPP_IMAGE_PATH=$dir/images:$OMNETPP_IMAGE_PATH
 export HOSTNAME
 export HOST
 
