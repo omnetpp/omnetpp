@@ -29,6 +29,7 @@ if [ -n "$__omnetpp_root_dir" ]; then
     echo "Warning: overwriting previous environment for '$__omnetpp_root_dir'."
   fi
   export PATH=${PATH#$__omnetpp_root_dir/bin:}
+  export OMNETPP_IMAGE_PATH=${OMNETPP_IMAGE_PATH#$__omnetpp_root_dir/images}
   export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
   export QT_SELECT=
@@ -56,6 +57,7 @@ fi
 export __omnetpp_root_dir=$dir
 export OMNETPP_RELEASE=$(cat $__omnetpp_root_dir/Version)
 export PATH=$__omnetpp_root_dir/bin:$PATH
+export OMNETPP_IMAGE_PATH=$__omnetpp_root_dir/images:$OMNETPP_IMAGE_PATH
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
