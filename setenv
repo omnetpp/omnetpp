@@ -10,8 +10,9 @@ if [ "$BASH_VERSION" != "" ]; then # for BASH
   dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 elif [ "$ZSH_VERSION" != "" ]; then # on zsh the script name is in '$0'
   dir=$(cd $(dirname $0) && pwd)
-else # on any other SH compatible shell we assume that the current working directory is the OMNeT++ root directory
-  dir=$(pwd)
+else # other shells are not supported, because we use variable manipulation constructs that are not part of POSIX
+  echo "Error: Unrecognized shell, only bash and zsh are supported."
+  return 1
 fi
 
 # check if dir is really pointing to an omnet++ installation dir
@@ -19,6 +20,30 @@ if [ ! -f $dir/configure.user -o ! -f $dir/include/omnetpp.h -o ! -f $dir/Versio
     echo "Error: '$dir' does not look like an OMNeT++ root directory"
     return 1
 fi
+
+# utility functions for path manipulation
+opp_path_remove()
+{
+    [[ -z $2 ]] && return 2
+    local value=":$1:"
+    value=${value//:$2:/:}
+    value=${value#:}
+    value=${value%:}
+    echo $value
+}
+
+opp_path_cleanup()
+{
+    for varname in "$@"; do
+      local value=$(eval echo \$$varname)  # note: we use eval because '${!varname}' works only in bash, and '${(P)varname}' works only in zsh
+      while [[ $value == *::* ]] ; do
+          value=${value//::/:}
+      done
+      value=${value#:}
+      value=${value%:}
+      export $varname="$value"
+    done
+}
 
 # remove previous environment to prevent the accumulation of path elements
 if [ -n "$__omnetpp_root_dir" ]; then
@@ -28,9 +53,9 @@ if [ -n "$__omnetpp_root_dir" ]; then
   else
     echo "Warning: overwriting previous environment for '$__omnetpp_root_dir'."
   fi
-  export PATH=${PATH#$__omnetpp_root_dir/bin:}
-  export PYTHONPATH=${PYTHONPATH#$__omnetpp_root_dir/python}
-  export OMNETPP_IMAGE_PATH=${OMNETPP_IMAGE_PATH#$__omnetpp_root_dir/images}
+  export PATH=$(opp_path_remove "$PATH" "$__omnetpp_root_dir/bin")
+  export PYTHONPATH=$(opp_path_remove "$PYTHONPATH" "$__omnetpp_root_dir/python")
+  export OMNETPP_IMAGE_PATH=$(opp_path_remove "$OMNETPP_IMAGE_PATH" "$__omnetpp_root_dir/images")
   export __omnetpp_root_dir=
   export OMNETPP_RELEASE=
   export QT_SELECT=
@@ -87,9 +112,9 @@ if [ "$MSYSTEM" = "MINGW64" ] ; then
   fi
 fi
 
-export PATH=$dir/bin:$PATH
-export PYTHONPATH=$dir/python:$PYTHONPATH && PYTHONPATH=${PYTHONPATH%:}  # required because colon at the end causes issues on Windows
-export OMNETPP_IMAGE_PATH=$dir/images:$OMNETPP_IMAGE_PATH
+export PATH="$dir/bin:$PATH"
+export PYTHONPATH="$dir/python:$PYTHONPATH"
+export OMNETPP_IMAGE_PATH="$dir/images:$OMNETPP_IMAGE_PATH"
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
@@ -115,3 +140,7 @@ fi
 if [ -f "$__omnetpp_root_dir/setenv_local" ] ; then
   source $__omnetpp_root_dir/setenv_local
 fi
+
+# Mingw doesn't like extra colons in paths, so remove them using a shell function
+opp_path_cleanup PATH PYTHONPATH OMNETPP_IMAGE_PATH
+
