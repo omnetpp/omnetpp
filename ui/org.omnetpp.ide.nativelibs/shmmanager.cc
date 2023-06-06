@@ -112,7 +112,7 @@ ShmSendBufferPtr ShmSendBufferManager::create(const char *label, size_t commitSi
 
     static int counter = 0;
     char name[OPP_SHM_NAME_MAX];
-    snprintf(name, OPP_SHM_NAME_MAX, "opp-%ld-%d-%s", getpid()%1000000L, ++counter, label);
+    snprintf(name, OPP_SHM_NAME_MAX, "/opp-%ld-%d-%s", getpid()%1000000L, ++counter, label);
     // It would be more idiomatic to use std::make_shared here, but I'drather keep the
     // constructor of ShmSendBuffer private, and make ShmSendBufferManager a friend of it.
     ShmSendBufferPtr result(new ShmSendBuffer(name, commitSize, extendable));
