@@ -30,10 +30,6 @@ namespace scave {
 std::pair<ShmSendBufferPtr, ShmSendBufferPtr> ResultsPickler::readVectorIntoShm(const ID& id, double simTimeStart, double simTimeEnd)
 {
     size_t memoryLimitBytes = getSizeLimit();
-
-    static int counter = 0;
-    counter++;
-
     IDList vectorList(id);
 
     std::vector<XYArray *> vectorData = readVectorsIntoArrays(rfm, vectorList, false, false, memoryLimitBytes, simTimeStart, simTimeEnd, interrupted);
