@@ -184,7 +184,7 @@ std::vector<std::string> cValueArray::asStringVector() const
     std::vector<std::string> result;
     result.resize(array.size());
     for (int i = 0; i < array.size(); i++)
-        result[i] = array[i].stringValue();
+        result[i] = array[i].stdstringValue();
     return result;
 }
 
