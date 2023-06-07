@@ -14,6 +14,12 @@ else # on any other SH compatible shell we assume that the current working direc
   dir=$(pwd)
 fi
 
+function _numargs() { echo $#; }
+if [ $(_numargs $dir) -gt 1 ]; then
+    echo "Error: Directory name ($dir) must not contain spaces or special characters."
+    return 1
+fi
+
 # check if dir is really pointing to an omnet++ installation dir
 if [ ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
     echo "Error: '$dir' does not look like an OMNeT++ root directory"
