@@ -16,8 +16,14 @@ else # other shells are not supported, because we use variable manipulation cons
 fi
 
 # check if dir is really pointing to an omnet++ installation dir
-if [ ! -f $dir/configure.user -o ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
+if [ ! -f "$dir/configure.user" -o ! -f "$dir/include/omnetpp.h" -o ! -f "$dir/Version" ]; then
     echo "Error: '$dir' does not look like an OMNeT++ root directory"
+    return 1
+fi
+
+function _numargs() { echo $#; }
+if [ $(_numargs $dir) -gt 1 ]; then
+    echo "Error: Directory name ($dir) must not contain spaces or special characters."
     return 1
 fi
 
