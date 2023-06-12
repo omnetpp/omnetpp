@@ -30,6 +30,7 @@
 .project
 .cproject
 lex.*yy.cc
+.DS_Store
 /tools
 /msys
 /mingw
@@ -67,6 +68,7 @@ Thumbs.db
 /src/guienv/simkernel_wrap.cxx
 /src/tkenv/tclcode.cc
 /src/tkenv/tclcode.inc
+/src/qtenv/icons/
 /src/qtenv/qtenv.pro.user
 /src/utils/opp_configfilepath.cmd
 /src/nedxml/nedelements.*
@@ -155,3 +157,4 @@ r71.bat
 r80.bat
 r90.bat
 r100.bat
+include/omnetpp/platdep/config.h
