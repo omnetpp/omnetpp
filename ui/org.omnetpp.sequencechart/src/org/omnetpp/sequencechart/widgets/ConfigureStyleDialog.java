@@ -455,8 +455,10 @@ public class ConfigureStyleDialog
             @Override
             public void widgetSelected(SelectionEvent event) {
                 List<Pair<String, String>> input = (List<Pair<String, String>>)tableViewer.getInput();
-                input.add(new Pair<String, String>("", ""));
+                Pair<String, String> element = new Pair<String, String>("", "");
+                input.add(element);
                 tableViewer.refresh();
+                tableViewer.setSelection(new StructuredSelection(element), true);
             }
         });
         button = createButton(buttons, "&Remove");
