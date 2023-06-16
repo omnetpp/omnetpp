@@ -10,8 +10,8 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engineext.IMatchableObject;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
-import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.BigDecimal;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.eventlog.FilteredMessageDependency;
 import org.omnetpp.eventlog.IEvent;
 import org.omnetpp.eventlog.IEventLog;
@@ -83,20 +83,21 @@ public final class SequenceChartStyleProvider implements ISequenceChartStyleProv
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void setSequenceChartSettings(SequenceChartSettings sequenceChartSettings) {
         this.sequenceChartSettings = sequenceChartSettings;
         if (sequenceChartSettings.axesColorFallback != null)
-            axesColorFallback.setFallback(getColorFallback(sequenceChartSettings.axesColorFallback));
+            axesColorFallback.setFallback(sequenceChartSettings.enableAxesColoring ? getColorFallback(sequenceChartSettings.axesColorFallback) : new Pair[0]);
         if (sequenceChartSettings.axesHeaderColorFallback != null)
-            axesHeaderColorFallback.setFallback(getColorFallback(sequenceChartSettings.axesHeaderColorFallback));
+            axesHeaderColorFallback.setFallback(sequenceChartSettings.enableAxesHeaderColoring ? getColorFallback(sequenceChartSettings.axesHeaderColorFallback) : new Pair[0]);
         if (sequenceChartSettings.eventColorFallback != null)
-            eventColorFallback.setFallback(getColorFallback(sequenceChartSettings.eventColorFallback));
+            eventColorFallback.setFallback(sequenceChartSettings.enableEventColoring ? getColorFallback(sequenceChartSettings.eventColorFallback) : new Pair[0]);
         if (sequenceChartSettings.selfMessageEventColorFallback != null)
-            selfMessageEventColorFallback.setFallback(getColorFallback(sequenceChartSettings.selfMessageEventColorFallback));
+            selfMessageEventColorFallback.setFallback(sequenceChartSettings.enableSelfMessageEventColoring ? getColorFallback(sequenceChartSettings.selfMessageEventColorFallback) : new Pair[0]);
         if (sequenceChartSettings.messageSendColorFallback != null)
-            messageSendColorFallback.setFallback(getColorFallback(sequenceChartSettings.messageSendColorFallback));
+            messageSendColorFallback.setFallback(sequenceChartSettings.enableMessageSendColoring ? getColorFallback(sequenceChartSettings.messageSendColorFallback) : new Pair[0]);
         if (sequenceChartSettings.componentMethodCallColorFallback != null)
-            componentMethodCallColorFallback.setFallback(getColorFallback(sequenceChartSettings.componentMethodCallColorFallback));
+            componentMethodCallColorFallback.setFallback(sequenceChartSettings.enableComponentMethodCallColoring ? getColorFallback(sequenceChartSettings.componentMethodCallColorFallback) : new Pair[0]);
     }
 
     public SequenceChartSettings getSequenceChartSettings() {

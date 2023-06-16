@@ -249,9 +249,18 @@ public class ConfigureStyleDialog
         selfMessageEventColor.setInput(unparseColorFallback(sequenceChartSettings.selfMessageEventColorFallback));
         messageSendColor.setInput(unparseColorFallback(sequenceChartSettings.messageSendColorFallback));
         componentMethodCallColor.setInput(unparseColorFallback(sequenceChartSettings.componentMethodCallColorFallback));
+        unparseBoolean(colorFilter, sequenceChartSettings.enableColoring);
+        unparseBoolean(axesColorFilter, sequenceChartSettings.enableAxesColoring);
+        unparseBoolean(axesHeaderColorFilter, sequenceChartSettings.enableAxesHeaderColoring);
+        unparseBoolean(eventColorFilter, sequenceChartSettings.enableEventColoring);
+        unparseBoolean(selfMessageEventColorFilter, sequenceChartSettings.enableSelfMessageEventColoring);
+        unparseBoolean(messageSendColorFilter, sequenceChartSettings.enableMessageSendColoring);
+        unparseBoolean(componentMethodCallColorFilter, sequenceChartSettings.enableComponentMethodCallColoring);
     }
 
-    protected void unparseBoolean(DialogTreeNode treeNode, boolean value) {
+    protected void unparseBoolean(DialogTreeNode treeNode, Boolean value) {
+        if (value == null)
+            value = Boolean.TRUE;
         panelCheckboxTree.setChecked(treeNode, value);
         treeNode.checkStateChanged(value);
     }
@@ -279,6 +288,13 @@ public class ConfigureStyleDialog
         sequenceChartSettings.selfMessageEventColorFallback = parseColorFallback(selfMessageEventColor);
         sequenceChartSettings.messageSendColorFallback = parseColorFallback(messageSendColor);
         sequenceChartSettings.componentMethodCallColorFallback = parseColorFallback(componentMethodCallColor);
+        sequenceChartSettings.enableColoring = parseBoolean(colorFilter);
+        sequenceChartSettings.enableAxesColoring = parseBoolean(axesColorFilter);
+        sequenceChartSettings.enableAxesHeaderColoring = parseBoolean(axesHeaderColorFilter);
+        sequenceChartSettings.enableEventColoring = parseBoolean(eventColorFilter);
+        sequenceChartSettings.enableSelfMessageEventColoring = parseBoolean(selfMessageEventColorFilter);
+        sequenceChartSettings.enableMessageSendColoring = parseBoolean(messageSendColorFilter);
+        sequenceChartSettings.enableComponentMethodCallColoring = parseBoolean(componentMethodCallColorFilter);
     }
 
     @SuppressWarnings("unchecked")

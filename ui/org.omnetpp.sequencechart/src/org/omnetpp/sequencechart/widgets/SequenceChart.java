@@ -1794,13 +1794,21 @@ public class SequenceChart
         sequenceChartSettings.showHairlines = getShowHairlines();
         if (styleProvider instanceof SequenceChartStyleProvider) {
             SequenceChartStyleProvider sequenceChartStyleProvider = (SequenceChartStyleProvider)styleProvider;
-            if (sequenceChartStyleProvider.getSequenceChartSettings() != null) {
-                sequenceChartSettings.axesColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().axesColorFallback;
-                sequenceChartSettings.axesHeaderColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().axesHeaderColorFallback;
-                sequenceChartSettings.eventColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().eventColorFallback;
-                sequenceChartSettings.selfMessageEventColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().selfMessageEventColorFallback;
-                sequenceChartSettings.messageSendColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().messageSendColorFallback;
-                sequenceChartSettings.componentMethodCallColorFallback = sequenceChartStyleProvider.getSequenceChartSettings().componentMethodCallColorFallback;
+            SequenceChartSettings styleProvidersequenceChartSettings = sequenceChartStyleProvider.getSequenceChartSettings();
+            if (styleProvidersequenceChartSettings != null) {
+                sequenceChartSettings.axesColorFallback = styleProvidersequenceChartSettings.axesColorFallback;
+                sequenceChartSettings.axesHeaderColorFallback = styleProvidersequenceChartSettings.axesHeaderColorFallback;
+                sequenceChartSettings.eventColorFallback = styleProvidersequenceChartSettings.eventColorFallback;
+                sequenceChartSettings.selfMessageEventColorFallback = styleProvidersequenceChartSettings.selfMessageEventColorFallback;
+                sequenceChartSettings.messageSendColorFallback = styleProvidersequenceChartSettings.messageSendColorFallback;
+                sequenceChartSettings.componentMethodCallColorFallback = styleProvidersequenceChartSettings.componentMethodCallColorFallback;
+                sequenceChartSettings.enableColoring = styleProvidersequenceChartSettings.enableColoring;
+                sequenceChartSettings.enableAxesColoring = styleProvidersequenceChartSettings.enableAxesColoring;
+                sequenceChartSettings.enableAxesHeaderColoring = styleProvidersequenceChartSettings.enableAxesHeaderColoring;
+                sequenceChartSettings.enableEventColoring = styleProvidersequenceChartSettings.enableEventColoring;
+                sequenceChartSettings.enableSelfMessageEventColoring = styleProvidersequenceChartSettings.enableSelfMessageEventColoring;
+                sequenceChartSettings.enableMessageSendColoring = styleProvidersequenceChartSettings.enableMessageSendColoring;
+                sequenceChartSettings.enableComponentMethodCallColoring = styleProvidersequenceChartSettings.enableComponentMethodCallColoring;
             }
         }
 

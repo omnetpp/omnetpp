@@ -71,4 +71,11 @@ class SequenceChartSettings implements Serializable {
     public Pair<String, String[]>[] selfMessageEventColorFallback;
     public Pair<String, String[]>[] messageSendColorFallback;
     public Pair<String, String[]>[] componentMethodCallColorFallback;
+    public Boolean enableColoring;
+    public Boolean enableAxesColoring;
+    public Boolean enableAxesHeaderColoring;
+    public Boolean enableEventColoring;
+    public Boolean enableSelfMessageEventColoring;
+    public Boolean enableMessageSendColoring;
+    public Boolean enableComponentMethodCallColoring;
 }
