@@ -29,23 +29,23 @@ DEFAULT_WORKSPACE_ARGS="-vmargs -Dosgi.instance.area.default=$IDEDIR/../samples"
 
 case $PLATFORM in
 *MINGW*)
-	$IDEDIR/${LAUNCHER}.exe --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
+        $IDEDIR/${LAUNCHER}.exe --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Linux*)
-        if [[ $(grep -i microsoft /proc/version) ]]; then
+        if [ $(grep -i microsoft /proc/version) ]; then
             # on WSLg we have to force an x11 backend because the default wayland backend has rendering issues
             export GDK_BACKEND=x11
         fi
-	$IDEDIR/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
+        $IDEDIR/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
-	# remove the quarantine extended bit so the IDE will not be copied to a private dir on macOS sierra and later
-	xattr -d com.apple.quarantine $IDEDIR/${LAUNCHER}.app 2>/dev/null
-	# starting the executable directly allows to avoid unsigned app warnings showing up
-	$IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
+        # remove the quarantine extended bit so the IDE will not be copied to a private dir on macOS sierra and later
+        xattr -d com.apple.quarantine $IDEDIR/${LAUNCHER}.app 2>/dev/null
+        # starting the executable directly allows to avoid unsigned app warnings showing up
+        $IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *)
-	echo $PRODUCT IDE is supported only on: Linux, Windows and macOS
-	exit 1
+        echo $PRODUCT IDE is supported only on: Linux, Windows and macOS
+        exit 1
         ;;
 esac
