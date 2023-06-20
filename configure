@@ -2842,6 +2842,10 @@ case $host in
   *-hp-hpux*)
     SO_LIB_SUFFIX=".sl"
     ;;
+  *darwin*)
+    CFLAGS_ARCH="-D_XOPEN_SOURCE"
+    SO_LIB_SUFFIX=".dylib"
+    ;;
   *)
     ;;
 esac

@@ -48,7 +48,7 @@ OBJS = gned$(GNED_EMBED_SUFFIX).o tklib.o tkcmd.o arrow.o \
 default: @GNED_IF_POSSIBLE@
 
 gned : $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
+	$(CXX) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
 	../utils/install-prog gned $(OMNETPP_BIN_DIR)
 
 gned.o : gned.cc

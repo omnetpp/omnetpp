@@ -42,7 +42,7 @@ OBJS = cmdenv.o enumstr.o heap.o
 all: libcmdenv$(LIB_SUFFIX)
 
 libcmdenv$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libcmdenv$(A_LIB_SUFFIX) $(OBJS)
+	$(AR) -r libcmdenv$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libcmdenv$(A_LIB_SUFFIX)
 	../utils/install-lib libcmdenv$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(A_LIB_SUFFIX)
 

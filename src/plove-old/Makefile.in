@@ -48,7 +48,7 @@ plove-cyg:
 	chmod +x plove
 
 plove-exe: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o plove
+	$(CXX) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o plove
 
 plove.o: plove.cc tclcode.cc
 	$(CXX) -c $(COPTS) plove.cc

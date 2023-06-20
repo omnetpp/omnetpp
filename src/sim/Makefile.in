@@ -86,7 +86,7 @@ default : sim_std
 sim_std : libsim_std$(LIB_SUFFIX)
 
 libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS)
-	$(AR) libsim_std$(A_LIB_SUFFIX) $(CPPOBJS)
+	$(AR) -r libsim_std$(A_LIB_SUFFIX) $(CPPOBJS)
 	$(RANLIB) libsim_std$(A_LIB_SUFFIX)
 	../utils/install-lib libsim_std$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(A_LIB_SUFFIX)
 

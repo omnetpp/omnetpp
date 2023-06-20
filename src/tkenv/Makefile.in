@@ -54,7 +54,7 @@ default: @TKENV_IF_POSSIBLE@
 tkenv : libtkenv$(LIB_SUFFIX)
 
 libtkenv$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libtkenv$(A_LIB_SUFFIX) $(OBJS)
+	$(AR) -r libtkenv$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libtkenv$(A_LIB_SUFFIX)
 	../utils/install-lib libtkenv$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(A_LIB_SUFFIX)
 

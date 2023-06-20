@@ -58,7 +58,7 @@ OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
 default: @SCALARS_IF_POSSIBLE@
 
 scalars: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o scalars
+	$(CXX) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o scalars
 	../utils/install-prog scalars $(OMNETPP_BIN_DIR)
 
 scalars.o : scalars.cc

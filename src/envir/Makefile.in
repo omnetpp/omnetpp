@@ -47,7 +47,7 @@ OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
 all : libenvir$(LIB_SUFFIX)
 
 libenvir$(A_LIB_SUFFIX) : $(OBJS)
-	$(AR) libenvir$(A_LIB_SUFFIX) $(OBJS)
+	$(AR) -r libenvir$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libenvir$(A_LIB_SUFFIX)
 	../utils/install-lib libenvir$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(A_LIB_SUFFIX)
 

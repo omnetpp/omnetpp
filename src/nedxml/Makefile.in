@@ -56,7 +56,7 @@ default : nedxmllib
 nedxmllib : libnedxml$(LIB_SUFFIX)
 
 libnedxml$(A_LIB_SUFFIX): $(OBJS)
-	$(AR) libnedxml$(A_LIB_SUFFIX) $(OBJS)
+	$(AR) -r libnedxml$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libnedxml$(A_LIB_SUFFIX)
 	../utils/install-lib libnedxml$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libnedxml$(A_LIB_SUFFIX)
 
