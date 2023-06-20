@@ -20,12 +20,6 @@ if [ ! -f $dir/include/omnetpp.h -o ! -f $dir/Version ]; then
     return 1
 fi
 
-# check that the bundled tools are there on macOS
-if [ `uname` = "Darwin" -a ! -d $omnetpp_root/tools/macosx ]; then
-    echo "WARNING! We are on macOS, but it seems that you have downloaded the Linux version of the installation package!"
-    return 1
-fi
-
 # remove previous environment to prevent the accumulation of path elements
 if [ -n "$__omnetpp_root_dir" ]; then
   if [ "$1" = "-r" ]; then
@@ -48,7 +42,7 @@ if [ "$1" = "-r" ]; then
     return 0
 fi
 
-if [ `uname` = "Darwin" ]; then
+if [ `uname` = "Darwin" -a -d $__omnetpp_root_dir/tools/macosx ]; then
   export PATH=$omnetpp_root/tools/macosx/bin:$PATH
   export QT_PLUGIN_PATH=$omnetpp_root/tools/macosx/plugins
 fi
