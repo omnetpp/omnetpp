@@ -1,3 +1,4 @@
+.DS_Store
 *.so
 *.a
 *.dylib
@@ -24,12 +25,10 @@
 *.aux
 .ccls-cache
 .clangd
-.vscode/ipch
+.vscode
 */__pycache__/*
 *.gdb_history
 *.last-copts
-.tkenvrc
-.tkenvlog
 *.cmdenv-log
 .qtenvrc
 lex.*yy.cc
@@ -42,13 +41,11 @@ autom4te.cache/
 /bin/*
 out/
 /lib/
-/samples/inet/
 Thumbs.db
 backups
 /ide
 /Makefile.inc
-/makeui
-/mingwenv.cmd
+/include/omnetpp/platdep/config.h
 /include/systemc.h
 /include/systemc
 /include/systemcdefs.h
@@ -67,13 +64,9 @@ backups
 /src/eventlog/eventlogentryfactory.cc
 /src/guienv/registernatives.cc
 /src/guienv/simkernel_wrap.cxx
-/src/tkenv/tclcode.cc
-/src/tkenv/tclcode.inc
-/src/qtenv/qtenv.pro.user
 /src/utils/opp_configfilepath.cmd
 /src/nedxml/nedelements.*
 /src/nedxml/nedvalidator.*
-/src/include/
 .metadata
 .settings
 /ui/org.omnetpp.runtime.nativelibs/src/org/omnetpp/runtime/nativelibs/simkernel/
@@ -83,7 +76,6 @@ backups
 /ui/*/bin
 /samples/.metadata
 /samples/*/Makefile
-/samples/*/Makefile.vc
 /samples/*/*.mkv
 /samples/*/*/results/
 /samples/*/frames/
@@ -149,11 +141,8 @@ backups
 /test/stress/results/
 /test/build/_buildlog
 /test/anim/*/Makefile
-/msys/
-/mingw/
 /samples/*/doc/
 /configure.user
-/configuser.vc
 /test/scave/charttemplates/export/
 /test/scave/results_api/results/
 /test/misc/neddocext/doc/neddoc/
