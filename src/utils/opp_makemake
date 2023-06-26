@@ -1245,6 +1245,7 @@ endif
 
 {sourcedirs:}# disabling all implicit rules
 {sourcedirs:}.SUFFIXES :
+{sourcedirs:}.PRECIOUS : %_m.h %_m.{cc}
 {sourcedirs:}
 ### Pattern rules for cc files.
 {sourcedirs:}$O/%.o: %.{cc} $(COPTS_FILE) | msgheaders smheaders
