@@ -208,18 +208,15 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
             tx->transmissionId = pkt->getTransmissionId();
         }
         else {
-            // find updated transmission, purge expired ones
+            // find updated transmission
             ASSERT(pkt->getTransmissionId() != -1); // assured in send()
             int txIndex = -1;
-            simtime_t now = getSimulation()->getSimTime();
             for (int i = 0; i < txList.size(); i++) {
-                if (txList[i].finishTime < now) {
-                    txList[i] = txList.back(); // no-op if txList[i] is the last item (i.e. txList.back())
-                    txList.pop_back();
-                    i--;
+                if (pkt->getTransmissionId() == txList[i].transmissionId) {
+                    if (txList[i].finishTime >= getSimulation()->getSimTime())
+                        txIndex = i;
+                    break;
                 }
-                else if (pkt->getTransmissionId() == txList[i].transmissionId)
-                    txIndex = i;
             }
             if (txIndex == -1)
                 throw cRuntimeError("Cannot send transmission update packet (%s)%s: The transmission transmissionId=%" PRId64 " references was not found (either nonexistent or already finished)", pkt->getClassName(), pkt->getFullName(), pkt->getTransmissionId());
@@ -328,10 +325,18 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
     if (mode == SINGLE)
         channelFinishTime = tx->finishTime;
     else if (mode == MULTI) {
+        // find max transmission finish time, purge expired transmissions
+        simtime_t now = getSimulation()->getSimTime();
         simtime_t tmax = SIMTIME_ZERO;
-        for (const Tx& tx: txList)
-            if (tx.finishTime > tmax)
-                tmax = tx.finishTime;
+        for (int i = 0; i < txList.size(); i++) {
+            if (txList[i].finishTime < now) {
+                txList[i] = txList.back(); // no-op if txList[i] is the last item (i.e. txList.back())
+                txList.pop_back();
+                i--;
+            }
+            else if (txList[i].finishTime > tmax)
+                tmax = txList[i].finishTime;
+        }
         channelFinishTime = tmax;
     }
 
