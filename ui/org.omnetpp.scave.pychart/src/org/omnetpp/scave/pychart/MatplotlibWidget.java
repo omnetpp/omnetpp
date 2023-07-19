@@ -17,6 +17,8 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
@@ -257,6 +259,35 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
             if (pythonProcess != null && pythonProcess.isAlive()) {
                 pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseMoveEvent(e.x, sy - e.y),
                         figureNumber * 100 + EVENTSTREAM_MOUSEMOVE);
+            }
+        });
+
+        addKeyListener(new KeyListener() {
+            String getKeyFromEvent(KeyEvent e) {
+                String key = null;
+                if (e.character != '\0')
+                    key = Character.toString(e.character);
+                if (e.keyCode == SWT.CONTROL)
+                    key = "control";
+                if (e.keyCode == SWT.SHIFT)
+                    key = "shift";
+                return key;
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                String key = getKeyFromEvent(e);
+                if (key != null && pythonProcess != null && pythonProcess.isAlive()) {
+                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().keyPressEvent(key));
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                String key = getKeyFromEvent(e);
+                if (key != null && pythonProcess != null && pythonProcess.isAlive()) {
+                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().keyReleaseEvent(key));
+                }
             }
         });
 
