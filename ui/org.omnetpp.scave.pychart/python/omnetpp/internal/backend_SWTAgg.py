@@ -137,8 +137,6 @@ class FigureCanvasSWT(FigureCanvasBase):
         super().__init__(figure)
         self.figure = figure
 
-        w, h = self.get_width_height() # TODO pass these in as well, as initial size?
-
         self.widget = Gateway.widget_provider.getWidget(self.num, self)
 
     def enterEvent(self, x, y):
