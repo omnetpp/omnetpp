@@ -16,13 +16,13 @@
 #ifndef __OMNETPP_CSIMULATION_H
 #define __OMNETPP_CSIMULATION_H
 
-#include "simkerneldefs.h" // for WITH_PYTHONSIM
+#include "simkerneldefs.h" // for WITH_PYTHON
 
 #include <atomic>
 #include <functional>
 #include <map>
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
 #include <Python.h>
 #endif
 
@@ -194,7 +194,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     // Lifecycle listeners
     std::vector<cISimulationLifecycleListener*> listeners;
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
     std::map<int, PyObject *> componentAccessors; // mapping from component IDs to Accessor object to be used in pyeval/pycode NED functions
 #endif
 
@@ -224,7 +224,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     void setUniqueNumberRange(uint64_t start, uint64_t end) {nextUniqueNumber = start; uniqueNumbersEnd = end;}
     void printUnusedConfigEntriesIfAny(std::ostream& out);
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
     // internal
     PyObject *getComponentAccessor(int componentId);
     // internal

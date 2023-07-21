@@ -44,7 +44,7 @@
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
 #include <Python.h>
 #else
 #define Py_BEGIN_ALLOW_THREADS  /*no-op*/

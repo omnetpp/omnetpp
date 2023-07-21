@@ -626,7 +626,7 @@ WITH_OSG
 WITH_QTENV
 WITH_PARSIM
 WITH_LIBXML
-WITH_PYTHONSIM
+WITH_PYTHON
 WITH_NETBUILDER
 AKAROA_LIBS
 AKAROA_CFLAGS
@@ -2877,7 +2877,7 @@ WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 WITH_AKAROA=${WITH_AKAROA:-no}
 
 # Support Python embedding by default
-WITH_PYTHONSIM=${WITH_PYTHONSIM:-yes}
+WITH_PYTHON=${WITH_PYTHON:-yes}
 
 LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
 LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
@@ -5509,7 +5509,7 @@ if os.name == 'posix':
 else:
   try_import("msvcrt")
 
-if os.environ['WITH_PYTHONSIM'] == 'yes':
+if os.environ['WITH_PYTHON'] == 'yes':
   try_import("cppyy")
 
 if failed:
@@ -5522,18 +5522,18 @@ from omnetpp.scave import utils
 EOT
 )
 
-if output=$(WITH_PYTHONSIM=$WITH_PYTHONSIM python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
+if output=$(WITH_PYTHON=$WITH_PYTHON python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
     if test -d ide; then
-      as_fn_error $? "The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output" "$LINENO" 5
+      as_fn_error $? "The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output" "$LINENO" 5
     else
       OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  $output (python3 module/modules)"
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output" >&5
-printf "%s\n" "$as_me: WARNING: The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output" >&2;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output" >&5
+printf "%s\n" "$as_me: WARNING: The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output" >&2;}
     fi
 fi
 
@@ -5547,7 +5547,7 @@ SYS_LIBS=""
 #-------------------------------------------
 # Check for python embedding cflags and libs
 #-------------------------------------------
-if test "$WITH_PYTHONSIM" = "yes"; then
+if test "$WITH_PYTHON" = "yes"; then
   PYTHON_CFLAGS=$(pkg-config --cflags python3-embed)
   PYTHON_LIBS=$(pkg-config --libs python3-embed)
 
@@ -5590,7 +5590,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
    LIBS=$save_LIBS
 
   if test $python3_found = no; then
-     as_fn_error $? "Python embedding was configured (WITH_PYTHONSIM=yes), but the 'python3-dev' package was not found." "$LINENO" 5
+     as_fn_error $? "Python embedding was configured (WITH_PYTHON=yes), but the 'python3-dev' package was not found." "$LINENO" 5
   fi
 fi
 
@@ -7308,8 +7308,8 @@ if test "$WITH_NETBUILDER" = "yes"; then
 
 fi
 
-if test "$WITH_PYTHONSIM" = "yes"; then
-  printf "%s\n" "#define WITH_PYTHONSIM /**/" >>confdefs.h
+if test "$WITH_PYTHON" = "yes"; then
+  printf "%s\n" "#define WITH_PYTHON /**/" >>confdefs.h
 
 fi
 
@@ -8838,3 +8838,4 @@ cat << EOT
 
 Configuration phase finished. Use 'make' to build $OMNETPP_PRODUCT.
 EOT
+

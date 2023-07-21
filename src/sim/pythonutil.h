@@ -19,7 +19,7 @@
 
 #include "omnetpp/platdep/config.h"
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
 
 #include <string>
 #include <Python.h>
@@ -78,7 +78,7 @@ public:
 
 }  // namespace omnetpp
 
-#endif  // WITH_PYTHONSIM
+#endif  // WITH_PYTHON
 
 #endif // __OMNETPP_PYTHONUTIL_H
 

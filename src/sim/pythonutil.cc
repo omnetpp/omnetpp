@@ -16,7 +16,7 @@
 
 #include "pythonutil.h"
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
 
 #include <cstddef>
 #include <string>
@@ -279,7 +279,7 @@ std::string getQualifiedPythonClassName(cNedDeclaration *declaration)
 
 void *instantiatePythonObject(const char *pythonClassQName)
 {
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
     ASSERT2(strchr(pythonClassQName, '.'), "Python class name must be qualified");
 
     std::string moduleToImport = opp_substringbeforelast(pythonClassQName, ".");
@@ -331,4 +331,4 @@ void *instantiatePythonObject(const char *pythonClassQName)
 
 }  // namespace omnetpp
 
-#endif  // WITH_PYTHONSIM
+#endif  // WITH_PYTHON

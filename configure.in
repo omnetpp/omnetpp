@@ -222,7 +222,7 @@ WITH_SYSTEMC=${WITH_SYSTEMC:-no}
 WITH_AKAROA=${WITH_AKAROA:-no}
 
 # Support Python embedding by default
-WITH_PYTHONSIM=${WITH_PYTHONSIM:-yes}
+WITH_PYTHON=${WITH_PYTHON:-yes}
 
 LDFLAG_LIBPATH=${LDFLAG_LIBPATH:--L}
 LDFLAG_INCLUDE=${LDFLAG_INCLUDE:--Wl,-u,}
@@ -799,7 +799,7 @@ if os.name == 'posix':
 else:
   try_import("msvcrt")
 
-if os.environ[['WITH_PYTHONSIM']] == 'yes':
+if os.environ[['WITH_PYTHON']] == 'yes':
   try_import("cppyy")
 
 if failed:
@@ -812,15 +812,15 @@ from omnetpp.scave import utils
 EOT
 )
 
-if output=$(WITH_PYTHONSIM=$WITH_PYTHONSIM python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
+if output=$(WITH_PYTHON=$WITH_PYTHON python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     AC_MSG_RESULT(yes)
 else
     AC_MSG_RESULT(no)
     if test -d ide; then
-      AC_MSG_ERROR([The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output])
+      AC_MSG_ERROR([The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output])
     else
       OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  $output (python3 module/modules)"
-      AC_MSG_WARN([The following Python modules required by the IDE and/or WITH_PYTHONSIM were not found: $output])
+      AC_MSG_WARN([The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output])
     fi
 fi
 
@@ -834,7 +834,7 @@ SYS_LIBS=""
 #-------------------------------------------
 # Check for python embedding cflags and libs
 #-------------------------------------------
-if test "$WITH_PYTHONSIM" = "yes"; then
+if test "$WITH_PYTHON" = "yes"; then
   PYTHON_CFLAGS=$(pkg-config --cflags python3-embed)
   PYTHON_LIBS=$(pkg-config --libs python3-embed)
 
@@ -843,7 +843,7 @@ if test "$WITH_PYTHONSIM" = "yes"; then
 
   OPP_CHECK_LIB(python3-dev, Python.h, Py_Initialize(), $PYTHON_CFLAGS, $PYTHON_LIBS, python3_found)
   if test $python3_found = no; then
-     AC_MSG_ERROR([Python embedding was configured (WITH_PYTHONSIM=yes), but the 'python3-dev' package was not found.])
+     AC_MSG_ERROR([Python embedding was configured (WITH_PYTHON=yes), but the 'python3-dev' package was not found.])
   fi
 fi
 
@@ -1178,8 +1178,8 @@ if test "$WITH_NETBUILDER" = "yes"; then
   AC_DEFINE([WITH_NETBUILDER], [], [])
 fi
 
-if test "$WITH_PYTHONSIM" = "yes"; then
-  AC_DEFINE([WITH_PYTHONSIM], [], [])
+if test "$WITH_PYTHON" = "yes"; then
+  AC_DEFINE([WITH_PYTHON], [], [])
 fi
 
 if test "$WITH_LIBXML" = "yes"; then
@@ -1319,7 +1319,7 @@ AC_SUBST(AKAROA_CFLAGS)
 AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(WITH_NETBUILDER)
-AC_SUBST(WITH_PYTHONSIM)
+AC_SUBST(WITH_PYTHON)
 AC_SUBST(WITH_LIBXML)
 AC_SUBST(WITH_PARSIM)
 AC_SUBST(WITH_QTENV)

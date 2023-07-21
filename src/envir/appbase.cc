@@ -103,8 +103,8 @@ static const char *buildOptions = ""
     " WITH_NETBUILDER"
     #endif
 
-    #ifdef WITH_PYTHONSIM
-    " WITH_PYTHONSIM"
+    #ifdef WITH_PYTHON
+    " WITH_PYTHON"
     #endif
 
     #ifdef WITH_QTENV

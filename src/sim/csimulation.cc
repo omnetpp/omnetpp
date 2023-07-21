@@ -66,7 +66,7 @@
 #include "sim/parsim/cparsimsynchr.h"
 #endif
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
 #include "pythonutil.h"
 #endif
 
@@ -173,7 +173,7 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
 
 cSimulation::~cSimulation()
 {
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
     for (auto p : componentAccessors)
         Py_DECREF(p.second);
     componentAccessors.clear();
@@ -1356,7 +1356,7 @@ int cSimulation::getParsimNumPartitions() const
 #endif
 }
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
 PyObject *cSimulation::getComponentAccessor(int componentId)
 {
     // These have to be initialized lazily, for two reasons:

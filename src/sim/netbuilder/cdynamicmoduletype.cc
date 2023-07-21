@@ -71,7 +71,7 @@ cModule *cDynamicModuleType::createModuleObject()
 {
     cNedDeclaration *decl = getDecl();
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
     std::string pythonClassName = getQualifiedPythonClassName(decl);
     if (!pythonClassName.empty())
         return instantiatePythonObjectChecked<cSimpleModule>(pythonClassName.c_str());

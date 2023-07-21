@@ -20,7 +20,7 @@
 
 #include "omnetpp/platdep/config.h"
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
 #include <Python.h>
 #endif
 
@@ -121,7 +121,7 @@ int setupUserInterface(int argc, char *argv[])
         // verify definitions of int64_t, int32_t, etc.
         verifyIntTypes();
 
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
         if (!Py_IsInitialized()) {
             Py_Initialize();
             pythonInitializedHere = true;

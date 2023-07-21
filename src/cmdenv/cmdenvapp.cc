@@ -71,7 +71,7 @@ int CmdenvApp::doRunApp()
             // ignore -- already processed
         }
         else if (opp_stringendswith(fname, ".py")) {
-#ifdef WITH_PYTHONSIM
+#ifdef WITH_PYTHON
             ensurePythonInterpreter();
             FILE *f = fopen(fname, "r");
             if (f) {
@@ -79,7 +79,7 @@ int CmdenvApp::doRunApp()
                 fclose(f);
             }
 #else
-            throw opp_runtime_error("Cannot process command-line argument '%s': No OMNeT++ was compiled with WITH_PYTHONSIM=no", fname);
+            throw opp_runtime_error("Cannot process command-line argument '%s': No OMNeT++ was compiled with WITH_PYTHON=no", fname);
 #endif
         }
         else {
