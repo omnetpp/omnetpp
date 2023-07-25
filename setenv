@@ -97,6 +97,7 @@ fi
 
 # Windows/MinGW specifiy settings
 if [ "$MSYSTEM" = "MINGW64" ] ; then
+  export PYTHONPATH=
   if [ "$VCToolsInstallDir" = "" ] ; then
     export PATH="/opt/mingw64/bin:$PATH"
   else
