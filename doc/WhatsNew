@@ -1,6 +1,48 @@
 What's New
 ==========
 
+OMNeT++ 3.3.2 (August 2023)
+---------------------------
+
+This is a modernized version of omnetpp-3.3p1 that makes it possible to build
+and use the now 17-year-old package in today's software environments. The
+primary objective of this release is to facilitate the execution of old
+simulation models, e.g. for reproducing simulation results or as a basis of
+porting them to more recent versions of OMNeT++.
+
+Main changes:
+
+ - Minor source code adjustments to enable compilation with modern C++ compilers
+   and eliminate compiler warnings. Backported several bug fixes from newer versions.
+
+ - Adjusted to make the code compatible with more recent versions of Tcl/Tk
+   libraries. In addition to the original Tcl/Tk-8.4 and BLT-2.4z, graphical
+   parts now works with Tcl/Tk-8.6 and BLT-2.5.3, too.
+
+ - Backported the setcontext()/switchcontext() based coroutine library from
+   omnetpp-4.2, to make activity() modules work again. (The original "portable
+   coroutines" library which used setjmp()/longjmp() to switch stacks no longer
+   works with recent glibc versions.)
+
+ - Updated the 'setenv' and 'configure' scripts, to make them more consistent with
+   those in more recent or modernized releases.
+
+    1. 'configure' now mandates having 'setenv' sourced before it runs.
+    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+       frameworks from accidentally making omnetpp's bundled icons unaccessible
+       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
+    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       if it does not already exist.
+
+ - The Makefiles were updated with more dependencies to enable parallel build.
+
+
+OMNeT++ 3.3p1 (Oct 2006)
+----------------------
+
+Source code adjustments for improved compiler and library compatibility.
+
+
 OMNeT++ 3.3 (Oct 2006)
 ----------------------
 This release contains several GUI enhancements in Tkenv, and several bugfixes.
