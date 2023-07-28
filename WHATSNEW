@@ -5,10 +5,45 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+
+OMNeT++ 4.2.3 (August 2023)
+---------------------------
+
+This is a modernized version of omnetpp-4.2.2 that makes it possible to build
+and use the now 11-year-old package in today's software environments. The
+primary objective of this release is to facilitate the execution of old
+simulation models, e.g. for reproducing simulation results or as a basis of
+porting them to more recent versions of OMNeT++.
+
+Changes:
+
+ - Source code updated for C++11 compatibility, and to eliminate warnings
+   issued by modern C++ compilers. Backported several smaller fixes.
+
+ - Adjusted to make the code compatible with more recent versions of Tcl/Tk
+   libraries. In addition to the original Tcl/Tk-8.4 and BLT-2.4z, Tkenv now
+   works with Tcl/Tk-8.6 and BLT-2.5.3, too.
+
+ - Updated to compile with both Bison 2.3 and 3.0.
+
+ - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+   with those in more recent or modernized releases. This includes:
+
+    1. 'configure' now mandates having 'setenv' sourced before it runs.
+    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+       frameworks from accidentally making omnetpp's bundled icons unaccessible
+       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
+    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       if it does not already exist.
+
+ - Allow running tests in other than "debug" mode.
+
+
 OMNeT++ 4.2.2 (March 2012)
 ----------------------
 
 Bugs fixed: http://tinyurl.com/omnetpp422-fixes
+
 
 OMNeT++ 4.2.1 (Jan 2012)
 ----------------------
@@ -610,6 +645,46 @@ Several bugs have been fixed; you can see the detailed list at:
 http://tinyurl.com/omnetpp42b1-fixes
 
 
+OMNeT++ 4.1.1 (August 2023)
+---------------------------
+
+This is a modernized version of omnetpp-4.1 that makes it possible to build
+and use the now 13-year-old package in today's software environments. The
+primary objective of this release is to facilitate the execution of old
+simulation models, e.g. for reproducing simulation results or as a basis of
+porting them to more recent versions of OMNeT++.
+
+Changes:
+
+ - Source code updated for C++11 compatibility, and to eliminate warnings
+   issued by modern C++ compilers. Backported several smaller fixes.
+
+ - Adjusted to make the code compatible with more recent versions of Tcl/Tk
+   libraries. In addition to the original Tcl/Tk-8.4 and BLT-2.4z, Tkenv now
+   works with Tcl/Tk-8.6 and BLT-2.5.3, too.
+
+ - Updated to compile with both Bison 2.3 and 3.0.
+
+ - Backported the setcontext()/switchcontext() based coroutine library from
+   omnetpp-4.2, to make activity() modules work again. (The original "portable
+   coroutines" library which used setjmp()/longjmp() to switch stacks no longer
+   works with recent glibc versions.)
+
+ - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+   with those in more recent or modernized releases. This includes:
+
+    1. 'configure' now mandates having 'setenv' sourced before it runs.
+    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+       frameworks from accidentally making omnetpp's bundled icons unaccessible
+       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
+    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       if it does not already exist.
+
+ - Allow running tests in other than "debug" mode.
+
+ - Added missing dependency to enable parallel build.
+
+
 OMNeT++ 4.1 (June 2010)
 -----------------------
 Changes after 4.1rc2:
@@ -1147,8 +1222,63 @@ Tooling:
  - Updated MSYS binaries (on Windows)
 
 
+OMNeT++ 4.0.2 (August 2023)
+---------------------------
+
+This is a modernized version of omnetpp-4.0p1 that makes it possible to build
+and use the now 14-year-old package in today's software environments. The
+primary objective of this release is to facilitate the execution of old
+simulation models, e.g. for reproducing simulation results or as a basis of
+porting them to more recent versions of OMNeT++.
+
+Changes:
+
+ - Source code updated for C++11 compatibility, and to eliminate warnings
+   issued by modern C++ compilers. Backported several smaller fixes.
+
+ - Adjusted to make the code compatible with more recent versions of Tcl/Tk
+   libraries. In addition to the original Tcl/Tk-8.4 and BLT-2.4z, Tkenv now
+   works with Tcl/Tk-8.6 and BLT-2.5.3, too.
+
+ - Updated to compile with both Bison 2.3 and 3.0.
+
+ - Backported the setcontext()/switchcontext() based coroutine library from
+   omnetpp-4.2, to make activity() modules work again. (The original "portable
+   coroutines" library which used setjmp()/longjmp() to switch stacks no longer
+   works with recent glibc versions.)
+
+ - Updated the 'setenv' and 'configure' scripts, to make them more consistent with
+   those in more recent or modernized releases. This includes:
+
+    1. 'configure' now mandates having 'setenv' sourced before it runs.
+    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+       frameworks from accidentally making omnetpp's bundled icons unaccessible
+       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
+    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       if it does not already exist.
+
+ - Allow running tests in other than "debug" mode.
+
+ - Added missing dependency to enable parallel build.
+
+
+OMNeT++ 4.0p1 (Nov 2009)
+------------------------
+
+Simulation kernel:
+  - Fixed compilation problems on systems with GCC 4.4.x
+
+IDE:
+  - Fixed compatibility problems with the xulrunner package on certain
+    GNU/Linux systems. (Problem caused lockups on first start after
+    installation)
+  - Fixed compatibility problems with newer versions of GTK. (Problem
+    caused buttons not to respond to mouse clicks.)
+
+
 OMNeT++ 4.0 (March 2009)
 -------------------------
+
 This is a major revision of the whole simulation platform, with fundamental
 changes in nearly every component. Changes since version 3.4b2:
 
@@ -1574,6 +1704,48 @@ Simulation library:
 Other:
   - makefile improvements, from Laura Marie Feeney and Michael Tuexen.
   - the FDDI sample simulation has retired (it used lots of deprecated APIs)
+
+
+OMNeT++ 3.3.2 (August 2023)
+---------------------------
+
+This is a modernized version of omnetpp-3.3p1 that makes it possible to build
+and use the now 17-year-old package in today's software environments. The
+primary objective of this release is to facilitate the execution of old
+simulation models, e.g. for reproducing simulation results or as a basis of
+porting them to more recent versions of OMNeT++.
+
+Main changes:
+
+ - Minor source code adjustments to enable compilation with modern C++ compilers
+   and eliminate compiler warnings. Backported several bug fixes from newer versions.
+
+ - Adjusted to make the code compatible with more recent versions of Tcl/Tk
+   libraries. In addition to the original Tcl/Tk-8.4 and BLT-2.4z, graphical
+   parts now works with Tcl/Tk-8.6 and BLT-2.5.3, too.
+
+ - Backported the setcontext()/switchcontext() based coroutine library from
+   omnetpp-4.2, to make activity() modules work again. (The original "portable
+   coroutines" library which used setjmp()/longjmp() to switch stacks no longer
+   works with recent glibc versions.)
+
+ - Updated the 'setenv' and 'configure' scripts, to make them more consistent with
+   those in more recent or modernized releases.
+
+    1. 'configure' now mandates having 'setenv' sourced before it runs.
+    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+       frameworks from accidentally making omnetpp's bundled icons unaccessible
+       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
+    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       if it does not already exist.
+
+ - The Makefiles were updated with more dependencies to enable parallel build.
+
+
+OMNeT++ 3.3p1 (Oct 2006)
+----------------------
+
+Source code adjustments for improved compiler and library compatibility.
 
 
 OMNeT++ 3.3 (Oct 2006)
