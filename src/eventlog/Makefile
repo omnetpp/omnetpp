@@ -66,7 +66,7 @@ $O/eventlogtool$(EXE_SUFFIX) : install $(GENERATED_SOURCES)
 	@echo Creating executable: $@
 	$(Q)$(CXX) $(CXXFLAGS) $(COPTS) $(IMPORT_DEFINES) eventlogtool.cc -o $@ $(LDFLAGS) $(IMPLIBS) -loppeventlog$D
 
-$(GENERATED_SOURCES) : eventlogentries.txt eventlogentries.pl
+%ventlogentries.cc %ventlogentries.h %ventlogentryfactory.cc : eventlogentries.txt eventlogentries.pl
 	$(PERL) eventlogentries.pl
 
 $O/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)

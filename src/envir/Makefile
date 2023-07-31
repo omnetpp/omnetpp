@@ -97,7 +97,7 @@ $O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	@echo Creating DLL: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
 
-eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
+%ventlogwriter.cc %ventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogwriter.pl
 
 $O/envirbase.o: eventlogwriter.h

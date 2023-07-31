@@ -86,7 +86,7 @@ $O/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	@echo Creating DLL: $@
 	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) $(LDFLAG_IMPLIB)$O/$(LIBNAME)$(A_LIB_SUFFIX)
 
-expression.tab.hh expression.tab.cc : expression.y
+%xpression.tab.hh %xpression.tab.cc : expression.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o expression.tab.cc -p expressionyy -d expression.y
 
@@ -94,7 +94,7 @@ lex.expressionyy.cc: expression.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.expressionyy.cc -Pexpressionyy expression.lex
 
-matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
+%atchexpression.tab.hh %atchexpression.tab.cc : matchexpression.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
 
