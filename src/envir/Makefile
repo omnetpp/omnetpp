@@ -89,7 +89,7 @@ envir-implib : $(OBJS)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && ln -s $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
-eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
+%ventlogwriter.cc %ventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentries.txt
 	$(PERL) eventlogwriter.pl
 
 $O/envirbase.o: eventlogwriter.h

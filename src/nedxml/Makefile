@@ -91,10 +91,10 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
+%edelements.cc %edelements.h %edvalidator.cc %edvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 
-ned1.tab.hh ned1.tab.cc : ned1.y
+%ed1.tab.hh %ed1.tab.cc : ned1.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o ned1.tab.cc -p ned1yy -d ned1.y
 
@@ -102,7 +102,7 @@ lex.ned1yy.cc: ned1.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.ned1yy.cc -Pned1yy ned1.lex
 
-ned2.tab.hh ned2.tab.cc : ned2.y
+%ed2.tab.hh %ed2.tab.cc : ned2.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
 
@@ -110,7 +110,7 @@ lex.ned2yy.cc: ned2.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.ned2yy.cc -Pned2yy ned2.lex
 
-msg2.tab.hh msg2.tab.cc : msg2.y
+%sg2.tab.hh %sg2.tab.cc : msg2.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
 

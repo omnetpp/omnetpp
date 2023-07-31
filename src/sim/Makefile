@@ -133,7 +133,7 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-expr.tab.hh expr.tab.cc : expr.y
+%xpr.tab.hh %xpr.tab.cc : expr.y
 	$(qecho) YACC: $<
 	$(Q)$(YACC) -o expr.tab.cc -p expryy -d expr.y
 
@@ -141,7 +141,7 @@ lex.expryy.cc: expr.lex
 	$(qecho) LEX: $<
 	$(Q)$(LEX) -olex.expryy.cc -Pexpryy expr.lex
 
-sim_std_m.cc sim_std_m.h : sim_std.msg
+%im_std_m.cc %im_std_m.h : sim_std.msg
 	$(qecho) MSGC: $<
 	$(Q)$(MSGC) -Xnc -Xns sim_std.msg
 
