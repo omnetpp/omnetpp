@@ -596,25 +596,42 @@ Some profiling software:
 \section{Checkpointing}
 \label{sec:run-sim:checkpointing}
 
-Debugging long-running simulations can be challenging, because one often needs
-to run the simulation for a long time just to get to the point of failure and
-be able to start debugging.
+Debugging long-running simulations can be challenging, as it often requires
+running the simulation for extended periods before reaching the point of failure
+and commencing debugging.
 
-Checkpointing can facilitate debugging such errors. It is a technique that
-basically consists of saving a snapshot of the application's state, and being
-able to resume execution from there, even multiple times.
-{\opp} itself contains no checkpointing functionality, but it is available via
-external tools. It depends on the tool whether it is able to restore GUI windows
-(usually not.)
+Checkpointing can significantly ease the debugging process by enabling the
+creation of snapshots of the program's state, allowing for the resumption of
+execution from these checkpoints, even multiple times. Unfortunately, {\opp}
+itself does not natively include checkpointing functionality; however, this
+capability is available through external tools. It should be noted that
+restoring GUI windows is typically not supported by these tools.
 
-Some checkpointing software that is available on Linux:
+Currently, the dominant and actively maintained checkpointing software on Linux
+is CRIU (Checkpoint/Restore In Userspace). CRIU offers a user-space
+checkpointing library, which has gained widespread adoption due to its
+reliability and continued development.\footnote{Other checkpointing packages
+include BLCR (Berkeley Lab Checkpoint/Restart) and DMTCP (Distributed
+MultiThreaded Checkpointing), but these tools have become obsolete and have not
+received updates for several years.}
 
-\begin{itemize}
-  \item Berkeley Lab Checkpoint/Restart (BLCR)
-  \item DMTCP (Distributed MultiThreaded Checkpointing)
-  \item CRIU is a user space checkpoint lib
-  \item Docker and the underlying technology contain a checkpoint and restore mechanism
-\end{itemize}
+Furthermore, it is worth mentioning that Docker and its underlying technologies
+also incorporate a checkpoint and restore mechanism, providing additional
+options for checkpointing long-running applications.
+
+An example session with CRIU:
+
+\begin{commandline}
+$ ./aloha -u Cmdenv -c PureAloha2 --cmdenv-redirect-output=true &
+$ pid=$!  # remember process ID
+...
+...
+$ mkdir checkpoint1
+$ sudo criu --shell-job dump -t $pid -D ./checkpoint1
+...
+...
+$ sudo criu --shell-job restore -D ./checkpoint1
+\end{commandline}
 
 
 \section{Using Cmdenv}
