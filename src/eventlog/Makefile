@@ -48,7 +48,7 @@ $O/%.o: %.cc
 all: eventlogentries.cc $L/$(LIBNAME)$(LIB_SUFFIX) $O/eventlogtool$(EXE_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
-$(GENERATED_SOURCES) : eventlogentries.txt eventlogentries.pl
+%ventlogentries.cc %ventlogentries.h %ventlogentryfactory.cc : eventlogentries.txt eventlogentries.pl
 	$(PERL) eventlogentries.pl
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)

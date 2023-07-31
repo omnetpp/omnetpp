@@ -80,13 +80,13 @@ $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
-expression.tab.hh expression.tab.cc : expression.y
+%xpression.tab.hh %xpression.tab.cc : expression.y
 	$(YACC) -o expression.tab.cc -p expressionyy -d expression.y
 
 lex.expressionyy.cc: expression.lex
 	$(LEX) -olex.expressionyy.cc -Pexpressionyy expression.lex
 
-matchexpression.tab.hh matchexpression.tab.cc : matchexpression.y
+%atchexpression.tab.hh %atchexpression.tab.cc : matchexpression.y
 	$(YACC) -o matchexpression.tab.cc --no-lines -p matchexpressionyy -d matchexpression.y
 
 depend: $(GENERATED_SOURCES)
