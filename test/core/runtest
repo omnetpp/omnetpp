@@ -24,7 +24,7 @@ export NEDPATH=.:../lib
 EXTRA_INCLUDES="-I../../../src"
 #OPT="-a --debugger-attach-on-error=true"
 
-$MAKE -C signalreg
+$MAKE $MAKEOPTIONS -C signalreg
 
 opp_test gen $OPT -v $TESTFILES || exit 1
 echo
