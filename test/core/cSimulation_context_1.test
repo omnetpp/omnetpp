@@ -114,7 +114,7 @@ Running simulation...
 - Test.b.g$o.channel process: "packet"
 - Test.a handleMessage: "packet"
 
-<!> No more events -- simulation ended.
+<!> No more events -- simulation ended at event #5, t=1.
 
 
 Calling finish() at end of Run #0...
