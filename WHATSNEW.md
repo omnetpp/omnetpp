@@ -16,14 +16,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. 'setenv' now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -62,9 +62,9 @@ Analysis Tool:
 
 NED Documentation Generator:
 
-    - Refined support for msg types with namespace.
-    - Added support for "@debug links" page directive.
-    - Made namespaces appear in the navigation tree.
+  - Refined support for msg types with namespace.
+  - Added support for "@debug links" page directive.
+  - Made namespaces appear in the navigation tree.
 
 Qtenv:
 
@@ -83,6 +83,8 @@ Documentation:
   - Document fingerprint ingredients added in 6.0.
 
 See ChangeLogs in individual folders for details.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A6.0.1
 
 
 OMNeT++ 6.0 (April 2022)
@@ -295,7 +297,7 @@ NED:
     expressions. I.e. `-5s100ms` is valid as a quantity string (and means
     -5.1s), but `5s-100ms` is no longer.
 
-    Also, the plain "0" constant is no longer accepted at places where a
+    Also, the plain `0` constant is no longer accepted at places where a
     quantity with a measurement unit is expected. Reason: it was confusing when
     the expected unit was dB or dBm. E.g. in `omnetpp.ini`, should `**.power = 0`
     be interpreted as 0W or 0dBm?
@@ -1204,7 +1206,7 @@ Statistics recording:
     record queue length computed as the difference of the number of messages
     that entered the queue and those that left it:
 
-      @statistic[queueLen](source=count(pkIn)-count(pkOut);record=vector); //INCORRECT
+        @statistic[queueLen](source=count(pkIn)-count(pkOut);record=vector); //INCORRECT
 
     In this case, if a warmup period is set, the result may even go negative
     because the `pkIn` and `pkOut` signals that arrive during the warmup period
@@ -1212,7 +1214,7 @@ Statistics recording:
     solution is to add the `warmup` filter after the difference between arrivals
     and departures have been computed:
 
-      @statistic[queueLen](source=warmup(count(pkIn)-count(pkOut));autoWarmupFilter=false;record=vector); //OK
+        @statistic[queueLen](source=warmup(count(pkIn)-count(pkOut));autoWarmupFilter=false;record=vector); //OK
 
     The `autoWarmupFilter` option exists because either location for the warmup
     filter (beginning or end of the chain, or even mid-chain) may make sense for
@@ -1224,7 +1226,7 @@ Statistics recording:
     signal are tagged with the labels `first`, `second` and `third`, then the
     following statistics:
 
-      @statistic[foo](record=count(demux(foo)));
+        @statistic[foo](record=count(demux(foo)));
 
     will produce three scalars: `first:foo:count(demux)`, `second:foo:count(demux)`,
     and `third:foo:count(demux)`. The labels are taken from the (full) name of
@@ -1622,7 +1624,7 @@ C++ Debugging:
     manually import them from the LLDB debugger console with the following
     command:
 
-      command script import <OMNETPP_ROOT>/python/omnetpp/lldb/formatters/omnetpp.py
+        command script import <OMNETPP_ROOT>/python/omnetpp/lldb/formatters/omnetpp.py
 
   - Allow Qtenv's "Debug on Error" and "Debug Next Event" functionality to use
     the integrated debugger of the Simulation IDE. This required multiple
@@ -1644,7 +1646,7 @@ C++ Debugging:
     Hint: You can force Qtenv to use Visual Studio Code as your external
     debugger by setting the following environment variable:
 
-      export OMNETPP_DEBUGGER_COMMAND="code --open-url \"vscode://vadimcn.vscode-lldb/launch/config?{request:'attach', pid:'%u'}\""
+        export OMNETPP_DEBUGGER_COMMAND="code --open-url \"vscode://vadimcn.vscode-lldb/launch/config?{request:'attach', pid:'%u'}\""
 
     Alternatively, you can specify the same value (`code --open-url ...`)
     to the "debugger-attach-command" configuration option in `omnetpp.ini`.
@@ -1837,6 +1839,8 @@ Documentation:
     from their original source format (DocBook or AsciiDoc) to reStructuredText,
     except for the Simulation Manual which remains in LaTeX.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A6.0
+
 
 OMNeT++ 5.7.1 (August 2023)
 ---------------------------
@@ -1895,17 +1899,17 @@ For compatibility with 6.0:
 
     Example:
 
-    network Network {
-       node: Node {
-         foo = foo; // CAVEAT: means "parent.foo" in 5.x, "this.foo" in 6.x!
-         bar = this.foo;  // OK: unambiguous, recognized by all versions
-         faa = parent.foo;  // OK: unambiguous, recognized in 5.7 and 6.x
-         baz = node2.foo;  // CAVEAT: means "parent.node2.foo" in 5.x, "this.node2.foo" in 6.x!
-         bax = parent.node2.foo;  // OK: unambiguous, recognized in 5.7 and 6.x
-       }
-    }
+        network Network {
+          node: Node {
+            foo = foo; // CAVEAT: means "parent.foo" in 5.x, "this.foo" in 6.x!
+            bar = this.foo;  // OK: unambiguous, recognized by all versions
+            faa = parent.foo;  // OK: unambiguous, recognized in 5.7 and 6.x
+            baz = node2.foo;  // CAVEAT: means "parent.node2.foo" in 5.x, "this.node2.foo" in 6.x!
+            bax = parent.node2.foo;  // OK: unambiguous, recognized in 5.7 and 6.x
+          }
+        }
 
-  - MatchExpression: added 'field =~ pattern' syntax as alternative to 'field(pattern)'
+  - MatchExpression: added `field =~ pattern` syntax as alternative to `field(pattern)`
 
   - Added Ws, Wh, kWh, MWh to the list of recognized measurement units
 
@@ -2015,6 +2019,8 @@ Build:
 
   - Updated bundled sqlite3 amalgamation sources.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.7
+
 
 OMNeT++ 5.6.3 (August 2023)
 ---------------------------
@@ -2044,6 +2050,8 @@ OMNeT++ 5.6.2 (May 2020)
 
 This release contains minor stability fixes.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.6.2
+
 
 OMNeT++ 5.6.1 (February 2020)
 -----------------------------
@@ -2055,12 +2063,14 @@ Minor bug fixes.
 
  - Added missing .cproject file for the canvas example.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.6.1
+
 
 OMNeT++ 5.6 (January 2020)
 --------------------------
 
 This is primarily a bugfix release, with a small but practically quite useful
-NED feature (@reconnect) and minor additions to the simulation library.
+NED feature (`@reconnect`) and minor additions to the simulation library.
 Regarding bugfixes, Qtenv has received quite a lot of attention.
 
 NED:
@@ -2167,6 +2177,8 @@ Other:
 
   - opp_test, opp_featuretool: Various small fixes.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.6
+
 
 OMNeT++ 5.5.2 (August 2023)
 ---------------------------
@@ -2195,6 +2207,8 @@ OMNeT++ 5.5.1 (June 2019)
 -------------------------
 
 This release contains minor stability fixes.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.5.1
 
 
 OMNeT++ 5.5 (June 2019)
@@ -2237,6 +2251,8 @@ Other:
 
   - Workaround for long C++ indexer runtimes in the IDE.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.5
+
 
 OMNeT++ 5.4.2 (August 2023)
 ---------------------------
@@ -2265,6 +2281,8 @@ OMNeT++ 5.4.1 (June 2018)
 -------------------------
 
 This release contains minor fixes. See the individual ChangeLogs for details.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.4.1
 
 
 OMNeT++ 5.4 (June 2018)
@@ -2338,6 +2356,8 @@ IDE:
 
   - Fix: inifile analysis: typename deep assignments in NED were ignored
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.4
+
 
 OMNeT++ 5.3.1 (August 2023)
 ---------------------------
@@ -2398,7 +2418,7 @@ Core:
     provided.
 
   - In recording histograms with @statistic, the number of bins can be specified
-    by adding numBins=nn: @statistic[x](record=histogram;numBins=100). The actual
+    by adding numBins=nn: `@statistic[x](record=histogram;numBins=100)`. The actual
     number of bins produced might slightly differ, due to auto-extension and
     bin merging during result collection.
 
@@ -2481,7 +2501,7 @@ Documentation:
   - Documented smooth animation in detail, and updated the section on statistical
     data collection classes (cStdDev, cHistogram) in the Simulation Manual.
 
-Plus several bug fixes.
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.3
 
 
 OMNeT++ 5.2.2 (August 2023)
@@ -2519,6 +2539,8 @@ This is a maintenance release.
  - Updates to the C++ Development and Launcher chapters of the User Guide.
 
 See ChangeLogs in individual folders for details.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.2.1
 
 
 OMNeT++ 5.2 (September 2017)
@@ -2797,7 +2819,7 @@ Result recording and processing:
 
  - SQLite recorder: slight changes in file format
 
-Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.2
 
 
 OMNeT++ 5.1.2 (August 2023)
@@ -2831,6 +2853,8 @@ This release contains only minor bugfixes.
  - The IDE on Windows now can be started directly from a shortcut. Previously
    the IDE was not able to load its native library if it was started from a
    shortcut instead of the MinGW shell.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.1.1
 
 
 OMNeT++ 5.1 (March 2017)
@@ -2887,7 +2911,7 @@ Samples:
    to switch between cut-through switching and store-and-forward. Also added
    a parameter study into its omnetpp.ini.
 
-Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+milestone%3A5.1
 
 
 OMNeT++ 5.1 Preview 3 (February 2017)
@@ -2964,7 +2988,7 @@ Samples:
    Debian/Ubuntu distros, because they contain an osgEarth library version
    that is too old.)
 
-Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+milestone%3A5.1pre3
 
 
 OMNeT++ 5.1 Preview 2 (December 2016)
@@ -3413,6 +3437,9 @@ Samples:
    currently in the Qtenv runtime environment. If you want to run those examples
    please run them in either Tkenv or Cmdenv ('-u Tkenv' or '-u Cmdenv').
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.1pre2
+
+
 OMNeT++ 5.1 Preview 1 (September 2016)
 --------------------------------------
 
@@ -3521,6 +3548,8 @@ Utils:
  - opp_featuretool refinements
 
 Additionally, several bug were fixed in the IDE, Tkenv and Qtenv.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.0
 
 
 OMNeT++ 5.0 rc1 (March 2016)
@@ -3653,6 +3682,8 @@ Examples:
 Utils:
 
  - opp_featuretool revised and improved
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.0rc1
 
 
 OMNeT++ 5.0 beta 3 (December 2015)
@@ -3804,6 +3835,8 @@ Build:
    will pick 'clang' by default. This behavior can be changed by the PREFER_CLANG
    variable in the configure.user file.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.0b3
+
 
 OMNeT++ 5.0 beta 2 (July 2015)
 ------------------------------
@@ -3945,6 +3978,8 @@ Contrib:
 
  - Removed JSimpleModule due to lack of users and good use cases
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.0b2
+
 
 OMNeT++ 5.0 beta 1 (Feb 2015)
 -----------------------------
@@ -4062,7 +4097,7 @@ Example simulations:
 
  - Added samples/canvas, a demo for the Canvas API
 
-Bugs fixed: see http://dev.omnetpp.org/bugs/changelog_page.php?project_id=1
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A5.0b1
 
 
 OMNeT++ 4.6.1 (August 2023)
@@ -4151,7 +4186,7 @@ Other:
      the mingw/ directory that contains the compiler has been moved to
      tools/win32/mingw32/.
 
-Bugs fixed: http://tinyurl.com/omnetpp46-fixes
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.6
 
 
 OMNeT++ 4.5.1 (August 2023)
@@ -4239,6 +4274,8 @@ Other:
    MinGW 4.7 compiler.
  - Tcl/Tk version 8.5 is required, 8.6 is preferred; BLT is no longer in use
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.5
+
 
 OMNeT++ 4.4.2 (August 2023)
 ---------------------------
@@ -4274,7 +4311,7 @@ Changes:
 OMNeT++ 4.4.1 (Feb 2014)
 ------------------------
 
-Bugs fixed: http://tinyurl.com/omnetpp441-fixes
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.4.1
 
 
 OMNeT++ 4.4 (Dec 2013)
@@ -4380,7 +4417,7 @@ Improved support for C++11, Mac OS X:
 
  - Updated the source to compile with both Bison 2.3 and 3.0
 
-Bugs fixed: http://tinyurl.com/omnetpp44-fixes
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.4
 
 
 OMNeT++ 4.3.2 (August 2023)
@@ -4469,6 +4506,8 @@ Further IDE improvements:
 
  - Some other bug fixes
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.3.1
+
 
 OMNeT++ 4.3 (March 2013)
 ------------------------
@@ -4485,6 +4524,8 @@ IDE:
 Tools:
 
  - The configure script now correctly detects the X headers on Mac OS X 10.8.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.3
 
 
 OMNeT++ 4.3rc1 (Jan 2013)
@@ -4559,6 +4600,7 @@ Tools:
    If you need the old behavior, use the 'V=1' (verbose on) option on
    the make command line.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.3rc1
 
 OMNeT++ 4.2.3 (August 2023)
 ---------------------------
@@ -4596,19 +4638,19 @@ Changes:
 OMNeT++ 4.2.2 (March 2012)
 --------------------------
 
-Bugs fixed: http://tinyurl.com/omnetpp422-fixes
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.2.2
 
 
 OMNeT++ 4.2.1 (Jan 2012)
 ------------------------
 
-Bugs fixed: http://tinyurl.com/omnetpp421-fixes
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.2.1
 
 
 OMNeT++ 4.2 (Nov 2011)
 ----------------------
 
-Several bug fixes.
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.2
 
 
 OMNeT++ 4.2rc2 (Nov 2011)
@@ -4665,6 +4707,8 @@ Sample simulations:
    network topology. Currently it works with MySQL.
 
 Countless bug fixes and smaller improvements.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.2rc2
 
 
 OMNeT++ 4.2rc1 (Aug 2011)
@@ -4804,6 +4848,8 @@ IDE:
  - Removed Animation Player as it was only a "technology preview" bundled
    with the beta releases to gather feedback from the user community. The
    animator is scheduled to appear in the next major OMNeT++ release.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.2rc1
 
 
 OMNeT++ 4.2b2 (May 2011)
@@ -4978,8 +5024,7 @@ IDE/Sequence Chart and Event Log:
    Animation Tool) -- .elog files recorded with any prior version of OMNeT++
    have to be re-recorded.
 
-Many bug fixes, mostly in the IDE; you can see the detailed list at:
-http://tinyurl.com/omnetpp42b2-fixes
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.2b2
 
 
 OMNeT++ 4.2b1 (Feb 2011)
@@ -5159,7 +5204,7 @@ IDE/Documentation Generator:
  - Fix: External pages (@externalpage) now appear under the "Selected Topics"
    node of the navigation tree in the generated documentation.
 
- - Several minor fixes: recognize the <u> (underline) HTML tag; sanitize the
+ - Several minor fixes: recognize the `<u>` (underline) HTML tag; sanitize the
    file names for @page; added/refined test cases
 
 Tkenv:
@@ -5195,8 +5240,7 @@ Misc:
 
  - Added a detailed IDE change log file doc/IDE-Changes
 
-Several bugs have been fixed; you can see the detailed list at:
-http://tinyurl.com/omnetpp42b1-fixes
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.2b1
 
 
 OMNeT++ 4.1.1 (August 2023)
@@ -5253,6 +5297,8 @@ Changes after 4.1rc2:
 
  - Various bug fixes
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.1
+
 
 OMNeT++ 4.1 rc2 (June 2010)
 -------------------------------
@@ -5290,6 +5336,8 @@ Misc:
 
  - various fixes on Tkenv, the IDE and the build system
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.1rc2
+
 
 OMNeT++ 4.1 rc1 (May 2010)
 --------------------------
@@ -5311,9 +5359,10 @@ Simulation kernel:
 
 NED:
 
- - New NED function: expand(). It substitutes ${} config variables into a string.
+ - New NED function: expand(). It substitutes `${}` config variables into a string.
    Example usage in a NED parameter:
-   string fileName = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
+
+       string fileName = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
 
 MSG:
 
@@ -5355,6 +5404,8 @@ IDE:
 
  - Several other bug fixes
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.1rc1
+
 
 OMNeT++ 4.1 beta 4 (April 2010)
 -------------------------------
@@ -5390,21 +5441,21 @@ Simulation kernel:
 NED:
  - Inner types can now refer to the parameters of their enclosing type.
 
- - Statistics recording: introduced the source= key within the @statistic
+ - Statistics recording: introduced the `source=key` within the @statistic
    property, which lets you use a derived value as statistic. For example:
-   @statistic[dropPercent](source=100*dropRatio;record=vector,last),
+   `@statistic[dropPercent](source=100*dropRatio;record=vector,last)`,
    where dropRatio is a signal emitted from the module. This feature also
    lets one emit message or packet objects as signals, and record some
    property of them as statistics. For example:
-   @statistic[bytesSent](source=packetBytes(pkSent);record=sum).
+   `@statistic[bytesSent](source=packetBytes(pkSent);record=sum)`.
 
  - The @signal property can now be used to declare signals, for example
    those that can be used as source for @statistic. An example:
-   @signal[pkSent](type=cPacket).
+   `@signal[pkSent](type=cPacket)`.
 
  - Introduced optional statistic recording modes: now you can add optional
    items to the record= key of the @statistic property, by appending "?"
-   to them. For example: @statistic[eed](record=vector?,histogram?,mean).
+   to them. For example: `@statistic[eed](record=vector?,histogram?,mean)`.
    By default, only non-optional items are active; optional ones can be
    turned on with **.result-recording-modes = all (see below).
 
@@ -5418,18 +5469,20 @@ NED:
    can be edited (and configured in the inifile editor) like other submodules.
 
 Envir:
- - The result-recording-mode= configuration option was renamed to
-   result-recording-modes=.
+ - The `result-recording-mode=` configuration option was renamed to
+   `result-recording-modes=`.
 
  - result-recording-modes now has support for optional recording modes (those
-   marked with "?" in @statistic(record=..), see above). The value "default"
-   selects non-optional modes from @statistic(record=..), and "all" selects
+   marked with "?" in `@statistic(record=..)`, see above). The value "default"
+   selects non-optional modes from `@statistic(record=..)`, and "all" selects
    all of them. The list can be fine-tuned by adding recording modes prefixed
    with "+" or "-" (for "add" and "remove", respectively). A lone "-" disables
    all recording modes. Some examples:
-     **.result-recording-modes = default,+vector,-histogram
-     **.result-recording-modes = all,-vector
-     **.result-recording-modes = last
+
+        **.result-recording-modes = default,+vector,-histogram
+        **.result-recording-modes = all,-vector
+        **.result-recording-modes = last
+
    The first one selects non-optional recording modes plus records everything
    as output vector, but disables histogram recording. The second one selects
    all recording modes but disables vector recording. The third one only
@@ -5501,6 +5554,8 @@ Bugfixes since beta 3:
  - Go To C++ Definition in NED file is working again
  - opp_test: %subst to understand backrefs ($1) in the replacement string
  - many other bug fixes
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.1b4
 
 
 OMNeT++ 4.1 beta 3 (March 2010)
@@ -5612,6 +5667,8 @@ Bugfixes since beta 2:
    containing the @titlepage property.
  - Boolean parameters now can be recorded as scalars.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0b3
+
 
 OMNeT++ 4.1 beta 2 (Jan 2010)
 -----------------------------
@@ -5641,6 +5698,8 @@ Documentation:
 
  - An IDE Developers Guide has been created that describes how to enhance the
    OMNeT++ IDE and extend it with new functionality.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0b2
 
 
 OMNeT++ 4.1 beta 1 (Jan 2010)
@@ -5774,6 +5833,8 @@ Tooling:
  - Source files are now compatible with GCC 4.4 version (fixed missing #includes)
  - Updated MinGW GCC compiler to 4.4 (on Windows)
  - Updated MSYS binaries (on Windows)
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.1b1
 
 
 OMNeT++ 4.0.2 (August 2023)
@@ -5989,6 +6050,8 @@ Result analysis:
   The vector and scalar file format has changed to support the new features
   of the IDE. Vector files are now indexed for efficiency.
 
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0
+
 
 OMNeT++ 4.0rc2 (Feb 2009)
 -------------------------
@@ -6111,8 +6174,7 @@ Packaging:
    and gitk). Please use the hyphen-less form of commands (e.g. git checkout
    instead of git-checkout).
 
-Several bugfixes:
- - see http://dev.omnetpp.org/bugs/changelog_page.php
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0rc2
 
 
 OMNeT++ 4.0rc1 (Dec 2008)
@@ -6170,8 +6232,8 @@ Tools:
  - seedtool was renamed opp_lcg32_seedtool, and added a warning in its help
    that it is an obsolete tool and probably should not be used.
 
-Several bugfixes:
- - see http://dev.omnetpp.org/bugs/changelog_page.php
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0rc1
+
 
 
 OMNeT++ 4.0 beta 8 (Nov 2008)
@@ -6522,8 +6584,10 @@ omnetpp.ini:
    of xmldoc(), i.e. the paths expression to select part of an XML file
    to load. This allows for assigning XML params of several modules with a
    single line in omnetpp.ini. Consider the following:
-     **.xmlConfig=xmldoc("all-in-one.xml","config[@mod=$MODULE_FULLPATH]")
-   where all-in-one.xml contains <config mod="net.host1.rt">...</config>
+
+       **.xmlConfig=xmldoc("all-in-one.xml","config[@mod=$MODULE_FULLPATH]")
+   
+   where all-in-one.xml contains `<config mod="net.host1.rt">...</config>`
    elements for every module.
 
  - also fixed some anomalies in the XML path expression interpreter.
@@ -6548,7 +6612,7 @@ Tkenv:
    at it with Plove to decide if simulation needs to be run longer)
 
  - added support for OPP_PLUGIN_PATH environment variable, and
-   [Tkenv]/plugin-path= omnetpp.ini entry.
+   `[Tkenv]/plugin-path=` omnetpp.ini entry.
 
  - cGate inspector: channel attributes (delay, error and datarate)
    can now be changed from the GUI.
