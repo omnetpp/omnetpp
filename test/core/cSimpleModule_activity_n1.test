@@ -35,6 +35,12 @@ void Simple::activity()
 
 }; //namespace
 
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+total-stack = 5MB  # ensure that we receive the error
+
 %exitcode: 1
 
 %contains-regex: stdout
