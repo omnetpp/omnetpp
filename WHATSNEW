@@ -2192,7 +2192,7 @@ Other:
 OMNeT++ 3.3.2 (August 2023)
 ---------------------------
 
-This is a modernized version of omnetpp-3.3p1 that makes it possible to build
+This is a modernized version of omnetpp-3.3 that makes it possible to build
 and use the now 17-year-old package in today's software environments. The
 primary objective of this release is to facilitate the execution of old
 simulation models, e.g. for reproducing simulation results or as a basis of
@@ -2225,10 +2225,12 @@ Main changes:
  - The Makefiles were updated with more dependencies to enable parallel build.
 
 
-OMNeT++ 3.3p1 (Oct 2006)
-----------------------
+OMNeT++ 3.3.1 (Mar 2019)
+------------------------
 
 Source code adjustments for improved compiler and library compatibility.
+The changes made it possible to compile it on Ubuntu 18.04 LTS and GCC 7.3.
+This version was originally released as omnetpp-3.3p1-src-gcc73.tgz.
 
 
 OMNeT++ 3.3 (Oct 2006)
