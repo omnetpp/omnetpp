@@ -427,7 +427,9 @@ proc setOSXDockIcon {} {
     }
 
     # set the icon
-    tkdock::switchIcon $icon
+    if [catch {tkdock::switchIcon $icon}] {
+        debug "tkdock::switchIcon failed"
+    }
 }
 
 
