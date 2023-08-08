@@ -4285,7 +4285,11 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 
 #----------------------
 # check if swapcontext() call is available (used for coroutines)
+# NOTE: we should explicitly exclude MAC OS because AC_CHECK_FUNC reports that swapcontext()
+# is present, but it is uninmplemented (and deprecated) on OS X 10.6 and later. We use the
+# original 'portable' implementation on MAC.
 #----------------------
+if test "$PLATFORM" != "macosx"; then
 
   for ac_func in swapcontext
 do :
@@ -4297,6 +4301,7 @@ then :
 fi
 
 done
+fi
 
 #----------------------
 # check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib
