@@ -235,8 +235,13 @@ AC_PROG_RANLIB
 
 #----------------------
 # check if swapcontext() call is available (used for coroutines)
+# NOTE: we should explicitly exclude MAC OS because AC_CHECK_FUNC reports that swapcontext()
+# is present, but it is uninmplemented (and deprecated) on OS X 10.6 and later. We use the
+# original 'portable' implementation on MAC.
 #----------------------
+if test "$SO_LIB_SUFFIX" != ".dylib"; then # we are NOT on on macOS
 AC_CHECK_FUNCS(swapcontext, [CFLAGS="$CFLAGS -DHAVE_SWAPCONTEXT"])
+fi
 
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
 #----------------------
