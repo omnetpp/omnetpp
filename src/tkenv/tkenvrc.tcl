@@ -184,7 +184,9 @@ proc loadTkenvrc {fname} {
 proc applyTkenvrc {} {
     global config
 
-    catch {wm state . $config(mainwin-state)}
+    if {![string equal [tk windowingsystem] aqua]} { # skip setting window state on macOS because it causes an error on startup
+        catch {wm state . $config(mainwin-state)}
+    }
     catch {wm geometry . $config(mainwin-geom)}
 
     catch {.main.right config -orient $config(mainwin-sash-orient)}
