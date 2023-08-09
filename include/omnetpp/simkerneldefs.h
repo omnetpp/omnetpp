@@ -26,7 +26,7 @@
 #define OMNETPP_VERSION  0x0507
 
 // OMNeT++ build number
-#define OMNETPP_BUILDNUM   1024
+#define OMNETPP_BUILDNUM   1025
 
 // uncomment to switch fingerprint computation algorithm to OMNeT++ 4.x compatible mode
 //#define USE_OMNETPP4x_FINGERPRINTS
