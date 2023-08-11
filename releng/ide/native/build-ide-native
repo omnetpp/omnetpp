@@ -8,6 +8,7 @@ if [ "$BUILD_LINUX_X86_64_DISTRO" = "true" ]; then
   # build Linux x86_64
   echo Building Linux x86_64 binaries
   cp releng/ide/native/Makefile.inc.linux.x86_64 Makefile.inc
+  touch include/omnetpp/platdep/config.h # an empty config header is fine here
   make cleanall || { echo --- error during cleaning native Linux x86_64 IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Linux x86_64 IDE parts ---; exit 1;}
 fi
@@ -16,6 +17,7 @@ if [ "$BUILD_LINUX_AARCH64_DISTRO" = "true" ]; then
   # build Linux aarch64
   echo Building Linux aarch64 binaries
   cp releng/ide/native/Makefile.inc.linux.aarch64 Makefile.inc
+  touch include/omnetpp/platdep/config.h # an empty config header is fine here
   make cleanall || { echo --- error during cleaning native Linux aarch64 IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Linux aarch64 IDE parts ---; exit 1;}
 fi
@@ -24,14 +26,16 @@ if [ "$BUILD_WIN32_X86_64_DISTRO" = "true" ]; then
   # Build MS Windows
   echo Building Windows X86_64 binaries
   cp releng/ide/native/Makefile.inc.win32.x86_64 Makefile.inc
+  touch include/omnetpp/platdep/config.h # an empty config header is fine here
   make cleanall || { echo --- error during cleaning native Windows x86_64 IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native Windows x86_64 IDE parts ---; exit 1;}
 fi
 
 if [ "$BUILD_MACOS_X86_64_DISTRO" = "true" -o "$BUILD_MACOS_AARCH64_DISTRO" = "true" ]; then
- if which x86_64-apple-darwin20.4-clang++-libc++ ; then
+ if which x86_64-apple-darwin21.4-clang++-libc++ ; then
   echo Building 64-bit macOS binaries using a cross compiler
   cp releng/ide/native/Makefile.inc.macos Makefile.inc
+  touch include/omnetpp/platdep/config.h # an empty config header is fine here
   export MACOSX_DEPLOYMENT_TARGET=10.10
   make cleanall || { echo --- error during cleaning native macOS IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native macOS IDE parts ---; exit 1;}
