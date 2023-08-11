@@ -82,9 +82,7 @@ fi
 mv doc/Readme-IDE doc/Readme-IDE.txt
 mv doc/License doc/License.txt
 mv doc/IDE-Changes doc/IDE-Changes.txt
-mv WHATSNEW WHATSNEW.txt
 mv README README.txt
-mv INSTALL INSTALL.txt
 mv MIGRATION MIGRATION.txt
 
 # convert CR/LFs in txt files to windows format
