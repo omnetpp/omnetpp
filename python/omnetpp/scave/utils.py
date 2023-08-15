@@ -23,7 +23,7 @@ import pandas as pd
 import itertools as it
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from omnetpp.scave import chart, ideplot, vectorops
+from omnetpp.scave import chart, ideplot, vectorops, scave_bindings as sb
 
 from ._version import __version__
 
@@ -121,6 +121,59 @@ def _check_same_unit(df):
         units = ["<none>" if u is None else u for u in units]
         raise chart.ChartScriptError("The data frame contains multiple units: " + ", ".join(units))
     return units[0]
+
+
+def convert_to_base_unit(df, columns_to_convert=["value", "min", "max", "mean", "stddev", "vecvalue", "binedges"]):
+    """
+    Converts results with units in the passed DataFrame to their base units in-place.
+    The DataFrame needs to have a "unit" column - which is updated to the base unit.
+    By default, the following columns are converted:
+      "value", "min", "max", "mean", "stddev", "vecvalue", "binedges"
+    Every converted column must contain either all numbers or all `np.ndarray` instances.
+
+    This works for example on the DataFrames returned by `get_scalars`, `get_vectors`, `get_statistics`,
+    and `get_histograms` in `omnetpp.scave`, but NOT on those returned by `get_results`.
+    """
+
+    if "unit" not in df.columns:
+        raise chart.ChartScriptError("The DataFrame does not contain a 'unit' column")
+
+    if df.empty:
+        return
+
+    # Precompute eligible columns and separate them by dtype
+    numeric_columns = [col for col in df.columns
+                         if col in columns_to_convert
+                           and pd.api.types.is_numeric_dtype(df[col])]
+    ndarray_columns = [col for col in df.columns
+                         if col in columns_to_convert
+                           and isinstance(df[col].iloc[0], np.ndarray)]
+
+    uc = sb.UnitConversion
+
+    # Iterate through rows
+    for index, row in df.iterrows():
+        original_unit = row["unit"]
+        if original_unit is None or original_unit == "" or not isinstance(original_unit, str):
+            continue
+
+        # Convert unit for the current row
+        base_unit = uc.getBaseUnit(original_unit)
+        if base_unit is None or base_unit == "" or base_unit == original_unit:
+            continue
+        df.at[index, "unit"] = base_unit
+
+        # Convert numeric quantity columns to base unit
+        for col in numeric_columns:
+            value = row[col]
+            converted_value = uc.convertUnit(value, original_unit, base_unit)
+            df.at[index, col] = converted_value
+
+        # Convert ndarray quantity columns to base unit
+        for col in ndarray_columns:
+            values = row[col].copy() # NOTE: I don't know why this copy is needed...
+            uc.convertUnitArray(values, original_unit, base_unit)
+            df.at[index, col] = values
 
 
 # Note: must be at the top, because it appears in other functions' arg list as default

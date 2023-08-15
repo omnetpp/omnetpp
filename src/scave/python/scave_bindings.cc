@@ -20,13 +20,19 @@
 #include <nanobind/stl/vector.h>
 #include <nanobind/stl/pair.h>
 #include <nanobind/stl/map.h>
+#include <nanobind/ndarray.h>
+
 #include <scave/resultfilemanager.h>
 #include <scave/interruptedflag.h>
 #include <scave/vectorutils.h>
 
+// TODO: should this be in a separate module?
+#include <common/unitconversion.h>
+
 namespace nb = nanobind;
 
 using namespace omnetpp::scave;
+using namespace omnetpp::common;
 
 #define CONCAT_(prefix, suffix) prefix##suffix
 #define CONCAT(prefix, suffix) CONCAT_(prefix, suffix)
@@ -252,4 +258,33 @@ NB_MODULE(MODULENAME, m) {
         //.def("getPreciseX", &XYArray::getPreciseX)
         .def("getEventNumber", &XYArray::getEventNumber)
         ;
+
+
+    nb::class_<UnitConversion>(m, "UnitConversion")
+        .def_static("getBaseUnit", [](const char *unitName) { auto baseUnit = UnitConversion::getBaseUnit(unitName); return opp_nulltoempty(baseUnit); })
+        //.def_static("getBestUnit", &UnitConversion::getBestUnit)
+        .def_static("convertUnit", &UnitConversion::convertUnit)
+        .def_static("convertUnitArray", [](
+                nb::ndarray<double, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> a,
+                const char *unitName, const char *targetUnitName) {
+
+            if (unitName == targetUnitName || opp_streq(unitName, targetUnitName))
+                return;
+
+            double *data = a.data();
+            size_t n = a.shape(0);
+
+            double factor = UnitConversion::getConversionFactor(unitName, targetUnitName);
+            if (factor != 0.0) {
+                // optimization for the simple case, where the units are compatible and linear
+                for (size_t i = 0; i < n; ++i)
+                    data[i] *= factor;
+            }
+            else {
+                for (size_t i = 0; i < n; ++i)
+                    data[i] = UnitConversion::convertUnit(data[i], unitName, targetUnitName);
+            }
+        })
+        ;
+
 }
