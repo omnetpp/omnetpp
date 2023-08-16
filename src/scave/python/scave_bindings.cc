@@ -259,6 +259,19 @@ NB_MODULE(MODULENAME, m) {
         .def("getEventNumber", &XYArray::getEventNumber)
         ;
 
+    m.def("xyArrayToNumpyArrays", [](
+            XYArray *xyArray,
+            nb::ndarray<double, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> xs,
+            nb::ndarray<double, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> ys
+        ) {
+            int l = xyArray->length();
+            if (xs.shape(0) != l || ys.shape(0) != l)
+                throw std::runtime_error("xyArrayToNumpyArrays: shape mismatch");
+            memcpy(xs.data(), xyArray->xs.data(), l * sizeof(double));
+            memcpy(ys.data(), xyArray->ys.data(), l * sizeof(double));
+        })
+        ;
+
 
     nb::class_<UnitConversion>(m, "UnitConversion")
         .def_static("getBaseUnit", [](const char *unitName) { auto baseUnit = UnitConversion::getBaseUnit(unitName); return opp_nulltoempty(baseUnit); })
