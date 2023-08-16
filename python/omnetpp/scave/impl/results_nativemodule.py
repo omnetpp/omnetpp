@@ -136,9 +136,7 @@ def _collect_results(rfm : sb.ResultFileManager, filter_expression : str, includ
             times = np.empty(l, dtype=np.float64)
             values = np.empty(l, dtype=np.float64)
 
-            for x in range(l):
-                times[x] = array.getX(x)
-                values[x] = array.getY(x)
+            sb.xyArrayToNumpyArrays(array, times, values)
 
             row["vectime"] = times
             row["vecvalue"] = values
@@ -400,9 +398,7 @@ def get_vectors(filter_expression, include_attrs, include_runattrs, include_iter
         times = np.empty(array.length(), dtype=np.float64)
         values = np.empty(array.length(), dtype=np.float64)
 
-        for x in range(array.length()):
-            times[x] = array.getX(x)
-            values[x] = array.getY(x)
+        sb.xyArrayToNumpyArrays(array, times, values)
 
         vectimes[i] = times
         vecvalues[i] = values
