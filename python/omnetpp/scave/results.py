@@ -158,7 +158,12 @@ import os
 if os.getenv("WITHIN_OMNETPP_IDE") == "yes":
     from omnetpp.scave.impl_ide import results as impl
 else:
-    from .impl import results_nativemodule as impl
+    try:
+        from .impl import results_nativemodule as impl
+    except ImportError:
+        print("Failed to import results_nativemodule, falling back to results_scavetool")
+        from .impl import results_scavetool as impl
+
 
 from math import inf
 from functools import wraps

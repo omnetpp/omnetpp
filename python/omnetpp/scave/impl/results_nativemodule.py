@@ -24,6 +24,9 @@ for suffix in _module_suffixes:
     except ImportError as e:
         print("Failed to load " + modulename + ":", e)
 
+if sb is None:
+    raise ImportError("Could not import omnetpp.scave.scave_bindings")
+
 from omnetpp.scave.utils import _append_metadata_columns
 from typing import Dict, List, Union, Optional
 
