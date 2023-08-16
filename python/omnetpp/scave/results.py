@@ -174,7 +174,7 @@ import re
 
 from ._version import __version__
 
-from omnetpp.scave.utils import _pivot_results, _pivot_metadata, _select_param_assignments
+from omnetpp.scave.utils import _pivot_results, _pivot_metadata, _select_param_assignments, convert_to_base_unit as convert_to_base_unit_func
 
 # Nontechnical error whose text may directly be displayed to the end user.
 # Subclasses ValueError for backward compatibility.
@@ -463,7 +463,7 @@ def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervar
 
 
 @_guarded_result_query_func
-def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=False):
     """
     Returns a filtered list of scalar results.
 
@@ -482,6 +482,8 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
       pieces of metadata about the run is appended to the DataFrame, pivoted
       into columns. See the "Metadata columns" section of the module
       documentation for details.
+    - `convert_to_base_unit` (bool): Optional. If `True`, the values of the
+      scalars are converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
 
     Columns of the returned DataFrame:
 
@@ -494,9 +496,11 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
       variables, etc.), as requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_scalars(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        del params["convert_to_base_unit"]
+        result = impl.get_scalars(**params)
     else:
         if include_fields:
             raise ValueError("include_fields is not supported when filter_or_dataframe is a dataframe")
@@ -508,7 +512,12 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
         df.dropna(axis='columns', how='all', inplace=True)
         if "value" in df: # it might be empty
             df["value"] = pd.to_numeric(df["value"], errors="raise")
-        return df
+        result = df
+
+    if convert_to_base_unit:
+        convert_to_base_unit_func(result)
+
+    return result
 
 
 @_guarded_result_query_func
@@ -563,7 +572,7 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
 
 
 @_guarded_result_query_func
-def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, start_time=-inf, end_time=inf):
+def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, start_time=-inf, end_time=inf, convert_to_base_unit=False):
     """
     Returns a filtered list of vector results.
 
@@ -584,6 +593,8 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
       of vector type results. The unit is seconds, both the `vectime` and
       `vecvalue` arrays will be affected, the interval is left-closed,
       right-open.
+    - `convert_to_base_unit` (bool): Optional. If `True`, the values in the
+      vectors are converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
 
     Columns of the returned DataFrame:
 
@@ -597,9 +608,11 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
       variables, etc.), as requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_vectors(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        del params["convert_to_base_unit"]
+        result = impl.get_vectors(**params)
     else:
         df = filter_or_dataframe
         row_types = ["vector", "itervar", "runattr", "config", "attr"]
@@ -621,11 +634,16 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
                 return row
             df = df.transform(crop, axis='columns')
 
-        return df
+        result = df
+
+    if convert_to_base_unit:
+        convert_to_base_unit_func(result)
+
+    return result
 
 
 @_guarded_result_query_func
-def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=False):
     """
     Returns a filtered list of statistics results.
 
@@ -642,6 +660,9 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
       pieces of metadata about the run is appended to the DataFrame, pivoted
       into columns. See the "Metadata columns" section of the module
       documentation for details.
+    - `convert_to_base_unit` (bool): Optional. If `True`, some fields of the
+      statistics (in the `min`, `max`, `mean`, and `stddev` columns) are
+      converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
 
     Columns of the returned DataFrame:
 
@@ -655,20 +676,27 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
       variables, etc.), as requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_statistics(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        del params["convert_to_base_unit"]
+        result = impl.get_statistics(**params)
     else:
         df = filter_or_dataframe
         row_types = ["statistic", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
         df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
-        return df
+        result = df
+
+    if convert_to_base_unit:
+        convert_to_base_unit_func(result)
+
+    return result
 
 
 @_guarded_result_query_func
-def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False):
+def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=False):
     """
     Returns a filtered list of histogram results.
 
@@ -685,6 +713,9 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
       pieces of metadata about the run is appended to the DataFrame, pivoted
       into columns. See the "Metadata columns" section of the module
       documentation for details.
+    - `convert_to_base_unit` (bool): Optional. If `True`, some fields of the
+      histograms (in the `min`, `max`, `mean`, `stddev`, and `binedges` columns)
+      are converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
 
     Columns of the returned DataFrame:
 
@@ -703,16 +734,23 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
       variables, etc.), as requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_histograms(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        del params["convert_to_base_unit"]
+        result = impl.get_histograms(**params)
     else:
         df = filter_or_dataframe
         row_types = ["histogram", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
         df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
         df.dropna(axis='columns', how='all', inplace=True)
-        return df
+        result = df
+
+    if convert_to_base_unit:
+        convert_to_base_unit_func(result)
+
+    return result
 
 
 @_guarded_result_query_func
