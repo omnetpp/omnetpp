@@ -227,6 +227,11 @@ def test_scalars():
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "scalars.csv"), "content mismatch")
 
+def test_scalars_noconvert():
+    df = results.get_scalars(r, convert_to_base_unit=False)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "scalars_noconvert.csv"), "content mismatch")
+
 def test_scalars_with_fields():
     df = results.get_scalars(r_with_fields)
     _assert_sequential_index(df)
@@ -258,6 +263,10 @@ def test_vectors():
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "vectors.csv"), "content mismatch")
 
+def test_vectors_noconvert():
+    df = results.get_vectors(r, convert_to_base_unit=False)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "vectors_noconvert.csv"), "content mismatch")
 
 def test_vectors_with_attrs():
     df = results.get_vectors(r, include_attrs=True)
@@ -308,6 +317,11 @@ def test_histograms():
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "histograms.csv"), "content mismatch")
 
+def test_histograms_noconvert():
+    df = results.get_histograms(r, convert_to_base_unit=False)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "histograms_noconvert.csv"), "content mismatch")
+
 def test_histograms_with_attrs():
     df = results.get_histograms(r, include_attrs=True)
     _assert_sequential_index(df)
@@ -323,6 +337,11 @@ def test_statistics():
     df = results.get_statistics(r)
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "statistics.csv"), "content mismatch")
+
+def test_statistics_noconvert():
+    df = results.get_statistics(r, convert_to_base_unit=False)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "statistics_noconvert.csv"), "content mismatch")
 
 def test_statistics_with_attrs():
     df = results.get_statistics(r, include_attrs=True)
