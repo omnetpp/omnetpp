@@ -299,9 +299,10 @@ def get_results(filter_or_dataframe="", row_types=None, omit_unused_columns=True
     the module documentation for details).
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_results(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        return impl.get_results(**params)
     else:
         if include_fields_as_scalars:
             raise ValueError("include_fields_as_scalars is not supported when filter_or_dataframe is a dataframe")
@@ -355,9 +356,10 @@ def get_runs(filter_or_dataframe="", include_runattrs=False, include_itervars=Fa
       requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_runs(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        return impl.get_runs(**params)
     else:
         df = filter_or_dataframe
         runs = df[["runID"]].drop_duplicates()
@@ -397,9 +399,10 @@ def get_runattrs(filter_or_dataframe="", include_runattrs=False, include_itervar
     - Additional metadata items (run attributes, iteration variables, etc.)
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_runattrs(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        return impl.get_runattrs(**params)
     else:
         df = filter_or_dataframe
 
@@ -442,9 +445,10 @@ def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervar
       requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_itervars(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        return impl.get_itervars(**params)
     else:
         df = filter_or_dataframe
 
@@ -559,9 +563,10 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
       variables, etc.), as requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_parameters(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        return impl.get_parameters(**params)
     else:
         df = filter_or_dataframe
         row_types = ["param", "itervar", "runattr", "config", "attr"]
@@ -779,9 +784,10 @@ def get_config_entries(filter_or_dataframe, include_runattrs=False, include_iter
       requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_config_entries(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        return impl.get_config_entries(**params)
     else:
         df = filter_or_dataframe
 
@@ -825,9 +831,10 @@ def get_param_assignments(filter_or_dataframe, include_runattrs=False, include_i
       requested
     """
     if type(filter_or_dataframe) is str:
-        filter_expression = filter_or_dataframe
-        del filter_or_dataframe
-        return impl.get_param_assignments(**locals())
+        params = locals().copy()
+        params["filter_expression"] = filter_or_dataframe
+        del params["filter_or_dataframe"]
+        return impl.get_param_assignments(**params)
     else:
         df = filter_or_dataframe
 
