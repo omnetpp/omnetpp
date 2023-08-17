@@ -2,10 +2,13 @@
 # - Redundant docstrings removed.
 # - Import statements added.
 # - Unnecessary `omnetpp.scave.scave_bindings.` type qualifiers removed.
+# - Added @staticmethod where necessary.
+# - Fixed functions with ndarray in their argument lists.
 
 from typing import Any, Optional, overload
 from enum import Enum
 from math import inf
+from numpy import ndarray
 
 class DataType(Enum):
     """
@@ -517,6 +520,20 @@ class StatisticsResult:
     def itemTypeToString(arg: int, /) -> str:
         ...
 
+class UnitConversion:
+
+    @staticmethod
+    def convertUnit(arg0: float, arg1: str, arg2: str, /) -> float:
+        ...
+
+    @staticmethod
+    def convertUnitArray(arg0: ndarray[dtype=float64, shape=(*), order='C', device='cpu'], arg1: str, arg2: str, /) -> None
+        ...
+
+    @staticmethod
+    def getBaseUnit(arg: str, /) -> str:
+        ...
+
 class VectorResult:
 
     def __init__(*args, **kwargs):
@@ -575,5 +592,8 @@ class XYArray:
         ...
 
 def readVectorsIntoArrays(arg0: ResultFileManager, arg1: IDList, includePreciseX: bool, includeEventNumbers: bool, memoryLimitBytes: int = 18446744073709551615, simTimeStart: float = -inf, simTimeEnd: float = inf, interrupted: Optional[InterruptedFlag] = None) -> list[XYArray]:
+    ...
+
+def xyArrayToNumpyArrays(arg0: XYArray, arg1: ndarray[dtype=float64, shape=(*), order='C', device='cpu'], arg2: ndarray[dtype=float64, shape=(*), order='C', device='cpu'], /) -> None
     ...
 
