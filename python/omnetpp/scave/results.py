@@ -467,7 +467,7 @@ def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervar
 
 
 @_guarded_result_query_func
-def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=False):
+def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=True):
     """
     Returns a filtered list of scalar results.
 
@@ -577,7 +577,7 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
 
 
 @_guarded_result_query_func
-def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, start_time=-inf, end_time=inf, convert_to_base_unit=False):
+def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, start_time=-inf, end_time=inf, convert_to_base_unit=True):
     """
     Returns a filtered list of vector results.
 
@@ -648,7 +648,7 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
 
 
 @_guarded_result_query_func
-def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=False):
+def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=True):
     """
     Returns a filtered list of statistics results.
 
@@ -701,7 +701,7 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
 
 
 @_guarded_result_query_func
-def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=False):
+def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, convert_to_base_unit=True):
     """
     Returns a filtered list of histogram results.
 
