@@ -81,12 +81,22 @@ cEvent& cEvent::operator=(const cEvent& event)
     if (this == &event)
         return *this;
 
+    if (isScheduled())
+        throw cRuntimeError(this, "operator=() may not be called while the event or message is scheduled"); // as it could affect the ordering of scheduled messages, violating the invariants of the FES data structure
+
     cOwnedObject::operator=(event);
 
     priority = event.priority;
     arrivalTime = event.arrivalTime;
 
     return *this;
+}
+
+void cEvent::setSchedulingPriority(short p)
+{
+    if (isScheduled())
+        throw cRuntimeError(this, "setSchedulingPriority() may not be called while the event or message is scheduled"); // as it could affect the ordering of scheduled messages, violating the invariants of the FES data structure
+    priority = p;
 }
 
 bool cEvent::shouldPrecede(const cEvent *other) const

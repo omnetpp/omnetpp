@@ -68,8 +68,9 @@ class SIM_API cEvent : public cOwnedObject
     eventnumber_t getInsertOrder() const {return insertOrder;}
 
     // internal: called by the simulation kernel to set the value returned
-    // by the getArrivalTime() method
-    void setArrivalTime(simtime_t t) {arrivalTime = t;}
+    // by the getArrivalTime() method; must not be called while the event is
+    // in the FES, because it would break ordering.
+    void setArrivalTime(simtime_t t) {ASSERT(!isScheduled()); arrivalTime = t;}
 
     // internal: used by the parallel simulation kernel.
     virtual int getSrcProcId() const {return -1;}
@@ -144,8 +145,11 @@ class SIM_API cEvent : public cOwnedObject
      * Sets the scheduling priority of this event. Scheduling priority is
      * used when the simulator inserts messages into the future events set
      * (FES), to order events with identical arrival time values.
+     *
+     * The scheduling priority must not be modified while the event is
+     * scheduled, i.e. is owned by the FES.
      */
-    void setSchedulingPriority(short p)  {priority=p;}
+    void setSchedulingPriority(short p);
 
     /**
      * Returns the scheduling priority of this event.
