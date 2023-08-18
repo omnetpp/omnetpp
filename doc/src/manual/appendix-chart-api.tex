@@ -435,7 +435,7 @@ requested
 \label{cha:chart-api:omnetpp.scave.results:get-scalars}
 
 \begin{flushleft}
-\ttt{get\_scalars(filter\_or\_dataframe="", include\_attrs=False, include\_fields=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
+\ttt{get\_scalars(filter\_or\_dataframe="", include\_attrs=False, include\_fields=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, convert\_to\_base\_unit=True)}
 \end{flushleft}
 
 \par Returns a filtered list of scalar results.
@@ -455,6 +455,8 @@ histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as synthetic scalar
 pieces of metadata about the run is appended to the DataFrame, pivoted
 into columns. See the "Metadata columns" section of the module
 documentation for details.
+  \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, the values of the
+scalars are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
 
 \end{itemize}
 
@@ -523,7 +525,7 @@ variables, etc.), as requested
 \label{cha:chart-api:omnetpp.scave.results:get-vectors}
 
 \begin{flushleft}
-\ttt{get\_vectors(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, start\_time=-inf, end\_time=inf)}
+\ttt{get\_vectors(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, start\_time=-inf, end\_time=inf, convert\_to\_base\_unit=True)}
 \end{flushleft}
 
 \par Returns a filtered list of vector results.
@@ -545,6 +547,8 @@ documentation for details.
 of vector type results. The unit is seconds, both the \ttt{vectime} and
 \ttt{vecvalue} arrays will be affected, the interval is left-closed,
 right-open.
+  \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, the values in the
+vectors are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
 
 \end{itemize}
 
@@ -567,7 +571,7 @@ variables, etc.), as requested
 \label{cha:chart-api:omnetpp.scave.results:get-statistics}
 
 \begin{flushleft}
-\ttt{get\_statistics(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
+\ttt{get\_statistics(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, convert\_to\_base\_unit=True)}
 \end{flushleft}
 
 \par Returns a filtered list of statistics results.
@@ -585,6 +589,9 @@ pivoted into columns.
 pieces of metadata about the run is appended to the DataFrame, pivoted
 into columns. See the "Metadata columns" section of the module
 documentation for details.
+  \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, some fields of the
+statistics (in the \ttt{min}, \ttt{max}, \ttt{mean}, and \ttt{stddev} columns) are
+converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
 
 \end{itemize}
 
@@ -607,7 +614,7 @@ variables, etc.), as requested
 \label{cha:chart-api:omnetpp.scave.results:get-histograms}
 
 \begin{flushleft}
-\ttt{get\_histograms(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False)}
+\ttt{get\_histograms(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, convert\_to\_base\_unit=True)}
 \end{flushleft}
 
 \par Returns a filtered list of histogram results.
@@ -625,6 +632,9 @@ pivoted into columns.
 pieces of metadata about the run is appended to the DataFrame, pivoted
 into columns. See the "Metadata columns" section of the module
 documentation for details.
+  \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, some fields of the
+histograms (in the \ttt{min}, \ttt{max}, \ttt{mean}, \ttt{stddev}, and \ttt{binedges} columns)
+are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
 
 \end{itemize}
 
@@ -1160,6 +1170,22 @@ These are the following.
 
 \end{itemize}
 
+\subsubsection{convert\_to\_base\_unit()}
+\label{cha:chart-api:omnetpp.scave.utils:convert-to-base-unit}
+
+\begin{flushleft}
+\ttt{convert\_to\_base\_unit(df, columns\_to\_convert=["value", "min", "max", "mean", "stddev", "vecvalue", "binedges"])}
+\end{flushleft}
+
+\par Converts results with units in the passed DataFrame to their base units in-place.
+The DataFrame needs to have a "unit" column - which is updated to the base unit.
+By default, the following columns are converted:
+  "value", "min", "max", "mean", "stddev", "vecvalue", "binedges"
+Every converted column must contain either all numbers or all \ttt{np.ndarray} instances.
+
+\par This works for example on the DataFrames returned by \ttt{get\_scalars}, \ttt{get\_vectors}, \ttt{get\_statistics},
+and \ttt{get\_histograms} in \ttt{omnetpp.scave}, but NOT on those returned by \ttt{get\_results}.
+
 \subsubsection{make\_legend\_label()}
 \label{cha:chart-api:omnetpp.scave.utils:make-legend-label}
 
@@ -1258,6 +1284,7 @@ to select other combinations if the default one is not suitable.
   \item \ttt{xlabel\_rotation}: Amount of counter-clockwise rotation of x axis labels a.k.a. group names, in degrees.
   \item \ttt{title}: Plot title (autocomputed if missing).
   \item \ttt{cycle\_seed}: Alters the sequence in which colors are assigned to series.
+  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
 
 \end{itemize}
 
@@ -1308,6 +1335,7 @@ differentiate among the vectors.
   \item \ttt{drawstyle}: Matplotlib draw style; if present, it overrides the draw style derived from \ttt{interpolationmode}.
   \item \ttt{linestyle}, \ttt{linecolor}, \ttt{linewidth}, \ttt{marker}, \ttt{markersize}: styling
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
+  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
 
 \end{itemize}
 
@@ -1382,6 +1410,7 @@ differentiate among the histograms.
   \item \ttt{drawstyle}: Selects whether to fill the area below the histogram line.
   \item \ttt{linestyle}, \ttt{linecolor}, \ttt{linewidth}: Styling.
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
+  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic x axis label.
 
 \end{itemize}
 
@@ -1438,6 +1467,7 @@ differentiate among the lines.
   \item \ttt{error\_style}: If \ttt{error} is present, controls how the error is shown.
  Accepted values: "Error bars", "Error band"
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
+  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
 
 \end{itemize}
 
@@ -1489,6 +1519,7 @@ differentiate among the boxes.
 \begin{itemize}
   \item \ttt{title}: Plot title (autocomputed if missing).
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
+  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
 
 \end{itemize}
 
@@ -2454,6 +2485,11 @@ OMNeT++ Analysis (.anf) files, querying their contents, and
 running the charts scripts they contain. The main user of this
 module is \ttt{opp\_charttool}.
 
+\subsubsection{Class ExpatError}
+\label{cha:chart-api:omnetpp.scave.analysis:ExpatError}
+
+
+
 \subsubsection{Class DialogPage}
 \label{cha:chart-api:omnetpp.scave.analysis:DialogPage}
 
@@ -2480,7 +2516,7 @@ and properties (which are what the \textit{Chart Properties} dialog in the IDE e
 \label{cha:chart-api:omnetpp.scave.analysis:Chart:--init--}
 
 \begin{flushleft}
-\ttt{Chart(self, id: str = None, name: str = "", type: str = "MATPLOTLIB", template: str = None, icon: str = None, script: str = "", dialog\_pages=[], properties=\{\})}
+\ttt{Chart(self, id: str = None, name: str = "", type: str = "MATPLOTLIB", template: str = None, icon: str = None, script: str = "", dialog\_pages=[], properties=\{\}, created\_with: str = None)}
 \end{flushleft}
 
 
@@ -2617,7 +2653,7 @@ in this Analysis if no folder is given.
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-data}
 
 \begin{flushleft}
-\ttt{\small{Analysis.}export\_data(self, chart, wd, workspace, format="csv", target\_folder=None, filename=None, enforce=True, extra\_props=\{\})}
+\ttt{\small{Analysis.}export\_data(self, chart, wd, workspace, format="csv", target\_folder=None, filename=None, enforce=True, extra\_props=\{\}, suppress\_print=False)}
 \end{flushleft}
 
 \par Runs a chart script for data export. This method just calls \ttt{run\_chart()}
@@ -2628,7 +2664,7 @@ or implements equivalent functionality).
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-image}
 
 \begin{flushleft}
-\ttt{\small{Analysis.}export\_image(self, chart, wd, workspace, format="svg", target\_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra\_props=\{\})}
+\ttt{\small{Analysis.}export\_image(self, chart, wd, workspace, format="svg", target\_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra\_props=\{\}, suppress\_print=False)}
 \end{flushleft}
 
 \par Runs a chart script for image export. This method just calls \ttt{run\_chart()}
@@ -2670,7 +2706,7 @@ the item is not part of the Analysis, None is returned.
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:run-chart}
 
 \begin{flushleft}
-\ttt{\small{Analysis.}run\_chart(self, chart, wd, workspace, extra\_props=\{\}, show=False)}
+\ttt{\small{Analysis.}run\_chart(self, chart, wd, workspace, extra\_props=\{\}, show=False, suppress\_print=False)}
 \end{flushleft}
 
 \par Runs a chart script with the given working directory, workspace, and extra
