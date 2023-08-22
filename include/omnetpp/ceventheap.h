@@ -66,6 +66,9 @@ class SIM_API cEventHeap : public cFutureEventSet
     bool getUseCb() const {return useCb;}
     void setUseCb(bool b) {ASSERT(cbhead==cbtail); useCb = b;}
 
+    // utility function for checking heap sanity
+    virtual void checkHeap();
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{

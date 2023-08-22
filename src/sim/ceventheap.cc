@@ -343,5 +343,39 @@ void cEventHeap::putBackFirst(cEvent *event)
         cbgrow();
 }
 
+// like ASSERT(), but active in release mode as well
+#define ENSURE(expr) \
+  ((void) ((expr) ? 0 : (throw omnetpp::cRuntimeError("ENSURE(): Condition '%s' does not hold in function '%s' at %s:%d", \
+                                   #expr, __FUNCTION__, __FILE__, __LINE__), 0)))
+
+void cEventHeap::checkHeap()
+{
+    simtime_t now = simTime();
+    ENSURE((cbsize & (cbsize-1)) == 0); // cbsize must be power of 2
+    ENSURE(cbhead >= 0 && cbhead < cbsize && cbtail >= 0 && cbtail < cbsize);
+    for (int i = cbhead; i < cbtail; CBINC(i)) {
+        cEvent *event = cb[i];
+        ENSURE(event->getOwner() == this);
+        ENSURE(event->heapIndex == CBHEAPINDEX(i));
+        ENSURE(event->getArrivalTime() == now);
+        ENSURE(event->getSchedulingPriority() == 0);
+    }
+
+    for (int i = 1; i <= heapLength; i++) {
+        cEvent *event = heap[i];
+        ENSURE(event->getOwner() == this);
+        ENSURE(event->heapIndex == i);
+        ENSURE(event->getArrivalTime() >= now);
+        if (i > 1) {
+            cEvent *parent = heap[i>>1];
+            ENSURE(*parent <= *event); // heap order property
+        }
+    }
+
+    if (heapLength >= 1 && cbhead != cbtail)
+        ENSURE(*cb[cbhead] <= *heap[1]);
+
+}
+
 }  // namespace omnetpp
 
