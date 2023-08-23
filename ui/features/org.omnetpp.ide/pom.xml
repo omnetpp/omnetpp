@@ -16,26 +16,31 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.eclipse.tycho.extras</groupId>
-        <artifactId>tycho-source-feature-plugin</artifactId>
-        <version>${tycho.extras.version}</version>
-        <configuration>
-          <excludes>
-            <plugin id="org.omnetpp.ide.nativelibs.linux.x86_64"/>
-            <plugin id="org.omnetpp.ide.nativelibs.linux.aarch64"/>
-            <plugin id="org.omnetpp.ide.nativelibs.win32.x86_64"/>
-            <plugin id="org.omnetpp.ide.nativelibs.macosx"/>
-            <plugin id="org.omnetpp.doc"/>
-          </excludes>
-          <includeBinaryFeature>false</includeBinaryFeature>
-        </configuration>
+        <groupId>org.eclipse.tycho</groupId>
+        <artifactId>tycho-source-plugin</artifactId>
+        <version>${tycho.version}</version>
         <executions>
           <execution>
-            <id>source-feature</id>
-            <phase>package</phase>
+            <id>plugin-source</id>
             <goals>
-              <goal>source-feature</goal>
+              <goal>plugin-source</goal>
             </goals>
+          </execution>
+          <execution>
+            <id>feature-source</id>
+            <goals>
+              <goal>feature-source</goal>
+            </goals>
+            <configuration>
+              <excludes>
+                <plugin id="org.omnetpp.ide.nativelibs.linux.x86_64"/>
+                <plugin id="org.omnetpp.ide.nativelibs.linux.aarch64"/>
+                <plugin id="org.omnetpp.ide.nativelibs.win32.x86_64"/>
+                <plugin id="org.omnetpp.ide.nativelibs.macosx"/>
+                <plugin id="org.omnetpp.doc"/>
+              </excludes>
+              <includeBinaryFeature>false</includeBinaryFeature>
+            </configuration>
           </execution>
         </executions>
       </plugin>
