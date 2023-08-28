@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -210,16 +211,19 @@ public class InstallSimulationModelsDialog extends TitleAreaDialog {
                 protected IStatus run(IProgressMonitor monitor) {
                     try {
                         downloadProjectDescriptions(descriptorsURL);
-                        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                fillProjects();
-                            }
+                        DisplayUtils.runNowOrAsyncInUIThread(() -> {
+                            fillProjects();
                         });
                     }
                     catch (Exception e) {
-                        CommonPlugin.logError("An error occurred while downloading the list of models available for installation from " + descriptorsURL, e);
-                        setErrorMessage("An error occurred while downloading the list of models available for installation");
+                        DisplayUtils.runNowOrAsyncInUIThread(() -> {
+                            CommonPlugin.logError("An error occurred while downloading the list of models available for installation from " + descriptorsURL, e);
+                            setErrorMessage("An error occurred while downloading the list of models available for installation");
+                            MessageDialog.openError(getParentShell(), "Error Downloading Model List",
+                                "An error occurred while downloading the list of models available for installation: " + e.getMessage() + "\n\n" +
+                                "Make sure you have an active internet connection, and if necessary, the HTTP(S) proxy is set up correctly " +
+                                "(in the Window/Preferences dialog, under General/Network Connections).");
+                        });
                     }
                     return Status.OK_STATUS;
                 }
