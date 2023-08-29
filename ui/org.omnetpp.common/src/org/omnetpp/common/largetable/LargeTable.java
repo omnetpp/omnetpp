@@ -254,10 +254,8 @@ public class LargeTable extends Composite
         });
 
         // recompute table size after the scrollable area size is known
-        Display.getCurrent().asyncExec(new Runnable() {
-            public void run() {
-                recomputeTableSize();
-            }
+        Display.getCurrent().asyncExec(() -> {
+            recomputeTableSize();
         });
     }
 
@@ -446,7 +444,11 @@ public class LargeTable extends Composite
         tableColumn.addControlListener(new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent e) {
-                recomputeTableSize();
+                // Delaying this is an attempt to work around
+                // https://github.com/omnetpp/omnetpp/issues/891
+                Display.getCurrent().asyncExec(() -> {
+                    recomputeTableSize();
+                });
             }
         });
         return tableColumn;
