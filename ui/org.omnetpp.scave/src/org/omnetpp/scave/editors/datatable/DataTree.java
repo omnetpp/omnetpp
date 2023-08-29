@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.util.CsvWriter;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.scave.ScavePlugin;
@@ -341,7 +342,11 @@ public class DataTree extends Tree implements IDataControl {
         item.setText(0, node.getColumnText(0));
         item.setText(1, node.getColumnText(1));
         item.setData(node);
-        item.setImage(node.getImage());
+        // Delaying `setImage` is an attempt to work around
+        // https://github.com/omnetpp/omnetpp/issues/1040
+        Display.getCurrent().asyncExec(() -> {
+            item.setImage(node.getImage());
+        });
         item.setItemCount(contentProvider.getChildNodes(path).length);
         item.setExpanded(node.isExpandedByDefault());
         setRedraw(true);
