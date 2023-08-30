@@ -70,6 +70,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         try {
             markerSynchronizer = new ProblemMarkerSynchronizer(MARKER_ID);
 
+            checkProjectReferences();
             checkProjectFeatures();
             checkOrderOfProjectBuilders();
             checkActiveCDTConfiguration();
@@ -162,6 +163,31 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 "to the enabled project features. This may cause build errors as well. " +
                 "Do you want to fix the project state?",
                 problemTexts, UIUtils.ICON_ERROR);
+    }
+
+    protected void checkProjectReferences() {
+        // make sure that there are no dangling project references
+        final IProject project = getProject();
+        try {
+            List<String> danglingProjectReferences = new ArrayList<>();
+            for (IProject p : project.getReferencedProjects())
+                if (!p.isAccessible()) // exists and open
+                    danglingProjectReferences.add(p.getName());
+
+            if (!danglingProjectReferences.isEmpty()) {
+                runInUIThread(() -> {
+                    String message = "Project " + project.getName() + " references projects that are missing or closed, " +
+                            "which might prevent it from building and/or operating correctly. " +
+                            "Check the Project References page in the Project Properties dialog.\n\n" +
+                            "Missing " + StringUtils.plural("project", danglingProjectReferences.size()) + ": " +
+                            StringUtils.join(danglingProjectReferences, ",");
+                    MessageDialog.openWarning(getActiveShell(), "Warning: Missing Projects", message);
+                });
+            }
+        }
+        catch (CoreException e) {
+            Activator.logError(e);
+        }
     }
 
     /**

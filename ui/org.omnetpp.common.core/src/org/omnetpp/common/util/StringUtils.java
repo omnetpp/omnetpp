@@ -387,6 +387,14 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
+     * Returns the singular or plural form of the English <code>noun</code>,
+     * whichever is appropriate for the given count.
+     */
+    public static String plural(String noun, int count) {
+        return count <= 1 ? noun : plural(noun);
+    }
+
+    /**
      * Returns the plural of an English <code>noun</code> (approximately).
      */
     public static String plural(String noun) {
