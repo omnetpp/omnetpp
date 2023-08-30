@@ -341,7 +341,8 @@ public class DataTree extends Tree implements IDataControl {
         // Delaying `setImage` is an attempt to work around
         // https://github.com/omnetpp/omnetpp/issues/1040
         Display.getCurrent().asyncExec(() -> {
-            item.setImage(node.getImage());
+            if (!item.isDisposed())
+                item.setImage(node.getImage());
         });
         item.setItemCount(contentProvider.getChildNodes(path).length);
         item.setExpanded(node.isExpandedByDefault());
