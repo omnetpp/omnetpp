@@ -860,6 +860,9 @@ public class LargeTable extends Composite
     }
 
     protected void recomputeTableSize() {
+        if (table.isDisposed() || composite.isDisposed())
+            return;
+
         int size = 0;
         for (int i = 0; i < table.getColumnCount(); i++)
             size += table.getColumn(i).getWidth(); // columnOrder doesn't matter
