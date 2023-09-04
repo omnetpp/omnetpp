@@ -6,7 +6,7 @@
       provider-name="OpenSim Ltd."
       os="linux,macosx,win32"
       ws="cocoa,gtk,win32"
-      arch="x86_64">
+      arch="x86_64,aarch64">
 
    <requires>
       <import feature="org.eclipse.platform"/>

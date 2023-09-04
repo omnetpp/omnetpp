@@ -40,12 +40,20 @@ ifeq ("$(JNI_LIB_SUFFIX)",".jnilib")
 STRIP_FLAGS=-x
 endif
 
+ifeq ($(PLATFORM),win32.x86_64)
+  JNI_PLATFORM=win32
+else if ($(PLATFORM),macosx)
+  JNI_PLATFORM=darwin
+else
+  JNI_PLATFORM=linux
+endif
+
 DLL_TARGET_DIR = ../org.omnetpp.ide.nativelibs.$(PLATFORM)
 
 #
 # Local definitions
 #
-INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR)
+INCLUDES=-I$(OMNETPP_INCL_DIR) -I$(OMNETPP_SRC_DIR) -Ijdk -Ijdk/$(JNI_PLATFORM)
 COPTS=$(CFLAGS) $(CXXFLAGS) $(JAVA_CFLAGS) $(INCLUDES) -DTHREADED $(PTHREAD_CFLAGS) 
 
 #

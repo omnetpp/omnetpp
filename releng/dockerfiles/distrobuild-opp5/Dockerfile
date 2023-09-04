@@ -1,4 +1,4 @@
-FROM  omnetpp/distrobuild:eclipse4.21-tools210809-210927
+FROM  omnetpp/distrobuild:eclipse4.27-tools210809-230907
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # install additional packages for building a complete OMNeT++ 5 distro (doc related packages that are not needed for the 6.0 images)

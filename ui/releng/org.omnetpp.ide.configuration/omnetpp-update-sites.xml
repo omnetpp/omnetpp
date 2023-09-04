@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bookmarks>
-   <site url="https://download.eclipse.org/releases/2021-09" selected="true" name="Eclipse release 2021-09"/>
-   <site url="https://download.eclipse.org/tools/cdt/releases/10.4" selected="false" name="CDT SDK"/>
+   <site url="https://download.eclipse.org/releases/2023-03" selected="true" name="Eclipse release 2023-03"/>
    <site url="https://download.eclipse.org/tools/gef/updates/legacy/releases/" selected="false" name="GEF3 Legacy SDK"/>
-   <site url="https://download.eclipse.org/eclipse/updates/4.21" selected="false" name="Eclipse 4.21 SDK"/>
+   <site url="https://download.eclipse.org/eclipse/updates/4.27" selected="false" name="Eclipse 4.27 SDK"/>
 </bookmarks>
