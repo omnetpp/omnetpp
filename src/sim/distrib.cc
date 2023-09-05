@@ -320,7 +320,8 @@ int intuniform(cRNG *rng, int a, int b)
     if (a > b)
         throw cRuntimeError("intuniform(): Wrong parameters a=%d and b=%d: a <= b required", a, b);
     int64_t range = (int64_t)b - (int64_t)a + 1;
-    if (range > rng->intRandMax())
+    int64_t rngRange = (int64_t)rng->intRandMax() + 1;
+    if (range > rngRange)
         throw cRuntimeError("intuniform(): Wrong parameters a=%d and b=%d: Interval is greater than RNG range", a, b); // could work around but nobody will need it
     return a + rng->intRand((uint32_t)range);
 }
@@ -330,7 +331,8 @@ int intuniformexcl(cRNG *rng, int a, int b)
     if (a >= b)
         throw cRuntimeError("intuniformexcl(): Wrong parameters a=%d and b=%d: a < b required", a, b);
     int64_t range = (int64_t)b - (int64_t)a;
-    if (range > rng->intRandMax())
+    int64_t rngRange = (int64_t)rng->intRandMax() + 1;
+    if (range > rngRange)
         throw cRuntimeError("intuniformexcl(): Wrong parameters a=%d and b=%d: Interval is greater than RNG range", a, b); // could work around but nobody will need it
     return a + rng->intRand((uint32_t)range);
 }
