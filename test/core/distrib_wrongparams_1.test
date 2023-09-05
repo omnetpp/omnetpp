@@ -28,6 +28,15 @@ TEST_ERROR(weibull(1,1));
 TEST_ERROR(weibull(0,1));
 TEST_ERROR(weibull(1,0));
 
+TEST_ERROR(intuniform(0,1));
+TEST_ERROR(intuniform(0,0));
+TEST_ERROR(intuniform(1,0));
+TEST_ERROR(intuniform(std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max()));
+TEST_ERROR(intuniformexcl(0,1));
+TEST_ERROR(intuniformexcl(0,0));
+TEST_ERROR(intuniformexcl(1,0));
+TEST_ERROR(intuniform(std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max()));
+
 /*
 TEST_ERROR(hypergeometric(0,1,1));
 TEST_ERROR(hypergeometric(1,0,1));
@@ -37,6 +46,7 @@ TEST_ERROR(hypergeometric(-1,3,5));
 TEST_ERROR(hypergeometric(2,-1,5));
 TEST_ERROR(hypergeometric(2,3,-1));
 */
+EV << ".\n";
 
 %contains: stdout
 gamma_d(0,1): gamma(): Wrong parameters alpha=0, theta=1: Both must be positive
@@ -56,3 +66,12 @@ triang(0,1,2): no error
 weibull(1,1): no error
 weibull(0,1): weibull(): Wrong parameters a=0, b=1: Both must be positive
 weibull(1,0): weibull(): Wrong parameters a=1, b=0: Both must be positive
+intuniform(0,1): no error
+intuniform(0,0): no error
+intuniform(1,0): intuniform(): Wrong parameters a=1 and b=0: a <= b required
+intuniform(std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max()): no error
+intuniformexcl(0,1): no error
+intuniformexcl(0,0): intuniformexcl(): Wrong parameters a=0 and b=0: a < b required
+intuniformexcl(1,0): intuniformexcl(): Wrong parameters a=1 and b=0: a < b required
+intuniform(std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max()): no error
+.
