@@ -14,10 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <string.h>
-
-#include <mysql.h>
-
+#include <cstring>
+#include <mysql/mysql.h>
 #include <omnetpp.h>
 
 using namespace omnetpp;

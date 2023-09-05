@@ -13,17 +13,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __MYSQLOUTPUTVECTORMGR_H
-#define __MYSQLOUTPUTVECTORMGR_H
+#ifndef __DATABASE_MYSQLOUTPUTVECTORMGR_H
+#define __DATABASE_MYSQLOUTPUTVECTORMGR_H
 
-#include <mysql.h>
-
+#include <mysql/mysql.h>
 #include <omnetpp.h>
 
 using namespace omnetpp;
 
 #include "intervals.h"
-
 
 /**
  * An Output Vector Manager that writes into a MySQL database instead of
@@ -96,23 +94,23 @@ class cMySQLOutputVectorManager : public cIOutputVectorManager
     };
 
     // the database connection
-    MYSQL *mysql;
+    MYSQL *mysql = nullptr;
 
     // database id (vrun.id) of current run
-    long runId;
+    long runId = -1;
 
-    bool initialized;
+    bool initialized = false;
 
     // we COMMIT after every commitFreq INSERT statements
     int commitFreq;
     int insertCount;
 
     // prepared statements and their parameter bindings
-    MYSQL_STMT *insertVectorStmt;
+    MYSQL_STMT *insertVectorStmt = nullptr;
     MYSQL_BIND insVectorBind[3];
-    MYSQL_STMT *insertVecAttrStmt;
+    MYSQL_STMT *insertVecAttrStmt = nullptr;
     MYSQL_BIND insVecAttrBind[3];
-    MYSQL_STMT *insertVecdataStmt;
+    MYSQL_STMT *insertVecdataStmt = nullptr;
     MYSQL_BIND insVecdataBind[3];
 
     // these variables are bound to the above bind parameters
@@ -144,7 +142,7 @@ class cMySQLOutputVectorManager : public cIOutputVectorManager
     /**
      * Constructor.
      */
-    explicit cMySQLOutputVectorManager();
+    explicit cMySQLOutputVectorManager() {}
 
     /**
      * Destructor. Closes the output file if it is still open.
@@ -159,42 +157,42 @@ class cMySQLOutputVectorManager : public cIOutputVectorManager
      * Deletes output vector file if exists (left over from previous runs).
      * The file is not yet opened, it is done inside registerVector() on demand.
      */
-    virtual void startRun();
+    virtual void startRun() override;
 
     /**
      * Closes the output file.
      */
-    virtual void endRun();
+    virtual void endRun() override;
 
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname);
+    virtual void *registerVector(const char *modulename, const char *vectorname) override;
 
     /**
      * Deregisters the output vector.
      */
-    virtual void deregisterVector(void *vectorhandle);
+    virtual void deregisterVector(void *vectorhandle) override;
 
     /**
      * Sets an attribute of an output vector.
      */
-    virtual void setVectorAttribute(void *vectorhandle, const char *name, const char *value);
+    virtual void setVectorAttribute(void *vectorhandle, const char *name, const char *value) override;
 
     /**
      * Writes the (time, value) pair into the output file.
      */
-    virtual bool record(void *vectorhandle, simtime_t t, double value);
+    virtual bool record(void *vectorhandle, simtime_t t, double value) override;
 
     /**
      * Returns NULL, because this class doesn't use a file.
      */
-    const char *getFileName() const {return nullptr;}
+    const char *getFileName() const override {return nullptr;}
 
     /**
      * Performs a database commit.
      */
-    virtual void flush();
+    virtual void flush() override;
     //@}
 };
 

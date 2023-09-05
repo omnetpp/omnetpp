@@ -13,9 +13,7 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
-
 #include "cmysqloutputscalarmgr.h"
-
 #include "oppmysqlutils.h"
 
 //
@@ -30,11 +28,6 @@ Register_Class(cMySQLOutputScalarManager);
 Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_CONNECTIONNAME, "mysqloutputscalarmanager-connectionname", CFG_STRING, "\"mysql\"", "Object name of database connection parameters");
 Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputscalarmanager-commit-freq", CFG_INT, "10", "COMMIT every n INSERTs, default=10");
 
-cMySQLOutputScalarManager::cMySQLOutputScalarManager()
-{
-    mysql = nullptr;
-    insertScalarStmt = nullptr;
-}
 
 cMySQLOutputScalarManager::~cMySQLOutputScalarManager()
 {
@@ -125,7 +118,7 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
     }
 }
 
-void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
+bool cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     if (!initialized)
         insertRunIntoDB();
@@ -144,11 +137,23 @@ void cMySQLOutputScalarManager::recordScalar(cComponent *component, const char *
         insertCount = 0;
         commitDB();
     }
+
+    return true;
 }
 
-void cMySQLOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
+bool cMySQLOutputScalarManager::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    throw cRuntimeError("cMySQLOutputScalarManager: recording cStatistics objects not supported yet");
+    throw cRuntimeError("cMySQLOutputScalarManager: recordStatistic(): not yet implemented");
+}
+
+bool cMySQLOutputScalarManager::recordParameter(cPar *par)
+{
+    throw cRuntimeError("cMySQLOutputScalarManager: recordParameter(): not yet implemented");
+}
+
+bool cMySQLOutputScalarManager::recordComponentType(cComponent *component)
+{
+    throw cRuntimeError("cMySQLOutputScalarManager: recordComponentType(): not yet implemented");
 }
 
 void cMySQLOutputScalarManager::flush()

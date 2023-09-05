@@ -14,10 +14,7 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
-
 #include "cmysqloutputvectormgr.h"
-
-#include "fileoutvectormgr.h"
 #include "oppmysqlutils.h"
 
 
@@ -39,12 +36,6 @@ Register_Class(cMySQLOutputVectorManager);
 Register_GlobalConfigOption(CFGID_MYSQLOUTVECTORMGR_CONNECTIONNAME, "mysqloutputvectormanager-connectionname", CFG_STRING, "\"mysql\"", "Object name of database connection parameters, default='mysql'");
 Register_GlobalConfigOption(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ, "mysqloutputvectormanager-commit-freq", CFG_INT, "50", "COMMIT every n INSERTs, default=50");
 
-
-cMySQLOutputVectorManager::cMySQLOutputVectorManager()
-{
-    mysql = nullptr;
-    insertVectorStmt = insertVecdataStmt = nullptr;
-}
 
 cMySQLOutputVectorManager::~cMySQLOutputVectorManager()
 {

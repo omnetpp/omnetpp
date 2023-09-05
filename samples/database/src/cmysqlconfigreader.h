@@ -19,9 +19,7 @@
 
 #include <string>
 #include <vector>
-
-#include <mysql.h>
-
+#include <mysql/mysql.h>
 #include <omnetpp.h>
 #include "cconfigreader.h"
 

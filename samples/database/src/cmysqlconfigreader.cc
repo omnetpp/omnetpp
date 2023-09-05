@@ -18,9 +18,7 @@
 #include <ctype.h>
 
 #include "cmysqlconfigreader.h"
-
 #include "sectionbasedconfig.h"
-
 #include "oppmysqlutils.h"
 
 Register_Class(cMySQLConfigReader);

@@ -13,11 +13,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __OPPMYSQLUTILS_H__
-#define __OPPMYSQLUTILS_H__
+#ifndef __DATABASE_OPPMYSQLUTILS_H__
+#define __DATABASE_OPPMYSQLUTILS_H__
 
-#include <mysql.h>
-
+#include <mysql/mysql.h>
 #include <omnetpp.h>
 
 using namespace omnetpp;
