@@ -40,6 +40,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
@@ -722,19 +723,41 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     }
 
     protected void drawStatusText(Graphics graphics) {
-        Rectangle rect = getViewportRectangle();
-
+        String text;
+        boolean isWarning = false;
         if (getWarningText() != null) {
-            resetDrawingStylesAndColors(graphics);
-            graphics.setFont(warningFont);
-            graphics.setForegroundColor(ColorFactory.RED);
-            graphics.drawText(getWarningText(), rect.x+10, rect.y+10);
+            text = getWarningText();
+            isWarning = true;
         }
         else if (getStatusText() != null && !StringUtils.isBlank(getStatusText())) {
-            resetDrawingStylesAndColors(graphics);
-            graphics.setFont(warningFont);
-            graphics.drawText(getStatusText(), rect.x+10, rect.y+10);
+            text = getStatusText();
         }
+        else {
+            return;
+        }
+
+        Rectangle rect = getViewportRectangle();
+
+        TextLayout textLayout = new TextLayout(getDisplay());
+        textLayout.setText(text);
+        textLayout.setFont(warningFont);
+        textLayout.setWidth(rect.width - 20);
+
+        int textWidth = 0;
+        for (int line = 0; line < textLayout.getLineCount(); ++line)
+            textWidth = Integer.max(textWidth, textLayout.getLineBounds(line).width);
+        int textHeight = textLayout.getBounds().height;
+
+        resetDrawingStylesAndColors(graphics);
+
+        graphics.setBackgroundColor(ColorFactory.WHITE);
+        graphics.setAlpha(192);
+        graphics.fillRectangle(rect.x + 4, rect.y + 4, textWidth + 12, textHeight + 12);
+
+        if (isWarning)
+            graphics.setForegroundColor(ColorFactory.RED);
+        graphics.setAlpha(255);
+        graphics.drawTextLayout(textLayout, rect.x + 10, rect.y + 10);
     }
 
     protected void drawRubberband(Graphics graphics) {
