@@ -24,7 +24,6 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.MouseWheelListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
@@ -32,6 +31,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -227,16 +227,23 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
             // draw the warning if there is one
             if (warning != null && !warning.isEmpty()) {
-                e.gc.setFont(warningFont);
-                Point textSize = e.gc.textExtent(warning);
+                TextLayout textLayout = new TextLayout(getDisplay());
+                textLayout.setText(warning);
+                textLayout.setFont(warningFont);
+                textLayout.setWidth(getSize().x - 32);
+
+                int textWidth = 0;
+                for (int line = 0; line < textLayout.getLineCount(); ++line)
+                    textWidth = Integer.max(textWidth, textLayout.getLineBounds(line).width);
+                int textHeight = textLayout.getBounds().height;
 
                 e.gc.setBackground(ColorFactory.WHITE);
                 e.gc.setAlpha(192);
-                e.gc.fillRectangle(6, 10, textSize.x + 20, textSize.y + 8);
+                e.gc.fillRectangle(4, 4, textWidth + 12, textHeight + 12);
 
                 e.gc.setForeground(ColorFactory.RED);
                 e.gc.setAlpha(255);
-                e.gc.drawText(warning, 16, 14, true);
+                textLayout.draw(e.gc, 10, 10);
             }
 
             // draw the tool rectangle if needed
