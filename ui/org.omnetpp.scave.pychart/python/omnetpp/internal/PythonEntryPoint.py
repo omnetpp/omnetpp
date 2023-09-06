@@ -115,6 +115,7 @@ class PythonEntryPoint(object):
         except chart.ChartScriptError as e:
             # ChartScriptErrors are by convention constructed with a message that
             # is helpful and complete on its own, so just printing that is OK.
+            print(e, file=sys.stderr)
             Gateway.warning_annotator.setWarning(str(e))
             sys.exit(1)
         except Exception as e:
