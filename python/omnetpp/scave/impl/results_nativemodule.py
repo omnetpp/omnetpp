@@ -9,27 +9,10 @@ import numpy as np
 import pandas as pd
 from enum import Enum
 
-_module_suffixes = ["", "_dbg", "_sanitize"]
-
-import importlib
-sb = None
-
-for suffix in _module_suffixes:
-    try:
-        modulename = "omnetpp.scave.scave_bindings" + suffix
-        if suffix:
-            print("Falling back to: ", modulename)
-        sb = importlib.import_module(modulename)
-        break
-    except ImportError as e:
-        print("Failed to load " + modulename + ":", e)
-
-if sb is None:
-    raise ImportError("Could not import omnetpp.scave.scave_bindings")
-
-from omnetpp.scave.utils import _append_metadata_columns
+from omnetpp.scave.utils import _append_metadata_columns, _import_scave_bindings
 from typing import Dict, List, Union, Optional
 
+sb = _import_scave_bindings()
 
 _global_rfm = sb.ResultFileManager()
 _serial_base = 0 # is only necessary because _global_rfm is recreated in set_inputs()

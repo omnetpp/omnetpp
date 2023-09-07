@@ -25,6 +25,29 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from omnetpp.scave import chart, ideplot, vectorops
 
+
+def _import_scave_bindings():
+    module_suffixes = ["", "_dbg", "_sanitize"]
+
+    import importlib
+    sb = None
+
+    for suffix in module_suffixes:
+        try:
+            modulename = "omnetpp.scave.scave_bindings" + suffix
+            if suffix:
+                print("Falling back to: ", modulename)
+            sb = importlib.import_module(modulename)
+            break
+        except ImportError as e:
+            print("Failed to load " + modulename + ":", e)
+
+    if sb is None:
+        raise ImportError("Could not import omnetpp.scave.scave_bindings")
+
+    return sb
+
+
 from ._version import __version__
 
 def _parse_version(v: str):
@@ -150,7 +173,7 @@ def convert_to_base_unit(df, columns_to_convert=["value", "min", "max", "mean", 
                            and isinstance(df[col].iloc[0], np.ndarray)]
 
     # Importing late because it's only needed in this (rarely used) function
-    from omnetpp.scave import scave_bindings as sb
+    sb = _import_scave_bindings()
     uc = sb.UnitConversion
 
     # Iterate through rows
