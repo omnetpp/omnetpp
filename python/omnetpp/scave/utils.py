@@ -16,14 +16,14 @@ If you want image/data export to work:
 - `export_data_if_needed()`
 """
 
-import random, sys, os, string, re, math, importlib
+import random, sys, os, string, re, math
 import numpy as np
 import scipy.stats as st
 import pandas as pd
 import itertools as it
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from omnetpp.scave import chart, ideplot, vectorops, scave_bindings as sb
+from omnetpp.scave import chart, ideplot, vectorops
 
 from ._version import __version__
 
@@ -149,6 +149,8 @@ def convert_to_base_unit(df, columns_to_convert=["value", "min", "max", "mean", 
                          if col in columns_to_convert
                            and isinstance(df[col].iloc[0], np.ndarray)]
 
+    # Importing late because it's only needed in this (rarely used) function
+    from omnetpp.scave import scave_bindings as sb
     uc = sb.UnitConversion
 
     # Iterate through rows
