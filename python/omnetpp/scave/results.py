@@ -518,7 +518,7 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
             df["value"] = pd.to_numeric(df["value"], errors="raise")
         result = df
 
-    if convert_to_base_unit:
+    if convert_to_base_unit and "unit" in result:
         convert_to_base_unit_func(result)
 
     return result
@@ -641,7 +641,7 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
 
         result = df
 
-    if convert_to_base_unit:
+    if convert_to_base_unit and "unit" in result:
         convert_to_base_unit_func(result)
 
     return result
@@ -694,7 +694,7 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
         df.dropna(axis='columns', how='all', inplace=True)
         result = df
 
-    if convert_to_base_unit:
+    if convert_to_base_unit and "unit" in result:
         convert_to_base_unit_func(result)
 
     return result
@@ -752,7 +752,7 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
         df.dropna(axis='columns', how='all', inplace=True)
         result = df
 
-    if convert_to_base_unit:
+    if convert_to_base_unit and "unit" in result:
         convert_to_base_unit_func(result)
 
     return result
