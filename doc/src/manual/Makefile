@@ -1,6 +1,6 @@
 LATEX=pdflatex -halt-on-error
 PERL=perl
-INKSCAPE=inkscape
+RSVGCONVERT=rsvg-convert
 DOT=dot
 TEMPLATE=omnetpp
 VERSION=6.x
@@ -27,7 +27,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
 %.pdf: %.svg
-	$(INKSCAPE) $< --without-gui --export-pdf=$@
+	$(RSVGCONVERT) $< -f pdf -o $@
 
 %.svg: %.dot
 	$(DOT) -Tsvg $< >$@
@@ -39,7 +39,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png
 #       copy usman.bbl usman-bibl.bbl
 
 %.png: %.svg
-	$(INKSCAPE) $< --without-gui --export-png=$@
+	$(RSVGCONVERT) $< -f png -o $@
 
 %.png: %.dot
 	$(DOT) -Tpng $< >$@
