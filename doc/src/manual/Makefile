@@ -29,6 +29,7 @@ pdf: $(ALLTEX) $(PDFPICS) figures/*.png cover.pdf
 
 %.svg: %.dot
 	$(DOT) -Tsvg $< >$@
+	python3 tools/update-svg-viewBox-after-dot.py $@ 2.0
 
 # --- generating html ---
 
