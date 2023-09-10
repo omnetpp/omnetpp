@@ -10,7 +10,7 @@ DOTPICS = $(wildcard figures/*.dot)
 SVGPICS = $(wildcard figures/*.svg) $(DOTPICS:.dot=.svg)
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 
-.PHONY : pdf html eclipse
+.PHONY : pdf html eclipse clean
 
 # disabling all implicit rules
 .SUFFIXES :
@@ -81,6 +81,6 @@ clean:
 	rm -rf ../../SimulationManual.pdf
 	rm -rf eclipse
 	rm -f figures/*.pdf
-	rm -f $(ls figures/*.svg | sed 's/svg$$/png/')
-	rm -f $(ls figures/*.dot | sed 's/dot$$/svg/')
+	rm -f $$(ls figures/*.svg | sed 's/svg$$/png/')
+	rm -f $$(ls figures/*.dot | sed 's/dot$$/svg/')
 
