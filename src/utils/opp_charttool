@@ -18,15 +18,13 @@ import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 from omnetpp.scave.analysis import *
 from omnetpp.scave.charttemplate import *
-from omnetpp.scave.impl import chart_charttool as chart
 
 
 def error(message):
     print("ERROR: " + message)
     sys.exit(1)
 
-if __name__ == "__main__":
-
+def parse_command_line():
     parser = argparse.ArgumentParser(description=
         "For processing OMNeT++ Analysis files (*.anf) on the command line. opp_charttool can list the "
         "contents of anf files, and run the chart scripts for display or image/data export. "
@@ -85,55 +83,52 @@ if __name__ == "__main__":
         exit(0)
 
     if args.command not in COMMANDS:
-        parser.print_help()
-        error("Unknown command '%s'" % args.command)
+        error(f"Unknown command '{args.command}'")
 
-    if args.command == 'templates':
-        dirs = [os.path.abspath(dir) for dir in args.templates_path.split(":")] if args.templates_path else []
-        if args.verbose:
-            print("Loading from: " + ":".join(dirs + get_chart_template_locations()) + "\n")
-        templates = load_chart_templates(dirs)
-        for id in sorted(templates.keys()):
-            template = templates[id]
-            print('{}: "{}" ({})'.format(id, template.name, template.type))
-            if args.print_properties:
-                for key in sorted(template.properties.keys(), key=str.casefold):
-                    value = template.properties[key]
-                    print('    {} = {}'.format(key, repr(value)))
-        exit(0)
+    return args
 
-    anf_file = args.anf_file[0]
-    anf_dir = os.path.dirname(os.path.abspath(anf_file))
+def do_templates_command(templates_path, print_properties, verbose):
+    dirs = [os.path.abspath(dir) for dir in templates_path.split(":")] if templates_path else []
+    if verbose:
+        print("Loading from: " + ":".join(dirs + get_chart_template_locations()) + "\n")
+    templates = load_chart_templates(dirs)
+    for id in sorted(templates.keys()):
+        template = templates[id]
+        print('{}: "{}" ({})'.format(id, template.name, template.type))
+        if print_properties:
+            for key in sorted(template.properties.keys(), key=str.casefold):
+                value = template.properties[key]
+                print('    {} = {}'.format(key, repr(value)))
 
-    analysis = load_anf_file(anf_file)
+def do_info_command(anf_file, analysis, selected_charts, all_charts):
+    print(anf_file + ":\n")
+    print("{} inputs:\n".format(len(analysis.inputs)))
+    for i, inp in enumerate(analysis.inputs):
+        print('\t"{}"'.format(inp))
+    print()
+    if selected_charts == all_charts:
+        print('{} charts:\n'.format(len(all_charts)))
+    else:
+        print('{} of {} charts selected:\n'.format(len(selected_charts), len(all_charts)))
+    for i, chart in enumerate(all_charts):
+        if chart in selected_charts:
+            print('\t{}.\t{}\t"{}"'.format(i, chart.type, analysis.get_item_path_as_string(chart)))
 
-    if False: # debug output
-        import json
-        print(json.dumps(analysis, default=lambda obj: vars(obj), indent=4, separators=(',', ': ')))
+def expand_ranges(s):
+    if not re.match(r'^(((\d+)-(\d+)|(\d+)|),)+$', s+","):
+        error("Invalid syntax '{}' in argument for -i <indices>".format(s))
+    # "1-6,99" -> "1,2,3,4,5,6,99"
+    s = re.sub('(\d+)-(\d+)', lambda m: str(list(range(int(m.group(1)),1+int(m.group(2)))))[1:-1], s)
+    # "1,2,3,4,5,6,99" -> [1,2,3,4,5,6,99]
+    numbers = [ int(i) for i in s.split(',') ]
+    return np.unique(np.array(numbers))
 
-    project_paths = dict([tuple(p.split('=', 1)) for p in args.p]) if args.p else dict()
-
-    workspace_dir = args.w[0]
-    if not workspace_dir:
-        anf_dir = os.path.dirname(os.path.abspath(anf_file))
-        workspace_dir = Workspace.find_workspace(anf_dir)
-    workspace = Workspace(workspace_dir, project_paths)
-
+def select_charts(args, analysis, all_charts):
     selected_charts = None
 
     if args.i and args.n:
         error("Do not use -i and -n together.")
 
-    def expand_ranges(s):
-        if not re.match(r'^(((\d+)-(\d+)|(\d+)|),)+$', s+","):
-            error("Invalid syntax '{}' in argument for -i <indices>".format(s))
-        # "1-6,99" -> "1,2,3,4,5,6,99"
-        s = re.sub('(\d+)-(\d+)', lambda m: str(list(range(int(m.group(1)),1+int(m.group(2)))))[1:-1], s)
-        # "1,2,3,4,5,6,99" -> [1,2,3,4,5,6,99]
-        numbers = [ int(i) for i in s.split(',') ]
-        return np.unique(np.array(numbers))
-
-    all_charts = analysis.collect_charts()
     if args.i:
         try:
             indices = expand_ranges(args.i[0])
@@ -147,43 +142,67 @@ if __name__ == "__main__":
     else: # neither -i nor -n given
         selected_charts = all_charts
 
-    props = dict([i.split("=", 1) for i in args.properties])
+    return selected_charts
+
+def resolve_workspace(anf_file, args):
+    workspace_dir = args.w[0]
+    if not workspace_dir:
+        anf_dir = os.path.dirname(os.path.abspath(anf_file))
+        workspace_dir = Workspace.find_workspace(anf_dir)
+    project_paths = dict([tuple(p.split('=', 1)) for p in args.p]) if args.p else dict()
+    workspace = Workspace(workspace_dir, project_paths)
+    return workspace
+
+def main():
+    args = parse_command_line()
+
+    if args.command == 'templates':
+        do_templates_command(args.templates_path, args.print_properties, args.verbose)
+        exit(0)
+
+    anf_file = args.anf_file[0]
+    anf_dir = os.path.dirname(os.path.abspath(anf_file))
+
+    analysis = load_anf_file(anf_file)
+
+    if False: # debug output
+        import json
+        print(json.dumps(analysis, default=lambda obj: vars(obj), indent=4, separators=(',', ': ')))
+
+    all_charts = analysis.collect_charts()
+    selected_charts = select_charts(args, analysis, all_charts)
 
     if args.command == 'info':
-        print(anf_file + ":\n")
-        print("{} inputs:\n".format(len(analysis.inputs)))
-        for i, inp in enumerate(analysis.inputs):
-            print('\t"{}"'.format(inp))
-        print()
-        if selected_charts == all_charts:
-            print('{} charts:\n'.format(len(all_charts)))
-        else:
-            print('{} of {} charts selected:\n'.format(len(selected_charts), len(all_charts)))
-        for i, chart in enumerate(all_charts):
-            if chart in selected_charts:
-                print('\t{}.\t{}\t"{}"'.format(i, chart.type, analysis.get_item_path_as_string(chart)))
-    else:
-        error_list = []
-        for chart in selected_charts:
-            try:
-                if args.command == 'run':
-                    print("Running " + chart.name + "...")
-                    analysis.run_chart(chart, anf_dir, workspace, show=args.show, extra_props=props, suppress_print=args.suppress_print)
-                elif args.command == 'imageexport':
-                    print("Exporting " + chart.name + "...")
-                    analysis.export_image(chart, anf_dir, workspace, enforce=False,
-                                          format=args.format, target_folder=args.target_folder, filename=args.out_file,
-                                          width=args.width, height=args.height, dpi=args.dpi,
-                                          extra_props=props, suppress_print=args.suppress_print)
-                elif args.command == 'dataexport':
-                    print("Exporting " + chart.name + "...")
-                    analysis.export_data(chart, anf_dir, workspace, enforce=False,
-                                         format=args.format, target_folder=args.target_folder, filename=args.out_file,
-                                         extra_props=props, suppress_print=args.suppress_print)
-            except Exception as e:
-                print("\nError in chart " + chart.name + ": " + str(e), file = sys.stderr)
-                print(traceback.format_exc(), file = sys.stderr)
-                error_list.append(chart.name)
-        if error_list:
-            print("Failed charts: " + ", ".join(error_list), file = sys.stderr)
-            sys.exit(1)
+        do_info_command(anf_file, analysis, selected_charts, all_charts)
+        exit(0)
+
+    workspace = resolve_workspace(anf_file, args)
+    props = dict([i.split("=", 1) for i in args.properties])
+
+    error_list = []
+    for chart in selected_charts:
+        try:
+            if args.command == 'run':
+                print("Running " + chart.name + "...")
+                analysis.run_chart(chart, anf_dir, workspace, show=args.show, extra_props=props, suppress_print=args.suppress_print)
+            elif args.command == 'imageexport':
+                print("Exporting " + chart.name + "...")
+                analysis.export_image(chart, anf_dir, workspace, enforce=False,
+                                        format=args.format, target_folder=args.target_folder, filename=args.out_file,
+                                        width=args.width, height=args.height, dpi=args.dpi,
+                                        extra_props=props, suppress_print=args.suppress_print)
+            elif args.command == 'dataexport':
+                print("Exporting " + chart.name + "...")
+                analysis.export_data(chart, anf_dir, workspace, enforce=False,
+                                        format=args.format, target_folder=args.target_folder, filename=args.out_file,
+                                        extra_props=props, suppress_print=args.suppress_print)
+        except Exception as e:
+            print("\nError in chart " + chart.name + ": " + str(e), file = sys.stderr)
+            print(traceback.format_exc(), file = sys.stderr)
+            error_list.append(chart.name)
+    if error_list:
+        print("Failed charts: " + ", ".join(error_list), file = sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
