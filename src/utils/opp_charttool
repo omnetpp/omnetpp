@@ -123,6 +123,14 @@ def expand_ranges(s):
     numbers = [ int(i) for i in s.split(',') ]
     return np.unique(np.array(numbers))
 
+def split_keyvalue(s, where):
+    parts = s.split("=", 1)
+    if len(parts) != 2:
+        error(f"Invalid syntax '{s}' {where}, key=value expected")
+    key = parts[0].strip()
+    value = parts[1].strip()
+    return [key,value]
+
 def select_charts(args, analysis, all_charts):
     selected_charts = None
 
@@ -149,7 +157,7 @@ def resolve_workspace(anf_file, args):
     if not workspace_dir:
         anf_dir = os.path.dirname(os.path.abspath(anf_file))
         workspace_dir = Workspace.find_workspace(anf_dir)
-    project_paths = dict([tuple(p.split('=', 1)) for p in args.p]) if args.p else dict()
+    project_paths = dict([split_keyvalue(p, "in a -p option") for p in args.p]) if args.p else dict()
     workspace = Workspace(workspace_dir, project_paths)
     return workspace
 
@@ -177,7 +185,7 @@ def main():
         exit(0)
 
     workspace = resolve_workspace(anf_file, args)
-    props = dict([i.split("=", 1) for i in args.properties])
+    props = dict([split_keyvalue(i, "in a -D option") for i in args.properties])
 
     error_list = []
     for chart in selected_charts:
