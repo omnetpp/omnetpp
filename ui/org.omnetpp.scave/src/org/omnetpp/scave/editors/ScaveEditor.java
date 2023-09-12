@@ -1795,6 +1795,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 },
                 "Do you want to save '" + getInputFile().getName() + "'?\n\nAlso, keep the following temporary charts as part of the analysis:")
                 {
+                    {
+                        setInitialElementSelections(temporaryChartPages);
+                    }
+
                     @Override
                     protected void createButtonsForButtonBar(Composite parent) {
                         createButton(parent, IDialogConstants.NO_ID, "Don't Save", false);
