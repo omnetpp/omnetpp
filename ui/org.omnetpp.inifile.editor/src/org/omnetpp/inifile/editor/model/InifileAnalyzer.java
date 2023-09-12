@@ -560,7 +560,9 @@ public final class InifileAnalyzer {
 
         for (String section : doc.getSectionNames()) {
             if (!section.equals(GENERAL)) {
-                if (section.contains(" "))
+                if (section.isEmpty())
+                    markers.addError(section, "Section name may not be empty");  // also due to .charAt(0) below
+                else if (section.contains(" "))
                     markers.addError(section, "Section name may not contain space");
                 else if (!String.valueOf(section.charAt(0)).matches("[a-zA-Z_]"))
                     markers.addError(section, "Section name must begin with a letter or underscore");
