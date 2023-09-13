@@ -70,8 +70,6 @@ public class ProjectFeaturesHandler extends AbstractHandler {
             project = getProjectFrom(workbenchPage.getSelection(IPageLayout.ID_PROJECT_EXPLORER));
         if (project == null)
             project = getProjectFrom(workbenchPage.getSelection(ID_CDT_PROJECTS));
-        if (project == null)
-            project = getProjectFrom(workbenchPage.getSelection(IPageLayout.ID_RES_NAV));
         return project;
     }
 

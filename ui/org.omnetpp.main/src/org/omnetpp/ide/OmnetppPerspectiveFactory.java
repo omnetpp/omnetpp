@@ -33,7 +33,6 @@ public class OmnetppPerspectiveFactory implements IPerspectiveFactory {
 
         IFolderLayout leftFolder = layout.createFolder("left", IPageLayout.LEFT, (float)0.25, editorArea); //$NON-NLS-1$
         leftFolder.addView(IPageLayout.ID_PROJECT_EXPLORER);
-        leftFolder.addPlaceholder(IPageLayout.ID_RES_NAV);
 
         IFolderLayout leftBottomFolder = layout.createFolder("leftbottom", IPageLayout.BOTTOM, (float)0.50, "left"); //$NON-NLS-1$
         leftBottomFolder.addView(IPageLayout.ID_PROP_SHEET);
