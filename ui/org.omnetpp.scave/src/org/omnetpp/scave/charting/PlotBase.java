@@ -94,6 +94,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     protected String titleText;
     protected Legend legend = new Legend(this);
     protected LegendTooltip legendTooltip;
+    private boolean adjustViewOnLegendItemEnablementChange = false; //TODO make user-settable?
 
     private String statusText = "No data available."; // displayed when there's no dataset
     private String warningText = null;
@@ -675,30 +676,32 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
     }
 
     public void legendItemEnablementChanged() {
-        double zx = getZoomX();
-        double zy = getZoomY();
-        long vt = getViewportTop();
-        long vl = getViewportLeft();
+        if (adjustViewOnLegendItemEnablementChange) {
+            double zx = getZoomX();
+            double zy = getZoomY();
+            long vt = getViewportTop();
+            long vl = getViewportLeft();
 
-        boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
-        boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
+            boolean shouldZoomOutX = getZoomX()==0 || isZoomedOutX();
+            boolean shouldZoomOutY = getZoomY()==0 || isZoomedOutY();
 
-        chartChanged();
-        chartArea = calculatePlotArea();
-        updateArea();
+            chartChanged();
+            chartArea = calculatePlotArea();
+            updateArea();
 
-        if (shouldZoomOutX)
-            zoomToFitX();
-        else {
-            setZoomX(zx);
-            scrollHorizontalTo(vl);
-        }
+            if (shouldZoomOutX)
+                zoomToFitX();
+            else {
+                setZoomX(zx);
+                scrollHorizontalTo(vl);
+            }
 
-        if (shouldZoomOutY)
-            zoomToFitY();
-        else {
-            setZoomY(zy);
-            scrollVerticalTo(vt);
+            if (shouldZoomOutY)
+                zoomToFitY();
+            else {
+                setZoomY(zy);
+                scrollVerticalTo(vt);
+            }
         }
     }
 
