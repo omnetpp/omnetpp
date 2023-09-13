@@ -10,11 +10,10 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 
 public class AutoXYLayout extends XYLayout {
-    @SuppressWarnings("unchecked")
     @Override
     public void layout(IFigure container) {
         int spacing = 2;
-        List<IFigure> figures = container.getChildren();
+        List<? extends IFigure> figures = container.getChildren();
         for (IFigure figure : figures) {
             if (getConstraint(figure) == null) {
                 Dimension size = figure.getPreferredSize();

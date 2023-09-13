@@ -535,7 +535,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
                 IConstants.MODULEPARAMETERS_VIEW_ID,
                 IPageLayout.ID_OUTLINE,
                 IPageLayout.ID_PROBLEM_VIEW,
-                IPageLayout.ID_RES_NAV,
+                IPageLayout.ID_PROJECT_EXPLORER,
                 };
     }
 }

@@ -951,8 +951,7 @@ public class IconGridViewer extends ContentViewer {
     }
 
     protected IFigure[][] getRows() {
-        @SuppressWarnings("unchecked")
-        List<IFigure> children = contentLayer.getChildren();
+        List<? extends IFigure> children = contentLayer.getChildren();
         List<IFigure[]> rows = new ArrayList<>();
         List<IFigure> currentRow = null;
         int currentRowY = Integer.MIN_VALUE;

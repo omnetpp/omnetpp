@@ -77,8 +77,7 @@ public class EditableFigureCanvas extends ScrolledComposite {
         initializeFigure(figure, bestPoint.x, bestPoint.y);
     }
 
-    @SuppressWarnings("unchecked")
-    protected List<IFigure> getEditableFigures() {
+    protected List<? extends IFigure> getEditableFigures() {
         return getRootFigure().getChildren();
     }
 
