@@ -69,6 +69,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
@@ -953,6 +954,45 @@ public class ScaveEditor extends MultiPageEditorPartExt
         }
     }
 
+    private static class SaveOnCloseDialog extends ListSelectionDialog {
+        @SuppressWarnings("deprecation")
+        private SaveOnCloseDialog(Shell parentShell, String fileName, List<ChartPage> temporaryChartPages) {
+            super(parentShell, temporaryChartPages,
+                    new ArrayContentProvider(),
+                    new LabelProvider() {
+                        @Override
+                        public String getText(Object element) {
+                            ChartPage chartPage = (ChartPage)element;
+                            String suggestedName = chartPage.getChartScriptEditor().getSuggestedChartName();
+                            String text = chartPage.getChart().getName();
+                            if (suggestedName != null)
+                                text += " -> " + suggestedName;
+                            return text;
+                        }
+                    },
+                    "Do you want to save '" + fileName + "'?\n\nAlso, keep the following temporary charts as part of the analysis:");
+            setInitialElementSelections(temporaryChartPages);
+            setTitle("Save Changes");
+        }
+
+        @Override
+        protected void createButtonsForButtonBar(Composite parent) {
+            createButton(parent, IDialogConstants.NO_ID, "Don't Save", false);
+            createButton(parent, IDialogConstants.CANCEL_ID, "Cancel", false);
+            createButton(parent, IDialogConstants.YES_ID, "Save", true);
+        }
+
+        @Override
+        protected void buttonPressed(int buttonId) {
+            setReturnCode(buttonId);
+            if (buttonId == IDialogConstants.YES_ID) {
+                // to set the selected result list
+                super.okPressed();
+            }
+            close();
+        }
+    }
+
     class ScaveEditorContentOutlinePage extends ContentOutlinePage {
         public void createControl(Composite parent) {
             super.createControl(parent);
@@ -1777,45 +1817,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         if (temporaryChartPages.isEmpty())
             return DEFAULT;
 
-        @SuppressWarnings("deprecation")
-        ListSelectionDialog dialog = new ListSelectionDialog
-                (Display.getCurrent().getActiveShell(),
-                temporaryChartPages,
-                new ArrayContentProvider(),
-                new LabelProvider() {
-                    @Override
-                    public String getText(Object element) {
-                        ChartPage chartPage = (ChartPage)element;
-                        String suggestedName = chartPage.getChartScriptEditor().getSuggestedChartName();
-                        String text = chartPage.getChart().getName();
-                        if (suggestedName != null)
-                            text += " -> " + suggestedName;
-                        return text;
-                    }
-                },
-                "Do you want to save '" + getInputFile().getName() + "'?\n\nAlso, keep the following temporary charts as part of the analysis:")
-                {
-                    {
-                        setInitialElementSelections(temporaryChartPages);
-                    }
-
-                    @Override
-                    protected void createButtonsForButtonBar(Composite parent) {
-                        createButton(parent, IDialogConstants.NO_ID, "Don't Save", false);
-                        createButton(parent, IDialogConstants.CANCEL_ID, "Cancel", false);
-                        createButton(parent, IDialogConstants.YES_ID, "Save", true);
-                    }
-
-                    protected void buttonPressed(int buttonId) {
-                        setReturnCode(buttonId);
-                        if (buttonId == IDialogConstants.YES_ID) {
-                            // to set the selected result list
-                            super.okPressed();
-                        }
-                        close();
-                    }
-                };
-        dialog.setTitle("Save Changes");
+        SaveOnCloseDialog dialog = new SaveOnCloseDialog(Display.getCurrent().getActiveShell(), getInputFile().getName(), temporaryChartPages);
         dialog.open();
 
         if (dialog.getReturnCode() == IDialogConstants.CANCEL_ID)
