@@ -11,7 +11,7 @@
     <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" numColumns="2"/>
+  <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true"/>
 
   <x:children>
 
@@ -85,7 +85,29 @@
 
     <label text="Marker size:"/>
     <spinner x:id="markersize" x:id.default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+      </x:children>
+    </group>
 
+    <group text="Hints">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+
+        <label x:style="WRAP" text="* To change the set of colors/markers used in Auto mode, choose a different cycle seed on the Styling page">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="* To have more control over the specific colors/markers chosen, add properties in the Advanced page. Examples:">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `axes.prop_cycle: cycler('color', ['blue', 'green', 'red'])`  # on a Matplotlib chart: selects colors">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `Line.Color/3: yellow`  # on a native chart: selects the color of the 3rd line">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
       </x:children>
     </group>
 
