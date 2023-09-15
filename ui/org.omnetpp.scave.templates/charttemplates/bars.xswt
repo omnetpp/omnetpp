@@ -48,5 +48,29 @@
       </x:children>
     </group>
 
+    <group text="Hints">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+
+        <label x:style="WRAP" text="* To change the set of bar colors used, choose a different cycle seed on the Styling page">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="* To have more control over the specific colors, add properties in the Advanced page. Examples:">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `axes.prop_cycle: cycler('color', ['blue', 'green', 'red'])`  # on a Matplotlib chart: selects colors">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `Bar.Color/3: yellow`  # on a native chart: selects the color of the 3rd series">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+      </x:children>
+    </group>
+
   </x:children>
 </xswt>

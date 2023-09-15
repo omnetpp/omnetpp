@@ -27,33 +27,62 @@ Show over_underflow cell?
       <layout x:class="GridLayout" numColumns="2"/>
       <x:children>
 
-    <!-- Baseline -->
-    <label text="Baseline:"/>
-    <text x:id="baseline" x:id.default="0" x:style="BORDER">
-      <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
-    </text>
+        <!-- Baseline -->
+        <label text="Baseline:"/>
+        <text x:id="baseline" x:id.default="0" x:style="BORDER">
+          <layoutData x:class="GridData" horizontalAlignment="FILL" grabExcessHorizontalSpace="true"/>
+        </text>
 
-    <!-- Bar type:Solid/Outline -->
-    <label text="Draw style:"/>
-    <combo x:id="drawstyle" x:id.default="Solid" x:style="BORDER|READ_ONLY">
-      <add x:p0="Solid"/>
-      <add x:p0="Outline"/>
-    </combo>
+        <!-- Bar type:Solid/Outline -->
+        <label text="Draw style:"/>
+        <combo x:id="drawstyle" x:id.default="Solid" x:style="BORDER|READ_ONLY">
+          <add x:p0="Solid"/>
+          <add x:p0="Outline"/>
+        </combo>
 
-    <button x:id="normalize" x:id.default="false" text="Normalize" x:style="CHECK">
-      <layoutData x:class="GridData" horizontalSpan="2"/>
-    </button>
+        <button x:id="normalize" x:id.default="false" text="Normalize" x:style="CHECK">
+          <layoutData x:class="GridData" horizontalSpan="2"/>
+        </button>
 
-    <button x:id="cumulative" x:id.default="false" text="Cumulative" x:style="CHECK">
-      <layoutData x:class="GridData" horizontalSpan="2"/>
-    </button>
+        <button x:id="cumulative" x:id.default="false" text="Cumulative" x:style="CHECK">
+          <layoutData x:class="GridData" horizontalSpan="2"/>
+        </button>
 
-    <!-- Show over_underflow cell? -->
-    <button x:id="show_overflows" x:id.default="true" text="Show under/overflows" x:style="CHECK">
-      <layoutData x:class="GridData" horizontalSpan="2"/>
-    </button>
+        <!-- Show over_underflow cell? -->
+        <button x:id="show_overflows" x:id.default="true" text="Show under/overflows" x:style="CHECK">
+          <layoutData x:class="GridData" horizontalSpan="2"/>
+        </button>
 
       </x:children>
     </group>
+    
+    <group text="Hints">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+
+        <label x:style="WRAP" text="* When plotting multiple histograms, you can reduce occlusion by choosing 'Outline' for 'Draw style'">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="* To change the set of histogram colors used, choose a different cycle seed on the Styling page">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="* To have more control over the specific colors, add properties in the Advanced page. Examples:">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `axes.prop_cycle: cycler('color', ['blue', 'green', 'red'])`  # on a Matplotlib chart: selects colors">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `Histogram.Color/3: yellow`  # on a native chart: selects the color of the 3rd histogram">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+      </x:children>
+    </group>
+
   </x:children>
 </xswt>
