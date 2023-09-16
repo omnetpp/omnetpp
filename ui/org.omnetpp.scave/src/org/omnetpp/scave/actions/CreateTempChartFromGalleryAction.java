@@ -46,7 +46,7 @@ public class CreateTempChartFromGalleryAction extends AbstractScaveAction {
         if (template == null)
             return;
 
-        Chart chart = ScaveModelUtil.createChartFromTemplate(template);
+        Chart chart = ScaveModelUtil.createChartFromTemplate(template, editor.makeNameForNewChart(template));
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);

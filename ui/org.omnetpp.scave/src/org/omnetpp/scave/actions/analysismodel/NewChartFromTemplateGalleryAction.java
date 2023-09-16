@@ -40,8 +40,7 @@ public class NewChartFromTemplateGalleryAction extends AbstractScaveAction {
         if (template == null)
             return;
 
-        Chart chart = ScaveModelUtil.createChartFromTemplate(template);
-        chart.assignNewId();
+        Chart chart = ScaveModelUtil.createChartFromTemplate(template, editor.makeNameForNewChart(template));
         ICommand command = new AddChartCommand(editor.getCurrentFolder(), chart);
         editor.getChartsPage().getCommandStack().execute(command);
         editor.showAnalysisItem(chart);

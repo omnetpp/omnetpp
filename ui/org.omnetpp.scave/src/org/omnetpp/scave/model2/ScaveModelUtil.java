@@ -63,11 +63,11 @@ public class ScaveModelUtil {
         return input;
     }
 
-    public static Chart createChartFromTemplate(ChartTemplateRegistry chartTemplateRegistry, String templateId) {
-        return createChartFromTemplate(chartTemplateRegistry.getTemplateByID(templateId));
+    public static Chart createChartFromTemplate(ChartTemplateRegistry chartTemplateRegistry, String templateId, String name) {
+        return createChartFromTemplate(chartTemplateRegistry.getTemplateByID(templateId), name);
     }
 
-    public static Chart createChartFromTemplate(ChartTemplate template) {
+    public static Chart createChartFromTemplate(ChartTemplate template, String name) {
         Chart chart = new Chart(template.getChartType());
         chart.setTemplateID(template.getId());
         chart.setSupportedResultTypes(template.getSupportedResultTypes());
@@ -83,13 +83,13 @@ public class ScaveModelUtil {
 
         chart.setDialogPages(pages);
 
-        chart.setName(template.getName());
+        chart.setName(name);
         chart.setTemporary(false);
         chart.setIconPath(template.getIconPath());
 
         List<Property> properties = new ArrayList<>();
-        for (String name : template.getPropertyNames())
-            properties.add(new Property(name, template.getPropertyDefault(name)));
+        for (String propertyName : template.getPropertyNames())
+            properties.add(new Property(propertyName, template.getPropertyDefault(propertyName)));
         chart.setProperties(properties);
 
         return chart;
