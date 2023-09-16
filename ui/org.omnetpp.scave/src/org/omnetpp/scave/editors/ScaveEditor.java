@@ -987,7 +987,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
             setReturnCode(buttonId);
             if (buttonId == IDialogConstants.YES_ID)
                 super.okPressed(); // to set the selected result list; implies close()
-            else if (buttonId == IDialogConstants.CANCEL_ID || buttonId == IDialogConstants.YES_ID) // note: the Select All/Deselect All buttons delegate here too, not only the Yes/No/Cancel ones!
+            else if (buttonId == IDialogConstants.CANCEL_ID || buttonId == IDialogConstants.NO_ID) // note: the Select All/Deselect All buttons delegate here too, not only the Yes/No/Cancel ones!
                 close();
         }
     }
