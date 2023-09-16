@@ -48,7 +48,7 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
     protected void doRun(ScaveEditor editor, ISelection selection) throws CoreException {
         IDListSelection idListSelection = (IDListSelection)selection;
 
-        Chart chart = ScaveModelUtil.createChartFromTemplate(template);
+        Chart chart = ScaveModelUtil.createChartFromTemplate(template, editor.makeNameForNewChart(template));
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);

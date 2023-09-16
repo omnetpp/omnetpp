@@ -122,6 +122,7 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Folder;
 import org.omnetpp.scave.model.IModelChangeListener;
 import org.omnetpp.scave.model.InputFile;
@@ -1724,6 +1725,10 @@ public class ScaveEditor extends MultiPageEditorPartExt
                 statusLineManager.setMessage("");
             }
         }
+    }
+
+    public String makeNameForNewChart(ChartTemplate template) {
+        return template.getName();
     }
 
     public ScaveEditorActions getActions() {

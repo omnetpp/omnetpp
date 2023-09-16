@@ -186,35 +186,34 @@ public class LegacyAnalysisLoader {
      */
     private Chart makeLegacyChart(ArrayList<DataOp> ops, ArrayList<DataVecOp> vecOps, Node chartNode, String chartType) {
         Chart chart = null;
+        String name = chartNode.getAttributes().getNamedItem("name").getNodeValue();
 
         if ("scave:BarChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, BARCHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, BARCHART_ID, name);
         else if ("scave:HistogramChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, HISTOGRAMCHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, HISTOGRAMCHART_ID, name);
         else if ("scave:ScatterChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, SCATTERCHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, SCATTERCHART_ID, name);
         else if ("scave:LineChart".equals(chartType))
-            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, LINECHART_ID);
+            chart = ScaveModelUtil.createChartFromTemplate(chartTemplateRegistry, LINECHART_ID, name);
         else
             throw new RuntimeException("unknown chart type: " + chartType);
 
-        chart.setName(chartNode.getAttributes().getNamedItem("name").getNodeValue());
-
         ArrayList<DataFilter> filters = new ArrayList<DataFilter>();
 
-        NodeList props = chartNode.getChildNodes();
+        NodeList properties = chartNode.getChildNodes();
 
-        for (int k = 0; k < props.getLength(); ++k) {
-            Node propNode = props.item(k);
-            if ("properties".equals(propNode.getNodeName())) {
-                String name = propNode.getAttributes().getNamedItem("name").getNodeValue();
-                String value = propNode.getAttributes().getNamedItem("value").getNodeValue();
-                Property prop = new Property(name, value);
-                chart.addProperty(prop);
-            } else if ("filters".equals(propNode.getNodeName())) {
-                String filterExpression = propNode.getAttributes().getNamedItem("filterPattern").getNodeValue();
+        for (int k = 0; k < properties.getLength(); ++k) {
+            Node propertyNode = properties.item(k);
+            if ("properties".equals(propertyNode.getNodeName())) {
+                String propertyName = propertyNode.getAttributes().getNamedItem("name").getNodeValue();
+                String propertyValue = propertyNode.getAttributes().getNamedItem("value").getNodeValue();
+                Property property = new Property(propertyName, propertyValue);
+                chart.addProperty(property);
+            } else if ("filters".equals(propertyNode.getNodeName())) {
+                String filterExpression = propertyNode.getAttributes().getNamedItem("filterPattern").getNodeValue();
                 filterExpression = AndFilter.translateLegacyFilterExpression(filterExpression);
-                filters.add(new DataFilter(propNode.getAttributes().getNamedItem("xsi:type").getNodeValue(), filterExpression));
+                filters.add(new DataFilter(propertyNode.getAttributes().getNamedItem("xsi:type").getNodeValue(), filterExpression));
             }
         }
 

@@ -44,7 +44,7 @@ public class PlotAction extends AbstractScaveAction {
         Assert.isTrue(!templates.isEmpty());
         ChartTemplate template = templates.get(0);
 
-        Chart chart = ScaveModelUtil.createChartFromTemplate(template);
+        Chart chart = ScaveModelUtil.createChartFromTemplate(template, editor.makeNameForNewChart(template));
         editor.getChartTemplateRegistry().markTemplateUsage(template);
 
         String filter = ResultSelectionFilterGenerator.makeFilterForIDListSelection(idListSelection);
