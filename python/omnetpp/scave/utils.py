@@ -292,16 +292,12 @@ def make_legend_label(legend_cols, row, props={}):
     return legend
 
 
-def plot_bars(df, errors_df=None, meta_df=None, props={}):
+def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
     """
     Creates a bar plot from the dataframe, with styling and additional input
     coming from the properties. Each row in the dataframe defines a series.
 
     Group names (displayed on the x axis) are taken from the column index.
-
-    The name of the variable represented by the values can be passed in as
-    the `variable_name` argument (as it is not present in the dataframe); if so,
-    it will become the y axis label.
 
     Error bars can be drawn by providing an extra dataframe of identical
     dimensions as the main one. Error bars will protrude by the values in the
@@ -315,11 +311,12 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}):
 
     Parameters:
 
-    - `df`: the dataframe
-    - `props` (dict): the properties
-    - `variable_name` (string): The name of the variable represented by the values.
-    - `errors_df`: dataframe with the errors (in y axis units)
-    - `meta_df`: dataframe with the metadata about each series
+    - `df`: The dataframe.
+    - `errors_df`: Dataframe with the errors (in y axis units).
+    - `meta_df`: Dataframe with the metadata about each series.
+    - `props` (dict): The properties.
+    - `sort` (bool): Whether to sort the values by the column and row indices
+       (which are the labels of the bar series and groups).
 
     Notable properties that affect the plot:
     - `baseline`: The y value at which the x axis is drawn.
@@ -376,8 +373,9 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}):
                 extra_parts = (1.0 / overlap_visible_fraction - 1)
                 xs += width / extra_parts - (len(df.index) + extra_parts) * width * overlap_visible_fraction / 2
 
-    df.sort_index(axis="columns", inplace=True)
-    df.sort_index(axis="index", inplace=True)
+    if sort:
+        df.sort_index(axis="columns", inplace=True)
+        df.sort_index(axis="index", inplace=True)
 
     if errors_df is not None:
         errors_df.sort_index(axis="columns", inplace=True)
@@ -442,7 +440,7 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}):
 
 
 
-def plot_vectors(df, props, legend_func=make_legend_label):
+def plot_vectors(df, props, legend_func=make_legend_label, sort=True):
     """
     Creates a line plot from the dataframe, with styling and additional input
     coming from the properties. Each row in the dataframe defines a series.
@@ -458,9 +456,12 @@ def plot_vectors(df, props, legend_func=make_legend_label):
 
     Parameters:
 
-    - `df`: the dataframe
-    - `props` (dict): the properties
-    - `legend_func`: the function to produce custom legend labels
+    - `df`: The dataframe.
+    - `props` (dict): The properties.
+    - `legend_func` (function): The function to produce custom legend labels.
+       See `utils.make_legend_label()` for prototype and semantics.
+    - `sort` (bool): Whether to sort the vectors by the columns used for the legend
+       (before applying `legend_func`, for backwards bug-compatibility).
 
     Columns of the dataframe:
 
@@ -485,7 +486,9 @@ def plot_vectors(df, props, legend_func=make_legend_label):
 
     title_cols, legend_cols = extract_label_columns(df, props)
 
-    df.sort_values(by=legend_cols, inplace=True)
+    if sort:
+        df.sort_values(by=legend_cols, inplace=True)
+
     for t in df.itertuples(index=False):
         style = _make_line_args(props, t, df)
         p.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
@@ -500,7 +503,7 @@ def plot_vectors(df, props, legend_func=make_legend_label):
     p.ylabel(ylabel)
 
 
-def plot_vectors_separate(df, props, legend_func=make_legend_label):
+def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
     """
     This is very similar to `plot_vectors`, with identical usage.
     The only difference is in the end result, where each vector will
@@ -512,7 +515,8 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label):
 
     title_cols, legend_cols = extract_label_columns(df, props)
 
-    df.sort_values(by=legend_cols, inplace=True)
+    if sort:
+        df.sort_values(by=legend_cols, inplace=True)
 
     ax = None
     for i, t in enumerate(df.itertuples(index=False)):
@@ -606,7 +610,7 @@ def _plot_enum(vectime, vecvalue, labels, label):
     fig.canvas.mpl_connect('pick_event', on_pick)
 
 
-def plot_histograms(df, props, legend_func=make_legend_label):
+def plot_histograms(df, props, legend_func=make_legend_label, sort=True):
     """
     Creates a histogram plot from the dataframe, with styling and additional input
     coming from the properties. Each row in the dataframe defines a histogram.
@@ -626,6 +630,8 @@ def plot_histograms(df, props, legend_func=make_legend_label):
     - `props` (dict): The properties.
     - `legend_func` (function): The function to produce custom legend labels.
        See `utils.make_legend_label()` for prototype and semantics.
+    - `sort` (bool): Whether to sort the histograms by the columns used for the legend
+       (before applying `legend_func`, for backwards bug-compatibility).
 
     Columns of the dataframe:
 
@@ -667,7 +673,9 @@ def plot_histograms(df, props, legend_func=make_legend_label):
 
     title_cols, legend_cols = extract_label_columns(df, props)
 
-    df.sort_values(by=legend_cols, inplace=True)
+    if sort:
+        df.sort_values(by=legend_cols, inplace=True)
+
     for t in df.itertuples(index=False):
         style = _make_histline_args(props, t, df)
 
@@ -707,7 +715,7 @@ def plot_histograms(df, props, legend_func=make_legend_label):
         p.xlabel(f"[{unit}]")
 
 
-def plot_lines(df, props, legend_func=make_legend_label):
+def plot_lines(df, props, legend_func=make_legend_label, sort=True):
     """
     Creates a line plot from the dataframe, with styling and additional input
     coming from the properties. Each row in the dataframe defines a line.
@@ -727,6 +735,8 @@ def plot_lines(df, props, legend_func=make_legend_label):
     - `props` (dict): The properties.
     - `legend_func` (function): The function to produce custom legend labels.
        See `utils.make_legend_label()` for prototype and semantics.
+    - `sort` (bool): Whether to sort the series by the columns used for the legend
+       (before applying `legend_func`, for backwards bug-compatibility).
 
     Columns of the dataframe:
 
@@ -756,7 +766,9 @@ def plot_lines(df, props, legend_func=make_legend_label):
 
     title_cols, legend_cols = extract_label_columns(df, props)
 
-    df.sort_values(by=legend_cols, inplace=True)
+    if sort:
+        df.sort_values(by=legend_cols, inplace=True)
+
     for t in df.itertuples(index=False):
         style = _make_line_args(props, t, df)
 
@@ -781,7 +793,7 @@ def plot_lines(df, props, legend_func=make_legend_label):
         p.ylabel(f"[{unit}]")
 
 
-def plot_boxwhiskers(df, props, legend_func=make_legend_label):
+def plot_boxwhiskers(df, props, legend_func=make_legend_label, sort=True):
     """
     Creates a box and whiskers plot from the dataframe, with styling and additional
     input coming from the properties. Each row in the dataframe defines one set
@@ -802,6 +814,8 @@ def plot_boxwhiskers(df, props, legend_func=make_legend_label):
     - `props` (dict): The properties.
     - `legend_func` (function): The function to produce custom legend labels.
        See `utils.make_legend_label()` for prototype and semantics.
+    - `sort` (bool): Whether to sort the series by the columns used for the legend
+       (before applying `legend_func`, for backwards bug-compatibility).
 
     Columns of the dataframe:
 
@@ -819,7 +833,9 @@ def plot_boxwhiskers(df, props, legend_func=make_legend_label):
     """
     unit = _check_same_unit(df)
     title_cols, legend_cols = extract_label_columns(df, props)
-    df.sort_values(by=legend_cols, axis='index', inplace=True)
+
+    if sort:
+        df.sort_values(by=legend_cols, axis='index', inplace=True)
 
     # This is how much of the standard deviation will give the 25th and 75th
     # percentiles, assuming normal distribution.
@@ -1479,7 +1495,7 @@ def confidence_interval(alpha, data):
     return math.nan if len(data) <= 1 else 0 if len(set(data)) <= 1 else st.norm.interval(alpha, loc=0, scale=st.sem(data))[1]
 
 
-def pivot_for_barchart(df, groups, series, confidence_level=None):
+def pivot_for_barchart(df, groups, series, confidence_level=None, sort=True):
     """
     Turns a DataFrame containing scalar results (in the format returned
     by `results.get_scalars()`) into a 3-tuple of a value, an error, and
@@ -1495,6 +1511,8 @@ def pivot_for_barchart(df, groups, series, confidence_level=None):
        be used as names for the bar series.
     - `confidence_level` (float, optional):
        The confidence level to use when computing the sizes of the error bars.
+    - `sort` (bool): Whether to sort the values by the columns in `groups`
+       and `series` before pivoting.
 
     Returns:
 
@@ -1503,7 +1521,8 @@ def pivot_for_barchart(df, groups, series, confidence_level=None):
     for c in groups + series:
         df[c] = pd.to_numeric(df[c], errors="ignore")
 
-    df.sort_values(by=groups+series, axis='index', inplace=True)
+    if sort:
+        df.sort_values(by=groups+series, axis='index', inplace=True)
 
     def aggfunc(values):
         if values.empty:
