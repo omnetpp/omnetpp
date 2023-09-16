@@ -1002,7 +1002,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     public String getChartDisplayName() {
         String name = chart.getName();
         if (chart.isTemporary())
-            name = "[" + name + "]";
+            name =  "*"  + name; // or: name + "*", or name + " (tmp)"
         return StringUtils.defaultIfEmpty(name, "<unnamed>");
     }
 
