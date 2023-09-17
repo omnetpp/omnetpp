@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -162,6 +163,8 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
     private PythonProcessPool processPool = new PythonProcessPool(2);
     private ChartTemplateRegistry chartTemplateRegistry = new ChartTemplateRegistry();
+
+    private Map<String,Integer> numChartsCreatedByTemplateId = new HashMap<>();
 
     /**
      * This is the content outline page.
@@ -1728,7 +1731,15 @@ public class ScaveEditor extends MultiPageEditorPartExt
     }
 
     public String makeNameForNewChart(ChartTemplate template) {
-        return template.getName();
+        // look up and update how many charts have been created from that template (in this session)
+        String key = template.getId();
+        if (!numChartsCreatedByTemplateId.containsKey(key))
+            numChartsCreatedByTemplateId.put(key, 0);
+        int count = numChartsCreatedByTemplateId.get(key);
+        numChartsCreatedByTemplateId.put(key, count+1);
+
+        // make name like "Line Chart 2"
+        return template.getName() + " " + (count + 1);
     }
 
     public ScaveEditorActions getActions() {
