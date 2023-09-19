@@ -985,8 +985,8 @@ public class GraphicalNedEditor
             DrawerFigure figure = new LocalDrawerFigure((Composite)getViewer().getControl());
 
             // the following is copied over from the superclass'es constructor
-            figure.setExpanded(getDrawer().isInitiallyOpen());
-            figure.setPinned(getDrawer().isInitiallyPinned());
+            figure.setExpanded(getModel().isInitiallyOpen());
+            figure.setPinned(getModel().isInitiallyPinned());
 
             figure.getCollapseToggle().addFocusListener(new FocusListener.Stub() {
                 @Override
