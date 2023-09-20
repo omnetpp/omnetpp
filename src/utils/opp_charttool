@@ -92,25 +92,25 @@ def do_templates_command(templates_path, print_properties, verbose):
     templates = load_chart_templates(dirs)
     for id in sorted(templates.keys()):
         template = templates[id]
-        print('{}: "{}" ({})'.format(id, template.name, template.type))
+        print(f'{id}: "{template.name}" ({template.type})')
         if print_properties:
             for key in sorted(template.properties.keys(), key=str.casefold):
                 value = template.properties[key]
-                print('    {} = {}'.format(key, repr(value)))
+                print(f'    {key} = {repr(value)}')
 
 def do_info_command(anf_file, analysis, selected_charts, all_charts):
     print(anf_file + ":\n")
-    print("{} inputs:\n".format(len(analysis.inputs)))
-    for i, inp in enumerate(analysis.inputs):
-        print('\t"{}"'.format(inp))
+    print(f"{len(analysis.inputs)} inputs:\n")
+    for i, input in enumerate(analysis.inputs):
+        print(f'\t"{input}"')
     print()
     if selected_charts == all_charts:
-        print('{} charts:\n'.format(len(all_charts)))
+        print(f'{len(all_charts)} charts:\n')
     else:
-        print('{} of {} charts selected:\n'.format(len(selected_charts), len(all_charts)))
+        print(f'{len(selected_charts)} of {len(all_charts)} charts selected:\n')
     for i, chart in enumerate(all_charts):
         if chart in selected_charts:
-            print('\t{}.\t{}\t"{}"'.format(i, chart.type, analysis.get_item_path_as_string(chart)))
+            print(f'\t{i}.\t{chart.type}\t"{analysis.get_item_path_as_string(chart)}"')
 
 def expand_ranges(s):
     if not re.match(r'^(((\d+)-(\d+)|(\d+)|),)+$', s+","):
@@ -144,7 +144,7 @@ def select_charts(args, analysis, all_charts):
     elif args.n:
         selected_charts = [ c for c in all_charts if args.n[0] in analysis.get_item_path_as_string(c) ]
         if not selected_charts:
-            raise LookupError('String "{}" does not occur in any chart\'s name or path'.format(args.n[0]))
+            raise LookupError(f'String "{args.n[0]}" does not occur in any chart\'s name or path')
     else: # neither -i nor -n given
         selected_charts = all_charts
 
@@ -206,21 +206,21 @@ def main():
     for chart in selected_charts:
         try:
             if args.command == 'run':
-                print("Running " + chart.name + "...")
+                print(f"Running {chart.name}...")
                 analysis.run_chart(chart, anf_dir, workspace, show=args.show, extra_props=props, suppress_print=args.suppress_print)
             elif args.command == 'imageexport':
-                print("Exporting " + chart.name + "...")
+                print(f"Exporting {chart.name}...")
                 analysis.export_image(chart, anf_dir, workspace, enforce=False,
                                         format=args.format, target_folder=args.target_folder, filename=args.out_file,
                                         width=args.width, height=args.height, dpi=args.dpi,
                                         extra_props=props, suppress_print=args.suppress_print)
             elif args.command == 'dataexport':
-                print("Exporting " + chart.name + "...")
+                print(f"Exporting {chart.name}...")
                 analysis.export_data(chart, anf_dir, workspace, enforce=False,
                                         format=args.format, target_folder=args.target_folder, filename=args.out_file,
                                         extra_props=props, suppress_print=args.suppress_print)
         except Exception as e:
-            print("\nError in chart " + chart.name + ": " + str(e), file = sys.stderr)
+            print(f"\nError in chart {chart.name}: {str(e)}", file = sys.stderr)
             if not isinstance(e, ChartScriptError) or args.debug:
                 print(traceback.format_exc(), file = sys.stderr)
             error_list.append(chart.name)
