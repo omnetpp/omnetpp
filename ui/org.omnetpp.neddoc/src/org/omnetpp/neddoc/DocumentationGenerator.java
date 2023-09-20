@@ -244,9 +244,6 @@ public class DocumentationGenerator {
     public DocumentationGenerator(IProject project) {
         this.project = project;
 
-        nedResolver = NedResourcesPlugin.getNedResources().getImmutableCopy();
-        msgResources = NedResourcesPlugin.getMsgResources();
-
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
@@ -355,6 +352,10 @@ public class DocumentationGenerator {
             if (verboseMode)
                 System.out.println("Generating NED documentation for '" + project.getName() + "'.");
 
+            NedResources.getInstance().readMissingNedFiles();
+            nedResolver = NedResourcesPlugin.getNedResources().getImmutableCopy();
+            msgResources = NedResourcesPlugin.getMsgResources();
+
             DocumentationGenerator.this.monitor = monitor;
             renderer = new HtmlRenderer(documentationRootPath.append(rootRelativeNeddocPath));
 
@@ -455,7 +456,6 @@ public class DocumentationGenerator {
     protected void collectCaches() throws Exception {
         try {
             monitor.beginTask("Collecting data...", 6);
-            NedResources.getInstance().readMissingNedFiles(); // ensure that all ned files are loaded already
 
             navigationItemIndex = new TreeMap<String, ArrayList<Integer>>();
             for (int i = 0; i<levelIndex.length; i++)
