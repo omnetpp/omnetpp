@@ -18,11 +18,8 @@ import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 from omnetpp.scave.analysis import *
 from omnetpp.scave.charttemplate import *
+from omnetpp.scave.chart import ChartScriptError
 
-
-def error(message):
-    print("ERROR: " + message)
-    sys.exit(1)
 
 def parse_command_line():
     parser = argparse.ArgumentParser(description=
@@ -43,6 +40,7 @@ def parse_command_line():
     common_parser.add_argument('-D', metavar='properties', dest='properties', type=str, nargs='*', default=[], help='Extra properties to pass to the chart script, format: key=value')
     common_parser.add_argument('-v', dest="verbose", default=False, action='store_true', help='Verbose operation')
     common_parser.add_argument('-s', dest="suppress_print", default=False, action='store_true', help='Suppress `print` from chart scripts')
+    common_parser.add_argument('-g', dest="debug", default=False, action='store_true', help='Debug: Print stack trace on error')
     common_parser.add_argument('anf_file', type=str, nargs=1, default="", help='The Analysis (.anf) file')
 
     info_parser = subparsers.add_parser('info', help='(default) Info about the analysis file', parents=[common_parser], add_help=False)
@@ -83,7 +81,7 @@ def parse_command_line():
         exit(0)
 
     if args.command not in COMMANDS:
-        error(f"Unknown command '{args.command}'")
+        raise ValueError(f"Unknown command '{args.command}'")
 
     return args
 
@@ -116,7 +114,7 @@ def do_info_command(anf_file, analysis, selected_charts, all_charts):
 
 def expand_ranges(s):
     if not re.match(r'^(((\d+)-(\d+)|(\d+)|),)+$', s+","):
-        error("Invalid syntax '{}' in argument for -i <indices>".format(s))
+        raise ValueError("Invalid syntax '{}' in argument for -i <indices>".format(s))
     # "1-6,99" -> "1,2,3,4,5,6,99"
     s = re.sub('(\d+)-(\d+)', lambda m: str(list(range(int(m.group(1)),1+int(m.group(2)))))[1:-1], s)
     # "1,2,3,4,5,6,99" -> [1,2,3,4,5,6,99]
@@ -126,7 +124,7 @@ def expand_ranges(s):
 def split_keyvalue(s, where):
     parts = s.split("=", 1)
     if len(parts) != 2:
-        error(f"Invalid syntax '{s}' {where}, key=value expected")
+        raise ValueError(f"Invalid syntax '{s}' {where}, key=value expected")
     key = parts[0].strip()
     value = parts[1].strip()
     return [key,value]
@@ -135,18 +133,18 @@ def select_charts(args, analysis, all_charts):
     selected_charts = None
 
     if args.i and args.n:
-        error("Do not use -i and -n together.")
+        raise RuntimeError("Do not use -i and -n together.")
 
     if args.i:
         try:
             indices = expand_ranges(args.i[0])
             selected_charts = [all_charts[index] for index in indices]
         except IndexError:
-            error('Chart index out of range 0..{}'.format(len(all_charts)-1))
+            raise IndexError(f'Chart index out of range 0..{len(all_charts)-1}')
     elif args.n:
         selected_charts = [ c for c in all_charts if args.n[0] in analysis.get_item_path_as_string(c) ]
         if not selected_charts:
-            error('String "{}" does not occur in any chart\'s name or path'.format(args.n[0]))
+            raise LookupError('String "{}" does not occur in any chart\'s name or path'.format(args.n[0]))
     else: # neither -i nor -n given
         selected_charts = all_charts
 
@@ -161,31 +159,48 @@ def resolve_workspace(anf_file, args):
     workspace = Workspace(workspace_dir, project_paths)
     return workspace
 
+def msg_from_chained_exception(e):
+    msg = ""
+    while e:
+        if msg:
+            msg += ": "
+        msg += str(e)
+        e = e.__cause__ if isinstance(e, BaseException) else None
+    return msg
+
 def main():
-    args = parse_command_line()
+    try:
+        args = parse_command_line()
 
-    if args.command == 'templates':
-        do_templates_command(args.templates_path, args.print_properties, args.verbose)
-        exit(0)
+        if args.command == 'templates':
+            do_templates_command(args.templates_path, args.print_properties, args.verbose)
+            exit(0)
 
-    anf_file = args.anf_file[0]
-    anf_dir = os.path.dirname(os.path.abspath(anf_file))
+        anf_file = args.anf_file[0]
+        anf_dir = os.path.dirname(os.path.abspath(anf_file))
 
-    analysis = load_anf_file(anf_file)
+        analysis = load_anf_file(anf_file)
 
-    if False: # debug output
-        import json
-        print(json.dumps(analysis, default=lambda obj: vars(obj), indent=4, separators=(',', ': ')))
+        if False: # debug output
+            import json
+            print(json.dumps(analysis, default=lambda obj: vars(obj), indent=4, separators=(',', ': ')))
 
-    all_charts = analysis.collect_charts()
-    selected_charts = select_charts(args, analysis, all_charts)
+        all_charts = analysis.collect_charts()
+        selected_charts = select_charts(args, analysis, all_charts)
 
-    if args.command == 'info':
-        do_info_command(anf_file, analysis, selected_charts, all_charts)
-        exit(0)
+        if args.command == 'info':
+            do_info_command(anf_file, analysis, selected_charts, all_charts)
+            exit(0)
 
-    workspace = resolve_workspace(anf_file, args)
-    props = dict([split_keyvalue(i, "in a -D option") for i in args.properties])
+        workspace = resolve_workspace(anf_file, args)
+        props = dict([split_keyvalue(i, "in a -D option") for i in args.properties])
+
+    except Exception as e:
+        if not args.debug:
+            print("Error: " + msg_from_chained_exception(e), file = sys.stderr)
+            exit(1)
+        else:
+            raise e
 
     error_list = []
     for chart in selected_charts:
@@ -206,7 +221,8 @@ def main():
                                         extra_props=props, suppress_print=args.suppress_print)
         except Exception as e:
             print("\nError in chart " + chart.name + ": " + str(e), file = sys.stderr)
-            print(traceback.format_exc(), file = sys.stderr)
+            if not isinstance(e, ChartScriptError) or args.debug:
+                print(traceback.format_exc(), file = sys.stderr)
             error_list.append(chart.name)
     if error_list:
         print("Failed charts: " + ", ".join(error_list), file = sys.stderr)
