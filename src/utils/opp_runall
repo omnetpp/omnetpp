@@ -10,7 +10,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import argparse
 import os
 import sys
-import re
 import subprocess
 import tempfile
 import multiprocessing
@@ -87,7 +86,7 @@ class Runall:
 			opts = parser.parse_args()
 			self.verbose = opts.verbose
 		except (IOError, OSError) as e:
-			fail(e)
+			self.fail(e)
 		if not opts.simProgArgs:
 			parser.print_help()
 			sys.exit(0)
