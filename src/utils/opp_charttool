@@ -42,6 +42,7 @@ def parse_command_line():
     common_parser.add_argument('-s', dest="suppress_print", default=False, action='store_true', help='Suppress `print` from chart scripts')
     common_parser.add_argument('-g', dest="debug", default=False, action='store_true', help='Debug: Print stack trace on error')
     common_parser.add_argument('anf_file', type=str, nargs=1, default="", help='The Analysis (.anf) file')
+    common_parser.add_argument('charts', type=str, nargs="*", default="", help='Select charts to operate on. Accepts any number of both index ranges (like -i) and name/path substrings (like -n).')
 
     info_parser = subparsers.add_parser('info', help='(default) Info about the analysis file', parents=[common_parser], add_help=False)
 
@@ -112,8 +113,12 @@ def do_info_command(anf_file, analysis, selected_charts, all_charts):
         if chart in selected_charts:
             print(f'\t{i}.\t{chart.type}\t"{analysis.get_item_path_as_string(chart)}"')
 
+def is_valid_index_range(s):
+    """ Checks whether `s` is an index range, as accepted by the `-i` command line argument. """
+    return re.match(r'^(((\d+)-(\d+)|(\d+)|),)+$', s+",") is not None
+
 def expand_ranges(s):
-    if not re.match(r'^(((\d+)-(\d+)|(\d+)|),)+$', s+","):
+    if not is_valid_index_range(s):
         raise ValueError("Invalid syntax '{}' in argument for -i <indices>".format(s))
     # "1-6,99" -> "1,2,3,4,5,6,99"
     s = re.sub('(\d+)-(\d+)', lambda m: str(list(range(int(m.group(1)),1+int(m.group(2)))))[1:-1], s)
@@ -130,22 +135,33 @@ def split_keyvalue(s, where):
     return [key,value]
 
 def select_charts(args, analysis, all_charts):
-    selected_charts = None
+    selected_charts = []
 
     if args.i and args.n:
+        # this technically works now, keeping the restriction for backward compatibility
         raise RuntimeError("Do not use -i and -n together.")
 
-    if args.i:
+    indices = (args.i or []).copy()
+    names = (args.n or []).copy()
+
+    for chart in args.charts:
+        if is_valid_index_range(chart):
+            indices.append(chart)
+        else:
+            names.append(chart)
+
+    for chart_index in indices:
         try:
-            indices = expand_ranges(args.i[0])
-            selected_charts = [all_charts[index] for index in indices]
+            expanded_indices = expand_ranges(chart_index)
+            selected_charts += [all_charts[index] for index in expanded_indices]
         except IndexError:
             raise IndexError(f'Chart index out of range 0..{len(all_charts)-1}')
-    elif args.n:
-        selected_charts = [ c for c in all_charts if args.n[0] in analysis.get_item_path_as_string(c) ]
+    for chart_name in names:
+        selected_charts += [c for c in all_charts if chart_name in analysis.get_item_path_as_string(c)]
         if not selected_charts:
-            raise LookupError(f'String "{args.n[0]}" does not occur in any chart\'s name or path')
-    else: # neither -i nor -n given
+            raise LookupError(f'String "{chart_name}" does not occur in any chart\'s name or path')
+
+    if not selected_charts:
         selected_charts = all_charts
 
     return selected_charts
