@@ -52,10 +52,8 @@ def _load_files_into(rfm : sb.ResultFileManager, input_patterns : Union[str, Lis
             matching_files = glob.glob("*.sca", root_dir=file_arg, recursive=True)
             matching_files += glob.glob("*.vec", root_dir=file_arg, recursive=True)
             files_to_load = [os.path.join(file_arg, gr) for gr in matching_files]
-        elif "*" in file_arg or "?" in file_arg:
+        else: # even if it does not look like a glob pattern, nonexistent files shouldn't cause an error
             files_to_load = glob.glob(file_arg, recursive=True)
-        else:
-            files_to_load.append(file_arg)
 
         for file_name in files_to_load:
             rfm.loadFile(file_name, file_name, load_flags)
