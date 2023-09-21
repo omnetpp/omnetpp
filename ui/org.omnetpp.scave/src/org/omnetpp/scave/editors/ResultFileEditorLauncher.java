@@ -94,7 +94,9 @@ public class ResultFileEditorLauncher implements IEditorLauncher {
                 return analysisFile; // return existing
             }
             else {
-                String basePath = resultFile.getParent().getFullPath().append(res.globPattern).toString();
+                IPath basePath = resultFile.getParent().getFullPath().append(res.globPattern);
+                if (anfContainer.getFullPath().isPrefixOf(basePath))
+                    basePath = basePath.makeRelativeTo(anfContainer.getFullPath());
                 String vecFilePattern = basePath + ".vec";
                 String scaFilePattern = basePath + ".sca";
                 openNewAnalysisWizard(analysisFile, new String[] {vecFilePattern, scaFilePattern});
