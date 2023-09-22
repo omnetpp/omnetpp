@@ -40,7 +40,10 @@ public class ResultItemValueFormatter {
     }
 
     public String format(double value) {
-        if (type == DataType.TYPE_DOUBLE) {
+        if (type == DataType.TYPE_BOOL) {
+            return value == 0.0 ? "false" : "true";
+        }
+        else if (type == DataType.TYPE_DOUBLE) {
             return String.valueOf(value);
         }
         else if (type == DataType.TYPE_INT) {
@@ -55,7 +58,10 @@ public class ResultItemValueFormatter {
     }
 
     public String format(BigDecimal value) {
-        if (type == DataType.TYPE_DOUBLE) {
+        if (type == DataType.TYPE_BOOL) {
+            return BigDecimal.getZero().equals(value) ? "false" : "true";
+        }
+        else if (type == DataType.TYPE_DOUBLE) {
             return String.valueOf(value);
         }
         else if (type == DataType.TYPE_INT) {
