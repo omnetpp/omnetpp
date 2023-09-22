@@ -70,7 +70,7 @@ class SCAVE_API ResultItem
     friend class SqliteResultFileLoader;
 
   public:
-    enum DataType { TYPE_NA, TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
+    enum DataType { TYPE_NA, TYPE_BOOL, TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
     enum class FieldNum { NONE=0, COUNT, SUM, SUMWEIGHTS, MEAN, STDDEV, MIN, MAX, NUMBINS, RANGEMIN, RANGEMAX, UNDERFLOWS, OVERFLOWS, STARTTIME, ENDTIME };
 
   protected:

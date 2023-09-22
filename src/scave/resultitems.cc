@@ -147,7 +147,9 @@ ResultItem::DataType ResultItem::getDataType() const
     }
     else {
         const std::string& type = it->second;
-        if (type == "int")
+        if (type == "bool")
+            return TYPE_BOOL;
+        else if (type == "int")
             return TYPE_INT;
         else if (type == "double")
             return TYPE_DOUBLE;
