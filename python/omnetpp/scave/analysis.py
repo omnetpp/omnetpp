@@ -410,9 +410,16 @@ class Analysis:
         """
         assert(os.path.isabs(wd))
 
-        # set up state in 'results' module
-        fs_inputs = [ workspace.to_filesystem_path(i) for i in self.inputs ]
-        results_module.set_inputs(fs_inputs)
+        # TODO: use contextlib.chdir once Python 3.11 is the minimum
+        od = os.getcwd()
+
+        try:
+            os.chdir(wd)
+            # set up state in 'results' module
+            fs_inputs = [ workspace.to_filesystem_path(i) for i in self.inputs ]
+            results_module.set_inputs(fs_inputs)
+        finally:
+            os.chdir(od)
 
         # set up state in 'chart' module
         chart_module.name = chart.name
@@ -426,7 +433,6 @@ class Analysis:
         global _show_called
         _show_called = False
 
-        od = os.getcwd()
         orig_sys_path = sys.path.copy()
         orig_rcparams = mpl.rcParams.copy()
 
