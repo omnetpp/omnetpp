@@ -24,7 +24,7 @@ import mmap
 import functools
 
 from matplotlib.figure import Figure
-from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, NavigationToolbar2, MouseEvent
+from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, KeyEvent, LocationEvent, NavigationToolbar2, MouseEvent, ResizeEvent
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from omnetpp.internal import Gateway
@@ -140,30 +140,22 @@ class FigureCanvasSWT(FigureCanvasBase):
         self.widget = Gateway.widget_provider.getWidget(self.num, self)
 
     def enterEvent(self, x, y):
-        FigureCanvasBase.enter_notify_event(self, xy=(x, y))
+        event = LocationEvent('figure_enter_event', self, x, y)
+        self.callbacks.process(event.name, event)
 
     def leaveEvent(self):
-        FigureCanvasBase.leave_notify_event(self)
-
-    def mouseEventCoords(self, pos):
-        dpi_ratio = self._dpi_ratio
-        x = pos.x()
-        # flip y so y=0 is bottom of canvas
-        y = self.figure.bbox.height / dpi_ratio - pos.y()
-        return x * dpi_ratio, y * dpi_ratio
+        event = LocationEvent('figure_leave_event', self, None, None)
+        self.callbacks.process(event.name, event)
 
     def mousePressEvent(self, x, y, button):
-        FigureCanvasBase.button_press_event(self, x, y, button)
+        event = MouseEvent('button_press_event', self, x, y, button)
+        self.callbacks.process(event.name, event)
 
     def mouseDoubleClickEvent(self, x, y, button):
-        FigureCanvasBase.button_press_event(self, x, y, button, dblclick=True)
+        event = MouseEvent('button_press_event', self, x, y, button, dblclick=True)
+        self.callbacks.process(event.name, event)
 
     def mouseWheelEvent(self, x, y, count, mod1, mod2):
-        # This is not delegated to FigureCanvasBase.scroll_event
-        # because it has no way of directly accepting (modifier) keys,
-        # and at the moment key events are not forwarded to MPL to
-        # make its internal key state tracking work.
-
         button = "up" if count >= 0 else "down"
 
         if mod1:
@@ -171,38 +163,32 @@ class FigureCanvasSWT(FigureCanvasBase):
         else:
             key = "shift" if mod2 else None
 
-        s = 'scroll_event'
-        mouseevent = MouseEvent(s, self, x, y, button, key, step=count)
-        self.callbacks.process(s, mouseevent)
+        event = MouseEvent('scroll_event', self, x, y, button, key, step=count)
+        self.callbacks.process(event.name, event)
 
     def mouseMoveEvent(self, x, y):
-        FigureCanvasBase.motion_notify_event(self, x, y)
+        event = MouseEvent('motion_notify_event', self, x, y)
+        self.callbacks.process(event.name, event)
 
     def mouseReleaseEvent(self, x, y, button):
-        FigureCanvasBase.button_release_event(self, x, y, button)
-
-    def wheelEvent(self, event):
-        x, y = self.mouseEventCoords(event)
-        # from QWheelEvent::delta doc
-        if event.pixelDelta().x() == 0 and event.pixelDelta().y() == 0:
-            steps = event.angleDelta().y() / 120
-        else:
-            steps = event.pixelDelta().y()
-        if steps:
-            FigureCanvasBase.scroll_event(self, x, y, steps, guiEvent=event)
+        event = MouseEvent('button_release_event', self, x, y, button)
+        self.callbacks.process(event.name, event)
 
     def keyPressEvent(self, key):
-        FigureCanvasBase.key_press_event(self, key)
+        event = KeyEvent('key_press_event', self, key)
+        self.callbacks.process(event.name, event)
 
     def keyReleaseEvent(self, key):
-        FigureCanvasBase.key_release_event(self, key)
+        event = KeyEvent('key_release_event', self, key)
+        self.callbacks.process(event.name, event)
 
     def _resize(self, width, height):
         dpival = self.figure.dpi
         winch = width / dpival
         hinch = height / dpival
         self.figure.set_size_inches(winch, hinch, forward=False)
-        FigureCanvasBase.resize_event(self)
+        event = ResizeEvent('resize_event', self)
+        self.callbacks.process(event.name, event)
 
     def resizeEvent(self, width, height):
         self._resize(width, height)
