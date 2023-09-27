@@ -24,6 +24,7 @@ import itertools as it
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from omnetpp.scave import chart, ideplot, vectorops
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
 
 def _import_scave_bindings():
@@ -522,7 +523,10 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label):
             plt.setp(ax.get_xticklabels(), visible=False)
             ax.xaxis.get_label().set_visible(False)
 
-        plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
+        if hasattr(t, "enum") and isinstance(t.enum, str) and t.enum and props.get("enum_as_strip") == "true":
+            _plot_enum(t.vectime, t.vecvalue, t.enum.split(","), label=legend_func(legend_cols, t, props))
+        else:
+            plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
     plt.subplot(df.shape[0], 1, 1)
 
@@ -530,6 +534,76 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label):
     set_plot_title(title)
 
     plt.xlabel("Simulation Time [s]")
+
+
+def _plot_enum(vectime, vecvalue, labels, label):
+    labels_map = {index: name for index, name in enumerate(labels)}
+    label_colors = {index: "C" + str(index) for index, label in enumerate(labels)}
+    colors = [label_colors[key] for key in sorted(label_colors.keys())]
+    boundaries = list(label_colors.keys()) + [max(label_colors.keys()) + 1]
+    cmap = ListedColormap(colors)
+    norm = BoundaryNorm(boundaries, cmap.N)
+
+    fig = plt.gcf()
+    ax = plt.gca()
+    ax.grid(alpha=0)
+    ax.tick_params(axis='both', which='both', labelleft=False, bottom=True, left=False)
+    cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue[:-1]]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1)
+
+    legend_handles, legend_labels = ax.get_legend_handles_labels()
+    legend_handles.append(plt.Rectangle((0, 0), 1, 1, color=(0.5, 0.5, 0.5, 0.5)))
+    legend_labels.append(label)
+    legend = ax.legend(legend_handles, legend_labels)
+    legend.set_picker(True)
+    ax.default_legend = True
+
+    def compute_conversion_factor(ax):
+        x_pixel_0 = ax.transData.transform((0, 0))[0]
+        x_pixel_1 = ax.transData.transform((1, 0))[0]
+        return x_pixel_1 - x_pixel_0
+
+    def on_xlim_changed(ax):
+        if ax is None:
+            return
+        for txt in ax.texts:
+            txt.remove()
+        x_min, x_max = ax.get_xlim()
+        a = np.ediff1d(vectime) * compute_conversion_factor(ax)
+        c = np.sum((x_min < vectime) & (vectime < x_max))
+        cex.set_edgecolor((0, 0, 0, .1 * .99 ** c))
+        for i in np.where(a > 10)[0]:
+            x = (vectime[i] + vectime[i + 1]) / 2
+            value = vecvalue[i]
+            if x_min <= x and x <= x_max:
+                txt = ax.text(x, 0.5, labels_map[value], fontsize='x-small', color='white', ha='center', va='center', clip_on=True)
+                bbox = txt.get_window_extent(fig.canvas.get_renderer())
+                txt.set_rotation('horizontal' if bbox.width < a[i] else 'vertical')
+
+    def on_legend_click(ax):
+        ax.default_legend = not ax.default_legend
+        if ax.default_legend:
+            legend = ax.legend(legend_handles, legend_labels)
+            legend.set_picker(True)
+        else:
+            legend_elements = [plt.Rectangle((0, 0), 1, 1, color=color) for color in label_colors.values()]
+            legend = ax.legend(legend_elements, labels, fontsize='x-small', loc='upper right', ncol=math.ceil(len(label_colors) / 4))
+            legend.set_picker(True)
+            legend.set_clip_on(False)
+        fig.canvas.draw_idle()
+
+    def on_resize_event(event):
+        for ax in fig.axes:
+            ax.callbacks.process('xlim_changed', ax)
+
+    def on_pick(event):
+        for ax in fig.get_axes():
+            if event.artist == ax.get_legend():
+                ax.callbacks.process('zlim_changed', ax) # KLUDGE: for switching between the two legends
+
+    ax.callbacks.connect('xlim_changed', on_xlim_changed)
+    ax.callbacks.connect('zlim_changed', on_legend_click) # KLUDGE: for switching between the two legends
+    fig.canvas.mpl_connect('resize_event', on_resize_event)
+    fig.canvas.mpl_connect('pick_event', on_pick)
 
 
 def plot_histograms(df, props, legend_func=make_legend_label):
