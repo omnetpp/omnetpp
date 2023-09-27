@@ -68,7 +68,6 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
     //@}
 
     /**
-    /**
      * Compares the computed fingerprint with the expected one, and returns
      * true if they match, and false otherwise.
     */
