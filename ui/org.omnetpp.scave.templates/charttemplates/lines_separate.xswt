@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+
+  <import xmlns="http://sweet_swt.sf.net/xswt">
+    <package name="java.lang"/>
+    <package name="org.eclipse.swt.widgets" />
+    <package name="org.eclipse.swt.graphics" />
+    <package name="org.eclipse.swt.layout" />
+    <package name="org.eclipse.swt.custom" />
+    <package name="org.omnetpp.common.wizard.support" />
+    <package name="org.omnetpp.ned.editor.wizards.support" />
+    <package name="org.omnetpp.cdt.wizard.support" />
+  </import>
+  <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true"/>
+
+  <x:children>
+
+    <group text="Lines">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Draw style:"/>
+    <combo x:id="drawstyle" x:id.default="auto" x:style="BORDER|READ_ONLY">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0="linear"/>
+      <add x:p0="steps-pre"/>
+      <add x:p0="steps-mid"/>
+      <add x:p0="steps-post"/>
+    </combo>
+
+    <label text="Line color:"/>
+    <ColorChooser x:id="linecolor" x:id.default="" x:style="BORDER">
+      <layoutData x:class="GridData" horizontalAlignment="BEGINNING" grabExcessHorizontalSpace="false"/>
+    </ColorChooser>
+
+    <label text="Line style:"/>
+    <combo x:id="linestyle" x:id.default="solid" x:style="BORDER|READ_ONLY">
+      <add x:p0="none"/>
+      <add x:p0="solid"/>
+      <add x:p0="dotted"/>
+      <add x:p0="dashed"/>
+      <add x:p0="dashdot"/>
+    </combo>
+
+    <label text="Line width:"/>
+    <spinner x:id="linewidth" x:id.default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
+
+    <button x:id="enum_as_strip" x:id.default="false" text="Display enums as colored strips" x:style="CHECK">
+      <layoutData x:class="GridData" horizontalSpan="2"/>
+    </button>
+
+      </x:children>
+    </group>
+
+    <group text="Markers">
+      <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="2"/>
+      <x:children>
+
+    <label text="Marker:"/>
+    <combo x:id="marker" x:id.default="none" x:style="BORDER">
+      <add x:p0="auto"/>
+      <add x:p0="none"/>
+      <add x:p0=". (dot)"/>
+      <add x:p0=", (point)"/>
+      <add x:p0="v (triangle down)"/>
+      <add x:p0="^ (triangle up)"/>
+      <add x:p0="&lt; (triangle left)"/>
+      <add x:p0="&gt; (triangle right)"/>
+      <add x:p0="1 (tri down)"/>
+      <add x:p0="2 (tri up)"/>
+      <add x:p0="3 (tri left)"/>
+      <add x:p0="4 (tri right)"/>
+      <add x:p0="| (vline)"/>
+      <add x:p0="_ (hline)"/>
+      <add x:p0="8 (octagon)"/>
+      <add x:p0="o (circle)"/>
+      <add x:p0="s (square)"/>
+      <add x:p0="p (pentagon)"/>
+      <add x:p0="* (star)"/>
+      <add x:p0="+ (plus)"/>
+      <add x:p0="x (cross)"/>
+      <add x:p0="D (diamond)"/>
+      <add x:p0="d (thin diamond)"/>
+      <!-- TODO the rest...  -->
+    </combo>
+
+    <label text="Marker size:"/>
+    <spinner x:id="markersize" x:id.default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+      </x:children>
+    </group>
+
+    <group text="Hints">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+
+        <label x:style="WRAP" text="* To change the set of colors/markers used in Auto mode, choose a different cycle seed on the Styling page">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="* To have more control over the specific colors/markers chosen, add properties in the Advanced page. Examples:">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `axes.prop_cycle: cycler('color', ['blue', 'green', 'red'])`  # on a Matplotlib chart: selects colors">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `Line.Color/3: yellow`  # on a native chart: selects the color of the 3rd line">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+      </x:children>
+    </group>
+
+  </x:children>
+</xswt>
