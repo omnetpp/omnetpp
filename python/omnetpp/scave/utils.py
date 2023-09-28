@@ -1005,7 +1005,9 @@ def postconfigure_plot(props):
                 if loc and loc.startswith("outside"):
                     args.update(_legend_loc_outside_args(loc))
                 args["frameon"] =_parse_optional_bool(get_prop("legend_border"))
-                plt.legend(**args)
+                handles, labels = ax.get_legend_handles_labels()
+                if handles:
+                    plt.legend(**args)
         plt.tight_layout()
 
 
