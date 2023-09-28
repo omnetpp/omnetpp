@@ -225,7 +225,11 @@ public class NewChartPageDialog extends TitleAreaDialog {
                 out += "    </group>\n";
             }
             else {
-                out += "    <!-- unrecognized suffix '" + suffix + "' -->\n";
+                // text
+                out += "    <label text='" + field.replace("'", "") + ":'/>\n";
+                out += "    <text x:id='" + field.replace("'", "") + "' x:style='BORDER'>\n";
+                out += "      <layoutData x:class='GridData' horizontalAlignment='FILL' grabExcessHorizontalSpace='true'/>\n";
+                out += "    </text>\n";
             }
         }
         out += "\n";
