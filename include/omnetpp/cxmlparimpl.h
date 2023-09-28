@@ -37,7 +37,7 @@ class SIM_API cXMLParImpl : public cParImpl
     void copy(const cXMLParImpl& other);
 
   protected:
-    void deleteOld();
+    void deleteOld() {cParImpl::deleteOld(expr);}
 
   public:
     /** @name Constructors, destructor, assignment. */

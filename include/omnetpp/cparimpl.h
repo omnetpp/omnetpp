@@ -78,6 +78,7 @@ class SIM_API cParImpl : public cNamedObject
 
   protected:
     cValue evaluate(cExpression *expr, cComponent *context) const;
+    void deleteOld(cExpression *expr);
 
   public:
     /** @name Constructors, destructor, assignment. */

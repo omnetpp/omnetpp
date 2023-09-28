@@ -140,6 +140,14 @@ cParImpl *cParImpl::createWithType(Type type)
     }
 }
 
+void cParImpl::deleteOld(cExpression *expr)
+{
+    if (flags & FL_ISEXPR) {
+        delete expr;
+        flags &= ~FL_ISEXPR;
+    }
+}
+
 }  // namespace internal
 }  // namespace omnetpp
 

@@ -144,14 +144,6 @@ cExpression *cIntParImpl::getExpression() const
     return (flags & FL_ISEXPR) ? expr : nullptr;
 }
 
-void cIntParImpl::deleteOld()
-{
-    if (flags & FL_ISEXPR) {
-        delete expr;
-        flags &= ~FL_ISEXPR;
-    }
-}
-
 cPar::Type cIntParImpl::getType() const
 {
     return cPar::INT;
