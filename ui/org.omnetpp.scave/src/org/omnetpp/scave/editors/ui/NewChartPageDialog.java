@@ -235,12 +235,13 @@ public class NewChartPageDialog extends TitleAreaDialog {
     }
 
     private String makeLabel(String rawName) {
-        String label = rawName.replaceAll("([a-z0-9_])([A-Z])", "$1 $2");
+        String label = rawName.replace("_", " ").replaceAll("([a-z0-9])([A-Z])", "$1 $2");
         return StringUtils.capitalize(StringUtils.lowerCase(label));
     }
 
     private String makeIdentifier(String rawName) {
-        return StringUtils.uncapitalize(StringUtils.makeValidIdentifier(WordUtils.capitalize(rawName.trim())), 1);
+        String tmp = rawName.trim().replace(" ", "_").replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase();
+        return StringUtils.makeValidIdentifier(tmp);
     }
 
 }
