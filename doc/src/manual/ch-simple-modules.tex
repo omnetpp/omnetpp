@@ -2600,6 +2600,7 @@ kernel. This channel is called the \textit{transmission channel}.
   also map to \ttt{ned.DatarateChannel}.
 \end{note}
 
+
 \subsubsection{Transmitting a Packet}
 \label{sec:simple-modules:transmitting-a-packet}
 
@@ -2653,79 +2654,6 @@ changes, the cached channel pointer needs to be updated; section
 \ref{sec:simple-modules:model-change} describes the mechanism that can
 be used to get notifications about topology changes.
 
-\subsubsection{Receiving a Packet}
-\label{sec:simple-modules:receiving-a-packet}
-
-As a result of error modeling in the channel, the packet may arrive
-with the \textit{bit error} flag set (\ffunc{hasBitError() method}.
-It is the receiver module's responsibility to examine this flag
-and take appropriate action (i.e. discard the packet).
-
-Normally the packet object gets delivered to the destination module
-at the simulation time that corresponds to finishing the reception
-of the message (ie. the arrival of its last bit). However, the receiver
-module may change this by ``reprogramming'' the receiver gate with
-the \ffunc{setDeliverImmediately()} method:
-
-\begin{cpp}
-gate("in")->setDeliverImmediately(true);
-\end{cpp}
-
-This method may only be called on simple module input gates, and it
-instructs the simulation kernel to deliver packets arriving through
-that gate at the simulation time that corresponds to the
-beginning of the reception process.
-\ffunc{getDeliverOnReceptionStart()} only needs to be called once,
-so it is usually done in the \ffunc{initialize()} method of the module.
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includesvg[scale=0.9]{figures/transmission}
-    \caption{Packet transmission}
-    \label{fig:ch-simple-modules:transmission}
-  \end{center}
-\end{figure}
-
-When a packet is delivered to the module, the packet's
-\ffunc{isReceptionStart()} method can be called to determine
-whether it corresponds to the start or end of the reception
-process (it should be the same as the \ffunc{getDeliverOnReceptionStart()}
-flag of the input gate), and \ffunc{getDuration()} returns the transmission
-duration.
-
-The following example code prints the start and end times of a packet reception:
-
-\begin{cpp}
-simtime_t startTime, endTime;
-if (pkt->isReceptionStart()) {
-    // gate was reprogrammed with setDeliverImmediately(true)
-    startTime = pkt->getArrivalTime(); // or: simTime();
-    endTime = startTime + pkt->getDuration();
-}
-else {
-    // default case
-    endTime = pkt->getArrivalTime(); // or: simTime();
-    startTime = endTime - pkt->getDuration();
-}
-EV << "interval: " << startTime << ".." << endTime << "\n";
-\end{cpp}
-
-Note that this works with wireless connections (\ffunc{sendDirect()})
-as well; there, the duration is an argument to the \ffunc{sendDirect()}
-call.
-
-\subsubsection{Aborting Transmissions}
-\label{sec:simple-modules:aborting-transmissions}
-
-Certain protocols, for example Ethernet require the ability to abort
-a transmission before it completes. The support {\opp} provides
-for this task is the \ffunc{forceTransmissionFinishTime()} channel method.
-This method forcibly overwrites the \textit{transmissionFinishTime}
-member of the channel with the given value, allowing the sender to transmit
-another packet without raising the \textit{``channel is currently busy''}
-error. The receiving party needs to be notified about the aborted transmission
-by some external means, for example by sending another packet or an
-out-of-band message.
 
 \subsubsection{Implementation of Message Sending}
 \label{sec:simple-modules:implementation-of-message-sending}
@@ -2752,6 +2680,198 @@ The code which inserts the message into the FES is the \ffunc{arrived()}
 method of the recipient module. By overriding this method it is possible
 to perform custom processing at the recipient module immediately, still
 from within the \ffunc{send()} call. Use only if you know what you are doing!
+
+
+\subsection{Transmission Updates}
+\label{sec:simple-modules:transmission-updates}
+\label{sec:simple-modules:aborting-transmissions}
+
+In the modeling of communication networks, it is sometimes necessary to model
+that the transmission of a packet does not go through as planned, but is aborted
+or finished prematurely. For example, when a colliding transmission is detected
+on an Ethernet link that uses CSMA/CD, the transmission of the packet is
+aborted. Even on a duplex Ethernet link, the transmission of an Ethernet frame
+may be suspended (and later resumed) so that a higher-priority frame can be
+transmitted immediately, a feature called frame preemption. It is also possible
+that a transmission is extended to a longer duration, for example when the
+frame's payload is appended on the fly, due to the use of frame aggregation.
+
+{\omnetpp} allows for modeling such scenarios using a special mechanism called
+\textit{transmission updates}. The basic idea is that while a transmission is
+underway, the sender can change its mind on when the transmission will actually
+finish, and what the final packet content will be. It announces the change by
+sending a special packet, called a \textit{transmission update}. The
+transmission update packet contains the remaining transmission duration, and the
+updated packet content.
+
+This mechanism allows for both shortening and extending the transmission
+duration (but not retroactively, i.e. the remaining duration cannot be
+negative). Any number of updates may be sent for a transmission, and the
+original transmission does not need to be marked specially to allow the use of
+updates. Aborting a transmission is modeled by simply sending an update with
+zero remaining duration and the truncated packet.\footnote{Before {\omnetpp}
+version 6.0, using the \ffunc{forceTransmissionFinishTime()} channel method was
+recommended as a way to implement aborting a transmission. It is now considered
+obsolete, and should not be used.} An interesting additional use of transmission
+updates could be making the transmission end explicit (which is normally
+implicit in {\omnetpp}), by sending a zero-remaining-time transmission update
+exactly at the time the transmission would otherwise end.
+
+\begin{note}
+  The receiver has to be prepared to receive transmission updates, and to react
+  to them appropriately. The details are explained in section
+  \ref{sec:simple-modules:reception-of-transmission-updates}.
+\end{note}
+
+
+\subsubsection{Sending Transmission Updates}
+\label{sec:simple-modules:sending-transmission-updates}
+
+Transmission updates are sent using the normal message sending functions
+(\ffunc{send()}, \ffunc{sendDirect()}, etc.), specifying a \cclass{SendOptions}
+struct that has the \ttt{updateTx} field set to \ttt{true}.
+
+Transmission updates are paired with the original packet they modify using a
+unique transmission ID. The \cclass{SendOptions} methods that set
+\ttt{updateTx=true}, \ffunc{finishTx()} and \ffunc{updateTx()}, also require a
+transmission ID to be specified.
+
+To allow a packet transmission to be updated later, a transmission ID needs to
+be chosen (it is often the ID of the original packet), and remembered for later.
+This can be done with the following code fragment:
+
+\begin{cpp}
+cPacket *pk = new cPacket("pk", 0, length*8);
+transmissionId = pk->getId();
+send(pk, SendOptions().transmissionId(transmissionId), "out");
+\end{cpp}
+
+At a later time, the transmission update can be sent with the following code:
+
+\begin{cpp}
+cPacket *pk = new cPacket("update", 0, updatedLength*8);
+send(pk, SendOptions().updateTx(transmissionId), "out");
+\end{cpp}
+
+
+\subsection{Receiving Packets}
+\label{sec:simple-modules:receiving-a-packet}
+
+Packets in OMNeT++ are delivered to modules similarly to normal messages,
+through the \texttt{handleMessage()} method. When a module expects packets to
+arrive via a transmission channel, it is necessary to cast the incoming message
+to \cclass{cPacket} to access packet-specific methods and properties.
+
+\cclass{cPacket} has several fields that carry information about the packet's
+last transmission over the transmission channel. These fields are:
+
+\begin{itemize}
+  \item \ffunc{hasBitError()}: Determines if the packet has any bit errors.
+  \item \ffunc{isUpdate()}: Checks if the packet is a transmission update.
+  \item \ffunc{getTransmissionId()}: For transmission updates, returns the ID for identifying the transmission.
+  \item \ffunc{isReceptionStart()}: Checks if the packet's arrival time represents the beginning of the reception of the packet.
+  \item \ffunc{isReceptionEnd()}: Checks if the packet's arrival time represents the end of the reception of the packet.
+  \item \ffunc{getDuration()}: Retrieves the total transmission duration of the packet.
+  \item \ffunc{getRemainingDuration()}: Obtains the remaining transmission time of the packet.
+\end{itemize}
+
+Based on the information carried by those fields, processing of the received
+packet typically involves handling the following:
+
+\begin{itemize}
+    \item \textbf{Bit Errors}: Use the \texttt{hasBitError()} method to check if the packet has arrived with errors.
+    \item \textbf{Reception Timing}: Control whether packets are delivered at
+      the start or end of their reception using \texttt{setDeliverImmediately()}.
+      Utilize \texttt{isReceptionStart()} and \texttt{isReceptionEnd()} to
+      determine the reception phase of the packet.
+    \item \textbf{Transmission Updates}: Recognize transmission updates using \texttt{isUpdate()}, and react to them accordingly.
+\end{itemize}
+
+
+\subsubsection{Checking for Bit Errors}
+\label{sec:simple-modules:checking-bit-errors}
+
+Packets may have a bit error flag set due to channel error modeling. It is the
+receiver's responsibility to check this flag using \ffunc{hasBitError()} and
+act accordingly, typically by discarding the packet.
+
+
+\subsubsection{Reception Start vs Reception End}
+\label{sec:simple-modules:reception-start-vs-end}
+
+By default, packets are delivered at the end of their reception. To alter this
+behavior, use \texttt{gate("in")->setDeliverImmediately(true);} in the module's
+\texttt{initialize()} method. This setting makes packets available at the
+reception start.
+
+\begin{cpp}
+gate("in")->setDeliverImmediately(true);
+\end{cpp}
+
+This method may only be called on simple module input gates, and it
+instructs the simulation kernel to deliver packets arriving through
+that gate at the simulation time that corresponds to the
+beginning of the reception process.
+\ffunc{setDeliverImmediately()} only needs to be called once,
+so it is usually done in the \ffunc{initialize()} method of the module.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includesvg[scale=0.9]{figures/transmission}
+    \caption{Packet transmission}
+    \label{fig:ch-simple-modules:transmission}
+  \end{center}
+\end{figure}
+
+When a packet is delivered to the module, the packet's
+\ffunc{isReceptionStart()} method can be called to determine
+whether it corresponds to the start or end of the reception
+process (it should be the same as the \ffunc{getDeliverOnReceptionStart()}
+flag of the input gate), and \ffunc{getDuration()} returns the transmission
+duration.
+
+The following example code prints the start and end times of a packet reception:
+
+\begin{cpp}
+if (pkt->isReceptionStart()) {
+    startTime = pkt->getArrivalTime(); // or: simTime();
+    endTime = startTime + pkt->getDuration();
+}
+else {
+    endTime = pkt->getArrivalTime(); // or: simTime();
+    startTime = endTime - pkt->getDuration();
+}
+\end{cpp}
+
+Note that this works with wireless connections (\ffunc{sendDirect()})
+as well; there, the duration is an argument to the \ffunc{sendDirect()}
+call.
+
+
+\subsubsection{Handling Transmission Updates}
+\label{sec:simple-modules:reception-of-transmission-updates}
+
+Receivers that receive the packet at the end of the reception, which is the
+default operating mode, will only receive the final update. The original
+packet and intermediate updates are absorbed by the simulation kernel.
+
+Receivers that receive the packet at the start of the reception (as selected by
+\ttt{setDeliverImmediately(true)}, see previous section) should be prepared to receive
+all of the original packet and the updates, and handle them appropriately.
+Transmission updates can be recognized by the packet's \ffunc{isUpdate()} method
+returning \ttt{true}. cPacket::getRemainingDuration() returns the remaining
+transmission duration, and cPacket::getDuration() the total transmission
+duration.
+
+As a safeguard against unprepared modules accidentally processing transmission
+updates as independent packets, the module is only given transmission updates if
+it explicitly declares that it is able to handle them properly. The latter is
+done by the module calling \ttt{setTxUpdateSupport(true)}, usually in
+\ffunc{initialize()}.
+
+Non-transmission channels don't handle updates any different from
+other messages and packets.
+
 
 
 \subsection{Receiving Messages with activity()}
