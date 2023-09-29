@@ -184,9 +184,13 @@ class ResultQueryError(ValueError):
 def _guarded_result_query_func(func):
     @wraps(func)
     def inner(filter_or_dataframe, **rest):
-        if type(filter_or_dataframe) is str and not filter_or_dataframe:
-            raise ResultQueryError("Empty filter expression")
-        # TODO: add else: assert on dataframe columns
+        if type(filter_or_dataframe) is str:
+            if not filter_or_dataframe:
+                raise ResultQueryError("Empty filter expression")
+            # remove comment lines
+            filter_or_dataframe = '\n'.join([line for line in filter_or_dataframe.split('\n') if not line.lstrip().startswith('#')])
+        else:
+            pass # TODO: add else: assert on dataframe columns
         try:
             return func(filter_or_dataframe, **rest)
         except Exception as e:
