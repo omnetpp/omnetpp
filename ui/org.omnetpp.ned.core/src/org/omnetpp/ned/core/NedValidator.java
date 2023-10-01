@@ -7,8 +7,6 @@
 
 package org.omnetpp.ned.core;
 
-import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_OBJECT;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -593,6 +591,12 @@ public class NedValidator extends AbstractNedValidatorEx {
     protected void validateElement(SubmoduleElementEx node) {
         // find submodule type
         String name = node.getName();
+        if (members.containsKey(name)) {
+            errors.addError(node, "'"+name+"': already defined at "+members.get(name).getSourceLocation()); // and may not be a parameter at all...
+            return;
+        }
+        members.put(name, node);
+
         String typeName = node.getType();
         String likeTypeName = node.getLikeType();
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)componentNode;
