@@ -225,10 +225,10 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
+iterationvars
 iterationvarsd
-iterationvarsf  
-measurement     
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      0
@@ -244,10 +244,10 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
+iterationvars
 iterationvarsd
-iterationvarsf  
-measurement     
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      1
@@ -318,10 +318,10 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
+iterationvars
 iterationvarsd
-iterationvarsf  
-measurement     
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      0
@@ -337,10 +337,10 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
+iterationvars
 iterationvarsd
-iterationvarsf  
-measurement     
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      1
@@ -490,10 +490,10 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
+iterationvars
 iterationvarsd
-iterationvarsf  
-measurement     
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      0
@@ -509,10 +509,10 @@ datetime        xxxx
 datetimef       xxxx
 experiment      General
 inifile         _defaults.ini
-iterationvars   
+iterationvars
 iterationvarsd
-iterationvarsf  
-measurement     
+iterationvarsf
+measurement
 network         Test
 processid       xxxx
 repetition      1
@@ -751,7 +751,6 @@ General-0-xxxx:
 scalar      Test.node  foo:mean                  19.84
 scalar      Test.node  foo:last                  17
 scalar      Test.node  foo:stats:count           100
-scalar      Test.node  foo:stats:sum             1984
 scalar      Test.node  foo:stats:sumweights      100
 scalar      Test.node  foo:stats:mean            19.84
 scalar      Test.node  foo:stats:stddev          3.15499
@@ -759,7 +758,6 @@ scalar      Test.node  foo:stats:min             12
 scalar      Test.node  foo:stats:max             28
 scalar      Test.node  foo:stats:numbins         0
 scalar      Test.node  foo:histogram:count       100
-scalar      Test.node  foo:histogram:sum         1984
 scalar      Test.node  foo:histogram:sumweights  100
 scalar      Test.node  foo:histogram:mean        19.84
 scalar      Test.node  foo:histogram:stddev      3.15499
@@ -790,7 +788,6 @@ General-1-xxxx:
 scalar      Test.node  foo:mean                  19.65
 scalar      Test.node  foo:last                  19
 scalar      Test.node  foo:stats:count           100
-scalar      Test.node  foo:stats:sum             1965
 scalar      Test.node  foo:stats:sumweights      100
 scalar      Test.node  foo:stats:mean            19.65
 scalar      Test.node  foo:stats:stddev          3.33447
@@ -798,7 +795,6 @@ scalar      Test.node  foo:stats:min             13
 scalar      Test.node  foo:stats:max             27
 scalar      Test.node  foo:stats:numbins         0
 scalar      Test.node  foo:histogram:count       100
-scalar      Test.node  foo:histogram:sum         1965
 scalar      Test.node  foo:histogram:sumweights  100
 scalar      Test.node  foo:histogram:mean        19.65
 scalar      Test.node  foo:histogram:stddev      3.33447
@@ -831,7 +827,6 @@ General-0-xxxx:
 scalar      Test.node  foo:mean                  19.84
 scalar      Test.node  foo:last                  17
 scalar      Test.node  foo:stats:count           100
-scalar      Test.node  foo:stats:sum             1984
 scalar      Test.node  foo:stats:sumweights      100
 scalar      Test.node  foo:stats:mean            19.84
 scalar      Test.node  foo:stats:stddev          3.15499
@@ -839,7 +834,6 @@ scalar      Test.node  foo:stats:min             12
 scalar      Test.node  foo:stats:max             28
 scalar      Test.node  foo:stats:numbins         0
 scalar      Test.node  foo:histogram:count       100
-scalar      Test.node  foo:histogram:sum         1984
 scalar      Test.node  foo:histogram:sumweights  100
 scalar      Test.node  foo:histogram:mean        19.84
 scalar      Test.node  foo:histogram:stddev      3.15499
@@ -870,7 +864,6 @@ General-1-xxxx:
 scalar      Test.node  foo:mean                  19.65
 scalar      Test.node  foo:last                  19
 scalar      Test.node  foo:stats:count           100
-scalar      Test.node  foo:stats:sum             1965
 scalar      Test.node  foo:stats:sumweights      100
 scalar      Test.node  foo:stats:mean            19.65
 scalar      Test.node  foo:stats:stddev          3.33447
@@ -878,7 +871,6 @@ scalar      Test.node  foo:stats:min             13
 scalar      Test.node  foo:stats:max             27
 scalar      Test.node  foo:stats:numbins         0
 scalar      Test.node  foo:histogram:count       100
-scalar      Test.node  foo:histogram:sum         1965
 scalar      Test.node  foo:histogram:sumweights  100
 scalar      Test.node  foo:histogram:mean        19.65
 scalar      Test.node  foo:histogram:stddev      3.33447
