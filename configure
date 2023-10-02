@@ -3858,11 +3858,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++11 features" >&5
 printf %s "checking for $CXX option to enable C++11 features... " >&6; }
-if test ${ac_cv_prog_cxx_11+y}
+if test ${ac_cv_prog_cxx_cxx11+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_11=no
+  ac_cv_prog_cxx_cxx11=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -3904,11 +3904,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++98 features" >&5
 printf %s "checking for $CXX option to enable C++98 features... " >&6; }
-if test ${ac_cv_prog_cxx_98+y}
+if test ${ac_cv_prog_cxx_cxx98+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_98=no
+  ac_cv_prog_cxx_cxx98=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -7091,7 +7091,7 @@ fi
 #----------------------
 # Check for ccache support
 #----------------------
-if test "$USE_CCACHE" = "yes"; then
+if test "$USE_CCACHE_PREFIX" = "yes"; then
   # Extract the first word of "ccache", so it can be a program name with args.
 set dummy ccache; ac_word=$2
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -7137,7 +7137,7 @@ fi
 
   if test "$CCACHE" = "not found"; then
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ccache"
-    as_fn_error $? "ccache program not found, but it is configured to be used in config.user (USE_CCACHE=yes)" "$LINENO" 5
+    as_fn_error $? "ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes)" "$LINENO" 5
   else
     CC="ccache $CC"
     CXX="ccache $CXX"
@@ -8467,6 +8467,24 @@ $OMNETPP_PRODUCT was configured with \$WITH_QTENV = no. The Qt-based graphical
 runtime environment (Qtenv) will not be available.
 EOT
 
+fi
+
+#---------------------------
+# Check for ccache
+#---------------------------
+
+if ccache -V >/dev/null 2>/dev/null; then
+  if which "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # using ccache's compiler wrapper, OK
+  elif echo "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # compiler command prefixed with ccache, OK
+  else
+    cat << EOT
+
+Note: ccache is installed, but it is apparently not used by your current setup.
+To activate it, add set USE_CCACHE_PREFIX=yes in configure.user, and re-run configure.
+EOT
+  fi
 fi
 
 cat << EOT

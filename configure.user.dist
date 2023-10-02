@@ -15,8 +15,8 @@
 #CXX=g++
 
 #
-# Set to "no" if you want to use gcc/g++ instead of default clang/clang++ when both
-# compiler is installed.
+# Set to "no" if you want to use gcc/g++ instead of the default clang/clang++ when both
+# compilers are installed.
 #
 PREFER_CLANG=yes
 
@@ -114,9 +114,13 @@ WITH_SYSTEMC=no
 SHARED_LIBS=yes
 
 #
-# Set to yes and install ccache to speed up the repeated compilation of models.
+# Adds the "ccache" prefix to the compiler commands ($CC,$CXX). This option
+# requires ccache to be installed on your system. It can significantly speed up
+# recompilations by caching already compiled object files. Note that turning
+# this option off does not necessarily disable ccache if it is installed to be
+# used system-wide.
 #
-USE_CCACHE=no
+USE_CCACHE_PREFIX=no
 
 #
 # Compiler and linker options for Qt

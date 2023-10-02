@@ -1115,11 +1115,11 @@ fi
 #----------------------
 # Check for ccache support
 #----------------------
-if test "$USE_CCACHE" = "yes"; then
+if test "$USE_CCACHE_PREFIX" = "yes"; then
   AC_CHECK_PROG(CCACHE, ccache, ccache, not found)
   if test "$CCACHE" = "not found"; then
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ccache"
-    AC_MSG_ERROR([ccache program not found, but it is configured to be used in config.user (USE_CCACHE=yes)])
+    AC_MSG_ERROR([ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes)])
   else
     CC="ccache $CC"
     CXX="ccache $CXX"
@@ -1301,6 +1301,24 @@ $OMNETPP_PRODUCT was configured with \$WITH_QTENV = no. The Qt-based graphical
 runtime environment (Qtenv) will not be available.
 EOT
 
+fi
+
+#---------------------------
+# Check for ccache
+#---------------------------
+
+if ccache -V >/dev/null 2>/dev/null; then
+  if which "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # using ccache's compiler wrapper, OK
+  elif echo "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+    : # compiler command prefixed with ccache, OK
+  else
+    cat << EOT
+
+Note: ccache is installed, but it is apparently not used by your current setup.
+To activate it, add set USE_CCACHE_PREFIX=yes in configure.user, and re-run configure.
+EOT
+  fi
 fi
 
 cat << EOT
