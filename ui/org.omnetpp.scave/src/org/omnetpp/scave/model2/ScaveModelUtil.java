@@ -71,6 +71,7 @@ public class ScaveModelUtil {
         Chart chart = new Chart(template.getChartType());
         chart.setTemplateID(template.getId());
         chart.setSupportedResultTypes(template.getSupportedResultTypes());
+        chart.setSupportsVectorOperations(template.supportsVectorOperations());
         chart.setCreatedWith(IConstants.PRODUCT_NAME + " " + OmnetppDirs.getVersion());
 
         chart.setScript(template.getPythonScript());

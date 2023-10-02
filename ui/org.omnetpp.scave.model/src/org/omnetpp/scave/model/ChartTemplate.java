@@ -32,10 +32,11 @@ public class ChartTemplate {
     private Map<String,String> properties;
     private String originFolder; // workspace path or plugin-relative path (latter starts with "plugin:")
     private boolean builtin;
+    private boolean supportsVectorOps;
 
     public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, int supportedResultTypes,
             String pythonScript, List<DialogPage> dialogPages, int score, String menuIconPath, Map<String,String> properties,
-            String originFolder, boolean builtin) {
+            String originFolder, boolean builtin, boolean supportsVectorOps) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -49,6 +50,7 @@ public class ChartTemplate {
         this.properties = properties;
         this.originFolder = originFolder;
         this.builtin = builtin;
+        this.supportsVectorOps = supportsVectorOps;
     }
 
     public String getId() {
@@ -110,6 +112,10 @@ public class ChartTemplate {
 
     public boolean isBuiltin() {
         return builtin;
+    }
+
+    public boolean supportsVectorOperations() {
+        return supportsVectorOps;
     }
 
     @Override

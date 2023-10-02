@@ -85,6 +85,7 @@ public class Chart extends AnalysisItem {
     protected ChartType type;
     protected String iconPath = "";
     protected int supportedResultTypes; // a bitwise OR of the constants in ResultFileManager
+    protected boolean supportsVectorOps;
     protected String createdWith; // used to store the OMNeT++ version at creation
 
     public Chart() {
@@ -288,6 +289,15 @@ public class Chart extends AnalysisItem {
 
     public void setSupportedResultTypes(int supportedResultTypes) {
         this.supportedResultTypes = supportedResultTypes;
+        notifyListeners();
+    }
+
+    public boolean supportsVectorOperations() {
+        return supportsVectorOps;
+    }
+
+    public void setSupportsVectorOperations(boolean supportsVectorOps) {
+        this.supportsVectorOps = supportsVectorOps;
         notifyListeners();
     }
 

@@ -170,6 +170,12 @@ public class ChartTemplateRegistry {
         if (chartType == null)
             throw new RuntimeException("Unrecognized chart type '" + type + "', use one of: " + StringUtils.join(Chart.ChartType.values(), ","));
 
+        String supportsVectorOperations = props.getProperty("supportsVectorOperations");
+        boolean supportsVectorOps =
+            (supportsVectorOperations == null)
+            ? (chartType == ChartType.MATPLOTLIB || chartType == ChartType.LINE)
+            : Boolean.parseBoolean(supportsVectorOperations);
+
         // description
         if (!StringUtils.isEmpty(description) && !StringUtils.isEmpty(descriptionFile))
             throw new RuntimeException("Both description and descriptionFile given, please decide which one you want");
@@ -192,7 +198,8 @@ public class ChartTemplateRegistry {
         if (resultTypesProp != null)
             resultTypes = ScaveModelUtil.parseResultTypes(resultTypesProp);
 
-        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script, pages, score, menuIcon, properties, originFolder.toString(), builtin);
+        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script,
+            pages, score, menuIcon, properties, originFolder.toString(), builtin, supportsVectorOps);
 
         return template;
     }
