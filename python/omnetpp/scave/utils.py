@@ -216,15 +216,20 @@ def make_legend_label(legend_cols, row, props={}):
     3. Otherwise, the legend label is concatenated from the columns listed in `legend_cols`,
        a list whose contents is usually produced using the `extract_label_columns()` function.
 
-    Second, if there is a `legend_replacements` property, the series of regular expression
-    find/replace operations described in it are performed. `legend_replacements` is expected
-    to be a multi-line string, where each line contains a replacement in the customary
-    "/findstring/replacement/" form. "findstring" should be a valid regex, and "replacement"
-    is a string that may contain match group references ("\1", "\2", etc.). If "/" is unsuitable
-    as separator, other characters may also be used; common choices are "|" and "!".
-    Similar to the format string (`legend_format`), both "findstring" and "replacement"
-    may contain column references in the "$name" or "${name}" form. (Note that "findstring"
-    may still end in "$" to match the end of the string, it won't collide with column references.)
+    Second, if there is a `legend_replacements` property, it defines a series of
+    replacements to be done on the legend labels. `legend_replacements` is
+    expected to be a multi-line string, where each line contains a replacement.
+    A replacement line can be a plain substring replacement in the
+    `findstring --> replacement` syntax, or a regex replacement in the sed-style
+    `/findregex/replacement/` syntax. With the latter, "findregex" should be
+    a valid regular expression, and "replacement" a string that may contain
+    match group references ("\1", "\2", etc.). If "/" is unsuitable as
+    separator, other characters may also be used; common choices are "|" and
+    "!". Similar to the `legend_format` property, "findstring", "findregex" and
+    "replacement" may contain column references in the "$name" or "${name}"
+    form. Use "$$" to mean a single "$" sign. Also note that "findregex" may
+    still end in "$" to match the end of the string, it won't collide with
+    column references.
 
     Parameters:
 
@@ -281,18 +286,23 @@ def make_legend_label(legend_cols, row, props={}):
         for line in lines:
             if line.startswith("#"):
                 continue
-            m = re.search(r"^(.)(.*)\1(.*)\1$", line)
-            if not m:
-                raise chart.ChartScriptError("Invalid line in 'legend_replacements', '/foo/bar/' syntax expected: '" + line + "'")
-            else:
+            m = re.search(r"^(\W)(.*)\1(.*)\1$", line)
+            if m:
                 findstr = m.group(2)
                 findstr = re.sub(r'\$$', '$$', findstr) # if ends with "$" (regex end-of-line), make it "$$" so that string.Template won't mistake it for invalid variable reference
-                findstr = substitute_columns(findstr, row, "in legend label replacement "+line)
-                replacement = substitute_columns(m.group(3), row, "in legend label replacement "+line)
+                findstr = substitute_columns(findstr, row, f"in legend label replacement `{line}`")
+                replacement = substitute_columns(m.group(3), row, f"in legend label replacement `{line}`")
                 try:
                     legend = re.sub(findstr, replacement, legend)
                 except re.error as ex:
                     raise chart.ChartScriptError("Regex error in legend replacement '{}': {}".format(line, str(ex))) from ex
+            elif "-->" in line:
+                (findstr, replacement) = line.split("-->", 1)
+                findstr = substitute_columns(findstr.strip(), row, f"in legend label replacement `{line}`")
+                replacement = substitute_columns(replacement.strip(), row, f"in legend label replacement `{line}`")
+                legend = legend.replace(findstr, replacement)
+            else:
+                raise chart.ChartScriptError("Invalid line in 'legend_replacements', 'foo --> bar' or '/foo-regex/bar-regex/' syntax expected: '" + line + "'")
 
     return legend
 
