@@ -15,7 +15,9 @@ df = pd.concat([stats, hists], sort=False)
 if df.empty:
     raise chart.ChartScriptError("The result filter returned no data.")
 
-utils.plot_boxwhiskers(df, props)
+utils.add_legend_labels(df, props)
+utils.sort_rows_by_legend(df, props)
+utils.plot_boxwhiskers(df, props, sort=False)
 
 utils.postconfigure_plot(props)
 
