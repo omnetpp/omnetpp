@@ -140,6 +140,7 @@ public class ChartTemplateRegistry {
         // base properties
         String id = props.getProperty("id");
         String name = props.getProperty("name");
+        String defaultChartName = props.getProperty("defaultChartName", name);
         String description = props.getProperty("description", "");
         String descriptionFile = props.getProperty("descriptionFile", "");
         String type = props.getProperty("type");
@@ -198,8 +199,8 @@ public class ChartTemplateRegistry {
         if (resultTypesProp != null)
             resultTypes = ScaveModelUtil.parseResultTypes(resultTypesProp);
 
-        ChartTemplate template = new ChartTemplate(id, name, description, chartType, icon, resultTypes, script,
-            pages, score, menuIcon, properties, originFolder.toString(), builtin, supportsVectorOps);
+        ChartTemplate template = new ChartTemplate(id, name, defaultChartName, description, chartType, icon, resultTypes,
+                script, pages, score, menuIcon, properties, originFolder.toString(), builtin, supportsVectorOps);
 
         return template;
     }

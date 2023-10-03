@@ -21,6 +21,7 @@ import org.omnetpp.scave.model.Chart.DialogPage;
 public class ChartTemplate {
     private String id;
     private String name;
+    private String defaultChartName;
     private String description;
     private ChartType chartType;
     private String iconPath;
@@ -34,11 +35,12 @@ public class ChartTemplate {
     private boolean builtin;
     private boolean supportsVectorOps;
 
-    public ChartTemplate(String id, String name, String description, ChartType chartType, String iconPath, int supportedResultTypes,
+    public ChartTemplate(String id, String name, String defaultChartName, String description, ChartType chartType, String iconPath, int supportedResultTypes,
             String pythonScript, List<DialogPage> dialogPages, int score, String menuIconPath, Map<String,String> properties,
             String originFolder, boolean builtin, boolean supportsVectorOps) {
         this.id = id;
         this.name = name;
+        this.defaultChartName = defaultChartName;
         this.description = description;
         this.chartType = chartType;
         this.iconPath = iconPath;
@@ -57,9 +59,12 @@ public class ChartTemplate {
         return id;
     }
 
-
     public String getName() {
         return name;
+    }
+
+    public String getDefaultChartName() {
+        return defaultChartName;
     }
 
     public String getDescription() {

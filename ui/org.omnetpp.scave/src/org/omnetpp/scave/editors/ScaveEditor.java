@@ -1739,7 +1739,7 @@ public class ScaveEditor extends MultiPageEditorPartExt
         numChartsCreatedByTemplateId.put(key, count+1);
 
         // make name like "Line Chart 2"
-        return template.getName() + " " + (count + 1);
+        return template.getDefaultChartName() + " " + (count + 1);
     }
 
     public ScaveEditorActions getActions() {
