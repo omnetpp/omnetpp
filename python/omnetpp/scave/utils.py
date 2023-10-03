@@ -244,7 +244,7 @@ def make_legend_label(legend_cols, row, props={}):
 
     def substitute_columns(format, row, where):
         try:
-            return string.Template(format).substitute(row._asdict())
+            return string.Template(format).substitute(row.to_dict() if isinstance(row, pd.Series) else row._asdict())
         except KeyError as ex:
             raise chart.ChartScriptError("Unknown column reference ${} {}".format(ex.args[0], where)) from ex
         except ValueError as ex:
