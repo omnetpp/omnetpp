@@ -201,7 +201,6 @@ def convert_to_base_unit(df, columns_to_convert=["value", "min", "max", "mean", 
             uc.convertUnitArray(values, original_unit, base_unit)
             df.at[index, col] = values
 
-
 # Note: must be at the top, because it appears in other functions' arg list as default
 def make_legend_label(legend_cols, row, props={}):
     """
@@ -227,17 +226,23 @@ def make_legend_label(legend_cols, row, props={}):
     may contain column references in the "$name" or "${name}" form. (Note that "findstring"
     may still end in "$" to match the end of the string, it won't collide with column references.)
 
-    Possible errors:
-
-    - References to nonexistent columns in `legend_format` or `legend_replacements` (`KeyError`)
-    - Malformed regex in the "findstring" parts of `legend_replacements` (`re.error`)
-    - Invalid group reference in the "replacement" parts of `legend_replacements` (`re.error`)
-
     Parameters:
 
     - `row` (named tuple): The row from the dataframe.
     - `props` (dict): The properties that control how the legend is produced
     - `legend_cols` (list of strings): The names of columns chosen for the legend.
+
+    Properties that affect the generated legend label:
+
+    - `legend_automatic` (string): If `true`, do not use the legend format string even if present.
+    - `legend_format` (string): A format string to produce the label from columns.
+    - `legend_replacements` (string): A multi-line string of regex find/replace operations to modify the label.
+
+    Possible errors:
+
+    - References to nonexistent columns in `legend_format` or `legend_replacements` (`KeyError`)
+    - Malformed regex in the "findstring" parts of `legend_replacements` (`re.error`)
+    - Invalid group reference in the "replacement" parts of `legend_replacements` (`re.error`)
     """
 
     def get_prop(k):
@@ -291,6 +296,68 @@ def make_legend_label(legend_cols, row, props={}):
 
     return legend
 
+def add_legend_labels(df, props):
+    """
+    Adds a `legend` column to the dataframe. In the dataframe, each row is
+    expected to represent an item to be plotted. The legend label will be
+    computed for each item individually by the `make_legend_label()` function.
+
+    Parameters:
+
+    - `df`: The dataframe.
+    - `props` (dict): The properties.
+
+    Notable properties that affect the legend generation: See the documentation
+    of `make_legend_label()`.
+    """
+    title_cols, legend_cols = extract_label_columns(df, props)
+    def get_legend_label(row):
+        return make_legend_label(legend_cols, row, props)
+    df['legend'] = df.apply(get_legend_label, axis=1)
+    return df
+
+def sort_rows_by_legend(df, props=()):
+    """
+    Sorts the rows of the dataframe, where each row represents an item to be
+    plotted. The dataframe is expected to have a `legend` column, which will
+    serve as the basis for ordering.
+
+    Ordering is based on two lists of regexes, one for primary ordering and
+    another one for secondary ordering. Each item's rank will be determined by
+    the index of the first regex the item's legend matches. After sorting, items
+    matching the first regex will appear at the top, those matching the second
+    regex will be placed below, and so forth. Case-sensitive substring match is
+    used.
+
+    Parameters:
+
+    - `df`: The dataframe.
+    - `props` (dict): The properties.
+
+    Notable properties that affect the ordering:
+
+    - `ordering_regex_list`: Regex list for primary ordering, as multi-line string (one regex per line).
+    - `secondary_ordering_regex_list`: Regex list for secondary ordering, as multi-line string (one regex per line).
+    - `sorting`: Boolean to determine if sorting should be applied
+    """
+    def sort_by_regex_list(df, regex_list):
+        regex_list = [re.compile(r) for r in regex_list if r]
+        if regex_list:
+            def find_first_match(row):
+                for id, regex in enumerate(regex_list):
+                    if regex.search(row['legend']): # this is substring match
+                        return id
+                return math.inf
+            df['order'] = df.apply(find_first_match, axis=1)
+            df.sort_values(by='order', kind='stable', inplace=True)
+
+    if props.get("sorting") == "true":
+        df.sort_values(by='legend', kind='stable', inplace=True) #TODO use natural sorting: https://saturncloud.io/blog/how-to-naturally-sort-pandas-dataframe/
+    if props.get("secondary_ordering_regex_list"):
+        sort_by_regex_list(df, props["secondary_ordering_regex_list"].split("\n"))
+    if props.get("ordering_regex_list"):
+        sort_by_regex_list(df, props["ordering_regex_list"].split("\n"))
+    return df
 
 def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
     """
@@ -319,6 +386,7 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
        (which are the labels of the bar series and groups).
 
     Notable properties that affect the plot:
+
     - `baseline`: The y value at which the x axis is drawn.
     - `bar_placement`: Selects the arrangement of bars: aligned, overlap, stacked, etc.
     - `xlabel_rotation`: Amount of counter-clockwise rotation of x axis labels a.k.a. group names, in degrees.
@@ -437,7 +505,6 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
 
     if title is not None:
         set_plot_title(title)
-
 
 
 def plot_vectors(df, props, legend_func=make_legend_label, sort=True):
