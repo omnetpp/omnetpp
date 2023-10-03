@@ -187,6 +187,11 @@ public class ModuleHierarchyView extends AbstractModuleView {
                    element == other.element &&
                    typeElement == other.typeElement;
         }
+
+        @Override
+        public String toString() {
+            return "SubmoduleOrConnectionPayload [fullPath=" + fullPath + ", element=" + element + ", typeElement=" + typeElement + "]";
+        }
     }
 
     // Note: TreeNode can have TreeNode parent only!
@@ -304,7 +309,13 @@ public class ModuleHierarchyView extends AbstractModuleView {
                         return NedModelLabelProvider.getInstance().getImage(mn.element);
                     // for a "like" submodule, use icon of the concrete module type
                     DisplayString dps = mn.element.getDisplayString(mn.typeElement);
-                    IProject project = mn.element.getCompoundModule().getNedTypeInfo().getProject();
+                    CompoundModuleElementEx compoundModule = mn.element.getCompoundModule();
+                    if (compoundModule == null) {
+                        // TODO this should not occur, but the logs say it indeed does!
+                        InifileEditorPlugin.getDefault().getLog().warn("Inifileeditor.ModuleHierarchyView: Stray submodule/connection, has no compound module parent (!!!): " + mn);
+                        return ImageFactory.global().getImage(ImageFactory.DEFAULT_ERROR); // make it recognizable
+                    }
+                    IProject project = compoundModule.getNedTypeInfo().getProject();
                     Image image = ImageFactory.of(project).getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
                     return image!=null ? image : NedModelLabelProvider.getInstance().getImage(mn.element);
                 }
