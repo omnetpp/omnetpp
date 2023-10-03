@@ -29,7 +29,10 @@ def compute_histogram(row):
 df = df.apply(compute_histogram, axis=1)
 
 # plot
-utils.plot_histograms(df, props)
+utils.add_legend_labels(df, props)
+utils.sort_rows_by_legend(df, props)
+utils.plot_histograms(df, props, sort=False)
+
 utils.postconfigure_plot(props)
 
 utils.export_image_if_needed(props)
