@@ -20,6 +20,9 @@ except results.ResultQueryError as e:
 if df.empty:
     raise chart.ChartScriptError("The result filter returned no data.")
 
+# apply vector operations
+df = utils.perform_vector_ops(df, props["vector_operations"])
+
 def compute_histogram(row):
     values = row["vecvalue"]
     edges = utils.histogram_bin_edges(values)
