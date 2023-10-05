@@ -59,7 +59,7 @@ ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
   $(file >$(COPTS_FILE),$(COPTS))
 endif
 
-.PHONY: all clean executables pythonbindings
+.PHONY: all clean pythonbindings
 .SECONDARY: $(OBJS) $O/$(LIBNAME)$(LIB_SUFFIX) $(GENERATED_SOURCES)
 
 # disabling all implicit rules
@@ -79,15 +79,14 @@ $O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 #
 
 ifeq ($(SHARED_LIBS),yes)
-all: $(TARGET_LIB_FILES) pythonbindings
+all: $(TARGET_LIB_FILES) $(TARGET_EXE_FILES) pythonbindings
 else
-all: $(TARGET_LIB_FILES)
+all: $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 endif
 
 pythonbindings: $(TARGET_LIB_FILES)
 	$(Q)$(MAKE) -C python
 
-executables: $(TARGET_EXE_FILES)
 $(TARGET_EXE_FILES): $(TARGET_LIB_FILES)
 
 ifeq ($(SHARED_LIBS),yes)
