@@ -589,6 +589,7 @@ else
    # fixing this would mean overturning and re-testing the whole configure script
    AC_MSG_RESULT(test failed)
 fi
+
 rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
 
 #----------------------
@@ -671,6 +672,16 @@ then
       WHOLE_ARCHIVE_ON=$silly1
       WHOLE_ARCHIVE_OFF=$silly2
    fi
+
+   # On Windows, using the WHOLE_ARCHVE_XX flags on the import lib of models in dynamic libraries
+   # would cause duplicate symbol linker errors. We rather not support static linking than
+   # causing issues when using dynamic libraries (which is the default and recommended way of linking)
+   if test "$PLATFORM" = "win32"; then
+      silly_ok="no"
+      WHOLE_ARCHIVE_ON=
+      WHOLE_ARCHIVE_OFF=
+   fi
+
    # no solution found
    if test $silly_ok = "no"; then
       AC_MSG_RESULT(no solution found)
@@ -682,6 +693,7 @@ then
 else
    AC_MSG_RESULT(test failed)
 fi
+
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 

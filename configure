@@ -4781,6 +4781,7 @@ else
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: test failed" >&5
 printf "%s\n" "test failed" >&6; }
 fi
+
 rm -f conftest_a.* conftest_m.* libconftest_a.so conftest
 
 #----------------------
@@ -4877,6 +4878,16 @@ printf "%s\n" "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
       WHOLE_ARCHIVE_ON=$silly1
       WHOLE_ARCHIVE_OFF=$silly2
    fi
+
+   # On Windows, using the WHOLE_ARCHVE_XX flags on the import lib of models in dynamic libraries
+   # would cause duplicate symbol linker errors. We rather not support static linking than
+   # causing issues when using dynamic libraries (which is the default and recommended way of linking)
+   if test "$PLATFORM" = "win32"; then
+      silly_ok="no"
+      WHOLE_ARCHIVE_ON=
+      WHOLE_ARCHIVE_OFF=
+   fi
+
    # no solution found
    if test $silly_ok = "no"; then
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no solution found" >&5
@@ -4894,6 +4905,7 @@ else
    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: test failed" >&5
 printf "%s\n" "test failed" >&6; }
 fi
+
 rm -f conftest_a.* conftest_m.* libconftest_a.a conftest
 
 
