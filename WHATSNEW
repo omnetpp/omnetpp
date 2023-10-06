@@ -6,27 +6,98 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.0.2 (August 2023)
----------------------------
+OMNeT++ 6.0.2 (October 2023)
+----------------------------
 
-This is a modernized maintenance release of omnetpp-6.0.1.
+This is a maintenance release with dozens of bug fixes.
 
-Changes:
+Configure and setenv:
 
- - Source code updated to eliminate warnings issued by modern C++ compilers.
-   Backported several smaller fixes.
+  - `configure` now mandates having `setenv` sourced before it runs.
+  - `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
+    frameworks from accidentally making OMNeT++ bundled icons unaccessible
+    from Qtenv by simply appending to `OMNETPP_IMAGE_PATH`.
+  - `configure` now creates `configure.user` from `configure.user.dist`
+    if it does not already exist.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
-   with those in more recent or modernized releases. This includes:
+Simulation kernel:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
-       frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
-       if it does not already exist.
+  - Improved overflow checking in SimTime `operator=()` methods
+  - Better commenting of `cGate::connectTo()` and `disconnect()`, and some other methods
+  - Fix in `ConstantFilter` to return the constant value from `getInitialDoubleValue()`
+  - Fix for missing initialization of some result filters
+  - Fix in `cDatarateChannel` to clear finished transmissions from txList
+  - Fix for the issue where `intuniform()` had a broken bounds check
+  - Disallowing changes to arrival time and scheduling priority in `cEvent` when scheduled
+  - Fix for startup error complaining about arg count of `hypot()`
+  - Addition of `cEventHeap::checkHeap()` for potential FES debugging
+  - Introduction of a `panic()` function and `ASSERT_DTOR()` for throwing from destructors
+  - Fix for warnings in the code
 
- - Allow running tests in other than "debug" mode.
+IDE:
+
+  - IDE update to Tycho 2.7.5, Eclipse 4.29, CDT 11.3, and removal of ansiconsole plugin
+  - Error message display improvement in Simulation Model Installer
+  - Checking for dangling project references in IDE
+  - Workaround for "Unhandled event loop" exceptions in Inifile Editor
+  - Fix for "String index out of range: 0" in Inifile Editor
+  - Detection of duplicate submodule names in NED
+  - Compatibility with Matplotlib 3.8 in Analysis Tool
+  - Improved error/warning message display in Analysis Tool
+  - Adjustments to zoom and legend behavior in native plots in Analysis Tool
+  - Preselection of all temp charts in "Save On Close" dialog in Analysis Tool
+  - Support for key events in Matplotlib for x/y navigation modes in Analysis Tool
+  - Fix leaking cursor resources in Analysis Tool
+  - Workaround for display glitch in Analysis Tool's "Choose table columns" dialog
+  - Periodic reload of user's chart templates in Analysis Tool
+  - Improved zoom behavior in native plots in Analysis Tool
+  - Trimming from left instead of right for right-aligned table columns in Analysis Tool
+  - Parameter type display improvement in Analysis Tool
+  - Support for displaying vectors with bool data type in Analysis Tool
+  - Workaround for crash in SWT table and tree widgets in Analysis Tool
+  - Ensure reading all NED files in NED Documentation Generator
+  - Resolution of unresolved module interface in NED Documentation Generator
+  - Fix for unreadable text in dark theme in generated NED source listing
+  - Tooltip content improvements for submodules in generated NED documentation
+  - Default navigation target changes for submodule types in generated NED documentation
+  - Fix for bug #939 in Sequence Chart
+
+Qtenv:
+
+  - Error handling improvement in the Object Inspector
+  - Focus adjustment in the Run Selection dialog
+  - Purge message animations when their messages are rotated out of the LogBuffer
+  - Fix simulations stopping spontaneously when running in FAST mode
+  - Message animations made more tolerant of degeneration connections
+  - Clamp non-zero computed animation speed to at least 1e-9
+  - Proper rendering of degenerate connections
+  - Fix for missing logs with disabled event/initialization banners
+  - Fix for non-working parameter replacements in channel display strings
+  - Fix assertion failure on stopping eventlog recording
+  - Fix for includes in osg.msg
+  - Refactoring for code clarity, warning elimination
+
+Python (omnetpp.scave.* packages):
+
+  - Use of pandas.concat instead of deprecated DataFrame.append
+  - Fix to hide legend in Matplotlib plots if it was empty
+  - Fixed division by zero warnings in timeavg filter
+  - Fix to prevent turning scalars of value 0 into NaNs
+  - Added missing docstring in analysis.py of omnetpp/scave
+  - Fixed a subtle bug related to mutable objects as default values
+  - Look for projects by real name instead of directory name
+  - Improved treatment of workspace_dir and error handling in get_project_location()
+  - Fixed error if a renamed project is not directly under the Eclipse workspace directory
+  - Improved error message for project not found errors
+  - Reload mpl and plt before exporting an image for reproducibility in opp_charttool
+  - Added "python" folder of referenced projects to python path in opp_charttool
+
+Other:
+
+  - Fix wrong bounding box for Graphviz-generated images in the manual
+  - Fix stray LaTeX comments showing up in the HTML version of the manual
+  - Allow running tests in other than "debug" mode
+  - Fix for bug #1055 during Windows builds
 
 
 OMNeT++ 6.0.1 (September 2022)
@@ -41,7 +112,7 @@ Simulation kernel:
   - Fix: Build errors on newer versions of clang.
   - Fix #933: eventlog recording intervals were ignored.
   - Fix: Check for context component in all built-in NED functions that need it
-	  and throw an exception if there is none, instead of just crashing.
+    and throw an exception if there is none, instead of just crashing.
 
 IDE:
 
