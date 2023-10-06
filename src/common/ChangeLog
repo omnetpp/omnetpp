@@ -1,3 +1,28 @@
+2023-04-25  Attila Torok
+
+	* Fix GCC warning -Wformat-zero-length (from opp_runtime_error ctor)
+
+2022-09-07  Attila Torok
+
+	* opp_indentlines(): fix: Don't index out of bounds if `text` is empty
+
+2022-09-20  Levente Mészáros
+
+	* UnitConversion: Extended getBestUnit() comparator with a slow
+	path for the case when the base units are not the same.
+
+2023-02-04  Andras Varga
+
+	* expression: raise error for duplicate keys in NED object literals
+
+2021-06-24  Zoltan Bojthe
+
+	* stlutil.h: minor conversion fix
+
+2023-04-06  Andras Varga
+
+	* Added panic() function
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-05-18  Attila Torok

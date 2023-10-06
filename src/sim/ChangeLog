@@ -1,3 +1,71 @@
+2022-10-25  Attila Torok
+
+	* Fix build with DEVELOPER_DEBUG defined
+
+2022-04-21  Andras Varga
+
+	* Fix missing initialization of some result filters
+
+2023-06-06  Zoltan Bojthe
+
+	* cValueArray::asStringVector(): Remove unnecessary back and forth
+	conversions. The original code converted std:string --> cstring -->
+	std::string.
+
+2023-07-17  Zoltan Bojthe
+
+	* cDatarateChannel: fixed issue 1012: clear finished transmissions from
+	txList.
+
+2023-09-05  Andras Varga
+
+	* Fix #972 "intuniform() has broken bounds check"
+
+	intuniform(rng, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::max())
+	resulted in "Interval is greater than RNG range" error due to wrong
+	comparison.
+
+2023-08-22  Andras Varga
+
+	* cEventHeap: added checkHeap(). Not called anywhere, but available in case
+	FES debugging is needed.
+
+2023-08-18  Andras Varga
+
+	* cEvent: disallow changing the arrival time and scheduling priority
+	when scheduled.	They are part of the comparison key, so changing them
+	could change event ordering i.e. break the heap data structure of the
+	FES (cEventHeap).
+
+	setPriority(): check if event is scheduled, and throw exception if so.
+
+	setArrivalTime(): it is invoked quite often (on average at least once
+	per simulation event), so we use ASSERT() in order not to impact runtime
+	performance in release mode builds
+
+2023-04-16  Andras Varga
+
+	* Fix startup error complaining about arg count of hypot()
+
+	<!> Error during startup: Register_Function() or cFunctionType: attempt
+	to register function "hypot" with wrong number of arguments 2, should be
+	3
+
+	Observed under gcc 11.3.0, ubuntu 22.04
+
+2023-04-16  Andras Varga
+
+	* Fix fgets/fread "unused result" warnings
+
+2023-04-06  Andras Varga
+
+	* Work around the fact that C++ doesn't allow throwing from destructors.
+	Introduced a panic() function and ASSERT_DTOR() instead.
+
+2023-03-30  Andras Varga
+
+	* Fix warnings.
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-08-26  Andras Varga

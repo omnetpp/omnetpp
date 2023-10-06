@@ -1,3 +1,114 @@
+2023-09-28  Andras Varga
+
+	* omnetpp/scave: utils.py: do not display an empty legend
+
+2023-04-27  Levente Mészáros
+
+	* omnetpp/scave: Fixed division by zero warnings in timeavg. When the divisor is
+	zero the result will also be zero.
+
+2023-02-06  Attila Torok
+
+	* omnetpp/scave: Drop the now-removed second argument to random.shuffle.
+	This was deprecated in Python 3.9 and removed in Python 3.11.
+
+2023-02-06  Attila Torok
+
+	* omnetpp/scave: Use pandas.concat instead of the deprecated DataFrame.append.
+	This fixes a couple of DeprecationWarnings.
+
+	df_c = df_a.append(df_b) -> df_c = pd.concat([df_a, df_b])
+
+2023-02-06  Attila Torok
+
+	* opp_scavetool: fix: Don't turn scalars of value 0 into NaNs (or "" in CSV)
+
+	This fixes the ValueError('x and y must have same first dimension, but
+	have shapes (21,) and (20,)') in the "Throughput vs. SNIR in the case of
+	2000-byte packet size and 250-byte fragmentation threshold" chart in the
+	"inet/showcases/wireless/fragmentation/Fragmentation.anf" file.
+
+2023-03-14  Attila Torok
+
+	* omnetpp/scave: Use line_terminator or lineterminator in Dataframe.to_csv,
+	depending on Pandas version. It was renamed in in a backwards-compatible
+	way, but with an annoying FutureWarning.
+
+2022-08-25  Andras Varga
+
+	* omnetpp/scave: analysis.py: added missing docstring
+
+2022-08-25  Andras Varga
+
+	* omnetpp/scave: Workspace: fix recently introduced subtle bug.
+
+	One MUST NOT use mutable objects as default values to functions, because
+	any change the functions makes to those values inside will affect further
+	calls.
+
+	def func(d = []):
+	    print("d = ", d)
+	    d.append(7)
+
+	func()  --> [] func()  --> [7] func()  --> [7, 7] func()  --> [7, 7, 7]
+	etc.
+
+	See https://nikos7am.com/posts/mutable-default-arguments/
+
+2022-08-23  Andras Varga
+
+	* omnetpp/scave: Workspace: rename internal var: project_paths -> project_locations
+
+2022-08-23  Andras Varga
+
+	* omnetpp/scave: Workspace: cosmetics: use f-strings instead of string.format() and
+	string concatenation. Also: refine one of the "Cannot determine location..."
+	error messages.
+
+2022-08-23  Andras Varga
+
+	* omnetpp/scave: Workspace: fix: look for projects by real name. "Real name" being
+	the one in the .project file, not the directory name.
+
+2022-08-23  Andras Varga
+
+	* omnetpp/scave: Workspace: fix: better treatment of workspace_dir, more
+	resilient get_project_location()
+
+	- Workspace ctor: accept workspace_dir=None too, for "not known"
+	- find_workspace(): return None if .metadata was not found, instead if
+	  lying something
+	- get_project_location(): if there is no Eclipse workspace, look for
+	  project next to existing known project
+	- get_project_location(): improved error reporting
+
+2022-08-23  Andras Varga
+
+	* omnetpp/scave: Workspace: Fix error if a renamed project is not directly
+	under the Eclipse workspace directory.
+
+	"renamed project" = where name in .project differs from folder name
+
+	find_enclosing_project() changes:
+	- remember project location
+	- method no longer static (API change)
+
+2022-08-23  Andras Varga
+
+	* omnetpp/scave: Workspace: fix: better error message (more specific info on
+	why project was not found)
+
+2022-06-08  Attila Torok
+
+	* omnetpp/scave: Reload mpl and plt before exporting an image to make it
+	reproducible. While this is not an ideal solution by far, we found
+	no other way.
+
+2022-05-26  Attila Torok
+
+	* omnetpp/scave: Add "python" folder of [referenced] project[s] to python
+	path in opp_charttool as well
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-08-23  Andras Varga
@@ -17,8 +128,8 @@
 
 	  - Workspace class constructor now accepts workspace_dir=None, for "not known".
 
-      - find_workspace() now returns None if a .metadata directory was not found,
-        instead of making up something.
+	  - find_workspace() now returns None if a .metadata directory was not found,
+	instead of making up something.
 
 	  - find_enclosing_project() is no longer static.
 

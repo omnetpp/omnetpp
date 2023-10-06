@@ -1,3 +1,118 @@
+2023-10-02  Attila Torok
+
+	* core: Update scavetool tests, following 7b3396f3 (stats:sum field
+	removed)
+
+2023-07-13  Attila Torok
+
+	* scave/results_api: Update Makefile for GNU Make 4.4+
+
+	This is a follow-up of: e879658e53545ce833e42ba667969caad6ee8005
+
+2022-12-21  Attila Torok
+
+	* cleanup: Remove all remaining traces of the now-removed
+	`--no-deep-includes` option of opp_makemake
+
+2023-02-06  Attila Torok
+
+	* scave/results_api: Add a zero result to check conversion from string
+
+2023-02-04  Andras Varga
+
+	* test for detecting duplicate keys in NED object literals
+
+2023-01-23  Andras Varga
+
+	* models: force explicit name for executables
+
+2023-09-05  Andras Varga
+
+	* test for fix #972 "intuniform() has broken bounds check"
+
+2023-08-01  Rudolf Hornig
+
+	* fix failing signals_static_registration_1.test when compiling in a
+	non-default mode
+
+2023-04-19  Andras Varga
+
+	* allow running tests in other than "debug" mode
+
+	Also: use all available CPUs by default
+
+	Example: MODE=release ./runtest
+
+	Also allow overriding the make program's name and number of CPUs to use
+	(via MAKEFLAGS)
+
+2023-03-30  Andras Varga
+
+	* core: c++-doubletolongconversion.test
+
+	Added one more possible outcome for casting a negative double to an
+	unsigned integer, which is apparently something that should NOT be done
+
+2022-08-31  Andras Varga
+
+	* test for fix #705 'Configuration option "cmdenv-config-name" is ignored'
+
+2022-08-28  Andras Varga
+
+	* added cProperty_value_2.test
+
+2022-08-26  Andras Varga
+
+	* signals_namespace1.test has been fixed, no longer an expected
+	failure
+
+2022-08-25  Andras Varga
+
+	* fixed up and properly added scave/multi_project [Attila]
+
+	- added to Makefile
+	- rename sh
+	- added missing .project files
+	- .metadata is not needed (although it's ok)
+
+2022-08-23  Andras Varga
+
+	* added test for the omnetpp.scave.analysis.Workspace class [with Attila]
+
+2022-08-24  Rudolf Hornig
+
+	* build test should check WITH_OSGEARTH (as osgEarth is disabled by
+	default)
+
+2022-07-27  Andras Varga
+
+	* fix incorrect expected output in inifile_eventlog_1.test
+
+	Events at t=2s and t=6s should be missing from the recorded eventlog
+	file, because the 1s..3s and 5s..7s intervals are excluded by the
+
+	  eventlog-recording-intervals = ..1, 3..5, 7..
+
+	line in the ini file.
+
+2022-06-20  Andras Varga
+
+	* misc/neddoc: backslash handling description updated. It has worked like
+	that for some time.
+
+2022-06-11  Andras Varga
+
+	* misc/neddoc: brush up test, add test cases for C++ namespaces
+
+2022-05-30  Attila Torok
+
+	* scave: Add a multi_project test - to check for PYTHONPATH including
+	(indirectly) referenced projects
+
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-04-11  ------ omnetpp-6.0 released ------

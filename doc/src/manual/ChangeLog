@@ -1,4 +1,38 @@
+2023-09-10  Andras Varga
+
+	* Makefile: fix target "clean"
+
+2022-12-05  Andras Varga
+
+	* Fix stray "% legacy" strings in the HTML output.
+	ltoh only understands LaTeX comments at the start of the line.
+
+2023-09-10  Andras Varga
+
+	* Workaround: wrong viewbox for dot-generated SVG figures
+
+	See "Some figures in the Simulation Manual appear to be zoomed to their
+	top-left corner" https://github.com/omnetpp/omnetpp/issues/1048
+
+	Since the viewBox correction factor differs from figure to figure, this
+	fix is not perfect. factor=2.0 seems to be fine for most figures, and
+	only seriously off (too much) for one.
+
+	Both web and pdf renderings look ok.
+
+2023-07-31  Andras Varga
+
+	* Update section on checkpointing, include example CRIU session
+
+2022-08-25  Andras Varga
+
+	* Update the documentation of the omnetpp.scave.* Python classes
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
+
+2022-07-27  Andras Varga
+
+	* doc: fix: list fingerprint ingredients added in 6.0
 
 2022-08-25  Andras Varga
 

@@ -1,3 +1,7 @@
+2023-04-25  Attila Torok
+
+	* Fix "variable set but not used" warnings
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-04-11  ------ omnetpp-6.0 released ------

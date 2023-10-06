@@ -1,8 +1,191 @@
+2023-10-03  Andras Varga
+
+	* Inifile Editor: workaround for "Unhandled event loop" exceptions
+
+	java.lang.NullPointerException: Cannot invoke "org.omnetpp.ned.model.ex.CompoundModuleElementEx.getNedTypeInfo()"
+	because the return value of	"org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection.getCompoundModule()" is null
+	at org.omnetpp.inifile.editor.views.ModuleHierarchyView$1.getImage(ModuleHierarchyView.java:307)
+
+2023-10-01  Andras Varga
+
+	* NED: Duplicate submodule names were not detected
+
+2023-09-26  Attila Torok
+
+	* Analysis Tool: Make it compatible with Matplotlib 3.8 (do not use callback
+	methods removed in that version)
+
+2023-09-22  Attila Torok
+
+	* Analysis Tool: Support displaying vectors with bool data type (fixes #1041)
+
+2023-09-06  Attila Torok
+
+	* Analysis Tool: Also print ChartScriptError messages to the Console
+	in addition to displaying them in the chart area.
+
+2023-09-06  Attila Torok
+
+	* Analysis Tool: Use line wrapping when displaying error/warning messages
+	in the chart area. This makes long error messages possible to read in their
+	entirety.
+
+2023-09-13  Andras Varga
+
+	* Analysis Tool: In native plots, turn off adjusting zoom on legend item
+	enablement changes. Reason: when it is on, view adjustments make the plot
+	contents jump around when items are enabled/disabled, making it hard to
+	follow or compare the plotted lines.
+
+2023-09-13  Andras Varga
+
+	* Analysis Tool: Fix: In the "Save On Close" dialog, the Select All /
+	Deselect All buttons closed the dialog
+
+2023-09-12  Andras Varga
+
+	* Analysis Tool: "Save On Close" dialog, preselect all temp charts.
+	The default was dangerous: User would have to notice that they have to
+	explicitly select the charts they want to preserve, or they will be lost.
+
+2023-09-12  Andras Varga
+
+	* Inifile Editor: fix "String index out of range: 0" for empty section name "[]"
+
+2023-07-19  Attila Torok
+
+	* Analysis Tool: Pass key events to MPL, making x/y navigation modes work
+
+2023-05-31  Attila Torok
+
+	* Analysis Tool: fix: Do not create new SWT Cursor instances needlessly.
+	This prevents the ResourceTracker from spamming the output with
+	`java.lang.Error: SWT Resource was not properly disposed` lines.
+
+2022-11-14  Attila Torok
+
+	* Analysis Tool: improvement: Reload the user's chart templates periodically.
+	So far this was only done in debug mode for convenience during development.
+
+2022-11-15  Attila Torok
+
+	* Analysis Tool: fix: Compatibility with matplotlib >= 3.5 (set_cursor)
+
+2023-09-21  Rudolf Hornig
+
+	* IDE: Updated to Eclipse 4.29, CDT 11.3, Pydev 10.2
+
+2023-09-20  Rudolf Hornig
+
+	* NED Documentation Generator (neddoc): fix #1045: Ensure that all NED files
+	are read in properly when neddoc generator is invoked, otherwise they don't
+	show up in the output.
+
+2023-03-01  Andras Varga
+
+	* Analysis Tool: Browse Data page: workaround for display glitch after
+	"Choose table columns".
+
+	After accepting the dialog, most of the table content disappeared (became
+	blank), only the leftmost strip of ~120 pixels wide was visible. Some
+	tweaking with the layout (like resizing the editor window) brought back
+	the rendering of the whole table.
+
+2023-03-07  Levente Mészáros
+
+	* Analysis Tool: Native plots changed  to zoom around mouse pointer; also
+	added mouse wheel over axis to zoom along that axis.
+
+	The old zoom behavior did not take the mouse coordinate into account.
+	There was no easy way to zoom along only one of the axis.
+
+2023-02-03  Andras Varga
+
+	* Analysis Tool: Browse Data page: when table column is right-aligned
+	and cell content is too wide, trim from left instead of right.
+
+2023-02-05  Andras Varga
+
+	* Analysis Tool: fix: all recorded parameters were listed with "type=double" in
+	the Analysis Tool GUI.
+
+	Namely, in the data tree on the All tab of the Browse Data page. We now
+	do not show the parameter type, because that info is not available (not
+	currently recorded into the .sca files).
+
+2022-12-08  Andras Varga
+
+	* NED Documentation Generator: Fix unresolved module interface in the
+	generated documentation. If a NED file was open in the editor when
+	the IDE started, and was not edited, and it contained a module type which
+	implements a NED interface, the interface type could not be resolved.
+
+2022-12-08  Andras Varga
+
+	* NED Documentation Generator: Improved tooltip content for submodules in
+	images in the generated documentation:
+
+	1. for parametric submodules, display the docs of both the likely actual
+	   type and the interface type
+	2. when abbreviating the doc, try not to cut words in half
+
+2022-12-01  Rudolf Hornig
+
+	* NED Documentation Generator: Improved tooltip content for submodules in
+	images in the generated documentation: Include the submodule type documentation,
+	and source code for the	submodule definition.
+
+2022-11-30  Rudolf Hornig
+
+	* NED Documentation Generator: Changed the default navigation target on some
+	submodules in images in the generated documentation:
+
+	If a submodule type is an interface, clicking on the submodule navigated
+	to that interface. After this change, the navigation will lead to the
+	default type that implements that interface.
+
+2022-11-30  Rudolf Hornig
+
+	* NED Documentation Generator: fix unreadable (white on white) text in
+	 generated NED source listing when generated from the IDE in dark theme.
+
+	If NED doc was generated from the IDE using a dark theme the generated
+	NED source listing was also using a dark theme but the background of the
+	source listing had always a light background. This made the light text on
+	the light background unreadable. FIX: use dark background for the listing
+	in dark mode.
+
+2023-08-30  Andras Varga
+
+	* Let the IDE check for dangling project references when a project is built.
+	This makes a frequently occurring source of setup errors a lot easier to
+	discover by the user.
+
+2023-08-29  Attila Torok
+
+	* Analysis Tool: Work around a crash in the SWT table and tree widgets
+	in the Browse Data page that occur with newer GTK versions.
+
+2023-08-28  Attila Torok
+
+	* Simulation Model Installer ("Install Models" dialog): fix: Show a relevant
+	error message when a network error occurs during download. This is essential
+	for resolving the issue if a HTTP proxy needs to be configured in the IDE.
+
+2023-08-23  Rudolf Hornig
+
+	* IDE: use Tycho 2.7.5, Eclipse 4.27 and CDT 10.8, update batik plugin
+	* IDE: Removed ansiconsole plugin, because Eclipse supports ansi sequences since 4.25
+
+2022-09-20  Levente Mészáros
+
+	* Sequence Chart: fixed bug #939: Added guards for calling isInitializationEvent.
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-08-24  Levente Mészáros
 
-	* Fixed issue #938, filtering the eventlog in the sequence chart makes it empty.
+	* Sequence Chart: Fixed issue #938, filtering the eventlog in the sequence chart makes it empty.
 	Several parts were commented out during the porting of the old implementation
 	from C++ to Java. The missing parts were revived and tested manually.
 
@@ -19,7 +202,7 @@
 
 2022-06-16  Andras Varga
 
-    Neddoc fixes and enhancements:
+	Neddoc fixes and enhancements:
 
 	* Refined support for msg types with namespace. Accepts various forms:
 	unqualified, (fully or partially) qualified, explicitly fully qualified

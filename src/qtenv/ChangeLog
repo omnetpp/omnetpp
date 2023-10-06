@@ -1,3 +1,122 @@
+2023-04-25  Attila Torok
+
+	* Fix "variable set but not used" warnings here and there
+	These are new warnings starting with Clang 15.
+
+	The remaining ones about `yynerrs` in *.tab.cc files will be fixed by the
+	next release (after v3.8.2) of Bison:
+	https://github.com/akimd/bison/issues/89
+
+	Who knows when that will happen though:
+	https://github.com/akimd/bison/issues/103
+
+2023-05-17  Attila Torok
+
+	* Generic object inspector: Fix: Show error text if a call into a descriptor
+	throws, instead of crashing.
+
+2022-05-22  Andras Varga
+
+	* osg.msg: fix includes
+
+2022-08-02  Attila Torok
+
+	* Fix: Don't leave behind stale message animations when switching to
+	FAST mode
+
+2022-07-27  Attila Torok
+
+	* Fix: Simulations no longer spontaneously stop when running in FAST
+	mode
+
+2023-02-10  Attila Torok
+
+	* Fix: SendOnConnAnimation: Store source module ID on creation
+
+	Similar to how it is already in SendDirectAnimation. This fixes a rare
+	crash that happened when Qtenv was closed with a message animation in
+	progress on a degenerate connection. In this case, gate->getOwnerModule()
+	was a garbage value, because the module destruction order (from the
+	perspective of message animations) is different than in the regular case.
+
+2023-02-09  Attila Torok
+
+	* Fix: Only draw a half length line for degenerate connections
+
+2023-02-07  Attila Torok
+
+	* Msg animation: Fix: Tolerate degenerate connections without ASSERT
+	failure. These connections can't be created from NED, only dynamically
+	from C++.
+
+	This happened when running inet/examples/rtp/unicast2 on a debug build,
+	in "normal" mode, with animations turned on, when viewing the inside of
+	the "sender" module for example.
+
+2022-08-11  Attila Torok
+
+	* Fix: Clamp non-zero computed animation speed to at least 1e-9.
+
+	This fixes the case where an INET wireless simulation would just stop
+	when the playback speed is too small, due to the limited precision of the
+	time deltas, resulting in zero progress in simtime.
+
+2022-08-11  Attila Torok
+
+	* Fix: Set the focus to the "OK" button on the run selection dialog.
+
+	This resolves the annoyance of not being able to simply press enter after
+	launching Qtenv to set up the last selected config/run.
+
+2022-07-27  Andras Varga
+
+	* Fix #934: Eliminate assertion failure on stopping eventlog
+	recording from Qtenv.
+
+	Manually setting Qtenv::recordEventlog brought it out of sync with
+	EventlogFileManager's isRecordingEnabled variable, causing an assertion
+	in EventlogFileManager::resume() [which Qtenv wrongly invoked instead of
+	EventlogFileManager::suspend()].
+
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
+2022-06-29  Attila Torok
+
+	* Tidy up AnimationGroup::str() and AnimationSequence::str()
+
+	Include AnimationGroup state, fix missing newline before the first part,
+	matching parts separation and indentation, consistent variable names.
+
+2022-06-29  Attila Torok
+
+	* end() MessageAnimations when their messages were rotated out of
+	the LogBuffer
+
+	This fixes the ever-increasing number of "PLAYING" animations in FAST
+	mode.
+
+2022-06-28  Attila Torok
+
+	* Fix AnimationGroup::update() never end()-ing
+
+	Fixes the performance degradation over time: groups with all parts
+	finished, but themselves still "playing", were piling up endlessly.
+
+2022-06-27  Attila Torok
+
+	* Nit: Remove unused transmissionId variable (replaced by usage in
+	MessageSendKey::fromMessage)
+
+2022-06-23  Attila Torok
+
+	* Fix missing logs with disabled event/initialization banners
+
+2022-06-08  Rudolf Hornig
+
+	* Fix for non-working parameter replacements in channel display strings
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-08-11  Attila Torok

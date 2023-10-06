@@ -1,3 +1,11 @@
+2023-01-11  greenPointCap
+
+	* ch-macos.rst: updated spctl command
+
+2022-08-23  Rudolf Hornig
+
+	* Added xdg-utils as a required package
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-08-23  Rudolf Hornig

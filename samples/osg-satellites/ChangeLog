@@ -1,3 +1,17 @@
+2022-09-19  Attila Torok
+
+	* Fix: Don't fail to build without OSG[EARTH] if they are not even
+	installed
+
+2022-08-25  Attila Torok
+
+	* Fix: Make sure config.h is included before checking for WITH_OSG
+	and WITH_OSGEARTH
+
+	So the code using OSG and osgEarth actually has a chance to be built and
+	used. This did not matter back when these macros were defined on the
+	compiler command line by the build system, but now it does.
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-04-11  ------ omnetpp-6.0 released ------

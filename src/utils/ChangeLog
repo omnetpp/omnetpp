@@ -1,13 +1,40 @@
+2023-09-21  Attila Torok
+
+	* opp_run: fix/nit: Add missing `self.`, delete unused `import re`
+
+2023-07-14  Attila Torok
+
+	* Bump config.guess and config.sub files
+
+	This makes building the runtime for RISC-V targets possible.
+
+	The files were downloaded from git.savannah.gnu.org, as per:
+	https://www.gnu.org/software/gettext/manual/html_node/config_002eguess.html
+
+2023-03-11  Andras Varga
+
+	* opp_test: apply "too long to dump" message for expected output too
+
+2023-06-26  Rudolf Hornig
+
+	* opp_makemake: Fix build issue with gnu make 4.4+. The *_m.cc files were
+	(correctly) deemed as temporary files and deleted at the end of build,
+	causing a full rebuild next time even if nothing was changed in the source
+	files. We will now treat _m.cc and _m.h files as PRECIOUS so they will be kept.
+
+2022-08-23  Andras Varga
+
+	* opp_charttool: improve finding the workspace
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-05-26  Attila Torok
 
-	* scave/python: Add "python" folders of [referenced] project[s] to python
-	path in opp_charttool as well
+	* opp_charttool: Fix: find workspace from the anf file location up
 
 2022-05-18  Attila Torok
 
-	* build: Disable implicit make rules by setting .SUFFIXES to empty
+	* Makefile: Disable implicit make rules by setting .SUFFIXES to empty
 
 2022-04-11  ------ omnetpp-6.0 released ------
 

@@ -1,3 +1,44 @@
+2023-09-22  Attila Torok
+
+	* Fix ResultItem::getDataType(): Support type="bool", for displaying vectors
+	with bool data type (fixes #1041).
+
+2023-04-25  Attila Torok
+
+	* Fix GCC warning -Wformat-zero-length in ResultFileFormatException
+
+2023-04-25  Attila Torok
+
+	* Fix "variable set but not used" warnings
+
+2023-04-26  Levente Mészáros
+
+	* StatisticsResult, HistogramResult: getAvailableFields(): Removed SUM
+	fields from list of available fields, because the SUM field is meaningless
+	and therefore not supported in the weighted case.
+
+2023-02-08  Andras Varga
+
+	* IDList: prevent crash if sort functions are called with wrong item types
+
+2023-02-05  Andras Varga
+
+	* resultitems.h: Clarify the meaning of ResultItem::getDataType(), and let
+	ParameterItem's method return NA to indicate that it is not meaningful for
+	parameter items.
+
+2023-07-27  Rudolf Hornig
+
+	* Fix a build error (removed function) when building with c++20 enabled
+
+2022-05-18  Attila Torok
+
+	* build: Disable implicit make rules by setting .SUFFIXES to empty
+
+2022-05-16  Attila Torok
+
+	* Fix build by including <memory> for std::unique_ptr
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-05-18  Attila Torok

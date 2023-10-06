@@ -1,8 +1,44 @@
+2023-05-02  Levente Meszaros
+
+	* Changed ConstantFilter to return the constant value from
+	getInitialDoubleValue().
+
+	Previously some statistics didn't record an initial value because
+	constant values in expressions prevented the initial fire() calls to
+	propagate down the chain.
+
+2022-11-24  Andras Varga
+
+	* SimTime: improved overflow checking in operator=() methods
+
+2022-09-14  Andras Varga
+
+	* cFingerprint::checkFingerprint(): fix comment of checkFingerprint()
+
+2022-11-07  Andras Varga
+
+	* cModule: improve comment of getGateNames()
+
+2022-10-26  Andras Varga
+
+	* cGate: better commenting of connectTo()/disconnect()
+
+2023-08-22  Andras Varga
+
+	* cEventHeap: added checkHeap(). Not called anywhere, but available in case
+	FES debugging is needed.
+
+2023-04-06  Andras Varga
+
+	* simkerneldefs.h: added ASSERT_DTOR(), a throw-less version of the ASSERT
+	macros to be used in destructors (C++ doesn't allow throwing from destructors)
+
 2022-09-01  ------ omnetpp-6.0.1 released ------
 
 2022-08-26  Andras Varga
 
-	* Fix: proper namespace resolution for C++ types in @signal declarations
+	* cComponentType: internal methods to support proper namespace resolution
+	for C++ types in @signal declarations
 
 2022-08-17  Andras Varga
 
