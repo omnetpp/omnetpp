@@ -1682,14 +1682,15 @@ public class DocumentationGenerator {
         if (propertyMap != null) {
             out(renderer.subsectionHeading("Signals", "subtitle")+
                 renderer.beginTable("signalstable") +
-                renderer.tableHeading("Name","name", "Type","type", "Unit","unit"));
+                renderer.tableHeading("Name","name", "Type","type", "Unit","unit", "Description","description"));
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
                 String cppType = getPropertyElementValue(propertyElement, "type");
                 out(renderer.tableRow("local",
                         name,
                         cppReferenceString(cppType, cppType),
-                        getPropertyElementValue(propertyElement, "unit")));
+                        getPropertyElementValue(propertyElement, "unit"),
+                        tableCommentString(getExpandedComment(propertyElement))));
             }
             out(renderer.endTable());
         }
@@ -1701,7 +1702,7 @@ public class DocumentationGenerator {
             out(renderer.subsectionHeading("Statistics", "subtitle")+
                 renderer.beginTable("statisticstable") +
                 renderer.tableHeading("Name","name", "Title","title", "Source","source",
-                            "Record","record", "Unit","unit", "Interpolation Mode","interpolationmode"));
+                            "Record","record", "Unit","unit", "Interpolation Mode","interpolationmode", "Description","description"));
 
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
@@ -1710,7 +1711,8 @@ public class DocumentationGenerator {
                         getPropertyElementValue(propertyElement, "source"),
                         getPropertyElementValue(propertyElement, "record"),
                         getPropertyElementValue(propertyElement, "unit"),
-                        getPropertyElementValue(propertyElement, "interpolationmode")));
+                        getPropertyElementValue(propertyElement, "interpolationmode"),
+                        tableCommentString(getExpandedComment(propertyElement))));
 
             }
             out(renderer.endTable());
