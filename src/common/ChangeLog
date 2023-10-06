@@ -1,3 +1,5 @@
+2023-10-06  ------ omnetpp-6.0.2 released ------
+
 2023-04-25  Attila Torok
 
 	* Fix GCC warning -Wformat-zero-length (from opp_runtime_error ctor)

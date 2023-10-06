@@ -1,3 +1,5 @@
+2023-10-06  ------ omnetpp-6.0.2 released ------
+
 2023-09-21  Attila Torok
 
 	* opp_run: fix/nit: Add missing `self.`, delete unused `import re`
