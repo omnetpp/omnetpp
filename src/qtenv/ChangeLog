@@ -1,3 +1,5 @@
+2022-09-01  ------ omnetpp-6.0.1 released ------
+
 2022-08-11  Attila Torok
 
 	* Fix: Clamp non-zero computed animation speed to at least 1e-9.

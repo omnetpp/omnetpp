@@ -1,3 +1,5 @@
+2022-09-01  ------ omnetpp-6.0.1 released ------
+
 2022-08-24  Levente Mészáros
 
 	* Fixed issue #938, filtering the eventlog in the sequence chart makes it empty.
