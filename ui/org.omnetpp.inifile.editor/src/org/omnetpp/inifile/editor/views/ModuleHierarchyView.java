@@ -310,11 +310,6 @@ public class ModuleHierarchyView extends AbstractModuleView {
                     // for a "like" submodule, use icon of the concrete module type
                     DisplayString dps = mn.element.getDisplayString(mn.typeElement);
                     CompoundModuleElementEx compoundModule = mn.element.getCompoundModule();
-                    if (compoundModule == null) {
-                        // TODO this should not occur, but the logs say it indeed does!
-                        InifileEditorPlugin.getDefault().getLog().warn("Inifileeditor.ModuleHierarchyView: Stray submodule/connection, has no compound module parent (!!!): " + mn);
-                        return ImageFactory.global().getImage(ImageFactory.DEFAULT_ERROR); // make it recognizable
-                    }
                     IProject project = compoundModule.getNedTypeInfo().getProject();
                     Image image = ImageFactory.of(project).getIconImage(dps.getAsString(IDisplayString.Prop.IMAGE));
                     return image!=null ? image : NedModelLabelProvider.getInstance().getImage(mn.element);
@@ -564,7 +559,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
 
         // prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
-        if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput(), true)) {
+        GenericTreeNode oldInput = (GenericTreeNode)treeViewer.getInput();
+        boolean treeEquals = GenericTreeUtils.treeEquals(root, oldInput);
+        if (!treeEquals) {
             treeViewer.setInput(root);
 
             // open root node (useful in case preserving the selection fails)
