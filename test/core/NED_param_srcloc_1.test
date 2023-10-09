@@ -50,19 +50,19 @@ network = Test
 module Test: Test {
     parameters:
         @isNetwork
-        a = "ini"  (from test.ini:2)
+        a = "ini"  (from .../test.ini:2)
         b = "ned"  (from .../test.ned:6)
     submodules:
         module Test.node: Node {
             parameters:
-                a = "ini"  (from test.ini:2)
+                a = "ini"  (from .../test.ini:2)
                 b = "ned"  (from .../node.ned:5)
                 c = "ned-submod"  (from .../test.ned:10)
                 d = "ned-pattern"  (from .../test.ned:7)
             submodules:
                 module Test.node.subnode: Subnode {
                     parameters:
-                        a = "ini"  (from test.ini:2)
+                        a = "ini"  (from .../test.ini:2)
                         b = "ned"  (from .../subnode.ned:5)
                         c = "ned-submodule-pattern"  (from .../test.ned:12)
                 }
