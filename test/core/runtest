@@ -7,7 +7,7 @@
 MODE=${MODE:-"debug"}
 MAKEOPTIONS="MODE=$MODE"
 MAKE=${MAKE:-"make"}
-MAKEFLAGS=${MAKEFLAGS:-"-j$(nproc)"}
+export MAKEFLAGS=${MAKEFLAGS:-"-j$(nproc)"}
 
 case "$MODE" in
   "release") PROGSUFFIX="" ;;
