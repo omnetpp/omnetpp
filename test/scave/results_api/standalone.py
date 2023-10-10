@@ -13,6 +13,13 @@ RESULT_FILES = ["results/General-*.vec", "results/General-*.sca"]
 
 r = results.read_result_files(RESULT_FILES)
 r_with_fields = results.read_result_files(RESULT_FILES, include_fields_as_scalars=True)
+r_empty = results.read_result_files(RESULT_FILES, "NONEXISTENT")
+
+
+def test_runs_empty():
+    df = results.get_runs(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "runs_empty.csv"), "content mismatch")
 
 def test_runs():
     df = results.get_runs(r)
@@ -66,6 +73,11 @@ def test_runs_without_config_entries():
     _assert(sanitize_and_compare_csv(df, "runs_without_config_entries.csv"), "content mismatch")
 
 
+def test_runattrs_empty():
+    df = results.get_runattrs(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "runattrs_empty.csv"), "content mismatch")
+
 def test_runattrs():
     df = results.get_runattrs(r)
     _assert_sequential_index(df)
@@ -77,6 +89,11 @@ def test_runattrs_with_all():
     _assert(sanitize_and_compare_csv(df, "runattrs_with_all.csv"), "content mismatch")
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
+
+def test_itervars_empty():
+    df = results.get_itervars(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "itervars_empty.csv"), "content mismatch")
 
 def test_itervars():
     df = results.get_itervars(r)
@@ -90,6 +107,11 @@ def test_itervars_with_all():
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
 
+def test_config_entries_empty():
+    df = results.get_config_entries(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "config_entries_empty.csv"), "content mismatch")
+
 def test_config_entries():
     df = results.get_config_entries(r)
     _assert_sequential_index(df)
@@ -102,6 +124,11 @@ def test_config_entries_with_all():
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
 
+def test_param_assignments_empty():
+    df = results.get_param_assignments(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "param_assignments_empty.csv"), "content mismatch")
+
 def test_param_assignments():
     df = results.get_param_assignments(r)
     _assert_sequential_index(df)
@@ -113,6 +140,11 @@ def test_param_assignments_with_all():
     _assert(sanitize_and_compare_csv(df, "param_assignments_with_all.csv"), "content mismatch")
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
+
+def test_results_empty():
+    df = results.get_results(r_empty, omit_unused_columns=False)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "results_empty.csv"), "content mismatch")
 
 def test_results():
     df = results.get_results(r)
@@ -222,6 +254,11 @@ def test_vector_time_limit_3():
     return df["vectime"].map(lambda a: (a >= 20.0).all() and (a < 50.0).all()).all()
 
 
+def test_scalars_empty():
+    df = results.get_scalars(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "scalars_empty.csv"), "content mismatch")
+
 def test_scalars():
     df = results.get_scalars(r)
     _assert_sequential_index(df)
@@ -257,6 +294,11 @@ def test_scalars_with_all():
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "scalars_with_all.csv"), "content mismatch")
 
+
+def test_vectors_empty():
+    df = results.get_vectors(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "vectors_empty.csv"), "content mismatch")
 
 def test_vectors():
     df = results.get_vectors(r)
@@ -312,6 +354,11 @@ def test_vectors_start_end_time():
     _assert(sanitize_and_compare_csv(df, "vectors_start_end_time.csv"), "content mismatch")
 
 
+def test_histograms_empty():
+    df = results.get_histograms(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "histograms_empty.csv"), "content mismatch")
+
 def test_histograms():
     df = results.get_histograms(r)
     _assert_sequential_index(df)
@@ -333,6 +380,11 @@ def test_histograms_with_all():
     _assert(sanitize_and_compare_csv(df, "histograms_with_all.csv"), "content mismatch")
 
 
+def test_statistics_empty():
+    df = results.get_statistics(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "statistics_empty.csv"), "content mismatch")
+
 def test_statistics():
     df = results.get_statistics(r)
     _assert_sequential_index(df)
@@ -353,6 +405,11 @@ def test_statistics_with_all():
     _assert_sequential_index(df)
     _assert(sanitize_and_compare_csv(df, "statistics_with_all.csv"), "content mismatch")
 
+
+def test_parameters_empty():
+    df = results.get_parameters(r_empty)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "parameters_empty.csv"), "content mismatch")
 
 def test_parameters():
     df = results.get_parameters(r)

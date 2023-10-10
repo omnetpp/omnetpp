@@ -1,18 +1,21 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <analysis version="2">
     <inputs>
         <input pattern="results/General-*.vec"/>
         <input pattern="results/General-*.sca"/>
     </inputs>
     <charts>
-        <chart icon="icons/full/obj/barchart.png" id="180" name="get_runs" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="180" name="get_runs" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
 
+def test_runs_empty():
+    df = results.get_runs("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "runs_empty.csv"), "content mismatch")
 
 def test_runs():
     df = results.get_runs("*")
@@ -67,17 +70,19 @@ def test_runs_without_config_entries():
 
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="191" name="get_runattrs" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="191" name="get_runattrs" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_runattrs_empty():
+    df = results.get_runattrs("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "runattrs_empty.csv"), "content mismatch")
 
 def test_runattrs():
     df = results.get_runattrs("*")
@@ -91,18 +96,20 @@ def test_runattrs_with_all():
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="195" name="get_itervars" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="195" name="get_itervars" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_itervars_empty():
+    df = results.get_itervars("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "itervars_empty.csv"), "content mismatch")
 
 def test_itervars():
     df = results.get_itervars("*")
@@ -116,17 +123,19 @@ def test_itervars_with_all():
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="196" name="get_config_entries" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="196" name="get_config_entries" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_config_entries_empty():
+    df = results.get_config_entries("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "config_entries_empty.csv"), "content mismatch")
 
 def test_config_entries():
     df = results.get_config_entries("*")
@@ -140,17 +149,19 @@ def test_config_entries_with_all():
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="446" name="get_param_assignments" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="446" name="get_param_assignments" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_param_assignments_empty():
+    df = results.get_param_assignments("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "param_assignments_empty.csv"), "content mismatch")
 
 def test_param_assignments():
     df = results.get_param_assignments("*")
@@ -164,17 +175,19 @@ def test_param_assignments_with_all():
     _assert(df.apply(lambda r: r[r["name"]] == r["value"], axis=1).all(), "wrong join")
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="38" name="get_results" template="barchart" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="38" name="get_results" resultTypes="" template="barchart" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_results_empty():
+    df = results.get_results("NONEXISTENT", omit_unused_columns=False)
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "results_empty.csv"), "content mismatch")
 
 def test_results():
     df = results.get_results("*")
@@ -255,18 +268,20 @@ def test_vector_time_limit_3():
 
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="89" name="get_scalars" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="89" name="get_scalars" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_scalars_empty():
+    df = results.get_scalars("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "scalars_empty.csv"), "content mismatch")
 
 def test_scalars():
     df = results.get_scalars("*")
@@ -305,18 +320,20 @@ def test_scalars_with_all():
 
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="247" name="get_vectors" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="247" name="get_vectors" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_vectors_empty():
+    df = results.get_vectors("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "vectors_empty.csv"), "content mismatch")
 
 def test_vectors():
     df = results.get_vectors("*")
@@ -349,18 +366,20 @@ def test_vectors_start_end_time():
     _assert(sanitize_and_compare_csv(df, "vectors_start_end_time.csv"), "content mismatch")
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="419" name="get_histograms" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="419" name="get_histograms" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_histograms_empty():
+    df = results.get_histograms("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "histograms_empty.csv"), "content mismatch")
 
 def test_histograms():
     df = results.get_histograms("*")
@@ -383,18 +402,20 @@ def test_histograms_with_all():
     _assert(sanitize_and_compare_csv(df, "histograms_with_all.csv"), "content mismatch")
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="420" name="get_statistics" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="420" name="get_statistics" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_statistics_empty():
+    df = results.get_statistics("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "statistics_empty.csv"), "content mismatch")
 
 def test_statistics():
     df = results.get_statistics("*")
@@ -418,18 +439,20 @@ def test_statistics_with_all():
 
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
-        <chart icon="icons/full/obj/barchart.png" id="146" name="get_parameters" template="barchart_legacy" type="BAR">
-            <script>
-<![CDATA[from omnetpp.scave import results, chart, utils
+        <chart createdWith="" icon="icons/full/obj/barchart.png" id="146" name="get_parameters" resultTypes="" template="barchart_legacy" type="BAR">
+            <script><![CDATA[from omnetpp.scave import results, chart, utils
 import numpy as np
 import pandas as pd
 import tester
 tester.print = print
 from tester import _assert, _assert_sequential_index, run_tests, sanitize_and_compare_csv
+
+def test_parameters_empty():
+    df = results.get_parameters("NONEXISTENT")
+    _assert_sequential_index(df)
+    _assert(sanitize_and_compare_csv(df, "parameters_empty.csv"), "content mismatch")
 
 def test_parameters():
     df = results.get_parameters("*")
@@ -448,9 +471,7 @@ def test_parameters_with_all():
     _assert(sanitize_and_compare_csv(df, "parameters_with_all.csv"), "content mismatch")
 
 run_tests(locals())
-]]>
-
-            </script>
+]]></script>
         </chart>
     </charts>
 </analysis>
