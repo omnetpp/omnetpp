@@ -150,16 +150,16 @@ def _collect_results(rfm : sb.ResultFileManager, filter_expression : str, includ
         for an, av in attrs.items():
             result_rows.append({"runID": runID, "type": "attr", "module": module, "name": name, "attrname": an, "attrvalue": av})
 
-    df = pd.DataFrame(columns = ["runID", "type", "module", "name", "attrname", "attrvalue",
-                                 "value", "count", "sumweights", "mean", "stddev",
-                                 "min", "max", "underflows", "overflows",
-                                 "binedges", "binvalues", "vectime", "vecvalue"])
-    df["count"] = df["count"].astype(np.int64)
-
     run_metadata_df = pd.DataFrame(metadata_rows)
     results_df = pd.DataFrame(result_rows)
-    # even though df is empty here, the desired column names and types are set on it
-    df = pd.concat([df, run_metadata_df, results_df], copy=False)
+    df = pd.concat([run_metadata_df, results_df], ignore_index=True)
+
+    df = df.reindex(columns=["runID", "type", "module", "name", "attrname", "attrvalue",
+                             "value", "count", "sumweights", "mean", "stddev",
+                             "min", "max", "underflows", "overflows",
+                             "binedges", "binvalues", "vectime", "vecvalue"])
+
+    df["count"] = df["count"].astype(np.int64, errors="ignore")
 
     return df
 
