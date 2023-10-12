@@ -229,7 +229,7 @@
 
    <modules>
       <module>features</module>
-      <module>releng</module>
+      <module>releng/org.omnetpp.ide.${what}.product</module>
 
       <module>org.omnetpp.cdt</module>
       <module>org.omnetpp.common</module>
