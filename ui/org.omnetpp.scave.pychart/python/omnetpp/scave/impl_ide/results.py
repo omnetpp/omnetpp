@@ -115,6 +115,9 @@ def get_results(filter_expression, row_types, omit_unused_columns, include_field
     df["vectime"] = df["vectime"].map(getter)
     df["vecvalue"] = df["vecvalue"].map(getter)
 
+    for column in ["count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows"]:
+        df[column] = df[column].astype(np.float64, errors="ignore")
+
     if omit_unused_columns:  # maybe do this in Java?
         df.dropna(axis='columns', how='all', inplace=True)
 
@@ -173,7 +176,7 @@ def get_serial():
 def get_runs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     shmname = Gateway.results_provider.getRunsPickle(filter_expression)
     runs = _load_pickle_from_shm(shmname)
-    df = pd.DataFrame({"runID": runs})
+    df = pd.DataFrame({"runID": runs}, dtype=np.dtype("object"))
     return _append_additional_data(df, None, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
@@ -245,6 +248,9 @@ def get_statistics(filter_expression, include_attrs, include_runattrs, include_i
     statistics, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(statistics, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max"])
 
+    for column in ["count", "sumweights", "mean", "stddev", "min", "max"]:
+        df[column] = df[column].astype(np.float64, errors="ignore")
+
     df = _append_additional_data(df, attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
     return df
 
@@ -253,6 +259,9 @@ def get_histograms(filter_expression, include_attrs, include_runattrs, include_i
     shmname = Gateway.results_provider.getHistogramsPickle(filter_expression, include_attrs)
     histograms, attrs = _load_pickle_from_shm(shmname)
     df = pd.DataFrame(histograms, columns=["runID", "module", "name", "count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows", "binedges", "binvalues"])
+
+    for column in ["count", "sumweights", "mean", "stddev", "min", "max", "underflows", "overflows"]:
+        df[column] = df[column].astype(np.float64, errors="ignore")
 
     df["binedges"] = df["binedges"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
     df["binvalues"] = df["binvalues"].map(lambda v: np.frombuffer(v, dtype=np.double), na_action='ignore')
