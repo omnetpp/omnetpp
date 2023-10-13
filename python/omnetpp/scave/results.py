@@ -163,6 +163,7 @@ else:
 
 from math import inf
 from functools import wraps
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -170,7 +171,21 @@ import re
 
 from ._version import __version__
 
-from omnetpp.scave.utils import _pivot_results, _pivot_metadata, _select_param_assignments, convert_to_base_unit as convert_to_base_unit_func
+from omnetpp.scave.utils import _pivot_results, _pivot_metadata, \
+  _select_param_assignments, convert_to_base_unit as convert_to_base_unit_func
+
+
+_COMMON_RESULT_COLUMN_NAMES = ["runID", "module", "name"]
+_STATISTIC_FIELD_NAMES = ["count", "sumweights", "mean", "stddev", "min", "max"]
+
+PARAMETER_COLUMN_NAMES = _COMMON_RESULT_COLUMN_NAMES + ["value"]
+SCALAR_COLUMN_NAMES = _COMMON_RESULT_COLUMN_NAMES + ["value", "unit"]
+VECTOR_COLUMN_NAMES = _COMMON_RESULT_COLUMN_NAMES + ["vectime", "vecvalue", "unit"]
+STATISTIC_COLUMN_NAMES = _COMMON_RESULT_COLUMN_NAMES + \
+    _STATISTIC_FIELD_NAMES + ["unit"]
+HISTOGRAM_COLUMN_NAMES = _COMMON_RESULT_COLUMN_NAMES + \
+    _STATISTIC_FIELD_NAMES + ["underflows", "overflows", "binedges", "binvalues", "unit"]
+
 
 # Nontechnical error whose text may directly be displayed to the end user.
 # Subclasses ValueError for backward compatibility.
@@ -200,13 +215,26 @@ def _guarded_result_query_func(func):
                 raise e
     return inner
 
-def _fix_ndarray_shapes(df, columns):
-    """
-    A workaround for: https://github.com/pandas-dev/pandas/issues/53565
-    """
+
+def _fix_ndarray_shapes(df : pd.DataFrame, columns : List[str]):
+    """ A workaround for: https://github.com/pandas-dev/pandas/issues/53565 """
     for col in columns:
-        df[col] = df[col].apply(lambda a: a.reshape(1) if isinstance(a, np.ndarray) and a.shape == () else a)
+        df[col] = df[col].apply(lambda a: a.reshape(1)
+                                            if isinstance(a, np.ndarray) and a.shape == ()
+                                            else a)
     return df
+
+def _ensure_columns_exist(df : pd.DataFrame, columns : List[str]) -> None:
+    for col in columns:
+        if col not in df:
+            # Not [] because that would set dtype to float64, and we want object
+            df[col] = ""
+
+def _dropna_except(df : pd.DataFrame, keep_columns : List[str]):
+    cols_with_all_nan = df.columns[df.isna().all()].tolist()
+    cols_to_drop = [col for col in cols_with_all_nan if col not in keep_columns]
+    df.drop(columns=cols_to_drop, inplace=True)
+
 
 def get_serial():
     """
@@ -372,9 +400,8 @@ def get_runs(filter_or_dataframe="", include_runattrs=False, include_itervars=Fa
         runs = df[["runID"]].drop_duplicates()
         row_types = ["itervar", "runattr", "config"]
         metadf = df[df["type"].isin(row_types)]
-        df = _pivot_metadata(runs, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-        return df
+
+        return _pivot_metadata(runs, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
 @_guarded_result_query_func
@@ -421,10 +448,7 @@ def get_runattrs(filter_or_dataframe="", include_runattrs=False, include_itervar
         row_types = ["itervar", "runattr", "config"]
         metadf = df[df["type"].isin(row_types)]
 
-        df = _pivot_metadata(runattrs, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-
-        return df
+        return _pivot_metadata(runattrs, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
 @_guarded_result_query_func
@@ -467,10 +491,7 @@ def get_itervars(filter_or_dataframe="", include_runattrs=False, include_itervar
         row_types = ["itervar", "runattr", "config"]
         metadf = df[df["type"].isin(row_types)]
 
-        df = _pivot_metadata(itervars, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-
-        return df
+        return _pivot_metadata(itervars, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
 @_guarded_result_query_func
@@ -519,13 +540,14 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
         df = filter_or_dataframe
         row_types = ["scalar", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-        if "value" in df: # it might be empty
-            df["value"] = pd.to_numeric(df["value"], errors="raise")
-        result = df
+        result = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    if convert_to_base_unit and "unit" in result:
+    _dropna_except(result, SCALAR_COLUMN_NAMES)
+    _ensure_columns_exist(result, SCALAR_COLUMN_NAMES)
+
+    result["value"] = pd.to_numeric(result["value"], errors="raise").astype(np.float64)
+
+    if convert_to_base_unit:
         convert_to_base_unit_func(result)
 
     return result
@@ -573,14 +595,17 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
         params = locals().copy()
         params["filter_expression"] = filter_or_dataframe
         del params["filter_or_dataframe"]
-        return impl.get_parameters(**params)
+        result = impl.get_parameters(**params)
     else:
         df = filter_or_dataframe
         row_types = ["param", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-        return df
+        result = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
+
+    _dropna_except(result, PARAMETER_COLUMN_NAMES)
+    _ensure_columns_exist(result, PARAMETER_COLUMN_NAMES)
+
+    return result
 
 
 @_guarded_result_query_func
@@ -629,8 +654,7 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
         df = filter_or_dataframe
         row_types = ["vector", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
+        result = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
         if start_time != -inf or end_time != inf:
             def crop(row):
@@ -644,13 +668,13 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
                 row['vecvalue'] = v[from_index:to_index]
 
                 return row
-            df = df.transform(crop, axis='columns')
+            result = result.transform(crop, axis='columns')
 
-        result = df
-
+    _dropna_except(result, VECTOR_COLUMN_NAMES)
+    _ensure_columns_exist(result, VECTOR_COLUMN_NAMES)
     _fix_ndarray_shapes(result, ["vectime", "vecvalue"])
 
-    if convert_to_base_unit and "unit" in result:
+    if convert_to_base_unit:
         convert_to_base_unit_func(result)
 
     return result
@@ -699,11 +723,12 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
         df = filter_or_dataframe
         row_types = ["statistic", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-        result = df
+        result = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    if convert_to_base_unit and "unit" in result:
+    _dropna_except(result, STATISTIC_COLUMN_NAMES)
+    _ensure_columns_exist(result, STATISTIC_COLUMN_NAMES)
+
+    if convert_to_base_unit:
         convert_to_base_unit_func(result)
 
     return result
@@ -757,11 +782,12 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
         df = filter_or_dataframe
         row_types = ["histogram", "itervar", "runattr", "config", "attr"]
         df = df[df["type"].isin(row_types)]
-        df = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-        result = df
+        result = _pivot_results(df, include_attrs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    if convert_to_base_unit and "unit" in result:
+    _dropna_except(result, HISTOGRAM_COLUMN_NAMES)
+    _ensure_columns_exist(result, HISTOGRAM_COLUMN_NAMES)
+
+    if convert_to_base_unit:
         convert_to_base_unit_func(result)
 
     return result
@@ -808,10 +834,7 @@ def get_config_entries(filter_or_dataframe, include_runattrs=False, include_iter
         row_types = ["itervar", "runattr", "config"]
         metadf = df[df["type"].isin(row_types)]
 
-        df = _pivot_metadata(configentries, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-
-        return df
+        return _pivot_metadata(configentries, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
 
 @_guarded_result_query_func
@@ -855,8 +878,5 @@ def get_param_assignments(filter_or_dataframe, include_runattrs=False, include_i
         row_types = ["itervar", "runattr", "config"]
         metadf = df[df["type"].isin(row_types)]
 
-        df = _pivot_metadata(paramassignments, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
-        df.dropna(axis='columns', how='all', inplace=True)
-
-        return df
+        return _pivot_metadata(paramassignments, metadf, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 

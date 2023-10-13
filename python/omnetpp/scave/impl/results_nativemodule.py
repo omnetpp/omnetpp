@@ -55,19 +55,6 @@ def add_inputs(input_patterns : Union[str, List[str]]) -> None:
     _load_files_into(_global_rfm, input_patterns)
 
 
-_SCALAR_COLUMN_NAMES = ["value"]
-_STATISTIC_COLUMN_NAMES = ["count", "sumweights", "mean", "stddev", "min", "max"]
-_HISTOGRAM_COLUMN_NAMES = ["underflows", "overflows", "binedges", "binvalues"]
-_VECTOR_COLUMN_NAMES = ["vectime", "vecvalue"]
-_PARAMETER_COLUMN_NAMES = ["value"]
-
-
-def _ensure_columns_exist(df : pd.DataFrame, columns : List[str]) -> None:
-    for col in columns:
-        if col not in df:
-            df[col] = []
-
-
 def get_serial() -> int:
     return _serial_base + _global_rfm.getSerial()
 
@@ -150,7 +137,7 @@ def _collect_results(rfm : sb.ResultFileManager, filter_expression : str, includ
         for an, av in attrs.items():
             result_rows.append({"runID": runID, "type": "attr", "module": module, "name": name, "attrname": an, "attrvalue": av})
 
-    run_metadata_df = pd.DataFrame(metadata_rows)
+    run_metadata_df = pd.DataFrame(metadata_rows, dtype=np.dtype("object"))
     results_df = pd.DataFrame(result_rows)
     df = pd.concat([run_metadata_df, results_df], ignore_index=True)
 
@@ -159,7 +146,22 @@ def _collect_results(rfm : sb.ResultFileManager, filter_expression : str, includ
                              "min", "max", "underflows", "overflows",
                              "binedges", "binvalues", "vectime", "vecvalue"])
 
-    df["count"] = df["count"].astype(np.int64, errors="ignore")
+    df = df.astype({
+        # strings
+        "runID": np.dtype("object"),
+        "type": np.dtype("object"),
+        "module": np.dtype("object"),
+        "name": np.dtype("object"),
+        "attrname": np.dtype("object"),
+        "attrvalue": np.dtype("object"),
+        "value": np.dtype("object"),
+        # np.arrays
+        "binedges": np.dtype("object"),
+        "binvalues": np.dtype("object"),
+        "vectime": np.dtype("object"),
+        "vecvalue": np.dtype("object"),
+
+        }, errors="ignore")
 
     return df
 
@@ -231,7 +233,7 @@ def _collect_attrs(idlist : sb.IDList, attribute_mode : _AttributeMode) -> pd.Da
             attrnames.append(attrname)
             attrvalues.append(attributes.get(attrname, ""))
 
-    return pd.DataFrame({"runID" : runIDs, "module": modules, "name": names, "attrname": attrnames, "attrvalue": attrvalues})
+    return pd.DataFrame({"runID" : runIDs, "module": modules, "name": names, "attrname": attrnames, "attrvalue": attrvalues}, dtype=np.dtype("object"))
 
 
 def _collect_runs(rfm : sb.ResultFileManager, idlist : sb.IDList) -> Dict[str, sb.Run]:
@@ -259,7 +261,7 @@ def _collect_param_assignments(runs : Dict[str, sb.Run]) -> pd.DataFrame:
             attrnames.append(e[0])
             attrvalues.append(e[1])
 
-    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues})
+    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues}, dtype=np.dtype("object"))
 
 
 def _collect_config_entries(runs : Dict[str, sb.Run]) -> pd.DataFrame:
@@ -275,7 +277,7 @@ def _collect_config_entries(runs : Dict[str, sb.Run]) -> pd.DataFrame:
             attrnames.append(e[0])
             attrvalues.append(e[1])
 
-    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues})
+    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues}, dtype=np.dtype("object"))
 
 
 def _collect_run_attributes(runs : Dict[str, sb.Run]) -> pd.DataFrame:
@@ -291,7 +293,7 @@ def _collect_run_attributes(runs : Dict[str, sb.Run]) -> pd.DataFrame:
             attrnames.append(n)
             attrvalues.append(v)
 
-    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues})
+    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues}, dtype=np.dtype("object"))
 
 
 def _collect_iteration_variables(runs : Dict[str, sb.Run]) -> pd.DataFrame:
@@ -307,7 +309,7 @@ def _collect_iteration_variables(runs : Dict[str, sb.Run]) -> pd.DataFrame:
             attrnames.append(n)
             attrvalues.append(v)
 
-    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues})
+    return pd.DataFrame({"runID" : runIDs, "attrname": attrnames, "attrvalue": attrvalues}, dtype=np.dtype("object"))
 
 
 def _add_metadata(df : pd.DataFrame, runs : Dict[str, sb.Run], include_runattrs : bool, include_itervars : bool, include_param_assignments : bool, include_config_entries : bool):
@@ -355,7 +357,6 @@ def get_scalars(filter_expression, include_attrs, include_fields, include_runatt
         runs = _collect_runs(_global_rfm, scalars)
         df = _add_metadata(df, runs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    _ensure_columns_exist(df, _SCALAR_COLUMN_NAMES)
     return df
 
 
@@ -400,7 +401,6 @@ def get_vectors(filter_expression, include_attrs, include_runattrs, include_iter
         runs = _collect_runs(_global_rfm, vectors)
         df = _add_metadata(df, runs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    _ensure_columns_exist(df, _VECTOR_COLUMN_NAMES)
     return df
 
 
@@ -447,7 +447,6 @@ def get_statistics(filter_expression, include_attrs, include_runattrs, include_i
         runs = _collect_runs(_global_rfm, statistics)
         df = _add_metadata(df, runs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    _ensure_columns_exist(df, _STATISTIC_COLUMN_NAMES)
     return df
 
 
@@ -506,7 +505,6 @@ def get_histograms(filter_expression, include_attrs, include_runattrs, include_i
         runs = _collect_runs(_global_rfm, histograms)
         df = _add_metadata(df, runs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    _ensure_columns_exist(df, _HISTOGRAM_COLUMN_NAMES)
     return df
 
 
@@ -533,17 +531,17 @@ def get_parameters(filter_expression, include_attrs, include_runattrs, include_i
         if not attrs.empty:
             attrs = pd.pivot(attrs, columns="attrname", index=["runID", "module", "name"], values="attrvalue")
             df = df.merge(attrs, left_on=["runID", "module", "name"], right_index=True, how='left', suffixes=(None, "_attr"))
+
     if include_itervars or include_runattrs or include_config_entries or include_param_assignments:
         runs = _collect_runs(_global_rfm, parameters)
         df = _add_metadata(df, runs, include_runattrs, include_itervars, include_param_assignments, include_config_entries)
 
-    _ensure_columns_exist(df, _PARAMETER_COLUMN_NAMES)
     return df
 
 
 def get_runs(filter_expression, include_runattrs, include_itervars, include_param_assignments, include_config_entries):
     runlist = _global_rfm.filterRunList(_global_rfm.getRuns(), filter_expression)
-    df = pd.DataFrame({"runID" : [r.getRunName() for r in runlist]})
+    df = pd.DataFrame({"runID" : [r.getRunName() for r in runlist]}, dtype=np.dtype("object"))
 
     if include_itervars or include_runattrs or include_config_entries or include_param_assignments:
         runs = {r.getRunName() : r for r in runlist}
