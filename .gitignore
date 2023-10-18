@@ -38,6 +38,7 @@
 .qtenvrc
 lex.*yy.cc
 compile_commands.json
+hs_err_*.log
 
 /tools
 /msys
@@ -154,6 +155,7 @@ backups
 /test/stress/results/
 /test/build/_buildlog
 /test/anim/*/Makefile
+/test/makemake2/actual/
 /samples/*/doc/
 /configure.user
 /test/scave/charttemplates/export/
@@ -166,3 +168,7 @@ backups
 /doc/src/manual/usman.ilg
 /doc/src/manual/usman.log
 /doc/src/python-api/_autosummary
+/doc/src/manual/tools/*.txt
+/doc/src/manual/tools/*.tex
+
+
