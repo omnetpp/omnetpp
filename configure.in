@@ -735,9 +735,14 @@ fi
 # disable some bison warnings
 YACC="$YACC -Wno-yacc"
 
-AC_PROG_LEX(noyywrap)
-if test "$LEX" != "flex"; then
-   AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
+if test "$USE_MS_ABI"="yes"; then
+  # Windows/MS_ABI does not have unistd.h and the test fails unless the usage is manually disabled
+  LEX="flex --nounistd"
+else
+  AC_PROG_LEX(noyywrap)
+  if test "$LEX" != "flex"; then
+     AC_MSG_ERROR([Flex not found, needed to build OMNeT++/OMNEST -- please install it!])
+  fi
 fi
 FLEX_VER_LINE=`$LEX --version | grep "flex.* 2\\.[[5-9]]"`
 if test -z "$FLEX_VER_LINE"; then
