@@ -2613,19 +2613,24 @@ public class SequenceChart
                             IFile vectorFile = inputFile.getParent().getFile(new Path(inputFileName.substring(0, inputFileName.indexOf(".")) + ".vec"));
                             if (vectorFile.exists()) {
                                 ResultFile resultFile = resultFileManager.loadFile(vectorFile.getName(), vectorFile.getLocation().toOSString(), ResultFileManager.LoadFlags.NEVER_RELOAD.swigValue() + ResultFileManager.LoadFlags.ALLOW_INDEXING.swigValue() + ResultFileManager.LoadFlags.SKIP_IF_LOCKED.swigValue(), null);
-                                String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
-                                FileRun fileRun = resultFileManager.getFileRun(resultFile, resultFileManager.getRunByName(eventlogRunName));
-                                String modulePath = axisModule.getModuleFullPath();
-                                String propertyModule = property.getValue("module");
-                                if (propertyModule != null)
-                                    modulePath = modulePath + "." + propertyModule;
-                                long id = resultFileManager.getItemByName(fileRun, modulePath, vectorName);
-                                // TODO: compare vector's run against log file's run
-                                if (id != 0) {
-                                    ResultItem resultItem = resultFileManager.getItem(id);
-                                    IDList selectedIdList = new IDList(id);
-                                    XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
-                                    axisRenderer = new AxisVectorBarRenderer(this, vectorFile.getLocation().toOSString(), eventlogRunName, modulePath, vectorName, resultItem, dataVector, 0);
+                                if (resultFile != null) {
+                                    String eventlogRunName = getEventLog().getSimulationBeginEntry().getRunId();
+                                    Run run = resultFileManager.getRunByName(eventlogRunName);
+                                    if (run != null) {
+                                        FileRun fileRun = resultFileManager.getFileRun(resultFile, run);
+                                        String modulePath = axisModule.getModuleFullPath();
+                                        String propertyModule = property.getValue("module");
+                                        if (propertyModule != null)
+                                            modulePath = modulePath + "." + propertyModule;
+                                        long id = resultFileManager.getItemByName(fileRun, modulePath, vectorName);
+                                        // TODO: compare vector's run against log file's run
+                                        if (id != 0) {
+                                            ResultItem resultItem = resultFileManager.getItem(id);
+                                            IDList selectedIdList = new IDList(id);
+                                            XYArrayVector dataVector = ScaveEngine.readVectorsIntoArrays2(resultFileManager, selectedIdList, true, true);
+                                            axisRenderer = new AxisVectorBarRenderer(this, vectorFile.getLocation().toOSString(), eventlogRunName, modulePath, vectorName, resultItem, dataVector, 0);
+                                        }
+                                    }
                                 }
                             }
                         }
