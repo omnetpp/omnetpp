@@ -1624,7 +1624,7 @@ def pivot_for_barchart(df, groups, series, confidence_level=None, sort=True):
         def conf_intv(values):
             return confidence_interval(confidence_level, values)
 
-        pivoted = pd.pivot_table(df, index=series, columns=groups, values="value", aggfunc=[np.mean, conf_intv], dropna=False, sort=sort)
+        pivoted = pd.pivot_table(df, index=series, columns=groups, values="value", aggfunc=["mean", conf_intv], dropna=False, sort=sort)
         valuedf = pivoted["mean"]
         errorsdf = pivoted["conf_intv"]
         if errorsdf.isna().values.all():
@@ -1666,7 +1666,7 @@ def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level=None):
     else:
         def conf_intv(values):
             return confidence_interval(confidence_level, values)
-        pivoted = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=[np.mean, conf_intv], dropna=False)
+        pivoted = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=["mean", conf_intv], dropna=False)
 
         df = pivoted["mean"]
         errors_df = pivoted["conf_intv"]
