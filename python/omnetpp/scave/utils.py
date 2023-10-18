@@ -306,7 +306,7 @@ def make_legend_label(legend_cols, row, props={}):
 
     return legend
 
-def add_legend_labels(df, props):
+def add_legend_labels(df, props, legend_cols=None):
     """
     Adds a `legend` column to the dataframe. In the dataframe, each row is
     expected to represent an item to be plotted. The legend label will be
@@ -320,7 +320,8 @@ def add_legend_labels(df, props):
     Notable properties that affect the legend generation: See the documentation
     of `make_legend_label()`.
     """
-    title_cols, legend_cols = extract_label_columns(df, props)
+    if legend_cols is None:
+        _, legend_cols = extract_label_columns(df, props)
     def get_legend_label(row):
         return make_legend_label(legend_cols, row, props)
     df['legend'] = df.apply(get_legend_label, axis=1)
@@ -1613,17 +1614,17 @@ def pivot_for_barchart(df, groups, series, confidence_level=None, sort=True):
             else:
                 return str(uniq[0]) + ", etc."
 
-    metadf = pd.pivot_table(df, index=series, aggfunc=aggfunc, dropna=False)
+    metadf = pd.pivot_table(df, index=series, aggfunc=aggfunc, dropna=False, sort=sort)
     del metadf["value"]
 
     if confidence_level is None:
-        df = pd.pivot_table(df, index=series, columns=groups, values='value', dropna=False)
+        df = pd.pivot_table(df, index=series, columns=groups, values='value', dropna=False, sort=sort)
         return (df, None, metadf)
     else:
         def conf_intv(values):
             return confidence_interval(confidence_level, values)
 
-        pivoted = pd.pivot_table(df, index=series, columns=groups, values="value", aggfunc=[np.mean, conf_intv], dropna=False)
+        pivoted = pd.pivot_table(df, index=series, columns=groups, values="value", aggfunc=[np.mean, conf_intv], dropna=False, sort=sort)
         valuedf = pivoted["mean"]
         errorsdf = pivoted["conf_intv"]
         if errorsdf.isna().values.all():
