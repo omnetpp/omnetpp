@@ -18,10 +18,15 @@ if df.empty:
     raise chart.ChartScriptError("The result filter returned no data.")
 
 groups, series = utils.select_groups_series(df, props)
-confidence_level = utils.get_confidence_level(props)
-valuedf, errorsdf, metadf = utils.pivot_for_barchart(df, groups, series, confidence_level)
 
-utils.plot_bars(valuedf, errorsdf, metadf, props)
+utils.add_legend_labels(df, props, groups + series)
+utils.sort_rows_by_legend(df, props)
+del df["legend"]
+
+confidence_level = utils.get_confidence_level(props)
+valuedf, errorsdf, metadf = utils.pivot_for_barchart(df, groups, series, confidence_level, sort=False)
+
+utils.plot_bars(valuedf, errorsdf, metadf, props, sort=False)
 
 utils.postconfigure_plot(props)
 
