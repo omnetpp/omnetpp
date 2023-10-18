@@ -30,8 +30,15 @@
 *.gdb_history
 *.last-copts
 *.cmdenv-log
+*-ide.desktop
+*-shell.desktop
+/.project
+/.cproject
+/.pydevproject
 .qtenvrc
 lex.*yy.cc
+compile_commands.json
+
 /tools
 /msys
 /mingw
@@ -54,6 +61,7 @@ backups
 /include/sysc
 /include/tlm_utils
 /include/tlm_core
+/python/omnetpp/**/*.pyi
 /src/common/ver.h
 /src/utils/opp_configfilepath
 /src/envir/eventlogwriter.cc
@@ -67,9 +75,13 @@ backups
 /src/utils/opp_configfilepath.cmd
 /src/nedxml/nedelements.*
 /src/nedxml/nedvalidator.*
+/src/*/*.lex.cc
+/src/*/*.lex.h
+/src/*/*.tab.h
 .metadata
 .settings
 /ui/org.omnetpp.runtime.nativelibs/src/org/omnetpp/runtime/nativelibs/simkernel/
+/ui/org.omnetpp.ide.nativelibs/common.h
 /ui/org.omnetpp.ide.nativelibs/*.cxx
 /ui/org.omnetpp.ide.nativelibs/src/org/omnetpp/*/engine/
 /ui/org.omnetpp.ned.model/src/org/omnetpp/ned/model/pojo/*
@@ -128,6 +140,7 @@ backups
 /samples/tictoc/tictoc_dbg
 /samples/wiredphy/wiredphy
 /samples/wiredphy/wiredphy_dbg
+/samples/*/*_sanitize
 /tmp/
 /ui/org.omnetpp.test.gui/test-workspace/.metadata
 /ui/_*/
@@ -152,3 +165,4 @@ backups
 /doc/src/manual/usman.idx
 /doc/src/manual/usman.ilg
 /doc/src/manual/usman.log
+/doc/src/python-api/_autosummary
