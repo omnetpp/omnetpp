@@ -200,6 +200,13 @@ def _guarded_result_query_func(func):
                 raise e
     return inner
 
+def _fix_ndarray_shapes(df, columns):
+    """
+    A workaround for: https://github.com/pandas-dev/pandas/issues/53565
+    """
+    for col in columns:
+        df[col] = df[col].apply(lambda a: a.reshape(1) if isinstance(a, np.ndarray) and a.shape == () else a)
+    return df
 
 def get_serial():
     """
@@ -640,6 +647,8 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
             df = df.transform(crop, axis='columns')
 
         result = df
+
+    _fix_ndarray_shapes(result, ["vectime", "vecvalue"])
 
     if convert_to_base_unit and "unit" in result:
         convert_to_base_unit_func(result)
