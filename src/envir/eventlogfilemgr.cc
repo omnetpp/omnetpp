@@ -98,7 +98,7 @@ static ObjectPrinterRecursionControl recurseIntoMessageFields(any_ptr object, cC
         if (fieldValue != nullptr)
             return RECURSE;
         else {
-            cArray *array = check_and_cast<cArray*>(fromAnyPtr<cObject>(fieldValue));
+            cArray *array = check_and_cast_nullable<cArray*>(fromAnyPtr<cObject>(fieldValue));
             return !array || array->size() != 0 ? RECURSE : SKIP;
         }
     }
