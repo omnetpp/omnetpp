@@ -50,8 +50,14 @@ public:
     /// Decrease the reference count of all appended objects
     void release() noexcept;
 
-    /// Does the list contain any entries?
-    inline bool used() { return m_size != 1; }
+    /// Does the list contain any entries? (besides the 'self' argument)
+    bool used() { return m_size != 1; }
+
+    /// Return the size of the cleanup stack
+    size_t size() const { return m_size; }
+
+    /// Subscript operator
+    PyObject *operator[](size_t index) const { return m_data[index]; }
 
 protected:
     /// Out of memory, expand..
@@ -174,6 +180,11 @@ NB_CORE void getitem_or_raise(PyObject *obj, PyObject *key, PyObject **out);
 NB_CORE void setitem(PyObject *obj, Py_ssize_t, PyObject *value);
 NB_CORE void setitem(PyObject *obj, const char *key, PyObject *value);
 NB_CORE void setitem(PyObject *obj, PyObject *key, PyObject *value);
+
+/// Set an item or raise an exception
+NB_CORE void delitem(PyObject *obj, Py_ssize_t);
+NB_CORE void delitem(PyObject *obj, const char *key);
+NB_CORE void delitem(PyObject *obj, PyObject *key);
 
 // ========================================================================
 
@@ -377,6 +388,7 @@ NB_CORE void keep_alive(PyObject *nurse, PyObject *patient);
 NB_CORE void keep_alive(PyObject *nurse, void *payload,
                         void (*deleter)(void *) noexcept) noexcept;
 
+
 // ========================================================================
 
 /// Indicate to nanobind that an implicit constructor can convert 'src' -> 'dst'
@@ -419,7 +431,8 @@ NB_CORE PyObject *module_new_submodule(PyObject *base, const char *name,
 
 // Try to import a reference-counted ndarray object via DLPack
 NB_CORE ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
-                                       bool convert) noexcept;
+                                       bool convert,
+                                       cleanup_list *cleanup) noexcept;
 
 // Describe a local ndarray object using a DLPack capsule
 NB_CORE ndarray_handle *ndarray_create(void *value, size_t ndim,
@@ -498,9 +511,16 @@ NB_CORE void slice_compute(PyObject *slice, Py_ssize_t size,
 NB_CORE PyObject *repr_list(PyObject *o);
 NB_CORE PyObject *repr_map(PyObject *o);
 
-#if PY_VERSION_HEX < 0x030A0000
+NB_CORE bool is_alive() noexcept;
+
+#if NB_TYPE_GET_SLOT_IMPL
 NB_CORE void *type_get_slot(PyTypeObject *t, int slot_id);
 #endif
 
 NAMESPACE_END(detail)
+
+using detail::raise;
+using detail::raise_type_error;
+using detail::raise_python_error;
+
 NAMESPACE_END(NB_NAMESPACE)

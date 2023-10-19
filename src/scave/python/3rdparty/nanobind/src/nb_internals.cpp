@@ -17,7 +17,7 @@
 
 /// Tracks the ABI of nanobind
 #ifndef NB_INTERNALS_VERSION
-#  define NB_INTERNALS_VERSION 10
+#  define NB_INTERNALS_VERSION 11
 #endif
 
 /// On MSVC, debug and release builds are not ABI-compatible!
@@ -56,8 +56,11 @@
 #endif
 
 /// On Linux/OSX, changes in __GXX_ABI_VERSION__ indicate ABI incompatibility.
+/// Also keep potentially ABI-incompatible visual studio builds apart.
 #if defined(__GXX_ABI_VERSION)
 #  define NB_BUILD_ABI "_cxxabi" NB_TOSTRING(__GXX_ABI_VERSION)
+#elif defined(_MSC_VER)
+#  define NB_BUILD_ABI "_mscver" NB_TOSTRING(_MSC_VER)
 #else
 #  define NB_BUILD_ABI ""
 #endif
@@ -217,10 +220,19 @@ void default_exception_translator(const std::exception_ptr &p, void *) {
 nb_internals *internals = nullptr;
 PyTypeObject *nb_meta_cache = nullptr;
 
-#if !defined(PYPY_VERSION)
+static bool is_alive_value = false;
+static bool *is_alive_ptr = &is_alive_value;
+bool is_alive() noexcept { return *is_alive_ptr; }
+
 static void internals_cleanup() {
     if (!internals)
         return;
+
+    *is_alive_ptr = false;
+
+#if !defined(PYPY_VERSION)
+    /* The memory leak checker is unsupported on PyPy, see
+       see https://foss.heptapod.net/pypy/pypy/-/issues/3855 */
 
     bool leak = false;
 
@@ -283,12 +295,12 @@ static void internals_cleanup() {
                             "counting issue in the binding code.\n");
         }
 
-#if NB_ABORT_ON_LEAK == 1
-        abort(); // Extra-strict behavior for the CI server
-#endif
+        #if NB_ABORT_ON_LEAK == 1
+            abort(); // Extra-strict behavior for the CI server
+        #endif
     }
-}
 #endif
+}
 
 NB_NOINLINE void init(const char *name) {
     if (internals)
@@ -314,11 +326,11 @@ NB_NOINLINE void init(const char *name) {
         check(internals,
               "nanobind::detail::internals_fetch(): capsule pointer is NULL!");
         nb_meta_cache = internals->nb_meta;
+        is_alive_ptr = internals->is_alive_ptr;
         return;
     }
 
     nb_internals *p = new nb_internals();
-
 
     str nb_name("nanobind");
     p->nb_module = PyModule_NewObject(nb_name.ptr());
@@ -358,6 +370,9 @@ NB_NOINLINE void init(const char *name) {
 #endif
 
     p->translators = { default_exception_translator, nullptr, nullptr };
+    is_alive_value = true;
+    is_alive_ptr = &is_alive_value;
+    p->is_alive_ptr = is_alive_ptr;
 
 #if PY_VERSION_HEX < 0x030C0000 && !defined(PYPY_VERSION)
     /* The implementation of typing.py on CPython <3.12 tends to introduce
@@ -393,9 +408,6 @@ NB_NOINLINE void init(const char *name) {
     }
 #endif
 
-#if !defined(PYPY_VERSION)
-    /* Install the memory leak checker. This feature is unsupported on
-       PyPy, see https://foss.heptapod.net/pypy/pypy/-/issues/3855 */
     if (Py_AtExit(internals_cleanup))
         fprintf(stderr,
                 "Warning: could not install the nanobind cleanup handler! This "
@@ -403,7 +415,6 @@ NB_NOINLINE void init(const char *name) {
                 "resources at interpreter shutdown (e.g., to avoid leaks being "
                 "reported by tools like 'valgrind'). If you are a user of a "
                 "python extension library, you can ignore this warning.");
-#endif
 
     capsule = PyCapsule_New(p, "nb_internals", nullptr);
     int rv = PyDict_SetItem(dict, key, capsule);

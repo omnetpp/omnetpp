@@ -119,6 +119,7 @@
 #  define NB_LIST_GET_ITEM PyList_GetItem
 #  define NB_LIST_SET_ITEM PyList_SetItem
 #  define NB_DICT_GET_SIZE PyDict_Size
+#  define NB_SET_GET_SIZE PySet_Size
 #else
 #  define NB_TUPLE_GET_SIZE PyTuple_GET_SIZE
 #  define NB_TUPLE_GET_ITEM PyTuple_GET_ITEM
@@ -127,6 +128,7 @@
 #  define NB_LIST_GET_ITEM PyList_GET_ITEM
 #  define NB_LIST_SET_ITEM PyList_SET_ITEM
 #  define NB_DICT_GET_SIZE PyDict_GET_SIZE
+#  define NB_SET_GET_SIZE PySet_GET_SIZE
 #endif
 
 #if defined(PYPY_VERSION_NUM) && PYPY_VERSION_NUM < 0x07030a00
@@ -137,6 +139,22 @@
 #  define NB_DOMAIN_STR NB_TOSTRING(NB_DOMAIN)
 #else
 #  define NB_DOMAIN_STR nullptr
+#endif
+
+#if !defined(PYPY_VERSION)
+#  if PY_VERSION_HEX < 0x030A0000
+#    define NB_TYPE_GET_SLOT_IMPL 1 // Custom implementation of nb::type_get_slot
+#  else
+#    define NB_TYPE_GET_SLOT_IMPL 0
+#  endif
+#  if PY_VERSION_HEX < 0x030C0000
+#    define NB_TYPE_FROM_METACLASS_IMPL 1 // Custom implementation of PyType_FromMetaclass
+#  else
+#    define NB_TYPE_FROM_METACLASS_IMPL 0
+#  endif
+#else
+#  define NB_TYPE_FROM_METACLASS_IMPL 1
+#  define NB_TYPE_GET_SLOT_IMPL 1
 #endif
 
 #define NB_MODULE_IMPL(name)                                                   \

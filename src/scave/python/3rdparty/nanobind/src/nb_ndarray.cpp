@@ -69,6 +69,13 @@ static int nd_ndarray_tpbuffer(PyObject *exporter, Py_buffer *view, int) {
             }
             break;
 
+        case dlpack::dtype_code::Complex:
+            switch (t.dtype.bits) {
+                case 64: format = "Zf"; break;
+                case 128: format = "Zd"; break;
+            }
+            break;
+
         case dlpack::dtype_code::Bool:
             format = "?";
             break;
@@ -293,7 +300,7 @@ bool ndarray_check(PyObject *o) noexcept {
 
 
 ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
-                               bool convert) noexcept {
+                               bool convert, cleanup_list *cleanup) noexcept {
     object capsule;
     bool is_pycapsule = PyCapsule_CheckExact(o);
 
@@ -415,26 +422,27 @@ ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
         str module_name_o = borrow<str>(handle(tp).attr("__module__"));
         const char *module_name = module_name_o.c_str();
 
-        char order = 'K';
+        char order = 'K'; // for NumPy. 'K' means 'keep'
         if (req->req_order != '\0')
             order = req->req_order;
 
-        if (req->dtype.lanes != 1)
+        dlpack::dtype dt = req->req_dtype ? req->dtype : t.dtype;
+        if (dt.lanes != 1)
             return nullptr;
 
         const char *prefix = nullptr;
         char dtype[9];
-        if (req->dtype.code == (uint8_t) dlpack::dtype_code::Bool) {
+        if (dt.code == (uint8_t) dlpack::dtype_code::Bool) {
             std::strcpy(dtype, "bool");
         } else {
-            switch (req->dtype.code) {
+            switch (dt.code) {
                 case (uint8_t) dlpack::dtype_code::Int: prefix = "int"; break;
                 case (uint8_t) dlpack::dtype_code::UInt: prefix = "uint"; break;
                 case (uint8_t) dlpack::dtype_code::Float: prefix = "float"; break;
                 default:
                     return nullptr;
             }
-            snprintf(dtype, sizeof(dtype), "%s%u", prefix, req->dtype.bits);
+            snprintf(dtype, sizeof(dtype), "%s%u", prefix, dt.bits);
         }
 
         object converted;
@@ -443,9 +451,9 @@ ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
                 converted = handle(o).attr("astype")(dtype, order);
             } else if (strcmp(module_name, "torch") == 0) {
                 converted = handle(o).attr("to")(
-                    arg("dtype") = module_::import_("torch").attr(dtype),
-                    arg("copy") = true
-                );
+                    arg("dtype") = module_::import_("torch").attr(dtype));
+                if (req->req_order == 'C')
+                    converted = converted.attr("contiguous")();
             } else if (strncmp(module_name, "tensorflow.", 11) == 0) {
                 converted = module_::import_("tensorflow")
                                 .attr("cast")(handle(o), dtype);
@@ -455,10 +463,15 @@ ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
         } catch (...) { converted.reset(); }
 
         // Potentially try again recursively
-        if (!converted.is_valid())
+        if (!converted.is_valid()) {
             return nullptr;
-        else
-            return ndarray_import(converted.ptr(), req, false);
+        } else {
+            ndarray_handle *h =
+                ndarray_import(converted.ptr(), req, false, nullptr);
+            if (h && cleanup)
+                cleanup->append(converted.release().ptr());
+            return h;
+        }
     }
 
     if (!pass_dtype || !pass_device || !pass_shape || !pass_order)
