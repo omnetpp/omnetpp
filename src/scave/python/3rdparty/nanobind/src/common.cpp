@@ -488,6 +488,36 @@ void setitem(PyObject *obj, PyObject *key, PyObject *value) {
         raise_python_error();
 }
 
+void delitem(PyObject *obj, Py_ssize_t key_) {
+    PyObject *key = PyLong_FromSsize_t(key_);
+    if (!key)
+        raise_python_error();
+
+    int rv = PyObject_DelItem(obj, key);
+    Py_DECREF(key);
+
+    if (rv)
+        raise_python_error();
+}
+
+void delitem(PyObject *obj, const char *key_) {
+    PyObject *key = PyUnicode_FromString(key_);
+    if (!key)
+        raise_python_error();
+
+    int rv = PyObject_DelItem(obj, key);
+    Py_DECREF(key);
+
+    if (rv)
+        raise_python_error();
+}
+
+void delitem(PyObject *obj, PyObject *key) {
+    int rv = PyObject_DelItem(obj, key);
+    if (rv)
+        raise_python_error();
+}
+
 // ========================================================================
 
 PyObject *str_from_obj(PyObject *o) {
@@ -576,6 +606,12 @@ PyObject **seq_get(PyObject *seq, size_t *size_out, PyObject **temp_out) noexcep
     /* This function is used during overload resolution; if anything
        goes wrong, it fails gracefully without reporting errors. Other
        overloads will then be tried. */
+
+    if (PyUnicode_CheckExact(seq) || PyBytes_CheckExact(seq)) {
+        *size_out = 0;
+        *temp_out = nullptr;
+        return nullptr;
+    }
 
 #if !defined(Py_LIMITED_API) && !defined(PYPY_VERSION)
     if (PyTuple_CheckExact(seq)) {

@@ -14,9 +14,9 @@ NAMESPACE_BEGIN(NB_NAMESPACE)
 public:                                                                        \
     static constexpr auto Name = ::nanobind::detail::const_name(Str);          \
     NB_INLINE Type(handle h, ::nanobind::detail::borrow_t)                     \
-        : Parent(h, ::nanobind::detail::borrow_t{}) {}                         \
+        : Parent(h, ::nanobind::detail::borrow_t{}) { }                        \
     NB_INLINE Type(handle h, ::nanobind::detail::steal_t)                      \
-        : Parent(h, ::nanobind::detail::steal_t{}) {}                          \
+        : Parent(h, ::nanobind::detail::steal_t{}) { }                         \
     NB_INLINE static bool check_(handle h) {                                   \
         return Check(h.ptr());                                                 \
     }
@@ -105,8 +105,8 @@ public:
     NB_INLINE bool is_none() const { return derived().ptr() == Py_None; }
     NB_INLINE bool is_type() const { return PyType_Check(derived().ptr()); }
     NB_INLINE bool is_valid() const { return derived().ptr() != nullptr; }
-    NB_INLINE handle inc_ref() const & noexcept;
-    NB_INLINE handle dec_ref() const & noexcept;
+    NB_INLINE handle inc_ref() const &;
+    NB_INLINE handle dec_ref() const &;
     iterator begin() const;
     iterator end() const;
 
@@ -352,7 +352,7 @@ class int_ : public object {
               detail::type_caster<T>::from_cpp(value, rv_policy::copy, nullptr),
               detail::steal_t{}) {
         if (!m_ptr)
-            detail::raise_python_error();
+            raise_python_error();
     }
 
     template <typename T, detail::enable_if_t<std::is_arithmetic_v<T>> = 0>
@@ -373,7 +373,7 @@ class float_ : public object {
     explicit float_(double value)
         : object(PyFloat_FromDouble(value), detail::steal_t{}) {
         if (!m_ptr)
-            detail::raise_python_error();
+            raise_python_error();
     }
 
 #if !defined(Py_LIMITED_API)
@@ -397,7 +397,7 @@ class str : public object {
 
     template <typename... Args> str format(Args&&... args);
 
-    const char *c_str() { return PyUnicode_AsUTF8AndSize(m_ptr, nullptr); }
+    const char *c_str() const { return PyUnicode_AsUTF8AndSize(m_ptr, nullptr); }
 };
 
 class bytes : public object {
@@ -412,7 +412,7 @@ class bytes : public object {
     explicit bytes(const char *s, size_t n)
         : object(detail::bytes_from_cstr_and_size(s, n), detail::steal_t{}) { }
 
-    const char *c_str() { return PyBytes_AsString(m_ptr); }
+    const char *c_str() const { return PyBytes_AsString(m_ptr); }
 
     size_t size() const { return (size_t) PyBytes_Size(m_ptr); }
 };
@@ -463,6 +463,21 @@ class dict : public object {
     list keys() const { return steal<list>(detail::obj_op_1(m_ptr, PyDict_Keys)); }
     list values() const { return steal<list>(detail::obj_op_1(m_ptr, PyDict_Values)); }
     list items() const { return steal<list>(detail::obj_op_1(m_ptr, PyDict_Items)); }
+    template <typename T> bool contains(T&& key) const;
+    void clear() { PyDict_Clear(m_ptr); }
+};
+
+
+class set : public object {
+    NB_OBJECT(set, object, "set", PySet_Check)
+    set() : object(PySet_New(nullptr), detail::steal_t()) { }
+    size_t size() const { return (size_t) NB_SET_GET_SIZE(m_ptr); }
+    template <typename T> bool contains(T&& key) const;
+    template <typename T> void add(T &&value);
+    void clear() {
+        if (PySet_Clear(m_ptr))
+            raise_python_error();
+    }
 };
 
 class sequence : public object {
@@ -474,6 +489,7 @@ class mapping : public object {
     list keys() const { return steal<list>(detail::obj_op_1(m_ptr, PyMapping_Keys)); }
     list values() const { return steal<list>(detail::obj_op_1(m_ptr, PyMapping_Values)); }
     list items() const { return steal<list>(detail::obj_op_1(m_ptr, PyMapping_Items)); }
+    template <typename T> bool contains(T&& key) const;
 };
 
 class args : public tuple {
@@ -535,7 +551,7 @@ template <typename T>
 NB_INLINE bool isinstance(handle h) noexcept {
     if constexpr (std::is_base_of_v<handle, T>)
         return T::check_(h);
-    else if constexpr (detail::make_caster<T>::IsClass)
+    else if constexpr (detail::is_base_caster_v<detail::make_caster<T>>)
         return detail::nb_type_isinstance(h.ptr(), &typeid(detail::intrinsic_t<T>));
     else
         return detail::make_caster<T>().from_python(h, 0, nullptr);
@@ -547,6 +563,7 @@ NB_INLINE size_t len_hint(handle h) { return detail::obj_len_hint(h.ptr()); }
 NB_INLINE size_t len(const tuple &t) { return (size_t) NB_TUPLE_GET_SIZE(t.ptr()); }
 NB_INLINE size_t len(const list &l) { return (size_t) NB_LIST_GET_SIZE(l.ptr()); }
 NB_INLINE size_t len(const dict &d) { return (size_t) NB_DICT_GET_SIZE(d.ptr()); }
+NB_INLINE size_t len(const set &d) { return (size_t) NB_SET_GET_SIZE(d.ptr()); }
 
 inline void print(handle value, handle end = handle(), handle file = handle()) {
     detail::print(value.ptr(), end.ptr(), file.ptr());
@@ -569,7 +586,7 @@ public:
     slice(handle start, handle stop, handle step) {
         m_ptr = PySlice_New(start.ptr(), stop.ptr(), step.ptr());
         if (!m_ptr)
-            detail::raise_python_error();
+            raise_python_error();
     }
 
     template <typename T, detail::enable_if_t<std::is_arithmetic_v<T>> = 0>
@@ -607,6 +624,17 @@ class callable : public object {
 public:
     NB_OBJECT(callable, object, "Callable[..., object]", PyCallable_Check)
     using object::object;
+};
+
+class weakref : public object {
+public:
+    NB_OBJECT(weakref, object, "weakref", PyWeakref_Check)
+
+    explicit weakref(handle obj, handle callback = {})
+        : object(PyWeakref_NewRef(obj.ptr(), callback.ptr()), detail::steal_t{}) {
+        if (!m_ptr)
+            raise_python_error();
+    }
 };
 
 template <typename T> class handle_t : public handle {
@@ -652,9 +680,12 @@ template <typename Derived> NB_INLINE handle api<Derived>::type() const {
     return (PyObject *) Py_TYPE(derived().ptr());
 }
 
-template <typename Derived>
-NB_INLINE handle api<Derived>::inc_ref() const &noexcept {
+template <typename Derived> NB_INLINE handle api<Derived>::inc_ref() const & {
     return operator handle().inc_ref();
+}
+
+template <typename Derived> NB_INLINE handle api<Derived>::dec_ref() const & {
+    return operator handle().dec_ref();
 }
 
 template <typename Derived>
@@ -787,5 +818,8 @@ inline detail::fast_iterator list::end() const {
     return v->ob_item + v->ob_base.ob_size;
 }
 #endif
+
+template <typename T> void del(detail::accessor<T> &a) { a.del(); }
+template <typename T> void del(detail::accessor<T> &&a) { a.del(); }
 
 NAMESPACE_END(NB_NAMESPACE)
