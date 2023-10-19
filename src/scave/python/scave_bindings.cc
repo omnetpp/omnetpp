@@ -261,8 +261,8 @@ NB_MODULE(MODULENAME, m) {
 
     m.def("xyArrayToNumpyArrays", [](
             XYArray *xyArray,
-            nb::ndarray<double, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> xs,
-            nb::ndarray<double, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> ys
+            nb::ndarray<double, nb::ndim<1>, nb::c_contig, nb::device::cpu> xs,
+            nb::ndarray<double, nb::ndim<1>, nb::c_contig, nb::device::cpu> ys
         ) {
             int l = xyArray->length();
             if (xs.shape(0) != l || ys.shape(0) != l)
@@ -278,7 +278,7 @@ NB_MODULE(MODULENAME, m) {
         //.def_static("getBestUnit", &UnitConversion::getBestUnit)
         .def_static("convertUnit", &UnitConversion::convertUnit)
         .def_static("convertUnitArray", [](
-                nb::ndarray<double, nb::shape<nb::any>, nb::c_contig, nb::device::cpu> a,
+                nb::ndarray<double, nb::ndim<1>, nb::c_contig, nb::device::cpu> a,
                 const char *unitName, const char *targetUnitName) {
 
             if (unitName == targetUnitName || opp_streq(unitName, targetUnitName))
