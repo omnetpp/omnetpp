@@ -1,3 +1,4 @@
+import pandas as pd
 from omnetpp.scave import results, chart, utils, ideplot
 
 # get chart properties
@@ -18,9 +19,19 @@ if df.empty:
     raise chart.ChartScriptError("The result filter returned no data.")
 
 xaxis_itervar, group_by = utils.select_xaxis_and_groupby(df, props)
+
+try:
+    df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar])
+except:
+    raise chart.ChartScriptError(f"The values of the iteration variable for the X axis ({xaxis_itervar}) are not numeric.")
+
 confidence_level = utils.get_confidence_level(props)
-newdf = utils.pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level)
-utils.plot_lines(newdf, props)
+
+utils.add_legend_labels(df, props, [xaxis_itervar] + group_by)
+utils.sort_rows_by_legend(df, props)
+
+newdf = utils.pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level, False)
+utils.plot_lines(newdf, props, sort=False)
 
 names = df["name"].unique()
 scalar_names = names[0] + ", etc." if len(names) > 1 else names[0]

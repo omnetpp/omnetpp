@@ -1632,7 +1632,7 @@ def pivot_for_barchart(df, groups, series, confidence_level=None, sort=True):
         return (valuedf, errorsdf, metadf)
 
 
-def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level=None):
+def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level=None, sort=True):
     """
     Turns a DataFrame containing scalar results (in the format returned
     by `results.get_scalars()`) into a DataFrame which can then be
@@ -1661,12 +1661,12 @@ def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level=None):
 
     newdf = pd.DataFrame()
     if confidence_level is None:
-        df = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar)
+        df = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar, sort=sort)
         errors_df = None
     else:
         def conf_intv(values):
             return confidence_interval(confidence_level, values)
-        pivoted = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=["mean", conf_intv], dropna=False)
+        pivoted = pd.pivot_table(df, values="value", columns=group_by, index=xaxis_itervar if xaxis_itervar else "name", aggfunc=["mean", conf_intv], dropna=False, sort=sort)
 
         df = pivoted["mean"]
         errors_df = pivoted["conf_intv"]
