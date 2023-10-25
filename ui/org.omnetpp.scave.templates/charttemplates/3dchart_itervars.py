@@ -34,10 +34,17 @@ utils.assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the 
 utils.assert_columns_exist(df, [yaxis_itervar], "The iteration variable for the Y axis could not be found")
 
 if xaxis_itervar == yaxis_itervar:
-    raise chart.ChartScriptError("The itervar for the X and Y axes are the same: " + xaxis_itervar)
+    raise chart.ChartScriptError("The iteration variable for the X and Y axes cannot be the same: " + xaxis_itervar)
 
-df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
-df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")
+try:
+    df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar])
+except:
+    raise chart.ChartScriptError(f"The values of the iteration variable for the X axis ({xaxis_itervar}) are not numeric.")
+
+try:
+    df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar])
+except:
+    raise chart.ChartScriptError(f"The values of the iteration variable for the Y axis ({yaxis_itervar}) are not numeric.")
 
 title_cols, legend_cols = utils.extract_label_columns(df, props)
 
@@ -77,10 +84,14 @@ if type == "bar":
     ax.bar3d(X.ravel() - width / 2, Y.ravel() - depth / 2, bottom, width, depth, top, shade=True, color=rgba)
 elif type == "points":
     ax.scatter(X, Y, df, c=top, cmap=cmap, depthshade=True)
-elif type == "surface":
-    ax.plot_surface(X, Y, df, cmap=cmap, shade=True)
-elif type == "trisurf":
-    ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap=cmap, shade=True)
+else:
+    if df.shape[0] <= 1 or df.shape[1] <= 1:
+        raise chart.ChartScriptError(f'The selected data has the shape {df.shape}, which does not define a surface. Set chart type to "points" or "bar" in the properties dialog.')
+
+    if type == "surface":
+        ax.plot_surface(X, Y, df, cmap=cmap, shade=True)
+    elif type == "trisurf":
+        ax.plot_trisurf(X.ravel(), Y.ravel(), df.values.ravel(), cmap=cmap, shade=True)
 
 ax.set_xticks(df.columns)
 ax.get_xaxis().set_label_text(df.columns.name)
