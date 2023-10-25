@@ -2084,7 +2084,7 @@ def select_xaxis_and_groupby(df, props):
     group_by = split(props["group_by"])
 
     if not xaxis_itervar and not group_by:
-        print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data..")
+        print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data.")
         xaxis_itervar, group_by = select_best_partitioning_column_pair(df, props)
         group_by = [group_by] if group_by else []
         print("X Axis: " + xaxis_itervar + ", Group By: " + ",".join(group_by))
