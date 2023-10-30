@@ -1270,7 +1270,7 @@ Statistics recording:
   - Added the `autoWarmupFilter` statistic attribute that allows one to disable
     auto-adding the `warmup` filter to a statistic. Example:
 
-      @statistic[foo](record=vector;autoWarmupFilter=false);
+        @statistic[foo](record=vector;autoWarmupFilter=false);
 
     This will cause all values from the `foo` signal to be recorded, even
     values emitted during the warm-up period (if one is set).
@@ -1936,14 +1936,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -2116,14 +2116,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -2274,14 +2274,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -2348,14 +2348,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -2383,11 +2383,11 @@ Details follow.
 NED:
 
   - Allow 'typename' in expressions. Motivation: we want to be able to write:
-     foo: <> like IFoo if typename!=""
+    `foo: <> like IFoo if typename!=""`
 
-  - Added the "exists" operator. Syntax: exists(<submodulename>)
+  - Added the `exists` operator. Syntax: `exists(<submodulename>)`
 
-  - Introduced "nan" and "inf" as keywords for numeric constants
+  - Introduced `nan` and `inf` as keywords for numeric constants
 
 Core:
 
@@ -2453,14 +2453,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -2598,14 +2598,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -2916,14 +2916,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -3038,7 +3038,7 @@ Build:
  - omnetpp.h is now treated as a 'system header', so it will no longer generate
    warnings in case a model specifies more stringent checking for the compiler.
 
- - The 'configure' script now accepts WITH_XXX=yes/no options on the command line.
+ - The `configure` script now accepts WITH_XXX=yes/no options on the command line.
    Look into the configure.user file to see the supported variables.
 
  - Cross compilation of OMNeT++ for Windows on a Linux host is now supported.
@@ -3175,7 +3175,7 @@ Core:
  - In NED statistic declarations (@statistic), signal names in the "source"
    attribute can now be qualified with the name of a submodule. This will cause
    the signal listener to be added to the given submodule instead of the module
-   containing the @statistic. Example: @statistic[foo](source=a.b.foo). Note that
+   containing the @statistic. Example: `@statistic[foo](source=a.b.foo)`. Note that
    there is no syntax to specify modules above or outside the one containing the
    @statistic, as that would limit the module's reusability (encapsulation
    violation).
@@ -3323,7 +3323,7 @@ Envir:
 
  - In output scalar files, when run attributes (iteration variables, etc.)
    are saved as scalars, the module name they are saved with has been changed
-   from "." to "_runattrs_".
+   from `.` to `_runattrs_`.
 
  - The cpu-time-limit option has been fixed to work as expected; a new
    real-time-limit option also has been added.
@@ -3542,16 +3542,16 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
-    4. 'configure' now accepts WITH_FOO=no macros as command line options
+    4. `configure` now accepts WITH_FOO=no macros as command line options
 
  - Allow running tests in other than "debug" mode.
 
@@ -3975,7 +3975,7 @@ Core:
    has been added to cSimulation, and the older members msgQueue and
    getMessageQueue() have been removed. Simulations now accept a
 
-      futureeventset-class=<classname>
+        futureeventset-class=<classname>
 
    configuration option.
 
@@ -4008,7 +4008,7 @@ NED:
    (classes with @customize(true) or with subclasses), you can emulate the
    old behavior by adding the following to the message definition:
 
-       @fieldNameSuffix("_var");
+        @fieldNameSuffix("_var");
 
  - In message compiler generated code, doPacking() has been renamed to
    doParsimPacking(), doUnpacking() to doParsimUnpacking().
@@ -4198,14 +4198,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -4287,14 +4287,14 @@ Changes:
  - Source code updated to eliminate warnings issued by modern C++ compilers.
    Backported several smaller fixes.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -4379,14 +4379,14 @@ Changes:
    libraries. In addition to the original Tcl/Tk-8.4 and BLT-2.4z, Tkenv now
    works with Tcl/Tk-8.6 and BLT-2.5.3, too.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -4408,14 +4408,14 @@ Sim:
    in the module's or channel's NED description; undeclared signals will result
    in a runtime error. Signal declarations are of the form
 
-       @signal[<signalName>](type=<dataType>).
+        @signal[<signalName>](type=<dataType>).
 
    <signalName> may contain wildcards (?,*). Type is optional; if present,
    data type can be long, unsigned long, double, simtime_t, string, or a
    registered class name. To allow NULL pointers, append a question mark to
    the class name. Example:
 
-       @signal[receivedPk](type=cPacket?);
+        @signal[receivedPk](type=cPacket?);
 
    This feature is controlled by the check-signals=<bool> configuration
    option, and it is turned off by default for now.
@@ -4524,14 +4524,14 @@ Changes:
 
  - Updated to compile with both Bison 2.3 and 3.0.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -4625,7 +4625,7 @@ IDE:
  - Added NED editor support for named channels.
 
  - Added support for opening files from the command line, i.e. use:
-   $ omnetpp Aloha.ned
+   `omnetpp Aloha.ned``
 
  - Added full screen mode (Ctrl-Shift-F11).
 
@@ -4706,14 +4706,14 @@ Changes:
 
  - Updated to compile with both Bison 2.3 and 3.0.
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -4876,7 +4876,7 @@ Tools:
  - Implemented number filter expressions using multiple inputs for statistics source
    expressions. For example:
 
-      @statistic[dropRate](source="count(packetDropped)/count(packetSent)");
+        @statistic[dropRate](source="count(packetDropped)/count(packetSent)");
 
  - opp_msgc: improvement: announcements and type definitions now observe
    whether they are above the namespace declaration (=outside the namespace)
@@ -4945,8 +4945,8 @@ NED:
 
  - Added support for conditional submodules. Syntax:
 
-     udp: UDP if needsUDP {...}
-     tcp: <tcpType> like ITCP if needsTCP {...}
+        udp: UDP if needsUDP {...}
+        tcp: <tcpType> like ITCP if needsTCP {...}
 
  - Added the xml() NED function, which accepts a string argument and parses
    it as XML. Its most notable use is eliminating "empty.xml" files from INET:
@@ -4955,13 +4955,13 @@ NED:
  - Implemented default value for parametric submodule and channel types.
    NED now supports the following syntax:
 
-     mobility: <default("NullMobility")> like IMobility;
+        mobility: <default("NullMobility")> like IMobility;
 
    The effect is that the NullMobility NED type will be used for the mobility
    submodule if the type name is not specified otherwise, e.g. in the config-
    uration with something like
 
-     **.mobility.type-name = "ConstSpeedMobility"
+        **.mobility.type-name = "ConstSpeedMobility"
 
  - Added the firstAvailable() NED function, which is helpful with the Project
    Features feature (see below). It accepts any number of strings (see new
@@ -4970,7 +4970,7 @@ NED:
    that exists and is also "available" (its C++ implementation class exists).
    Example usage:
 
-     tcp: <default(firstAvailable("TCP_lwIP", "TCP_NSC", "TCP"))> {..}
+        tcp: <default(firstAvailable("TCP_lwIP", "TCP_NSC", "TCP"))> {..}
 
    It chooses the TCP_lwIP, TCP_NSC or TCP module type for the tcp submodule,
    in this order, unless the type is explicitly defined to be something else
@@ -4979,11 +4979,11 @@ NED:
  - Parametric submodule type can now also be specified in NED files, using
    patterns that end in the new "typename" keyword. An example:
 
-     network Net {
-         parameters:
-             host[*].tcp.typename = "TCP_lwIP";
-             ...
-     }
+        network Net {
+            parameters:
+                host[*].tcp.typename = "TCP_lwIP";
+                ...
+        }
 
 Ini files:
 
@@ -5046,14 +5046,14 @@ IDE/Inifile Editor:
 
  - Improved text hover (F2) and hyperlink (Ctrl+click) support: the editor
    can now show information and go to the definition of modules that occur
-   in the inifile key. For example, for a **.host[*].tcp.sackSupport = true
-   line, the user can hover over (or Ctrl+click) the host[*] part, and the
+   in the inifile key. For example, for a `**.host[*].tcp.sackSupport = true`
+   line, the user can hover over (or Ctrl+click) the `host[*]` part, and the
    editor will show relevant information and go to the definition of the
-   host[] submodule vector in the NED network description.
+   `host[]` submodule vector in the NED network description.
 
  - Improved content assist: per-object configuration options are now filtered
    by the type of object that the key refers to; for example, if you type
-   **.ppp[*].txPkBytes.<Ctrl+Space>, the editor will know from the NED files
+   `**.ppp[*].txPkBytes.` <Ctrl+Space>, the editor will know from the NED files
    that txPkBytes is a statistic, and offer completions accordingly.
 
  - Content assist: different types of completions (modules, parameters,
@@ -5073,9 +5073,9 @@ IDE/Wizards:
    overwriting the IDE-generated Makefile.
 
  - New OMNeT++ Project wizard template: now it is possible to set "custom make"
-   for a folder: specify <foldername>:CUSTOM in the makemakeOptions= template
-   variable in template.properties. Use "." to name the project root folder.
-   Example: makemakeOptions = .: CUSTOM, src: --deep -meta:recurse...
+   for a folder: specify `<foldername>:CUSTOM` in the makemakeOptions= template
+   variable in template.properties. Use `.` to name the project root folder.
+   Example: `makemakeOptions = .: CUSTOM, src: --deep -meta:recurse...`
 
  - New option for template.properties: preRunTemplate=<fti-file-name>. Example:
    preRunTemplate = main.fti. The option causes the given template file to be
@@ -5127,8 +5127,8 @@ Simulation runtime:
 
  - Ini files: implemented multiple inheritance for sections. Syntax:
 
-     [Config Foobar]
-     extends = Foo, Bar
+        [Config Foobar]
+        extends = Foo, Bar
 
    When the runtime looks for a config option or param assignment, sections
    are examined in a "fallback order" until the first match is found. In the
@@ -5145,11 +5145,11 @@ Simulation runtime:
    interpreted in the wrong context. Deep parameter assignments are when
    an inifile-like pattern is used to name the parameter(s) to be set, as in:
 
-      network Inet {
-          parameters:
-              host[*].tcp.nagleEnabled = true;
-          ...
-      }
+        network Inet {
+            parameters:
+                host[*].tcp.nagleEnabled = true;
+            ...
+        }
 
  - Resolved spurious errors: 'Class "..." not found -- perhaps its code
    was not linked in, or the class wasn't registered with Register_Class()'
@@ -5352,14 +5352,14 @@ Changes:
    coroutines" library which used setjmp()/longjmp() to switch stacks no longer
    works with recent glibc versions.)
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent
+ - Updated the `setenv` and `configure` scripts, to make them more consistent
    with those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -5446,7 +5446,7 @@ NED:
  - New NED function: expand(). It substitutes `${}` config variables into a string.
    Example usage in a NED parameter:
 
-       string fileName = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
+        string fileName = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
 
 MSG:
 
@@ -5870,16 +5870,16 @@ IDE:
 
 IDE features:
  - NED editor:
-    o adaptive palette: items with matching @labels properties and those
+    - adaptive palette: items with matching @labels properties and those
       already in the compound module are shown at the top
-    o palette filtering: easily accessible text field to filter palette
+    - palette filtering: easily accessible text field to filter palette
       contents (case insensitive substring search)
-    o when creating connections, connection chooser now offers connections
+    - when creating connections, connection chooser now offers connections
       with matching gates, using @labels properties of gates
-    o new parameter editor dialog for channels and modules
-    o completion proposals for connection parameters
-    o visual feedback for multiple and conditional connections
-    o better validation of NED files in the editor
+    - new parameter editor dialog for channels and modules
+    - completion proposals for connection parameters
+    - visual feedback for multiple and conditional connections
+    - better validation of NED files in the editor
 
  - Parameter grouping in the Module Hierarchy view
 
@@ -5946,14 +5946,14 @@ Changes:
    coroutines" library which used setjmp()/longjmp() to switch stacks no longer
    works with recent glibc versions.)
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent with
+ - Updated the `setenv` and `configure` scripts, to make them more consistent with
    those in more recent or modernized releases. This includes:
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - Allow running tests in other than "debug" mode.
@@ -5979,160 +5979,167 @@ OMNeT++ 4.0 (March 2009)
 -------------------------
 
 This is a major revision of the whole simulation platform, with fundamental
-changes in nearly every component. Changes since version 3.4b2:
+changes in nearly every component. A summary of changes since version 3.4b2:
 
 GUI:
-  An Eclipse-based comprehensive simulation IDE has been introduced to replace
-  the previous standalone GUI programs gned, scalars and plove. The IDE supports
-  all stages of a simulation project: developing, building, configuring and
-  running simulation models, and analyzing results. It also supports
-  visualizing simulation execution traces as sequence charts, and generating
-  documentation. We are also bundling version control (cvs, svn, git) Eclipse
-  plug-ins with the IDE. The IDE is supported on the three major platforms,
-  Linux, Mac OS X and Windows. Since Eclipse is extremely extensible, we expect
-  that OMNeT++-based simulation frameworks will contribute their own custom
-  wizards into the IDE.
+
+  - An Eclipse-based comprehensive simulation IDE has been introduced to replace
+    the previous standalone GUI programs gned, scalars and plove. The IDE supports
+    all stages of a simulation project: developing, building, configuring and
+    running simulation models, and analyzing results. It also supports
+    visualizing simulation execution traces as sequence charts, and generating
+    documentation. We are also bundling version control (cvs, svn, git) Eclipse
+    plug-ins with the IDE. The IDE is supported on the three major platforms,
+    Linux, Mac OS X and Windows. Since Eclipse is extremely extensible, we expect
+    that OMNeT++-based simulation frameworks will contribute their own custom
+    wizards into the IDE.
 
 Tooling:
-  On the Windows platform, we have standardized on using the MinGW compiler.
-  We are bundling a version of MSys and MinGW with the distribution, along
-  with MinGW versions of several open-source programs and libraries needed
-  or found useful with OMNeT++, such as gdb, perl, libxml, gmp, graphviz,
-  Tcl/Tk, svn and git. MinGW was chosen over Cygwin because MinGW builds and
-  uses libraries in the native Windows (MSVC-compatible) binary format, and
-  builds programs that execute without a Unix emulation layer. The MSVC
-  compiler is only supported in the commercial version of OMNeT++.
+
+  - On the Windows platform, we have standardized on using the MinGW compiler.
+    We are bundling a version of MSys and MinGW with the distribution, along
+    with MinGW versions of several open-source programs and libraries needed
+    or found useful with OMNeT++, such as gdb, perl, libxml, gmp, graphviz,
+    Tcl/Tk, svn and git. MinGW was chosen over Cygwin because MinGW builds and
+    uses libraries in the native Windows (MSVC-compatible) binary format, and
+    builds programs that execute without a Unix emulation layer. The MSVC
+    compiler is only supported in the commercial version of OMNeT++.
 
 Build system:
-  In order to facilitate working with large simulation models like the INET
-  Framework, the makefile generator opp_makemake has been extended with the
-  --deep option. With --deep, opp_makemake generates a makefile that takes
-  care of building a whole source directory tree.
 
-  Another big change is out-of-directory builds for both the OMNeT++ libraries
-  and simulation models: object files and other by-products of the build
-  process go in a separate directory tree (out/).
+  - In order to facilitate working with large simulation models like the INET
+    Framework, the makefile generator opp_makemake has been extended with the
+    --deep option. With --deep, opp_makemake generates a makefile that takes
+    care of building a whole source directory tree.
 
-  Simulation models can now easily be compiled with debug/release compiler
-  options, simply with the commands "make MODE=debug" and "make MODE=release";
-  there is no need to modify configure.user.
+  - Another big change is out-of-directory builds for both the OMNeT++ libraries
+    and simulation models: object files and other by-products of the build
+    process go in a separate directory tree (out/).
+
+  - Simulation models can now easily be compiled with debug/release compiler
+    options, simply with the commands "make MODE=debug" and "make MODE=release";
+    there is no need to modify configure.user.
 
 Simulation kernel:
-  Simulation kernel internals have been redesigned with memory efficiency in
-  mind, to support large-scale simulations better. Techniques include string
-  pooling (storing freqeuently occurring strings such as module, gate and
-  parameter names only in one copy), shared parameter value instances,
-  gate vector descriptors (gate name, type and size are only stored once
-  for the whole gate vector), and optimal packing of object fields (e.g.
-  packing several boolean variables into an unsigned int).
 
-  The simulation kernel as a library has been made significantly easier to
-  embed in other (non-OMNeT++) programs. The way of using the OMNeT++
-  simulation kernel as a plain C++ library has been documented in the Manual,
-  and two corresponding code examples have been added to the distribution.
+  - Simulation kernel internals have been redesigned with memory efficiency in
+    mind, to support large-scale simulations better. Techniques include string
+    pooling (storing freqeuently occurring strings such as module, gate and
+    parameter names only in one copy), shared parameter value instances,
+    gate vector descriptors (gate name, type and size are only stored once
+    for the whole gate vector), and optimal packing of object fields (e.g.
+    packing several boolean variables into an unsigned int).
 
-  There have been several complaints about precision loss due to simtime_t
-  being represented with the C type "double". In 4.0, double has been replaced
-  with an int64-based fixed-point representation; the precision can be
-  configured in omnetpp.ini as a power of ten, with the default being
-  picosecond resolution (1e-12).
+  - The simulation kernel as a library has been made significantly easier to
+    embed in other (non-OMNeT++) programs. The way of using the OMNeT++
+    simulation kernel as a plain C++ library has been documented in the Manual,
+    and two corresponding code examples have been added to the distribution.
 
-  Regarding the API, several functions have been given better or more
-  consistent names, with the most visible change being that getter methods
-  have been prefixed with the word "get". Migration of simulation models
-  to 4.0 is assisted by scripts that perform this renaming (and several other
-  adjustments) in the source code.
+  - There have been several complaints about precision loss due to simtime_t
+    being represented with the C type "double". In 4.0, double has been replaced
+    with an int64-based fixed-point representation; the precision can be
+    configured in omnetpp.ini as a power of ten, with the default being
+    picosecond resolution (1e-12).
 
-  cMessage has been split into a base cMessage plus a cPacket class.
-  The bit length, encapsulated message and error flag fields have been
-  moved to cPacket.
+  - Regarding the API, several functions have been given better or more
+    consistent names, with the most visible change being that getter methods
+    have been prefixed with the word "get". Migration of simulation models
+    to 4.0 is assisted by scripts that perform this renaming (and several other
+    adjustments) in the source code.
 
-  Modules have now the possibility to receive nonzero-duration messages
-  at the beginning of the reception; this is done by reconfiguring the
-  gate object.
+  - cMessage has been split into a base cMessage plus a cPacket class.
+    The bit length, encapsulated message and error flag fields have been
+    moved to cPacket.
 
-  sendDirect() calls now expect the propagation delay and transmission
-  duration values in separate arguments; this was done to facilitate
-  the animation of wireless transmissions later.
+  - Modules have now the possibility to receive nonzero-duration messages
+    at the beginning of the reception; this is done by reconfiguring the
+    gate object.
+
+  - sendDirect() calls now expect the propagation delay and transmission
+    duration values in separate arguments; this was done to facilitate
+    the animation of wireless transmissions later.
 
 NED:
+
   The NED language has been revised and significantly extended. An overview
-  of changes:
+  of changes follows.
 
-  The language syntax has been changed to make it more consistent. A migration
-  tool is provided to convert old NED files to the new syntax.
+  - The language syntax has been changed to make it more consistent. A migration
+    tool is provided to convert old NED files to the new syntax.
 
-  A Java-like package system has been introduced to make the language scale
-  to large model frameworks and to prevent name clashes; NED files files are
-  now read from directory trees listed on the NEDPATH.
+  - A Java-like package system has been introduced to make the language scale
+    to large model frameworks and to prevent name clashes; NED files files are
+    now read from directory trees listed on the *NED path*.
 
-  Channels have been made first-class citizens. They can have arbitrary
-  parameters like modules do, and may have custom C++ implementation classes.
-  Three predefined channel types have been created, ned.IdealChannel,
-  ned.DelayChannel and ned.DatarateChannel.
+  - Channels have been made first-class citizens. They can have arbitrary
+    parameters like modules do, and may have custom C++ implementation classes.
+    Three predefined channel types have been created, ned.IdealChannel,
+    ned.DelayChannel and ned.DatarateChannel.
 
-  Inheritance is now supported for module and channel types. Derived modules
-  and channels may add new parameters and gates, may set or modify parameter
-  values and gate vector size, and (in the case of compound modules) may add
-  new submodules and connections.
+  - Inheritance is now supported for module and channel types. Derived modules
+    and channels may add new parameters and gates, may set or modify parameter
+    values and gate vector size, and (in the case of compound modules) may add
+    new submodules and connections.
 
-  Inner types are now supported. This is most useful for making channel
-  definitions local to the network definition that uses them.
+  - Inner types are now supported. This is most useful for making channel
+    definitions local to the network definition that uses them.
 
-  Module and channel interfaces have been introduced, to make "like"
-  relationships more explicit. Module and channel interfaces can be used as
-  a placeholder where normally a module or channel type would be used, and the
-  concrete module or channel type is determined at network setup time by a
-  parameter. Concrete module types have to "implement" the interface they can
-  substitute.
+  - Module and channel interfaces have been introduced, to make "like"
+    relationships more explicit. Module and channel interfaces can be used as
+    a placeholder where normally a module or channel type would be used, and the
+    concrete module or channel type is determined at network setup time by a
+    parameter. Concrete module types have to "implement" the interface they can
+    substitute.
 
-  Inout gates and bidirectional gates are now supported. In the C++ code,
-  inout gates appear as (input,output) gate pairs.
+  - Inout gates and bidirectional gates are now supported. In the C++ code,
+    inout gates appear as (input,output) gate pairs.
 
-  Parameters can now have default values. The default value can be overridden
-  in the ini file. If the ini file does not assign any value to the parameter,
-  the default values get used automatically.
+  - Parameters can now have default values. The default value can be overridden
+    in the ini file. If the ini file does not assign any value to the parameter,
+    the default values get used automatically.
 
-  Support for arithmetic expressions has become more complete, e.g. string
-  manipulation is also possible.
+  - Support for arithmetic expressions has become more complete, e.g. string
+    manipulation is also possible.
 
-  It is possible to annotate module or channel types, parameters, gates and
-  submodules with properties. Metadata can carry extra information for
-  various tools, the runtime environment, or even for other modules in the
-  model. Examples include display strings, parameter prompt string and unit
-  of measurement.
+  - It is possible to annotate module or channel types, parameters, gates and
+    submodules with properties. Metadata can carry extra information for
+    various tools, the runtime environment, or even for other modules in the
+    model. Examples include display strings, parameter prompt string and unit
+    of measurement.
 
-  Default icons (in general, default display strings) are now supported.
-  Display strings are represented as metadata annotation (@display property),
-  which can be modified via inheritance.
+  - Default icons (in general, default display strings) are now supported.
+    Display strings are represented as metadata annotation (@display property),
+    which can be modified via inheritance.
 
 Ini files:
-  Instead of runs, named configuration sections were introduced in the ini
-  file.
 
-  The concept of "runs" have been refined to provide parameter study support;
-  Ini files now can specify parameter ranges and the runtime is able to explore
-  them. The notion of experiment, measurement and replication was introduced to
-  help the general workflow of result analysis.
+  - Instead of runs, named configuration sections were introduced in the ini
+    file.
 
-  Configuration options are now checked; mistyped configuration options are
-  reported. Configuration options can be given on the command-line as well,
-  overriding the values specified in the ini file.
+  - The concept of "runs" have been refined to provide parameter study support;
+    Ini files now can specify parameter ranges and the runtime is able to explore
+    them. The notion of experiment, measurement and replication was introduced to
+    help the general workflow of result analysis.
 
-  The new "fingerprint" ini file option allows for quick-and-simple regression
-  tests. The fingerprint is basically a hash of event times and module IDs
-  during the simulation, and it can detect if the simulation follows a
-  different trajectory after a supposedly "harmless" code change.
+  - Configuration options are now checked; mistyped configuration options are
+    reported. Configuration options can be given on the command-line as well,
+    overriding the values specified in the ini file.
+
+  - The new "fingerprint" ini file option allows for quick-and-simple regression
+    tests. The fingerprint is basically a hash of event times and module IDs
+    during the simulation, and it can detect if the simulation follows a
+    different trajectory after a supposedly "harmless" code change.
 
 Result analysis:
-  The new result analysis tool in the IDE (which replaces plove and scave)
-  supports the notion of experiments, measurements and replication. The IDE
-  now stores all operations required to create a diagram or chart in a "recipe"
-  file. It can recreate the charts and diagrams automatically after re-running
-  the simulation or the whole experiment.
 
-  The vector and scalar file format has changed to support the new features
-  of the IDE. Vector files are now indexed for efficiency.
+  - The new result analysis tool in the IDE (which replaces plove and scave)
+    supports the notion of experiments, measurements and replication. The IDE
+    now stores all operations required to create a diagram or chart in a "recipe"
+    file. It can recreate the charts and diagrams automatically after re-running
+    the simulation or the whole experiment.
+
+  - The vector and scalar file format has changed to support the new features
+    of the IDE. Vector files are now indexed for efficiency.
 
 Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A4.0
 
@@ -6144,18 +6151,18 @@ Improvements since rc1:
 Documentation:
  - Significant work went into updating the Manual. The following chapters are
    either new, or have been rewritten or significantly expanded:
-     3 The NED Language
-     7 Building Simulation Programs
-     8 Configuring Simulations
-     9 Running Simulations
-     10 Network Graphics And Animation
-     11 Analyzing Simulation Results
-     15 Plug-in Extensions
-     16 Embedding the Simulation Kernel
-     17 Appendix: NED Reference
+     - 3 The NED Language
+     - 7 Building Simulation Programs
+     - 8 Configuring Simulations
+     - 9 Running Simulations
+     - 10 Network Graphics And Animation
+     - 11 Analyzing Simulation Results
+     - 15 Plug-in Extensions
+     - 16 Embedding the Simulation Kernel
+     - 17 Appendix: NED Reference
    Chapters that need further work are:
-     4 Simple Modules
-     6 The Simulation Library
+     - 4 Simple Modules
+     - 6 The Simulation Library
 
  - Revised the User Guide. Text and screenshots have been updated to the
    current state of the UI.
@@ -6240,8 +6247,9 @@ Cmdenv/Tkenv:
  - on the command-line, accept per-object configuration options, also without
    object name pattern. Thus, both of the following are accepted, and are
    equivalent:
-      opp_run --**.vector-recording=false
-      opp_run --vector-recording=false
+
+        opp_run --**.vector-recording=false
+        opp_run --vector-recording=false
 
 Tools:
  - added opp_runall tool
@@ -6433,14 +6441,14 @@ Main changes:
    coroutines" library which used setjmp()/longjmp() to switch stacks no longer
    works with recent glibc versions.)
 
- - Updated the 'setenv' and 'configure' scripts, to make them more consistent with
+ - Updated the `setenv` and `configure` scripts, to make them more consistent with
    those in more recent or modernized releases.
 
-    1. 'configure' now mandates having 'setenv' sourced before it runs.
-    2. 'setenv' now sets OMNETPP_IMAGE_PATH, in order to prevent model
+    1. `configure` now mandates having `setenv` sourced before it runs.
+    2. `setenv` now sets `OMNETPP_IMAGE_PATH`, in order to prevent model
        frameworks from accidentally making omnetpp's bundled icons unaccessible
-       from Tkenv by simply appending to OMNETPP_IMAGE_PATH.
-    3. 'configure' now creates 'configure.user' from 'configure.user.dist'
+       from Tkenv by simply appending to `OMNETPP_IMAGE_PATH`.
+    3. `configure` now creates `configure.user` from `configure.user.dist`
        if it does not already exist.
 
  - The Makefiles were updated with more dependencies to enable parallel build.
@@ -6504,7 +6512,7 @@ OMNeT++ 3.2p1 (Jan 2006)
 This is a maintenance release. Changes include:
 
  - support for VC8.0 (Microsoft Visual C++ 2005 [Express]).
- - opp_nmakemake -b <dir> failed for directory names containing "++"
+ - opp_nmakemake -b <dir> failed for directory names containing `++`
  - fixed bug in Plove/Scalars "Save picture" function
 
 
@@ -6589,13 +6597,13 @@ New examples:
    existing models), or build a network from topology stored in a database.
 
 Other:
- - NED: enabled parent module gates to get connected with "++".
-   parentmodgate++ connects the first unconnected gate, but it doesn't
-   create new ones -- it is an error to exceed sizeof(gate).
+ - NED: enabled parent module gates to get connected with `++`.
+   `parentmodgate++` connects the first unconnected gate, but it doesn't
+   create new ones -- it is an error to exceed `sizeof(gate)`.
 
  - Precision in output vector/scalar files, that is, the number of
    significant digits printed can be set from the configuration now:
-   [General] / output-scalar-precision=<int>, output-vector-precision=<int>.
+   `[General]` / `output-scalar-precision=<int>`, `output-vector-precision=<int>`.
    The default is 12, but it might not be straightforward to decide what
    is the "optimal" setting -- see src/envir/ChangeLog for a discussion.
 
@@ -6670,7 +6678,7 @@ omnetpp.ini:
    single line in omnetpp.ini. Consider the following:
 
        **.xmlConfig=xmldoc("all-in-one.xml","config[@mod=$MODULE_FULLPATH]")
-   
+
    where all-in-one.xml contains `<config mod="net.host1.rt">...</config>`
    elements for every module.
 
