@@ -75,6 +75,13 @@ WITH_OSGEARTH=no
 WITH_NETBUILDER=yes
 
 #
+# Whether to support using Python in simulations. This feature includes the
+# availability of the pyeval()/pycode() NED functions, the @pythonClass NED module
+# property, etc.
+#
+WITH_PYTHON=yes
+
+#
 # Set to "yes" to allow the use of LibXML2. OMNeT++ will only use LibXML for loading
 # XML files that have a DOCTYPE declaration such as an associated DTD. All other XML files
 # are loaded using an embedded XML parser, which is both faster and more memory-efficient.
