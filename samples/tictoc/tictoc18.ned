@@ -26,7 +26,7 @@ network TicToc18
         tic[0].gate++ <--> Channel <--> tic[2].gate++;
         tic[1].gate++ <--> Channel <--> tic[2].gate++;
         // connect the central nodes together
-        for i=2..numCentralNodes+1 {
+        for i=2..numCentralNodes {
             tic[i].gate++ <--> Channel <--> tic[i+1].gate++;
         }
         // connect the 2 nodes on the other side to the central nodes
