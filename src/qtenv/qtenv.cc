@@ -78,10 +78,6 @@
 #include "messageanimator.h"
 #include "runselectiondialog.h"
 
-#ifdef Q_OS_MAC
-#include <ApplicationServices/ApplicationServices.h> // for the TransformProcessType magic on startup
-#endif
-
 #define emit
 
 using namespace omnetpp::common;
@@ -655,15 +651,6 @@ void Qtenv::doRun()
         QFontDatabase::addApplicationFont(":/fonts/FiraCode-Bold");
 
         app->setStyle(new QtenvProxyStyle());
-
-#ifdef Q_OS_MAC
-        ProcessSerialNumber psn;
-        GetCurrentProcess(&psn);
-
-        // This dance is necessary to make the Apple Menu work immediately after launch.
-        TransformProcessType(&psn, kProcessTransformToBackgroundApplication);
-        TransformProcessType(&psn, kProcessTransformToForegroundApplication);
-#endif
 
         pauseEventLoop = new QEventLoop(app);
 
