@@ -4275,7 +4275,7 @@ else
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
         ;;
-    arm-*-darwin*)
+    aarch64-*-darwin*)
         PLATFORM=macos
         ARCH=aarch64
         OMNETPP_TOOLS_DIR=$OMNETPP_ROOT_DIR/tools/$PLATFORM.$ARCH
