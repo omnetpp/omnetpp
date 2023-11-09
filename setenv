@@ -82,6 +82,10 @@ if [ $(uname) = "Darwin" ]; then
       export dir; arch -x86_64 /bin/zsh -c 'source $dir/setenv; zsh -i'
       return 1
     fi
+    if [ -d $dir/tools/macos.aarch64 ]; then
+      TOOLS_DIR=$dir/tools/macos.aarch64
+      export PATH=$TOOLS_DIR/bin:$PATH
+    fi
   else
     if [ -d $dir/tools/macos.x86_64 ]; then
       TOOLS_DIR=$dir/tools/macos.x86_64
