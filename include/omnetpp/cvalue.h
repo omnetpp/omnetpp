@@ -93,6 +93,8 @@ class SIM_API cValue
     cValue(bool b)  {set(b);}
     cValue(int l)  {set((intval_t)l);}
     cValue(int l, const char *unit)  {set((intval_t)l, unit);}
+    cValue(long l)  {set((intval_t)l);}
+    cValue(long l, const char *unit)  {set((intval_t)l, unit);}
     cValue(intval_t l)  {set(l);}
     cValue(intval_t l, const char *unit)  {set(l, unit);}
     cValue(double d)  {set(d);}
