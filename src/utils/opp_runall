@@ -27,7 +27,7 @@ repetitions.
 
 The first positional (non-option) argument and all following arguments are
 treated as the simulation command (simulation program and its arguments).
-Options intended for opp_runall should come before the the simulation command.
+Options intended for opp_runall should come before the simulation command.
 
 To limit the set of simulation runs to be performed, add a -r <runfilter>
 argument to the simulation command.
