@@ -1697,7 +1697,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createZoomToFitAction() {
-        return new SequenceChartAction("Zoom to Fit", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOM)) {
+        return new SequenceChartAction("Zoom to Fit", Action.AS_PUSH_BUTTON, ImageFactory.global().getDescriptor(ImageFactory.TOOLBAR_IMAGE_ZOOMTOFIT)) {
             @Override
             protected void doRun() {
                 sequenceChart.zoomToFit();
