@@ -159,6 +159,7 @@ public class ImageFactory {
 
     public final static String CURSOR_IMAGE_ZOOMIN = CURSOR_IMAGE_DIR + "ZoomIn";
     public final static String CURSOR_IMAGE_ZOOMOUT = CURSOR_IMAGE_DIR + "ZoomOut";
+    public final static String CURSOR_IMAGE_ZOOMTOFIT = CURSOR_IMAGE_DIR + "ZoomToFit";
     public final static String CURSOR_IMAGE_DRAGGER = CURSOR_IMAGE_DIR + "dragger";
 
     public final static String UNKNOWN = INTERNAL_DIR + "unknown";
