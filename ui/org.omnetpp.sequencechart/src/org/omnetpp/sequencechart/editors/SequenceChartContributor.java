@@ -746,11 +746,14 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(configureStyleAction);
         toolBarManager.add(new Separator());
         toolBarManager.add(homeAction);
-        toolBarManager.add(increaseSpacingAction);
-        toolBarManager.add(decreaseSpacingAction);
         toolBarManager.add(new Separator());
+        toolBarManager.add(defaultZoomAction);
+        toolBarManager.add(zoomToFitAction);
         toolBarManager.add(zoomInAction);
         toolBarManager.add(zoomOutAction);
+        toolBarManager.add(new Separator());
+        toolBarManager.add(increaseSpacingAction);
+        toolBarManager.add(decreaseSpacingAction);
         toolBarManager.add(new Separator());
         if (view)
             toolBarManager.add(pinAction);
