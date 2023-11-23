@@ -21,6 +21,7 @@ import org.omnetpp.eventlog.entry.ModuleDescriptionEntry;
 public class FilteredEvent extends EventBase implements IEvent
 {
     protected FilteredEventLog filteredEventLog;
+    protected IEvent event;
     protected long eventNumber = -1; // the corresponding event number
     protected long causeEventNumber = -1; // the event number from which the message was sent that is being processed in this event
     protected IMessageDependency cause; // the message send which is processed in this event
@@ -48,7 +49,9 @@ public class FilteredEvent extends EventBase implements IEvent
     }
 
     public final IEvent getEvent() {
-        return filteredEventLog.getEventLog().getEventForEventNumber(eventNumber);
+        if (event == null)
+            event = filteredEventLog.getEventLog().getEventForEventNumber(eventNumber);
+        return event;
     }
 
     // IEvent interface
