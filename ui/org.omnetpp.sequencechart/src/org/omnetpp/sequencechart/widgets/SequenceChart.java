@@ -1353,6 +1353,8 @@ public class SequenceChart
                     setPixelPerTimelineUnit(1);
                 else
                     setPixelPerTimelineUnit((getViewportWidth() - padding * 2) / timelineCoordinateDelta);
+                // scrolling both ways makes sure that both ends fit in the viewport
+                scrollToEnd();
                 scrollToBegin();
             }
         });
