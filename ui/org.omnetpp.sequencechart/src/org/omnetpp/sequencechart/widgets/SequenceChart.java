@@ -4439,6 +4439,7 @@ public class SequenceChart
         boolean isReuse = messageDependency instanceof MessageReuseDependency;
         // TODO: not always BeginSendEntry?!
         MessageDescriptionEntry messageEntry = messageDependency.getBeginMessageDescriptionEntry();
+        boolean isMessageEntryEventIncludedInEventLog = eventLog.getEventForEventNumber(messageEntry.getEventNumber()) != null;
         BeginSendEntry beginSendEntry = messageEntry instanceof BeginSendEntry ? (BeginSendEntry)messageEntry : null;
         EndSendEntry endSendEntry = beginSendEntry != null ? beginSendEntry.getEvent().getEndSendEntry(beginSendEntry) : null;
         long messageId = messageEntry == null ? 0 : messageEntry.getMessageId();
@@ -4505,7 +4506,7 @@ public class SequenceChart
         if (consequenceEventNumber < startEventNumber || endEventNumber < consequenceEventNumber) {
             // consequence event is out of drawn message dependency range
             x1 = (int)getEventXViewportCoordinateEnd(causeEvent);
-            if (messageEntry != null && !isReuse)
+            if (messageEntry != null && isMessageEntryEventIncludedInEventLog && !isReuse)
                 x1 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
             double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEvent);
             double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEvent, -Double.MAX_VALUE, causeTimelineCoordinate + timelineCoordinateLimit);
@@ -4518,7 +4519,7 @@ public class SequenceChart
         else if (causeEventNumber < startEventNumber || endEventNumber < causeEventNumber) {
             // cause event is out of drawn message dependency range
             x2 = (int)getEventXViewportCoordinateBegin(consequenceEvent);
-            if (messageEntry != null && isReuse)
+            if (messageEntry != null && isMessageEntryEventIncludedInEventLog && isReuse)
                 x2 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
             double consequenceTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(consequenceEvent);
             double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEvent, consequenceTimelineCoordinate - timelineCoordinateLimit, Double.MAX_VALUE);
@@ -4532,9 +4533,9 @@ public class SequenceChart
             // both events are inside
             x1 = (int)getEventXViewportCoordinateEnd(causeEvent);
             x2 = (int)getEventXViewportCoordinateBegin(consequenceEvent);
-            if (messageEntry != null && !isReuse)
+            if (messageEntry != null && isMessageEntryEventIncludedInEventLog && !isReuse)
                 x1 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
-            if (messageEntry != null && isReuse)
+            if (messageEntry != null && isMessageEntryEventIncludedInEventLog && isReuse)
                 x2 = (int)getEventLogEntryXViewportCoordinateBegin(messageEntry);
 
             double causeTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateBegin(causeEvent);
