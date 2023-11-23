@@ -355,13 +355,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             @Override
             public IMenuCreator getMenuCreator() {
                 return new AbstractMenuCreator() {
-                    protected ArrayList<ModuleTreeItem> collectAxiesModules(String property) {
+                    protected ArrayList<ModuleTreeItem> collectAxisModules(String property) {
                         ArrayList<ModuleTreeItem> axisModules = new ArrayList<ModuleTreeItem>();
-                        collectAxiesModules(property, axisModules);
+                        collectAxisModules(property, axisModules);
                         return axisModules;
                     }
 
-                    protected void collectAxiesModules(String property, ArrayList<ModuleTreeItem> axisModules) {
+                    protected void collectAxisModules(String property, ArrayList<ModuleTreeItem> axisModules) {
                         ModuleTreeItem root = sequenceChart.getInput().getModuleTreeRoot();
                         if (root != null) {
                             root.visitItems(new IModuleTreeItemVisitor() {
@@ -382,7 +382,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                         addSubMenuItem(menu, "Network Node", new Runnable() {
                             @Override
                             public void run() {
-                                ArrayList<ModuleTreeItem> axisModules = collectAxiesModules("networkNode");
+                                ArrayList<ModuleTreeItem> axisModules = collectAxisModules("networkNode");
+                                axisModules.addAll(collectAxisModules("wireJunction"));
                                 sequenceChart.setOpenAxisModules(axisModules);
                                 sequenceChart.setShowNetworkCommunication();
                             }
@@ -391,7 +392,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                             @Override
                             public void run() {
                                 // TODO: factor out with the above
-                                ArrayList<ModuleTreeItem> axisModules = collectAxiesModules("networkInterface");
+                                ArrayList<ModuleTreeItem> axisModules = collectAxisModules("networkInterface");
+                                axisModules.addAll(collectAxisModules("wireJunction"));
                                 sequenceChart.setOpenAxisModules(axisModules);
                                 sequenceChart.setShowNetworkCommunication();
                             }
