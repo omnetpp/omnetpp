@@ -238,6 +238,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private SequenceChartAction increaseSpacingAction;
     private SequenceChartAction decreaseSpacingAction;
     private SequenceChartAction defaultZoomAction;
+    private SequenceChartAction gotoBeginAction;
+    private SequenceChartAction gotoEndAction;
     private SequenceChartAction zoomToFitAction;
     private SequenceChartAction zoomInAction;
     private SequenceChartAction zoomOutAction;
@@ -294,6 +296,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.increaseSpacingAction = createIncreaseSpacingAction();
         this.decreaseSpacingAction = createDecreaseSpacingAction();
         this.defaultZoomAction = createDefaultZoomAction();
+        this.gotoBeginAction = createGotoBeginAction();
+        this.gotoEndAction = createGotoEndAction();
         this.zoomToFitAction = createZoomToFitAction();
         this.zoomInAction = createZoomInAction();
         this.zoomOutAction = createZoomOutAction();
@@ -677,9 +681,12 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 showInSubmenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow));
 
                 // Go to submenu
-                IMenuManager gotoSubmenu = new MenuManager("Go To");
+                IMenuManager gotoSubmenu = new MenuManager("Go to");
                 gotoSubmenu.add(createGotoEventCommandContributionItem());
                 gotoSubmenu.add(createGotoSimulationTimeCommandContributionItem());
+                gotoSubmenu.add(new Separator());
+                gotoSubmenu.add(gotoBeginAction);
+                gotoSubmenu.add(gotoEndAction);
 
                 // context menu static part
                 menuManager.add(selectModulesAction);
@@ -1654,6 +1661,24 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             protected void doRun() {
                 sequenceChart.setAxisSpacingMode(AxisSpacingMode.MANUAL);
                 sequenceChart.setAxisSpacing(sequenceChart.getAxisSpacing() - 5);
+            }
+        };
+    }
+
+    private SequenceChartAction createGotoBeginAction() {
+        return new SequenceChartAction("Go to Begin", Action.AS_PUSH_BUTTON) {
+            @Override
+            protected void doRun() {
+                sequenceChart.gotoBegin();
+            }
+        };
+    }
+
+    private SequenceChartAction createGotoEndAction() {
+        return new SequenceChartAction("Go to End", Action.AS_PUSH_BUTTON) {
+            @Override
+            protected void doRun() {
+                sequenceChart.gotoEnd();
             }
         };
     }
