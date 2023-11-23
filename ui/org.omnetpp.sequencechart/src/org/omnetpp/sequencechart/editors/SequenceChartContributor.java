@@ -96,6 +96,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -250,6 +251,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     private SequenceChartAction selfTestAction;
     private SequenceChartAction copyToClipboardAction;
     private SequenceChartAction exportToSVGAction;
+    private SequenceChartAction homeAction;
     private SequenceChartAction refreshAction;
     private SequenceChartAction pinAction;
     private SequenceChartAction selectModulesAction;
@@ -307,6 +309,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         this.copyToClipboardAction = createCopyToClipboardAction();
         this.releaseMemoryAction = createReleaseMemoryAction();
         this.selfTestAction = createSelfTestAction();
+        this.homeAction = createHomeAction();
         this.refreshAction = createRefreshAction();
         this.pinAction = createPinAction();
         this.exportToSVGAction = createExportToSVGAction();
@@ -742,6 +745,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(filterAction);
         toolBarManager.add(configureStyleAction);
         toolBarManager.add(new Separator());
+        toolBarManager.add(homeAction);
         toolBarManager.add(increaseSpacingAction);
         toolBarManager.add(decreaseSpacingAction);
         toolBarManager.add(new Separator());
@@ -2392,6 +2396,22 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     super.configureShell(newShell);
                 }
             };
+        };
+    }
+
+    private SequenceChartAction createHomeAction() {
+        return new SequenceChartAction("Home", Action.AS_PUSH_BUTTON, PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ETOOL_HOME_NAV)) {
+            @Override
+            protected void doRun() {
+                if (getEventLog().getApproximateNumberOfEvents() < 1000)
+                    sequenceChart.zoomToFit();
+                else {
+                    sequenceChart.defaultZoom();
+                    sequenceChart.gotoEnd();
+                    sequenceChart.gotoBegin();
+                }
+                sequenceChart.refresh();
+            }
         };
     }
 
