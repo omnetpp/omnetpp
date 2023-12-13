@@ -704,6 +704,9 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
                 scrollVerticalTo(vt);
             }
         }
+        else {
+            chartChanged();
+        }
     }
 
     protected void paintInsets(Graphics graphics) {
