@@ -1412,7 +1412,7 @@ def _export_df_as(df, format, filepath, **kwargs):
     #elif extension == "gbq":
     #    df.to_gbq(filepath, **kwargs) # needs authentication
     elif extension == "md":
-        df.to_markdown(filepath, **kwargs),
+        df.to_markdown(filepath, **kwargs)
     else:
         raise ValueError("Unknown export data format: " + format)
 
