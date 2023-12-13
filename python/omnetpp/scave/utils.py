@@ -34,8 +34,8 @@ def _import_scave_bindings():
     sb = None
 
     for suffix in module_suffixes:
+        modulename = "omnetpp.scave.scave_bindings" + suffix
         try:
-            modulename = "omnetpp.scave.scave_bindings" + suffix
             if suffix:
                 print("Falling back to: ", modulename)
             sb = importlib.import_module(modulename)
