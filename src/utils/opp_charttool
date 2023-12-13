@@ -124,7 +124,7 @@ def expand_ranges(s):
     if not is_valid_index_range(s):
         raise ValueError("Invalid syntax '{}' in argument for -i <indices>".format(s))
     # "1-6,99" -> "1,2,3,4,5,6,99"
-    s = re.sub('(\d+)-(\d+)', lambda m: str(list(range(int(m.group(1)),1+int(m.group(2)))))[1:-1], s)
+    s = re.sub(r'(\d+)-(\d+)', lambda m: str(list(range(int(m.group(1)),1+int(m.group(2)))))[1:-1], s)
     # "1,2,3,4,5,6,99" -> [1,2,3,4,5,6,99]
     numbers = [ int(i) for i in s.split(',') ]
     return np.unique(np.array(numbers))
