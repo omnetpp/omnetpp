@@ -134,13 +134,23 @@ class _DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
 
 
 def _check_same_unit(df):
+    """
+    Checks whether the results in the passed DataFrame all have the same unit.
+    If so, returns it. Otherwise, raises an exception.
+    If the DataFrame is empty, or has no "unit" column, or if all units
+    are either `None`, `NaN`, or empty string, then `None` is returned.
+    """
     if df is None or len(df) == 0 or "unit" not in df.columns:
         return None
-    units = list(df["unit"].unique())
+    def is_nonunit(u):
+        nonunits = [None, math.nan, np.nan, ""]
+        return u in nonunits or (isinstance(u, float) and math.isnan(u))
+    unit_col = df["unit"]
+    # The units column, but with all values in it that are considered non-units replaced with None.
+    unified_nonunits = unit_col.mask(unit_col.map(is_nonunit), None)
+    units = list(unified_nonunits.unique())
     if not units:
         return None
-    nonunits = [None, math.nan, np.nan, ""]
-    units = [None if u in nonunits else u for u in units]
     if len(units) > 1:
         units = ["<none>" if u is None else u for u in units]
         raise chart.ChartScriptError("The data frame contains multiple units: " + ", ".join(units))
