@@ -332,8 +332,7 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, false);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
-        if (Platform.getOS().equals(Platform.OS_MACOSX))  // use the bundled lldb-mi wrapper instead of gdb
-            configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, "lldbmi2");
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, "opp_dbgmi");
 
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
     }

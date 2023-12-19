@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+# A wrapper script to start 'lldbmi2' from the IDE nativelibs plugin (or fall back to system gdb) 
+#
+# You can directly specify the 'lldbmi2' executable to be used with the 'dbgmi' envvar, overriding the
+# version present in the IDE nativelibs folder (for development purposes). 
+
+if [ $# = 0 ]; then
+  echo "An lldbmi2 / gdb wrapper script for the OMNeT++ IDE."
+  echo "This is an internal tool, do not use it directly."
+  exit 1
+fi
+
+uname=$(uname)
+_ide_root=$(dirname $0)/../ide
+if [ ! -d "$_ide_root" ]; then
+  echo "IDE is not available. Debugging is not supported."
+  exit 1
+fi
+_ide_root=$(cd $_ide_root; pwd)
+
+if [ -z "$dbgmi" ]; then # if dbgmi is not specified in envvar then try to find it in the ide nativelibs plugin
+  if [ "$uname" = "Linux" ]; then
+    dbgmi="${_ide_root}/plugins/org.omnetpp.ide.nativelibs.linux."*/lldbmi2
+    lldb=$(command -v lldb)
+    if [ -n "$lldb" -a -f "$dbgmi" ]; then
+      # if 'lldb' is installed and 'lldbmi2' is present in the plugins dir, figure out the liblldb version used by it and preload it
+      liblldb=$(ldd $lldb | grep liblldb | sed 's/.* => \(.*\) .*/\1/')
+      export LD_PRELOAD=$liblldb
+      export LLDB_DEBUGSERVER_PATH=$(command -v lldb-server)
+    else
+      # lldbmi2 is unusable, later we will fall back to gdb
+      dbgmi=
+    fi
+  elif [ "$uname" = "Darwin" ]; then
+    dbgmi="${_ide_root}/opp_ide.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx_"*/lldbmi2
+  else # assuming we are on  Windows
+    dbgmi="${_ide_root}/plugins/org.omnetpp.ide.nativelibs.win32."*/lldbmi2.exe
+  fi
+fi
+
+if [ ! -f "$dbgmi" ]; then
+  echo "'lldb' or 'lldbmi2' is not present on this system. Falling back to 'gdb'."
+  dbgmi=$(command -v gdb)
+fi
+
+if [ ! -f "$dbgmi" ]; then
+  echo "Neither 'lldbmi2', nor 'gdb' is installed. Debugging is not supported."
+  exit 1
+fi
+
+exec $dbgmi "$@"
