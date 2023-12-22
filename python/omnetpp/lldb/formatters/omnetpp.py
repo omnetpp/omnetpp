@@ -38,7 +38,8 @@ def cEvent_SummaryProvider(value, internal_dict):
         " pri:" + value.GetChildMemberWithName("priority").GetValue()
 
 def cMessage_SummaryProvider(value, internal_dict):
-    return cEvent_SummaryProvider(value, internal_dict) + \
+    return "#" + value.GetChildMemberWithName("messageId").GetValue() + " " + \
+        cEvent_SummaryProvider(value, internal_dict) + \
         " kind:" + value.GetChildMemberWithName("messageKind").GetValue()
 
 def cPacket_SummaryProvider(value, internal_dict):
@@ -47,19 +48,22 @@ def cPacket_SummaryProvider(value, internal_dict):
         " dur:" + value.GetChildMemberWithName("duration").GetSummary()
 
 def __lldb_init_module(debugger, internal_dict):
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".simtime_t_SummaryProvider omnetpp::simtime_t")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cDisplayString_SummaryProvider omnetpp::cDisplayString")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cNamedObject_SummaryProvider omnetpp::cNamedObject")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cOwnedObject_SummaryProvider omnetpp::cOwnedObject")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cOwnedObject_SummaryProvider omnetpp::cNoncopyableOwnedObject")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cOwnedObject_SummaryProvider omnetpp::cDefaultOwner")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cComponentType_SummaryProvider omnetpp::cComponentType")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cComponentType_SummaryProvider omnetpp::cModuleType")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cComponentType_SummaryProvider omnetpp::cDynamicModuleType")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cComponent_SummaryProvider omnetpp::cComponent")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cModule_SummaryProvider omnetpp::cModule")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cModule_SummaryProvider omnetpp::cSimpleModule")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cEvent_SummaryProvider omnetpp::cEvent")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cMessage_SummaryProvider omnetpp::cMessage")
-    debugger.HandleCommand("type summary add -w omnetpp -F " + __name__ + ".cPacket_SummaryProvider omnetpp::cPacket")
+    print("Initializing LLDB type formatters for OMNeT++")
+    debugger.HandleCommand("type summary add -w omnetpp --summary-string ${var%s} char[]")
+    debugger.HandleCommand("type summary add -w omnetpp -v --summary-string #${var} omnetpp::msgid_t")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".simtime_t_SummaryProvider omnetpp::simtime_t")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cDisplayString_SummaryProvider omnetpp::cDisplayString")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cNamedObject_SummaryProvider omnetpp::cNamedObject")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cOwnedObject_SummaryProvider omnetpp::cOwnedObject")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cOwnedObject_SummaryProvider omnetpp::cNoncopyableOwnedObject")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cOwnedObject_SummaryProvider omnetpp::cDefaultOwner")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cComponentType_SummaryProvider omnetpp::cComponentType")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cComponentType_SummaryProvider omnetpp::cModuleType")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cComponentType_SummaryProvider omnetpp::cDynamicModuleType")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cComponent_SummaryProvider omnetpp::cComponent")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cModule_SummaryProvider omnetpp::cModule")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cModule_SummaryProvider omnetpp::cSimpleModule")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cEvent_SummaryProvider omnetpp::cEvent")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cMessage_SummaryProvider omnetpp::cMessage")
+    debugger.HandleCommand("type summary add -w omnetpp -v -F " + __name__ + ".cPacket_SummaryProvider omnetpp::cPacket")
     debugger.HandleCommand("type category enable omnetpp")
