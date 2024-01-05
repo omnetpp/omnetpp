@@ -65,7 +65,8 @@ void Host::handleMessage(cMessage *msg)
 {
     ASSERT(msg == endTxEvent);
 
-    getParentModule()->getCanvas()->setAnimationSpeed(transmissionEdgeAnimationSpeed, this);
+    if (hasGUI())
+        getParentModule()->getCanvas()->setAnimationSpeed(transmissionEdgeAnimationSpeed, this);
 
     if (state == IDLE) {
         // generate packet and schedule timer when it ends
@@ -199,7 +200,8 @@ void Host::refreshDisplay() const
             animSpeed = transmissionEdgeAnimationSpeed;
         if (frontRadius > circlesMaxRadius && backRadius < 0)
             animSpeed = midtransmissionAnimationSpeed;
-        canvas->setAnimationSpeed(animSpeed, this);
+        if (hasGUI())
+            canvas->setAnimationSpeed(animSpeed, this);
     }
     else {
         // hide transmission rings, update animation speed
@@ -211,7 +213,8 @@ void Host::refreshDisplay() const
                 c->setVisible(false);
                 c->setAssociatedObject(nullptr);
             }
-            canvas->setAnimationSpeed(idleAnimationSpeed, this);
+            if (hasGUI())
+                canvas->setAnimationSpeed(idleAnimationSpeed, this);
         }
     }
 
