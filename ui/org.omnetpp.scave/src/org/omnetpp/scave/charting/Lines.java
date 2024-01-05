@@ -28,6 +28,12 @@ class Lines implements ILinePlot {
 
     private static final boolean debug = false;
 
+    public enum PlotAreaCalculationMode {
+        DATA_WITH_PADDING,
+        DATA_WITH_PADDING_AND_ORIGIN,
+        DATA_WITH_PADDING_AND_ORIGIN_WITH_PADDING,
+    }
+
     private LinePlot parent;
     private Rectangle rect = new Rectangle(0,0,1,1);
 
@@ -61,6 +67,10 @@ class Lines implements ILinePlot {
     }
 
     protected RectangularArea calculatePlotArea() {
+        return calculatePlotArea(PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN);
+    }
+
+    protected RectangularArea calculatePlotArea(PlotAreaCalculationMode mode) {
 
         RectangularArea area = new RectangularArea(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY,
                                                     Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
@@ -138,37 +148,58 @@ class Lines implements ILinePlot {
             area.maxY = 1.0;
         }
 
-        double w = area.width();
-        double h = area.height();
+        // relative to data range
+        double paddingLeft = 0.1;
+        double paddingRight = 0.1;
+        double paddingBottom = 0.2;
+        double paddingTop = 0.2;
 
-        area.minX = (area.minX>=0 ? 0 : area.minX-w/80);
-        area.maxX = (area.maxX<=0 ? 0 : area.maxX+w/80);
-        area.minY = (area.minY>=0 ? 0 : area.minY-h/3);
-        area.maxY = (area.maxY<=0 ? 0 : area.maxY+h/3);
+        if (mode == PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN_WITH_PADDING
+                || mode == PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN) {
 
-        // If the original area was 0 size in either dimension, add a 25% margin "away from zero"
-        // in both dimensions, so the data is not covered by the chart area border.
-        // If all data was on the 0 line in a dimension, set a fixed range for it.
-        if (h == 0) {
-            if (area.maxY > 0)
-                area.maxY *= 1.25;
-            if (area.minY < 0)
-                area.minY *= 1.25;
-            if (area.height() == 0) {
-                area.minY = -1;
-                area.maxY = 1;
+            // The idea is that if we're extending the axis range in a direction just to
+            // include the origin, we probably don't want as much (or any) padding there.
+
+            double originMarginFactor = (mode == PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN)
+                                        ? 0.0 : 0.5;
+
+            if (area.minX >= 0) {
+                area.minX = 0;
+                paddingLeft *= originMarginFactor;
+            }
+            if (area.maxX <= 0) {
+                area.maxX = 0;
+                paddingRight *= originMarginFactor;
+            }
+            if (area.minY >= 0) {
+                area.minY = 0;
+                paddingBottom *= originMarginFactor;
+            }
+            if (area.maxY <= 0) {
+                area.maxY = 0;
+                paddingTop *= originMarginFactor;
             }
         }
 
+        double w = area.width();
+        double h = area.height();
+
         if (w == 0) {
-            if (area.maxX > 0)
-                area.maxX *= 1.25;
-            if (area.minX < 0)
-                area.minX *= 1.25;
-            if (area.width() == 0) {
-                area.minX = -1;
-                area.maxX = 1;
-            }
+            area.minX -= 0.5;
+            area.maxX += 0.5;
+        }
+        else {
+            area.minX -= w * paddingLeft;
+            area.maxX += w * paddingRight;
+        }
+
+        if (h == 0) {
+            area.minY -= 0.5;
+            area.maxY += 0.5;
+        }
+        else {
+            area.minY -= h * paddingBottom;
+            area.maxY += h * paddingTop;
         }
 
         return area;
