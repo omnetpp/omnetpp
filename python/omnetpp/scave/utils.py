@@ -957,52 +957,75 @@ def export_image_if_needed(props):
             # only use scientific notation for negative exponents
             ax.ticklabel_format(scilimits=(0, 1000), useOffset=False, useLocale=False)
 
+            from enum import Enum
+
+            class PlotAreaCalculationMode(Enum):
+                DATA_WITH_PADDING = 0
+                DATA_WITH_PADDING_AND_ORIGIN = 1
+                DATA_WITH_PADDING_AND_ORIGIN_WITH_PADDING = 2
+
+            mode = PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN
+
             # start with a tight value bounding box
             ax.margins(0)
             ax.autoscale(True)
 
             # apply the same auto-range logic as in the native widgets of the IDE
             min_x, max_x = ax.get_xlim()
-            width = max_x - min_x # not computing twice, would cause asymmetry
-            min_x = 0 if min_x >= 0 else min_x - width/80
-            max_x = 0 if max_x <= 0 else max_x + width/80
+            min_y, max_y = ax.get_ylim()
 
-            if width == 0:
-                if max_x > 0:
-                    max_x *= 1.25
-                if min_x < 0:
-                    min_x *= 1.25
-                if min_x == max_x == 0:
-                    min_x = -1
-                    max_x = 1
+            # relative to data range
+            padding_left = 0.1
+            padding_right = 0.1
+            padding_bottom = 0.2
+            padding_top = 0.2
 
-            if get_prop("xaxis_min"):
-                min_x = float(get_prop("xaxis_min"))
-            if get_prop("xaxis_max"):
-                max_x = float(get_prop("xaxis_max"))
+            if mode in (PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN_WITH_PADDING,
+                        PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN):
+
+                # The idea is that if we're extending the axis range just to include
+                # the origin, we probably don't want as much padding around it.
+
+                origin_margin_factor = 0.0 if (mode == PlotAreaCalculationMode.DATA_WITH_PADDING_AND_ORIGIN) \
+                                           else 0.5
+
+                if min_x >= 0:
+                    min_x = 0
+                    padding_left *= origin_margin_factor
+                if max_x <= 0:
+                    max_x = 0
+                    padding_right *= origin_margin_factor
+                if min_y >= 0:
+                    min_y = 0
+                    padding_bottom *= origin_margin_factor
+                if max_y <= 0:
+                    max_y = 0
+                    padding_top *= origin_margin_factor
+
+            w = max_x - min_x
+            h = max_y - min_y
+
+            if w == 0:
+                min_x -= 0.5
+                max_x += 0.5
+            else:
+                min_x -= w * padding_left
+                max_x += w * padding_right
+
+            if h == 0:
+                min_y -= 0.5
+                max_y += 0.5
+            else:
+                min_y -= h * padding_bottom
+                max_y += h * padding_top
+
+            min_x = float(get_prop("xaxis_min") or min_x)
+            max_x = float(get_prop("xaxis_max") or max_x)
+
+            min_y = float(get_prop("yaxis_min") or min_y)
+            max_y = float(get_prop("yaxis_max") or max_y)
 
             ax.set_xlim(left=min_x, right=max_x)
-
-
-            min_y, max_y = ax.get_ylim()
-            height = max_y - min_y # not computing twice, would cause asymmetry
-            min_y = 0 if min_y >= 0 else min_y - height/3
-            max_y = 0 if max_y <= 0 else max_y + height/3
-
-            if height == 0:
-                if max_y > 0:
-                    max_y *= 1.25
-                if min_y < 0:
-                    min_y *= 1.25
-                if min_y == max_y:
-                    min_y = -1
-                    max_y = 1
-
-            if get_prop("yaxis_min"):
-                min_y = float(get_prop("yaxis_min"))
-            if get_prop("yaxis_max"):
-                max_y = float(get_prop("yaxis_max"))
-
             ax.set_ylim(bottom=min_y, top=max_y)
 
             # reducing margins all around
