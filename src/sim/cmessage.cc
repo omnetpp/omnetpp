@@ -335,8 +335,8 @@ void cMessage::setSentFrom(cModule *module, int gateId, simtime_t_cref t)
 bool cMessage::isStale()
 {
     // check that destination module still exists and is alive
-    cSimpleModule *module = dynamic_cast<cSimpleModule *>(cSimulation::getActiveSimulation()->getModule(targetModuleId));
-    return !module || module->isTerminated();
+    cModule *module = getArrivalModule();
+    return !module || !module->isSimple() || static_cast<cSimpleModule *>(module)->isTerminated();
 }
 
 void cMessage::execute()
