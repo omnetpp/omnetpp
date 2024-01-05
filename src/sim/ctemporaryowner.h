@@ -39,7 +39,7 @@ class cTemporaryOwner : public cSoftOwner
   protected:
     virtual void objectStealingOnDeletion(cOwnedObject *obj) override { /*allow*/ }
   public:
-    cTemporaryOwner(DestructorMode mode) : cSoftOwner("tmp"), mode(mode), oldOwner(getOwningContext()) {setOwningContext(this);}
+    cTemporaryOwner(DestructorMode mode) : cSoftOwner(nullptr), mode(mode), oldOwner(getOwningContext()) {setOwningContext(this);}
     ~cTemporaryOwner();
     void restoreOriginalOwner() {setOwningContext(oldOwner); oldOwner = nullptr;}
     void drop(cOwnedObject *obj) override {cSoftOwner::drop(obj);}
