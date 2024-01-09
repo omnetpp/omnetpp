@@ -288,6 +288,11 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     virtual std::string str() const override;
 
     /**
+     * Returns true.
+     */
+    virtual bool isSimple() const override;
+
+    /**
      * Calls v->visit(this) for each contained object.
      * See cObject for more details.
      */
