@@ -81,6 +81,11 @@ std::string SendOptions::str() const
     return res;
 }
 
+bool cSimpleModule::isSimple() const
+{
+    return true;
+}
+
 void cSimpleModule::activate(void *p)
 {
     cSimpleModule *mod = (cSimpleModule *)p;

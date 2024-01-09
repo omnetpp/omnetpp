@@ -434,7 +434,7 @@ std::string cModule::getFullPath() const
 
 bool cModule::isSimple() const
 {
-    return dynamic_cast<const cSimpleModule *>(this) != nullptr;
+    return false;
 }
 
 std::vector<cModule*>& cModule::getSubmoduleArray(const char *name) const
