@@ -56,11 +56,9 @@ EXECUTE_ON_STARTUP(cSimulation::getActiveEnvir()->addLifecycleListener(new Local
 
 cSoftOwner::cSoftOwner(const char *name, bool namepooling) : cNoncopyableOwnedObject(name, namepooling)
 {
-    capacity = 2;
+    capacity = 0;
     numObjs = 0;
-    objs = new cOwnedObject *[capacity];
-    for (int i = 0; i < capacity; i++)
-        objs[i] = nullptr;
+    objs = nullptr;
 #ifdef SIMFRONTEND_SUPPORT
     lastChangeSerial = 0;
 #endif
