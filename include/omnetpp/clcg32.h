@@ -33,7 +33,7 @@ namespace omnetpp {
  *    - Range:              1 ... 2^31-2
  *    - Period length:      2^31-2
  *    - Method:             x=(x * 7^5) mod (2^31-1)
- *    - Required hardware:  exactly 32-bit integer aritmetics
+ *    - Required hardware:  exactly 32-bit integer arithmetics
  *    - To check:           if  x[0]=1  then  x[10000]=1,043,618,065
  *
  * Source:  Raj Jain: The Art of Computer Systems Performance Analysis
@@ -42,13 +42,13 @@ namespace omnetpp {
 class SIM_API cLCG32 : public cRNG
 {
   protected:
-    uint32_t seed;
+    int32_t seed;
 
     // 256 pre-generated seeds, spaced 8,388,608 values in the sequence.
     // This covers the whole RNG period. Enough for 128 runs with 2 RNGs
     // each, or 64 runs with 4 RNGs each -- assuming one run never uses
     // more than 8 million random numbers per RNG.
-    static const uint32_t autoSeeds[256];
+    static const int32_t autoSeeds[256];
 
   public:
     cLCG32() {}
