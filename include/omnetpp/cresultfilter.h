@@ -104,6 +104,7 @@ class SIM_API cResultFilter : public cResultListener
         virtual cResultFilter *clone() const override;
         virtual double getInitialDoubleValue() const {return NAN;}
         virtual void addDelegate(cResultListener *delegate);
+        virtual void removeDelegate(cResultListener *delegate);
         virtual bool hasDelegate(cResultListener *delegate);
         virtual int getNumDelegates() const;
         cResultListener *getDelegate(int k) const {return delegates[k];}  // unsafe

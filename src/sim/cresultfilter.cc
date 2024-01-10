@@ -75,6 +75,21 @@ void cResultFilter::addDelegate(cResultListener *delegate)
     delegate->subscribedTo(this);
 }
 
+void cResultFilter::removeDelegate(cResultListener *delegate)
+{
+    int index = -1, numDelegates, i;
+    for (i = 0; delegates[i]; i++)
+        if (delegates[i] == delegate)
+            index = i;
+    numDelegates = i;
+    if (index == -1)
+        throw cRuntimeError("%s: removeDelegate: no such delegate", getClassName());
+
+    std::move(delegates+index+1, delegates+numDelegates, delegates+index);
+    delegates[numDelegates-1] = nullptr;
+    delegate->unsubscribedFrom(this);
+}
+
 bool cResultFilter::hasDelegate(cResultListener *delegate)
 {
     for (int i = 0; delegates[i]; i++)
