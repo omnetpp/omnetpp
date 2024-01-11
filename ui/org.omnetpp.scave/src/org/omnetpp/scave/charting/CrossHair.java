@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
@@ -235,10 +234,7 @@ class CrossHair {
             });
 
             StringBuilder htmlText = new StringBuilder();
-            StringBuilder plainText  = new StringBuilder();
-            int maxTextLength = 0;
 
-            int lineNo = 0;
             for (DataPoint dp : dataPoints) {
                 LineProperties props = parent.getLineProperties(dp.series);
                 Color color = props.getEffectiveLineColor();
@@ -251,19 +247,10 @@ class CrossHair {
                     htmlText.append(String.format("<img src='%s'>", imageName));
 
                 htmlText.append(StringEscapeUtils.escapeHtml4(text));
-                if (lineNo > 0)
-                    plainText.append("\n");
-                plainText.append(text);
                 htmlText.append("<br/>");
-                maxTextLength = Math.max(maxTextLength, text.length());
-                ++lineNo;
             }
             if (totalFound > dataPoints.size())
                 htmlText.append(String.format("... and %d more", totalFound - dataPoints.size()));
-
-            TextLayout textLayout = new TextLayout(parent.getDisplay());
-            textLayout.setText(plainText.toString());
-            textLayout.setWidth(320); // comes from HoverSupport
 
             return HoverSupport.addHTMLStyleSheet(htmlText.toString());
         }
