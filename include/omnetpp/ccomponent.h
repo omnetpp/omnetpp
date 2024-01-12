@@ -35,6 +35,7 @@ class cProperties;
 class cDisplayString;
 class cRNG;
 class cStatistic;
+class cResultFilter;
 class cResultRecorder;
 
 /**
@@ -153,6 +154,9 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     void collectResultRecorders(std::vector<cResultRecorder*>& result) const;
     virtual void doEmit(simsignal_t signalID, intval_t i, cObject *details);
     virtual void doEmit(simsignal_t signalID, uintval_t i, cObject *details);
+    void trimResultListeners();
+    void trimResultFilterDelegates(cResultFilter *filter);
+    bool isRecorderEnabled(cResultRecorder *recorder);
 
   protected:
     virtual cModule *doFindModuleByPath(const char *s) const = 0;
