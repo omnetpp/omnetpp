@@ -1646,10 +1646,11 @@ void EnvirBase::setVectorAttribute(void *vechandle, const char *name, const char
 bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
     ASSERT(outvectorManager);
-    if (getSimulation()->getFingerprintCalculator())
+    bool recorded = outvectorManager->record(vechandle, t, value);
+    if (recorded && getSimulation()->getFingerprintCalculator())
         // TODO: determine component and result name if possible
         getSimulation()->getFingerprintCalculator()->addVectorResult(nullptr, "", t, value);
-    return outvectorManager->record(vechandle, t, value);
+    return recorded;
 }
 
 //-------------------------------------------------------------
@@ -1657,16 +1658,16 @@ bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 void EnvirBase::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
     ASSERT(outScalarManager);
-    outScalarManager->recordScalar(component, name, value, attributes);
-    if (getSimulation()->getFingerprintCalculator())
+    bool recorded = outScalarManager->recordScalar(component, name, value, attributes);
+    if (recorded && getSimulation()->getFingerprintCalculator())
         getSimulation()->getFingerprintCalculator()->addScalarResult(component, name, value);
 }
 
 void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
     ASSERT(outScalarManager);
-    outScalarManager->recordStatistic(component, name, statistic, attributes);
-    if (getSimulation()->getFingerprintCalculator())
+    bool recorded = outScalarManager->recordStatistic(component, name, statistic, attributes);
+    if (recorded && getSimulation()->getFingerprintCalculator())
         getSimulation()->getFingerprintCalculator()->addStatisticResult(component, name, statistic);
 }
 
