@@ -214,8 +214,13 @@ public abstract class LargeScrollableCanvas extends Canvas {
     }
 
     public void setViewportRectangle(Rectangle r) {
+        setViewportRectangle(r, true);
+    }
+
+    public void setViewportRectangle(Rectangle r, boolean configureScrollBars) {
         viewportRect = new Rectangle(r.x, r.y, r.width, r.height);
-        configureScrollBars();
+        if (configureScrollBars)
+            this.configureScrollBars();
     }
 
     public int virtualToCanvasX(long x) {
