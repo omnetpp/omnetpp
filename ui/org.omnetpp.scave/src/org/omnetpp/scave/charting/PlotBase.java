@@ -181,7 +181,7 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
             for (int pass = 1; pass <= 2; ++pass) {
                 Rectangle plotArea = doLayoutChart(graphics, pass);
-                setViewportRectangle(plotArea);
+                setViewportRectangle(plotArea, pass == 2);
 
                 if (shouldZoomOutX)
                     zoomToFitX();
