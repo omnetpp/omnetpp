@@ -477,12 +477,10 @@ bool cComponent::SignalListenerList::removeListener(cIListener *l)
     int k = findListener(l);
     if (k == -1)
         return false;  // not there
-
-    // remove listener. note: don't delete listeners[] even if empty,
-    // because fire() relies on it not being nullptr
-    int n = countListeners();
-    listeners[k] = listeners[n-1];
-    listeners[n-1] = nullptr;
+    while (listeners[k]) {
+        listeners[k] = listeners[k+1];
+        k++;
+    }
     return true;
 }
 
