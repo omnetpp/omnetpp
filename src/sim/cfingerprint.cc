@@ -29,6 +29,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 
 #ifdef WITH_PARSIM
 #include "parsim/cmemcommbuffer.h"
@@ -78,6 +79,7 @@ void cSingleFingerprintCalculator::initialize(const char *expectedFingerprints, 
 {
     this->expectedFingerprints = expectedFingerprints;
     hasher_.reset();
+    enabledVecHandles.clear();
 
     // fingerprints may have an ingredients string embedded in them after a "/" character;
     // if so, that overrides the fingerprint-ingredients configuration option.
@@ -300,18 +302,21 @@ void cSingleFingerprintCalculator::addStatisticResult(const cComponent *componen
     }
 }
 
-void cSingleFingerprintCalculator::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
+void cSingleFingerprintCalculator::registerVectorResult(void *vechandle, const cComponent *component, const char *name)
 {
-    if (addVectorResults) {
-        MatchableObject matchableComponent(component);
-        // TODO: remove workaround for unknown component
-        if (moduleMatcher == nullptr || component == nullptr || moduleMatcher->matches(&matchableComponent)) {
-            cNamedObject object(name);
-            MatchableObject matchableResult(&object);
-            if (resultMatcher == nullptr || resultMatcher->matches(&matchableResult))
-                hasher_ << t << value;
-        }
+    MatchableObject matchableComponent(component);
+    if (moduleMatcher == nullptr || component == nullptr || moduleMatcher->matches(&matchableComponent)) {
+        cNamedObject object(name);
+        MatchableObject matchableResult(&object);
+        if (resultMatcher == nullptr || resultMatcher->matches(&matchableResult))
+            enabledVecHandles.insert(vechandle);
     }
+}
+
+void cSingleFingerprintCalculator::addVectorResult(void *vechandle, const simtime_t& t, double value)
+{
+    if (addVectorResults && common::contains(enabledVecHandles, vechandle))
+        hasher_ << t << value;
 }
 
 void cSingleFingerprintCalculator::addVisuals()
@@ -395,10 +400,16 @@ void cMultiFingerprintCalculator::addStatisticResult(const cComponent *component
         element->addStatisticResult(component, name, value);
 }
 
-void cMultiFingerprintCalculator::addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value)
+void cMultiFingerprintCalculator::registerVectorResult(void *vechandle, const cComponent *component, const char *name)
 {
     for (auto& element: elements)
-        element->addVectorResult(component, name, t, value);
+        element->registerVectorResult(vechandle, component, name);
+}
+
+void cMultiFingerprintCalculator::addVectorResult(void *vechandle, const simtime_t& t, double value)
+{
+    for (auto& element: elements)
+        element->addVectorResult(vechandle, t, value);
 }
 
 void cMultiFingerprintCalculator::addVisuals()

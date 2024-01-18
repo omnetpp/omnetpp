@@ -16,6 +16,7 @@
 #ifndef __CFINGERPRINT_H
 #define __CFINGERPRINT_H
 
+#include <set>
 #include <cstring>
 #include "simkerneldefs.h"
 #include "cevent.h"
@@ -49,7 +50,8 @@ class SIM_API cFingerprintCalculator : public cObject, noncopyable
     virtual void addEvent(cEvent *event) = 0;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) = 0;
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) = 0;
-    virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) = 0;
+    virtual void registerVectorResult(void *vechandle, const cComponent *component, const char *name) = 0;
+    virtual void addVectorResult(void *vechandle, const simtime_t& t, double value) = 0;
     virtual void addVisuals() = 0;
 
     virtual void addExtraData(const char *data, size_t length) = 0;
@@ -157,6 +159,7 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     bool addStatisticResults = false;
     bool addVectorResults = false;
     bool addExtraData_ = false;
+    std::set<void*> enabledVecHandles;
 
   protected:
     virtual FingerprintIngredient validateIngredient(char ch);
@@ -178,7 +181,8 @@ class SIM_API cSingleFingerprintCalculator : public cFingerprintCalculator
     virtual void addEvent(cEvent *event) override;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override;
-    virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override;
+    virtual void registerVectorResult(void *vechandle, const cComponent *component, const char *name) override;
+    virtual void addVectorResult(void *vechandle, const simtime_t& t, double value) override;
     virtual void addVisuals() override;
 
     virtual void addExtraData(const char *buffer, size_t length) override { if (addExtraData_) hasher_.add(buffer, length); }
@@ -225,7 +229,8 @@ class SIM_API cMultiFingerprintCalculator : public cFingerprintCalculator
     virtual void addEvent(cEvent *event) override;
     virtual void addScalarResult(const cComponent *component, const char *name, double value) override;
     virtual void addStatisticResult(const cComponent *component, const char *name, const cStatistic *value) override;
-    virtual void addVectorResult(const cComponent *component, const char *name, const simtime_t& t, double value) override;
+    virtual void registerVectorResult(void *vechandle, const cComponent *component, const char *name) override;
+    virtual void addVectorResult(void *vechandle, const simtime_t& t, double value) override;
     virtual void addVisuals() override;
 
     virtual void addExtraData(const char *data, size_t length) override { for (auto element: elements) element->addExtraData(data, length); }

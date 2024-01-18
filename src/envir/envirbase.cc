@@ -1628,7 +1628,12 @@ void EnvirBase::setupRNGMapping(cComponent *component)
 void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname)
 {
     ASSERT(outvectorManager);
-    return outvectorManager->registerVector(modulename, vectorname);
+    void *vechandle = outvectorManager->registerVector(modulename, vectorname);
+    if (getSimulation()->getFingerprintCalculator()) {
+        cComponent *component = getSimulation()->findModuleByPath(modulename); //TODO won't work for vectors recorded by channels
+        getSimulation()->getFingerprintCalculator()->registerVectorResult(vechandle, component, vectorname);
+    }
+    return vechandle;
 }
 
 void EnvirBase::deregisterOutputVector(void *vechandle)
@@ -1648,8 +1653,7 @@ bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
     ASSERT(outvectorManager);
     bool recorded = outvectorManager->record(vechandle, t, value);
     if (recorded && getSimulation()->getFingerprintCalculator())
-        // TODO: determine component and result name if possible
-        getSimulation()->getFingerprintCalculator()->addVectorResult(nullptr, "", t, value);
+        getSimulation()->getFingerprintCalculator()->addVectorResult(vechandle, t, value);
     return recorded;
 }
 
