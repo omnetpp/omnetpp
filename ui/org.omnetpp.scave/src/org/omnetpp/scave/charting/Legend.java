@@ -120,6 +120,9 @@ public class Legend implements ILegend {
         int[] lastXY = new int[2];
 
         parent.addListener(SWT.MouseMove, (e) -> {
+            if (!isVisible())
+                return;
+
             int highlighted = -1;
 
             if (bounds.contains(e.x, e.y)) {
@@ -140,7 +143,7 @@ public class Legend implements ILegend {
         });
 
         parent.addListener(SWT.MouseDown, (e) -> {
-            if (bounds.contains(e.x, e.y)) {
+            if (isVisible() && bounds != null && bounds.contains(e.x, e.y)) {
                 int itemIndex = getItemIndexAt(e.x - bounds.x(), e.y - bounds.y());
                 if (itemIndex >= 0 && itemIndex < items.size()) {
                     Item item = items.get(itemIndex);
@@ -153,7 +156,7 @@ public class Legend implements ILegend {
 
 
         Listener canceler = (e) -> {
-            if (bounds != null && bounds.contains(lastXY[0], lastXY[1]))
+            if (isVisible() && bounds != null && bounds.contains(lastXY[0], lastXY[1]))
                 e.doit = false;
         };
 
