@@ -690,7 +690,8 @@ public class LinePlot extends PlotBase {
             getSelection().draw(graphics, coordsMapping);
         drawRubberband(graphics);
         Point crosshairPosition = crosshair.getCrosshairPosition();
-        if (innerPlotArea.contains(crosshairPosition.x, crosshairPosition.y) && !legend.getBounds().contains(crosshairPosition))
+        boolean overLegend = legend.isVisible() && legend.getBounds().contains(crosshairPosition);
+        if (innerPlotArea.contains(crosshairPosition.x, crosshairPosition.y) && !overLegend)
             crosshair.draw(graphics, coordsMapping);
     }
 
