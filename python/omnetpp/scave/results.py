@@ -77,7 +77,7 @@ Patterns may contain the following wildcards:
 - `{^a-z}` matches a character not in range a-z
 - `{32..255}` any number (i.e. sequence of digits) in range 32..255 (e.g. `99`)
 - `[32..255]` any number in square brackets in range 32..255 (e.g. `[99]`)
-- `\` takes away the special meaning of the subsequent character
+- `\\` takes away the special meaning of the subsequent character
 
 Patterns only need to be surrounded with quotes if they contain whitespace or
 other characters that would cause ambiguity in parsing the expression.
