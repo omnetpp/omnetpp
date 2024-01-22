@@ -663,6 +663,10 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
             legend.layout(graphics, remaining, 1);
             legend.layout(graphics, getViewportRectangle(), 2);
+
+            graphics.dispose();
+            gc.dispose();
+            image.dispose();
         }
     }
 
@@ -761,6 +765,8 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
             graphics.setForegroundColor(ColorFactory.RED);
         graphics.setAlpha(255);
         graphics.drawTextLayout(textLayout, rect.x + 10, rect.y + 10);
+
+        textLayout.dispose();
     }
 
     protected void drawRubberband(Graphics graphics) {
