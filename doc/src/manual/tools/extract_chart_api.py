@@ -39,7 +39,7 @@ def finalize_latex(s):
 
 
 sssnum = 0
-class LaTeXRenderer(mistune.renderers.HTMLRenderer):
+class LaTeXRenderer(mistune.renderers.html.HTMLRenderer):
     def block_code(self, code, info=None):
         # "\\begin{sloppypar}\n\\begin{flushleft}\n\\ttt{  ???
         return "\n∇begin☾filelisting☽\n" + code + "\n∇end☾filelisting☽\n"
@@ -55,13 +55,13 @@ class LaTeXRenderer(mistune.renderers.HTMLRenderer):
         sssnum = sssnum + 1
         return "\n\n∇subsubsection☾" + text + "☽\n∇label☾sssec:num" + str(sssnum) + "☽\n\n"
 
-    def list(self, text, ordered, level, start=None):
+    def list(self, text, ordered, depth, start=None):
         if ordered:
             return "\n\n∇begin☾enumerate☽\n" + text + "\n∇end☾enumerate☽\n"
         else:
             return "\n\n∇begin☾itemize☽\n" + text + "\n∇end☾itemize☽\n"
 
-    def list_item(self, text, level):
+    def list_item(self, text):
         return "  ∇item " + text + "\n"
 
     def paragraph(self, text):
