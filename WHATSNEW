@@ -6,6 +6,13 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 6.0.3 (January 2024)
+----------------------------
+
+This is a maintenance release, with several performance improvements
+in the simulation kernel and further adjustments.
+
+
 OMNeT++ 6.0.2 (October 2023)
 ----------------------------
 
