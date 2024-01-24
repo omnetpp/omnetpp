@@ -1,3 +1,11 @@
+2023-11-09  Attila Torok
+
+	* Remove another menu bar related workaround on macOS from Qtenv
+
+2023-11-09  Rudolf Hornig
+
+	* Build: Removed a workaround on macOS which is no longer needed
+
 2023-10-06  ------ omnetpp-6.0.2 released ------
 
 2023-04-25  Attila Torok

@@ -1,3 +1,39 @@
+2024-01-22  Attila Torok
+
+	* Analysis Tool: nit: Silence some more sources of "java.lang.Error: SWT
+	Resource was not properly disposed"
+
+2024-01-19  Attila Torok
+
+	* Analysis Tool: Fix: Make invisible chart legends not influence, or react
+	to, the mouse pointer
+
+2024-01-05  Attila Torok
+
+	* Analysis Tool: Change automatic line chart area computation logic
+	This should be more intuitive.
+
+2024-01-17  Attila Torok
+
+	* Analysis Tool: Fix charts not being scrollable all the way to the right.
+
+2024-01-11  Attila Torok
+
+	* Inifile Editor: Fix "SWT Resource was not properly disposed" error spam in
+	CrossHair.
+
+2023-12-13  Attila Torok
+
+	* Analysis Tool: Fix chart not updating when series visibility is toggled by
+	the legend.	This regressed in 32934a22e713a745ccc28dff59981291ad5f8b03,
+	"ide/scave: native plots: turn off adjusting zoom on legend item
+	enablement changes".
+
+2023-10-12  Rudolf Hornig
+
+	* prod: fixed ui/pom.xml to avoid building the omnetpp.product when OMNEST
+	should be built
+
 2023-10-06  ------ omnetpp-6.0.2 released ------
 
 2023-10-03  Andras Varga

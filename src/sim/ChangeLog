@@ -1,3 +1,24 @@
+2024-01-09  Rudolf Hornig
+
+	* Performance: improve cModule::isSimple() speed by replacing dynamic_cast
+	usage by use of virtual methods.
+
+2024-01-05  Rudolf Hornig
+
+	* Performance: In cTemporaryOwner, create base of class cSoftOwner with empty
+	name instead of "tmp".
+
+2024-01-05  Rudolf Hornig
+
+	* Performance: Speed up the cMessage::isStale() call by avoiding a dynamic_cast.
+	It is needed because isStale() is called at least once on every message
+	delivery,
+
+2024-01-09  Rudolf Hornig
+
+	* Performance: cSoftOwner: avoid pre-allocating array for child objects as most
+	of the time it is not needed.
+
 2023-10-06  ------ omnetpp-6.0.2 released ------
 
 2022-10-25  Attila Torok

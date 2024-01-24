@@ -1,12 +1,26 @@
+2024-01-22  Attila Torok
+
+	* omnetpp/scave: doc: Fix "SyntaxWarning: invalid escape sequence" Python warnings
+
+2024-01-05  Attila Torok
+
+	* omnetpp/scave: Change automatic line chart area computation logic. Add margins
+	to avoid data points drawn too long to the border of the plot.
+
+2023-12-13  Attila Torok
+
+	* omnetpp/scave: nit: Fix an "Expression value is unused" lint by removing a stray
+	trailing comma.
+
 2023-10-06  ------ omnetpp-6.0.2 released ------
 
 2023-09-28  Andras Varga
 
 	* omnetpp/scave: utils.py: do not display an empty legend
 
-2023-04-27  Levente Mészáros
+2023-04-27  Levente Meszaros
 
-	* omnetpp/scave: Fixed division by zero warnings in timeavg. When the divisor is
+	* omnetpp/scave:n Fixed division by zero warnings in timeavg. When the divisor is
 	zero the result will also be zero.
 
 2023-02-06  Attila Torok
