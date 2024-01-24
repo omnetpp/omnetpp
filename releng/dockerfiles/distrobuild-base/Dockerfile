@@ -1,4 +1,4 @@
-FROM ghcr.io/omnetpp/cross-compilers:ubuntu22.04-macos12.3-230503
+FROM ghcr.io/omnetpp/cross-compilers:ubuntu20.04-macos12.3-240124
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # install additional packages for building a complete OMNeT++ distro (with IDE and docs)
@@ -17,10 +17,10 @@ RUN apt-get update && \
 
 # install maven manually as the 3.6.3 version in the repo does not work on Java17
 RUN cd /opt && \
-    wget https://downloads.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz && \
-    tar xzf apache-maven-3.9.4-bin.tar.gz && \
-    rm apache-maven-3.9.4-bin.tar.gz && \
-    mv apache-maven-3.9.4 apachemaven
+    wget https://downloads.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz && \
+    tar xzf apache-maven-3.9.6-bin.tar.gz && \
+    rm apache-maven-3.9.6-bin.tar.gz && \
+    mv apache-maven-3.9.6 apachemaven
 ENV M2_HOME /opt/apachemaven
 ENV MAVEN_HOME /opt/apachemaven
 ENV PATH $M2_HOME/bin:$PATH
