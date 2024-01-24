@@ -6,11 +6,11 @@
    <packaging>pom</packaging>
 
    <properties>
-      <tycho.version>2.7.5</tycho.version>
+      <tycho.version>4.0.4</tycho.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <eclipse-repo.url>https://download.eclipse.org/releases/2023-09</eclipse-repo.url>
-      <justj-repo.url>https://download.eclipse.org/justj/jres/17/updates/release/</justj-repo.url>
-      <pydev-repo.url>https://pydev.org/update_sites/10.2.1</pydev-repo.url>
+      <eclipse-repo.url>https://download.eclipse.org/releases/2023-12</eclipse-repo.url>
+      <justj-repo.url>https://download.eclipse.org/justj/jres/17/updates/release/17.0.10</justj-repo.url>
+      <pydev-repo.url>https://pydev.sourceforge.net/pydev_update_site/11.0.3</pydev-repo.url>
    </properties>
 
    <repositories>
