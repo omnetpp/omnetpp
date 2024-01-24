@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t omnetpp/cross-compilers:ubuntu20.04-macos11.3-210713 .
+docker build -t ghcr.io/omnetpp/cross-compilers:ubuntu20.04-macos12.3-240124 .
