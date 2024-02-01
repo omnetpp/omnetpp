@@ -122,6 +122,7 @@ public class FirstStepsDialog extends TitleAreaDialog {
         b.setText(label);
         b.setSelection(checked);
         b.setFont(JFaceResources.getBannerFont());
+        b.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         return b;
     }
 
