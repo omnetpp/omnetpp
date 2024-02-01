@@ -1,3 +1,10 @@
+2024-02-01  Rudolf Hornig
+
+	* Model Installation Dialogs: If the IDE was installed from opp_env,
+	it tells the user to install the model with opp_env, too.
+
+	* IDE: Updated to Eclipse 4.30, CDT 11.4, Pydev 11.0
+
 2024-01-22  Attila Torok
 
 	* Analysis Tool: nit: Silence some more sources of "java.lang.Error: SWT
