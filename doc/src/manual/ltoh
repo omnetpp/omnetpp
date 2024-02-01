@@ -626,8 +626,10 @@ sub do_comment_verbatim {
         }
 
         # attempt math formatting. --Andras Varga
-        $line =~ s!\$\$([^\n]+?)\$\$!"<center>" . formatmath($1,0) . "</center>"!gse;
-        $line =~ s/\$([^\n]+?)\$/formatmath($1,1)/gse;
+        if ($inh == $false) {
+            $line =~ s!\$\$([^\n]+?)\$\$!"<center>" . formatmath($1,0) . "</center>"!gse;
+            $line =~ s/\$([^\n]+?)\$/formatmath($1,1)/gse;
+        }
 
         if ($skip == $true) {
             $line = "";
