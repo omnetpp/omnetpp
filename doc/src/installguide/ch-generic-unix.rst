@@ -31,7 +31,7 @@ It is also recommended to install the *clang* and *lld* package as they provide 
    visualization capabilities, you can disable them in the *configure.user* file, too.
 
 .. warning::
-   
+
    The IDE requires GLIBC 2.28 version or later, so you will need at least Debian 10, RedHat 8 or Ubuntu 18.10 to run the IDE.
 
 The following packages are strongly recommended, because their absence results in severe feature loss:
@@ -123,8 +123,7 @@ add a line something like this:
 
 .. note::
 
-   If you use a shell other than bash, consult the man page of that shell to find out which startup file to edit, and
-   how to set and export variables.
+   The `setenv` script requires Bash or Zsh.
 
 Configuring and Building |omnet++|
 ----------------------------------

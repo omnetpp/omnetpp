@@ -85,19 +85,10 @@ add a line something like this:
 .. code::
   
      [ -f "$HOME/|omnetpp|-|version|/setenv" ] && source "$HOME/|omnetpp|-|version|/setenv"
-  
-.. note::
-  
-     If you use a shell other than bash, consult the man page of that shell to find out which startup file to edit, and
-     how to set and export variables.
-  
+
 .. note::
 
-   If you use a shell other than *bash*, consult the man page of that shell to find out which startup file to edit, and
-   how to set and export variables.
-
-   Note that all Linux distributions covered in this Installation Guide use *bash* unless the user has explicitly
-   selected another shell.
+   The `setenv` script requires Bash or Zsh.
 
 Configuring and Building |omnet++|
 ----------------------------------
