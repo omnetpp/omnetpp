@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.OmnetppDirs;
+import org.omnetpp.common.OmnetppUtils;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
@@ -73,14 +74,27 @@ public class FirstStepsDialog extends TitleAreaDialog {
         group.setLayout(gridLayout);
         group.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        installINETButton = createCheckbox(group, "Install INET Framework", true);
-        createWrappingLabel(group,
-                "The INET Framework is the primary model library for the simulation of communication networks. " +
-                "It contains models for several wired and wireless networking protocols, Internet protocols and " +
-                "technologies, support for wireless ad-hoc mobile networks, and much more. " +
-                "This option will download the latest matching INET release from http://inet.omnetpp.org, " +
-                "and install it into your workspace. Select it if you want to simulate communication networks.",
-                true);
+        if (OmnetppUtils.isInsideOppEnv()) {
+        	installINETButton = createCheckbox(group, "Install INET Framework (not recommended, use opp_env instead)", false);
+        	createWrappingLabel(group,
+        			"CAUTION: We detected that the IDE and OMNeT++ was installed via opp_env. For consistency, " +
+        			"we recommend that you install simulation models and frameworks via opp_env, " +
+        			"not from the IDE. If you need INET, we suggest that you exit the IDE, install " +
+        			"INET from the shell with the `opp_env install inet-latest` command, and then " +
+        			"import it into the IDE.", 
+        			true);        	
+        }
+        else {
+        	installINETButton = createCheckbox(group, "Install INET Framework", true);
+        	createWrappingLabel(group,
+        			"The INET Framework is the primary model library for the simulation of communication networks. " +
+					"It contains models for several wired and wireless networking protocols, Internet protocols and " +
+					"technologies, support for wireless ad-hoc mobile networks, and much more. " +
+					"This option will download the latest matching INET release from http://inet.omnetpp.org, " +
+					"and install it into your workspace. Select it if you want to simulate communication networks.",
+					true);        	
+        }
+        
         importSamplesButton = createCheckbox(group, "Import OMNeT++ programming examples", true);
         createWrappingLabel(group,
                 "Import the examples provided with OMNeT++ into the workspace. " +
