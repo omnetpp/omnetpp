@@ -322,7 +322,7 @@ cPar& cPar::setValue(const cValue& value)
     switch (getType()) {
         case BOOL:   setBoolValue(value.boolValue()); break;
         case INT:    setIntValue(value.intValueInUnit(getUnit())); break;
-        case DOUBLE: setDoubleValue(value.doubleValueInUnit(getUnit()));
+        case DOUBLE: setDoubleValue(value.doubleValueInUnit(getUnit())); break;
         case STRING: setStringValue(value.stringValue()); break;
         case OBJECT: setObjectValue(value.objectValue()); break;
         case XML:    setXMLValue(value.xmlValue()); break;
