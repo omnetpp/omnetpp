@@ -209,25 +209,17 @@ void cMsgPar::parsimPack(cCommBuffer *buffer) const
 #else
     cOwnedObject::parsimPack(buffer);
 
-    // For error checking & handling
-    if (typeChar != 'S' && typeChar != 'L' && typeChar != 'D'
-        && typeChar != 'F' && typeChar != 'T' && typeChar != 'P'
-        && typeChar != 'O' && typeChar != 'M')
-    {
-        throw cRuntimeError(this, "parsimPack: Unsupported type '%c'", typeChar);
-    }
-
     buffer->pack(typeChar);
     buffer->pack(changedFlag);
 
     cNedMathFunction *ff;
     switch (typeChar) {
+        case 'B':
+            buffer->pack(lng.val);
+            break;
+
         case 'S':
-            buffer->pack(ls.sht);
-            if (ls.sht)
-                buffer->pack(ls.str, sizeof(ls.str));
-            else
-                buffer->pack(ss.str);
+            buffer->pack(ls.sht ? ss.str : ls.str);
             break;
 
         case 'L':
@@ -270,6 +262,9 @@ void cMsgPar::parsimPack(cCommBuffer *buffer) const
 
         case 'M':
             throw cRuntimeError(this, "parsimPack(): Cannot transmit pointer to XML element (type 'M')");
+
+        default:
+            throw cRuntimeError(this, "parsimPack(): Unsupported type '%c'", typeChar);
     }
 #endif
 }
@@ -289,13 +284,13 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
 
     cNedMathFunction *ff;
     switch (typeChar) {
+        case 'B':
+            buffer->unpack(lng.val);
+            break;
+
         case 'S':
-            buffer->unpack(ls.sht);
-            ss.sht = ls.sht;
-            if (ls.sht)
-                buffer->unpack(ss.str, sizeof(ls.str));
-            else
-                buffer->unpack(ls.str);
+            ss.sht = false;
+            buffer->unpack(ls.str);
             break;
 
         case 'L':
@@ -341,6 +336,9 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
             else
                 take(obj.obj = dynamic_cast<cOwnedObject *>(buffer->unpackObject()));
             break;
+
+        default:
+            throw cRuntimeError(this, "parsimUnpack(): Unknown parameter data type");
     }
 #endif
 }
