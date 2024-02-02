@@ -4835,6 +4835,71 @@ on the command line.
 \end{hint}
 
 
+\subsection{Demultiplexing Results with the Demux Filter}
+\label{sec:simple-modules:demux-filter}
+
+The \ttt{demux} result filter in {\omnetpp} provides a mechanism for
+recording a breakdown of simulation results based on runtime attributes. It
+facilitates the separation of results into multiple streams or categories,
+leveraging the properties of emitted signals, which is particularly advantageous
+in scenarios with multiple interacting entities or modules.
+
+The \ttt{demux} filter operates by demultiplexing its input into several
+outputs, dynamically creating new outputs as required. The filter uses the name
+string of the \ttt{details} object associated with the emitted signal as the
+selector for this demultiplexing process. This capability enables dynamic
+categorization of statistics based on runtime conditions, such as signal
+sources.
+
+Let us see a practical example. Consider a network simulation where a sink
+module is tasked with receiving packets from multiple senders. The objective is
+to separately account for the total number of bytes received from each sender.
+
+First, define a sink module in NED, equipped with a signal and a statistic
+employing the \ttt{demux} filter:
+
+\begin{ned}
+simple Sink {
+    @signal[packetReceived];
+    @statistic[bytesReceivedPerSender](source=packetReceived;record=sum(demux));
+}
+\end{ned}
+
+Next, implement the sink module to emit a signal for each packet received,
+tagging the emission with the sender's name:
+
+\begin{cpp}
+class Sink : public cSimpleModule {
+  protected:
+    virtual void handleMessage(cMessage *msg) override {
+        if (msg->isPacket()) {
+            cPacket *pkt = check_and_cast<cPacket *>(msg);
+            static simsignal_t packetReceivedSignal = registerSignal("packetReceived");
+            const char *senderName = pkt->getSendingModule()->getFullName();
+
+            cNamedObject senderDetails(senderName);
+            emit(packetReceivedSignal, (long)pkt->getByteLength(), &senderDetails);
+
+            delete msg;
+        }
+    }
+};
+\end{cpp}
+
+With the \ttt{demux} filter in operation, the generated statistics names
+incorporate the demux label (i.e., the sender's name), resulting in statistics
+such as:
+
+\begin{itemize}
+    \item \ttt{bytesReceivedPerSender:Sender1:sum}
+    \item \ttt{bytesReceivedPerSender:Sender2:sum}
+    \item \ldots
+\end{itemize}
+
+Each statistic records the sum of bytes received from its corresponding sender,
+offering a detailed breakdown of the data volume by source.
+
+
 \subsection{Statistics Recording for Dynamically Registered Signals}
 \label{sec:simple-modules:statistic-recording-dynamic-signals}
 
