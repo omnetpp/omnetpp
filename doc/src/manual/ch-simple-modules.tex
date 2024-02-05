@@ -1401,25 +1401,30 @@ or using the \ffunc{doubleValue()} or \ffunc{intValue()} methods.
 \subsection{Volatile versus Non-Volatile Parameters}
 \label{sec:simple-modules:volatile-parameters}
 
-Parameters declared in the NED file can be marked as \texttt{volatile}. When a
-parameter is tagged as \texttt{volatile}, it indicates that reading the
-parameter's value during simulation may yield a different value each time.
-(Reading the value will cause a re-evaluation of the NED expression, which may
-contain e.g. calls to the random number generator.) Consequently, within the
-model code, it is essential to re-fetch the parameter's value each time it is
-required during simulation. In other words, simply reading the parameter once in
-the \texttt{initialize()} function and storing that value for subsequent use
-is incorrect.
+Volatile parameters in {\omnetpp} are designed to provide dynamic values that are
+recalculated every time they are accessed. This feature is particularly useful
+for simulations requiring variability and unpredictability in parameter values.
+
+Parameters can be declared volatile by marking them with the \fkeyword{volatile}
+keyword in the NED file. When a parameter is marked as volatile, that indicates
+that reading the parameter's value will cause a re-evaluation of the NED
+expression, which, due possible calls to the random number generator, may yield
+a different value each time. Consequently, within the model code, it is
+essential to re-fetch the parameter's value each time it is required during
+simulation. In other words, simply reading the parameter once in the
+\ffunc{initialize()} function and storing that value for subsequent use is
+incorrect.
 
 Volatile parameters are often used for allowing stochastic input, things like
 random packet generation interval specified e.g. as \ttt{exponential(1.0)}
 (numbers drawn from the exponential distribution with mean 1.0).
 
-In contrast, non-volatile NED parameters are constants, and reading their
-values multiple times is guaranteed to yield the same value. When a non-volatile
-parameter is assigned a random value like \ttt{exponential(1.0)}, it is
-evaluated once at the beginning of the simulation and replaced with the result,
-so all reads will get same (randomly generated) value.
+Note that non-volatile NED parameters behave differently: reading their values
+multiple times is guaranteed to yield the same value every time. For
+non-volatile parameters, the NED expression is evaluated only once and the
+result stored, so all reads will yield the same value. When a non-volatile
+parameter is assigned an expression like \ttt{exponential(1.0)}, multiple
+reads will yield the same, randomly chosen value.
 
 The typical usage for non-volatile parameters is to read them in the
 \ffunc{initialize()} method of the module class, and store the values
