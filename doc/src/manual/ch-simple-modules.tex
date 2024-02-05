@@ -1491,25 +1491,119 @@ void Source::handleMessage(cMessage *msg)
 \subsection{Object Parameters}
 \label{sec:simple-modules:object-parameters}
 
-The method \ttt{objectValue()} is used to access object parameters. It returns a
-pointer of the type \ttt{cObject*}, which must be cast to the appropriate type
-using \ttt{check\_and\_cast()} or \ttt{dynamic\_cast()}. Object parameters are
-often used to pass compound values, such as arrays and dictionaries, to a module
-using a JSON-like syntax. In C++, these values are represented as object trees,
-with arrays represented by the \cclass{cValueArray} class and dictionaries
-represented by the \cclass{cValueMap} class. Values inside \cclass{cValueArray}
-and \cclass{cValueMap} are represented with the \cclass{cValue} class. When a
-single value is assigned to an object parameter, it is represented as a
-\cclass{cValue} wrapped in a \cclass{cValueHolder}. \footnote{Object parameters
-were introduced in version 6.0 of {\opp}. In earlier versions, string parameters
-were often used to emulate arrays and were parsed with the help of the
-\cclass{cStringTokenizer} class and its convenience methods, such as
-\ffunc{asIntVector()} and \ffunc{asDoubleVector()}.}
+Parameters declared with the type \fkeyword{object} in NED can be accessed with
+the \ttt{objectValue()} method of \cclass{cPar}. It returns a pointer of the
+type \ttt{cObject*}, which then must be cast to the appropriate type using
+\ttt{check\_and\_cast()} or \ttt{dynamic\_cast()}.
 
-If the \textit{object} notation includes a \textit{class name}, then the named C++ class
-will be used instead of \cclass{cValueMap}, and filled in using the key-value list
-with the help of the class descriptor (\cclass{cClassDescriptor}) of the class,
-interpreting keys as field names.
+For example, if a module has a parameter declared as follows:
+\begin{ned}
+  object packetToSend;
+\end{inifile}
+
+Then one can access this object parameter in C++ with the following line:
+
+\begin{cpp}
+cPacket *packet = check_and_cast<cPacket*>(par("packetToSend").objectValue());
+\end{cpp}
+
+Object parameters allow for JSON-style parameters and many interesting use cases.
+These use cases, along with real-life examples, were presented in the NED chapter,
+section \ref{sec:ned-lang:object-parameters}.
+
+
+\subsection{JSON-Style Parameters}
+\label{sec:simple-modules:json-style-parameters}
+
+In {\omnetpp}, JSON-style parameters introduced in version 6.0 offer a flexible
+way to pass structured data to simulation modules. The NED expression syntax was
+extended with JSON-like list and map (dictionary) syntaxes, which allows the
+user to express data structures as JSON.
+
+These data structures appear in C++ as object trees, with lists represented by
+the \cclass{cValueArray} class, and dictionaries represented by the
+\cclass{cValueMap} class. Values inside \cclass{cValueArray} and
+\cclass{cValueMap} are stored in \cclass{cValue} instances. When a single value
+is assigned to an object parameter, it is represented as a \cclass{cValue}
+wrapped in a \cclass{cValueHolder}. \footnote{Object parameters were introduced
+in version 6.0 of {\opp}. In earlier versions, string parameters were often used
+to emulate arrays and were parsed with the help of the \cclass{cStringTokenizer}
+class and its convenience methods, such as \ffunc{asIntVector()} and
+\ffunc{asDoubleVector()}.}
+
+To query and process JSON-style parameters in your module's C++ code,
+particularly within the \ttt{initialize()} method, you would retrieve the object
+using the \ttt{par()} and \ttt{objectValue()} methods, cast them to the
+appropriate type, then use the methods provided by the above classes to access
+the structured data.
+
+Let us see an example. Consider a module that needs to process a routing table
+defined as a JSON-style parameter. The routing table is an array of route
+objects, each specifying \ttt{dest}, \ttt{netmask}, \ttt{interf}, and
+\ttt{metric}.
+
+In the module's NED file, we define the parameter as follows:
+
+\begin{ned}
+  object routes;
+\end{ned}
+
+We assign the routes in the ini file:
+
+\begin{inifile}
+**.routes = [
+        {dest: "10.0.0.0", netmask: "255.255.0.0", interf: "eth0", metric: 10},
+        {dest: "10.1.0.0", netmask: "255.255.0.0", interf: "eth1", metric: 20},
+        // Additional routes...
+    ]
+\end{inifile}
+
+In the module's \ffunc{initialize()} method, you can process this parameter as follows:
+
+\begin{cpp}
+#include <omnetpp.h>
+#include <vector>
+#include <map>
+#include <string>
+
+using namespace omnetpp;
+
+class RoutingModule : public cSimpleModule {
+protected:
+    virtual void initialize() override {
+        // Access the parameter
+        cValueArray *routesArray = check_and_cast<cValueArray*>(par("routes").objectValue());
+
+        // Iterate over the array
+        for (int i = 0; i < routesArray->size(); ++i) {
+            cValueMap *route = check_and_cast<cValueMap*>(&(routesArray->get(i)));
+
+            // Extract route information
+            std::string dest = (*route)["dest"].stringValue();
+            std::string netmask = (*route)["netmask"].stringValue();
+            std::string interf = (*route)["interf"].stringValue();
+            int metric = (*route)["metric"].intValue();
+
+            // Process the route (example: add to internal routing table)
+            addRoute(dest, netmask, interf, metric);
+        }
+    }
+
+    void addRoute(const std::string& dest, const std::string& netmask,
+                  const std::string& interf, int metric) {
+        // Implementation of route addition to the internal routing table
+    }
+};
+\end{cpp}
+
+This example demonstrates how to access a JSON-style parameter (\ttt{routes}),
+iterate over its elements (routes), and extract and use the data in the
+simulation module's logic. The use of \cclass{cValueMap} and
+\cclass{cValueArray} classes makes handling structured data straightforward,
+resembling the process of working with JSON in high-level programming languages.
+
+Note that volatile object parameters yield a new object instance every time
+the parameter is accessed.
 
 
 \subsection{Changing a Parameter's Value}
