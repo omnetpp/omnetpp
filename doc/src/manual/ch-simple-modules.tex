@@ -2180,11 +2180,11 @@ message to determine if it is a self-message.
 You can determine whether a message is currently in the FES\index{FES}
 by calling its \ffunc{isScheduled()} member function.
 
-\subsubsection{Cancelling an Event}
-\label{sec:simple-modules:cancelling}
+\subsubsection{Canceling an Event}
+\label{sec:simple-modules:canceling}
 
-Scheduled self-messages can be cancelled\index{self-message!cancelling}
-\index{message!cancelling} (i.e. removed from the FES\index{FES}).
+Scheduled self-messages can be canceled\index{self-message!canceling}
+\index{message!canceling} (i.e. removed from the FES\index{FES}).
 This feature facilitates implementing timeouts.
 
 \begin{cpp}
@@ -2192,14 +2192,14 @@ cancelEvent(msg);
 \end{cpp}
 
 The \ffunc{cancelEvent()} function takes a pointer to the message to
-be cancelled, and also returns the same pointer. After having it
-cancelled, you may delete the message or reuse it in subsequent
+be canceled, and also returns the same pointer. After having it
+canceled, you may delete the message or reuse it in subsequent
 \ffunc{scheduleAt()} calls. \ffunc{cancelEvent()} has no effect if
 the message is not scheduled at that time.
 
-There is also a convenience method called \ffunc{cancelAndDelete()}
-implemented as \ttt{if (msg!=nullptr) delete cancelEvent(msg)};
-this method is primarily useful for writing destructors.
+There is also a convenience method called \ffunc{cancelAndDelete()},
+implemented as \ttt{if (msg!=nullptr) delete cancelEvent(msg)}.
+This method is primarily useful for writing destructors.
 
 The following example shows how to implement a timeout in a simple
 imaginary stop-and-wait protocol. The code utilizes a \ttt{timeoutEvent}
@@ -2231,7 +2231,7 @@ void Protocol::handleMessage(cMessage *msg)
 \label{sec:simple-modules:rescheduling}
 
 To reschedule an event which is currently scheduled to a different
-simulation time, it first needs to be cancelled using \ffunc{cancelEvent()}.
+simulation time, it first needs to be canceled using \ffunc{cancelEvent()}.
 This is shown in the following example code:
 
 \begin{cpp}
@@ -2250,8 +2250,8 @@ rescheduleAt(t, msg);
 rescheduleAfter(delta, msg);
 \end{cpp}
 
-Using these dedicated functions may be more efficient than the
-\ffunc{cancelEvent()}+\ffunc{scheduleAt()} combo.
+Using these dedicated functions is potentially more efficient than the
+\ffunc{cancelEvent()} + \ffunc{scheduleAt()} combo.
 
 
 \subsection{Sending Messages}
@@ -2281,9 +2281,10 @@ send(msg, "out");
 send(msg, "outv", 10); // send via outv[10]
 \end{cpp}
 
-To send a message on an \textit{inout} gate, remember that an inout gate is an
-input and an output gate glued together, and the two halves are be identified
-with the \ttt{\$i} and \ttt{\$o} name suffixes. Thus, the gate name needs to be
+To send a message on an \textit{inout} gate, remember that an inout gate
+consists of an input and an output gate combined. The input and output
+components of an inout gate are distinguished by appending the \ttt{\$i} and
+\ttt{\$o} suffixes to their names, respectively. Thus, the gate name needs to be
 specified in the \ffunc{send()} call with the \ttt{\$o} suffix:
 
 \begin{cpp}
@@ -2641,7 +2642,7 @@ else {
 \begin{note}
   If there is a channel with a propagation delay in
   the path before the transmission channel, the delay should be manually
-  substracted from the value returned by \ffunc{getTransmissionFinishTime()}!
+  subtracted from the value returned by \ffunc{getTransmissionFinishTime()}!
   The same applies to \ffunc{isBusy()}: it tells whether the channel is
   currently busy, and not whether it will be busy when a packet that you send
   gets there. It is therefore advisable that you never use propagation delays
