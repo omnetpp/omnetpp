@@ -9,6 +9,7 @@ Tests cMsgPar.parsimPack/parsimUnpack.
 
 %global:
 
+#ifdef WITH_PARSIM
 static void testPack(cMsgPar& par)
 {
     EV << "testing with type " << par.getType() << "\n";
@@ -23,6 +24,7 @@ static void testPack(cMsgPar& par)
     ASSERT(par.getType() == tmp.getType());
     ASSERT(par.str() == tmp.str());
 }
+#endif
 
 %activity:
 #ifndef WITH_PARSIM
