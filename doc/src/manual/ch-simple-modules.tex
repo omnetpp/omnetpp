@@ -2500,18 +2500,30 @@ calculated in advance, before the changes take place).
 \subsection{Direct Message Sending}
 \label{sec:simple-modules:direct-sending}
 
-At times it is convenient to be able to send a message directly to an input
-gate of another module. The \ffunc{sendDirect()} function is provided for
-this purpose.
-
-This function has several flavors. The first set of \ffunc{sendDirect()}
-functions accept a message and a target gate; the latter can be specified
-in various forms:
+The \ffunc{sendDirect()} function allows for sending a message directly to an
+input gate of another module, which is useful for scenarios such as simulating
+wireless transmissions. \ffunc{sendDirect()} has several variants, because the
+target gate can be specified in various ways, a propagation delay and duration
+can be optionally given, and the latter two can also be specified using a
+\cclass{SendOptions} structure:
 
 \begin{cpp}
-sendDirect(cMessage *msg, cModule *mod, int gateId)
-sendDirect(cMessage *msg, cModule *mod, const char *gateName, int index=-1)
+sendDirect(cMessage *msg, cModule *targetModule, int gateId)
+sendDirect(cMessage *msg, cModule *targetModule, const char *gateName,
+               int gateIndex=-1)
 sendDirect(cMessage *msg, cGate *gate)
+
+sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
+               cModule *targetModule, int gateId)
+sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
+               cModule *targetModule, const char *gateName, int gateIndex=-1)
+sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
+               cGate *gate)
+sendDirect(cMessage *msg, const SendOptions& options, cModule *targetModule,
+               int gateId)
+sendDirect(cMessage *msg, const SendOptions& options, cModule *targetModule,
+               const char *gateName, int gateIndex=-1)
+sendDirect(cMessage *msg, const SendOptions& options, cGate *gate)
 \end{cpp}
 
 An example for direct sending:
@@ -2526,7 +2538,7 @@ directly and those received over connections.
 
 The target gate must be an unconnected gate; in other words,
 modules must have dedicated gates to be able to receive messages
-sent via \ffunc{sendDirect()}. You cannot have a gate which receives
+sent via \ffunc{sendDirect()}. It is not possible to have a gate which receives
 messages via both connections and \ffunc{sendDirect()}.
 
 It is recommended to tag gates dedicated for receiving messages via
@@ -2553,30 +2565,15 @@ message to follow the connections starting at that gate.
 This can be useful, for example, when several submodules are sending
 to a single output gate of their parent module.
 
-A second set of \ffunc{sendDirect()} methods accept a propagation
-delay and a transmission duration as parameters as well:
-
-\begin{cpp}
-sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
-           cModule *mod, int gateId)
-sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
-           cModule *mod, const char *gateName, int index=-1)
-sendDirect(cMessage *msg, simtime_t propagationDelay, simtime_t duration,
-           cGate *gate)
-\end{cpp}
-
-The transmission duration parameter is important when the message is also
-a packet (instance of \cclass{cPacket}). For messages that are not packets
-(not subclassed from \cclass{cPacket}), the duration parameter
-is ignored.
-
-If the message is a packet, the duration will be written into the packet,
-and can be read by the receiver with the \ffunc{getDuration()} method of
-the packet.
+The transmission duration parameter is important when the message is also a
+packet, i.e. subclassed from \cclass{cPacket}. In that case, the duration
+will be written into the packet, and can be read by the receiver with the
+\ffunc{getDuration()} method of the packet. For non-packet messages, the
+duration parameter is ignored.
 
 The receiver module can choose whether it wants the simulation kernel
 to deliver the packet object to it at the start or at the end of the
-reception. The default is the latter; the module can change it by calling
+reception period. The default is the latter; the module can change it by calling
 \ffunc{setDeliverImmediately()} on the final input gate, that is, on
 \ttt{targetGate->getPathEndGate()}.
 
