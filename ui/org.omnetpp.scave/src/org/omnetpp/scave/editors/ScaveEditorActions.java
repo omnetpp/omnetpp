@@ -57,6 +57,7 @@ import org.omnetpp.scave.actions.analysismodel.ResetChartToTemplateAction;
 import org.omnetpp.scave.actions.analysismodel.SaveTempChartAction;
 import org.omnetpp.scave.actions.analysismodel.UndoAction;
 import org.omnetpp.scave.actions.nativeplots.ChartMouseModeAction;
+import org.omnetpp.scave.actions.nativeplots.RestoreOriginalViewAction;
 import org.omnetpp.scave.actions.nativeplots.ZoomChartAction;
 import org.omnetpp.scave.actions.ui.SelectAllAction;
 import org.omnetpp.scave.actions.ui.SetItemWidthAction;
@@ -95,7 +96,7 @@ public class ScaveEditorActions {
     public final ZoomChartAction hzoomOutAction = registerAction(new ZoomChartAction(true, false, 1/2.0));
     public final ZoomChartAction vzoomInAction = registerAction(new ZoomChartAction(false, true, 2.0));
     public final ZoomChartAction vzoomOutAction = registerAction(new ZoomChartAction(false, true, 1/2.0));
-    public final ZoomChartAction zoomToFitAction = registerAction(new ZoomChartAction(true, true, 0.0));
+    public final RestoreOriginalViewAction restoreOriginalViewAction = registerAction(new RestoreOriginalViewAction());
     public final ChartMouseModeAction switchChartToPanModeAction = registerAction(new ChartMouseModeAction(ZoomableCanvasMouseSupport.PAN_MODE));
     public final ChartMouseModeAction switchChartToZoomModeAction = registerAction(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
     public final CopyImageToClipboardAction copyChartToClipboardAction = registerAction(new CopyImageToClipboardAction());
@@ -145,7 +146,7 @@ public class ScaveEditorActions {
                 vzoomOutAction.update();
             if (event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_X ||
                     event.getProperty() == ZoomableCachingCanvas.PROP_ZOOM_Y)
-                zoomToFitAction.update();
+                restoreOriginalViewAction.update();
         }
     };
 

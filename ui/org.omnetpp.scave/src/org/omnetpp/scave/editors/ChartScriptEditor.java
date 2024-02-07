@@ -78,10 +78,10 @@ import org.omnetpp.scave.actions.ConfigureChartAction;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.ExportChartAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
-import org.omnetpp.scave.actions.ShowHelpInViewAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RefreshResultFilesAction;
 import org.omnetpp.scave.actions.SaveImageAction;
+import org.omnetpp.scave.actions.ShowHelpInViewAction;
 import org.omnetpp.scave.actions.ToggleAutoRefreshAction;
 import org.omnetpp.scave.actions.analysismodel.AddVectorOperationAction;
 import org.omnetpp.scave.actions.analysismodel.SaveTempChartAction;
@@ -92,6 +92,7 @@ import org.omnetpp.scave.actions.matplotlib.InteractAction;
 import org.omnetpp.scave.actions.matplotlib.PanAction;
 import org.omnetpp.scave.actions.matplotlib.ZoomAction;
 import org.omnetpp.scave.actions.nativeplots.ChartMouseModeAction;
+import org.omnetpp.scave.actions.nativeplots.RestoreOriginalViewAction;
 import org.omnetpp.scave.actions.nativeplots.ZoomChartAction;
 import org.omnetpp.scave.actions.ui.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.ui.ToggleShowSourceAction;
@@ -207,7 +208,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private BackAction backAction = new BackAction();
     private ForwardAction forwardAction = new ForwardAction();
 
-    private ZoomChartAction zoomToFitAction = new ZoomChartAction(true, true, 0.0);
+    private RestoreOriginalViewAction restoreOriginalViewAction = new RestoreOriginalViewAction();
     private ZoomChartAction zoomInHorizAction = new ZoomChartAction(true, false, 2.0);
     private ZoomChartAction zoomOutHorizAction = new ZoomChartAction(true, false, 1 / 2.0);
     private ZoomChartAction zoomInVertAction = new ZoomChartAction(false, true, 2.0);
@@ -622,7 +623,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             zoomSubmenuManager.add(zoomInVertAction);
             zoomSubmenuManager.add(zoomOutVertAction);
             zoomSubmenuManager.add(new Separator());
-            zoomSubmenuManager.add(zoomToFitAction);
+            zoomSubmenuManager.add(restoreOriginalViewAction);
 
             manager.add(zoomSubmenuManager);
             manager.add(new Separator());
@@ -708,7 +709,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             panAction.setChecked(true);
             chartPage.addToToolbar(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
             chartPage.addSeparatorToToolbar();
-            chartPage.addToToolbar(zoomToFitAction);
+            chartPage.addToToolbar(restoreOriginalViewAction);
             chartPage.addSeparatorToToolbar();
             chartPage.addToToolbar(zoomInHorizAction);
             chartPage.addToToolbar(zoomOutHorizAction);
@@ -912,6 +913,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         zoomOutHorizAction.update();
         zoomInVertAction.update();
         zoomOutVertAction.update();
+
+        restoreOriginalViewAction.update();
 
         killAction.update();
 
