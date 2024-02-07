@@ -94,6 +94,7 @@ import org.omnetpp.scave.actions.matplotlib.ZoomAction;
 import org.omnetpp.scave.actions.nativeplots.ChartMouseModeAction;
 import org.omnetpp.scave.actions.nativeplots.RestoreOriginalViewAction;
 import org.omnetpp.scave.actions.nativeplots.ZoomChartAction;
+import org.omnetpp.scave.actions.nativeplots.ZoomToFitDataAction;
 import org.omnetpp.scave.actions.ui.GotoChartDefinitionAction;
 import org.omnetpp.scave.actions.ui.ToggleShowSourceAction;
 import org.omnetpp.scave.charting.PlotBase;
@@ -209,6 +210,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private ForwardAction forwardAction = new ForwardAction();
 
     private RestoreOriginalViewAction restoreOriginalViewAction = new RestoreOriginalViewAction();
+    private ZoomToFitDataAction zoomToFitDataAction = new ZoomToFitDataAction();
     private ZoomChartAction zoomInHorizAction = new ZoomChartAction(true, false, 2.0);
     private ZoomChartAction zoomOutHorizAction = new ZoomChartAction(true, false, 1 / 2.0);
     private ZoomChartAction zoomInVertAction = new ZoomChartAction(false, true, 2.0);
@@ -624,6 +626,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             zoomSubmenuManager.add(zoomOutVertAction);
             zoomSubmenuManager.add(new Separator());
             zoomSubmenuManager.add(restoreOriginalViewAction);
+            if (chart.getType() == ChartType.LINE)
+                zoomSubmenuManager.add(zoomToFitDataAction);
 
             manager.add(zoomSubmenuManager);
             manager.add(new Separator());
@@ -710,6 +714,8 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             chartPage.addToToolbar(new ChartMouseModeAction(ZoomableCanvasMouseSupport.ZOOM_MODE));
             chartPage.addSeparatorToToolbar();
             chartPage.addToToolbar(restoreOriginalViewAction);
+            if (chart.getType() == ChartType.LINE)
+                chartPage.addToToolbar(zoomToFitDataAction);
             chartPage.addSeparatorToToolbar();
             chartPage.addToToolbar(zoomInHorizAction);
             chartPage.addToToolbar(zoomOutHorizAction);
@@ -915,6 +921,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
         zoomOutVertAction.update();
 
         restoreOriginalViewAction.update();
+        zoomToFitDataAction.update();
 
         killAction.update();
 

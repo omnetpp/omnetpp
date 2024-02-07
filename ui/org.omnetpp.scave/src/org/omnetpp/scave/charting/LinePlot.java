@@ -604,6 +604,10 @@ public class LinePlot extends PlotBase {
         return lines.calculatePlotArea();
     }
 
+    public void zoomToFitData() {
+        zoomToArea(lines.calculatePlotArea(Lines.PlotAreaCalculationMode.DATA_WITH_PADDING));
+    }
+
     @Override
     protected Rectangle doLayoutChart(Graphics graphics, int pass) {
         ICoordsMapping coordsMapping = getOptimizedCoordinateMapper();

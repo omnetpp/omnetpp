@@ -81,7 +81,7 @@ public class ScaveImages {
     public static final String IMG_ETOOL16_ZOOMOUT = "icons/full/etool16/zoomout.png";
     public static final String IMG_ETOOL16_ZOOM = "icons/full/etool16/zoom.png";
     public static final String IMG_ETOOL16_ZOOMTOFIT_OLD = "icons/full/etool16/zoomtofit_old.png"; //unused
-    public static final String IMG_ETOOL16_ZOOMTOFIT = "icons/full/etool16/zoomtofit.png"; //unused
+    public static final String IMG_ETOOL16_ZOOMTOFIT = "icons/full/etool16/zoomtofit.png";
     public static final String IMG_EVIEW16_OUTVECTOR = "icons/full/eview16/outvector.png";
     public static final String IMG_OBJ16_ADVANCEDFILTER = "icons/full/obj16/advancedfilter.png";
     public static final String IMG_OBJ16_BASICFILTER = "icons/full/obj16/basicfilter.png";
