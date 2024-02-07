@@ -2727,18 +2727,19 @@ exactly at the time the transmission would otherwise end.
 \subsubsection{Sending Transmission Updates}
 \label{sec:simple-modules:sending-transmission-updates}
 
+To allow a packet transmission to be updated later, a transmission ID needs to
+be chosen, specified in the send call, and remembered for later. The
+transmission ID is needed for the simulation kernel to match later updates with
+the original packet. It is convenient to choose the ID of the packet as
+transmission ID.
+
 Transmission updates are sent using the normal message sending functions
 (\ffunc{send()}, \ffunc{sendDirect()}, etc.), specifying a \cclass{SendOptions}
-struct that has the \ttt{updateTx} field set to \ttt{true}.
+that has the \ttt{updateTx} field set and contains the transmission ID.
+It is recommended to use utility functions of \cclass{SendOptions}, such as
+\ffunc{finishTx()} and \ffunc{updateTx()}, to set up the \cclass{SendOptions}.
 
-Transmission updates are paired with the original packet they modify using a
-unique transmission ID. The \cclass{SendOptions} methods that set
-\ttt{updateTx=true}, \ffunc{finishTx()} and \ffunc{updateTx()}, also require a
-transmission ID to be specified.
-
-To allow a packet transmission to be updated later, a transmission ID needs to
-be chosen (it is often the ID of the original packet), and remembered for later.
-This can be done with the following code fragment:
+An example for sending a packet, allowing it to be updated later:
 
 \begin{cpp}
 cPacket *pk = new cPacket("pk", 0, length*8);
@@ -2753,39 +2754,77 @@ cPacket *pk = new cPacket("update", 0, updatedLength*8);
 send(pk, SendOptions().updateTx(transmissionId), "out");
 \end{cpp}
 
+For the transmission to be modeled, the simulation kernel needs to obtain
+values for the packet duration and the remaining duration. Input for these values
+may come from multiple alternative sources:
+
+\begin{itemize}
+  \item If the channel defines a data rate, the duration can be
+    computed from that and the packet length.
+  \item If the channel does not contain the data rate, the sender must specify
+    it explicitly in \cclass{SendOptions}.
+  \item Once the duration is known, the remaining duration can be computed by
+    the channel as \textit{start time} + \textit{duration} - \textit{current simulation time}.
+  \item Or if the channel does not keep track of the transmission start times,
+    the remaining duration must be specified by the model in \cclass{SendOptions}.
+  \item Etc.
+\end{itemize}
+
+The \cclass{cDatarateChannel} class, the default transmission channel type in {\omnetpp},
+supports many variations of the above.
+
+For wireless transmissions modeled with \ffunc{sendDirect}, there is no channel,
+so the duration, the remaining duration, and also the propagation delay must be
+specified explicitly. Here is an example of sending the original packet:
+
+\begin{cpp}
+cGate *targetGate = peerNode->gate("directIn");
+cPacket *pk = new cPacket("directPk", 0, length*8);
+transmissionId = pk->getId();
+txStartTime = simTime();
+propagationDelay = ...;
+simtime_t duration = pk->getBitLength()/BITRATE;
+sendDirect(pk,
+    SendOptions().transmissionId(transmissionId).
+                  propagationDelay(propagationDelay).duration(duration),
+    targetGate);
+\end{cpp}
+
+And the corresponding update:
+
+\begin{cpp}
+cPacket *pk = new cPacket("directPkUpdate", 0, updatedLength*8);
+simtime_t newDuration = pk->getBitLength()/BITRATE;
+simtime_t remainingDuration = txStartTime + newDuration - simTime();
+sendDirect(pk,
+    SendOptions().updateTx(transmissionId, remainingDuration).
+                  propagationDelay(propagationDelay).duration(newDuration),
+    targetGate);
+\end{cpp}
+
 
 \subsection{Receiving Packets}
 \label{sec:simple-modules:receiving-a-packet}
 
-Packets in OMNeT++ are delivered to modules similarly to normal messages,
-through the \texttt{handleMessage()} method. When a module expects packets to
-arrive via a transmission channel, it is necessary to cast the incoming message
-to \cclass{cPacket} to access packet-specific methods and properties.
+Packets in {\omnetpp} are delivered to modules similarly to normal messages,
+through the \texttt{handleMessage()} method. To access packet-specific methods
+and fields, it is necessary to cast the incoming message to \cclass{cPacket}.
 
 \cclass{cPacket} has several fields that carry information about the packet's
 last transmission over the transmission channel. These fields are:
 
 \begin{itemize}
   \item \ffunc{hasBitError()}: Determines if the packet has any bit errors.
-  \item \ffunc{isUpdate()}: Checks if the packet is a transmission update.
+  \item \ffunc{isUpdate()}: Returns \ttt{true} if the packet is a transmission update.
   \item \ffunc{getTransmissionId()}: For transmission updates, returns the ID for identifying the transmission.
-  \item \ffunc{isReceptionStart()}: Checks if the packet's arrival time represents the beginning of the reception of the packet.
-  \item \ffunc{isReceptionEnd()}: Checks if the packet's arrival time represents the end of the reception of the packet.
+  \item \ffunc{isReceptionStart()}: Returns \ttt{true} if the packet's delivery to the module represents the beginning of the reception of the packet.
+  \item \ffunc{isReceptionEnd()}: Returns \ttt{true} if the packet's delivery to the module represents the end of the reception of the packet.
   \item \ffunc{getDuration()}: Retrieves the total transmission duration of the packet.
   \item \ffunc{getRemainingDuration()}: Obtains the remaining transmission time of the packet.
 \end{itemize}
 
 Based on the information carried by those fields, processing of the received
-packet typically involves handling the following:
-
-\begin{itemize}
-    \item \textbf{Bit Errors}: Use the \texttt{hasBitError()} method to check if the packet has arrived with errors.
-    \item \textbf{Reception Timing}: Control whether packets are delivered at
-      the start or end of their reception using \texttt{setDeliverImmediately()}.
-      Utilize \texttt{isReceptionStart()} and \texttt{isReceptionEnd()} to
-      determine the reception phase of the packet.
-    \item \textbf{Transmission Updates}: Recognize transmission updates using \texttt{isUpdate()}, and react to them accordingly.
-\end{itemize}
+packet typically involves handling the steps described in the following sections.
 
 
 \subsubsection{Checking for Bit Errors}
@@ -2824,44 +2863,27 @@ so it is usually done in the \ffunc{initialize()} method of the module.
 \end{figure}
 
 When a packet is delivered to the module, the packet's
-\ffunc{isReceptionStart()} method can be called to determine
-whether it corresponds to the start or end of the reception
-process (it should be the same as the \ffunc{getDeliverOnReceptionStart()}
-flag of the input gate), and \ffunc{getDuration()} returns the transmission
-duration.
-
-The following example code prints the start and end times of a packet reception:
-
-\begin{cpp}
-if (pkt->isReceptionStart()) {
-    startTime = pkt->getArrivalTime(); // or: simTime();
-    endTime = startTime + pkt->getDuration();
-}
-else {
-    endTime = pkt->getArrivalTime(); // or: simTime();
-    startTime = endTime - pkt->getDuration();
-}
-\end{cpp}
-
-Note that this works with wireless connections (\ffunc{sendDirect()})
-as well; there, the duration is an argument to the \ffunc{sendDirect()}
-call.
+\ffunc{isReceptionStart()} and \ffunc{isReceptionEnd()} methods can be called to
+determine whether it corresponds to the start or end of the reception process.
+(Note that for a transmission update, both methods may return \ttt{false}.)
 
 
 \subsubsection{Handling Transmission Updates}
 \label{sec:simple-modules:reception-of-transmission-updates}
+
+The receiver should recognize transmission updates using \texttt{isUpdate()}, and
+react to them accordingly.
 
 Receivers that receive the packet at the end of the reception, which is the
 default operating mode, will only receive the final update. The original
 packet and intermediate updates are absorbed by the simulation kernel.
 
 Receivers that receive the packet at the start of the reception (as selected by
-\ttt{setDeliverImmediately(true)}, see previous section) should be prepared to receive
-all of the original packet and the updates, and handle them appropriately.
-Transmission updates can be recognized by the packet's \ffunc{isUpdate()} method
-returning \ttt{true}. cPacket::getRemainingDuration() returns the remaining
-transmission duration, and cPacket::getDuration() the total transmission
-duration.
+\ttt{setDeliverImmediately(true)}, see previous section) should be prepared to
+receive all of the original packet and the updates, and handle them
+appropriately. If an update arrives, the receiver should replace the original
+packet with the update, and reschedule any potential end-reception event to
+\ttt{simTime() + pk->getRemainingDuration()}.
 
 As a safeguard against unprepared modules accidentally processing transmission
 updates as independent packets, the module is only given transmission updates if
@@ -2869,9 +2891,8 @@ it explicitly declares that it is able to handle them properly. The latter is
 done by the module calling \ttt{setTxUpdateSupport(true)}, usually in
 \ffunc{initialize()}.
 
-Non-transmission channels don't handle updates any different from
-other messages and packets.
-
+Non-transmission channels handle updates in the same way as any other messages
+and packets.
 
 
 \subsection{Receiving Messages with activity()}
