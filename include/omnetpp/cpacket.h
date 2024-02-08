@@ -344,16 +344,17 @@ class SIM_API cPacket : public cMessage
     simtime_t_cref getRemainingDuration() const {return remainingDuration;}
 
     /**
-     * Returns true if getRemainingDuration() and getDuration() would return
-     * the same value, and false otherwise.
+     * Returns true if the packet's delivery to the module represents the beginning
+     * of the reception of the packet, and false otherwise.
      */
     bool isReceptionStart() const {return duration == remainingDuration;}
 
     /**
-     * Returns true if getRemainingDuration() would return zero, and false otherwise.
+     * Returns true if the packet's delivery to the module represents the end
+     * of the reception of the packet, and false otherwise.
      */
     bool isReceptionEnd() const {return remainingDuration.isZero();}
-//@}
+    //@}
 };
 
 }  // namespace omnetpp
