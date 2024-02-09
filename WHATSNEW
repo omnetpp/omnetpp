@@ -14,9 +14,9 @@ in the simulation kernel and further adjustments.
 
 IDE:
 
-	- Updated to Eclipse 4.30, CDT 11.4, Pydev 11.0
-	- Model installation dialogs: If the IDE was installed from opp_env,
-	  tell the user to install the model with opp_env, too.
+  - Updated to Eclipse 4.30, CDT 11.4, Pydev 11.0
+  - Model installation dialogs: If the IDE was installed from opp_env,
+    tell the user to install the model with opp_env, too.
 
 
 OMNeT++ 6.0.2 (October 2023)
