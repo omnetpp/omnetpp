@@ -1382,11 +1382,11 @@
        sodipodi:role="line"
        x="22150.344"
        y="23821.467"
-       id="tspan4084">with deliverOn-</tspan><tspan
+       id="tspan4084">with deliver-</tspan><tspan
        sodipodi:role="line"
        x="22150.344"
        y="25488.986"
-       id="tspan4088">ReceptionStart=true</tspan></text>
+       id="tspan4088">  Immediately=true</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:1334.01623535px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;font-family:Bitstream Vera Sans"
