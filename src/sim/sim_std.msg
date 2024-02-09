@@ -833,7 +833,7 @@ class cPar extends cObject
     bool isMutable @getter(isMutable) @group(flags) @hint("Whether parameter setting the parameter value at runtime is supported");
     bool isExpression @getter(isExpression)@group(flags) @hint("Whether parameter value is a constant or an expression");
     bool isShared @getter(isShared) @group(flags) @hint("Whether storage could be optimized by several modules sharing the same parameter value object");
-    string assignedFrom @getter(getSourceLocation) @hint("File/1line info where the value of this parameter was parsed from");
+    string assignedFrom @getter(getSourceLocation) @hint("File/line info where the value of this parameter was parsed from");
     string baseDirectory @getter(getBaseDirectory) @hint("Base directory for interpreting potential relative path names in the contained expression");
 }
 
