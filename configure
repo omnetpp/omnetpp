@@ -4884,12 +4884,13 @@ printf "%s\n" "$as_me:    $CXX ... $silly1 <libs> $silly2 ..." >&6;}
    fi
 
    # On Windows, using the WHOLE_ARCHVE_XX flags on the import lib of models in dynamic libraries
-   # would cause duplicate symbol linker errors. We rather not support static linking than
-   # causing issues when using dynamic libraries (which is the default and recommended way of linking)
+   # would cause duplicate symbol linker errors, because multiple import symbols from headers
+   # that are included from several files would be included in the final executable.
+   # normally the linker garbage collection would remove this, but --whole-archive prevents this.
+   # We add -Wl,--allow-multiple-definition, so at least the linker would not throw an error,
+   # just a warning. It still generates a lot of warnings in these cases.
    if test "$PLATFORM" = "win32"; then
-      silly_ok="no"
-      WHOLE_ARCHIVE_ON=
-      WHOLE_ARCHIVE_OFF=
+      WHOLE_ARCHIVE_ON="-Wl,--allow-multiple-definition $WHOLE_ARCHIVE_ON"
    fi
 
    # no solution found
