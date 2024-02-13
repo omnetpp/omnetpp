@@ -1213,7 +1213,7 @@ endif
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {exe:}	@$(MKPATH) $O
 {exe:}	@echo Creating executable: $@
-{gcclongline:}{exe:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR_CR) .tmplib$$$$ @.tmp$$$$ && $(CXX) -o $O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{gcclongline:}{exe:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(CXX) -o $O/$(TARGET) @.tmp$$$$ $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) ; rm .tmp$$$$
 {~gcclongline:}{exe:}	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
 {sharedlib:}$O/$(TARGET) $O/$(TARGET_IMPDEF) $O/$(TARGET_IMPLIB) &: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} $(wildcard $(EXTRA_OBJS)) {makefile} $(CONFIGFILE)
 {sharedlib:}	@$(MKPATH) $O
