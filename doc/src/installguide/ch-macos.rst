@@ -22,10 +22,50 @@ Install the command line developer tools for macOS (compiler, debugger, etc.)
 Installing additional packages will enable more functionality in |omnet++|; see the *Additional packages* section at the
 end of this chapter.
 
+Intel-based Macs
+~~~~~~~~~~~~~~~~
+
+On an Intel-based Mac, |omnet++| is bundled with all the required external dependencies in the `tools` 
+directory of the archive, so no additional steps are needed. (You can still opt to install the external
+dependencies using Homebrew.)
+
+Apple Silicon
+~~~~~~~~~~~~~
+
+On an Apple Silicon-based computer, external dependencies must be installed manually,
+using a 3rd party package manager like Homebrew. With Homebrew, you can install the packages
+with the following command:
+
+.. code::
+
+   $ brew install bison flex perl python@3 make qt@5 openscenegraph
+
+Make sure that the following lines are sourced in your shell (e.g. add them to your `.zprofile`
+file or create a new file for them):
+
+.. code::
+
+   eval "$(/opt/homebrew/bin/brew shellenv)"
+
+   export PATH="$(brew --prefix qt@5)/bin:$PATH"
+   export PATH="$(brew --prefix bison)/bin:$PATH"
+   export PATH="$(brew --prefix flex)/bin:$PATH"
+   export PATH="$(brew --prefix make)/libexec/gnubin:$PATH"
+   export LDFLAGS="-L$(brew --prefix)/lib $LDFLAGS"
+   export CFLAGS="-I$(brew --prefix)/include $CFLAGS"
+
+Restart your shell to activate the above changes and make sure that you are using 
+`python3` from Homebrew (`which python3`) and not the system's Python interpreter
+provided by macOS (`/usr/lib/python3`) and then install the Python dependencies:
+
+.. code::
+
+   pip3 install numpy scipy pandas matplotlib posix_ipc
+
 Enabling Development Mode in Terminal
 -------------------------------------
 
-MacOS has a strict default security policy preventing the execution of unsigned code. This behavior often
+MacOS has a strict default security policy that prevents the execution of unsigned code. This behavior often
 interferes with the development process so you must explicitly allow running unsigned code from a Terminal.
 On the *System Preferences / Security and Privacy / Privacy* tab, select *Development Tools* on the left side,
 unlock the panel with the lock icon on the bottom left and select the Terminal app on the right side to
@@ -63,30 +103,6 @@ After issuing the above command go to *System Preferences / Security and Privacy
 select *Any* at the bottom of the dialog. After restarting your terminal application, you will be 
 able to debug your unsigned simulation models.
 
-Running |omnet++| on Apple Silicon
-----------------------------------
-
-|omnet++| does not currently support the Apple M1 processor natively, but you can run the x86_64 version using
-the Rosetta 2 emulator. To run |omnet++| under emulation, open a terminal window, then execute:
-
-.. code::
-
-   $ arch -x86_64 /bin/zsh --login
-
-
-After this, follow the normal installation instructions and be sure to execute all commands in this terminal.
-
-.. note::
-   
-   The above command may graphically prompt you to allow the installation of the emulator component.
-   You can also manually trigger the installation from the command line using the following command:
-   `softwareupdate --install-rosetta --agree-to-license`.   
-   
-.. note::
-
-   Typing `source setenv` will launch the x86_64 emulator automatically for you. Make sure to execute
-   all commands from that terminal.
-
 Additional Steps Required on macOS to Use the Debugger
 ------------------------------------------------------
 
@@ -102,14 +118,16 @@ Downloading and Unpacking |omnet++|
 -----------------------------------
 
 Download |omnet++| from |downloadsite|. Make sure you select to download
-the macOS specific archive, ``|omnetpp|-|version|-macos-x86_64.tgz``.
+the macOS specific archive matching your machine's architecture,
+``|omnetpp|-|version|-macos-aarch64.tgz`` (for Apple Silicon) or 
+``|omnetpp|-|version|-macos-x86_64.tgz`` (for Intel-based Macs).
 
 Copy the archive to the directory where you want to install it. This is usually your home directory, ``/Users/<you>``.
 Open a terminal, and extract the archive using the following command:
 
 .. code::
 
-   $ tar zxvf |omnetpp|-|version|-macos-x86_64.tgz
+   $ tar zxvf |omnetpp|-|version|-macos-aarch64.tgz
 
 A subdirectory called ``|omnetpp|-|version|`` will be created, containing the simulator files.
 
