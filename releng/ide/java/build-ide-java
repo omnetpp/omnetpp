@@ -89,6 +89,8 @@ rm -rf ide/features/* ide/plugins/*
 mv -f ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/features/* ide/features
 mv -f ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins/* ide/plugins
 mv -f ide/plugins/*.macosx_* ide/plugins/*.macosx.x86_64_* ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins # move back the platform specific plugins to the platform spec directory
+# make lldbmi2 executable
+chmod +x ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx*/lldbmi2
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
 echo org.eclipse.update.reconcile=false >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini
 echo osgi.instance.area.default=../../../../../samples >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini
@@ -100,6 +102,8 @@ rm -rf ide/features/* ide/plugins/*
 mv -f ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/features/* ide/features
 mv -f ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/plugins/* ide/plugins
 mv -f ide/plugins/*.macosx_* ide/plugins/*.macosx.aarch64_* ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/plugins # move back the platform specific plugins to the platform spec directory
+# make lldbmi2 executable
+chmod +x ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx*/lldbmi2
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
 echo org.eclipse.update.reconcile=false >>ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/configuration/config.ini
 echo osgi.instance.area.default=../../../../../samples >>ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/configuration/config.ini
