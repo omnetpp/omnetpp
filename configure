@@ -4297,6 +4297,24 @@ else
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
             LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
         fi
+        # self sign the IDE native lib if not already signed
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking if libopplibs.jnilib is signed" >&5
+printf %s "checking if libopplibs.jnilib is signed... " >&6; }
+        NATIVE_LIB="ide/opp_ide.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx*/libopplibs.jnilib"
+        if test ! -f $NATIVE_LIB ; then
+            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: opplibs not present" >&5
+printf "%s\n" "opplibs not present" >&6; }
+        elif test ! -x /usr/bin/codesign ; then
+            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: codesign not present - please install the macOS command-line tools package." >&5
+printf "%s\n" "codesign not present - please install the macOS command-line tools package." >&6; }
+        elif /usr/bin/codesign -v $NATIVE_LIB 2>/dev/null ; then
+            { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: already signed" >&5
+printf "%s\n" "already signed" >&6; }
+        else
+            /usr/bin/codesign -s - $NATIVE_LIB 2>/dev/null && { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: self signing... done" >&5
+printf "%s\n" "self signing... done" >&6; } || { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: self signing... failed" >&5
+printf "%s\n" "self signing... failed" >&6; }
+        fi
         ;;
     *)
         ;;
