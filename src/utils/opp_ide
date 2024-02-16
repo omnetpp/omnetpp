@@ -2,7 +2,7 @@
 #
 # Detects the platform and architecture, and starts the IDE with the right launcher
 #
-IDEDIR=$(dirname $0)/../ide
+IDEDIR=$(cd $(dirname $0)/../ide; pwd)
 PLATFORM=$(uname -sm)
 LAUNCHER=opp_ide
 if [ -z "${PRODUCT}" ]; then
@@ -41,6 +41,9 @@ case $PLATFORM in
 *Darwin*)
         # remove the quarantine extended bit so the IDE will not be copied to a private dir on macOS sierra and later
         xattr -d com.apple.quarantine $IDEDIR/${LAUNCHER}.app 2>/dev/null
+        # add the native libs plugin to the path so executables placed there (like lldbmi2) can be executed
+        IDE_NATIVE_PLUGIN_DIR=$(echo "$IDEDIR/${LAUNCHER}.app"/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx*)
+        export PATH="$IDE_NATIVE_PLUGIN_DIR:$PATH"
         # starting the executable directly allows to avoid unsigned app warnings showing up
         $IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
