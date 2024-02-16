@@ -422,6 +422,18 @@ else
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/lib -L\$(OMNETPP_TOOLS_DIR)/lib -F\$(OMNETPP_TOOLS_DIR)/lib"
             LDFLAGS_TOOLS_MACOSX="-L$OMNETPP_TOOLS_DIR/lib -F$OMNETPP_TOOLS_DIR/lib"
         fi
+        # self sign the IDE native lib if not already signed
+        AC_MSG_CHECKING(if libopplibs.jnilib is signed)
+        NATIVE_LIB="ide/opp_ide.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx*/libopplibs.jnilib"
+        if test ! -f $NATIVE_LIB ; then
+            AC_MSG_RESULT(opplibs not present)
+        elif test ! -x /usr/bin/codesign ; then
+            AC_MSG_RESULT(codesign not present - please install the macOS command-line tools package.)
+        elif /usr/bin/codesign -v $NATIVE_LIB 2>/dev/null ; then
+            AC_MSG_RESULT(already signed)
+        else
+            /usr/bin/codesign -s - $NATIVE_LIB 2>/dev/null && AC_MSG_RESULT(self signing... done) || AC_MSG_RESULT(self signing... failed)
+        fi
         ;;
     *)
         ;;
