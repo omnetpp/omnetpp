@@ -46,7 +46,6 @@ struct ticket {
     NB_INLINE ~ticket() noexcept { trampoline_leave(this); }
 };
 
-
 #define NB_TRAMPOLINE(base, size)                                              \
     using NBBase = base;                                                       \
     using NBBase::NBBase;                                                      \

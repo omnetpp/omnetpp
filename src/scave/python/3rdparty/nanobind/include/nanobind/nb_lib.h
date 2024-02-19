@@ -103,7 +103,7 @@ NB_CORE void fail(const char *fmt, ...) noexcept;
 NB_CORE void raise_next_overload_if_null(void *p);
 
 /// Raise nanobind::cast_error
-NB_CORE void raise_cast_error();
+[[noreturn]] NB_CORE void raise_cast_error();
 
 // ========================================================================
 
@@ -132,6 +132,9 @@ NB_CORE PyObject *bytes_from_cstr(const char *c);
 NB_CORE PyObject *bytes_from_cstr_and_size(const char *c, size_t n);
 
 // ========================================================================
+
+/// Convert a Python object into a Python boolean object
+NB_CORE PyObject *bool_from_obj(PyObject *o);
 
 /// Convert a Python object into a Python integer object
 NB_CORE PyObject *int_from_obj(PyObject *o);
@@ -181,7 +184,7 @@ NB_CORE void setitem(PyObject *obj, Py_ssize_t, PyObject *value);
 NB_CORE void setitem(PyObject *obj, const char *key, PyObject *value);
 NB_CORE void setitem(PyObject *obj, PyObject *key, PyObject *value);
 
-/// Set an item or raise an exception
+/// Delete an item or raise an exception
 NB_CORE void delitem(PyObject *obj, Py_ssize_t);
 NB_CORE void delitem(PyObject *obj, const char *key);
 NB_CORE void delitem(PyObject *obj, PyObject *key);

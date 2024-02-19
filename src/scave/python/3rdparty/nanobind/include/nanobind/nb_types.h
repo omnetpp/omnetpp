@@ -260,6 +260,12 @@ template <typename T> NB_INLINE T borrow(handle h) {
     return { h, detail::borrow_t() };
 }
 
+template <typename T = object, typename T2,
+          std::enable_if_t<std::is_base_of_v<object, T2> && !std::is_lvalue_reference_v<T2>, int> = 0>
+NB_INLINE T borrow(T2 &&o) {
+    return { o.release(), detail::steal_t() };
+}
+
 template <typename T> NB_INLINE T steal(handle h) {
     return { h, detail::steal_t() };
 }
@@ -319,7 +325,7 @@ public:
     /// Import and return a module or throws `python_error`.
     NB_INLINE module_ def_submodule(const char *name,
                                     const char *doc = nullptr) {
-        return borrow<module_>(detail::module_new_submodule(m_ptr, name, doc));
+        return steal<module_>(detail::module_new_submodule(m_ptr, name, doc));
     }
 };
 
@@ -338,6 +344,20 @@ class capsule : public object {
     const char *name() const { return PyCapsule_GetName(m_ptr); }
 
     void *data() const { return PyCapsule_GetPointer(m_ptr, name()); }
+};
+
+class bool_ : public object {
+    NB_OBJECT_DEFAULT(bool_, object, "bool", PyBool_Check)
+
+    explicit bool_(handle h)
+        : object(detail::bool_from_obj(h.ptr()), detail::borrow_t{}) { }
+
+    explicit bool_(bool value)
+        : object(value ? Py_True : Py_False, detail::borrow_t{}) { }
+
+    explicit operator bool() const {
+        return m_ptr == Py_True;
+    }
 };
 
 class int_ : public object {

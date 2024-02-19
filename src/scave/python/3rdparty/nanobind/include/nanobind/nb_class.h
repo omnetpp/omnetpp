@@ -49,7 +49,10 @@ enum class type_flags : uint32_t {
     /// If so, type_data::keep_shared_from_this_alive is also set.
     has_shared_from_this     = (1 << 12),
 
-    // Six more flag bits available (13 through 18) without needing
+    /// Instances of this type can be referenced by 'weakref'
+    is_weak_referenceable    = (1 << 13),
+
+    // Five more flag bits available (12 through 18) without needing
     // a larger reorganization
 };
 
@@ -77,6 +80,9 @@ enum class type_init_flags : uint32_t {
     all_init_flags           = (0x1f << 19)
 };
 
+// See internals.h
+struct nb_alias_chain;
+
 /// Information about a type that persists throughout its lifetime
 struct type_data {
     uint32_t size;
@@ -84,6 +90,7 @@ struct type_data {
     uint32_t flags : 24;
     const char *name;
     const std::type_info *type;
+    nb_alias_chain *alias_chain;
     PyTypeObject *type_py;
     void (*destruct)(void *);
     void (*copy)(void *, const void *);
@@ -94,6 +101,7 @@ struct type_data {
     bool (*keep_shared_from_this_alive)(PyObject *) noexcept;
 #if defined(Py_LIMITED_API)
     size_t dictoffset;
+    size_t weaklistoffset;
 #endif
 };
 
@@ -146,6 +154,10 @@ NB_INLINE void type_extra_apply(type_init_data &t, is_final) {
 
 NB_INLINE void type_extra_apply(type_init_data &t, dynamic_attr) {
     t.flags |= (uint32_t) type_flags::has_dynamic_attr;
+}
+
+NB_INLINE void type_extra_apply(type_data & t, is_weak_referenceable) {
+    t.flags |= (uint32_t) type_flags::is_weak_referenceable;
 }
 
 template <typename T>
@@ -473,7 +485,7 @@ public:
 
         if constexpr (!std::is_same_v<Getter, std::nullptr_t>)
             get_p = cpp_function((detail::forward_t<Getter>) getter,
-                                 scope(*this), is_method(),
+                                 scope(*this), is_method(), is_getter(),
                                  rv_policy::reference_internal, extra...);
 
         if constexpr (!std::is_same_v<Setter, std::nullptr_t>)
@@ -491,7 +503,7 @@ public:
         object get_p, set_p;
 
         if constexpr (!std::is_same_v<Getter, std::nullptr_t>)
-            get_p = cpp_function((detail::forward_t<Getter>) getter,
+            get_p = cpp_function((detail::forward_t<Getter>) getter, is_getter(),
                                  scope(*this), rv_policy::reference, extra...);
 
         if constexpr (!std::is_same_v<Setter, std::nullptr_t>)

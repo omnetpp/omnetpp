@@ -24,7 +24,7 @@ struct type_caster<std::optional<T>> {
 
     NB_TYPE_CASTER(std::optional<T>, const_name("Optional[") +
                                          concat(Caster::Name) +
-                                         const_name("]"));
+                                         const_name("]"))
 
     type_caster() : value(std::nullopt) { }
 
@@ -45,7 +45,7 @@ struct type_caster<std::optional<T>> {
             "type caster was registered to intercept this particular "
             "type, which is not allowed.");
 
-        value = caster.operator cast_t<T>();
+        value.emplace(caster.operator cast_t<T>());
 
         return true;
     }
@@ -57,6 +57,20 @@ struct type_caster<std::optional<T>> {
 
         return Caster::from_cpp(forward_like<T_>(*value), policy, cleanup);
     }
+};
+
+template <> struct type_caster<std::nullopt_t> {
+    bool from_python(handle src, uint8_t, cleanup_list *) noexcept {
+        if (src.is_none())
+            return true;
+        return false;
+    }
+
+    static handle from_cpp(std::nullopt_t, rv_policy, cleanup_list *) noexcept {
+        return none().release();
+    }
+
+    NB_TYPE_CASTER(std::nullopt_t, const_name("None"))
 };
 
 NAMESPACE_END(detail)

@@ -168,30 +168,34 @@ static PyObject *dlpack_from_buffer_protocol(PyObject *o, bool ro) {
         return nullptr;
     }
 
-    char format = 'B';
+    char format_c = 'B';
     const char *format_str = view->format;
     if (format_str)
-        format = *format_str;
+        format_c = *format_str;
 
-    bool skip_first = format == '@' || format == '=';
+    bool skip_first = format_c == '@' || format_c == '=';
 
     int32_t num = 1;
     if(*(uint8_t *) &num == 1) {
-        if (format == '<')
+        if (format_c == '<')
             skip_first = true;
     } else {
-        if (format == '!' || format == '>')
+        if (format_c == '!' || format_c == '>')
             skip_first = true;
     }
 
     if (skip_first && format_str)
-        format = *++format_str;
+        format_c = *++format_str;
+
+    bool is_complex = format_str[0] == 'Z';
+    if (is_complex)
+        format_c = *++format_str;
 
     dlpack::dtype dt { };
     bool fail = format_str && format_str[1] != '\0';
 
     if (!fail) {
-        switch (format) {
+        switch (format_c) {
             case 'c':
             case 'b':
             case 'h':
@@ -215,6 +219,11 @@ static PyObject *dlpack_from_buffer_protocol(PyObject *o, bool ro) {
 
             default:
                 fail = true;
+        }
+
+        if (is_complex) {
+            fail |= dt.code != (uint8_t) dlpack::dtype_code::Float;
+            dt.code = (uint8_t) dlpack::dtype_code::Complex;
         }
 
         dt.lanes = 1;
@@ -415,9 +424,12 @@ ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
         }
     }
 
+    bool refused_conversion = t.dtype.code == (uint8_t) dlpack::dtype_code::Complex &&
+                              req->dtype.code != (uint8_t) dlpack::dtype_code::Complex;
+
     // Support implicit conversion of 'dtype' and order
     if (pass_device && pass_shape && (!pass_dtype || !pass_order) && convert &&
-        capsule.ptr() != o) {
+        capsule.ptr() != o && !refused_conversion) {
         PyTypeObject *tp = Py_TYPE(o);
         str module_name_o = borrow<str>(handle(tp).attr("__module__"));
         const char *module_name = module_name_o.c_str();
@@ -431,7 +443,7 @@ ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
             return nullptr;
 
         const char *prefix = nullptr;
-        char dtype[9];
+        char dtype[11];
         if (dt.code == (uint8_t) dlpack::dtype_code::Bool) {
             std::strcpy(dtype, "bool");
         } else {
@@ -439,6 +451,7 @@ ndarray_handle *ndarray_import(PyObject *o, const ndarray_req *req,
                 case (uint8_t) dlpack::dtype_code::Int: prefix = "int"; break;
                 case (uint8_t) dlpack::dtype_code::UInt: prefix = "uint"; break;
                 case (uint8_t) dlpack::dtype_code::Float: prefix = "float"; break;
+                case (uint8_t) dlpack::dtype_code::Complex: prefix = "complex"; break;
                 default:
                     return nullptr;
             }
@@ -524,6 +537,8 @@ void ndarray_dec_ref(ndarray_handle *th) noexcept {
     if (rc_value == 0) {
         check(false, "ndarray_dec_ref(): reference count became negative!");
     } else if (rc_value == 1) {
+        gil_scoped_acquire guard;
+
         Py_XDECREF(th->owner);
         Py_XDECREF(th->self);
         managed_dltensor *mt = th->ndarray;

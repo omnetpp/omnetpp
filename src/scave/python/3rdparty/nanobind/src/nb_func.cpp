@@ -100,6 +100,10 @@ void nb_func_dealloc(PyObject *self) {
                 }
             }
 
+            if (f->flags & (uint32_t) func_flags::has_doc)
+                free((char *) f->doc);
+
+            free((char *) f->name);
             free(f->args);
             free((char *) f->descr);
             free(f->descr_types);
@@ -165,6 +169,18 @@ void *malloc_check(size_t size) {
     if (!ptr)
         fail("nanobind: malloc() failed!");
     return ptr;
+}
+
+char *strdup_check(const char *s) {
+    char *result;
+    #if defined(_WIN32)
+        result = _strdup(s);
+    #else
+        result = strdup(s);
+    #endif
+    if (!result)
+        fail("nanobind: strdup() failed!");
+    return result;
 }
 
 /**
@@ -282,8 +298,12 @@ PyObject *nb_func_new(const void *in_) noexcept {
 
     func_data *fc = nb_func_data(func) + to_copy;
     memcpy(fc, f, sizeof(func_data_prelim<0>));
-    if (has_doc && fc->doc[0] == '\n')
-        fc->doc++;
+    if (has_doc) {
+        if (fc->doc[0] == '\n') {
+            fc->doc++;
+        }
+        fc->doc = strdup_check(fc->doc);
+    }
 
     if (is_constructor)
         fc->flags |= (uint32_t) func_flags::is_constructor;
@@ -292,6 +312,7 @@ PyObject *nb_func_new(const void *in_) noexcept {
 
     if (!has_name)
         fc->name = "";
+    fc->name = strdup_check(fc->name);
 
     if (is_implicit) {
         check(fc->flags & (uint32_t) func_flags::is_constructor,
@@ -942,9 +963,9 @@ static void nb_func_render_signature(const func_data *f) noexcept {
                       "nb::detail::nb_func_render_signature(): missing type!");
 
                 if (!(is_method && arg_index == 0)) {
-                    auto it = internals->type_c2p.find(std::type_index(**descr_type));
+                    auto it = internals->type_c2p_slow.find(*descr_type);
 
-                    if (it != internals->type_c2p.end()) {
+                    if (it != internals->type_c2p_slow.end()) {
                         handle th((PyObject *) it->second->type_py);
                         buf.put_dstr((borrow<str>(th.attr("__module__"))).c_str());
                         buf.put('.');
@@ -1108,7 +1129,7 @@ NB_NOINLINE char *type_name(const std::type_info *t) {
     int status = 0;
     char *name = abi::__cxa_demangle(name_in, nullptr, nullptr, &status);
 #else
-    char *name = NB_STRDUP(name_in);
+    char *name = strdup_check(name_in);
     strexc(name, "class ");
     strexc(name, "struct ");
     strexc(name, "enum ");

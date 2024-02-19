@@ -48,6 +48,7 @@ template <typename... Ts> struct call_guard {
 };
 
 struct dynamic_attr {};
+struct is_weak_referenceable {};
 struct is_method {};
 struct is_implicit {};
 struct is_operator {};
@@ -78,6 +79,8 @@ struct raw_doc {
     const char *value;
     raw_doc(const char *doc) : value(doc) {}
 };
+
+struct is_getter { };
 
 NAMESPACE_BEGIN(literals)
 constexpr arg operator"" _a(const char *name, size_t) { return arg(name); }
@@ -155,9 +158,37 @@ template <size_t Size> struct func_data_prelim {
     const char *doc;
     PyObject *scope;
 
+    // *WARNING*: nanobind regularly receives requests from users who run it
+    // through Clang-Tidy, or who compile with increased warnings levels, like
+    //
+    //   -Wpedantic, -Wcast-qual, -Wsign-conversion, etc.
+    //
+    // (i.e., beyond -Wall -Wextra and /W4 that are currently already used)
+    //
+    // Their next step is to open a big pull request needed to silence all of
+    // the resulting messages. This comment is strategically placed here
+    // because the zero-length array construction below will almost certainly
+    // be flagged in this process.
+    //
+    // My policy on this is as follows: I am always happy to fix issues in the
+    // codebase. However, many of the resulting change requests are in the
+    // "ritual purification" category: things that cause churn, decrease
+    // readability, and which don't fix actual problems. It's a never-ending
+    // cycle because each new revision of such tooling adds further warnings
+    // and purification rites.
+    //
+    // So just to be clear: I do not wish to pepper this codebase with
+    // "const_cast" and #pragmas/comments to avoid warnings in external
+    // tooling just so those users can have a "silent" build. I don't think it
+    // is reasonable for them to impose their own style on this project.
+    //
+    // As a workaround it is likely possible to restrict the scope of style
+    // checks to particular C++ namespaces or source code locations.
 #if defined(_MSC_VER)
+    // MSVC doesn't support zero-length arrays
     arg_data args[Size == 0 ? 1 : Size];
 #else
+    // GCC and Clang do.
     arg_data args[Size];
 #endif
 };
@@ -190,6 +221,9 @@ template <typename F>
 NB_INLINE void func_extra_apply(F &f, is_method, size_t &) {
     f.flags |= (uint32_t) func_flags::is_method;
 }
+
+template <typename F>
+NB_INLINE void func_extra_apply(F &, is_getter, size_t &) { }
 
 template <typename F>
 NB_INLINE void func_extra_apply(F &f, is_implicit, size_t &) {

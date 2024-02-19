@@ -133,7 +133,7 @@ public:
         }
     }
 
-    NB_TYPE_CASTER(T, const_name<std::is_integral_v<T>>("int", "float"));
+    NB_TYPE_CASTER(T, const_name<std::is_integral_v<T>>("int", "float"))
 };
 
 template <> struct type_caster<void_type> {
@@ -180,7 +180,7 @@ template <> struct type_caster<std::nullptr_t> {
         return none().release();
     }
 
-    NB_TYPE_CASTER(std::nullptr_t, const_name("None"));
+    NB_TYPE_CASTER(std::nullptr_t, const_name("None"))
 };
 
 template <> struct type_caster<bool> {
@@ -200,7 +200,7 @@ template <> struct type_caster<bool> {
         return handle(src ? Py_True : Py_False).inc_ref();
     }
 
-    NB_TYPE_CASTER(bool, const_name("bool"));
+    NB_TYPE_CASTER(bool, const_name("bool"))
 };
 
 template <> struct type_caster<char> {
@@ -393,8 +393,12 @@ bool try_cast(const detail::api<Derived> &value, T &out, bool convert = true) no
     if (caster.from_python(value.derived().ptr(),
                            convert ? (uint8_t) detail::cast_flags::convert
                                    : (uint8_t) 0, nullptr)) {
-        out = caster.operator detail::cast_t<T>();
-        return true;
+        try {
+            out = caster.operator detail::cast_t<T>();
+            return true;
+        } catch (const builtin_exception&) {
+            return false;
+        }
     }
 
     return false;
@@ -419,17 +423,7 @@ T cast(const detail::api<Derived> &value, bool convert = true) {
                                         : (uint8_t) 0, nullptr))
             detail::raise_cast_error();
 
-        // GCC misses that from_python will return or ensure orderly initialization
-        #if defined(__GNUC__) && !defined(__clang__)
-          #pragma GCC diagnostic push
-          #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-        #endif
-
         return caster.operator detail::cast_t<T>();
-
-        #if defined(__GNUC__) && !defined(__clang__)
-          #pragma GCC diagnostic pop
-        #endif
     }
 }
 

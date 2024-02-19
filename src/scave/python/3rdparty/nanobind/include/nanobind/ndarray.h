@@ -67,8 +67,7 @@ NAMESPACE_END(dlpack)
 
 NAMESPACE_BEGIN(detail)
 
-template <typename T>
-struct is_complex : public std::false_type { };
+template <typename T> struct is_complex : std::false_type { };
 
 NAMESPACE_END(detail)
 
@@ -121,10 +120,10 @@ template <typename T> constexpr dlpack::dtype dtype() {
 
     if constexpr (ndarray_traits<T>::is_float)
         result.code = (uint8_t) dlpack::dtype_code::Float;
-    else if constexpr (ndarray_traits<T>::is_signed)
-        result.code = (uint8_t) dlpack::dtype_code::Int;
     else if constexpr (ndarray_traits<T>::is_complex)
         result.code = (uint8_t) dlpack::dtype_code::Complex;
+    else if constexpr (ndarray_traits<T>::is_signed)
+        result.code = (uint8_t) dlpack::dtype_code::Int;
     else if constexpr (std::is_same_v<std::remove_cv_t<T>, bool>)
         result.code = (uint8_t) dlpack::dtype_code::Bool;
     else
@@ -498,7 +497,7 @@ public:
                                   byte_offset(indices...));
     }
 
-    template <typename... Extra> NB_INLINE auto view() {
+    template <typename... Extra> NB_INLINE auto view() const {
         using Info2 = typename ndarray<Args..., Extra...>::Info;
         using Scalar2 = typename Info2::scalar_type;
         using Shape2 = typename Info2::shape_type;
@@ -564,7 +563,7 @@ NAMESPACE_BEGIN(detail)
 template <typename... Args> struct type_caster<ndarray<Args...>> {
     NB_TYPE_CASTER(ndarray<Args...>, Value::Info::name + const_name("[") +
                                         concat_maybe(detail::ndarray_arg<Args>::name...) +
-                                        const_name("]"));
+                                        const_name("]"))
 
     bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept {
         constexpr size_t size = (0 + ... + detail::ndarray_arg<Args>::size);
