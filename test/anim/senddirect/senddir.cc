@@ -49,7 +49,7 @@ void Gen::activity()
 void Gen::sendTo(const char *modname, const char *gatename)
 {
     char msgname[32];
-    sprintf(msgname, "job-%d", ctr++);
+    snprintf(msgname, sizeof(msgname), "job-%d", ctr++);
     cMessage *msg = new cMessage(msgname);
 
     cModule *target = getSimulation()->getModuleByPath(modname);

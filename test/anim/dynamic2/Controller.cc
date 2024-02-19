@@ -38,7 +38,7 @@ void Controller::handleMessage(cMessage *msg)
     cModuleType *type = cModuleType::find("Node");
     for (int i = 0; i < n; i++) {
         char name[20];
-        sprintf(name, "node-%d", ++k);
+        snprintf(name, sizeof(name), "node-%d", ++k);
         type->createScheduleInit(name, getSystemModule());
     }
     bubble("created a bunch of modules");

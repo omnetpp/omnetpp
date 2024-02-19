@@ -43,7 +43,7 @@ void Txc17::handleMessage(cMessage *msg)
         if (hasGUI()) {
             char label[50];
             // Write last hop count to string
-            sprintf(label, "last hopCount = %d", hopcount);
+            snprintf(label, sizeof(label), "last hopCount = %d", hopcount);
             // Get pointer to figure
             cCanvas *canvas = getParentModule()->getCanvas();
             cTextFigure *textFigure = check_and_cast<cTextFigure*>(canvas->getFigure("lasthopcount"));
@@ -78,7 +78,7 @@ TicTocMsg17 *Txc17::generateMessage()
         dest++;
 
     char msgname[20];
-    sprintf(msgname, "tic-%d-to-%d", src, dest);
+    snprintf(msgname, sizeof(msgname), "tic-%d-to-%d", src, dest);
 
     // Create message object and set source and destination field.
     TicTocMsg17 *msg = new TicTocMsg17(msgname);

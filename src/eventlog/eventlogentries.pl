@@ -475,7 +475,7 @@ foreach $class (@classes)
       else
       {
          print ENTRIES_CC_FILE "    {\n";
-         print ENTRIES_CC_FILE "        sprintf(buffer, \"$field->{PRINTFTYPE}\", $field->{NAME});\n";
+         print ENTRIES_CC_FILE "        snprintf(buffer, sizeof(buffer), \"$field->{PRINTFTYPE}\", $field->{NAME});\n";
          print ENTRIES_CC_FILE "        return buffer;\n";
          print ENTRIES_CC_FILE "    }\n";
       }

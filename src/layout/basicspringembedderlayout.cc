@@ -678,7 +678,7 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     }
 
     char buf[80];
-    sprintf(buf, "after step %d", step);
+    snprintf(buf, sizeof(buf), "after step %d", step);
     environment->showGraphics(buf);
 }
 

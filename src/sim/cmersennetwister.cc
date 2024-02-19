@@ -36,8 +36,8 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
         cConfiguration *cfg)
 {
     char key[40], key2[40];
-    sprintf(key, "seed-%d-mt", rngId);
-    sprintf(key2, "seed-%d-mt-p%d", rngId, parsimProcId);
+    snprintf(key, sizeof(key), "seed-%d-mt", rngId);
+    snprintf(key2, sizeof(key2), "seed-%d-mt-p%d", rngId, parsimProcId);
 
     uint32_t seed;
     if (parsimNumPartitions > 1) {

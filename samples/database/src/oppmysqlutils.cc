@@ -120,7 +120,7 @@ int opp_mysql_substitute(std::string& query, const char *substring, const char *
 int opp_mysql_substitute(std::string& query, const char *substring, long value, MYSQL *mysql)
 {
     char buf[32];
-    sprintf(buf, "%ld", value);
+    snprintf(buf, sizeof(buf), "%ld", value);
     return opp_mysql_substitute(query, substring, buf, mysql);
 }
 

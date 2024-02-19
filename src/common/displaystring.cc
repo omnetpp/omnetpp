@@ -119,7 +119,7 @@ bool DisplayString::setTagArg(const char *tagname, int index, const char *value)
 bool DisplayString::setTagArg(const char *tagname, int index, long value)
 {
     char buf[32];
-    sprintf(buf, "%ld", value);
+    snprintf(buf, sizeof(buf), "%ld", value);
     return setTagArg(tagname, index, buf);
 }
 

@@ -40,7 +40,7 @@ void cLCG32::initialize(int seedSet, int rngId, int numRngs,
                             "in the configuration instead");
 
     char key[32];
-    sprintf(key, "seed-%d-lcg32", rngId);
+    snprintf(key, sizeof(key), "seed-%d-lcg32", rngId);
     const char *value = cfg->getConfigValue(key);
     if (value == nullptr) {
         int autoSeedIndex = seedSet * numRngs + rngId;

@@ -88,7 +88,7 @@ TicTocMsg14 *Txc14::generateMessage()
         dest++;
 
     char msgname[20];
-    sprintf(msgname, "tic-%d-to-%d", src, dest);
+    snprintf(msgname, sizeof(msgname), "tic-%d-to-%d", src, dest);
 
     // Create message object and set source and destination field.
     TicTocMsg14 *msg = new TicTocMsg14(msgname);
@@ -113,6 +113,6 @@ void Txc14::forwardMessage(TicTocMsg14 *msg)
 void Txc14::refreshDisplay() const
 {
     char buf[40];
-    sprintf(buf, "rcvd: %ld sent: %ld", numReceived, numSent);
+    snprintf(buf, sizeof(buf), "rcvd: %ld sent: %ld", numReceived, numSent);
     getDisplayString().setTagArg("t", 0, buf);
 }

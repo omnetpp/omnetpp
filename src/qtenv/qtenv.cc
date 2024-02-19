@@ -665,7 +665,7 @@ void Qtenv::doRun()
         // create windowtitle prefix
         if (getParsimNumPartitions() > 0) {
             char tmp[32];
-            sprintf(tmp, "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
+            snprintf(tmp, sizeof(tmp), "Proc %d/%d - ", getParsimProcId(), getParsimNumPartitions());
             windowTitlePrefix = tmp;
         }
 
@@ -1040,7 +1040,7 @@ bool Qtenv::doRunSimulationExpress()
     //
 
     char info[128];
-    sprintf(info, "** Running in Express mode from event #%" PRId64 "  t=%s ...\n",
+    snprintf(info, sizeof(info), "** Running in Express mode from event #%" PRId64 "  t=%s ...\n",
             getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
@@ -1609,7 +1609,7 @@ void Qtenv::componentInitBegin(cComponent *component, int stage)
 
     // produce banner text
     char banner[MAX_OBJECTFULLPATH+60];
-    sprintf(banner, "Initializing %s %s, stage %d\n",
+    snprintf(banner, sizeof(banner), "Initializing %s %s, stage %d\n",
             component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 
     // insert into log buffer

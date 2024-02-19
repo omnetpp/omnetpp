@@ -953,7 +953,7 @@ double opp_atof(const char *s)
 std::string opp_formatdouble(double value, int numSignificantDigits)
 {
     char buf[128];
-    sprintf(buf, "%.*g", numSignificantDigits, value);
+    snprintf(buf, sizeof(buf), "%.*g", numSignificantDigits, value);
     return buf;
 }
 

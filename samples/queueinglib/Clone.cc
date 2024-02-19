@@ -46,7 +46,7 @@ void Clone::handleMessage(cMessage *msg)
 void Clone::updateJobName(Job *job, int i)
 {
     char buf[80];
-    sprintf(buf, "%.70s.%d", job->getName(), i);
+    snprintf(buf, sizeof(buf), "%.70s.%d", job->getName(), i);
     job->setName(buf);
 }
 

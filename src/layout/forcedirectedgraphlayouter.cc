@@ -554,7 +554,7 @@ void ForceDirectedGraphLayouter::debugDraw()
 
         environment->drawRectangle(pt.x, pt.y, pt.x + rs.width, pt.y + rs.height, "{node bbox}", "black");
         char text[100];
-        sprintf(text, "%g", pt.z);
+        snprintf(text, sizeof(text), "%g", pt.z);
         environment->drawText(pt.x, pt.y, text, "{node bbox}", "black");
     }
 

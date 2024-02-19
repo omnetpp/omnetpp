@@ -218,7 +218,7 @@ std::string cValue::str() const
     switch (type) {
         case UNDEF: return "undefined";
         case BOOL: return bl ? "true" : "false";
-        case INT: sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit.c_str())); return buf;
+        case INT: snprintf(buf, sizeof(buf), "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit.c_str())); return buf;
         case DOUBLE: {
             if (unit.empty()) {
                 opp_dtoa(buf, "%g", dbl);

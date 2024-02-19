@@ -36,7 +36,7 @@ void Txc12::initialize()
     if (getIndex() == 0) {
         // Boot the process scheduling the initial message as a self-message.
         char msgname[20];
-        sprintf(msgname, "tic-%d", getIndex());
+        snprintf(msgname, sizeof(msgname), "tic-%d", getIndex());
         cMessage *msg = new cMessage(msgname);
         scheduleAt(0.0, msg);
     }

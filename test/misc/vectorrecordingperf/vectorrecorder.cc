@@ -11,7 +11,7 @@ void VectorRecorder::initialize()
     int numVectors = par("numVectors");
     for (int i = 0; i < numVectors; i++) {
         char vectorName[32];
-        sprintf(vectorName, "dummy-vector-%d", i);
+        snprintf(vectorName, sizeof(vectorName), "dummy-vector-%d", i);
         vectorHandles.push_back(ev->registerOutputVector("dummy-module", vectorName));
     }
 

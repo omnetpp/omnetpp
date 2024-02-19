@@ -930,9 +930,9 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
     // find out if this module is (or has any submodules that are) on this partition
     char parname[MAX_OBJECTFULLPATH];
     if (index < 0)
-        sprintf(parname, "%s.%s", parentmod->getFullPath().c_str(), modname);
+        snprintf(parname, sizeof(parname), "%s.%s", parentmod->getFullPath().c_str(), modname);
     else
-        sprintf(parname, "%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index);  // FIXME this is incorrectly chosen for non-vector modules too!
+        snprintf(parname, sizeof(parname), "%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index);  // FIXME this is incorrectly chosen for non-vector modules too!
     std::string procIds = getConfig()->getAsString(parname, CFGID_PARTITION_ID, "");
     if (procIds.empty()) {
         // modules inherit the setting from their parents, except when the parent is the system module (the network) itself

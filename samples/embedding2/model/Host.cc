@@ -47,7 +47,7 @@ void Host::handleMessage(cMessage *msg)
     if (state == IDLE) {
         // generate packet and schedule timer when it ends
         char pkname[40];
-        sprintf(pkname, "pk-%d-#%d", getId(), pkCounter++);
+        snprintf(pkname, sizeof(pkname), "pk-%d-#%d", getId(), pkCounter++);
         EV << "generating packet " << pkname << endl;
 
         state = TRANSMIT;

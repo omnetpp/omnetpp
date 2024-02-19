@@ -25,7 +25,7 @@ void SourceBase::initialize()
 Job *SourceBase::createJob()
 {
     char buf[80];
-    sprintf(buf, "%.60s-%d", jobName.c_str(), ++jobCounter);
+    snprintf(buf, sizeof(buf), "%.60s-%d", jobName.c_str(), ++jobCounter);
     Job *job = new Job(buf);
     job->setKind(par("jobType"));
     job->setPriority(par("jobPriority"));

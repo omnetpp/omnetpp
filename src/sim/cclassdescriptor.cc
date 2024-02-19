@@ -39,7 +39,7 @@ namespace omnetpp {
 std::string cClassDescriptor::long2string(long l)
 {
     char buf[32];
-    sprintf(buf, "%ld", l);
+    snprintf(buf, sizeof(buf), "%ld", l);
     return buf;
 }
 
@@ -51,7 +51,7 @@ long cClassDescriptor::string2long(const char *s)
 std::string cClassDescriptor::ulong2string(unsigned long l)
 {
     char buf[32];
-    sprintf(buf, "%lu", l);
+    snprintf(buf, sizeof(buf), "%lu", l);
     return buf;
 }
 
@@ -63,7 +63,7 @@ unsigned long cClassDescriptor::string2ulong(const char *s)
 std::string cClassDescriptor::int642string(int64_t l)
 {
     char buf[32];
-    sprintf(buf, "%" PRId64, l);
+    snprintf(buf, sizeof(buf), "%" PRId64, l);
     return buf;
 }
 
@@ -75,7 +75,7 @@ int64_t cClassDescriptor::string2int64(const char *s)
 std::string cClassDescriptor::uint642string(uint64_t l)
 {
     char buf[32];
-    sprintf(buf, "%" PRId64 "u", l);
+    snprintf(buf, sizeof(buf), "%" PRId64 "u", l);
     return buf;
 }
 
@@ -107,7 +107,7 @@ double cClassDescriptor::string2double(const char *s)
 std::string cClassDescriptor::enum2string(int e, const char *enumName) const
 {
     char buf[32];
-    sprintf(buf, "%d", e);
+    snprintf(buf, sizeof(buf), "%d", e);
 
     cEnum *enump = cEnum::find(enumName, getNamespace().c_str());
     if (!enump)

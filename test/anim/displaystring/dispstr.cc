@@ -127,7 +127,7 @@ void Gen::hue()
     EV << "HSB hue -- valid values only:\n";
     for (int i = 0; i < 255; i += 8) {
         char buf[10];
-        sprintf(buf, "@%2.2xffff", i);
+        snprintf(buf, sizeof(buf), "@%2.2xffff", i);
         getDisplayString().setTagArg("b", 3, buf);
         show();
     }
@@ -138,7 +138,7 @@ void Gen::saturation()
     EV << "HSB saturation -- valid values only:\n";
     for (int i = 0; i < 255; i += 8) {
         char buf[10];
-        sprintf(buf, "@40%2.2xff", i);
+        snprintf(buf, sizeof(buf), "@40%2.2xff", i);
         getDisplayString().setTagArg("b", 3, buf);
         show();
     }
@@ -149,7 +149,7 @@ void Gen::brightness()
     EV << "HSB brightness -- valid values only:\n";
     for (int i = 0; i < 255; i += 8) {
         char buf[10];
-        sprintf(buf, "@4080%2.2x", i);
+        snprintf(buf, sizeof(buf), "@4080%2.2x", i);
         getDisplayString().setTagArg("b", 3, buf);
         show();
     }
@@ -179,7 +179,7 @@ void Gen::messages()
 
     char msgname[32];
     for (unsigned int i = 0; i < sizeof(displayStrings) / sizeof(const char *); ++i) {
-        sprintf(msgname, "job-%d", i);
+        snprintf(msgname, sizeof(msgname), "job-%d", i);
         DisplayStringMessage *msg = new DisplayStringMessage(msgname, i);
         msg->setDisplayString(displayStrings[i]);
         EV << "Sending message #" << i << " with display string: \"" << displayStrings[i] << "\".\n";

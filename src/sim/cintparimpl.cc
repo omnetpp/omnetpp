@@ -173,7 +173,7 @@ std::string cIntParImpl::str() const
         return expr->str();
     else {
         char buf[32];
-        sprintf(buf, "%" PRId64, (int64_t)val);
+        snprintf(buf, sizeof(buf), "%" PRId64, (int64_t)val);
         const char *unit = getUnit();
         if (!unit)
             return buf;

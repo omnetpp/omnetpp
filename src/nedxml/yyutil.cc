@@ -57,7 +57,7 @@ const char *toString(ParseContext *np, YYLoc pos)
 const char *toString(long l)
 {
     static char buf[32];
-    sprintf(buf, "%ld", l);
+    snprintf(buf, sizeof(buf), "%ld", l);
     return buf;
 }
 
@@ -75,7 +75,7 @@ std::string removeSpaces(ParseContext *np, YYLoc pos)
 const char *currentLocation(ParseContext *np)
 {
     static char buf[2048];
-    sprintf(buf, "%s:%d", np->getFileName(), pos.li);
+    snprintf(buf, sizeof(buf), "%s:%d", np->getFileName(), pos.li);
     return buf;
 }
 

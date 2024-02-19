@@ -26,7 +26,7 @@ void HCGenerator::activity()
 
         // create packet
         char pktname[30];
-        sprintf(pktname, "%d-->%d", my_address, dest);
+        snprintf(pktname, sizeof(pktname), "%d-->%d", my_address, dest);
         HCPacket *pkt = new HCPacket(pktname);
         pkt->setSrcAddress(my_address);
         pkt->setDestAddress(dest);

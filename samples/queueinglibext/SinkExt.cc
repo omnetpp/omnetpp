@@ -26,7 +26,7 @@ void SinkExt::handleMessage(cMessage *msg)
 void SinkExt::refreshDisplay() const
 {
     char buf[80];
-    sprintf(buf, "received jobs: %d", numJobsReceived);
+    snprintf(buf, sizeof(buf), "received jobs: %d", numJobsReceived);
     getDisplayString().setTagArg("t", 0, buf);
 }
 

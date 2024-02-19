@@ -38,7 +38,7 @@ RunUntilDialog::RunUntilDialog(QWidget *parent) :
     ui->msgCombo->addItem("");
     for (cObject *ptr : msgPtrs) {
         char buffer[50];
-        sprintf(buffer, "%p", (void *)ptr);
+        snprintf(buffer, sizeof(buffer), "%p", (void *)ptr);
         QString msgLabel = ptr->getFullName() + QString(" (") + getObjectShortTypeName(ptr) + "), " +
                 ptr->str().c_str() + " -- " + buffer;
         ui->msgCombo->addItem(msgLabel, reinterpret_cast<quintptr>(ptr));

@@ -302,7 +302,7 @@ ASTNode *prependMinusSign(ParseContext *np, ASTNode *node)
     int type = literalNode->getType();
     if (type != LIT_INT && type != LIT_DOUBLE && type != LIT_QUANTITY) {
         char msg[140];
-        sprintf(msg, "unary minus not accepted before '%.100s'", literalNode->getValue());
+        snprintf(msg, sizeof(msg), "unary minus not accepted before '%.100s'", literalNode->getValue());
         np->error(msg, pos.li);
         return node;
     }

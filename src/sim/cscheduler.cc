@@ -91,7 +91,7 @@ std::string cRealTimeScheduler::str() const
         return "real-time scheduling";
     else {
         char buf[64];
-        sprintf(buf, "scaled real-time scheduling (%gx)", factor);
+        snprintf(buf, sizeof(buf), "scaled real-time scheduling (%gx)", factor);
         return buf;
     }
 }

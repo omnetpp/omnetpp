@@ -144,7 +144,7 @@ void testReader(const char *readerNodeType, const char *inputFile, int *vectorId
     char vectorIdStr[12];
 
     for (size_t i = 0; i < count; ++i) {
-        sprintf(vectorIdStr, "%d", vectorIds[i]);
+        snprintf(vectorIdStr, sizeof(vectorIdStr), "%d", vectorIds[i]);
         Node *builder = builderType->create(&manager, attrs);
         Port *src = readerType->getPort(reader, vectorIdStr);
         Port *dest = builderType->getPort(builder, "in");
