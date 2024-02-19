@@ -86,7 +86,7 @@ TicTocMsg13 *Txc13::generateMessage()
         dest++;
 
     char msgname[20];
-    sprintf(msgname, "tic-%d-to-%d", src, dest);
+    snprintf(msgname, sizeof(msgname), "tic-%d-to-%d", src, dest);
 
     // Create message object and set source and destination field.
     TicTocMsg13 *msg = new TicTocMsg13(msgname);

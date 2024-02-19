@@ -157,7 +157,7 @@ std::string ExprValue::str() const
         case BOOL:
             return bl ? "true" : "false";
         case INT:
-            sprintf(buf, "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit.c_str()));
+            snprintf(buf, sizeof(buf), "%" PRId64 "%s", (int64_t)intv, opp_nulltoempty(unit.c_str()));
             return buf;
         case DOUBLE:
             opp_dtoa(buf, "%g", dbl);

@@ -446,7 +446,7 @@ void DisplayUpdateController::recordFrame()
     painter.setBackgroundMode(Qt::OpaqueMode);
     painter.setPen(colors::BLACK);
     painter.setBackground(colors::LIGHTGREY);
-    sprintf(temp, "time: %s s", now.str().c_str());
+    snprintf(temp, sizeof(temp), "time: %s s", now.str().c_str());
     //painter.drawText(size.width() - 380, 200, temp);
     simtime_t frameTime = now - lastRecordedFrame;
     if (frameTime.inUnit(SimTimeUnit::SIMTIME_MS) > 0)
@@ -460,7 +460,7 @@ void DisplayUpdateController::recordFrame()
     double v = UnitConversion::convertUnit(frameTime.dbl(), "s", targetUnit);
 
 
-    sprintf(temp, "delta: %.3g %s", v, targetUnit);
+    snprintf(temp, sizeof(temp), "delta: %.3g %s", v, targetUnit);
     //painter.drawText(frame.size().width() - 380, 250, temp);
     std::stringstream ss;
     ss << filenameBase << std::setw(4) << std::setfill('0') << frameCount << ".png";

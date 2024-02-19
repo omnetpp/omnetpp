@@ -119,7 +119,7 @@ void cSimpleModule::activate(void *p)
     // rename message
     starterMessage->setKind(MK_TIMEOUT);
     char buf[24];
-    sprintf(buf, "timeout-%d", mod->getId());
+    snprintf(buf, sizeof(buf), "timeout-%d", mod->getId());
     starterMessage->setName(buf);
 
     cException *exception = nullptr;
@@ -309,7 +309,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
 
         // create timeoutmsg, used as internal timeout message
         char buf[24];
-        sprintf(buf, "starter-%d", getId());
+        snprintf(buf, sizeof(buf), "starter-%d", getId());
         timeoutMessage = new cMessage(buf, MK_STARTER);
 
         // initialize message fields

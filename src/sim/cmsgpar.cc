@@ -129,11 +129,11 @@ string cMsgPar::str() const
             return string(lng.val ? "true" : "false");
 
         case 'L':
-            sprintf(bb, "%ld", lng.val);
+            snprintf(bb, sizeof(bb), "%ld", lng.val);
             return string(bb);
 
         case 'D':
-            sprintf(bb, "%g", dbl.val);
+            snprintf(bb, sizeof(bb), "%g", dbl.val);
             return string(bb);
 
         case 'F':
@@ -141,27 +141,27 @@ string cMsgPar::str() const
             fn = ff ? ff->getName() : "unknown";
             switch (func.argc) {
                 case 0:
-                    sprintf(bb, "()");
+                    snprintf(bb, sizeof(bb), "()");
                     break;
 
                 case 1:
-                    sprintf(bb, "(%g)", func.p1);
+                    snprintf(bb, sizeof(bb), "(%g)", func.p1);
                     break;
 
                 case 2:
-                    sprintf(bb, "(%g,%g)", func.p1, func.p2);
+                    snprintf(bb, sizeof(bb), "(%g,%g)", func.p1, func.p2);
                     break;
 
                 case 3:
-                    sprintf(bb, "(%g,%g,%g)", func.p1, func.p2, func.p3);
+                    snprintf(bb, sizeof(bb), "(%g,%g,%g)", func.p1, func.p2, func.p3);
                     break;
 
                 case 4:
-                    sprintf(bb, "(%g,%g,%g,%g)", func.p1, func.p2, func.p3, func.p4);
+                    snprintf(bb, sizeof(bb), "(%g,%g,%g,%g)", func.p1, func.p2, func.p3, func.p4);
                     break;
 
                 default:
-                    sprintf(bb, "() with %d args", func.argc);
+                    snprintf(bb, sizeof(bb), "() with %d args", func.argc);
                     break;
             }
             ;
@@ -171,7 +171,7 @@ string cMsgPar::str() const
             return string("distribution ") + (dtr.res ? dtr.res->getFullPath().c_str() : "nullptr");
 
         case 'P':
-            sprintf(bb, "pointer %p", ptr.ptr);
+            snprintf(bb, sizeof(bb), "pointer %p", ptr.ptr);
             return string(bb);
 
         case 'O':

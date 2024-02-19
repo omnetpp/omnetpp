@@ -162,7 +162,7 @@ const char *cDisplayString::getTagArg(const char *tagname, int index) const
 bool cDisplayString::setTagArg(const char *tagname, int index, long value)
 {
     char buf[32];
-    sprintf(buf, "%ld", value);
+    snprintf(buf, sizeof(buf), "%ld", value);
     return setTagArg(tagname, index, buf);
 }
 

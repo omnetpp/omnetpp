@@ -99,7 +99,7 @@ void cNullMessageProtocol::startRun()
     EV << "  scheduling 'resend-EOT' events...\n";
     for (i = 0; i < numSeg; i++) {
         if (i != myProcId) {
-            sprintf(buf, "resendEOT-%d", i);
+            snprintf(buf, sizeof(buf), "resendEOT-%d", i);
             cMessage *eotMsg = new cMessage(buf, MK_PARSIM_RESENDEOT);
             eotMsg->setContextPointer((void *)(uintptr_t)i);  // khmm...
             segInfo[i].eotEvent = eotMsg;
@@ -111,7 +111,7 @@ void cNullMessageProtocol::startRun()
     EV << "  scheduling 'EIT' events...\n";
     for (i = 0; i < numSeg; i++) {
         if (i != myProcId) {
-            sprintf(buf, "EIT-%d", i);
+            snprintf(buf, sizeof(buf), "EIT-%d", i);
             cMessage *eitMsg = new cMessage(buf, MK_PARSIM_EIT);
             segInfo[i].eitEvent = eitMsg;
             rescheduleEvent(eitMsg, 0.0);

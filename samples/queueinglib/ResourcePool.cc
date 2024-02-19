@@ -80,7 +80,7 @@ void ResourcePool::add(AllocationRequest& request)
 void ResourcePool::refreshDisplay() const
 {
     char buf[80];
-    sprintf(buf, "amount: %ld\nrequests: %d", amount, (int)allocatorList.size());
+    snprintf(buf, sizeof(buf), "amount: %ld\nrequests: %d", amount, (int)allocatorList.size());
     getDisplayString().setTagArg("t", 0, buf);
 }
 

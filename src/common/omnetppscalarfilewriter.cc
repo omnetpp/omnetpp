@@ -143,10 +143,10 @@ bool OmnetppScalarFileWriter::isEnoughPrecision(const Histogram& bins, int prec)
     // check if the given precision is enough to make adjacent bin edges differ in the output
     int n = bins.getNumBins();
     char prevEdge[32];
-    sprintf(prevEdge, "%.*g", prec, bins.getBinEdge(0));
+    snprintf(prevEdge, sizeof(prevEdge), "%.*g", prec, bins.getBinEdge(0));
     for (int i = 1; i <= n; i++) {
         char edge[32];
-        sprintf(edge, "%.*g", prec, bins.getBinEdge(i));
+        snprintf(edge, sizeof(edge), "%.*g", prec, bins.getBinEdge(i));
         if (opp_streq(edge, prevEdge))
             return false;
         strcpy(prevEdge, edge);

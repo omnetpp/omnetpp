@@ -60,7 +60,7 @@ bool cHasher::equals(const char *hash) const
 std::string cHasher::str() const
 {
     char buf[32];
-    sprintf(buf, "%08x", getHash());
+    snprintf(buf, sizeof(buf), "%08x", getHash());
     std::string str = buf;
     str.insert(str.length() - 4, "-");
     return str;

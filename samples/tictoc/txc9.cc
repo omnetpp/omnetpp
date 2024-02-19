@@ -89,7 +89,7 @@ cMessage *Tic9::generateNewMessage()
 {
     // Generate a message with a different name every time.
     char msgname[20];
-    sprintf(msgname, "tic-%d", ++seq);
+    snprintf(msgname, sizeof(msgname), "tic-%d", ++seq);
     cMessage *msg = new cMessage(msgname);
     return msg;
 }

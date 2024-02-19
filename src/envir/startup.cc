@@ -88,7 +88,7 @@ static void verifyIntTypes()
 
     char buf[32];
     int64_t a = 1, b = 2;
-    sprintf(buf, "%" PRId64 " %" PRId64, a, b);
+    snprintf(buf, sizeof(buf), "%" PRId64 " %" PRId64, a, b);
     if (strcmp(buf, "1 2") != 0) {
         printf("INTERNAL ERROR: PRId64 is incorrectly defined, please report this bug!\n\n");
         abort();

@@ -27,7 +27,7 @@ void Fork::handleMessage(cMessage *msg)
 
         // give it a better name
         char buf[256];
-        sprintf(buf, "%s-%d", job->getName(), i);
+        snprintf(buf, sizeof(buf), "%s-%d", job->getName(), i);
         child->setName(buf);
 
         // then send it out

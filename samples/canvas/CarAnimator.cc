@@ -94,12 +94,12 @@ void CarAnimator::refresh() const
     antenna->setTransform(antTr);
 
     char buf[20];
-    sprintf(buf, "%.0fm", distanceTravelled);
+    snprintf(buf, sizeof(buf), "%.0fm", distanceTravelled);
     distanceDisplay->setText(buf);
 
     int degrees = -int(heading*180/M_PI);
     degrees = degrees - 360 * (int)floor(degrees / 360.0);
-    sprintf(buf, "%d\xC2\xB0", degrees);
+    snprintf(buf, sizeof(buf), "%d\xC2\xB0", degrees);
     headingDisplay->setText(buf);
 }
 

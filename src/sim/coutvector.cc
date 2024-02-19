@@ -143,7 +143,7 @@ void cOutVector::setMin(double minValue)
         throw cRuntimeError(this, "setMin(): Set the object name first, using setName()");
 
     char buf[32];
-    sprintf(buf, "%g", minValue);
+    snprintf(buf, sizeof(buf), "%g", minValue);
     getEnvir()->setVectorAttribute(handle, "min", buf);
 }
 
@@ -153,7 +153,7 @@ void cOutVector::setMax(double maxValue)
         throw cRuntimeError(this, "setMax(): Set the object name first, using setName()");
 
     char buf[32];
-    sprintf(buf, "%g", maxValue);
+    snprintf(buf, sizeof(buf), "%g", maxValue);
     getEnvir()->setVectorAttribute(handle, "max", buf);
 }
 

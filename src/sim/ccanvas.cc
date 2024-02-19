@@ -211,7 +211,7 @@ cFigure::Point cFigure::Rectangle::getSize() const
 std::string cFigure::Color::str() const
 {
     char buf[16];
-    sprintf(buf, "#%2.2x%2.2x%2.2x", red, green, blue);
+    snprintf(buf, sizeof(buf), "#%2.2x%2.2x%2.2x", red, green, blue);
     return buf;
 }
 

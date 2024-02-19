@@ -398,7 +398,7 @@ std::string SimTime::format(int prec, const char *decimalSep, const char *digitS
         out << "-";
 
     char digits[32];
-    sprintf(digits, "%" PRId64, t<0 ? -t : t);
+    snprintf(digits, sizeof(digits), "%" PRId64, t<0 ? -t : t);
     int numDigits = strlen(digits);
 
     int startDecimal = scaleexp + numDigits - 1;
