@@ -71,11 +71,9 @@ std::string HTTPServer::processHTTPCommand(const char *httpReqHeader)
     std::string content = getContentFor(uri.c_str());
 
     // assemble reply
-    char len[16];
-    sprintf(len, "%d", (int)content.length());
     std::string reply = std::string("HTTP/1.1 200 OK\r\n"
                         "Content-Type: text/html\r\n"
-                        "Content-Length: ") + len + "\r\n"
+                        "Content-Length: ") + std::to_string(content.length()) + "\r\n"
                         "\r\n" +
                         content;
     return reply;
