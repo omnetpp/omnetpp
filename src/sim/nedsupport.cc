@@ -458,7 +458,7 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
         static int counter = 0;
         cValueMap *object = new cValueMap(opp_stringf("map%d", ++counter).c_str());
         cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
-        for (int i = 0; i < fieldNames.size(); i++)
+        for (int i = 0; i < (int)fieldNames.size(); i++)
             object->set(fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_))); // note: set() includes taking added cOwnedObject
         return object;
     }
@@ -470,7 +470,7 @@ ExprValue NedObjectNode::evaluate(Context *context_) const
         }
         cTemporaryOwner tmp(cTemporaryOwner::DestructorMode::DISPOSE); // dispose temp objects created during evaluation
         cClassDescriptor *desc = object->getDescriptor();
-        for (int i = 0; i < fieldNames.size(); i++)
+        for (int i = 0; i < (int)fieldNames.size(); i++)
             setField(desc, toAnyPtr(object), fieldNames[i].c_str(), makeNedValue(children[i]->tryEvaluate(context_))); // SHOULD include taking added cOwnedObjects
         return object;
     }

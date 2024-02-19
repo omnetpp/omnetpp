@@ -263,7 +263,7 @@ void cModule::insertSubmodule(cModule *mod)
         if (it == subcomponentData->submoduleVectors.end())
             throw cRuntimeError("Cannot insert module %s into parent %s: There is no submodule vector named '%s'", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str(), name);
         auto& array = it->array;
-        if (index < 0 || index >= array.size())
+        if (index < 0 || index >= (int)array.size())
             throw cRuntimeError("Cannot insert module %s into parent %s: index is out of range (vector size is %d)", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str(), (int)array.size());
         if (array.at(index) != nullptr)
             throw cRuntimeError("Cannot insert module %s into parent %s: vector index already occupied", mod->getClassAndFullName().c_str(), getNedTypeAndFullPath().c_str());
@@ -1363,7 +1363,7 @@ void cModule::deleteSubmoduleVector(const char *name)
 void cModule::setSubmoduleVectorSize(const char *name, int newSize)
 {
     auto& array = getSubmoduleArray(name);
-    for (int index = newSize; index < array.size(); index++)
+    for (int index = newSize; index < (int)array.size(); index++)
         if (cModule *submodule = array[index])
             throw cRuntimeError("Cannot shrink submodule vector '%s.%s[]' to size %d: Submodule '%s' still exists", getFullPath().c_str(), name, newSize, submodule->getFullName());
 
@@ -1404,7 +1404,7 @@ cModule *cModule::getSubmodule(const char *name, int index) const
         if (it == subcomponentData->submoduleVectors.end())
             return nullptr;
         auto& array = it->array;
-        if (index < 0 || index >= array.size())
+        if (index < 0 || index >= (int)array.size())
             return nullptr;
         return array[index];
     }

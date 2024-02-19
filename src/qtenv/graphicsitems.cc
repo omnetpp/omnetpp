@@ -383,7 +383,7 @@ void MultiLineOutlinedTextItem::setText(const QString &text)
         textItems.resize(nl);
     }
 
-    ASSERT(textItems.size() == lines.size());
+    ASSERT((int)textItems.size() == lines.size());
     ASSERT(!textItems.empty());
 
     for (int i = 0; i < nl; ++i)

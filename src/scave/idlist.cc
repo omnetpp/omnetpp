@@ -110,7 +110,7 @@ bool IDList::isSubsetOf(IDList& ids)
 
 IDList IDList::getRange(int startIndex, int endIndex) const
 {
-    if (startIndex < 0 || endIndex > v.size() || startIndex > endIndex)
+    if (startIndex < 0 || endIndex > (int)v.size() || startIndex > endIndex)
         throw opp_runtime_error("Bad start or end index");
     IDList newList;
     newList.v.resize(endIndex-startIndex);
@@ -218,7 +218,7 @@ void IDList::doSort(const std::function<T(ID)>& getter, ResultFileManager *mgr, 
     // Before sorting, we mark the selected ID by setting a reserved bit in them. After sorting,
     // we rebuild a new list of selected indices by examining which IDs have their "reserved" bit set.
 
-    size_t n = v.size();
+    int n = (int)v.size();
     std::vector<std::pair<T,ID>> a(n);
     for (int i = 0; i < n; i++)
         a[i] = std::make_pair(getter(v[i]), v[i]);
@@ -251,7 +251,7 @@ void IDList::doSort<const char *>(const std::function<const char *(ID)>& getter,
 
     // This method only differs from the templated one in that it uses opp_strdicttmp() instead of op<.
 
-    size_t n = v.size();
+    int n = (int)v.size();
     std::vector<std::pair<const char *,ID>> a(n);
     for (int i = 0; i < n; i++)
         a[i] = std::make_pair(getter(v[i]), v[i]);

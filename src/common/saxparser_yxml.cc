@@ -91,7 +91,7 @@ void YxmlSaxParser::parseChunk(const char *chunk, int chunklen)
 
         if (insideElementOpenTag && code != YXML_ATTRSTART && code != YXML_ATTRVAL && code != YXML_ATTREND) {
             attrptrs.resize(attrs.size()+1);
-            for (int i = 0; i < attrs.size(); i++)
+            for (size_t i = 0; i < attrs.size(); i++)
                 attrptrs[i] = attrs[i].c_str();
             attrptrs[attrs.size()] = nullptr;
             fakeLineNumber = elemStartLine;

@@ -138,7 +138,7 @@ std::vector<bool> cValueArray::asBoolVector() const
 {
     std::vector<bool> result;
     result.resize(array.size());
-    for (int i = 0; i < array.size(); i++)
+    for (int i = 0; i < (int)array.size(); i++)
         result[i] = array[i].boolValue();
     return result;
 }
@@ -147,7 +147,7 @@ std::vector<intval_t> cValueArray::asIntVector() const
 {
     std::vector<intval_t> result;
     result.resize(array.size());
-    for (int i = 0; i < array.size(); i++)
+    for (int i = 0; i < (int)array.size(); i++)
         result[i] = array[i].intValue();
     return result;
 }
@@ -156,7 +156,7 @@ std::vector<intval_t> cValueArray::asIntVectorInUnit(const char *targetUnit) con
 {
     std::vector<intval_t> result;
     result.resize(array.size());
-    for (int i = 0; i < array.size(); i++)
+    for (int i = 0; i < (int)array.size(); i++)
         result[i] = array[i].intValueInUnit(targetUnit);
     return result;
 }
@@ -165,7 +165,7 @@ std::vector<double> cValueArray::asDoubleVector() const
 {
     std::vector<double> result;
     result.resize(array.size());
-    for (int i = 0; i < array.size(); i++)
+    for (int i = 0; i < (int)array.size(); i++)
         result[i] = array[i].doubleValue();
     return result;
 }
@@ -174,7 +174,7 @@ std::vector<double> cValueArray::asDoubleVectorInUnit(const char *targetUnit) co
 {
     std::vector<double> result;
     result.resize(array.size());
-    for (int i = 0; i < array.size(); i++)
+    for (int i = 0; i < (int)array.size(); i++)
         result[i] = array[i].doubleValueInUnit(targetUnit);
     return result;
 }
@@ -183,7 +183,7 @@ std::vector<std::string> cValueArray::asStringVector() const
 {
     std::vector<std::string> result;
     result.resize(array.size());
-    for (int i = 0; i < array.size(); i++)
+    for (int i = 0; i < (int)array.size(); i++)
         result[i] = array[i].stdstringValue();
     return result;
 }

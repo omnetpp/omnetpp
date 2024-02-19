@@ -211,7 +211,7 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
             // find updated transmission
             ASSERT(pkt->getTransmissionId() != -1); // assured in send()
             int txIndex = -1;
-            for (int i = 0; i < txList.size(); i++) {
+            for (int i = 0; i < (int)txList.size(); i++) {
                 if (pkt->getTransmissionId() == txList[i].transmissionId) {
                     if (txList[i].finishTime >= getSimulation()->getSimTime())
                         txIndex = i;
@@ -328,7 +328,7 @@ void cDatarateChannel::processPacket(cPacket *pkt, const SendOptions& options, s
         // find max transmission finish time, purge expired transmissions
         simtime_t now = getSimulation()->getSimTime();
         simtime_t tmax = SIMTIME_ZERO;
-        for (int i = 0; i < txList.size(); i++) {
+        for (int i = 0; i < (int)txList.size(); i++) {
             if (txList[i].finishTime < now) {
                 txList[i] = txList.back(); // no-op if txList[i] is the last item (i.e. txList.back())
                 txList.pop_back();

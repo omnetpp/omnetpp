@@ -58,7 +58,7 @@ inline bool isFunction(AstNode *astNode, const std::string& name) {
 }
 
 inline bool isFunction(AstNode *astNode, int argc) {
-    return astNode->type == AstNode::FUNCTION && astNode->children.size() == argc;
+    return astNode->type == AstNode::FUNCTION && (int)astNode->children.size() == argc;
 }
 
 inline bool isIdentOrMember(AstNode *astNode) {
@@ -70,7 +70,7 @@ inline bool hasIndex(AstNode *astNode) {
 }
 
 inline bool hasChildren(AstNode *astNode, int minCount=1) {
-    return astNode->children.size() >= minCount;
+    return (int)astNode->children.size() >= minCount;
 }
 
 inline AstNode *getIndexChild(AstNode *astNode) {

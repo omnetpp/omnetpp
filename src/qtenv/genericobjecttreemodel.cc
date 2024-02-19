@@ -90,7 +90,7 @@ std::vector<cObject *> GenericObjectTreeModel::getRootObjects()
 QModelIndex GenericObjectTreeModel::index(int row, int column, const QModelIndex& parent) const
 {
     if (!parent.isValid()) {
-        ASSERT(row < rootNodes.size());
+        ASSERT(row < (int)rootNodes.size());
         return createIndex(row, column, rootNodes[row]);
     }
     else {
@@ -226,7 +226,7 @@ void GenericObjectTreeModel::refreshTreeStructure()
 {
     emit layoutAboutToBeChanged();
 
-    for (int i = 0; i < rootNodes.size(); ++i)
+    for (int i = 0; i < (int)rootNodes.size(); ++i)
         refreshNodeChildrenRec(index(i, 0, QModelIndex()));
 
     // It's important to restore the data into the root nodes so they can give an

@@ -54,7 +54,7 @@ cValue cDynamicExpression::SymbolTable::readVariable(Context *context, const cha
     if (it == arrays.end())
         return IResolver::readVariable(context, name, index);
     auto array = it->second;
-    if (index < 0 || index >= array.size())
+    if (index < 0 || index >= (int)array.size())
         throw cRuntimeError("Index %ld out of bounds for array %s[%ld]", (long)index, name, (long)array.size());
     return array[index];
 }

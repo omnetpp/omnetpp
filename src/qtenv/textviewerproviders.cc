@@ -207,7 +207,7 @@ int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
     int entryIndex = logBuffer->findEntryByEventNumber(eventNumber);
     if (!isIndexValid())
         rebuildIndex();
-    if (entryIndex < 0 || entryIndex >= entryStartLineNumbers.size())
+    if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
         return -1;
     return entryStartLineNumbers[entryIndex];
 };
@@ -378,7 +378,7 @@ bool EventEntryLinesProvider::shouldShowBanner(LogBuffer::Entry *entry, bool sho
 
 bool EventEntryLinesProvider::shouldShowAnyLine(LogBuffer::Entry *entry)
 {
-    for (int i = 0; i < entry->lines.size(); i++)
+    for (int i = 0; i < (int)entry->lines.size(); i++)
         if (shouldShowLine(entry, i))
             return true;
     return false;

@@ -171,7 +171,7 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
             auto& group = groups[submod->getParentModule()][groupName];
             if (group.indices.find(submod) != group.indices.end())
                 index = group.indices[submod];
-            else if (group.size == group.indices.size())
+            else if (group.size == (int)group.indices.size())
                 index = group.indices[submod] = group.size++;
             else {
                 // find first unused index

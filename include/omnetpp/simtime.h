@@ -109,7 +109,7 @@ class SIM_API SimTime
     }
 
     void setSecondsU(uint64_t sec) {
-        if (sec > maxseconds)
+        if (sec > (uint64_t)maxseconds)
             rangeErrorSeconds(sec);
         t = dscale * sec;
     }

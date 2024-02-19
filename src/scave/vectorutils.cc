@@ -40,7 +40,7 @@ vector<XYArray *> readVectorsIntoArrays(ResultFileManager *manager, const IDList
     std::vector<XYArray *> result;
     result.resize(idlist.size());
 
-    for (int i = 0; i < result.size(); ++i) {
+    for (int i = 0; i < (int)result.size(); ++i) {
         result[i] = new XYArray();
         // TODO: reserve vectors, only those that are needed, taking time limit into account
     }

@@ -88,7 +88,7 @@ inline void Histogram::collect(double value, double weight)
     int index = it - binEdges.begin() - 1;
     if (index == -1)
         underflows += weight;
-    else if (index == binValues.size())
+    else if (index == (int)binValues.size())
         overflows += weight;
     else
         binValues[index] += weight;

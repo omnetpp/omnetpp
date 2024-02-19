@@ -103,7 +103,7 @@ const Node *RoutePlanner::getNextTarget()
     if (it == intersections.end()) {
         // no connecting roads: drive on, or turn around if we reached the end
         if (downstream) {
-            if (nodeIndex < way->nodes.size()-1)
+            if (nodeIndex < (int)way->nodes.size()-1)
                 nodeIndex++; // drive straight
             else {
                 downstream = false; // turn around
@@ -126,7 +126,7 @@ const Node *RoutePlanner::getNextTarget()
         for (const WayNode& wayNode : connectingWayNodes) {
             if (wayNode.nodeIndex != 0)
                 possibilities.push_back({wayNode.way, wayNode.nodeIndex-1});
-            if (wayNode.nodeIndex != wayNode.way->nodes.size()-1)
+            if (wayNode.nodeIndex != (int)wayNode.way->nodes.size()-1)
                 possibilities.push_back({wayNode.way, wayNode.nodeIndex+1});
         }
 
