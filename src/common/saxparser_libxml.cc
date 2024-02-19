@@ -49,8 +49,9 @@ void LibxmlSaxParser::generateSAXEvents(xmlNode *node, SaxHandler *sh)
             for (attr = node->properties, k = 0; attr; attr = (xmlAttr *)attr->next, k += 2) {
                 // ignore namespaces: pass "prefix:name" to SAX handler
                 if (attr->ns) {
-                    attrs[k] = new char[strlen((const char *)attr->name)+strlen((const char *)attr->ns->prefix)+2];
-                    sprintf((char *)attrs[k], "%s:%s", attr->ns->prefix, attr->name);
+                    size_t size = strlen((const char *)attr->name)+strlen((const char *)attr->ns->prefix)+2;
+                    attrs[k] = new char[size];
+                    snprintf((char *)attrs[k], size, "%s:%s", attr->ns->prefix, attr->name);
                 }
                 else {
                     attrs[k] = (const char *)attr->name;
@@ -63,8 +64,9 @@ void LibxmlSaxParser::generateSAXEvents(xmlNode *node, SaxHandler *sh)
             // element name. ignore namespaces: pass "prefix:name" to SAX handler
             char *nodename;
             if (node->ns) {
-                nodename = new char[strlen((const char *)node->name)+strlen((const char *)node->ns->prefix)+2];
-                sprintf(nodename, "%s:%s", node->ns->prefix, node->name);
+                size_t size = strlen((const char *)node->name)+strlen((const char *)node->ns->prefix)+2;
+                nodename = new char[size];
+                snprintf(nodename, size, "%s:%s", node->ns->prefix, node->name);
             }
             else {
                 nodename = (char *)node->name;

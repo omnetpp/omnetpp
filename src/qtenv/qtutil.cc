@@ -218,7 +218,7 @@ char *voidPtrToStr(void *ptr, char *buffer)
     if (ptr == nullptr)
         strcpy(buffer, "ptr0");  // GNU C++'s sprintf() says "nil"
     else
-        sprintf(buffer, "ptr%p", ptr);
+        snprintf(buffer, sizeof(staticbuf), "ptr%p", ptr);
     return buffer;
 }
 

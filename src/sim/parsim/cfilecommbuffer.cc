@@ -29,7 +29,7 @@ namespace omnetpp {
 
 Register_Class(cFileCommBuffer);
 
-#define STORE(FMT, d)                  { sprintf(mBuffer+mMsgSize, FMT "\n", d); mMsgSize += strlen(mBuffer+mMsgSize); }
+#define STORE(FMT, d)                  { snprintf(mBuffer+mMsgSize, 32, FMT "\n", d); mMsgSize += strlen(mBuffer+mMsgSize); }
 #define EXTRACT(FMT, d)                { sread(mBuffer, mPosition, FMT, &d); }
 
 // TBD store/extract as ASCII not binary
@@ -169,8 +169,8 @@ void cFileCommBuffer::pack(long double d)
 void cFileCommBuffer::pack(const char *d)
 {
     int len = d ? strlen(d) : 0;
-    extendBufferFor(strlen(d)+16);
-    sprintf(mBuffer+mMsgSize, "S %d|%s\n", len, d);
+    extendBufferFor(len+16);
+    snprintf(mBuffer+mMsgSize, len+16, "S %d|%s\n", len, d);
     mMsgSize += strlen(mBuffer+mMsgSize);
 }
 

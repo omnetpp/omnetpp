@@ -91,7 +91,7 @@ extern "C" CMDENV_API void _cmdenv_lib() {}
 
 bool Cmdenv::sigintReceived;
 
-// utility function for printing elapsed time
+// utility function for printing elapsed time, 64 bytes of buffer required
 static char *timeToStr(double t, char *buf = nullptr)
 {
     static char buf2[64];
@@ -99,11 +99,11 @@ static char *timeToStr(double t, char *buf = nullptr)
 
     int sec = (int) floor(t);
     if (t < 3600)
-        sprintf(b, "%lgs (%dm %02ds)", t, int(sec/60L), int(sec%60L));
+        snprintf(b, sizeof(buf2), "%lgs (%dm %02ds)", t, int(sec/60L), int(sec%60L));
     else if (t < 86400)
-        sprintf(b, "%lgs (%dh %02dm)", t, int(sec/3600L), int((sec%3600L)/60L));
+        snprintf(b, sizeof(buf2), "%lgs (%dh %02dm)", t, int(sec/3600L), int((sec%3600L)/60L));
     else
-        sprintf(b, "%lgs (%dd %02dh)", t, int(sec/86400L), int((sec%86400L)/3600L));
+        snprintf(b, sizeof(buf2), "%lgs (%dd %02dh)", t, int(sec/86400L), int((sec%86400L)/3600L));
 
     return b;
 }

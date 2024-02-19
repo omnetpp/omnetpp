@@ -1107,7 +1107,7 @@ bool Qtenv::doRunSimulationExpress()
 
     inspectorsFresh = false;
 
-    sprintf(info, "** Leaving Express mode at event #%" PRId64 "  t=%s\n",
+    snprintf(info, sizeof(info), "** Leaving Express mode at event #%" PRId64 "  t=%s\n",
             getSimulation()->getEventNumber(), SIMTIME_STR(getSimulation()->getSimTime()));
     logBuffer.addInfo(info);
 
@@ -1540,40 +1540,41 @@ void Qtenv::addEventToLog(cEvent *event)
     cModule *module = msg ? msg->getArrivalModule() : nullptr;
 
     char banner[2*MAX_OBJECTFULLPATH+2*MAX_CLASSNAME+60];
+    const char *endbuf = banner + sizeof(banner);
     banner[0] = '\0';
 
     // produce banner text if enabled
     if (opt->printEventBanners) {
         char *p = banner;
-        p += sprintf(p, "** Event #%" PRId64 "  t=%s  ",
+        p += snprintf(p, endbuf-p, "** Event #%" PRId64 "  t=%s  ",
                     getSimulation()->getEventNumber(),
                     SIMTIME_STR(getSimulation()->getSimTime()));
 
         if (opt->shortBanners) {
             // just object names
             if (target)
-                p += sprintf(p, "%s ", target->getFullPath().c_str());
-            p += sprintf(p, "on %s", event->getFullName());
+                p += snprintf(p, endbuf-p, "%s ", target->getFullPath().c_str());
+            p += snprintf(p, endbuf-p, "on %s", event->getFullName());
         }
         else {
             // print event and module type names and IDs, too
             if (module)
-                p += sprintf(p, "%s (%s, id=%d) ",
+                p += snprintf(p, endbuf-p, "%s (%s, id=%d) ",
                             module->getFullPath().c_str(),
                             module->getComponentType()->getName(),
                             module->getId());
             else if (target)
-                p += sprintf(p, "%s (%s) ",
+                p += snprintf(p, endbuf-p, "%s (%s) ",
                             target->getFullPath().c_str(),
                             target->getClassName());
             if (msg)
-                p += sprintf(p, " on %s%s (%s, id=%" PRId64 ")",
+                p += snprintf(p, endbuf-p, " on %s%s (%s, id=%" PRId64 ")",
                             msg->isSelfMessage() ? "selfmsg " : "",
                             msg->getFullName(),
                             msg->getClassName(),
                             msg->getId());
             else
-                p += sprintf(p, " on %s (%s)",
+                p += snprintf(p, endbuf-p, " on %s (%s)",
                             event->getFullName(),
                             event->getClassName());
         }
