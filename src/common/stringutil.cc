@@ -161,7 +161,8 @@ std::string opp_parsequotedstr(const char *txt, const char *& endp, char quot)
 
 std::string opp_quotestr(const std::string& txt)
 {
-    char *buf = new char[4 * txt.length() + 3];  // a conservative guess
+    size_t bufsize = 4 * txt.length() + 3; // a conservative guess
+    char *buf = new char[bufsize];
     char *d = buf;
     *d++ = '"';
     const char *s = txt.c_str();
@@ -174,7 +175,7 @@ std::string opp_quotestr(const std::string& txt)
             case '\t': *d++ = '\\'; *d++ = 't'; s++; break;
             case '"':  *d++ = '\\'; *d++ = '"'; s++; break;
             case '\\': *d++ = '\\'; *d++ = '\\'; s++; break;
-            default: if (opp_iscntrl(*s)) {*d++='\\'; *d++='x'; sprintf(d,"%2.2X",*s++); d+=2;}
+            default: if (opp_iscntrl(*s)) {*d++='\\'; *d++='x'; snprintf(d, buf+bufsize-d, "%2.2X", *s++); d+=2;}
                      else {*d++ = *s++;}
         }
     }
@@ -784,34 +785,33 @@ char *opp_indexedname(char *buf, size_t bufsize, const char *name, int index)
         *s++ = 0;
     }
     else {
-        sprintf(s, "%d]", index);
+        snprintf(s, buf+bufsize-s, "%d]", index);
     }
     return buf;
 }
 
-
 char *opp_itoa(char *buf, int d)
 {
-    sprintf(buf, "%d", d);
+    snprintf(buf, 12, "%d", d);
     return buf;
 }
 
 char *opp_ltoa(char *buf, long d)
 {
-    sprintf(buf, "%ld", d);
+    snprintf(buf, 20, "%ld", d);
     return buf;
 }
 
 char *opp_i64toa(char *buf, int64_t d)
 {
-    sprintf(buf, "%" PRId64, d);
+    snprintf(buf, 20, "%" PRId64, d);
     return buf;
 }
 
 char *opp_dtoa(char *buf, const char *format, double d)
 {
     if (std::isfinite(d))
-        sprintf(buf, format, d);
+        snprintf(buf, 32, format, d);
     else if (std::isinf(d))
         strcpy(buf, d<0 ? "-inf" : "inf");
     else // must be nan
@@ -1000,7 +1000,7 @@ std::string opp_makedatetimestring()
     time_t t = time(nullptr);
     struct tm tm = *localtime(&t);
     char timestr[32];
-    sprintf(timestr, "%04d%02d%02d-%02d:%02d:%02d",
+    snprintf(timestr, sizeof(timestr), "%04d%02d%02d-%02d:%02d:%02d",
             1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
             tm.tm_hour, tm.tm_min, tm.tm_sec);
     return timestr;
