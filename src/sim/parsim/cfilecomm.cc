@@ -29,6 +29,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/clog.h"
+#include "omnetpp/stringutil.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "cfilecomm.h"
 #include "cfilecommbuffer.h"
@@ -95,25 +96,23 @@ void cFileCommunications::send(cCommBuffer *buffer, int tag, int destination)
 
     // to prevent concurrency problems, first create the file as .tmp,
     // then rename it to .msg
-    char fname[100], fname2[100];
-    sprintf(fname, "%s#%.6d-s%d-d%d-t%d.tmp", commDirPrefix.buffer(), seqNum++, myProcId, destination, tag);
+    std::string fname = opp_stringf("%s#%.6d-s%d-d%d-t%d.tmp", commDirPrefix.buffer(), seqNum++, myProcId, destination, tag);
 
     // create
-    FILE *f = fopen(fname, "wb");
+    FILE *f = fopen(fname.c_str(), "wb");
     if (!f)
-        throw cRuntimeError("cFileCommunications: Cannot open %s for write: %s", fname, strerror(errno));
+        throw cRuntimeError("cFileCommunications: Cannot open %s for write: %s", fname.c_str(), strerror(errno));
     if (fwrite(b->getBuffer(), b->getMessageSize(), 1, f) < 1) {
         fclose(f);
-        throw cRuntimeError("cFileCommunications: Cannot write %s: %s", fname, strerror(errno));
+        throw cRuntimeError("cFileCommunications: Cannot write %s: %s", fname.c_str(), strerror(errno));
     }
     if (fclose(f) != 0)
-        throw cRuntimeError("cFileCommunications: Cannot close %s after writing: %s", fname, strerror(errno));
+        throw cRuntimeError("cFileCommunications: Cannot close %s after writing: %s", fname.c_str(), strerror(errno));
 
     // rename
-    strcpy(fname2, fname);
-    strcpy(fname2+strlen(fname2)-4, ".msg");
-    if (rename(fname, fname2) != 0)
-        throw cRuntimeError("cFileCommunications: Cannot rename %s to %s: %s", fname, fname2, strerror(errno));
+    std::string fname2 = fname.substr(0, fname.size()-4) + ".msg";
+    if (rename(fname.c_str(), fname2.c_str()) != 0)
+        throw cRuntimeError("cFileCommunications: Cannot rename %s to %s: %s", fname.c_str(), fname2.c_str(), strerror(errno));
 }
 
 bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
@@ -131,15 +130,14 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
     cFileCommBuffer *b = (cFileCommBuffer *)buffer;
     b->reset();
 
-    char fmask[100];
-    char fname2[100];
+    std::string fmask;
     if (filtTag == PARSIM_ANY_TAG)
-        sprintf(fmask, "%s#*-s*-d%d-t*.msg", commDirPrefix.buffer(), myProcId);
+        fmask = opp_stringf("%s#*-s*-d%d-t*.msg", commDirPrefix.buffer(), myProcId);
     else
-        sprintf(fmask, "%s#*-s*-d%d-t%d.msg", commDirPrefix.buffer(), myProcId, filtTag);
+        fmask = opp_stringf("%s#*-s*-d%d-t%d.msg", commDirPrefix.buffer(), myProcId, filtTag);
 
     bool ret = false;
-    const char *fname = FileGlobber(fmask).getNext();
+    const char *fname = FileGlobber(fmask.c_str()).getNext();
     if (fname) {
         ret = true;
 
@@ -189,6 +187,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
             // materializes itself in OMNeT++ as an "Error: (null)" message...
             // Strangely, this can be reproduced in both Linux and Windows.
             //
+            char fname2[1024];
             strcpy(fname2, readDirPrefix.buffer());
             strcat(fname2, fname + strlen(commDirPrefix.buffer()));
             if (rename(fname, fname2) != 0)

@@ -34,6 +34,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
+#include "omnetpp/stringutil.h"
 #include "cmemcommbuffer.h"
 #include "parsimutil.h"
 
@@ -98,15 +99,14 @@ void cNamedPipeCommunications::init(int np)
             continue;
         }
 
-        char fname[256];
-        sprintf(fname, "%spipe-%d-%d", prefix.buffer(), myProcId, i);
+        std::string fname = opp_stringf("%spipe-%d-%d", prefix.buffer(), myProcId, i);
         EV << "cNamedPipeCommunications: creating and opening pipe '" << fname << "' for read...\n";
-        unlink(fname);
-        if (mknod(fname, S_IFIFO|0600, 0) == -1)
-            throw cRuntimeError("cNamedPipeCommunications: Cannot create pipe '%s': %s", fname, strerror(errno));
-        rpipes[i] = open(fname, O_RDONLY|O_NONBLOCK);
+        unlink(fname.c_str());
+        if (mknod(fname.c_str(), S_IFIFO|0600, 0) == -1)
+            throw cRuntimeError("cNamedPipeCommunications: Cannot create pipe '%s': %s", fname.c_str(), strerror(errno));
+        rpipes[i] = open(fname.c_str(), O_RDONLY|O_NONBLOCK);
         if (rpipes[i] == -1)
-            throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for read: %s", fname, strerror(errno));
+            throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for read: %s", fname.c_str(), strerror(errno));
 
         if (rpipes[i] > maxFdPlus1)
             maxFdPlus1 = rpipes[i];
@@ -121,16 +121,15 @@ void cNamedPipeCommunications::init(int np)
             continue;
         }
 
-        char fname[256];
-        sprintf(fname, "%spipe-%d-%d", prefix.buffer(), i, myProcId);
+        std::string fname = opp_stringf("%spipe-%d-%d", prefix.buffer(), i, myProcId);
         EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
-        wpipes[i] = open(fname, O_WRONLY);
+        wpipes[i] = open(fname.c_str(), O_WRONLY);
         for (int k = 0; k < 30 && wpipes[i] == -1; k++) {
             sleep(1);
-            wpipes[i] = open(fname, O_WRONLY);
+            wpipes[i] = open(fname.c_str(), O_WRONLY);
         }
         if (wpipes[i] == -1)
-            throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for write: %s", fname, strerror(errno));
+            throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for write: %s", fname.c_str(), strerror(errno));
     }
 }
 

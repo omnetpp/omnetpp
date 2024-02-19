@@ -101,13 +101,12 @@ void cNamedPipeCommunications::init(int np)
             continue;
         }
 
-        char fname[256];
-        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), myProcId, i);
+        std::string fname = opp_stringf("\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), myProcId, i);
         EV << "cNamedPipeCommunications: creating pipe '" << fname << "' for read...\n";
 
         int openMode = PIPE_ACCESS_INBOUND;
         int pipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT;
-        rpipes[i] = CreateNamedPipe(fname, openMode, pipeMode, 1, 0, PIPE_INBUFFERSIZE, ~0UL, nullptr);
+        rpipes[i] = CreateNamedPipe(fname.c_str(), openMode, pipeMode, 1, 0, PIPE_INBUFFERSIZE, ~0UL, nullptr);
         if (rpipes[i] == INVALID_HANDLE_VALUE)
             throw cRuntimeError("cNamedPipeCommunications: CreateNamedPipe operation failed: %s", getWindowsError().c_str());
     }
@@ -120,13 +119,12 @@ void cNamedPipeCommunications::init(int np)
             continue;
         }
 
-        char fname[256];
-        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), i, myProcId);
+        std::string fname = opp_stringf("\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), i, myProcId);
         EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
         for (int k = 0; k < 60; k++) {
             if (k > 0 && k%5 == 0)
                 EV << "retry " << k << " of 60...\n";
-            wpipes[i] = CreateFile(fname, GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+            wpipes[i] = CreateFile(fname.c_str(), GENERIC_WRITE, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (wpipes[i] != INVALID_HANDLE_VALUE)
                 break;
             usleep(1000000);  // 1s
