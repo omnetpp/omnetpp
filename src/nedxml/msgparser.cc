@@ -70,16 +70,10 @@ bool MsgParser::loadFile(const char *osfname, const char *fname)
     np.errors->clear();
 
     // resolve "~" in file name
-    char osfname2[1000];
-    if (osfname[0] == '~') {
-        sprintf(osfname2, "%s%s", getenv("HOME"), osfname+1);
-    }
-    else {
-        strcpy(osfname2, osfname);
-    }
+    std::string osfname2 = (osfname[0] == '~') ? std::string(getenv("HOME")) + (osfname+1) : osfname;
 
     // load whole file into memory
-    if (!np.source->readFile(osfname2)) {
+    if (!np.source->readFile(osfname2.c_str())) {
         np.errors->addError("", "cannot read %s", fname);
         return false;
     }

@@ -19,6 +19,7 @@
 #include "omnetpp/cmodule.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/stringutil.h"
 #include "cispeventlogger.h"
 #include "cidealsimulationprot.h"
 #include "cplaceholdermod.h"
@@ -31,11 +32,10 @@ void cISPEventLogger::startRun()
 {
     cNullMessageProtocol::startRun();
 
-    char fname[200];
-    sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
-    fout = fopen(fname, "wb");
+    std::string fname = opp_stringf("ispeventlog-%d.dat", comm->getProcId());
+    fout = fopen(fname.c_str(), "wb");
     if (!fout)
-        throw cRuntimeError("cISPEventLogger error: Cannot open file '%s' for write", fname);
+        throw cRuntimeError("cISPEventLogger error: Cannot open file '%s' for write", fname.c_str());
 }
 
 void cISPEventLogger::endRun()

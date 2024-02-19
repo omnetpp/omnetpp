@@ -198,14 +198,12 @@ int ValueIterator::Item::getNumValues() const
 
 std::string ValueIterator::Item::getValueAsString(int k) const
 {
-    char buf[32];
     switch (type) {
         case TEXT:
             return text.strValue();
 
         case FROM_TO_STEP:
-            sprintf(buf, "%g", from.dblValue() + step.dblValue()*k);
-            return buf;
+            return opp_stringf("%g", from.dblValue() + step.dblValue()*k);
     }
     Assert(false);
     return "";

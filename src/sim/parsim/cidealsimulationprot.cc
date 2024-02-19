@@ -25,6 +25,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/stringutil.h"
 #include "cidealsimulationprot.h"
 #include "cplaceholdermod.h"
 #include "cparsimpartition.h"
@@ -54,11 +55,10 @@ cIdealSimulationProtocol::~cIdealSimulationProtocol()
 
 void cIdealSimulationProtocol::startRun()
 {
-    char fname[200];
-    sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
-    fin = fopen(fname, "rb");
+    std::string fname = opp_stringf("ispeventlog-%d.dat", comm->getProcId());
+    fin = fopen(fname.c_str(), "rb");
     if (!fin)
-        throw cRuntimeError("cIdealSimulationProtocol error: Cannot open file '%s' for read", fname);
+        throw cRuntimeError("cIdealSimulationProtocol error: Cannot open file '%s' for read", fname.c_str());
 
     readNextRecordedEvent();
 }
