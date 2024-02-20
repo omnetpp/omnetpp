@@ -99,7 +99,7 @@ if [ $(uname) = "Darwin" ]; then
   fi
 fi
 
-# Windows/MinGW specifiy settings
+# Windows/MinGW specific settings
 if [ "$MSYSTEM" = "MINGW64" ] ; then
   export PYTHONPATH=
   if [ "$VCToolsInstallDir" = "" ] ; then
