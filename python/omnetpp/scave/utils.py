@@ -133,6 +133,17 @@ class _DigitGroupingFormatter(mpl.ticker.ScalarFormatter):
         return ""
 
 
+def _natural_sort_key(text):
+    """
+    Splits a string into a list of numeric and non-numberic substrings.
+    The first element is always a non-numeric substring, even if it's empty.
+    Useful for sorting strings in a natural order, using the returned list
+    as a substitute comparison key, for which Python "does the right thing".
+    """
+    return [int(part) if part.isdigit() else part.lower()
+            for part in re.split('([0-9]+)', text)]
+
+
 def _check_same_unit(df):
     """
     Checks whether the results in the passed DataFrame all have the same unit.
@@ -373,7 +384,7 @@ def sort_rows_by_legend(df, props=()):
             df.sort_values(by='order', kind='stable', inplace=True)
 
     if props.get("sorting") == "true":
-        df.sort_values(by='legend', kind='stable', inplace=True) #TODO use natural sorting: https://saturncloud.io/blog/how-to-naturally-sort-pandas-dataframe/
+        df.sort_values(by='legend', kind='stable', inplace=True, key=lambda x: x.apply(_natural_sort_key))
     if props.get("secondary_ordering_regex_list"):
         sort_by_regex_list(df, props["secondary_ordering_regex_list"].split("\n"))
     if props.get("ordering_regex_list"):
