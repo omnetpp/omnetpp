@@ -9,54 +9,112 @@ Tests the checked_int_cast function in simutil.h
 %global:
 using namespace omnetpp;
 
-
-template<typename T>
-void checkOverflowed(T number) {
-    // an implicit rounding occurs, possibly to _just_ outside of int64_t range (to int64_t::max + 1)
-    double numberAsDouble = number;
-    // we convert it back, and with the tested values, we should
-    // always detect either a rounding error, or even an overflow
-    T numberCastedBack = numberAsDouble;
-    if (numberCastedBack == number)
-        throw common::opp_runtime_error("the value %f could be represented exactly as double", numberAsDouble);
-
-    try {
-        T castedInt = checked_int_cast<T>(numberAsDouble, "overflow check tripped");
-        (void)castedInt; // prevent "unused variable" warning
-        std::cout << "there was no overflow" << std::endl;
-    } catch (cRuntimeError &e) {
-        std::cout << e.what() << std::endl;
+#define P(T,d) \
+    try { \
+        EV << "checked_int_cast<" #T ">(" << d << ") --> "; \
+        T res = checked_int_cast<T>(d, "does not fit into target type"); \
+        EV << +res << std::endl; \
+    } catch (cRuntimeError &e) { \
+        EV << "exception: " << e.what() << std::endl; \
     }
-}
 
 %activity:
 
-// int64_t
+P(int8_t, -128)
+P(int8_t, 127)
+P(int8_t, 128)
+P(int8_t, -129)
+EV << std::endl;
 
-int64_t maxInt = std::numeric_limits<int64_t>::max();
-int64_t almostMaxInt = maxInt - 500; // this is still too big for double (it only has 53 bits, so we have 10 zero bits on the right)
-int64_t lessThanMaxInt = maxInt - 2000; // this will be rounded down to a smaller value
+P(uint8_t, 0)
+P(uint8_t, 255)
+P(uint8_t, 256)
+P(uint8_t, -1)
+EV << std::endl;
 
-checkOverflowed<int64_t>(maxInt); // overflow check tripped
-checkOverflowed<int64_t>(almostMaxInt); // overflow check tripped
-checkOverflowed<uint64_t>(lessThanMaxInt); // there was no overflow
+P(int16_t, -32768)
+P(int16_t, 32767)
+P(int16_t, 32768)
+P(int16_t, -32769)
+EV << std::endl;
 
-// uint64_t
+P(uint16_t, 0)
+P(uint16_t, 65535)
+P(uint16_t, 65536)
+P(uint16_t, -1)
+EV << std::endl;
 
-uint64_t maxUint = std::numeric_limits<uint64_t>::max();
-uint64_t almostMaxUint = maxUint - 500; // this is still too big for double (it only has 53 bits, so we have 11 zero bits on the right)
-int64_t lessThanMaxUint = maxUint - 2000; // this will be rounded down to a smaller value
+P(int32_t, -2147483648)
+P(int32_t, 2147483647)
+P(int32_t, 2147483648)
+P(int32_t, -2147483649)
+EV << std::endl;
 
-checkOverflowed<uint64_t>(maxUint); // overflow check tripped
-checkOverflowed<uint64_t>(almostMaxUint); // overflow check tripped
-checkOverflowed<uint64_t>(lessThanMaxUint); // there was no overflow
+P(uint32_t, 0)
+P(uint32_t, 4294967295)
+P(uint32_t, 4294967296)
+P(uint32_t, -1)
+EV << std::endl;
 
-%exitcode: 0
+double maxInt64AsDouble = static_cast<double>(std::numeric_limits<int64_t>::max());
+double justBelow = maxInt64AsDouble-2000;
+double justAbove = maxInt64AsDouble+2000;
+
+P(int64_t, -justBelow)
+P(int64_t, justBelow)
+P(int64_t, -justAbove)
+P(int64_t, justAbove)
+EV << std::endl;
+
+double maxUInt64AsDouble = static_cast<double>(std::numeric_limits<uint64_t>::max());
+double justBelowU = maxUInt64AsDouble-2000;
+double justAboveU = maxUInt64AsDouble+2000;
+
+P(uint64_t, 0U)
+P(uint64_t, justBelowU)
+P(uint64_t, justAboveU)
+P(uint64_t, -1)
+
+EV << ".\n";
 
 %contains: stdout
-overflow check tripped
-overflow check tripped
-there was no overflow
-overflow check tripped
-overflow check tripped
-there was no overflow
+checked_int_cast<int8_t>(-128) --> -128
+checked_int_cast<int8_t>(127) --> 127
+checked_int_cast<int8_t>(128) --> exception: does not fit into target type
+checked_int_cast<int8_t>(-129) --> exception: does not fit into target type
+
+checked_int_cast<uint8_t>(0) --> 0
+checked_int_cast<uint8_t>(255) --> 255
+checked_int_cast<uint8_t>(256) --> exception: does not fit into target type
+checked_int_cast<uint8_t>(-1) --> exception: does not fit into target type
+
+checked_int_cast<int16_t>(-32768) --> -32768
+checked_int_cast<int16_t>(32767) --> 32767
+checked_int_cast<int16_t>(32768) --> exception: does not fit into target type
+checked_int_cast<int16_t>(-32769) --> exception: does not fit into target type
+
+checked_int_cast<uint16_t>(0) --> 0
+checked_int_cast<uint16_t>(65535) --> 65535
+checked_int_cast<uint16_t>(65536) --> exception: does not fit into target type
+checked_int_cast<uint16_t>(-1) --> exception: does not fit into target type
+
+checked_int_cast<int32_t>(-2147483648) --> -2147483648
+checked_int_cast<int32_t>(2147483647) --> 2147483647
+checked_int_cast<int32_t>(2147483648) --> exception: does not fit into target type
+checked_int_cast<int32_t>(-2147483649) --> exception: does not fit into target type
+
+checked_int_cast<uint32_t>(0) --> 0
+checked_int_cast<uint32_t>(4294967295) --> 4294967295
+checked_int_cast<uint32_t>(4294967296) --> exception: does not fit into target type
+checked_int_cast<uint32_t>(-1) --> exception: does not fit into target type
+
+checked_int_cast<int64_t>(-9.22337e+18) --> -9223372036854773760
+checked_int_cast<int64_t>(9.22337e+18) --> 9223372036854773760
+checked_int_cast<int64_t>(-9.22337e+18) --> exception: does not fit into target type
+checked_int_cast<int64_t>(9.22337e+18) --> exception: does not fit into target type
+
+checked_int_cast<uint64_t>(0) --> 0
+checked_int_cast<uint64_t>(1.84467e+19) --> 18446744073709549568
+checked_int_cast<uint64_t>(1.84467e+19) --> exception: does not fit into target type
+checked_int_cast<uint64_t>(-1) --> exception: does not fit into target type
+.
