@@ -20,9 +20,9 @@ inline double strtod(const char *s)
     return std::strtod(s, nullptr);
 }
 
-inline long strtol(const char *s)
+inline long long strtoll(const char *s)
 {
-    return std::strtol(s, nullptr, 10);
+    return std::strtoll(s, nullptr, 10);
 }
 
 OpenStreetMap::~OpenStreetMap()
@@ -62,7 +62,7 @@ Map OpenStreetMap::loadMap(cXMLElement *mapRoot)
 
     for (cXMLElement *child : mapRoot->getChildrenByTagName("node")) {
         Node *node = new Node();
-        node->id = strtol(child->getAttribute("id"));
+        node->id = strtoll(child->getAttribute("id"));
         node->lat = strtod(child->getAttribute("lat"));
         node->lon = strtod(child->getAttribute("lon"));
 
@@ -79,10 +79,10 @@ Map OpenStreetMap::loadMap(cXMLElement *mapRoot)
 
     for (cXMLElement *child : mapRoot->getChildrenByTagName("way")) {
         Way *way = new Way();
-        way->id = strtol(child->getAttribute("id"));
+        way->id = strtoll(child->getAttribute("id"));
         for (cXMLElement *wayChild : child->getChildren()) {
             if (strcmp(wayChild->getTagName(),"nd")==0) {
-                id_t ref = strtol(wayChild->getAttribute("ref"));
+                id_t ref = strtoll(wayChild->getAttribute("ref"));
                 ASSERT(nodeById.find(ref) != nodeById.end());
                 Node *node = nodeById[ref];
                 way->nodes.push_back(node);
