@@ -186,11 +186,7 @@ public class ProjectFeaturesManager {
     protected Map<String, Boolean> loadFeatureEnablements() throws CoreException {
         Map<String, Boolean> result = new HashMap<String, Boolean>();
         Document doc = readXmlFile(getFeatureStatesFile());
-        if (doc == null) {
-            for (ProjectFeature feature : features.values())
-                result.put(feature.getId(), feature.getInitiallyEnabled());
-        }
-        else {
+        if (doc != null) {
             Element root = doc.getDocumentElement();
             NodeList featureElements = root.getElementsByTagName(ELMNT_FEATURE);
             for (int i = 0; i < featureElements.getLength(); i++) {
