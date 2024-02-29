@@ -44,7 +44,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -599,20 +598,24 @@ public class ProjectFeaturesManager {
      * reflect the given feature enablement state.
      */
     public void fixupExcludedNedPackages(NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
+        Set<String> excludedPackages = new HashSet<String>();
         for (ProjectFeature feature : getFeatures()) {
             boolean enabled = enabledFeatures.contains(feature);
-            adjustExcludedNedPackages(feature, enabled, nedSourceFoldersConfig);
+            if (!enabled)
+                excludedPackages.addAll(feature.getNedPackages());
         }
+        nedSourceFoldersConfig.setExcludedPackages(excludedPackages.toArray(new String[]{}));
     }
 
     /**
      * Adjusts the given CDT configurations to reflect the given feature enablement state.
      */
     public void fixupConfigurations(ICConfigurationDescription[] configurations, List<ProjectFeature> enabledFeatures) throws CoreException {
-        for (ProjectFeature feature : getFeatures()) {
-            boolean enabled = enabledFeatures.contains(feature);
-            adjustConfigurations(feature, enabled, configurations);
-        }
+        List<IContainer> excludedFolders = new ArrayList<>();
+        for (ProjectFeature feature : getFeatures())
+            if (!enabledFeatures.contains(feature))
+                excludedFolders.addAll(getAllCxxSourceFolders(feature));
+        replaceExludedFolders(configurations, excludedFolders);
 
         // since feature macros are now defined in header files, remove them from the configuration
         for (ProjectFeature feature : getFeatures()) {
@@ -693,60 +696,14 @@ public class ProjectFeaturesManager {
         return result;
     }
 
-    public void setFeatureEnabledRec(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, ProjectFeature feature, boolean enable) throws CoreException {
-        setFeatureEnabled(feature, enable, configurations, nedSourceFoldersConfig);
-        Set<ProjectFeature> affectedFeatures = enable ? collectDependencies(feature) : collectDependentFeatures(feature);
-        for (ProjectFeature f : affectedFeatures)
-            setFeatureEnabled(f, enable, configurations, nedSourceFoldersConfig);
-    }
-
     /**
      * Sets the list of enabled features in the given NED and CDT configurations.
      * This method ignores dependencies, i.e. it is possible to create an inconsistent
      * state with it.
      */
     public void setEnabledFeatures(List<ProjectFeature> enabledFeatures, ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig) throws CoreException {
-        for (ProjectFeature feature : getFeatures()) {
-            boolean enabled = enabledFeatures.contains(feature);
-            setFeatureEnabled(feature, enabled, configurations, nedSourceFoldersConfig);
-        }
-    }
-
-    /**
-     * Enables or disables the given feature in the given NED and CDT configurations.
-     * This method ignores dependencies, i.e. it is possible to create an inconsistent
-     * state with it.
-     */
-    public void setFeatureEnabled(ProjectFeature feature, boolean enable, ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig) throws CoreException {
-        Assert.isTrue(getFeature(feature.getId()) == feature, "Alien feature!");
-        Debug.println((enable ? "enabling" : "disabling") + " feature " + feature.getId());
-
-        adjustExcludedNedPackages(feature, enable, nedSourceFoldersConfig);
-        adjustConfigurations(feature, enable, configurations);
-    }
-
-    /**
-     * Update the list of excluded NED packages in the given configuration object
-     * according to the feature's enablement state.
-     */
-    protected void adjustExcludedNedPackages(ProjectFeature feature, boolean enable, NedSourceFoldersConfiguration nedSourceFoldersConfig) {
-        Set<String> excludedPackages = new HashSet<String>();
-        excludedPackages.addAll(Arrays.asList(nedSourceFoldersConfig.getExcludedPackages()));
-        if (enable)
-            excludedPackages.removeAll(feature.getNedPackages());
-        else
-            excludedPackages.addAll(feature.getNedPackages());
-        nedSourceFoldersConfig.setExcludedPackages(excludedPackages.toArray(new String[]{}));
-    }
-
-    /**
-     * Update the given CTD configurations according to the feature's enablement state.
-     */
-    protected void adjustConfigurations(ProjectFeature feature, boolean enable, ICConfigurationDescription[] configurations) throws CoreException {
-        // exclude/include C++ source folders that correspond to the feature's NED packages
-        List<IContainer> folders = getAllCxxSourceFolders(feature);
-        for (IContainer folder : folders)
-            setFolderExcluded(configurations, folder, !enable);
+        fixupExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
+        fixupConfigurations(configurations, enabledFeatures);
     }
 
     protected List<IContainer> getAllCxxSourceFolders(ProjectFeature feature) {
@@ -831,6 +788,13 @@ public class ProjectFeaturesManager {
             for (ICLanguageSetting languageSetting : rootLanguageSettings)
                 if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO))
                     CDTUtils.setMacro(languageSetting, name, null);
+        }
+    }
+
+    protected void replaceExludedFolders(ICConfigurationDescription[] configurations, List<IContainer> excludedFolders) throws CoreException {
+        for (ICConfigurationDescription configuration : configurations) {
+            ICSourceEntry[] newEntries = CDTUtils.replaceExclusions(configuration.getSourceEntries(), excludedFolders);
+            configuration.setSourceEntries(newEntries);
         }
     }
 

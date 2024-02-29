@@ -14,6 +14,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.cdt.build.core.scannerconfig.CfgInfoContext;
 import org.eclipse.cdt.build.internal.core.scannerconfig.CfgDiscoveredPathManager;
 import org.eclipse.cdt.core.settings.model.CMacroEntry;
+import org.eclipse.cdt.core.settings.model.CSourceEntry;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
@@ -117,6 +118,14 @@ public class CDTUtils {
         sourceEntries = CDataUtil.makeRelative(resource.getProject(), sourceEntries);  // convert everything to relative path
         ICSourceEntry[] newEntries = CDataUtil.setExcluded(resource.getProjectRelativePath(), (resource instanceof IFolder), exclude, sourceEntries);
         return newEntries;
+    }
+
+    public static ICSourceEntry[] replaceExclusions(ICSourceEntry[] sourceEntries, List<IContainer> excludedFolders) {
+        for (int i = 0; i < sourceEntries.length; i++)
+            sourceEntries[i] = new CSourceEntry(sourceEntries[i].getFullPath(), new IPath[0], sourceEntries[i].getFlags());
+        for (IContainer folder : excludedFolders)
+            sourceEntries = CDataUtil.setExcludedIfPossible(folder.getFullPath(), true, true, sourceEntries);
+        return sourceEntries;
     }
 
     /**
@@ -249,4 +258,5 @@ public class CDTUtils {
         }
         return config;
     }
+
 }
