@@ -372,9 +372,19 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
     protected void setAllFeaturesEnabled(boolean enable) {
         for (ProjectFeature f : features.getFeatures())
-            if (treeViewer.getChecked(f) != enable)
-                doSetFeatureEnabled(f, enable);
+            treeViewer.setChecked(f, enable);
+        makeTreeSelectionEffective();
         updateDiagnosticMessage();
+    }
+
+    protected void makeTreeSelectionEffective() {
+        try {
+            ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
+            features.setEnabledFeatures(getEnabledFeaturesFromTree(), configurations, nedSourceFoldersConfig);
+        }
+        catch (Exception e) {
+            errorDialog(e.getMessage(), e);
+        }
     }
 
     protected void setFeatureEnabled(ProjectFeature feature, boolean enable) {
@@ -392,9 +402,9 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             }
 
             // do it
-            doSetFeatureEnabled(feature, true);
+            treeViewer.setChecked(feature, true);
             for (ProjectFeature f : missingDependencies)
-                doSetFeatureEnabled(f, true);
+                treeViewer.setChecked(f, true);
         }
         else {
             // collect features that depend on the one we are turning off
@@ -410,11 +420,11 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             }
 
             // do it
-            doSetFeatureEnabled(feature, false);
+            treeViewer.setChecked(feature, false);
             for (ProjectFeature f : dependentFeatures)
-                doSetFeatureEnabled(f, false);
+                treeViewer.setChecked(f, false);
         }
-
+        makeTreeSelectionEffective();
         updateDiagnosticMessage();
     }
 
@@ -434,19 +444,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             if (treeViewer.getChecked(f))
                 bogusFeatures.add(f);
         return bogusFeatures;
-    }
-
-
-    protected void doSetFeatureEnabled(ProjectFeature feature, boolean enable) {
-        treeViewer.setChecked(feature, enable);
-
-        try {
-            ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
-            features.setFeatureEnabled(feature, enable, configurations, nedSourceFoldersConfig);
-        }
-        catch (Exception e) {
-            errorDialog(e.getMessage(), e);
-        }
     }
 
     protected static String itemizeNamesOf(Collection<ProjectFeature> features) {
@@ -592,8 +589,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     @Override
     protected void performDefaults() {
         for (ProjectFeature f : features.getFeatures())
-            if (treeViewer.getChecked(f) != f.getInitiallyEnabled())
-                doSetFeatureEnabled(f, f.getInitiallyEnabled());
+            treeViewer.setChecked(f, f.getInitiallyEnabled());
+        makeTreeSelectionEffective();
         updateDiagnosticMessage();
         super.performDefaults();
     }

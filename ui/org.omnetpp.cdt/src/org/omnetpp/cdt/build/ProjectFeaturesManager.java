@@ -701,6 +701,18 @@ public class ProjectFeaturesManager {
     }
 
     /**
+     * Sets the list of enabled features in the given NED and CDT configurations.
+     * This method ignores dependencies, i.e. it is possible to create an inconsistent
+     * state with it.
+     */
+    public void setEnabledFeatures(List<ProjectFeature> enabledFeatures, ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig) throws CoreException {
+        for (ProjectFeature feature : getFeatures()) {
+            boolean enabled = enabledFeatures.contains(feature);
+            setFeatureEnabled(feature, enabled, configurations, nedSourceFoldersConfig);
+        }
+    }
+
+    /**
      * Enables or disables the given feature in the given NED and CDT configurations.
      * This method ignores dependencies, i.e. it is possible to create an inconsistent
      * state with it.
