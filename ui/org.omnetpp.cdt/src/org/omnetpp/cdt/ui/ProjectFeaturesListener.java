@@ -1,8 +1,10 @@
 package org.omnetpp.cdt.ui;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -13,17 +15,14 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.build.ProjectFeaturesManager;
-import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.ui.ProblemsMessageDialog;
-import org.omnetpp.common.util.UIUtils;
 
 /**
  * Responsible for keeping a project's configuration (NED excluded packages, CDT
@@ -60,9 +59,11 @@ import org.omnetpp.common.util.UIUtils;
  * We could also listen on CDT config changes, folder creation notifications
  * etc., but this is not done (it was too aggressive and annoying).
  *
+ * TODO update docu
+ *
  * @author Andras
  */
-public class ProjectFeaturesListener implements IResourceChangeListener /*,ICProjectDescriptionListener*/ {
+public class ProjectFeaturesListener implements IResourceChangeListener, ICProjectDescriptionListener {
 
     public void hookListeners() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
@@ -74,9 +75,17 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
         //CoreModel.getDefault().removeCProjectDescriptionListener(this);
     }
 
-    //public void handleEvent(CProjectDescriptionEvent event) {
-    //    verifyProjectConfiguration(event.getProject());
-    //}
+    public void handleEvent(CProjectDescriptionEvent event) {
+        //Debug.println(" +++++++++++++++++++++++ CProjectDescriptionEvent: " + event);
+        //adjustProjectConfiguration(event.getProject());
+    }
+
+    public static final List<String> WATCHED_CONFIG_FILES = Arrays.asList(
+            ProjectFeaturesManager.PROJECTFEATURES_FILENAME,
+            ProjectFeaturesManager.PROJECTFEATURESTATE_FILENAME,
+            ProjectUtils.NEDFOLDERS_FILENAME
+            //ProjectUtils.NEDEXCLUSIONS_FILENAME -- do not watch!
+    );
 
     public void resourceChanged(IResourceChangeEvent event) {
         Assert.isTrue(event.getType() == IResourceChangeEvent.POST_CHANGE);
@@ -84,23 +93,21 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
             event.getDelta().accept(new IResourceDeltaVisitor() {
                 public boolean visit(IResourceDelta delta) throws CoreException {
                     IResource resource = delta.getResource();
-                    if (isFeaturesDescriptionFile(resource)) {
-                        if (delta.getKind() == IResourceDelta.ADDED)
+                    int kind = delta.getKind();
+                    if ((kind == IResourceDelta.ADDED || kind == IResourceDelta.CHANGED) && isDotFileInOmnetppProject(resource)) {
+                        if (delta.getKind() == IResourceDelta.ADDED && resource.getName().equals(ProjectFeaturesManager.PROJECTFEATURES_FILENAME))
                             omnetppProjectWithFeaturesCreated(resource.getProject());
-                        else if (delta.getKind() == IResourceDelta.CHANGED)
-                            verifyProjectConfiguration(resource.getProject());
+                        else if (delta.getKind() == IResourceDelta.CHANGED && WATCHED_CONFIG_FILES.contains(resource.getName()))
+                            adjustProjectConfiguration(resource.getProject());
                         return false;
                     }
                     return true;
                 }
 
-                protected boolean isFeaturesDescriptionFile(IResource resource) throws CoreException {
-                    return (resource.getParent() instanceof IProject &&   // note: least costly/more selective checks first
-                            resource instanceof IFile &&
-                            resource.getName().equals(ProjectFeaturesManager.PROJECTFEATURES_FILENAME) &&
-                            ProjectUtils.isOpenOmnetppProject(resource.getProject()));
+                protected boolean isDotFileInOmnetppProject(IResource resource) throws CoreException {
+                    return resource instanceof IFile && resource.getName().charAt(0) == '.' &&
+                            resource.getParent() instanceof IProject && ProjectUtils.isOpenOmnetppProject(resource.getProject());
                 }
-
             });
         }
         catch (CoreException e) {
@@ -109,10 +116,11 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
     }
 
     protected void omnetppProjectWithFeaturesCreated(final IProject project) {
-        Display.getDefault().asyncExec(new Runnable() {
-            public void run() {
+        Job job = new Job("Configuring project according to Project Features") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    // we need to run it in asyncExec() because the workspace is locked during a resource change
+                    // we need to run it in a workspace job because the workspace is locked during a resource change
                     // notification so we would not be able to save the updated CDT configuration
                     ProjectFeaturesManager features = new ProjectFeaturesManager(project);
                     if (features.loadFeaturesFile()) {
@@ -121,57 +129,40 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
                     }
                 }
                 catch (CoreException e) {
-                    Activator.logError(e);
+                    Activator.logError("Error activating default feature selection for new project", e);
                 }
+                return Status.OK_STATUS;
             }
-        });
+        };
+        job.schedule();
     }
 
-    protected void verifyProjectConfiguration(IProject project) {
+    protected void adjustProjectConfiguration(IProject project) {
         try {
-            if (ProjectUtils.isOpenOmnetppProject(project)) {
-                final ProjectFeaturesManager features = new ProjectFeaturesManager(project);
-                if (features.loadFeaturesFile()) {
-                    Debug.println("Project Features: checking project " + project.getName());
-                    final List<Problem> problems = features.validateProjectState();
-                    if (!problems.isEmpty()) {
-                        Display.getDefault().asyncExec(new Runnable() {
-                            public void run() {
-                                offerFixingProblems(features, problems);
-                            }
-                        });
-                    }
-
-                }
-            }
+            final ProjectFeaturesManager features = new ProjectFeaturesManager(project);
+            if (features.loadFeaturesFile())
+                adjustProjectState(features);
         }
         catch (CoreException e) {
-            Activator.logError("Error checking project state wrt. project features", e);
+            Activator.logError("Error adjusting project state according to Project Features", e);
         }
     }
 
-    protected void offerFixingProblems(ProjectFeaturesManager features, List<Problem> problems) {
-        if (isOkToFixConfigProblems(features.getProject(), problems)) {
-            try {
-                features.fixupProjectState();
+    protected void adjustProjectState(final ProjectFeaturesManager features) {
+        // Note: must use workspace job, because the workspace is locked during resource change notification
+        Job job = new Job("Configuring project according to Project Features") {
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                try {
+                    if (features.getProject().isAccessible())
+                        features.adjustProjectState();
+                } catch (CoreException e) {
+                    Activator.logError("Error adjusting project state according to Project Features", e);
+                }
+                return Status.OK_STATUS;
             }
-            catch (CoreException e) {
-                Activator.logError(e);
-                Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-                ErrorDialog.openError(parentShell, "Error", "Error fixing project state", e.getStatus());
-            }
-        }
-    }
-
-    protected boolean isOkToFixConfigProblems(IProject project, List<Problem> problems) {
-        List<String> problemTexts = new ArrayList<String>();
-        for (Problem p : problems)
-            problemTexts.add(p.toString());
-        Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency",
-                "Some configuration settings in project \"" + project.getName() + "\" do not correspond " +
-                "to the enabled project features. Do you want to fix the project state?",
-                problemTexts, UIUtils.ICON_ERROR);
+        };
+        job.schedule();
     }
 
 }

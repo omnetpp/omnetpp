@@ -121,11 +121,12 @@ public class CDTUtils {
     }
 
     public static ICSourceEntry[] replaceExclusions(ICSourceEntry[] sourceEntries, List<IContainer> excludedFolders) {
+        ICSourceEntry[] newEntries = new ICSourceEntry[sourceEntries.length];
         for (int i = 0; i < sourceEntries.length; i++)
-            sourceEntries[i] = new CSourceEntry(sourceEntries[i].getFullPath(), new IPath[0], sourceEntries[i].getFlags());
+            newEntries[i] = new CSourceEntry(sourceEntries[i].getFullPath(), new IPath[0], sourceEntries[i].getFlags());
         for (IContainer folder : excludedFolders)
-            sourceEntries = CDataUtil.setExcludedIfPossible(folder.getFullPath(), true, true, sourceEntries);
-        return sourceEntries;
+            newEntries = CDataUtil.setExcludedIfPossible(folder.getFullPath(), true, true, newEntries);
+        return newEntries;
     }
 
     /**

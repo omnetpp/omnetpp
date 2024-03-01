@@ -48,16 +48,13 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.ProjectFeature;
 import org.omnetpp.cdt.build.ProjectFeaturesManager;
-import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
@@ -380,7 +377,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     protected void makeTreeSelectionEffective() {
         try {
             ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
-            features.setEnabledFeatures(getEnabledFeaturesFromTree(), configurations, nedSourceFoldersConfig);
+            features.adjustProjectState(getEnabledFeaturesFromTree(), configurations, nedSourceFoldersConfig);
         }
         catch (Exception e) {
             errorDialog(e.getMessage(), e);
@@ -490,16 +487,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         if (!bogusFeatures.isEmpty())
             result += "Some features are missing dependencies. <a href=\"dependency\">Details</a>\n";
 
-        // check that CDT and NED state corresponds to the feature selection
-        try {
-            List<Problem> problems = features.validateProjectState();
-            if (!problems.isEmpty())
-                result += "Some project settings do not correspond to the enabled features. <a href=\"config\">Details</a>\n";
-        }
-        catch (CoreException e) {
-            Activator.logError(e);
-        }
-
         return result.trim();
     }
 
@@ -545,33 +532,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                     "The following problems were found in the features selection (please fix them manually):\n",
                     problems, UIUtils.ICON_ERROR);
         }
-
-        // "The project configuration does not correspond to the selected features. [Details]"
-        if (problemId.equals("config")) {
-            try {
-                List<Problem> problems = features.validateProjectState();
-                if (!problems.isEmpty() && isOkToFixConfigProblems(problems)) {
-                    features.fixupProjectState();
-                    NedSourceFoldersConfiguration tmp = ProjectUtils.readNedFoldersFile(getProject());
-                    nedSourceFoldersConfig.setExcludedPackages(tmp.getExcludedPackages());
-                }
-            }
-            catch (CoreException e1) {
-                Activator.logError(e1);
-            }
-        }
-
-    }
-
-    protected boolean isOkToFixConfigProblems(List<Problem> problems) {
-        List<String> problemTexts = new ArrayList<String>();
-        for (Problem p : problems)
-            problemTexts.add(p.toString());
-        Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency",
-                "Some project configuration settings do not correspond to the enabled project features. " +
-                "Do you want to fix the project state?",
-                problemTexts, UIUtils.ICON_ERROR);
     }
 
     protected ProjectFeature getTableSelection() {
@@ -601,26 +561,16 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot update settings while build is in progress.");
             return false;
         }
-        // save .nedfolders
-        try {
-            ProjectUtils.saveNedFoldersFile(getProject(), nedSourceFoldersConfig);
-        }
-        catch (CoreException e) {
-            Activator.logError("Cannot store updated NED Source Folders configuration for project " + getProject().getName(), e);
-            errorDialog("Cannot store updated NED Source Folders configuration for project", e);
-            return false;
-        }
 
         // save features enablement state and generated header
         try {
             List<ProjectFeature> enabledFeatures = getEnabledFeaturesFromTree();
             features.saveFeatureEnablement(enabledFeatures);
-            if (features.getDefinesFile() != null)
-                features.saveDefinesFile(enabledFeatures);
+            features.adjustProjectState();
         }
         catch (CoreException e) {
-            Activator.logError("Cannot store feature enablement state for project " + getProject().getName(), e); //XXX msg
-            errorDialog("Cannot store feature enablement state for project", e);//XXX msg
+            Activator.logError("Cannot adjust project state according to Project Features for project " + getProject().getName(), e);
+            errorDialog("Cannot adjust project state according to Project Features", e);
             return false;
         }
 

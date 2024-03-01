@@ -148,7 +148,7 @@ public class NewConfigConfigurer {
 
             // fix them up
             if (!cfgs.isEmpty()) {
-                features.fixupConfigurations(cfgs.toArray(new ICConfigurationDescription[]{}), features.getEnabledFeatures());
+                features.adjustConfigurations(cfgs.toArray(new ICConfigurationDescription[]{}), features.getEnabledFeatures());
                 changed = true;
             }
         }

@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -366,6 +367,7 @@ public class ProjectUtils {
 
     /**
      * Saves the ".nedfolders" file in the given OMNeT++ project.
+     * TODO split!!!!!!!
      */
     public static void saveNedFoldersFile(IProject project, NedSourceFoldersConfiguration config) throws CoreException {
         // save .nedfolders
@@ -373,24 +375,32 @@ public class ProjectUtils {
         for (IContainer folder : config.getSourceFolders())
             content += getProjectRelativePathOf(project, folder) + "\n";
         IFile nedfoldersFile = project.getFile(NEDFOLDERS_FILENAME);
-        if (!nedfoldersFile.exists())
-            nedfoldersFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-        else
-            nedfoldersFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+        ensureFileContent(nedfoldersFile, content.getBytes(), null);
 
         // save .nedexclusions
         content = "";
         for (String packageName : config.getExcludedPackages())
             content += packageName + "\n";
         IFile nedexclusionsFile = project.getFile(NEDEXCLUSIONS_FILENAME);
-        if (!nedexclusionsFile.exists())
-            nedexclusionsFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-        else
-            nedexclusionsFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+        ensureFileContent(nedexclusionsFile, content.getBytes(), null);
     }
 
     private static String getProjectRelativePathOf(IProject project, IContainer container) {
         return container.equals(project) ? "." : container.getProjectRelativePath().toString();
+    }
+
+    private static void ensureFileContent(IFile file, byte[] bytes, IProgressMonitor monitor) throws CoreException {
+        // only overwrites file if its content is not already what's desired
+        try {
+            file.refreshLocal(IResource.DEPTH_ZERO, monitor);
+            if (!file.exists())
+                file.create(new ByteArrayInputStream(bytes), true, monitor);
+            else if (!Arrays.equals(FileUtils.readBinaryFile(file.getContents()), bytes)) // NOTE: byte[].equals does NOT compare content, only references!!!
+                file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
+        }
+        catch (IOException e) {
+            throw CommonPlugin.wrapIntoCoreException(e);
+        }
     }
 
 }

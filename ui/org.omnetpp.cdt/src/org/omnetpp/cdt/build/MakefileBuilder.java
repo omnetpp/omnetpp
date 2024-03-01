@@ -40,14 +40,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.OmnetppDirs;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.ui.ProblemsMessageDialog;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.common.util.UIUtils;
 
 /**
  * Keeps makefiles up to date.
@@ -122,47 +119,14 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      */
     protected void checkProjectFeatures() {
         try {
-            // load feature description from file
-            final ProjectFeaturesManager features = new ProjectFeaturesManager(getProject());
-            if (features.loadFeaturesFile()) {
-                // check that CDT and NED state corresponds to the feature selection
-                final List<Problem> problems = features.validateProjectState();
-                if (!problems.isEmpty()) {
-                    runInUIThread(new Runnable() {
-                        public void run() {
-                            offerFixingProblems(features, problems);
-                        }
-                    });
-                }
-            }
+            ProjectFeaturesManager features = new ProjectFeaturesManager(getProject());
+            if (features.loadFeaturesFile())
+                features.adjustProjectState();
         }
         catch (CoreException e) {
             // log, but otherwise ignore it
-            Activator.logError("Error checking whether project configuration corresponds to project features enablement", e);
+            Activator.logError("Error adjusting project configuration according to Project Features enablements", e);
         }
-    }
-
-    protected void offerFixingProblems(ProjectFeaturesManager features, List<Problem> problems) {
-        if (isOkToFixConfigProblems(features.getProject(), problems)) {
-            try {
-                features.fixupProjectState();
-            }
-            catch (CoreException e) {
-                Activator.logError(e);
-                ErrorDialog.openError(getActiveShell(), "Error", "Error fixing project state", e.getStatus());
-            }
-        }
-    }
-
-    protected boolean isOkToFixConfigProblems(IProject project, List<Problem> problems) {
-        List<String> problemTexts = new ArrayList<String>();
-        for (Problem p : problems)
-            problemTexts.add(p.toString());
-        return ProblemsMessageDialog.openConfirm(getActiveShell(), "Project Setup Inconsistency",
-                "Some configuration settings in project \"" + project.getName() + "\" do not correspond " +
-                "to the enabled project features. This may cause build errors as well. " +
-                "Do you want to fix the project state?",
-                problemTexts, UIUtils.ICON_ERROR);
     }
 
     protected void checkProjectReferences() {

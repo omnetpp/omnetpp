@@ -8,7 +8,6 @@
 package org.omnetpp.cdt.build;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,7 +23,6 @@ import java.util.Stack;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
@@ -44,9 +42,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.XmlUtils;
 import org.omnetpp.ned.core.INedResources;
@@ -234,13 +232,14 @@ public class ProjectFeaturesManager {
      * Saves the defines file.
      */
     public void saveDefinesFile(List<ProjectFeature> enabledFeatures) throws CoreException {
-        Map<String, String> defines = collectDefines(enabledFeatures);
-        String content = makeDefinesFileContent(defines);
+        if (definesFile != null) {
+            Map<String, String> defines = collectDefines(enabledFeatures);
+            String content = makeDefinesFileContent(defines);
 
-        // save the file if its content differs
-        byte[] bytes = content.getBytes();
-        if (definesFile != null)
+            // save the file if its content differs
+            byte[] bytes = content.getBytes();
             MakefileTools.ensureFileContent(definesFile, bytes, null);
+        }
     }
 
     protected String makeDefinesFileContent(Map<String, String> defines) {
@@ -567,26 +566,30 @@ public class ProjectFeaturesManager {
      * Initializes the project state (CDT, NED) according to the enabled features, using getEnabledFeatures())
      */
     public void initializeProjectState() throws CoreException {
-        fixupProjectState();
+        adjustProjectState();
     }
 
     /**
      * Updates project configuration (CDT and NED) so that it reflects the currently enabled features.
      */
-    public void fixupProjectState() throws CoreException {
+    public void adjustProjectState() throws CoreException {
+        Debug.println("Updating project state according to Project Feature enablements");
+
         // load NED and CDT configurations
         List<ProjectFeature> enabledFeatures = getEnabledFeatures();
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
 
-        // fix them up
-        fixupExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
-        fixupConfigurations(configurations, enabledFeatures);
+        // fix up NED exclusions
+        boolean nedChange = adjustExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
+        if (nedChange)
+            ProjectUtils.saveNedFoldersFile(project, nedSourceFoldersConfig);
 
-        // save them
-        ProjectUtils.saveNedFoldersFile(project, nedSourceFoldersConfig);
-        CoreModel.getDefault().setProjectDescription(project, projectDescription);
+        // fix up C++ exclusions
+        boolean cppChange = adjustConfigurations(configurations, enabledFeatures);
+        if (cppChange)
+            CoreModel.getDefault().setProjectDescription(project, projectDescription);
 
         // fix up defines file
         if (definesFile != null)
@@ -596,38 +599,43 @@ public class ProjectFeaturesManager {
     /**
      * Adjusts the excluded NED packages in the given configuration object to
      * reflect the given feature enablement state.
+     * Returns true if there was an actual change.
      */
-    public void fixupExcludedNedPackages(NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
-        Set<String> excludedPackages = new HashSet<String>();
-        for (ProjectFeature feature : getFeatures()) {
-            boolean enabled = enabledFeatures.contains(feature);
-            if (!enabled)
-                excludedPackages.addAll(feature.getNedPackages());
-        }
-        nedSourceFoldersConfig.setExcludedPackages(excludedPackages.toArray(new String[]{}));
+    public boolean adjustExcludedNedPackages(NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
+        Set<String> tmp = new HashSet<String>();
+        for (ProjectFeature feature : getFeatures())
+            if (!enabledFeatures.contains(feature))
+                tmp.addAll(feature.getNedPackages());
+        String[] excludedPackages = tmp.toArray(new String[]{});
+        boolean changed = Arrays.equals(nedSourceFoldersConfig.getExcludedPackages(), excludedPackages);
+        nedSourceFoldersConfig.setExcludedPackages(excludedPackages);
+        return changed;
     }
 
     /**
      * Adjusts the given CDT configurations to reflect the given feature enablement state.
+     * Returns true if there was an actual change.
      */
-    public void fixupConfigurations(ICConfigurationDescription[] configurations, List<ProjectFeature> enabledFeatures) throws CoreException {
+    public boolean adjustConfigurations(ICConfigurationDescription[] configurations, List<ProjectFeature> enabledFeatures) throws CoreException {
         List<IContainer> excludedFolders = new ArrayList<>();
         for (ProjectFeature feature : getFeatures())
             if (!enabledFeatures.contains(feature))
                 excludedFolders.addAll(getAllCxxSourceFolders(feature));
-        replaceExludedFolders(configurations, excludedFolders);
+        boolean changed = replaceExcludedFolders(configurations, excludedFolders);
 
         // since feature macros are now defined in header files, remove them from the configuration
         for (ProjectFeature feature : getFeatures()) {
             for (String cflag : feature.getCompileFlags().split("\\s+")) {
                 if (cflag.startsWith("-D") && cflag.length() > 2) {
                     String symbol = cflag.substring(2).replaceAll("=.*", "");
-                    if (isMacroSet(project, configurations, symbol))
+                    if (isMacroSet(project, configurations, symbol)) {
                         removeMacroInAllConfigurationsAndFoldersAndLanguages(project, configurations, symbol);
+                        changed = true;
+                    }
                 }
             }
         }
-
+        return changed;
     }
 
     /**
@@ -697,13 +705,13 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Sets the list of enabled features in the given NED and CDT configurations.
+     * Adjusts the given NED and CDT configurations according to the feature enablements.
      * This method ignores dependencies, i.e. it is possible to create an inconsistent
      * state with it.
      */
-    public void setEnabledFeatures(List<ProjectFeature> enabledFeatures, ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig) throws CoreException {
-        fixupExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
-        fixupConfigurations(configurations, enabledFeatures);
+    public void adjustProjectState(List<ProjectFeature> enabledFeatures, ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig) throws CoreException {
+        adjustExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
+        adjustConfigurations(configurations, enabledFeatures);
     }
 
     protected List<IContainer> getAllCxxSourceFolders(ProjectFeature feature) {
@@ -791,163 +799,17 @@ public class ProjectFeaturesManager {
         }
     }
 
-    protected void replaceExludedFolders(ICConfigurationDescription[] configurations, List<IContainer> excludedFolders) throws CoreException {
+    protected boolean replaceExcludedFolders(ICConfigurationDescription[] configurations, List<IContainer> excludedFolders) throws CoreException {
+        boolean changed = false;
         for (ICConfigurationDescription configuration : configurations) {
-            ICSourceEntry[] newEntries = CDTUtils.replaceExclusions(configuration.getSourceEntries(), excludedFolders);
-            configuration.setSourceEntries(newEntries);
-        }
-    }
-
-    protected void setFolderExcluded(ICConfigurationDescription[] configurations, IContainer folder, boolean exclude) throws CoreException {
-        if (!folder.exists())
-            return;
-        for (ICConfigurationDescription configuration : configurations) {
-            ICSourceEntry[] newEntries = CDTUtils.setExcluded(folder, exclude, configuration.getSourceEntries());
-            configuration.setSourceEntries(newEntries);
-        }
-    }
-
-    protected Boolean isFolderExcluded(ICConfigurationDescription[] configurations, IContainer folder) throws CoreException {
-        Assert.isTrue(folder.exists());
-        int excludeCount = 0, includeCount = 0;
-        for (ICConfigurationDescription configuration : configurations) {
-            if (CDTUtils.isExcluded(folder, configuration.getSourceEntries()))
-                excludeCount++;
-            else
-                includeCount++;
-        }
-        return (excludeCount>0 && includeCount>0) ? null /*misc*/ : excludeCount>0;
-    }
-
-    protected static String joinNamesOf(Collection<ProjectFeature> features) {
-        List<String> names = new ArrayList<String>();
-        for (ProjectFeature f : features)
-            names.add(f.getName());
-        return StringUtils.join(names, ", ", " and ");
-    }
-
-    public static class Problem {
-        public ProjectFeature feature;
-        public String message;
-        public String toString() {return (feature==null ? "" : "\"" + feature.getName() + "\": ") + message;}
-    }
-
-    public List<Problem> validateProjectState() throws CoreException {
-        // load NED and CDT configuration
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
-        NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
-
-        // return list of problems
-        return validateProjectState(configurations, nedSourceFoldersConfig, getEnabledFeatures());
-    }
-
-    /**
-     * Checks that the project state, as represented by the configurations and nedSouerceFoldersConfig arguments,
-     * corresponds to enablement state of the project features, that is. It checks that NED folders and C++ source folders
-     * covered by the features are correctly enabled/disabled, symbols are defined, etc. Errors are returned
-     * in a string list.
-     */
-    protected List<Problem> validateProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
-        //dumpMacros(project, configurations, "WITH_.*");
-
-        List<Problem> problems = new ArrayList<Problem>();
-        List<String> excludedPackages = Arrays.asList(nedSourceFoldersConfig.getExcludedPackages());
-
-        for (ProjectFeature feature : getFeatures()) {
-            boolean enabled = enabledFeatures.contains(feature);
-
-            // check NED excluded folders
-            if (enabled) {
-                // feature is enabled: make sure its NED packages are NOT excluded
-                //FIXME check for prefixes not equality!!! i.e. if feature contains "inet.netw.ipv6", then neither "inet.netw" nor "inet.netw.ipv6.util" should be excluded!
-                @SuppressWarnings("unchecked")
-                Collection<String> wronglyExcludedPackages = CollectionUtils.intersection(excludedPackages, feature.getNedPackages());
-                if (!wronglyExcludedPackages.isEmpty())
-                    addProblem(problems, feature, "Feature is enabled but some of its NED packages are excluded: " + StringUtils.join(wronglyExcludedPackages, ", "));
-            }
-            else {
-                @SuppressWarnings("unchecked")
-                Collection<String> wronglyIncludedPackages = CollectionUtils.subtract(feature.getNedPackages(), excludedPackages);
-                if (!wronglyIncludedPackages.isEmpty())
-                    addProblem(problems, feature, "Feature is disabled but some of its NED packages are not excluded: " + StringUtils.join(wronglyIncludedPackages, ", "));
-            }
-
-
-            // check exclusion state of C++ source folders that correspond to the feature's NED packages
-            List<IContainer> folders = getAllCxxSourceFolders(feature);
-            for (IContainer folder : folders) {
-                Boolean isFolderExcluded = isFolderExcluded(configurations, folder); // null if mixed
-                if (enabled) {
-                    if (isFolderExcluded==null || isFolderExcluded)
-                        addProblem(problems, feature, "Feature is enabled but folder " + folder.getFullPath() + " is excluded from C++ build in at least one configuration");
-                }
-                else {
-                    if (isFolderExcluded==null || !isFolderExcluded)
-                        addProblem(problems, feature, "Feature is disabled but folder " + folder.getFullPath() + " is not excluded from C++ build in at least one configuration");
-                }
+            ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
+            ICSourceEntry[] newEntries = CDTUtils.replaceExclusions(sourceEntries, excludedFolders);
+            if (!Arrays.equals(sourceEntries, newEntries)) {
+                configuration.setSourceEntries(newEntries);
+                changed = true;
             }
         }
-
-        // warn if the Paths&Symbols page has some of the defines mentioned in the oppfeatures file
-        outerloop:
-        for (ProjectFeature feature : getFeatures()) {
-            for (String cflag : feature.getCompileFlags().split("\\s+")) {
-                if (cflag.startsWith("-D") && cflag.length() > 2) {
-                    String symbol = cflag.substring(2).replaceAll("=.*", "");
-                    if (isMacroSet(project, configurations, symbol)) {
-                        addProblem(problems, null, "Feature macro " + symbol + " and possibly others are set on the Paths & Symbols page.");
-                        break outerloop;
-                    }
-                }
-            }
-        }
-
-        // check that the defines file has the right content
-        if (definesFile != null) {
-            Map<String, String> defines = collectDefines(enabledFeatures);
-            String content = makeDefinesFileContent(defines);
-
-            try {
-                if (!definesFile.exists())
-                    addProblem(problems, null, "Missing defines file " + definesFile.getFullPath());
-                else if (!areDefinesFilesEqual(FileUtils.readTextFile(definesFile.getContents(), definesFile.getCharset()), content))
-                    addProblem(problems, null, "Generated defines file is out of date: " + definesFile.getFullPath());
-            }
-            catch (IOException e) {
-                throw Activator.wrapIntoCoreException(e);
-            }
-        }
-
-        return problems;
-    }
-
-    protected boolean areDefinesFilesEqual(String content1, String content2) {
-        // make comparison insensitive to comment, whitespace and order differences
-        String short1 = shortenDefinesFile(content1);
-        String short2 = shortenDefinesFile(content2);
-        return short1.equals(short2);
-    }
-
-    protected String shortenDefinesFile(String content) {
-        content += "\n";
-        content = content.replaceAll("\r\n", "\n");  // unix lines
-        content = content.replaceAll("//.*\n", "");  // remove comments
-        content = content.replaceAll("\n\n+", "\n"); // remove blank lines
-        content = content.replaceAll("[ \t]", " ");  // remove multiple spaces
-        content = content.replaceAll(" *# *", "#");  // remove spaces from preprocessor directives
-        content = content.replaceAll("#ifndef .*\n#define (.*)\n#endif\n+", "#define_if_new $1\n");
-        String[] lines = content.split("\n");
-        Arrays.sort(lines);
-        content = StringUtils.join(lines, "\n");
-        return content;
-    }
-
-    protected void addProblem(List<Problem> problems, ProjectFeature feature, String message) {
-        Problem problem = new Problem();
-        problem.feature = feature;
-        problem.message = message;
-        problems.add(problem);
+        return changed;
     }
 
     @Override
