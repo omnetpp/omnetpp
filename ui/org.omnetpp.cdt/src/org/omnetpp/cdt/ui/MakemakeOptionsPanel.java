@@ -59,9 +59,7 @@ import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.cdt.build.MakemakeOptions;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.cdt.build.MetaMakemake;
-import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.HtmlHoverInfo;
-import org.omnetpp.common.ui.IHoverInfoProvider;
+import org.omnetpp.common.ui.HelpLink;
 import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -97,7 +95,6 @@ public class MakemakeOptionsPanel extends Composite {
     private Composite linkPage;
     private Composite customPage;
     private Composite previewPage;
-    private HoverSupport hoverSupport;
 
     // "Scope" page
     private Button deepCheckbox;
@@ -175,9 +172,6 @@ public class MakemakeOptionsPanel extends Composite {
         previewPage = createTabPage(tabfolder, "Preview");
         tabfolder.setSelection(0);
 
-        hoverSupport = new HoverSupport();
-        hoverSupport.setHoverSizeConstaints(500, 400); // DLL help text is long & wide
-
         // "Target" page
         targetPage.setLayout(new GridLayout(1,false));
         Group group = createGroup(targetPage, "Target type", 1);
@@ -227,7 +221,7 @@ public class MakemakeOptionsPanel extends Composite {
         ccextCombo.add(".cpp");
 
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
-        final Link dllHelpLink = createLink(dllGroup, "Hover or <A>click here</A> for more info on creating DLLs.");
+        HelpLink dllHelpLink = createHelpLink(dllGroup, "Hover or <A>click here</A> for more info on creating DLLs.", getHelpTextForBuildingDLLs());
         setColumnSpan(dllHelpLink, 2);
         forceCompileForDllCheckbox = createCheckbox(dllGroup, "Force compiling object files for use in DLLs", "Forces defining the FOO_EXPORT macro (where FOO is the DLL export/import symbol) even if the target is not a DLL");
         forceCompileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
@@ -274,17 +268,6 @@ public class MakemakeOptionsPanel extends Composite {
 
         Dialog.applyDialogFont(composite);
 
-        hoverSupport.adapt(dllHelpLink, new IHoverInfoProvider() {
-            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-                return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(getHelpTextForBuildingDLLs()));
-            }
-        });
-        dllHelpLink.addSelectionListener(new SelectionAdapter() {
-            public void widgetSelected(SelectionEvent e) {
-                hoverSupport.makeHoverSticky(dllHelpLink);
-            }
-        });
-
         SelectionListener gotoListener = new SelectionListener(){
             public void widgetSelected(SelectionEvent e) {
                 gotoPathsAndSymbolsPage();
@@ -314,10 +297,18 @@ public class MakemakeOptionsPanel extends Composite {
         label.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         return label;
     }
-    
+
     protected Link createLink(Composite composite, String text) {
         Link link = new Link(composite, SWT.NONE);
         link.setText(text);
+        link.setLayoutData(new GridData());
+        return link;
+    }
+
+    protected HelpLink createHelpLink(Composite composite, String text, String hoverText) {
+        HelpLink link = new HelpLink(composite, SWT.NONE);
+        link.setText(text);
+        link.setHoverText(hoverText);
         link.setLayoutData(new GridData());
         return link;
     }
@@ -393,6 +384,7 @@ public class MakemakeOptionsPanel extends Composite {
     protected void hookChangeListeners() {
         // maintain consistency between dialog controls and the "Preview" page
         tabfolder.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 activeTabChanged();
             }

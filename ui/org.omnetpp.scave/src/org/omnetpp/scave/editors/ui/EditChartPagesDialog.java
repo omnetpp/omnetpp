@@ -184,7 +184,7 @@ public class EditChartPagesDialog extends TitleAreaDialog {
                 + "</pre>";
 
         Composite contentPane = createCompactComposite(contentSash, 1, false, 0);
-        SWTFactory.createInfoLink(contentPane, "XSWT source (<a>help</a>):", XSWT_HELP, 1);
+        SWTFactory.createHelpLink(contentPane, "XSWT source (<a>help</a>):", XSWT_HELP, 1);
 
         styledTextHolder = new Composite(contentPane, SWT.NONE);
         styledTextHolder.setLayoutData(new GridData(GridData.FILL_BOTH));

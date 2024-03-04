@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.omnetpp.common.util.CollectionUtils;
-import org.omnetpp.common.wizard.support.InfoLink;
 
 /**
  * Factory class to create some SWT resources.
@@ -367,8 +366,8 @@ public class SWTFactory {
         return l;
     }
 
-    public static InfoLink createInfoLink(Composite parent, String text, String hoverText, int hspan) {
-        InfoLink l = new InfoLink(parent, SWT.NONE);
+    public static HelpLink createHelpLink(Composite parent, String text, String hoverText, int hspan) {
+        HelpLink l = new HelpLink(parent, SWT.NONE);
         l.setFont(parent.getFont());
         l.setText(text);
         l.setHoverText(hoverText);
@@ -378,7 +377,6 @@ public class SWTFactory {
         l.setLayoutData(gd);
         return l;
     }
-
 
     /**
      * Creates a new text widget
