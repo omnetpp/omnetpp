@@ -44,6 +44,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.EditableList;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 
 /**
@@ -113,6 +114,11 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
         excludedPackagesList.setEditDialogMessage("Package name to exclude:");
         excludedPackagesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)excludedPackagesList.getLayoutData()).heightHint = convertHeightInCharsToPixels(8);
+
+        if (project.getFile(".oppfeatures").isAccessible()) {
+            excludedPackagesList.setEnabled(false);
+            SWTFactory.createLabel(lowerPart, "Note: Exclusions are uneditable because they are governed by Project Features", 1);
+        }
 
         // configure package tree
         folderTree.setLabelProvider(new WorkbenchLabelProvider());
