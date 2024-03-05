@@ -105,7 +105,7 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
         excludedPackagesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)excludedPackagesList.getLayoutData()).heightHint = convertHeightInCharsToPixels(8);
 
-        if (project.getFile(".oppfeatures").isAccessible()) {
+        if (project.getFile(ProjectUtils.PROJECTFEATURES_FILENAME).isAccessible()) {
             excludedPackagesList.setEnabled(false);
             SWTFactory.createLabel(lowerPart, "Note: Exclusions are uneditable because they are governed by Project Features", 1);
         }

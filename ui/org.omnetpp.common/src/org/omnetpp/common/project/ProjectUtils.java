@@ -48,6 +48,8 @@ import org.omnetpp.common.util.StringUtils;
 public class ProjectUtils {
     public static final String NEDFOLDERS_FILENAME = ".nedfolders";
     public static final String NEDEXCLUSIONS_FILENAME = ".nedexclusions";
+    public static final String PROJECTFEATURES_FILENAME = ".oppfeatures";
+    public static final String PROJECTFEATURESTATE_FILENAME = ".oppfeaturestate";
 
     /**
      * Checks whether the provided project is open, has the OMNeT++ nature,

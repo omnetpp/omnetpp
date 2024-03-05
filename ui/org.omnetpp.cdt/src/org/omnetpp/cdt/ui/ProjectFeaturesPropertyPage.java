@@ -109,7 +109,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         String text =
             "This page allows you to disable parts of the selected OMNeT++ project, " +
             "e.g. to shorten build times. Feature definitions come from the project's " +
-            "\"" + ProjectFeaturesManager.PROJECTFEATURES_FILENAME + "\" file. " +
+            "\"" + ProjectUtils.PROJECTFEATURES_FILENAME + "\" file. " +
             "Disabled features are excluded from NED and from C++ build, " +
             "see the \"OMNeT++ / NED Source Folders\" and \"C/C++ General / Paths and Symbols\" property pages.";
         final Label bannerTextLabel = SWTFactory.createWrapLabel(composite, text, 1);

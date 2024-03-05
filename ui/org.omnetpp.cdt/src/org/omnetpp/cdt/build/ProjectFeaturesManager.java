@@ -67,9 +67,6 @@ import org.w3c.dom.NodeList;
  * @author Andras
  */
 public class ProjectFeaturesManager {
-    public static final String PROJECTFEATURES_FILENAME = ".oppfeatures";
-    public static final String PROJECTFEATURESTATE_FILENAME = ".oppfeaturestate";
-
     // XML element and attribute names for ".oppfeatures" and ".oppfeaturestates"
     private static final String ELMNT_FEATURES = "featurestates"; //TODO rename to "features"
     private static final String ELMNT_FEATURE = "feature";
@@ -292,14 +289,14 @@ public class ProjectFeaturesManager {
      * Returns the handle for the features description file of the given project.
      */
     public IFile getFeatureDescriptionFile() {
-        return project.getFile(PROJECTFEATURES_FILENAME);
+        return project.getFile(ProjectUtils.PROJECTFEATURES_FILENAME);
     }
 
     /**
      * Returns the handle for the feature state file of the given project.
      */
     public IFile getFeatureStatesFile() {
-        return project.getFile(PROJECTFEATURESTATE_FILENAME);
+        return project.getFile(ProjectUtils.PROJECTFEATURESTATE_FILENAME);
     }
 
     /**

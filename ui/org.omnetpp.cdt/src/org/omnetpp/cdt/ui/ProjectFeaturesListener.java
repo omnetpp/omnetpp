@@ -81,8 +81,8 @@ public class ProjectFeaturesListener implements IResourceChangeListener, ICProje
     }
 
     public static final List<String> WATCHED_CONFIG_FILES = Arrays.asList(
-            ProjectFeaturesManager.PROJECTFEATURES_FILENAME,
-            ProjectFeaturesManager.PROJECTFEATURESTATE_FILENAME,
+            ProjectUtils.PROJECTFEATURES_FILENAME,
+            ProjectUtils.PROJECTFEATURESTATE_FILENAME,
             ProjectUtils.NEDFOLDERS_FILENAME
             //ProjectUtils.NEDEXCLUSIONS_FILENAME -- do not watch!
     );
@@ -95,7 +95,7 @@ public class ProjectFeaturesListener implements IResourceChangeListener, ICProje
                     IResource resource = delta.getResource();
                     int kind = delta.getKind();
                     if ((kind == IResourceDelta.ADDED || kind == IResourceDelta.CHANGED) && isDotFileInOmnetppProject(resource)) {
-                        if (delta.getKind() == IResourceDelta.ADDED && resource.getName().equals(ProjectFeaturesManager.PROJECTFEATURES_FILENAME))
+                        if (delta.getKind() == IResourceDelta.ADDED && resource.getName().equals(ProjectUtils.PROJECTFEATURES_FILENAME))
                             omnetppProjectWithFeaturesCreated(resource.getProject());
                         else if (delta.getKind() == IResourceDelta.CHANGED && WATCHED_CONFIG_FILES.contains(resource.getName()))
                             adjustProjectConfiguration(resource.getProject());
