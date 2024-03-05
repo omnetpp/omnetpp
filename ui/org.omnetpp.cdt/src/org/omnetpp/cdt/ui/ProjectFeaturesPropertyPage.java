@@ -96,6 +96,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     /**
      * Creates page contents
      */
+    @Override
     protected Control createContents(Composite parent) {
         final Composite composite = new Composite(parent, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -106,9 +107,11 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
         // info text
         String text =
-            "This page allows you to disable parts (\"features\") of the selected OMNeT++ project, " +
-            "for example to shorten build time. Feature definitions come from the project's " +
-            "\"" + ProjectFeaturesManager.PROJECTFEATURES_FILENAME + "\" file.";
+            "This page allows you to disable parts of the selected OMNeT++ project, " +
+            "e.g. to shorten build times. Feature definitions come from the project's " +
+            "\"" + ProjectFeaturesManager.PROJECTFEATURES_FILENAME + "\" file. " +
+            "Disabled features are excluded from NED and from C++ build, " +
+            "see the \"OMNeT++ / NED Source Folders\" and \"C/C++ General / Paths and Symbols\" property pages.";
         final Label bannerTextLabel = SWTFactory.createWrapLabel(composite, text, 1);
         bannerTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         ((GridData)bannerTextLabel.getLayoutData()).widthHint = 300;
