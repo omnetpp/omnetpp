@@ -29,7 +29,6 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -58,11 +57,13 @@ import org.omnetpp.cdt.build.ProjectFeaturesManager;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.ui.ArrayTreeContentProvider;
 import org.omnetpp.common.ui.FilteredCheckboxTree;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.ProblemsMessageDialog;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
@@ -108,7 +109,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             "This page allows you to disable parts (\"features\") of the selected OMNeT++ project, " +
             "for example to shorten build time. Feature definitions come from the project's " +
             "\"" + ProjectFeaturesManager.PROJECTFEATURES_FILENAME + "\" file.";
-        final Label bannerTextLabel = createLabel(composite, text);
+        final Label bannerTextLabel = SWTFactory.createWrapLabel(composite, text, 1);
         bannerTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         ((GridData)bannerTextLabel.getLayoutData()).widthHint = 300;
 
@@ -141,10 +142,10 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         Composite buttonsArea = new Composite(composite, SWT.NONE);
         buttonsArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
         buttonsArea.setLayout(new GridLayout(1,false));
-        Button selectAllButton = createButton(buttonsArea, SWT.PUSH, "&Select All", null);
-        Button deselectAllButton = createButton(buttonsArea, SWT.PUSH, "&Deselect All", null);
+        Button selectAllButton = SWTFactory.createPushButton(buttonsArea, "&Select All", null);
+        Button deselectAllButton = SWTFactory.createPushButton(buttonsArea, "&Deselect All", null);
 
-        Label noteLabel = createLabel(composite, "");
+        Label noteLabel = SWTFactory.createLabel(composite, "", 2);
 
         // register this page in the CDT property manager (note: if we skip this,
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
@@ -178,33 +179,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         });
 
         // configure the table
-        treeViewer.setContentProvider(new ITreeContentProvider() {
-            public void dispose() {
-            }
-
-            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-            }
-
-            public Object[] getElements(Object inputElement) {
-                return getChildren(inputElement);
-            }
-
-            public Object[] getChildren(Object parentElement) {
-                if (parentElement instanceof ProjectFeaturesManager)
-                    return ((ProjectFeaturesManager) parentElement).getFeatures().toArray();
-                else
-                    return new Object[0];
-            }
-
-            public Object getParent(Object element) {
-                return null; // apparently not needed in our case
-            }
-
-            public boolean hasChildren(Object element) {
-                return (element instanceof ProjectFeaturesManager);
-            }
-
-        });
+        treeViewer.setContentProvider(new ArrayTreeContentProvider());
         treeViewer.setLabelProvider(new LabelProvider() {
             public String getText(Object element) {
                 return ((ProjectFeature)element).getName();
@@ -255,7 +230,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             errorDialog("Error reading feature description file", e);
         }
 
-        treeViewer.setInput(features);
+        treeViewer.setInput(features.getFeatures().toArray());
+
         if (features.getDefinesFile() != null)
             noteLabel.setText("Generated header file: "+ features.getDefinesFile().getFullPath().toOSString());
 
@@ -293,13 +269,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         return group;
     }
 
-    protected Label createLabel(Composite composite, String text) {
-        Label label = new Label(composite, SWT.WRAP);
-        label.setText(text);
-        label.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, true, false));
-        return label;
-    }
-
     protected Text createReadonlyText(Composite composite, String text) {
         return createReadonlyText(composite, text, 1);
     }
@@ -310,22 +279,6 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         textWidget.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, numLines>1));
         ((GridData)textWidget.getLayoutData()).heightHint = textWidget.getLineHeight()*numLines;
         return textWidget;
-    }
-
-    protected Button createButton(Composite parent, int style, String text, String tooltip) {
-        Button button = new Button(parent, style);
-        button.setText(text);
-        if (tooltip != null)
-            button.setToolTipText(tooltip);
-        button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        return button;
-    }
-
-    protected Link createLink(Composite composite, String text) {
-        Link link = new Link(composite, SWT.NONE);
-        link.setText(text);
-        link.setLayoutData(new GridData());
-        return link;
     }
 
     @Override
