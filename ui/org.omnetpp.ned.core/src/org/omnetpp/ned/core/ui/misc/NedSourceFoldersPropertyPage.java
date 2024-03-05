@@ -76,16 +76,6 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
 
         final IProject project = getProject();
 
-        createWrapLabel(composite,
-                "NED Source Folders are root folders for the NED package hierarchy. " +
-                "A NED file with the package declaration 'org.foo.bar' must be in the " +
-                "'org/foo/bar' subdirectory, unless the NED Source Folder directly " +
-                "contains a 'package.ned' file with a package declaration. In the latter " +
-                "case, 'package.ned' defines what package the NED Source Folder root " +
-                "corresponds to. Other NED files in that folder and subfolders must be " +
-                "consistent with that declaration (i.e. only the root 'package.ned' has " +
-                "special meaning.)",
-                2, 300);
 
         Composite upperPart = new Composite(composite, SWT.NONE);
         upperPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -93,7 +83,7 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
 
         // Source folders tree
         Label label = new Label(upperPart, SWT.NONE);
-        label.setText("&NED Source Folders for project '" + project.getName() + "':");
+        label.setText("&Select the roots of NED folder hierarchies:");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         folderTree = new CheckboxTreeViewer(upperPart, SWT.BORDER);
