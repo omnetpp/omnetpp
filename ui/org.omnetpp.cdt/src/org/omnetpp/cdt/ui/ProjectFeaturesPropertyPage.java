@@ -256,6 +256,9 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             nedSourceFoldersConfig = new NedSourceFoldersConfiguration(new IContainer[0], new String[0]);
         }
 
+        if (features.isEmpty())
+            noteLabel.setText("* Project '" + features.getProject().getName() + "' has no Project Features defined ('.oppfeatures' file missing)");
+
         updateDiagnosticMessage();
 
         return composite;
