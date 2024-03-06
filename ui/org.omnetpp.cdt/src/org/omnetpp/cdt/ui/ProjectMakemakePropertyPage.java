@@ -147,8 +147,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         ((GridLayout)composite.getLayout()).marginHeight = 0;
 
         String text =
-            "On this page you can configure source folders and makefile generation; " +
-            "these two are independent of each other. All changes apply to all configurations.";
+            "On this page you can configure C++ source folders and OMNeT++ Makefile generation (opp_makemake commands).";
         // Note: do NOT add reference/link to the "Path and Symbols" page! It confuses users.
         final Label bannerTextLabel = createLabel(composite, text, 2);
         bannerTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
@@ -169,17 +168,17 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         buttons.setLayout(new GridLayout(1,false));
 
         Composite buildGroup = createGroup(buttons, "Build", 1);
-        makemakeButton = createButton(buildGroup, SWT.RADIO, "&Makemake", "Automatic makefile generation enabled for the selected folder");
+        makemakeButton = createButton(buildGroup, SWT.RADIO, "&Makemake", "A Makefile is generated (opp_makemake) in the selected folder");
         optionsButton = createButton(buildGroup, SWT.PUSH, "&Options...", "Edit makefile generation options");
         ((GridData)(optionsButton.getLayoutData())).horizontalIndent = 20;
-        customMakeButton = createButton(buildGroup, SWT.RADIO, "&Custom Makefile", "Selected folder contains a custom makefile");
-        noMakeButton = createButton(buildGroup, SWT.RADIO, "&No Makefile", "Selected folder contains no makefile");
+        customMakeButton = createButton(buildGroup, SWT.RADIO, "&Custom Makefile", "Selected folder contains a custom Makefile");
+        noMakeButton = createButton(buildGroup, SWT.RADIO, "&No Makefile", "Selected folder contains no Makefile");
         createLabel(buttons, "", 1);
 
-        Composite sourceGroup = createGroup(buttons, "Source", 1);
-        sourceLocationButton = createButton(sourceGroup, SWT.RADIO, "&Source Location", "Selected folder is a source location");
-        excludeButton = createButton(sourceGroup, SWT.RADIO, "&Excluded", "Selected folder is excluded from sources");
-        includeButton = createButton(sourceGroup, SWT.RADIO, "&Included", "Selected folder is included in sources");
+        Composite sourceGroup = createGroup(buttons, "C++ Source", 1);
+        sourceLocationButton = createButton(sourceGroup, SWT.RADIO, "&Source Folder", "Selected folder is root of a source folder tree");
+        excludeButton = createButton(sourceGroup, SWT.RADIO, "&Excluded", "Selected folder is excluded from build");
+        includeButton = createButton(sourceGroup, SWT.RADIO, "&Included", "Selected folder is included in build");
         createLabel(buttons, "", 1);
 
         exportButton = createButton(buttons, SWT.PUSH, "E&xport", "Export settings to \"makemakefiles\" file");
