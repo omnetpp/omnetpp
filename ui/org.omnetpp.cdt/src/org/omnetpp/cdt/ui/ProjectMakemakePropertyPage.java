@@ -474,10 +474,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     }
 
     protected void excludeFolder(IContainer folder) {
+        removeSourceLocation(folder);
         setExcluded(folder, true);
     }
 
     protected void includeFolder(IContainer folder) {
+        removeSourceLocation(folder);
         setExcluded(folder, false);
     }
 
@@ -645,17 +647,17 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
             ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
             boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
-            boolean isParentExcluded = (folder instanceof IProject) || CDTUtils.isExcluded(folder.getParent(), sourceEntries);
             boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
             boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
+            boolean isNestedSourceLocation = isSourceLocation && !(folder instanceof IProject) && CDTUtils.getSourceEntryThatCovers(folder.getParent(), sourceEntries) != null;
 
             sourceLocationButton.setSelection(isSourceLocation);
             excludeButton.setSelection(isExcluded);
             includeButton.setSelection(!isSourceLocation && !isExcluded);
 
             sourceLocationButton.setEnabled(!isSourceLocation || sourceLocationButton.getSelection());
-            excludeButton.setEnabled((!isExcluded && !(folder instanceof IProject && sourceEntries.length==1)) || excludeButton.getSelection());
-            includeButton.setEnabled((isUnderSourceLocation && isExcluded && !isParentExcluded) || includeButton.getSelection());
+            excludeButton.setEnabled(isNestedSourceLocation || (isUnderSourceLocation && !isExcluded) || excludeButton.getSelection());
+            includeButton.setEnabled(isNestedSourceLocation || (isUnderSourceLocation && isExcluded) || includeButton.getSelection());
             exportButton.setEnabled(true);
         }
     }
