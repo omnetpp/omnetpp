@@ -104,6 +104,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected static final String OVR_BUILDROOT_IMG = "icons/full/ovr16/buildroot.png";
 
     // state
+    protected boolean hasProjectFeatures;
     protected BuildSpecification buildSpec;
 
     protected static boolean suppressExcludeProjectRootQuestion = false; // per-session variable
@@ -331,6 +332,8 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 composite.layout(true);
             }
         });
+
+        hasProjectFeatures = getProject().getFile(ProjectUtils.PROJECTFEATURES_FILENAME).isAccessible();
 
         loadBuildSpecFile();
 
@@ -656,8 +659,16 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             includeButton.setSelection(!isSourceLocation && !isExcluded);
 
             sourceLocationButton.setEnabled(!isSourceLocation || sourceLocationButton.getSelection());
-            excludeButton.setEnabled(isNestedSourceLocation || (isUnderSourceLocation && !isExcluded) || excludeButton.getSelection());
-            includeButton.setEnabled(isNestedSourceLocation || (isUnderSourceLocation && isExcluded) || includeButton.getSelection());
+            if (hasProjectFeatures && isUnderSourceLocation) {
+                // basically disable exclude/include because exclusion is governed by Project Features;
+                // however, we need make it possible to switch back from sourceLocationButton (in case the user accidentally clicked it)
+                excludeButton.setEnabled(sourceLocationButton.getSelection() && isExcluded);
+                includeButton.setEnabled(sourceLocationButton.getSelection() && !isExcluded);
+            }
+            else {
+                excludeButton.setEnabled(isNestedSourceLocation || (isUnderSourceLocation && !isExcluded) || excludeButton.getSelection());
+                includeButton.setEnabled(isNestedSourceLocation || (isUnderSourceLocation && isExcluded) || includeButton.getSelection());
+            }
             exportButton.setEnabled(true);
         }
     }
