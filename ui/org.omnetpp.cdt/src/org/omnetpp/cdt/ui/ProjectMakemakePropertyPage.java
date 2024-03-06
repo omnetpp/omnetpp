@@ -183,6 +183,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         exportButton = createButton(buttons, SWT.PUSH, "E&xport", "Export settings to \"makemakefiles\" file");
 
+        hasProjectFeatures = getProject().getFile(ProjectUtils.PROJECTFEATURES_FILENAME).isAccessible();
+
+        createLabel(composite, hasProjectFeatures ?
+                "Note: C++ folder exclusions are uneditable because they are governed by Project Features." :
+                "Note: Review source folder settings in the \"C/C++ General / Paths and Symbols\" property page", 2);
+
 //        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
 //            public void widgetSelected(SelectionEvent e) {
 //                gotoPathsAndSymbolsPage();
@@ -322,6 +328,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
         // make the error text label wrap properly; see https://bugs.eclipse.org/bugs/show_bug.cgi?id=9866
         composite.addControlListener(new ControlAdapter(){
+            @Override
             public void controlResized(ControlEvent e){
                 GridLayout layout = (GridLayout)composite.getLayout();
                 GridData data = (GridData)errorMessageLabel.getLayoutData();
@@ -331,8 +338,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 composite.layout(true);
             }
         });
-
-        hasProjectFeatures = getProject().getFile(ProjectUtils.PROJECTFEATURES_FILENAME).isAccessible();
 
         loadBuildSpecFile();
 
