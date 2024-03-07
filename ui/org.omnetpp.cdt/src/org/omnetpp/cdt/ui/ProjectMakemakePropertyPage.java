@@ -553,8 +553,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             IFile makemakefile = project.getFile(MAKEMAKEFILE_NAME);
             boolean existed = makemakefile.exists();
             if (!makemakefile.exists() || MessageDialog.openConfirm(getShell(), "Export", "Overwrite existing " + makemakefile.getFullPath().toString() + "?")) {
-                byte[] bytes = text.getBytes();
-                MakefileTools.ensureFileContent(makemakefile, bytes, null);
+                MakefileTools.ensureFileContent(makemakefile, text, null);
                 makemakefile.refreshLocal(0, null);
                 if (!existed)
                     MessageDialog.openInformation(getShell(), "Export", makemakefile.getFullPath().toString() + " created.");

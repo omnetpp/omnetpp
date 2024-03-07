@@ -367,8 +367,7 @@ public class Makemake {
 
         // only overwrite file if it does not already exist with the same content,
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
-        byte[] bytes = content.getBytes();
-        MakefileTools.ensureFileContent(makefile, bytes, null);
+        MakefileTools.ensureFileContent(makefile, content, null);
     }
 
     protected String getOutDir(IContainer folder, String outRoot) {

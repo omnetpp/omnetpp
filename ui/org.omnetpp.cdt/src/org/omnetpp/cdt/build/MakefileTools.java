@@ -7,9 +7,7 @@
 
 package org.omnetpp.cdt.build;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -131,14 +129,10 @@ public class MakefileTools {
         return new Path(StringUtils.removeEnd(StringUtils.repeat("../", upLevels), "/")).append(inputPath.removeFirstSegments(commonPrefixLen));
     }
 
-    public static void ensureFileContent(IFile file, byte[] bytes, IProgressMonitor monitor) throws CoreException {
-        // only overwrites file if its content is not already what's desired
+    public static void ensureFileContent(IFile file, String content, IProgressMonitor monitor) throws CoreException {
         try {
+            FileUtils.ensureTextFile(file.getLocation().toFile(), content, null);
             file.refreshLocal(IResource.DEPTH_ZERO, monitor);
-            if (!file.exists())
-                file.create(new ByteArrayInputStream(bytes), true, monitor);
-            else if (!Arrays.equals(FileUtils.readBinaryFile(file.getContents()), bytes)) // NOTE: byte[].equals does NOT compare content, only references!!!
-                file.setContents(new ByteArrayInputStream(bytes), true, false, monitor);
         }
         catch (IOException e) {
             throw Activator.wrapIntoCoreException(e);

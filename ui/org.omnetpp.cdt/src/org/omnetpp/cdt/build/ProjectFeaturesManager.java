@@ -234,8 +234,7 @@ public class ProjectFeaturesManager {
             String content = makeDefinesFileContent(defines);
 
             // save the file if its content differs
-            byte[] bytes = content.getBytes();
-            MakefileTools.ensureFileContent(definesFile, bytes, null);
+            MakefileTools.ensureFileContent(definesFile, content, null);
         }
     }
 

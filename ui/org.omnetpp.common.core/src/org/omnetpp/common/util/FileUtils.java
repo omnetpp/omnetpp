@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 
@@ -147,6 +148,23 @@ public class FileUtils {
     public static void writeTextFile(File target, String content, String charset) throws IOException {
         byte[] bytes = charset==null ? content.getBytes() : content.getBytes(charset);
         writeBinaryFile(target, bytes);
+    }
+
+    public static void ensureTextFile(String fileName, String content, String charset) throws IOException {
+        ensureTextFile(new File(fileName), content, charset);
+    }
+
+    public static void ensureTextFile(File target, String content, String charset) throws IOException {
+        byte[] bytes = charset==null ? content.getBytes() : content.getBytes(charset);
+        if (!target.isFile())
+            writeBinaryFile(target, bytes);
+        else if (!Arrays.equals(readBinaryFile(target), bytes)) {
+            // Write content into a temporary file then rename that, so that observers of the file never see a truncated or partially written file
+            File targetNew = new File(target.getPath() + "." + System.currentTimeMillis());
+            writeBinaryFile(targetNew, bytes);
+            target.delete();
+            targetNew.renameTo(target);
+        }
     }
 
     public static String humanReadableByteCountBin(long bytes) {
