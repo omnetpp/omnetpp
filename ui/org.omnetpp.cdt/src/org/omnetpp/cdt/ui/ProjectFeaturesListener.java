@@ -138,24 +138,21 @@ public class ProjectFeaturesListener implements IResourceChangeListener, ICProje
     }
 
     protected void adjustProjectConfiguration(IProject project) {
-        try {
-            final ProjectFeaturesManager features = new ProjectFeaturesManager(project);
-            if (features.loadFeaturesFile())
-                adjustProjectState(features);
-        }
-        catch (CoreException e) {
-            Activator.logError("Error adjusting project state according to Project Features", e);
-        }
+        if (project.getFile(ProjectUtils.PROJECTFEATURES_FILENAME).exists())
+            adjustProjectState(project);
     }
 
-    protected void adjustProjectState(final ProjectFeaturesManager features) {
+    protected void adjustProjectState(final IProject project) {
         // Note: must use workspace job, because the workspace is locked during resource change notification
         Job job = new Job("Configuring project according to Project Features") {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    if (features.getProject().isAccessible())
+                    ProjectFeaturesManager features = new ProjectFeaturesManager(project);
+                    if (features.loadFeaturesFile()) {
+                        Debug.println("Configuring project according to Project Features for new project " + project.getName());
                         features.adjustProjectState();
+                    }
                 } catch (CoreException e) {
                     Activator.logError("Error adjusting project state according to Project Features", e);
                 }
