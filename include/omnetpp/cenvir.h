@@ -696,17 +696,12 @@ class SIM_API cEnvir
      * calls. The handle may have any value (it does not have to be a valid
      * pointer), but it should NOT be nullptr.
      */
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname) = 0;
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr) = 0;
 
     /**
      * cOutVector objects must deregister themselves when they are no longer needed.
      */
     virtual void deregisterOutputVector(void *vechandle) = 0;
-
-    /**
-     * This method is called when an attribute of the output vector is set.
-     */
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) = 0;
 
     /**
      * This method is intended to be called by cOutVector objects to write

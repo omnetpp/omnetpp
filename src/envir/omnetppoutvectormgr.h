@@ -92,17 +92,12 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname) override;
+    virtual void *registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr) override;
 
     /**
      * Deregisters the output vector.
      */
     virtual void deregisterVector(void *vechandle) override;
-
-    /**
-     * Sets an attribute of an output vector.
-     */
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override;
 
     /**
      * Writes the (time, value) pair into the output file.

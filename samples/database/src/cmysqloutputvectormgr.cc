@@ -187,7 +187,7 @@ void cMySQLOutputVectorManager::insertRunIntoDB()
     }
 }
 
-void *cMySQLOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
+void *cMySQLOutputVectorManager::registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes)
 {
     // only create the data structure here -- we'll insert the entry into the
     // DB lazily, when first data gets written
@@ -196,6 +196,8 @@ void *cMySQLOutputVectorManager::registerVector(const char *modulename, const ch
     vp->initialised = false;
     vp->modulename = modulename;
     vp->vectorname = vectorname;
+    if (attributes)
+        vp->attributes = *attributes;
 
     cFileOutputVectorManager::getOutVectorConfig(modulename, vectorname,
             vp->enabled, vp->recordEventNumbers, vp->intervals);  // FIXME...
@@ -211,13 +213,6 @@ void cMySQLOutputVectorManager::deregisterVector(void *vectorhandle)
 {
     sVectorData *vp = (sVectorData *)vectorhandle;
     delete vp;
-}
-
-void cMySQLOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
-{
-    ASSERT(vectorhandle != nullptr);
-    sVectorData *vp = (sVectorData *)vectorhandle;
-    vp->attributes[name] = value;
 }
 
 bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)

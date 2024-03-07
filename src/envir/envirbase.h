@@ -261,9 +261,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual cRNG *getRNG(int k) override;
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname) override;
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr) override;
     virtual void deregisterOutputVector(void *vechandle) override;
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override;
     virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) override;
 
     // output scalars

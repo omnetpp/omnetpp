@@ -803,9 +803,8 @@ class StaticEnv : public cEnvir
     virtual cRNG *getRNG(int k) override  { unsupported(); return nullptr; }
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  { return nullptr; }
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr) override  { return nullptr; }
     virtual void deregisterOutputVector(void *vechandle) override  {}
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override  {}
     virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) override  { return false; }
 
     // output scalars

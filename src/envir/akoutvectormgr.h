@@ -72,7 +72,7 @@ class ENVIR_API AkOutputVectorManager : public OmnetppOutputVectorManager
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname);
+    virtual void *registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr);
 
     /**
      * Passes a (time, value) pair to Akaroa and also writes it into the output file.

@@ -131,9 +131,8 @@ class SIM_API cNullEnvir : public cEnvir
     virtual cRNG *getRNG(int k) override  {return rng;}
 
     // output vectors
-    virtual void *registerOutputVector(const char *modulename, const char *vectorname) override  {return (void *)1;}
+    virtual void *registerOutputVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr) override  {return (void *)1;}
     virtual void deregisterOutputVector(void *vechandle) override  {}
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) override  {}
     virtual bool recordInOutputVector(void *vechandle, simtime_t t, double value) override  {return false;}
 
     // output scalars

@@ -101,7 +101,7 @@ void OmnetppOutputVectorManager::closeFile()
     writer.close();
 }
 
-void *OmnetppOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
+void *OmnetppOutputVectorManager::registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes)
 {
     Assert(state == NEW || state == STARTED || state == OPENED); // note: NEW needs to be allowed for now
 
@@ -109,6 +109,8 @@ void *OmnetppOutputVectorManager::registerVector(const char *modulename, const c
     vp->handleInWriter = nullptr;
     vp->moduleName = modulename;
     vp->vectorName = vectorname;
+    if (attributes)
+        vp->attributes = *attributes;
 
     std::string vectorfullpath = std::string(modulename) + "." + vectorname;
     vp->enabled = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
@@ -132,14 +134,6 @@ void OmnetppOutputVectorManager::deregisterVector(void *vectorhandle)
     Vectors::iterator newEnd = std::remove(vectors.begin(), vectors.end(), vp);
     vectors.erase(newEnd, vectors.end());
     delete vp;
-}
-
-void OmnetppOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
-{
-    ASSERT(vectorhandle != nullptr);
-    VectorData *vp = (VectorData *)vectorhandle;
-    ASSERT(vp->handleInWriter == nullptr); // otherwise it's too late
-    vp->attributes[name] = value;
 }
 
 bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)

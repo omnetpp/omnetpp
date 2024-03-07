@@ -122,7 +122,7 @@ void SqliteOutputVectorManager::closeFile()
     writer.close();
 }
 
-void *SqliteOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
+void *SqliteOutputVectorManager::registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes)
 {
     Assert(state == NEW || state == STARTED || state == OPENED);
 
@@ -130,6 +130,8 @@ void *SqliteOutputVectorManager::registerVector(const char *modulename, const ch
     vp->handleInWriter = nullptr;
     vp->moduleName = modulename;
     vp->vectorName = vectorname;
+    if (attributes)
+        vp->attributes = *attributes;
 
     std::string vectorfullpath = std::string(modulename) + "." + vectorname;
     vp->enabled = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORDING);
@@ -154,14 +156,6 @@ void SqliteOutputVectorManager::deregisterVector(void *vectorhandle)
     Vectors::iterator newEnd = std::remove(vectors.begin(), vectors.end(), vp);
     vectors.erase(newEnd, vectors.end());
     delete vp;
-}
-
-void SqliteOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
-{
-    ASSERT(vectorhandle != nullptr);
-    VectorData *vp = (VectorData *)vectorhandle;
-    ASSERT(vp->handleInWriter == nullptr); // otherwise it's too late
-    vp->attributes[name] = value;
 }
 
 bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)

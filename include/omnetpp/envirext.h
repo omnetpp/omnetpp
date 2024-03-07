@@ -102,7 +102,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
      *
      * Note: registerVector() calls are also allowed before startRun().
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname) = 0;
+    virtual void *registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr) = 0;
 
     /**
      * Deregisters an output vector. Deregistration makes the vector handle invalid.
@@ -110,12 +110,6 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
      * Note: deregisterVector() calls are also allowed after endRun().
      */
     virtual void deregisterVector(void *vechandle) = 0;
-
-    /**
-     * Sets an attribute on the output vector. setVectorAttribute() is not allowed
-     * after data have already been recorded into the vector.
-     */
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value) = 0;
 
     /**
      * Write data into the output vector. The return value is true if the

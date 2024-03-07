@@ -132,11 +132,8 @@ void VectorRecorder::subscribedTo(cResultFilter *prev)
 
     // we can register the vector here, because base class ensures we are subscribed only at once place
     opp_string_map attributes = getStatisticAttributes();
-
-    handle = getEnvir()->registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str());
+    handle = getEnvir()->registerOutputVector(getComponent()->getFullPath().c_str(), getResultName().c_str(), &attributes);
     ASSERT(handle != nullptr);
-    for (auto & attribute : attributes)
-        getEnvir()->setVectorAttribute(handle, attribute.first.c_str(), attribute.second.c_str());
 }
 
 void VectorRecorder::collect(simtime_t_cref t, double value, cObject *details)

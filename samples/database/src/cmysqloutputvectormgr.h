@@ -167,17 +167,12 @@ class cMySQLOutputVectorManager : public cIOutputVectorManager
     /**
      * Registers a vector and returns a handle.
      */
-    virtual void *registerVector(const char *modulename, const char *vectorname) override;
+    virtual void *registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes=nullptr) override;
 
     /**
      * Deregisters the output vector.
      */
     virtual void deregisterVector(void *vectorhandle) override;
-
-    /**
-     * Sets an attribute of an output vector.
-     */
-    virtual void setVectorAttribute(void *vectorhandle, const char *name, const char *value) override;
 
     /**
      * Writes the (time, value) pair into the output file.

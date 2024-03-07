@@ -46,9 +46,9 @@ AkOutputVectorManager::~AkOutputVectorManager()
 {
 }
 
-void *AkOutputVectorManager::registerVector(const char *modulename, const char *vectorname)
+void *AkOutputVectorManager::registerVector(const char *modulename, const char *vectorname, opp_string_map *attributes)
 {
-    AkVectorData *vp = (AkVectorData *)OmnetppOutputVectorManager::registerVector(modulename, vectorname);
+    AkVectorData *vp = (AkVectorData *)OmnetppOutputVectorManager::registerVector(modulename, vectorname, attributes);
 
     // see if this vector needs Akaroa control
     std::string objectfullpath = std::string(modulename) + "." + vectorname;
