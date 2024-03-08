@@ -23,6 +23,7 @@ public class ProjectFeature {
     private boolean initiallyEnabled;
     private Set<String> labels = new LinkedHashSet<String>();
     private Set<String> dependencies = new LinkedHashSet<String>();
+    private Set<String> recommended = new LinkedHashSet<String>();
     private Set<String> nedPackages = new LinkedHashSet<String>();
     private Set<String> extraSourceFolders = new LinkedHashSet<String>(); // C++ folders outside those defined by NED packages
     private String compileFlags;
@@ -35,6 +36,7 @@ public class ProjectFeature {
             boolean initiallyEnabled,
             Set<String> labels,
             Set<String> dependencies,
+            Set<String> recommended,
             Set<String> nedPackages,
             Set<String> extraSourceFolders,
             String compileFlags,
@@ -46,6 +48,7 @@ public class ProjectFeature {
         this.initiallyEnabled = initiallyEnabled;
         this.labels = labels;
         this.dependencies = dependencies;
+        this.recommended = recommended;
         this.nedPackages = nedPackages;
         this.extraSourceFolders = extraSourceFolders;
         this.compileFlags = compileFlags;
@@ -107,6 +110,13 @@ public class ProjectFeature {
      */
     public Set<String> getDependencies() {
         return dependencies;
+    }
+
+    /**
+     * IDs of features this feature is recommended to be used with.
+     */
+    public Set<String> getRecommended() {
+        return recommended;
     }
 
     public Set<String> getNedPackages() {

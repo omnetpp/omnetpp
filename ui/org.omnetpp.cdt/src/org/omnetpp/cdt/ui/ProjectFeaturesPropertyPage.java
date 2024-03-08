@@ -9,6 +9,9 @@ package org.omnetpp.cdt.ui;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +27,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -36,6 +40,7 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -47,6 +52,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.dialogs.PropertyPage;
@@ -75,6 +81,34 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
  * @author Andras
  */
 public class ProjectFeaturesPropertyPage extends PropertyPage {
+    private final class MessageDialogWithCheckbox extends MessageDialog {
+        private String checkboxMessage;
+        private Button checkbox;
+        private boolean checkboxState;
+
+        private MessageDialogWithCheckbox(Shell parent, String title, Image titleImage, String message, String checkboxMessage, int imageType, int defaultIndex, String[] buttonLabels) {
+            super(parent, title, titleImage, message, imageType, defaultIndex, buttonLabels);
+            this.checkboxMessage = checkboxMessage;
+        }
+
+        @Override
+        protected Control createCustomArea(Composite parent) {
+            Composite area = SWTFactory.createComposite(parent, 2, 1, SWTFactory.FILL_BOTH);
+            checkbox = SWTFactory.createCheckButton(area, checkboxMessage, null, true, 1);
+            return area;
+        }
+
+        @Override
+        protected void buttonPressed(int buttonId) {
+            checkboxState = checkbox.getSelection();
+            super.buttonPressed(buttonId);
+        }
+
+        public boolean getCheckboxState() {
+            return checkboxState;
+        }
+    }
+
     // features of the edited project
     protected ProjectFeaturesManager features;
 
@@ -162,6 +196,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
         // make the error text label wrap properly; see https://bugs.eclipse.org/bugs/show_bug.cgi?id=9866
         composite.addControlListener(new ControlAdapter(){
+            @Override
             public void controlResized(ControlEvent e){
                 GridLayout layout = (GridLayout)composite.getLayout();
                 GridData data = (GridData)errorMessageLabel.getLayoutData();
@@ -184,6 +219,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         // configure the table
         treeViewer.setContentProvider(new ArrayTreeContentProvider());
         treeViewer.setLabelProvider(new LabelProvider() {
+            @Override
             public String getText(Object element) {
                 return ((ProjectFeature)element).getName();
             }
@@ -233,7 +269,9 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             errorDialog("Error reading feature description file", e);
         }
 
-        treeViewer.setInput(features.getFeatures().toArray());
+        List<ProjectFeature> projectFeatures = new ArrayList<ProjectFeature>(features.getFeatures());
+        projectFeatures.sort(Comparator.comparing(ProjectFeature::getName));
+        treeViewer.setInput(projectFeatures);
 
         if (features.getDefinesFile() != null)
             noteLabel.setText("Generated header file: "+ features.getDefinesFile().getFullPath().toOSString());
@@ -304,6 +342,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         result += "<b>Details:</b><br>\n\n";
         result += makeLine("Id", f.getId(), false);
         result += makeLine("Requires", f.getDependencies(), false);
+        result += makeLine("Recommended", f.getRecommended(), false);
         result += makeLine("NED packages", f.getNedPackages(), false);
         result += makeLine("Extra C++ folders", f.getExtraSourceFolders(), true);
         result += makeLine("Compile flags", f.getCompileFlags(), true);
@@ -347,11 +386,13 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         if (enable) {
             // collect missing dependencies
             List<ProjectFeature> missingDependencies = collectMissingDependencies(feature);
+            List<ProjectFeature> recommendedFeatures = collectRecommendedFeatures(feature);
+            Collection<ProjectFeature> extraFeaturesToEnable = null;
 
             // ask for confirmation
-            if (!missingDependencies.isEmpty()) {
-                String question = "The following feature(s) are required by " + quotedName(feature) + ", and will also be enabled:\n\n" + itemizeNamesOf(missingDependencies);
-                if (!MessageDialog.openConfirm(getShell(), "Confirm Enabling Features", question)) {
+            if (!missingDependencies.isEmpty() || !recommendedFeatures.isEmpty()) {
+                extraFeaturesToEnable = openEnableFeaturesDialog(feature, missingDependencies, recommendedFeatures);
+                if (extraFeaturesToEnable == null) { // Cancel pressed
                     treeViewer.setChecked(feature, !enable);  // restore original state
                     return;
                 }
@@ -359,8 +400,9 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
             // do it
             treeViewer.setChecked(feature, true);
-            for (ProjectFeature f : missingDependencies)
-                treeViewer.setChecked(f, true);
+            if (extraFeaturesToEnable != null)
+                for (ProjectFeature f : extraFeaturesToEnable)
+                    treeViewer.setChecked(f, true);
         }
         else {
             // collect features that depend on the one we are turning off
@@ -384,28 +426,68 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         updateDiagnosticMessage();
     }
 
+    private static <T> List<T> union(List<T> list1, List<T> list2) {
+        Set<T> set = new HashSet<T>();
+        set.addAll(list1);
+        set.addAll(list2);
+        return new ArrayList<T>(set);
+    }
+
+    protected Collection<ProjectFeature> openEnableFeaturesDialog(ProjectFeature feature, List<ProjectFeature> requiredFeatures, List<ProjectFeature> recommendedFeatures) {
+        String title = "Confirm Enabling Features";
+        String message = "";
+        if (!requiredFeatures.isEmpty())
+            message = "The following feature(s) are required by " + quotedName(feature) + ", and will also be enabled:\n" + itemizeNamesOf(requiredFeatures);
+        if (recommendedFeatures.isEmpty()) {
+            boolean ok = MessageDialog.openConfirm(getShell(), title, message);
+            if (!ok)
+                return null;
+            return requiredFeatures;
+        }
+        else {
+            message += "\n\nRecommended features:\n" + itemizeNamesOf(recommendedFeatures);
+            String[] buttons = new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL };
+            MessageDialogWithCheckbox dialog = new MessageDialogWithCheckbox(getShell(), title, null, message.strip(), "Enable recommended features", MessageDialog.CONFIRM, 0, buttons);
+            boolean ok = dialog.open() == 0;
+            boolean wantRecommended = dialog.getCheckboxState();
+            if (!ok)
+                return null;
+            return wantRecommended ? union(requiredFeatures, recommendedFeatures) : requiredFeatures;
+        }
+    }
+
     protected List<ProjectFeature> collectMissingDependencies(ProjectFeature feature) {
-        Set<ProjectFeature> dependencies = features.collectDependencies(feature);
-        List<ProjectFeature> missingDependencies = new ArrayList<ProjectFeature>();
-        for (ProjectFeature f : dependencies)
-            if (!treeViewer.getChecked(f))
-                missingDependencies.add(f);
-        return missingDependencies;
+        Set<ProjectFeature> requiredFeatures = features.collectDependencies(feature, false);
+        return filterBySelectionState(requiredFeatures, false); // return unselected ones
+    }
+
+    protected List<ProjectFeature> collectRecommendedFeatures(ProjectFeature feature) {
+        Set<ProjectFeature> requiredAndRecommendedFeatures = features.collectDependencies(feature, true);
+        Set<ProjectFeature> requiredFeatures = features.collectDependencies(feature, false);
+        Set<ProjectFeature> recommendedFeatures = requiredAndRecommendedFeatures;
+        recommendedFeatures.removeAll(requiredFeatures);
+        return filterBySelectionState(recommendedFeatures, false); // return unselected ones
     }
 
     protected List<ProjectFeature> collectFeaturesThatDependOn(ProjectFeature feature) {
         Set<ProjectFeature> dependentFeatures = features.collectDependentFeatures(feature);
-        List<ProjectFeature> bogusFeatures = new ArrayList<ProjectFeature>();
-        for (ProjectFeature f : dependentFeatures)
-            if (treeViewer.getChecked(f))
-                bogusFeatures.add(f);
-        return bogusFeatures;
+        return filterBySelectionState(dependentFeatures, true); // return selected ones that need to be unchecked
+    }
+
+
+    protected List<ProjectFeature> filterBySelectionState(Collection<ProjectFeature> features, boolean selectionState) {
+        List<ProjectFeature> result = new ArrayList<ProjectFeature>();
+        for (ProjectFeature f : features)
+            if (treeViewer.getChecked(f) == selectionState)
+                result.add(f);
+        return result;
     }
 
     protected static String itemizeNamesOf(Collection<ProjectFeature> features) {
         List<String> names = new ArrayList<String>();
         for (ProjectFeature f : features)
-            names.add(" - " + f.getName());
+            names.add("         - " + f.getName());
+        Collections.sort(names);
         return StringUtils.join(names, "\n");
     }
 

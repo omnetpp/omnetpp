@@ -76,6 +76,7 @@ public class ProjectFeaturesManager {
     private static final String ATT_INITIALLYENABLED = "initiallyEnabled";
     private static final String ATT_LABELS = "labels";
     private static final String ATT_REQUIRES = "requires";
+    private static final String ATT_RECOMMENDED = "recommended";
     private static final String ATT_NEDPACKAGES = "nedPackages";
     private static final String ATT_EXTRASOURCEFOLDERS = "extraSourceFolders";
     private static final String ATT_COMPILEFLAGS = "compileFlags";
@@ -88,7 +89,7 @@ public class ProjectFeaturesManager {
         ATT_CPPSOURCEROOTS, ATT_DEFINESFILE
     };
     private static final String[] ALL_FEATURE_ATTRS = new String[] {
-        ATT_ID, ATT_NAME, ATT_DESCRIPTION, ATT_INITIALLYENABLED, ATT_LABELS, ATT_REQUIRES,
+        ATT_ID, ATT_NAME, ATT_DESCRIPTION, ATT_INITIALLYENABLED, ATT_LABELS, ATT_REQUIRES, ATT_RECOMMENDED,
         ATT_NEDPACKAGES, ATT_EXTRASOURCEFOLDERS, ATT_COMPILEFLAGS,  ATT_LINKERFLAGS
     };
 
@@ -343,6 +344,7 @@ public class ProjectFeaturesManager {
                     getBooleanAttribute(e, ATT_INITIALLYENABLED, true),
                     getListAttribute(e, ATT_LABELS),
                     getListAttribute(e, ATT_REQUIRES),
+                    getListAttribute(e, ATT_RECOMMENDED),
                     getListAttribute(e, ATT_NEDPACKAGES),
                     getListAttribute(e, ATT_EXTRASOURCEFOLDERS),
                     getAttribute(e, ATT_COMPILEFLAGS),
@@ -461,8 +463,11 @@ public class ProjectFeaturesManager {
         for (String dep : f.getDependencies())
             if (!features.containsKey(dep))
                 unrecognized.add(dep);
+        for (String dep : f.getRecommended())
+            if (!features.containsKey(dep))
+                unrecognized.add(dep);
         if (!unrecognized.isEmpty())
-            errors.add(prefix + "unknown feature(s) in dependency list: " + StringUtils.join(unrecognized, ", "));
+            errors.add(prefix + "unknown feature(s) in required/recommended list: " + StringUtils.join(unrecognized, ", "));
 
         // check for circular dependencies
         checkForCircularDependencies(f, new Stack<ProjectFeature>(), errors);
@@ -633,32 +638,44 @@ public class ProjectFeaturesManager {
         return changed;
     }
 
+    private static Set<String> union(Set<String> a, Set<String> b) {
+        Set<String> result = new HashSet<>();
+        result.addAll(a);
+        result.addAll(b);
+        return result;
+    }
+
     /**
      * Computes and returns the set of features that the given feature directly or indirectly
      * depends on (requires).
      */
-    public Set<ProjectFeature> collectDependencies(ProjectFeature feature) {
+    public Set<ProjectFeature> collectDependencies(ProjectFeature feature, boolean includeRecommended) {
         Assert.isTrue(getFeature(feature.getId()) == feature, "Alien feature!");
-        Set<ProjectFeature> dependencies = new LinkedHashSet<ProjectFeature>();
-        dependencies.add(feature); // temporarily
+        Set<ProjectFeature> result = new LinkedHashSet<ProjectFeature>();
+        result.add(feature); // temporarily add itself
 
         boolean changed;
         do {
             changed = false;
-            for (ProjectFeature f : dependencies.toArray(new ProjectFeature[]{})) {
-                for (String id : f.getDependencies()) {
-                    ProjectFeature dep = getFeature(id);
-                    if (dep != null && !dependencies.contains(dep)) {
-                        dependencies.add(dep);
+            for (ProjectFeature f : result.toArray(new ProjectFeature[]{})) {
+                Set<String> candidates = includeRecommended ? union(f.getDependencies(), f.getRecommended()) : f.getDependencies();
+                for (String id : candidates) {
+                    ProjectFeature candidate = getFeature(id);
+                    if (candidate != null && !result.contains(candidate)) {
+                        result.add(candidate);
                         changed = true;
                     }
                 }
             }
         } while (changed);
 
-        dependencies.remove(feature);
+        result.remove(feature);
 
-        return dependencies;
+        return result;
+    }
+
+    public Set<ProjectFeature> collectRecommendedFeatures(ProjectFeature feature) {
+        return null;
     }
 
     /**
