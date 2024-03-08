@@ -178,7 +178,7 @@ public class NedValidator extends AbstractNedValidatorEx {
         if (!name.contains("*")) {
             // not a wildcard import: must match a type
             if (resolver.getToplevelNedType(name, contextProject) == null)
-                errors.addError(node, "imported NED type not found: '" + name+"'");
+                errors.addWarning(node, "imported NED type not found: '" + name+"'");  // this is not an error unless that NED type is actually instantiated; most common cause of this warning is the use of a type in an excluded NED package (i.e. due to a disabled project feature)
         }
         else {
             // wildcard import: check if it matches anything
