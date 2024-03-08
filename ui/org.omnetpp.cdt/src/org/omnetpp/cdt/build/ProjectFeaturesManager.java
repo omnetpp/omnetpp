@@ -573,23 +573,22 @@ public class ProjectFeaturesManager {
 
         // load NED and CDT configurations
         List<ProjectFeature> enabledFeatures = getEnabledFeatures();
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
-        NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
 
-        // fix up NED exclusions
+        // update defines file -- do this quickly (i.e. first) in order to reduce interference with ongoing command-line builds
+        if (definesFile != null)
+            saveDefinesFile(enabledFeatures);
+
+        // update NED exclusions and CDT configuration, too
+        NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
         boolean nedChange = adjustExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
         if (nedChange)
             ProjectUtils.saveNedFoldersFile(project, nedSourceFoldersConfig);
 
-        // fix up C++ exclusions
+        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
+        ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
         boolean cppChange = adjustConfigurations(configurations, enabledFeatures);
         if (cppChange)
             CoreModel.getDefault().setProjectDescription(project, projectDescription);
-
-        // fix up defines file
-        if (definesFile != null)
-            saveDefinesFile(enabledFeatures);
     }
 
     /**
