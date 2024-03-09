@@ -27,6 +27,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cexception.h"
 #include "omnetpp/cenum.h"
+#include "omnetpp/stringutil.h"
 
 #ifdef WITH_PARSIM
 #include "omnetpp/ccommbuffer.h"
@@ -42,12 +43,12 @@ Register_Enum(cOutVector::InterpolationMode, (cOutVector::NONE, cOutVector::SAMP
 cOutVector::cOutVector(const char *name) : cNoncopyableOwnedObject(name)
 {
     setFlag(FL_ENABLED, true);
+}
 
-    // register early if possible (only required by Akaroa)
-    if (name) {
-        handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), name);
-        ASSERT(handle != nullptr);
-    }
+cOutVector::cOutVector(const char *name, const opp_string_map& attributes) : cNoncopyableOwnedObject(name), attributes(attributes)
+{
+    setFlag(FL_ENABLED, true);
+    ensureRegistered();
 }
 
 cOutVector::~cOutVector()
@@ -59,15 +60,8 @@ cOutVector::~cOutVector()
 void cOutVector::setName(const char *nam)
 {
     if (handle)
-        throw cRuntimeError(this, "setName(): Changing name of an output vector after record() calls is not allowed");
-
+        throw cRuntimeError(this, "setName(): Changing name of an output vector after it has been registered is not allowed");
     cOwnedObject::setName(nam);
-
-    // register early (only needed for Akaroa...)
-    if (nam) {
-        handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), getName());
-        ASSERT(handle != nullptr);
-    }
 }
 
 std::string cOutVector::str() const
@@ -79,11 +73,40 @@ std::string cOutVector::str() const
     return out.str();
 }
 
+void cOutVector::ensureRegistered()
+{
+    if (handle == nullptr) {
+        if (opp_isempty(getName()))
+            throw cRuntimeError(this, "Cannot register output vector because it has no name assigned");
+        handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), getName(), &attributes);
+        ASSERT(handle != nullptr);
+        attributes.clear(); // conserve memory
+    }
+}
+
+void cOutVector::setAttributes(const opp_string_map& attributes)
+{
+    this->attributes = attributes;
+    ensureRegistered();
+}
+
+void cOutVector::setAttribute(const char *name, const char *value)
+{
+    if (handle)
+        throw cRuntimeError(this, "setAttribute(): Too late, vector already registered");
+    attributes[name] = value;
+}
+
+void cOutVector::registerVector()
+{
+    ensureRegistered();
+}
+
 void cOutVector::setUnit(const char *unit)
 {
-    if (!handle)
-        throw cRuntimeError(this, "setUnit(): Set the object name first, using setName()");
-    getEnvir()->setVectorAttribute(handle, "unit", unit);
+    if (handle)
+        throw cRuntimeError(this, "setUnit(): Too late, vector already registered");
+    attributes["unit"] = unit;
 }
 
 void cOutVector::setEnum(const char *registeredEnumName)
@@ -96,16 +119,16 @@ void cOutVector::setEnum(const char *registeredEnumName)
 
 void cOutVector::setEnum(cEnum *enumDecl)
 {
-    if (!handle)
-        throw cRuntimeError(this, "setEnum(): Set the object name first, using setName()");
-    getEnvir()->setVectorAttribute(handle, "enumname", enumDecl->getName());
-    getEnvir()->setVectorAttribute(handle, "enum", enumDecl->str().c_str());
+    if (handle)
+        throw cRuntimeError(this, "setEnum(): Too late, vector already registered");
+    attributes["enumname"] = enumDecl->getName();
+    attributes["enum"] = enumDecl->str().c_str();
 }
 
 void cOutVector::setType(Type type)
 {
-    if (!handle)
-        throw cRuntimeError(this,"setType(): Set the object name first, using setName()");
+    if (handle)
+        throw cRuntimeError(this, "setType(): Too late, vector already registered");
 
     const char *typeString = nullptr;
     switch (type) {
@@ -116,13 +139,13 @@ void cOutVector::setType(Type type)
     }
     if (!typeString)
         throw cRuntimeError(this, "setType(): Invalid type %d", type);
-    getEnvir()->setVectorAttribute(handle, "type", typeString);
+    attributes["type"] = typeString;
 }
 
 void cOutVector::setInterpolationMode(InterpolationMode mode)
 {
-    if (!handle)
-        throw cRuntimeError(this,"setInterpolationMode(): Set the object name first, using setName()");
+    if (handle)
+        throw cRuntimeError(this, "setInterpolationMode(): Too late, vector already registered");
 
     const char *modeString = nullptr;
     switch (mode) {
@@ -134,27 +157,27 @@ void cOutVector::setInterpolationMode(InterpolationMode mode)
     }
     if (!modeString)
         throw cRuntimeError(this, "setInterpolationMode(): Invalid interpolation mode %d", mode);
-    getEnvir()->setVectorAttribute(handle, "interpolationmode", modeString);
+    attributes["interpolationmode"] = modeString;
 }
 
 void cOutVector::setMin(double minValue)
 {
-    if (!handle)
-        throw cRuntimeError(this, "setMin(): Set the object name first, using setName()");
+    if (handle)
+        throw cRuntimeError(this, "setMin(): Too late, vector already registered");
 
     char buf[32];
     snprintf(buf, sizeof(buf), "%g", minValue);
-    getEnvir()->setVectorAttribute(handle, "min", buf);
+    attributes["min"] = buf;
 }
 
 void cOutVector::setMax(double maxValue)
 {
-    if (!handle)
-        throw cRuntimeError(this, "setMax(): Set the object name first, using setName()");
+    if (handle)
+        throw cRuntimeError(this, "setMax(): Too late, vector already registered");
 
     char buf[32];
     snprintf(buf, sizeof(buf), "%g", maxValue);
-    getEnvir()->setVectorAttribute(handle, "max", buf);
+    attributes["max"] = buf;
 }
 
 bool cOutVector::record(double value)
@@ -164,10 +187,11 @@ bool cOutVector::record(double value)
 
 bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 {
+    ensureRegistered();
+
     // check timestamp
     if (t < lastTimestamp)
-        throw cRuntimeError(this, "Cannot record data with an earlier timestamp (t=%s) "
-                                  "than the previously recorded value", SIMTIME_STR(t));
+        throw cRuntimeError(this, "Cannot record data with an earlier timestamp (t=%s) than the previously recorded value", SIMTIME_STR(t));
     lastTimestamp = t;
 
     numReceived++;
@@ -181,10 +205,6 @@ bool cOutVector::recordWithTimestamp(simtime_t t, double value)
 
     if (!getRecordDuringWarmupPeriod() && t < getSimulation()->getWarmupPeriod())
         return false;
-
-    // initialize if not yet done
-    if (!handle)
-        handle = getEnvir()->registerOutputVector(getSimulation()->getContext()->getFullPath().c_str(), getName());
 
     // pass data to envir for storage
     bool stored = getEnvir()->recordInOutputVector(handle, t, value);

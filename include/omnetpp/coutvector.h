@@ -19,6 +19,7 @@
 #include <cstdio>
 #include "cownedobject.h"
 #include "simtime_t.h"
+#include "opp_string.h"
 
 namespace omnetpp {
 
@@ -34,10 +35,23 @@ class cEnum;
 
 
 /**
- * @brief Responsible for recording vector simulation results (an output vector).
+ * @brief Responsible for recording an "output vector" into the simulation
+ * results file. An output vector is a time series where each value is recorded
+ * with its own timestamp. Time stamps are monotonically increasing.
+ * The vector is registered in the result file with the module (the owner of
+ * this object), a vector name, and optional attributes. The first two identify
+ * the vector, and the attributes convey additional meta information that may be
+ * used by result analysis tools.
  *
- * A cOutVector object can write doubles to the output vector file
- * (or any another device determined by the current cIOutputVectorManager).
+ * Before recording values, the output vector needs to be registered, i.e. declared
+ * with its name and attributes. After registration, the name and attributes
+ * cannot be changed, e.g. new attribute cannot be added. This class allows
+ * attributes to be specified up front as a string map (which allows registering
+ * the vector immediately), or one by one using the setAttribute() call. In the latter
+ * case, the setAttribute() calls must be followed by an registerVector() call.
+ * If the registerVector() call is omitted, the vector will be registered when
+ *  the first data item is recorded into the vector; if no data is recorded,
+ *  the vector will be missing from the result file.
  *
  * @ingroup Statistics
  */
@@ -49,6 +63,7 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
       FL_RECORDWARMUP = 8, // flag: when set, object records data during warmup period as well
     };
 
+    opp_string_map attributes; // collects vector attributes until registration
     void *handle = nullptr;   // identifies output vector for the output vector manager
     simtime_t lastTimestamp;  // last timestamp written, needed to ensure increasing timestamp order
     long numReceived = 0;     // total number of values passed to the output vector object
@@ -66,13 +81,23 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
     enum Type { TYPE_INT, TYPE_DOUBLE, TYPE_ENUM };
     enum InterpolationMode { NONE, SAMPLE_HOLD, BACKWARD_SAMPLE_HOLD, LINEAR };
 
+  protected:
+    virtual void ensureRegistered();
+
   public:
     /** @name Constructors, destructor, assignment */
     //@{
     /**
-     * Constructor.
+     * Construct an output vector with a name. Attributes may be added later,
+     * in one step, or one-by-one. In the latter case, or if no attributes will
+     * be added, registerVector() should be called.
      */
     explicit cOutVector(const char *name=nullptr);
+
+    /**
+     * Construct an output vector with a name and attributes, and register it immediately.
+     */
+    explicit cOutVector(const char *name, const opp_string_map& attributes);
 
     /**
      * Destructor.
@@ -98,58 +123,74 @@ class SIM_API cOutVector : public cNoncopyableOwnedObject
 
     /** @name Metadata annotations. */
     //@{
+
     /**
-     * Associate the vector with an enum defined in a msg file.
-     * This information gets recorded into the output vector file and
-     * may be used by result analysis tools.
-     * cOutVector does not verify that recorded values actually comply
-     * with this annotation.
+     * Sets the vector attributes in one step, and registers the vector.
+     */
+    virtual void setAttributes(const opp_string_map& attributes);
+
+    /**
+     * Sets the specified vector attribute. This method may only be called
+     * when the vector is not yet registered. The last setAttribute() call
+     * should be followed by an registerVector() call.
+     */
+    virtual void setAttribute(const char *name, const char *value);
+
+    /**
+     * Registers the vector if it has not been registered yet. After this call,
+     * no more attributes can be added to the vector. If this call is omitted,
+     * the vector will be registered when the first data item is recorded
+     * into it, or if no data is recorded, the vector will be missing
+     * from the result file.
+     */
+    virtual void registerVector();
+
+    /**
+     * Associates the vector with a cEnum, by setting the "enum" and
+     * "enumname" vector attributes. The enum name as well as the symbols and
+     * their integer values will be recorded. cOutVector does not verify
+     * that recorded values actually comply with this annotation.
      */
     virtual void setEnum(const char *registeredEnumName);
 
     /**
-     * Associate the vector with an enum. The enum name as well as the
-     * symbols and their integer values will get recorded into the output
-     * vector file, and may be used by result analysis tools.
-     * cOutVector does not verify that recorded values actually comply
-     * with this annotation.
+     * Associates the vector with a cEnum, by setting the "enum" and
+     * "enumname" vector attributes. The enum name as well as the symbols and
+     * their integer values will be recorded. cOutVector does not verify
+     * that recorded values actually comply with this annotation.
      */
     virtual void setEnum(cEnum *enumDecl);
 
     /**
-     * Annotate the vector with a physical unit (like "s", "mW" or "bytes").
-     * This information gets recorded into the output vector file, and
-     * may be used by result analysis tools.
+     * Annotate the vector with a physical unit (like "s", "mW" or "bytes"),
+     * by setting the "unit" vector attribute.
      */
     virtual void setUnit(const char *unit);
 
     /**
-     * Annotate the vector with a data type. This information gets recorded
-     * into the output vector file, and may be used by result analysis tools.
+     * Annotate the vector with a data type, by setting the "type" vector attribute.
      * cOutVector does not verify that recorded values actually comply with
      * this annotation.
      */
     virtual void setType(Type type);
 
     /**
-     * Annotate the vector with an interpolation mode. This information
-     * gets recorded into the output vector file, and may be used
+     * Annotate the vector with an interpolation mode, by setting the
+     * "interpolationmode" vector attribute. This information may be used
      * by result analysis tools as a hint for choosing a plotting style.
      */
     virtual void setInterpolationMode(InterpolationMode mode);
 
     /**
-     * Annotate the vector with a minimum value. This information gets
-     * recorded into the output vector file and may be used
-     * by result analysis tools. cOutVector does not verify that
+     * Annotate the vector with a minimum value, by setting the
+     * "min" vector attribute. cOutVector does not verify that
      * recorded values actually comply with this annotation.
      */
     virtual void setMin(double minValue);
 
     /**
-     * Annotate the vector with a maximum value. This information gets
-     * recorded into the output vector file and may be used
-     * by result analysis tools. cOutVector does not verify that
+     * Annotate the vector with a maximum value, by setting the
+     * "max" vector attribute. cOutVector does not verify that
      * recorded values actually comply with this annotation.
      */
     virtual void setMax(double maxValue);

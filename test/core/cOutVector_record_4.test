@@ -5,3 +5,7 @@ check that unnamed cOutVector doesn't core dump.
 cOutVector vec;
 vec.record(35);
 
+%exitcode: 1
+
+%contains: stderr
+Cannot register output vector because it has no name assigned
