@@ -1,0 +1,26 @@
+%description:
+Basic test for vector-record-empty.
+
+%file: test.ned
+
+network Test
+{
+    @signal[foo](type="double");
+    @statistic[empty1](source=foo;record=vector);
+    @statistic[empty2](source=foo;record=vector);
+    @statistic[empty3](source=foo;record=vector);
+}
+
+%inifile: omnetpp.ini
+# empty1: for testing the default vector-record-empty setting
+*.empty2:vector.vector-record-empty = false
+*.empty3:vector.vector-record-empty = true
+
+%contains: results/General-#0.vec
+vector 0 Test empty1:vector ETV
+attr recordingmode vector
+attr source foo
+vector 1 Test empty3:vector ETV
+attr recordingmode vector
+attr source foo
+
