@@ -414,6 +414,22 @@ root directory where the following files are present:
         for _,feature in self.sortedFeatures:
             self.checkFeatureNedFoldersExist(feature)
 
+    ############################
+    def failUnknownFeature(self, feature):
+        def jaccard_similarity(word1, word2):
+            set1 = set(word1)
+            set2 = set(word2)
+            intersection = len(set1.intersection(set2))
+            union = len(set1) + len(set2) - intersection
+            similarity = intersection / union if union != 0 else 0
+            return similarity
+
+        most_similar =  max(self.features, key=lambda f: jaccard_similarity(feature.lower(), f.lower()))
+        more_candidates = [f for f in self.features if f!=most_similar and (f.lower() in feature.lower() or feature.lower() in f.lower())]
+        if more_candidates:
+            fail(f"Unknown feature '{feature}'. Did you mean one of {[most_similar] + more_candidates}?")
+        else:
+            fail(f"Unknown feature '{feature}'. Did you mean '{most_similar}'?")
 
     ############################
     def doListCommand(self):
@@ -484,7 +500,7 @@ root directory where the following files are present:
             requirements = set()
             for key in self.args.features:
                 if not key in self.features:
-                    fail("Unknown feature '%s'" % (key))
+                    self.failUnknownFeature(key)
                 if not self.featurestate[key].enabled:
                     featureOnList.add(key)
             self.updateRequirements(featureOnList, requirements)
@@ -536,7 +552,7 @@ root directory where the following files are present:
             dependencyList = set()
             for key in self.args.features:
                 if not key in self.features:
-                    fail("Unknown feature '%s'" % (key))
+                    self.failUnknownFeature(key)
                 if self.featurestate[key].enabled:
                     featureOffList.add(key)
             self.updateDependencies(featureOffList, dependencyList)
