@@ -462,19 +462,12 @@ root directory where the following files are present:
 
 
     ############################
-
-    ############################
-    def collectRequiredFeatures(self, featureOnList):
-        def updateRequirementsOf(featureid, featureOnList, requirements):
-            for req in self.features[featureid].requires:
-                if not self.featurestate[req].enabled:
-                    if not req in requirements and not req in featureOnList:
-                        updateRequirementsOf(req, featureOnList, requirements)
-                        requirements.add(req)
-        requirements = set()
-        for featureid in featureOnList:
-            updateRequirementsOf(featureid, featureOnList, requirements)
-        return requirements
+    def collectRequiredFeatures(self, features):
+        result = set()
+        for f in features:
+            result.update(self.features[f].requires)
+            result.update(self.collectRequiredFeatures(self.features[f].requires))
+        return result
 
     ############################
     def updateNedExclusions(self):
@@ -505,39 +498,34 @@ root directory where the following files are present:
                         self.featurestate[key].enabled = True
         else:
             self.failOnUnknownFeatures(self.args.features)
-            featureOnList = set()
-            for key in self.args.features:
-                if not self.featurestate[key].enabled:
-                    featureOnList.add(key)
-            requirements = self.collectRequiredFeatures(featureOnList)
-            update = True
-            if len(featureOnList) == 0:
+            featuresToEnable = [f for f in self.args.features if not self.featurestate[f].enabled]
+            if not featuresToEnable:
                 self.printIfVerbose(1, "Feature(s) are already enabled")
                 return
-            self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(sorted(featureOnList)))
-            if len(requirements):
+            enabledFeatures = [f for f in self.features if self.featurestate[f].enabled]
+            requiredFeaturesToEnable = self.collectRequiredFeatures(featuresToEnable).difference(enabledFeatures, featuresToEnable)
+
+            isOkToProceed = True
+            self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(sorted(featuresToEnable)))
+            if requiredFeaturesToEnable:
                 if self.args.with_dependencies:
-                    self.printIfVerbose(1, "Required features that will be enabled as well:  " + ", ".join(sorted(requirements)))
+                    self.printIfVerbose(1, "Required features that will be enabled as well:  " + ", ".join(sorted(requiredFeaturesToEnable)))
                 else:
-                    print("Required features:  " + ", ".join(sorted(requirements)))
-                    update = queryYesNo("Do you want to proceed?", default="yes")
-            if update:
-                featureOnList.update(requirements)
-                for key in featureOnList:
+                    print("Required features:  " + ", ".join(sorted(requiredFeaturesToEnable)))
+                    isOkToProceed = queryYesNo("Do you want to proceed?", default="yes")
+            if isOkToProceed:
+                for key in (featuresToEnable + list(requiredFeaturesToEnable)):
                     self.featurestate[key].enabled = True
                     self.featurestatesChanged = True
 
     ############################
-    def collectDependentFeatures(self, featureOffList):
-        def updateDependsOf(featureid, featureOffList, dependencyList):
-            for _,f in self.sortedFeatures:
-                if (featureid in f.requires) and self.featurestate[f.id].enabled and (not (f.id in dependencyList)) and (not (f.id in featureOffList)):
-                    updateDependsOf(f.id, featureOffList, dependencyList)
-                    dependencyList.add(f.id)
-        dependencyList = set()
-        for featureid in featureOffList:
-            updateDependsOf(featureid, featureOffList, dependencyList)
-        return dependencyList
+    def collectDependentFeatures(self, features):
+        result = set()
+        for f in features:
+            requiring = [ff for ff in self.features if f in self.features[ff].requires]
+            result.update(requiring)
+            result.update(self.collectDependentFeatures(requiring))
+        return result
 
     ############################
     def doDisableCommand(self):
@@ -554,25 +542,23 @@ root directory where the following files are present:
                         self.featurestatesChanged = True
         else:
             self.failOnUnknownFeatures(self.args.features)
-            featureOffList = set()
-            for key in self.args.features:
-                if self.featurestate[key].enabled:
-                    featureOffList.add(key)
-            dependencyList = self.collectDependentFeatures(featureOffList)
-            update = True
-            if len(featureOffList) == 0:
+            featuresToDisable = [f for f in self.args.features if self.featurestate[f].enabled]
+            if not featuresToDisable:
                 self.printIfVerbose(1, "The requested features are already disabled")
                 return
-            self.printIfVerbose(1, "Disabling feature(s):  " + ", ".join(sorted(featureOffList)))
-            if len(dependencyList):
+            disabledFeatures = [f for f in self.features if not self.featurestate[f].enabled]
+            dependentFeaturesToDisable = self.collectDependentFeatures(featuresToDisable).difference(disabledFeatures, featuresToDisable)
+
+            isOkToProceed = True
+            self.printIfVerbose(1, "Disabling feature(s):  " + ", ".join(sorted(featuresToDisable)))
+            if dependentFeaturesToDisable:
                 if self.args.with_dependencies:
-                    self.printIfVerbose(1, "Also disabling the following dependent features:  " + ", ".join(sorted(dependencyList)))
+                    self.printIfVerbose(1, "Also disabling the following dependent features:  " + ", ".join(sorted(dependentFeaturesToDisable)))
                 else:
-                    print("The following features require the disabled ones and also need to be disabled:  " + ", ".join(sorted(dependencyList)))
-                    update = queryYesNo("Do you want to proceed?", default="yes")
-            if update:
-                featureOffList.update(dependencyList)
-                for key in featureOffList:
+                    print("The following features require the disabled ones and also need to be disabled:  " + ", ".join(sorted(dependentFeaturesToDisable)))
+                    isOkToProceed = queryYesNo("Do you want to proceed?", default="yes")
+            if isOkToProceed:
+                for key in (featuresToDisable + list(dependentFeaturesToDisable)):
                     self.featurestate[key].enabled = False
                     self.featurestatesChanged = True
 
