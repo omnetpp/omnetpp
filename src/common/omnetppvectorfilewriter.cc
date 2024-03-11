@@ -159,6 +159,8 @@ void OmnetppVectorFileWriter::endRecordingForRun()
 
 void *OmnetppVectorFileWriter::registerVector(const std::string& componentFullPath, const std::string& name, const StringMap& attributes, size_t bufferSize, bool recordEventNumbers)
 {
+    Assert(f != nullptr);
+
     VectorData *vp = new VectorData();
     vp->id = nextVectorId++;
     vp->recordEventNumbers = recordEventNumbers;
@@ -166,7 +168,6 @@ void *OmnetppVectorFileWriter::registerVector(const std::string& componentFullPa
     if (vp->bufferedSamplesLimit > 0)
         vp->buffer.reserve(vp->bufferedSamplesLimit);
     vectors.push_back(vp);
-
 
     const char *columns = vp->recordEventNumbers ? "ETV" : "TV";
     check(fprintf(f, "vector %d %s %s %s\n", vp->id, QUOTE(componentFullPath.c_str()), QUOTE(name.c_str()), columns));

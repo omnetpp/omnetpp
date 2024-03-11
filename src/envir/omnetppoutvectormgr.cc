@@ -45,6 +45,7 @@ extern omnetpp::cConfigOption *CFGID_OUTPUT_VECTOR_PRECISION;
 
 // per-vector options
 extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING;
+extern omnetpp::cConfigOption *CFGID_VECTOR_RECORD_EMPTY;
 extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING_INTERVALS;
 extern omnetpp::cConfigOption *CFGID_VECTOR_BUFFER;
 extern omnetpp::cConfigOption *CFGID_VECTOR_RECORD_EVENTNUMBERS;
@@ -69,6 +70,9 @@ void OmnetppOutputVectorManager::startRun()
 
     size_t memoryLimit = (size_t) getEnvir()->getConfig()->getAsDouble(CFGID_OUTPUTVECTOR_MEMORY_LIMIT);
     writer.setOverallMemoryLimit(memoryLimit);
+
+    if (!vectors.empty())
+        openFileForRun();
 }
 
 void OmnetppOutputVectorManager::endRun()
@@ -94,6 +98,13 @@ void OmnetppOutputVectorManager::openFileForRun()
 
     // write run data
     writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
+
+    for (VectorData *vp : vectors) {
+        std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
+        bool recordEmpty = getEnvir()->getConfig()->getAsBool(vectorFullPath.c_str(), CFGID_VECTOR_RECORD_EMPTY);
+        if (recordEmpty)
+            doRegisterVector(vp);
+    }
 }
 
 void OmnetppOutputVectorManager::closeFile()
@@ -120,8 +131,26 @@ void *OmnetppOutputVectorManager::registerVector(const char *modulename, const c
     if (text)
         vp->intervals.parse(text);
 
+    if (state != NEW) {
+        bool recordEmpty = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORD_EMPTY);
+        if (recordEmpty) {
+            if (state == STARTED)
+                openFileForRun();
+            doRegisterVector(vp);
+        }
+    }
+
     vectors.push_back(vp);
     return vp;
+}
+
+void OmnetppOutputVectorManager::doRegisterVector(VectorData *vp)
+{
+    ASSERT(state == OPENED && vp->handleInWriter == nullptr);
+    std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
+    size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
+    bool recordEventNumbers = getEnvir()->getConfig()->getAsBool(vectorFullPath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
+    vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize, recordEventNumbers);
 }
 
 void OmnetppOutputVectorManager::deregisterVector(void *vectorhandle)
@@ -155,12 +184,8 @@ bool OmnetppOutputVectorManager::record(void *vectorhandle, simtime_t t, double 
     if (isBad())
         return false;
 
-    if (vp->handleInWriter == nullptr) {
-        std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
-        size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
-        bool recordEventNumbers = getEnvir()->getConfig()->getAsBool(vectorFullPath.c_str(), CFGID_VECTOR_RECORD_EVENTNUMBERS);
-        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize, recordEventNumbers);
-    }
+    if (vp->handleInWriter == nullptr)
+        doRegisterVector(vp);
 
     eventnumber_t eventNumber = getSimulation()->getEventNumber();
     writer.recordInVector(vp->handleInWriter, eventNumber, t.raw(), t.getScaleExp(), value);

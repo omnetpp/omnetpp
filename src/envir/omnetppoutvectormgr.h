@@ -58,6 +58,7 @@ class OmnetppOutputVectorManager : public cIOutputVectorManager
   protected:
     virtual void openFileForRun();
     virtual void closeFile();
+    virtual void doRegisterVector(VectorData *vp);
     bool isBad() {return state==OPENED && !writer.isOpen();}
 
   public:

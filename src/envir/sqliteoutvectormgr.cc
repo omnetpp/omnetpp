@@ -47,6 +47,7 @@ extern omnetpp::cConfigOption *CFGID_OUTPUTVECTOR_MEMORY_LIMIT;
 
 // per-vector options
 extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING;
+extern omnetpp::cConfigOption *CFGID_VECTOR_RECORD_EMPTY;
 extern omnetpp::cConfigOption *CFGID_VECTOR_RECORDING_INTERVALS;
 extern omnetpp::cConfigOption *CFGID_VECTOR_BUFFER;
 
@@ -79,6 +80,9 @@ void SqliteOutputVectorManager::startRun()
     else
         throw cRuntimeError("Invalid value '%s' for '%s', expecting 'skip', 'ahead' or 'after'",
                 indexModeStr.c_str(), CFGID_OUTPUT_VECTOR_DB_INDEXING->getName());
+
+    if (!vectors.empty())
+        openFileForRun();
 }
 
 void SqliteOutputVectorManager::endRun()
@@ -115,6 +119,13 @@ void SqliteOutputVectorManager::openFileForRun()
 
     // write run data
     writer.beginRecordingForRun(ResultFileUtils::getRunId().c_str(), SimTime::getScaleExp(), ResultFileUtils::getRunAttributes(), ResultFileUtils::getIterationVariables(), ResultFileUtils::getSelectedConfigEntries());
+
+    for (VectorData *vp : vectors) {
+        std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
+        bool recordEmpty = getEnvir()->getConfig()->getAsBool(vectorFullPath.c_str(), CFGID_VECTOR_RECORD_EMPTY);
+        if (recordEmpty)
+            doRegisterVector(vp);
+    }
 }
 
 void SqliteOutputVectorManager::closeFile()
@@ -141,9 +152,25 @@ void *SqliteOutputVectorManager::registerVector(const char *modulename, const ch
     if (text)
         vp->intervals.parse(text);
 
+    if (state != NEW) {
+        bool recordEmpty = getEnvir()->getConfig()->getAsBool(vectorfullpath.c_str(), CFGID_VECTOR_RECORD_EMPTY);
+        if (recordEmpty) {
+            if (state == STARTED)
+                openFileForRun();
+            doRegisterVector(vp);
+        }
+    }
 
     vectors.push_back(vp);
     return vp;
+}
+
+void SqliteOutputVectorManager::doRegisterVector(VectorData *vp)
+{
+    ASSERT(state == OPENED && vp->handleInWriter == nullptr);
+    std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
+    size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
+    vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize);
 }
 
 void SqliteOutputVectorManager::deregisterVector(void *vectorhandle)
@@ -174,11 +201,8 @@ bool SqliteOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
     if (state != OPENED)
         openFileForRun();
 
-    if (vp->handleInWriter == nullptr) {
-        std::string vectorFullPath = vp->moduleName.str() + "." + vp->vectorName.c_str();
-        size_t bufferSize = (size_t) getEnvir()->getConfig()->getAsDouble(vectorFullPath.c_str(), CFGID_VECTOR_BUFFER);
-        vp->handleInWriter = writer.registerVector(vp->moduleName.c_str(), vp->vectorName.c_str(), ResultFileUtils::convertMap(&vp->attributes), bufferSize);
-    }
+    if (vp->handleInWriter == nullptr)
+        doRegisterVector(vp);
 
     eventnumber_t eventNumber = getSimulation()->getEventNumber();
     writer.recordInVector(vp->handleInWriter, eventNumber, t.raw(), value);
