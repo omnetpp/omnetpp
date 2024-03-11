@@ -498,7 +498,7 @@ root directory where the following files are present:
                     self.printIfVerbose(1, "Required features that will be enabled as well:  " + ", ".join(sorted(requirements)))
                 else:
                     print("Required features:  " + ", ".join(sorted(requirements)))
-                    update = queryYesNo("Enable these features?", default="yes")
+                    update = queryYesNo("Do you want to proceed?", default="yes")
             if update:
                 featureOnList.update(requirements)
                 for key in featureOnList:
@@ -549,8 +549,8 @@ root directory where the following files are present:
                 if self.args.with_dependencies:
                     self.printIfVerbose(1, "Also disabling the following dependent features:  " + ", ".join(sorted(dependencyList)))
                 else:
-                    print("Dependent features:  " + ", ".join(sorted(dependencyList)))
-                    update = queryYesNo("Disable them as well?", default="yes")
+                    print("The following features require the disabled ones and also need to be disabled:  " + ", ".join(sorted(dependencyList)))
+                    update = queryYesNo("Do you want to proceed?", default="yes")
             if update:
                 featureOffList.update(dependencyList)
                 for key in featureOffList:
