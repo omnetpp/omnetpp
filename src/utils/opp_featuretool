@@ -117,6 +117,7 @@ class Feature:
         if feature.hasAttribute("initiallyEnabled"):
             self.initiallyEnabled = feature.getAttribute("initiallyEnabled") == 'true'
         self.requires = feature.getAttribute("requires").split()
+        self.recommended = feature.getAttribute("recommended").split()
         self.labels = feature.getAttribute("labels").split()
         self.nedPackages = feature.getAttribute("nedPackages").split()
         self.extraSourceFolders = feature.getAttribute("extraSourceFolders").split()
@@ -462,11 +463,12 @@ root directory where the following files are present:
 
 
     ############################
-    def collectRequiredFeatures(self, features):
+    def collectRequiredFeatures(self, features, includeRecommended=False):
         result = set()
         for f in features:
-            result.update(self.features[f].requires)
-            result.update(self.collectRequiredFeatures(self.features[f].requires))
+            dependencies = self.features[f].requires if not includeRecommended else self.features[f].requires + self.features[f].recommended
+            result.update(dependencies)
+            result.update(self.collectRequiredFeatures(dependencies))
         return result
 
     ############################
@@ -504,6 +506,7 @@ root directory where the following files are present:
                 return
             enabledFeatures = [f for f in self.features if self.featurestate[f].enabled]
             requiredFeaturesToEnable = self.collectRequiredFeatures(featuresToEnable).difference(enabledFeatures, featuresToEnable)
+            recommendedFeaturesToEnable = self.collectRequiredFeatures(featuresToEnable, True).difference(enabledFeatures, featuresToEnable, requiredFeaturesToEnable)
 
             isOkToProceed = True
             self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(sorted(featuresToEnable)))
@@ -513,8 +516,15 @@ root directory where the following files are present:
                 else:
                     print("Required features:  " + ", ".join(sorted(requiredFeaturesToEnable)))
                     isOkToProceed = queryYesNo("Do you want to proceed?", default="yes")
+            enableRecommended = False
+            if recommendedFeaturesToEnable:
+                print("Recommended features:  " + ", ".join(sorted(recommendedFeaturesToEnable)))
+                enableRecommended = queryYesNo("Also enable recommended features?", default="yes")
             if isOkToProceed:
-                for key in (featuresToEnable + list(requiredFeaturesToEnable)):
+                allFeaturesToEnable = featuresToEnable + list(requiredFeaturesToEnable)
+                if enableRecommended:
+                    allFeaturesToEnable += list(recommendedFeaturesToEnable)
+                for key in allFeaturesToEnable:
                     self.featurestate[key].enabled = True
                     self.featurestatesChanged = True
 
@@ -576,9 +586,9 @@ root directory where the following files are present:
 
         # make sure that the "requires" lists of features don't reference undefined features
         for fid, feature in self.sortedFeatures:
-            for r in feature.requires:
+            for r in feature.requires + feature.recommended:
                 if not r in self.features:
-                    fail("Feature '%s' requires undefined feature '%s' in '%s'" % (feature.id, r, FEATURESFILE))
+                    fail("Feature '%s' requires or recommends undefined feature '%s' in '%s'" % (feature.id, r, FEATURESFILE))
 
         # check feature dependencies:
         dependencyErrorOccurred = False
