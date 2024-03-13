@@ -462,17 +462,19 @@ root directory where the following files are present:
 
 
     ############################
-    def updateRequirementsOf(self, featureid, featureOnList, requirements):
-        for req in self.features[featureid].requires:
-            if not self.featurestate[req].enabled:
-                if not req in requirements and not req in featureOnList:
-                    self.updateRequirementsOf(req, featureOnList, requirements)
-                    requirements.add(req)
 
     ############################
-    def updateRequirements(self, featureOnList, requirements):
+    def collectRequiredFeatures(self, featureOnList):
+        def updateRequirementsOf(featureid, featureOnList, requirements):
+            for req in self.features[featureid].requires:
+                if not self.featurestate[req].enabled:
+                    if not req in requirements and not req in featureOnList:
+                        updateRequirementsOf(req, featureOnList, requirements)
+                        requirements.add(req)
+        requirements = set()
         for featureid in featureOnList:
-            self.updateRequirementsOf(featureid, featureOnList, requirements)
+            updateRequirementsOf(featureid, featureOnList, requirements)
+        return requirements
 
     ############################
     def updateNedExclusions(self):
@@ -504,11 +506,10 @@ root directory where the following files are present:
         else:
             self.failOnUnknownFeatures(self.args.features)
             featureOnList = set()
-            requirements = set()
             for key in self.args.features:
                 if not self.featurestate[key].enabled:
                     featureOnList.add(key)
-            self.updateRequirements(featureOnList, requirements)
+            requirements = self.collectRequiredFeatures(featureOnList)
             update = True
             if len(featureOnList) == 0:
                 self.printIfVerbose(1, "Feature(s) are already enabled")
@@ -526,18 +527,17 @@ root directory where the following files are present:
                     self.featurestate[key].enabled = True
                     self.featurestatesChanged = True
 
-
     ############################
-    def updateDependsOf(self, featureid, featureOffList, dependencyList):
-        for _,f in self.sortedFeatures:
-            if (featureid in f.requires) and self.featurestate[f.id].enabled and (not (f.id in dependencyList)) and (not (f.id in featureOffList)):
-                self.updateDependsOf(f.id, featureOffList, dependencyList)
-                dependencyList.add(f.id)
-
-    ############################
-    def updateDependencies(self, featureOffList, dependencyList):
+    def collectDependentFeatures(self, featureOffList):
+        def updateDependsOf(featureid, featureOffList, dependencyList):
+            for _,f in self.sortedFeatures:
+                if (featureid in f.requires) and self.featurestate[f.id].enabled and (not (f.id in dependencyList)) and (not (f.id in featureOffList)):
+                    updateDependsOf(f.id, featureOffList, dependencyList)
+                    dependencyList.add(f.id)
+        dependencyList = set()
         for featureid in featureOffList:
-            self.updateDependsOf(featureid, featureOffList, dependencyList)
+            updateDependsOf(featureid, featureOffList, dependencyList)
+        return dependencyList
 
     ############################
     def doDisableCommand(self):
@@ -555,11 +555,10 @@ root directory where the following files are present:
         else:
             self.failOnUnknownFeatures(self.args.features)
             featureOffList = set()
-            dependencyList = set()
             for key in self.args.features:
                 if self.featurestate[key].enabled:
                     featureOffList.add(key)
-            self.updateDependencies(featureOffList, dependencyList)
+            dependencyList = self.collectDependentFeatures(featureOffList)
             update = True
             if len(featureOffList) == 0:
                 self.printIfVerbose(1, "The requested features are already disabled")
@@ -598,7 +597,6 @@ root directory where the following files are present:
         # check feature dependencies:
         dependencyErrorOccurred = False
         featureOnList = set()
-        requirements = set()
         for fid, feature in self.sortedFeatures:
             if self.featurestate[fid].enabled:
                 for r in feature.requires:
@@ -607,7 +605,7 @@ root directory where the following files are present:
                         featureOnList.add(r)
                         dependencyErrorOccurred = True
         if len(featureOnList):
-            self.updateRequirements(featureOnList, requirements)
+            requirements = self.collectRequiredFeatures(featureOnList)
             if len(requirements):
                 warn("The following features are also required, enabling them:  " + ", ".join(sorted(requirements)))
             featureOnList.update(requirements)
