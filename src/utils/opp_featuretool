@@ -483,6 +483,12 @@ root directory where the following files are present:
         self.nedExclusionsChanged = True
 
     ############################
+    def failOnUnknownFeatures(self, features):
+        for key in features:
+            if not key in self.features:
+                self.failUnknownFeature(key)
+
+    ############################
     def doEnableCommand(self):
         self.readAllConfigFiles()
         self.validateAndRepair()
@@ -496,11 +502,10 @@ root directory where the following files are present:
                         self.featurestatesChanged = True
                         self.featurestate[key].enabled = True
         else:
+            self.failOnUnknownFeatures(self.args.features)
             featureOnList = set()
             requirements = set()
             for key in self.args.features:
-                if not key in self.features:
-                    self.failUnknownFeature(key)
                 if not self.featurestate[key].enabled:
                     featureOnList.add(key)
             self.updateRequirements(featureOnList, requirements)
@@ -548,11 +553,10 @@ root directory where the following files are present:
                         self.featurestate[key].enabled = False
                         self.featurestatesChanged = True
         else:
+            self.failOnUnknownFeatures(self.args.features)
             featureOffList = set()
             dependencyList = set()
             for key in self.args.features:
-                if not key in self.features:
-                    self.failUnknownFeature(key)
                 if self.featurestate[key].enabled:
                     featureOffList.add(key)
             self.updateDependencies(featureOffList, dependencyList)
