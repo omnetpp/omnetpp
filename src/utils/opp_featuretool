@@ -518,8 +518,11 @@ root directory where the following files are present:
                     isOkToProceed = queryYesNo("Do you want to proceed?", default="yes")
             enableRecommended = False
             if recommendedFeaturesToEnable:
-                print("Recommended features:  " + ", ".join(sorted(recommendedFeaturesToEnable)))
-                enableRecommended = queryYesNo("Also enable recommended features?", default="yes")
+                if self.args.with_dependencies: # selects non-interactive mode
+                    print("Skipping recommended features: " + ", ".join(sorted(recommendedFeaturesToEnable)))
+                else:
+                    print("Recommended features:  " + ", ".join(sorted(recommendedFeaturesToEnable)))
+                    enableRecommended = queryYesNo("Also enable recommended features?", default="yes")
             if isOkToProceed:
                 allFeaturesToEnable = featuresToEnable + list(requiredFeaturesToEnable)
                 if enableRecommended:
