@@ -16,7 +16,7 @@ Lists features
 '.oppfeatures' found.
 '.oppfeaturestate' not found.
 '.nedfolders' found.
-'.nedexclusions' not found.
+'.nedexclusions' found.
 
 %contains: stderr
 opp_featuretool: Error: Unknown feature(s): F_UNKNOWN
