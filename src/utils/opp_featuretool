@@ -235,7 +235,7 @@ root directory where the following files are present:
         self.readNedFoldersFile()
         self.readFeaturesFile()
 
-        self.printIfVerbose(1, "Enablement of all project features reset to the default")
+        self.printIfVerbose(1, "Enablements of all project features reset to the default")
         self.resetFeatureStates()
         self.writeFeatureStateFile()
 
@@ -306,6 +306,7 @@ root directory where the following files are present:
     def readNedExclusionsFile(self):
         self.nedExclusions = []
         if not isfile(NEDEXCLUSIONSFILE):
+            self.printIfVerbose(1, f"'{NEDEXCLUSIONSFILE}' file does not exist, creating it")
             self.resetNedExclusions()
             self.writeNedExclusionsFile()
             return
