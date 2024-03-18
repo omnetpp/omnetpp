@@ -609,7 +609,7 @@ root directory where the following files are present:
             if self.featurestate[fid].enabled:
                 for r in feature.requires:
                     if not self.featurestate[r].enabled:
-                        warn(f"Feature '{r}' is required for '{fid}', but it is disabled, fixing")
+                        warn(f"Feature '{r}' is required for '{fid}' but it is disabled, fixing by enabling it")
                         featureOnList.add(r)
                         dependencyErrorOccurred = True
         if len(featureOnList):
