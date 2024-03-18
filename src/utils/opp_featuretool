@@ -236,17 +236,10 @@ root directory where the following files are present:
         self.readFeaturesFile()
 
         self.printIfVerbose(1, "Enablement of all project features reset to the default")
-        self.featurestate = dict()
-        for fk, feature in self.sortedFeatures:
-            fs = FeatureState(feature.id, feature.initiallyEnabled, feature.ord)
-            self.featurestate[fk] = fs
+        self.resetFeatureStates()
         self.writeFeatureStateFile()
 
-        self.nedExclusions = []
-        for fk, feature in self.sortedFeatures:
-            if not feature.initiallyEnabled:
-                self.nedExclusions.extend(feature.nedPackages)
-
+        self.resetNedExclusions()
         self.writeNedExclusionsFile()
 
 
@@ -331,6 +324,13 @@ root directory where the following files are present:
         writeFile(NEDEXCLUSIONSFILE, content)
 
     ############################
+    def resetNedExclusions(self):
+        self.nedExclusions = []
+        for fk, feature in self.sortedFeatures:
+            if not feature.initiallyEnabled:
+                self.nedExclusions.extend(feature.nedPackages)
+
+    ############################
     def writeFeatureStateFile(self):
         domTree = xml.dom.minidom.parseString("<featurestates/>")
         featurestateDom = domTree.documentElement
@@ -369,6 +369,12 @@ root directory where the following files are present:
                 self.featurestate[fk] = fs
                 self.featurestatesChanged = True
 
+    ############################
+    def resetFeatureStates(self):
+        self.featurestate = dict()
+        for fk, feature in self.sortedFeatures:
+            fs = FeatureState(feature.id, feature.initiallyEnabled, feature.ord)
+            self.featurestate[fk] = fs
 
     ############################
     def isCxxSourceFolder(self, folder):
