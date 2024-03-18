@@ -306,6 +306,8 @@ root directory where the following files are present:
     def readNedExclusionsFile(self):
         self.nedExclusions = []
         if not isfile(NEDEXCLUSIONSFILE):
+            self.resetNedExclusions()
+            self.writeNedExclusionsFile()
             return
 
         lines = readFile(NEDEXCLUSIONSFILE)
