@@ -22,13 +22,13 @@ NEDFOLDERSFILE = ".nedfolders"
 NEDEXCLUSIONSFILE = ".nedexclusions"
 
 def fail(msg, repairHint=None):
-    print("opp_featuretool: Error: {}".format(msg), file=sys.stderr)
+    print("opp_featuretool: Error: " + msg, file=sys.stderr)
     if repairHint:
         print("Hint: " + repairHint, file=sys.stderr)
     sys.exit(1)
 
 def warn(msg, repairHint=None):
-    print("opp_featuretool: Warning: {}".format(msg), file=sys.stderr)
+    print("opp_featuretool: Warning: " + msg, file=sys.stderr)
     if repairHint:
         print("Hint: " + repairHint, file=sys.stderr)
 
@@ -51,7 +51,7 @@ def queryYesNo(question, default="yes"):
     elif default == "no":
         prompt = " [y/N] "
     else:
-        raise ValueError("invalid default answer: '%s'" % default)
+        raise ValueError(f"invalid default answer: '{default}'")
 
     while True:
         sys.stdout.write(question + prompt)
@@ -66,12 +66,11 @@ def queryYesNo(question, default="yes"):
 ############################
 def readFile(filename):
     try:
-        f = open(filename, 'r')
-        lines = f.readlines()
-        f.close()
+        with open(filename, 'r') as f:
+            lines = f.readlines()
         return lines
     except (IOError, OSError) as e:
-        fail("Cannot read '{}': {}".format(filename, e))
+        fail(f"Cannot read '{filename}': {e}")
 
 def writeFile(filename, content):
     try:
@@ -79,7 +78,7 @@ def writeFile(filename, content):
         f.write(content)
         f.close()
     except (IOError, OSError) as e:
-        fail("Cannot write '{}': {}".format(filename, e))
+        fail(f"Cannot write '{filename}': {e}")
 
 def readXmlFile(filename, repairHint=None):
     try:
@@ -88,9 +87,10 @@ def readXmlFile(filename, repairHint=None):
         f.close()
         return domTree
     except (IOError, OSError) as e:
-        fail("Cannot read '{}': {}".format(filename, e))
+        fail(f"Cannot read '{filename}': {e}")
     except Exception as e:
-        fail("Cannot parse XML file '{}': {}".format(filename, e), repairHint)
+        fail(f"Cannot parse XML file '{filename}': {e}", repairHint)
+
 
 def writeXmlFile(filename, domTree):
     try:
@@ -98,12 +98,12 @@ def writeXmlFile(filename, domTree):
         domTree.writexml(f, addindent="    ", newl="\n")
         f.close()
     except (IOError, OSError) as e:
-        fail("Cannot write '{}': {}".format(filename, e))
+        fail(f"Cannot write '{filename}': {e}")
 
 ############################
 class OppParser(argparse.ArgumentParser):
    def error(self, message):
-      sys.stderr.write('error: %s\n' % message)
+      sys.stderr.write(f'error: {message}\n')
       self.print_help()
       sys.exit(2)
 
@@ -405,7 +405,7 @@ root directory where the following files are present:
                     if os.path.exists(folder):
                         nedPackageFolderFound = True
             if not nedPackageFolderFound:
-                warn("No folder corresponds to NED package '{}' referenced in feature '{}' (Hint: Make sure its NED root folder is listed in '{}'!)".format(nedPackage, feature.id, NEDFOLDERSFILE))
+                warn(f"No folder corresponds to NED package '{nedPackage}' referenced in feature '{feature.id}' (Hint: Make sure its NED root folder is listed in '{NEDFOLDERSFILE}'!)")
                 retval = False
         return retval
 
@@ -580,18 +580,18 @@ root directory where the following files are present:
         # check C++ source folders
         for cppSourceRoot in self.cppSourceRoots:
             if not isdir(cppSourceRoot):
-                fail("C++ source folder '%s' defined in '%s' does not exist" % (cppSourceRoot, FEATURESFILE))
+                fail(f"C++ source folder '{cppSourceRoot}' defined in '{FEATURESFILE}' does not exist")
 
         # check NED folders
         for nedFolder in self.nedfolders:
             if not isdir(nedFolder.path):
-                fail("NED source folder '%s' listed in '%s' does not exist" % (nedFolder.path, NEDFOLDERSFILE))
+                fail(f"NED source folder '{nedFolder.path}' listed in '{NEDFOLDERSFILE}' does not exist")
 
         # make sure that the "requires" lists of features don't reference undefined features
         for fid, feature in self.sortedFeatures:
             for r in feature.requires + feature.recommended:
                 if not r in self.features:
-                    fail("Feature '%s' requires or recommends undefined feature '%s' in '%s'" % (feature.id, r, FEATURESFILE))
+                    fail(f"Feature '{feature.id}' requires or recommends undefined feature '{r}' in '{FEATURESFILE}'")
 
         # check feature dependencies:
         dependencyErrorOccurred = False
@@ -600,7 +600,7 @@ root directory where the following files are present:
             if self.featurestate[fid].enabled:
                 for r in feature.requires:
                     if not self.featurestate[r].enabled:
-                        warn("Feature '%s' is required for '%s', but it is disabled, fixing" % (r, fid))
+                        warn(f"Feature '{r}' is required for '{fid}', but it is disabled, fixing")
                         featureOnList.add(r)
                         dependencyErrorOccurred = True
         if len(featureOnList):
@@ -615,11 +615,11 @@ root directory where the following files are present:
             for np in feature.nedPackages:
                 if self.featurestate[fid].enabled:
                     if np in self.nedExclusions:
-                        warn("NED package '%s' is part of the enabled feature '%s', but it is excluded in '%s', fixing" % (np, fid, NEDEXCLUSIONSFILE))
+                        warn(f"NED package '{np}' is part of the enabled feature '{fid}', but it is excluded in '{NEDEXCLUSIONSFILE}', fixing")
                         nedfolderErrorOccurred = True
                 else:
                     if not np in self.nedExclusions:
-                        warn("NED package '%s' is part of the disabled feature '%s', but it is not excluded in '%s', fixing" % (np, fid, NEDEXCLUSIONSFILE))
+                        warn(f"NED package '{np}' is part of the disabled feature '{fid}', but it is not excluded in '{NEDEXCLUSIONSFILE}', fixing")
                         nedfolderErrorOccurred = True
 
         # enable missing features
@@ -748,10 +748,10 @@ root directory where the following files are present:
         try:
             self.args = self.parser.parse_args()
         except (IOError, OSError) as e:
-            fail("{}".format(e))
+            fail(f"{e}")
 
         exitcode = 0
-        if self.args.command == None:
+        if self.args.command is None:
             self.parser.print_help()
         elif self.args.command == 'list':
             self.doListCommand()
@@ -768,16 +768,16 @@ root directory where the following files are present:
         elif self.args.command == 'isenabled':
             exitcode = self.doIsEnabledCommand()
         else:
-            fail("Unknown command '%s'" % self.args.command)
+            fail(f"Unknown command '{self.args.command}'")
 
         if self.featurestatesChanged:
             self.writeFeatureStateFile()
-            self.printIfVerbose(1, "opp_featuretool: '" + FEATURESTATEFILE + "' updated")
+            self.printIfVerbose(1, f"opp_featuretool: '{FEATURESTATEFILE}' updated")
             self.updateNedExclusions()
 
         if self.nedExclusionsChanged:
             self.writeNedExclusionsFile()
-            self.printIfVerbose(1, "opp_featuretool: '" + NEDEXCLUSIONSFILE + "' updated")
+            self.printIfVerbose(1, f"opp_featuretool: '{NEDEXCLUSIONSFILE}' updated")
 
         sys.exit(exitcode)
 
