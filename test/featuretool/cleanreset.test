@@ -17,7 +17,7 @@ Reset .oppfeaturestate and .nedexclusions to default
 '.nedexclusions' found.
 
 %contains: stdout
-Enablement of all project features reset to the default
+Enablements of all project features reset to the default
 
 %contains: .oppfeaturestate
 <?xml version="1.0" ?>

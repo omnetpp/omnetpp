@@ -14,4 +14,4 @@ opp_featuretool list
 %exitcode: 1
 
 %contains: stderr
-opp_featuretool: Error: Feature 'B' requires undefined feature 'A' in '.oppfeatures'
+opp_featuretool: Error: Feature 'B' requires or recommends undefined feature 'A' in '.oppfeatures'
