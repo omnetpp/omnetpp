@@ -879,6 +879,19 @@ See the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 formal syntax, and section \ref{sec:ned-ref:parameteric-type-resolution}
 for the type resolution rules.
 
+\subsubsection{The @dynamic Property}
+\label{sec:ned-ref:dynamic-property}
+
+The \fprop{@dynamic} property is only recognized for submodules. The value may
+be empty, \ttt{true} or \ttt{false}; \ttt{@dynamic} is equivalent to \ttt{@dynamic(true)}.
+
+When a submodule is marked as dynamic inside a compound module, the submodule
+will not be instantiated when the compound module is created; rather, it is
+expected that it will be instantiated at runtime, using dynamic module creation.
+A module created this way will pick up parameter values from the submodule
+declaration in the NED file as well as from the ini file. Dynamic submodules
+may be displayed in the graphical NED editor as semi-transparent, allowing them
+to be edited and configured like other submodules.
 
 \subsubsection{Conditional Submodules}
 \label{sec:ned-ref:conditional-submodules}

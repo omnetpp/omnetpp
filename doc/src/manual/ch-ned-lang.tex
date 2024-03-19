@@ -2612,12 +2612,55 @@ $result$ & \ttt{@prop(foo=A,b,c;bar=1,2)}
 \begin{note}
     The above merge rules are part of NED, but the code that interprets
     properties may have special rules for certain properties. For example,
-    the \ttt{@unit} property of parameters is not allowed to be overridden,
-    and \ttt{@display} is merged with special although similar rules
+    the \fprop{@unit} property of parameters is not allowed to be overridden,
+    and \fprop{@display} is merged with special although similar rules
     (see Chapter \ref{cha:graphics}).
 \end{note}
 
 
+\subsection{Known Properties}
+\label{sec:ned-lang:known-properties}
+
+Here is a list of known NED properties in {\omnetpp}, grouped by the place of their usage.
+Note that simulation models, such as the INET Framework, may define and use additional
+properties for their own purposes.
+
+File / package level properties:
+
+\begin{itemize}
+  \item \fprop{@namespace(<name>)}: Defines a namespace for the C++ classes of NED components in the file or package tree. See \ref{sec:ned-lang:simple-modules}, \ref{sec:ned-ref:resolving-cpp-class}.
+\end{itemize}
+
+Module, channel, submodule and connection properties:
+
+\begin{itemize}
+  \item \fprop{@display(<string>)}: Determines the visual representation in graphical user interfaces like Qtenv. See \ref{sec:graphics:display-strings}.
+  \item \fprop{@class(<classname>)}: Together with \fprop{@namespace}, specifies the C++ class to be used for modules defined in the NED file. See \ref{sec:ned-lang:simple-modules}, \ref{sec:ned-ref:resolving-cpp-class}.
+  \item \fprop{@isNetwork}: Marks a compound module as a network, making it a candidate for being the top-level module. See \ref{sec:ned-ref:isnetwork-property}.
+  \item \fprop{@dynamic}: Submodules declared dynamic will not be instantiated automatically, it is expected that they will be created at runtime by other modules. See \ref{sec:ned-ref:dynamic-property}.
+  \item \fprop{@signal[<signalname>](...)}: Declares a signal that can be emitted by modules of this type. See \ref{sec:simple-modules:signal-declarations}.
+  \item \fprop{@statistic[<name>](...)}: Defines a statistic, including its recording modes and possibly associated signals. See \ref{sec:simple-modules:declaring-statistics}.
+  \item \fprop{@statisticTemplate[<name>](...)}: Defines a template for statistics set up programmatically. See \ref{sec:simple-modules:statistic-recording-dynamic-signals}.
+  \item \fprop{@figure[<name>](...)}: Defines a graphical element to be displayed in the graphical user interface. See \ref{sec:graphics:creating-and-manipulating-figures}.
+  \item \fprop{@defaultStatistic}: Denotes the default statistic to be displayed on the module's axis in Sequence Chart tool in the IDE.
+\end{itemize}
+
+Parameter properties:
+
+\begin{itemize}
+  \item \fprop{@unit(<string>)}: Specifies the measurement unit for a parameter, e.g., "s" for seconds. See \ref{sec:ned-lang:units}.
+  \item \fprop{@prompt(<string>)}: Provides a user-friendly prompt string for input parameters, enhancing model usability. See \ref{sec:ned-ref:prompt-property}.
+  \item \fprop{@mutable}: Indicates that the value of a parameter can change during the simulation, supporting dynamic behavior in models. See \ref{sec:ned-lang:mutable}, \ref{sec:ned-ref:mutable-property}.
+  \item \fprop{@enum(<strings>)}: Defines a list of valid values for the parameter.
+\end{itemize}
+
+Gate properties:
+
+\begin{itemize}
+  \item \fprop{@directIn}: Marks an input gate for receiving direct messages, bypassing the standard message passing mechanism. See \ref{sec:simple-modules:direct-sending}, \ref{sec:ned-ref:recognized-gate-properties}.
+  \item \fprop{@loose}: Declares that the gate is not required to be connected in the connections section of the compound module. See \ref{sec:ned-ref:recognized-gate-properties}.
+  \item \fprop{@labels(<strings>)}: Assigns a set of labels to the gate, which are used for matching gates to be connected in the graphical editor.
+\end{itemize}
 
 
 \section{Inheritance}
