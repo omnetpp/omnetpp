@@ -30,15 +30,15 @@ namespace omnetpp {
  * elements when a graphical runtime environment is used.
  *
  * A display string consist of several named tags, where each tag may have
- * several arguments (parameters). The syntax: "tag1=value1,val2,val3;tag2=val4,val5".
+ * several arguments (parameters). The syntax: `tag1=value1,val2,val3;tag2=val4,val5`.
  *
- * The special characters ",", ";", and "=" may be included in tag argument
- * values by preceding (escaping) them with a "\". A literal backslash may
- * be written as "\\".
+ * The special characters `,`, `;`, and `=` may be included in tag argument
+ * values by preceding (escaping) them with a `\`. A literal backslash may
+ * be written as `\\`.
  *
- * Tag values may also contain expressions in the following form: "${expression}".
+ * Tag values may also contain expressions in the following form: `${expression}`.
  * The three special characters mentioned above lose their meaning within these
- * expressions even without escaping. A literal dollar sign may be written as "$$".
+ * expressions even without escaping. A literal dollar sign may be written as `$$`.
  *
  * This class facilitates tasks such as adding new tags, adding arguments to
  * existing tags, removing tags or replacing arguments. The internal storage

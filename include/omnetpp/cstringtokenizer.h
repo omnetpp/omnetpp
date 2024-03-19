@@ -30,31 +30,31 @@ class StringTokenizer;
  * @brief String tokenizer that supports quoted strings and nested parenthesis.
  *
  * It considers the input string to consist of tokens, separated by one or more
- * delimiter characters. Repeated calls to nextToken() will enumerate the tokens
- * in the string, returning nullptr after the last token. The function
- * hasMoreTokens() can be used to find out whether there are more tokens
- * without consuming one. There is also an asVector() method that returns
+ * delimiter characters. Repeated calls to `nextToken()` will enumerate the tokens
+ * in the string, returning `nullptr` after the last token. The function
+ * `hasMoreTokens()` can be used to find out whether there are more tokens
+ * without consuming one. There is also an `asVector()` method that returns
  * all tokens at once in a string vector.
  *
  * By default, tokens are trimmed of leading and trailing whitespace, and empty
  * tokens are discarded. Trimming and empty token discarding can be turned off by
- * specifying the NO_TRIM and KEEP_EMPTY options to the constructor, respectively.
+ * specifying the `NO_TRIM` and `KEEP_EMPTY` options to the constructor, respectively.
  *
- * KEEP_EMPTY is advised for delimiters that act as field separators, such as
- * comma, semicolon, colon or tab. When KEEP_EMPTY is enabled, the number of
- * tokens returned is \#separators+1, except for empty input which produces zero
+ * `KEEP_EMPTY` is advised for delimiters that act as field separators, such as
+ * comma, semicolon, colon or tab. When `KEEP_EMPTY` is enabled, the number of
+ * tokens returned is `#separators+1`, except for empty input which produces zero
  * items, and blank input which produces zero or one token, depending on whether
- * NO_TRIM was also specified.
+ * `NO_TRIM` was also specified.
  *
  * The tokenizer may be asked not to split up substrings protected by a pair of
- * quote characters ("string constants"). This is enabled with the HONOR_QUOTES option.
+ * quote characters ("string constants"). This is enabled with the `HONOR_QUOTES` option.
  * Use backslash escaping to put quote chars inside strings: "Hello \" World".
  * The list of characters to be treated as quotation marks can be specified,
- * the default is double quote " and apostrophe '.  Unterminated string constants
+ * the default is double quote \" and apostrophe '.  Unterminated string constants
  * will be reported with an exception.
  *
  * The tokenizer may also be asked not to split up parenthesized expressions.
- * This is enabled with the HONOR_PARENS option. The list of character pairs
+ * This is enabled with the `HONOR_PARENS` option. The list of character pairs
  * (open+close) to be treated as parens can be specified, the default is parens,
  * square brackets and curly braces. Proper paren nesting is checked, and
  * mismatches, unterminated and unmatched parens are reported with an exception.

@@ -128,9 +128,10 @@ namespace omnetpp {
  * @defgroup RandomNumbers  Random Number Generation
  *
  * @brief Draw random values from various distributions.
- *
- * <b>Distributions</b>
- *
+ * 
+ * Distributions
+ * -------------
+ * 
  * The simulation library provides support for generating random variates
  * from various continuous and discrete distributions: uniform, exponential,
  * normal, truncated  normal, gamma, beta, Erlang, Weibull, Bernoulli,
@@ -141,8 +142,9 @@ namespace omnetpp {
  * that subclass cRandom and encapsulate both the RNG and the parameters
  * of the distribution.
  *
- * <b>Random number generators</b>
- *
+ * Random number generators
+ * ------------------------
+ * 
  * \opp provides several random number generators (streams) and several
  * random number generator algorithms (default is cMersenneTwister).
  * RNGs can be configured in omnetpp.ini. RNGs are made available via
