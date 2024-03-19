@@ -1,0 +1,54 @@
+%description:
+Test context module for evaluating expressions in parameter assignments.
+
+%file: test.ned
+import testlib.Dump;
+
+module App
+{
+    parameters:
+        string i = default("");
+}
+
+module Host
+{
+    parameters:
+        *.i = default("");
+    submodules:
+        app: App;
+}
+
+network Test
+{
+    submodules:
+        host[2]: Host;
+        dump: Dump {
+            printParamAssignmentLocations = true;
+        }
+}
+
+%inifile: test.ini
+network = Test
+*.host[*].app.i = string(ancestorIndex(1))
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.host[0]: Host {
+            submodules:
+                module Test.host[0].app: App {
+                    parameters:
+                        i = "0"  (from .../test.ini:2)
+                }
+        }
+        module Test.host[1]: Host {
+            submodules:
+                module Test.host[1].app: App {
+                    parameters:
+                        i = "1"  (from .../test.ini:2)
+                }
+        }
+}
+
