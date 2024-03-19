@@ -143,7 +143,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns the component (module/channel) this parameter belongs to.
      * Note: return type is cObject only for technical reasons, it can be
-     * safely cast to cComponent.
+     * safely cast to cComponent. Consider using getOwnerComponent() instead.
      */
     virtual cObject *getOwner() const override; // note: cannot return cComponent* (covariant return type) due to declaration order
 
@@ -216,6 +216,11 @@ class SIM_API cPar : public cObject
      * at runtime.
      */
     cProperties *getProperties() const;
+
+    /**
+     * Returns the component (module or channel) that owns this parameter object.
+     */
+    cComponent *getOwnerComponent() const { return ownerComponent;}
 
     /**
      * Returns the base directory for interpreting relative path names
@@ -446,7 +451,7 @@ class SIM_API cPar : public cObject
      * Note: this method understands expressions too, but does NOT handle
      * the special values "default" and "ask".
      */
-    void parse(const char *text, const char *baseDirectory=nullptr, FileLine loc=FileLine());
+    void parse(const char *text, const char *baseDirectory=nullptr, FileLine loc=FileLine(), bool resetEvalContext=true);
     //@}
 
     /** @name Overloaded assignment and conversion operators. */

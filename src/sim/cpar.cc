@@ -464,7 +464,7 @@ void cPar::doConvertToConst(bool isInternalChange)
     afterChange();
 }
 
-void cPar::parse(const char *text, const char *baseDirectory, FileLine loc)
+void cPar::parse(const char *text, const char *baseDirectory, FileLine loc, bool resetEvalContext)
 {
     // Implementation note: we are trying to share cParImpl objects for
     // values coming from the configuration. This is possible because an
@@ -503,6 +503,9 @@ void cPar::parse(const char *text, const char *baseDirectory, FileLine loc)
         componentType->putSharedParImpl(key.c_str(), tmp);
         setImpl(tmp);
     }
+
+    if (resetEvalContext)
+        setEvaluationContext(getOwnerComponent());
 
     // Ensure that expressions for non-volatile parameters are evaluated immediately,
     // unless we are in the setup phase when re-using the parsing of similar expressions
