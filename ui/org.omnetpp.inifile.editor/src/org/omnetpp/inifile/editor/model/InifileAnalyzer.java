@@ -8,7 +8,6 @@
 package org.omnetpp.inifile.editor.model;
 
 import static org.eclipse.core.resources.IMarker.SEVERITY_ERROR;
-import static org.eclipse.core.resources.IMarker.SEVERITY_INFO;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_SIMTIME_RESOLUTION;
@@ -590,9 +589,9 @@ public final class InifileAnalyzer {
             else if (!key.matches("[a-zA-Z0-9-_]+"))
                 markers.addError(section, key, "Syntax error in configuration option: "+key);
             else if (ConfigRegistry.getIgnoredOptions().contains(key))
-                markers.addInfo(section, key, "User-defined option (ignored by the editor): "+key);
+                markers.addInfo(section, key, "Known custom configuration option (see Preferences): "+key);
             else
-                markers.addError(section, key, "Unknown configuration option: "+key);
+                markers.addWarning(section, key, "Invalid or custom configuration option: "+key);
             return;
         }
         else if (e == CFGID_SIMTIME_SCALE) {
@@ -1218,9 +1217,9 @@ public final class InifileAnalyzer {
             else if (!optionName.matches("[a-zA-Z0-9-_]+"))
                 markers.addError(section, key, "Syntax error in per-object configuration option: "+optionName);
             else if (ConfigRegistry.getIgnoredOptions().contains(optionName))
-                markers.addInfo(section, key, "User-defined option (ignored by the editor): "+optionName);
+                markers.addInfo(section, key, "Known custom configuration option (see Preferences): "+optionName);
             else
-                markers.addError(section, key, "Unknown per-object configuration option: "+optionName);
+                markers.addWarning(section, key, "Invalid or custom per-object configuration option: "+optionName);
             return;
         }
         else if (e.isGlobal() && !section.equals(GENERAL)) {
