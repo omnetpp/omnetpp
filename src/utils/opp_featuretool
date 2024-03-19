@@ -202,7 +202,8 @@ root directory where the following files are present:
         # enable command
         enable_parser = subparsers.add_parser('enable', help='Enable the specified features')
         enable_parser.add_argument('features', nargs='+', help='Enable the specified features, use \'all\' for all features')
-        enable_parser.add_argument('-f', '--with-dependencies', action='store_true', default=False, help='Enable all required features without asking for confirmation')
+        enable_parser.add_argument('-r', '--with-required', action='store_true', default=False, help='Enable all required features (but not the recommended ones) without asking for confirmation')
+        enable_parser.add_argument('-f', '--with-dependencies', action='store_true', default=False, help='Enable all required and recommended features without asking for confirmation')
 
         # disable command
         disable_parser = subparsers.add_parser('disable', help='Disable the specified features')
@@ -520,18 +521,23 @@ root directory where the following files are present:
             isOkToProceed = True
             self.printIfVerbose(1, "Enabling feature(s):  " + ", ".join(sorted(featuresToEnable)))
             if requiredFeaturesToEnable:
-                if self.args.with_dependencies:
+                if self.args.with_dependencies or self.args.with_required:
                     self.printIfVerbose(1, "Required features that will be enabled as well:  " + ", ".join(sorted(requiredFeaturesToEnable)))
                 else:
                     print("Required features:  " + ", ".join(sorted(requiredFeaturesToEnable)))
                     isOkToProceed = queryYesNo("Do you want to proceed?", default="yes")
-            enableRecommended = False
             if recommendedFeaturesToEnable:
-                if self.args.with_dependencies: # selects non-interactive mode
-                    print("Skipping recommended features: " + ", ".join(sorted(recommendedFeaturesToEnable)))
+                if self.args.with_required:
+                    self.printIfVerbose(1, "Skipping recommended features: " + ", ".join(sorted(recommendedFeaturesToEnable)))
+                    enableRecommended = False
+                elif self.args.with_dependencies:
+                    self.printIfVerbose(1, "Adding recommended features: " + ", ".join(sorted(recommendedFeaturesToEnable)))
+                    enableRecommended = True
                 else:
                     print("Recommended features:  " + ", ".join(sorted(recommendedFeaturesToEnable)))
                     enableRecommended = queryYesNo("Also enable recommended features?", default="yes")
+            else:
+                enableRecommended = False
             if isOkToProceed:
                 allFeaturesToEnable = featuresToEnable + list(requiredFeaturesToEnable)
                 if enableRecommended:
