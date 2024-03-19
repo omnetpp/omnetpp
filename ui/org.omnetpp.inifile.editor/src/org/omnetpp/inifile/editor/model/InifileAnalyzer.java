@@ -1210,21 +1210,21 @@ public final class InifileAnalyzer {
 
     protected void validatePerObjectConfig(String section, String key, INedTypeResolver ned) {
         Assert.isTrue(key.lastIndexOf('.') > 0);
-        String configName = key.substring(key.lastIndexOf('.')+1);
-        ConfigOption e = ConfigRegistry.getPerObjectOption(configName);
+        String optionName = key.substring(key.lastIndexOf('.')+1);
+        ConfigOption e = ConfigRegistry.getPerObjectOption(optionName);
         if (e == null) {
-            if (OBSOLETE_OPTIONS.containsKey(configName))
-                markers.addError(section, key, OBSOLETE_OPTIONS.get(configName));
-            else if (!configName.matches("[a-zA-Z0-9-_]+"))
-                markers.addError(section, key, "Syntax error in per-object configuration option: "+configName);
-            else if (ConfigRegistry.getIgnoredOptions().contains(configName))
-                markers.addInfo(section, key, "User-defined option (ignored by the editor): "+configName);
+            if (OBSOLETE_OPTIONS.containsKey(optionName))
+                markers.addError(section, key, OBSOLETE_OPTIONS.get(optionName));
+            else if (!optionName.matches("[a-zA-Z0-9-_]+"))
+                markers.addError(section, key, "Syntax error in per-object configuration option: "+optionName);
+            else if (ConfigRegistry.getIgnoredOptions().contains(optionName))
+                markers.addInfo(section, key, "User-defined option (ignored by the editor): "+optionName);
             else
-                markers.addError(section, key, "Unknown per-object configuration option: "+configName);
+                markers.addError(section, key, "Unknown per-object configuration option: "+optionName);
             return;
         }
         else if (e.isGlobal() && !section.equals(GENERAL)) {
-            markers.addError(section, key, "Per-object configuration option \""+configName+"\" can only be specified globally, in the [General] section");
+            markers.addError(section, key, "Per-object configuration option \""+optionName+"\" can only be specified globally, in the [General] section");
         }
 
         // check value
