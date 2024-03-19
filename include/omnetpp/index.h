@@ -127,6 +127,8 @@ namespace omnetpp {
 /**
  * @defgroup RandomNumbers  Random Number Generation
  *
+ * @brief Draw random values from various distributions.
+ *
  * <b>Distributions</b>
  *
  * The simulation library provides support for generating random variates
@@ -196,6 +198,8 @@ namespace omnetpp {
 
 /**
  * @defgroup ResultFiltersRecorders Result Filters and Recorders
+ *
+ * @brief Classes for declarative result collection.
  *
  * Result filters and recorders are objects that participate in declarative
  * statistics recording via <tt>@statistic</tt> properties in NED files.
