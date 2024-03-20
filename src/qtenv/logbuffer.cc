@@ -113,6 +113,16 @@ void LogBuffer::addInfo(const char *text, int len)
     Q_EMIT logEntryAdded();
 }
 
+void LogBuffer::addScheduler(const char *text, int len)
+{
+    // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
+    Entry *entry = new Entry(Entry::Kind::SCHEDULER, 0, simTime(), nullptr, text, len);
+    entries.push_back(entry);
+    discardEventsIfLimitExceeded();
+
+    Q_EMIT logEntryAdded();
+}
+
 void LogBuffer::beginSend(cMessage *msg, const SendOptions& options)
 {
     ASSERT(!entries.empty());

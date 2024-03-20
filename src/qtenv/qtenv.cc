@@ -2412,11 +2412,20 @@ void Qtenv::log(cLogEntry *entry)
     }
 
     // insert into log buffer
-    cModule *module = getSimulation()->getContextModule();
-    if (module)
+    if (getSimulation()->getContextType() == CTX_SCHEDULER) {
+        if (!logBuffer.getEntries().back()->isScheduler()) {
+            std::string message = "** Scheduler after event #" + std::to_string(getSimulation()->getEventNumber());
+            logBuffer.addScheduler(message.c_str());
+        }
         logBuffer.addLogLine(entry->logLevel, prefix.c_str(), s, n);
-    else
-        logBuffer.addInfo(s, n);
+    }
+    else {
+        cModule *module = getSimulation()->getContextModule();
+        if (module)
+            logBuffer.addLogLine(entry->logLevel, prefix.c_str(), s, n);
+        else
+            logBuffer.addInfo(s, n);
+    }
 }
 
 bool Qtenv::inputDialog(const char *title, const char *prompt,

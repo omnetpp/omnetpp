@@ -388,7 +388,7 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
 {
     if (shouldShowBanner(entry, shouldShowAnyLine(entry))) {
         if (lineIndex == 0) // it's an event banner, or if no component, an info line
-            return (entry->isSystemMessage() ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + QString(entry->banner) + SGR(RESET);
+            return (entry->isSystemMessage() || entry->isScheduler() ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + QString(entry->banner) + SGR(RESET);
         else
             lineIndex--; // skipping the banner
     }

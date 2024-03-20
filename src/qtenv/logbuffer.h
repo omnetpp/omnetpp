@@ -65,6 +65,7 @@ class QTENV_API LogBuffer : public QObject
             GENESIS,              // for things printed in module constructors, etc.
             PROCESSED_EVENT,
             COMPONENT_INIT_STAGE,
+            SCHEDULER,
             SYSTEM_MESSAGE,       // an "info log line"
             INTERNAL_WARNING,     // invalid DisplayString for example
         };
@@ -89,6 +90,7 @@ class QTENV_API LogBuffer : public QObject
         bool isInitializationStage() { return kind == Kind::COMPONENT_INIT_STAGE; }
         bool isSystemMessage() { return kind == Kind::SYSTEM_MESSAGE; }
         bool isEvent() { return kind == Kind::PROCESSED_EVENT; }
+        bool isScheduler() { return kind == Kind::SCHEDULER; }
 
         ~Entry();
     };
@@ -112,6 +114,8 @@ class QTENV_API LogBuffer : public QObject
     void addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len);
     void addInfo(const char *text) { addInfo(text, strlen(text)); }
     void addInfo(const char *text, int len);
+    void addScheduler(const char *text) { addScheduler(text, strlen(text)); }
+    void addScheduler(const char *text, int len);
 
     void beginSend(cMessage *msg, const SendOptions& options);
     void messageSendDirect(cMessage *msg, cGate *toGate, const ChannelResult& result);

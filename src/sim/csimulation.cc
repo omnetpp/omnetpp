@@ -499,6 +499,8 @@ void cSimulation::deleteNetwork()
 
 cEvent *cSimulation::takeNextEvent()
 {
+    setContextType(CTX_SCHEDULER);
+
     // determine next event. Normally (with sequential simulation),
     // the scheduler just returns fes->peekFirst().
     cEvent *event = scheduler->takeNextEvent();

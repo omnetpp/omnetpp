@@ -34,7 +34,7 @@ class cObject;
 class cComponent;
 
 // logically belongs to csimulation.h but must be here because of declaration order
-enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
+enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_SCHEDULER, CTX_REFRESHDISPLAY, CTX_FINISH, CTX_CLEANUP};
 
 
 /**
