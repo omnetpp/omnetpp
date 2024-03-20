@@ -357,6 +357,9 @@ cModule *cModuleType::create(const char *moduleName, cModule *parentModule, int 
 
 cModule *cModuleType::instantiateModuleClass(const char *className)
 {
+#ifdef PRINT_MODULE_TYPES_USED
+    std::cout << "CREATE " << qualifiedName << std::endl;
+#endif
     cObject *obj = cObjectFactory::createOne(className);
     cModule *module = dynamic_cast<cModule *>(obj);
     if (!module)
