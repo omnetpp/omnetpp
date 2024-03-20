@@ -52,7 +52,6 @@
 /doc/src/python-api/_autosummary
 /ide
 /include/omnetpp/platdep/config.h
-/include/omnetpp/platdep/config.h
 /include/sysc
 /include/systemc
 /include/systemc.h
@@ -106,8 +105,6 @@
 /samples/osg-satellites/osg-satellites
 /samples/osg-satellites/osg-satellites_dbg
 /samples/petrinets/petrinets
-/samples/petrinets/petrinets
-/samples/petrinets/petrinets_dbg
 /samples/petrinets/petrinets_dbg
 /samples/phy/phy
 /samples/phy/phy_dbg
