@@ -5,6 +5,7 @@ running the charts scripts they contain. The main user of this
 module is `opp_charttool`.
 """
 
+import logging
 import os
 import sys
 import importlib
@@ -18,6 +19,8 @@ import omnetpp.scave.impl.chart_charttool as chart_module
 import omnetpp.scave.utils as utils
 
 from ._version import __version__
+
+logger = logging.getLogger(__name__)
 
 _real_show = plt.show
 
@@ -116,7 +119,7 @@ class Workspace:
             if not os.path.isdir(workspace_dir):
                 raise RuntimeError("Specified workspace directory doesn't exist, or is not a directory: " + workspace_dir)
             #if not os.path.isdir(workspace_dir + "/.metadata"):
-            #   print("Warning: Directory does not look like a workspace (it has no .metadata subdirectory): " + workspace_dir)
+            #   logger.warning("Directory does not look like a workspace (it has no .metadata subdirectory): " + workspace_dir)
             self.workspace_dir = os.path.abspath(workspace_dir)
         else:
             self.workspace_dir = None
@@ -532,7 +535,7 @@ class Analysis:
             if enforce:
                 raise RuntimeError(msg)
             else:
-                print("WARNING: " + msg, file=sys.stderr)
+                logger.warning(msg)
                 return None
         return fname
 

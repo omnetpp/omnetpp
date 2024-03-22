@@ -12,12 +12,16 @@ __license__ = """
 import sys
 import os
 import re
+import logging
 import pickle as pl
 import traceback as tb
 
 # the print function is replaced so it will flush after each line
 import functools
 print = functools.partial(print, flush=True)
+
+logging.basicConfig(format='%(levelname)s: %(message)s', force=True)
+logging.getLogger("omnetpp.scave").setLevel(logging.INFO)
 
 # the manual conversions are only necessary because of a Py4J bug:
 # https://github.com/bartdag/py4j/issues/359

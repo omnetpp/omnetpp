@@ -16,6 +16,7 @@ If you want image/data export to work:
 - `export_data_if_needed()`
 """
 
+import logging
 import random, sys, os, string, re, math
 import numpy as np
 import scipy.stats as st
@@ -26,6 +27,7 @@ import matplotlib.pyplot as plt
 from omnetpp.scave import chart, ideplot, vectorops
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
+logger = logging.getLogger(__name__)
 
 verbose_export = os.getenv("WITHIN_OMNETPP_IDE") == "yes" # use False as default, but we want verbose export in IDE
 
@@ -49,11 +51,11 @@ def _import_scave_bindings():
         modulename = "omnetpp.scave.scave_bindings" + suffix
         try:
             if suffix:
-                print("Falling back to: ", modulename)
+                logger.info("Falling back to: " + modulename)
             sb = importlib.import_module(modulename)
             break
         except ImportError as e:
-            print("Failed to load " + modulename + ":", e)
+            logger.error("Failed to load {modulename}: {e}")
 
     if sb is None:
         raise ImportError("Could not import omnetpp.scave.scave_bindings")
@@ -82,10 +84,9 @@ def _version_less_than(actual, required):
 
 def _check_version(module, required):
     if _version_less_than(module.__version__, required):
-        print("WARNING: '" + module.__name__ + "' is too old, some analysis tool functionality may be broken. "
-              "Required: " + required + ", present: " + module.__version__ + ". "
-              "Try running `python3 -m pip install --user --upgrade " + module.__name__ + "` to upgrade."
-              , file=sys.stderr)
+        logger.warning(f"'{module.__name__}' is too old, some analysis tool functionality may be broken. "
+              f"Required: {required}, present: {module.__version__}. "
+              f"Try running `python3 -m pip install --user --upgrade {module.__name__}` to upgrade.")
 
 _check_version(np, "1.18.0")  # Dec 22, 2019
 _check_version(pd, "1.0.0")  # January 29, 2020
@@ -1246,8 +1247,7 @@ def export_image_if_needed(props):
         height = float(get_prop("image_export_height") or 4)
         dpi = float(get_prop("image_export_dpi") or "96")
 
-        #print("exporting image to: '" + filepath + "' as " + format)
-
+        logger.info(f"exporting image to: '{filepath}' as {format}")
         os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
         plt.gcf().set_size_inches(width, height)
@@ -1491,7 +1491,7 @@ def export_data_if_needed(df, props, **kwargs):
     try:
         chart.set_observed_column_names(list(df.columns.values))
     except Exception as e:
-        print("Warning: error in chart.set_observed_column_names():", e, file=sys.stderr)
+        logger.warning(f"error in chart.set_observed_column_names(): {e}")
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -1503,8 +1503,7 @@ def export_data_if_needed(df, props, **kwargs):
         format = get_prop("data_export_format") or "csv"
         filepath = get_data_export_filepath(props)
 
-        #print("exporting data to: '" + filepath + "' as " + format)
-
+        logger.info(f"exporting data to: '{filepath}' as {format}")
         os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
         old_opts = np.get_printoptions()
@@ -2057,7 +2056,7 @@ def select_best_partitioning_column_pair(df, props=None):  #TODO remove default 
     if no such pair was found. This method is useful for creating e.g. a bar plot.
     """
     if props is None:
-        print("select_best_partitioning_column_pair(): Missing props argument! Update chart script, or code will break on next release!", file=sys.stderr)
+        logger.warning("select_best_partitioning_column_pair(): Missing props argument! Update chart script, or code will break on next release!")
         props = {}
     title_cols, label_cols = extract_label_columns(df, props)
     if len(label_cols) == 0:
@@ -2097,7 +2096,7 @@ def select_groups_series(df, props):
     series = split(props["series"])
 
     if not groups and not series:
-        print("The Groups and Series options were not set in the dialog, inferring them from the data.")
+        logger.info("The Groups and Series options were not set in the dialog, inferring them from the data.")
         g, s = ("module", "name") if len(df) == 1 else select_best_partitioning_column_pair(df, props)
         groups, series = [g], [s]
 
@@ -2136,10 +2135,10 @@ def select_xaxis_and_groupby(df, props):
     group_by = split(props["group_by"])
 
     if not xaxis_itervar and not group_by:
-        print("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data..")
+        logger.info("The 'X Axis' and 'Group By' options were not set in the dialog, inferring them from the data.")
         xaxis_itervar, group_by = select_best_partitioning_column_pair(df, props)
         group_by = [group_by] if group_by else []
-        print("X Axis: " + xaxis_itervar + ", Group By: " + ",".join(group_by))
+        logger.info(f"X Axis: {xaxis_itervar}, Group By: " + ",".join(group_by))
 
     if xaxis_itervar:
         assert_columns_exist(df, [xaxis_itervar], "The iteration variable for the X axis could not be found")
@@ -2162,7 +2161,7 @@ def select_xaxis_and_groupby(df, props):
     for c in df:
         ul = len(df[c].unique())
         if ul > 1 and c != xaxis_itervar and c not in group_by and c not in uninteresting:
-            print("Points are averaged from an overall", ul, "unique", c, "values.")
+            logger.info(f"Points are averaged from an overall {ul} unique {c} values.")
 
     return xaxis_itervar, group_by
 
@@ -2346,7 +2345,7 @@ def _interpolationmode_to_drawstyle(interpolationmode, hasenum):
     elif interp == "backward-sample-hold":
         ds = 'steps-pre'
     else:
-        print("Unknown interpolationmode:", interp, file=sys.stderr)
+        logger.warning(f"Unknown interpolationmode: ${interp}")
         ds = None
 
     return ds

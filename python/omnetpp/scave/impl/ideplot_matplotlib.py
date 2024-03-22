@@ -1,5 +1,8 @@
+import logging
 import matplotlib.pyplot as plt
 from omnetpp.scave import utils
+
+logger = logging.getLogger(__name__)
 
 def set_properties(*vargs, **kwargs):
     pass
@@ -14,7 +17,7 @@ def get_supported_property_keys():
 
 
 def set_warning(warning):
-    print("WARNING:", warning)
+    logger.warning(warning)
     # TODO this might not always work, depending on whether it's called before or after plotting?
     plt.annotate(warning, xy=(20, 40), xycoords="figure pixels", color="red")
 
