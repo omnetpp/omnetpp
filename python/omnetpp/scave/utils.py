@@ -1236,7 +1236,7 @@ def export_image_if_needed(props):
 
         print("exporting image to: '" + filepath + "' as " + format)
 
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
         plt.gcf().set_size_inches(width, height)
         plt.gcf().set_dpi(dpi)
@@ -1373,7 +1373,7 @@ def get_image_export_filepath(props):
     filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
     if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
         filename = filename + "." + format
-    return os.path.join(folder, filename)
+    return os.path.normpath(os.path.join(folder, filename))
 
 def _format_to_extension(format):
     format = format.lower()
@@ -1491,7 +1491,7 @@ def export_data_if_needed(df, props, **kwargs):
 
         print("exporting data to: '" + filepath + "' as " + format)
 
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
         old_opts = np.get_printoptions()
         np.set_printoptions(threshold=np.inf, linewidth=np.inf)
@@ -1518,7 +1518,7 @@ def get_data_export_filepath(props):
     filename = get_prop("data_export_filename") or _sanitize_filename(chart.get_name())
     if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
         filename = filename + "." + extension
-    return os.path.join(folder, filename)
+    return os.path.normpath(os.path.join(folder, filename))
 
 
 def _sanitize_filename(filename):
