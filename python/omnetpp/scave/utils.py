@@ -1345,17 +1345,16 @@ def export_image_if_needed(props):
         backend = _get_mpl_backend_for_image_format(format)
 
         # save image
-        retry = True
         try:
-            plt.savefig(filepath, format=format, dpi=dpi, metadata=_make_image_metadata(), backend=backend)
             retry = False
+            plt.savefig(filepath, format=format, dpi=dpi, metadata=_make_image_metadata(), backend=backend)
         except:
-            pass
+            retry = True
         if retry:
             # try again without metadata, in case that caused the error
             # oh yes, and we cannot put this into the "except" block, because we'd get
             # an ugly error message ("During handling of the above exception, another
-            # exception occurred") if this fails too, e.g. due to innvalid "format" parameter
+            # exception occurred") if this fails too, e.g. due to an invalid "format" parameter
             plt.savefig(filepath, format=format, dpi=dpi, backend=backend)
 
 def get_image_export_filepath(props):
@@ -1494,13 +1493,15 @@ def export_data_if_needed(df, props, **kwargs):
         os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
         old_opts = np.get_printoptions()
-        np.set_printoptions(threshold=np.inf, linewidth=np.inf)
-        np.set_string_function(printer, False)
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_colwidth', None)
-        _export_df_as(df, format, filepath, **kwargs)
-        np.set_string_function(None, False)
-        np.set_printoptions(**old_opts)
+        try:
+            np.set_printoptions(threshold=np.inf, linewidth=np.inf)
+            np.set_string_function(printer, False)
+            pd.set_option('display.max_columns', None)
+            pd.set_option('display.max_colwidth', None)
+            _export_df_as(df, format, filepath, **kwargs)
+        finally:
+            np.set_string_function(None, False)
+            np.set_printoptions(**old_opts)
 
 def get_data_export_filepath(props):
     """
