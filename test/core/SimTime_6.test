@@ -1,0 +1,137 @@
+%description:
+SimTime: test double+unit constructor
+
+%activity:
+
+for (int numDigits = 1; numDigits < 6; numDigits++) {
+    EV << std::endl;
+    for (int exponent = -15; exponent <= 0; exponent += 3) {
+        for (int decimalPoint = 0; decimalPoint < numDigits; decimalPoint++) {
+            int64_t digits = intuniform(0, pow(10,numDigits));
+            //EV << "digits=" << digits << "\n";
+            double d = digits / pow(10, decimalPoint);
+            EV << "SimTime(" << d << ", " << exponent << ")";
+            try {
+                EV << " = " << SimTime(d, (SimTimeUnit)exponent) << "\n";
+            }
+            catch(std::exception& e) {
+                EV << " ==> " << e.what() << "\n";
+            }
+        }
+    }
+}
+
+/*
+#define P(x)  { EV << #x; try { EV << (x); } catch(std::exception& e) {EV << " ==> " << e.what();} EV << "\n";}
+P(SimTime(1/3.0, SIMTIME_MS));
+P(SimTime(5, SIMTIME_MS));
+P(SimTime(5.0, SIMTIME_MS));
+P(SimTime(3.5, SIMTIME_MS));
+P(SimTime(3.25, SIMTIME_MS));
+P(SimTime(3.251345, SIMTIME_MS));
+P(SimTime(3.1, SIMTIME_MS));
+P(SimTime(3.2, SIMTIME_MS));
+P(SimTime(3.2, SIMTIME_NS));
+P(SimTime(3.2, SIMTIME_PS));
+P(SimTime(3.2, SIMTIME_FS));
+*/
+
+EV << ".\n";
+
+%contains: stdout
+SimTime(5, -15) =  ==> simtime_t: 5*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(0, -12) = 0
+SimTime(3, -9) = 0.000000003
+SimTime(3, -6) = 0.000003
+SimTime(7, -3) = 0.007
+SimTime(9, 0) = 9
+
+SimTime(83, -15) =  ==> simtime_t: 83*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(2.1, -15) =  ==> simtime_t: 2.1*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(36, -12) = 0.000000000036
+SimTime(8.7, -12) =  ==> simtime_t: 8.7*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(70, -9) = 0.00000007
+SimTime(8.8, -9) = 0.0000000088
+SimTime(88, -6) = 0.000088
+SimTime(1.2, -6) = 0.0000012
+SimTime(58, -3) = 0.058
+SimTime(6.5, -3) = 0.0065
+SimTime(39, 0) = 39
+SimTime(8.7, 0) = 8.7
+
+SimTime(174, -15) =  ==> simtime_t: 174*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(60, -15) =  ==> simtime_t: 60*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(8.49, -15) =  ==> simtime_t: 8.49*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(677, -12) = 0.000000000677
+SimTime(53.7, -12) =  ==> simtime_t: 53.7*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(8.45, -12) =  ==> simtime_t: 8.45*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(72, -9) = 0.000000072
+SimTime(77.7, -9) = 0.0000000777
+SimTime(9.16, -9) = 0.00000000916
+SimTime(115, -6) = 0.000115
+SimTime(97.6, -6) = 0.0000976
+SimTime(7.55, -6) = 0.00000755
+SimTime(709, -3) = 0.709
+SimTime(84.7, -3) = 0.0847
+SimTime(4.31, -3) = 0.00431
+SimTime(448, 0) = 448
+SimTime(85, 0) = 85
+SimTime(0.99, 0) = 0.99
+
+SimTime(755, -15) =  ==> simtime_t: 755*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(79.7, -15) =  ==> simtime_t: 79.7*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(6.59, -15) =  ==> simtime_t: 6.59*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(3.219, -15) =  ==> simtime_t: 3.219*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(8615, -12) = 0.000000008615
+SimTime(745.6, -12) =  ==> simtime_t: 745.6*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(33.37, -12) =  ==> simtime_t: 33.37*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(2.745, -12) =  ==> simtime_t: 2.745*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(4735, -9) = 0.000004735
+SimTime(873.6, -9) = 0.0000008736
+SimTime(66.87, -9) = 0.00000006687
+SimTime(0.714, -9) = 0.000000000714
+SimTime(2292, -6) = 0.002292
+SimTime(834.3, -6) = 0.0008343
+SimTime(12.07, -6) = 0.00001207
+SimTime(6.172, -6) = 0.000006172
+SimTime(8994, -3) = 8.994
+SimTime(722.1, -3) = 0.7221
+SimTime(60.21, -3) = 0.06021
+SimTime(3.622, -3) = 0.003622
+SimTime(3560, 0) = 3560
+SimTime(894.8, 0) = 894.8
+SimTime(16.41, 0) = 16.41
+SimTime(4.984, 0) = 4.984
+
+SimTime(20737, -15) =  ==> simtime_t: 20737*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(2864.7, -15) =  ==> simtime_t: 2864.7*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(613.53, -15) =  ==> simtime_t: 613.53*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(92.217, -15) =  ==> simtime_t: 92.217*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(8.0163, -15) =  ==> simtime_t: 8.0163*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(12134, -12) = 0.000000012134
+SimTime(6053.5, -12) =  ==> simtime_t: 6053.5*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(478.83, -12) =  ==> simtime_t: 478.83*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(86.107, -12) =  ==> simtime_t: 86.107*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(6.336, -12) =  ==> simtime_t: 6.336*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(51811, -9) = 0.000051811
+SimTime(978.1, -9) = 0.0000009781
+SimTime(193.4, -9) = 0.0000001934
+SimTime(27.257, -9) = 0.000000027257
+SimTime(1.6298, -9) =  ==> simtime_t: 1.6298*10^-9 cannot be represented precisely using the current scale exponent -12
+SimTime(12372, -6) = 0.012372
+SimTime(442, -6) = 0.000442
+SimTime(829.91, -6) = 0.00082991
+SimTime(62.079, -6) = 0.000062079
+SimTime(7.986, -6) = 0.000007986
+SimTime(7012, -3) = 7.012
+SimTime(939.6, -3) = 0.9396
+SimTime(39.18, -3) = 0.03918
+SimTime(9.359, -3) = 0.009359
+SimTime(4.4259, -3) = 0.0044259
+SimTime(23482, 0) = 23482
+SimTime(1512.7, 0) = 1512.7
+SimTime(372.37, 0) = 372.37
+SimTime(79.701, 0) = 79.701
+SimTime(0.8752, 0) = 0.8752
+.
+

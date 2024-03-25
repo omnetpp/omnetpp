@@ -124,32 +124,88 @@ void SimTime::overflowNegating()
             "that has no positive equivalent (try decreasing precision)", str().c_str());
 }
 
-SimTime::SimTime(int64_t value, SimTimeUnit unit)
+void SimTime::fromInt64WithUnit(int64_t value, SimTimeUnit unit)
 {
     if (scaleexp == SCALEEXP_UNINITIALIZED)
         throw cRuntimeError("Global simtime_t variable found, initialized with SimTime(%" PRId64 ", %d). "
                 "Global simtime_t variables are forbidden, because scale exponent is not yet known "
                 "at the time they are initialized. Please use double or const_simtime_t instead", value, unit);
 
-    t = value;
     int exponent = unit;
     int expdiff = exponent - scaleexp;
     if (expdiff < 0) {
         int64_t mul = exp10(-expdiff);
-        int64_t tmp = t / mul;
-        if (mul == -1 || tmp * mul != t)
+        t = value / mul;
+        if (mul == -1 || t * mul != value)
             throw cRuntimeError("simtime_t: %" PRId64 "*10^%d cannot be represented precisely using the current scale exponent %d, "
                     "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
                     value, exponent, scaleexp);
-        t = tmp;
     }
     else if (expdiff > 0) {
         int64_t mul = exp10(expdiff);
-        t *= mul;
+        t = value * mul;
         if (mul == -1 || t / mul != value)
             throw cRuntimeError("simtime_t overflow: Cannot represent %" PRId64 "*10^%d, out of range %s allowed by scale exponent %d",
                     value, exponent, range().c_str(), scaleexp);
     }
+    else {
+        t = value;
+    }
+}
+
+void SimTime::fromUint64WithUnit(uint64_t value, SimTimeUnit unit)
+{
+    if (scaleexp == SCALEEXP_UNINITIALIZED)
+        throw cRuntimeError("Global simtime_t variable found, initialized with SimTime(%" PRIu64 ", %d). "
+                "Global simtime_t variables are forbidden, because scale exponent is not yet known "
+                "at the time they are initialized. Please use double or const_simtime_t instead", value, unit);
+
+    int exponent = unit;
+    int expdiff = exponent - scaleexp;
+    uint64_t tmp;
+    if (expdiff < 0) {
+        uint64_t mul = (uint64_t)exp10(-expdiff);
+        tmp = value / mul;
+        if (mul == (uint64_t)-1 || tmp * mul != value)
+            throw cRuntimeError("simtime_t: %" PRIu64 "*10^%d cannot be represented precisely using the current scale exponent %d, "
+                    "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
+                    value, exponent, scaleexp);
+    }
+    else if (expdiff > 0) {
+        uint64_t mul = (uint64_t)exp10(expdiff);
+        tmp = value * mul;
+        if (mul == -1 || tmp / mul != value)
+            throw cRuntimeError("simtime_t overflow: Cannot represent %" PRIu64 "*10^%d, out of range %s allowed by scale exponent %d",
+                    value, exponent, range().c_str(), scaleexp);
+    }
+    else {
+        tmp = value;
+    }
+
+    t = fromUint64(tmp);
+}
+
+static bool isAlmostInteger(double value)
+{
+    // Returns true if value is an integer, or only 1 ULP (the smallest representable unit) away from an integer.
+    // This function is needed due to limitations of IEEE floating point; e.g. 8.7*1e12 is NOT an integer
+    // (x == floor(x) does not hold for it), but it is an "almost integer", and will yield the correct
+    // int64_t when rounded.
+    double nearestInt = std::round(value);
+    double ulp = std::nextafter(nearestInt, nearestInt + 1.0) - nearestInt;
+    return std::fabs(value - nearestInt) <= ulp;
+}
+
+SimTime::SimTime(double value, SimTimeUnit unit, bool allowRounding)
+{
+    assertInited(value);
+    int exponent = unit;
+    int expdiff = exponent - scaleexp;
+    double tmp = expdiff < 0 ? value / pow(10,-expdiff) : value * pow(10,expdiff);
+    if (!allowRounding && tmp != floor(tmp) && !isAlmostInteger(tmp))
+        throw cRuntimeError("simtime_t: %g*10^%d cannot be represented precisely using the current scale exponent %d",
+                value, exponent, scaleexp);
+    t = toInt64(tmp);
 }
 
 void SimTime::checkedMul(int64_t x)

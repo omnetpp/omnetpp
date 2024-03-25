@@ -1,0 +1,113 @@
+%description:
+SimTime: test int+unit constructor
+
+%activity:
+
+EV << "SimTime scale exponent: " << SimTime::getScaleExp() << std::endl;
+
+#define P(d,exponent) {EV << "SimTime(" << (d) << ", " << (exponent) << ") --> "; try { EV << SimTime((d), (SimTimeUnit)(exponent)) << "\n"; } catch(std::exception& e) { EV << e.what() << "\n"; }}
+
+EV << "\nint64_t:\n";
+for (int exp = -18; exp <= 5; exp++)
+    P((int64_t)12345, exp);
+
+EV << "\nint64_t:\n";
+for (int exp = -18; exp <= 5; exp++)
+    P((int64_t)-12345, exp);
+
+EV << "\nuint64_t:\n";
+for (int exp = -18; exp <= 5; exp++)
+    P((uint64_t)12345, exp);
+
+EV << "\nINT64_MAX:\n";
+P((int64_t)INT64_MAX, SimTime::getScaleExp());
+P((1u+(uint64_t)INT64_MAX), SimTime::getScaleExp());
+
+EV << ".\n";
+
+%contains: stdout
+SimTime scale exponent: -12
+
+int64_t:
+SimTime(12345, -18) --> simtime_t: 12345*10^-18 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -17) --> simtime_t: 12345*10^-17 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -16) --> simtime_t: 12345*10^-16 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -15) --> simtime_t: 12345*10^-15 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -14) --> simtime_t: 12345*10^-14 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -13) --> simtime_t: 12345*10^-13 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -12) --> 0.000000012345
+SimTime(12345, -11) --> 0.00000012345
+SimTime(12345, -10) --> 0.0000012345
+SimTime(12345, -9) --> 0.000012345
+SimTime(12345, -8) --> 0.00012345
+SimTime(12345, -7) --> 0.0012345
+SimTime(12345, -6) --> 0.012345
+SimTime(12345, -5) --> 0.12345
+SimTime(12345, -4) --> 1.2345
+SimTime(12345, -3) --> 12.345
+SimTime(12345, -2) --> 123.45
+SimTime(12345, -1) --> 1234.5
+SimTime(12345, 0) --> 12345
+SimTime(12345, 1) --> 123450
+SimTime(12345, 2) --> 1234500
+SimTime(12345, 3) --> simtime_t overflow: Cannot represent 12345*10^3, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+SimTime(12345, 4) --> simtime_t overflow: Cannot represent 12345*10^4, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+SimTime(12345, 5) --> simtime_t overflow: Cannot represent 12345*10^5, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+
+int64_t:
+SimTime(-12345, -18) --> simtime_t: -12345*10^-18 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(-12345, -17) --> simtime_t: -12345*10^-17 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(-12345, -16) --> simtime_t: -12345*10^-16 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(-12345, -15) --> simtime_t: -12345*10^-15 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(-12345, -14) --> simtime_t: -12345*10^-14 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(-12345, -13) --> simtime_t: -12345*10^-13 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(-12345, -12) --> -0.000000012345
+SimTime(-12345, -11) --> -0.00000012345
+SimTime(-12345, -10) --> -0.0000012345
+SimTime(-12345, -9) --> -0.000012345
+SimTime(-12345, -8) --> -0.00012345
+SimTime(-12345, -7) --> -0.0012345
+SimTime(-12345, -6) --> -0.012345
+SimTime(-12345, -5) --> -0.12345
+SimTime(-12345, -4) --> -1.2345
+SimTime(-12345, -3) --> -12.345
+SimTime(-12345, -2) --> -123.45
+SimTime(-12345, -1) --> -1234.5
+SimTime(-12345, 0) --> -12345
+SimTime(-12345, 1) --> -123450
+SimTime(-12345, 2) --> -1234500
+SimTime(-12345, 3) --> simtime_t overflow: Cannot represent -12345*10^3, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+SimTime(-12345, 4) --> simtime_t overflow: Cannot represent -12345*10^4, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+SimTime(-12345, 5) --> simtime_t overflow: Cannot represent -12345*10^5, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+
+uint64_t:
+SimTime(12345, -18) --> simtime_t: 12345*10^-18 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -17) --> simtime_t: 12345*10^-17 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -16) --> simtime_t: 12345*10^-16 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -15) --> simtime_t: 12345*10^-15 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -14) --> simtime_t: 12345*10^-14 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -13) --> simtime_t: 12345*10^-13 cannot be represented precisely using the current scale exponent -12, increase resolution by configuring a smaller scale exponent or use 'double' conversion
+SimTime(12345, -12) --> 0.000000012345
+SimTime(12345, -11) --> 0.00000012345
+SimTime(12345, -10) --> 0.0000012345
+SimTime(12345, -9) --> 0.000012345
+SimTime(12345, -8) --> 0.00012345
+SimTime(12345, -7) --> 0.0012345
+SimTime(12345, -6) --> 0.012345
+SimTime(12345, -5) --> 0.12345
+SimTime(12345, -4) --> 1.2345
+SimTime(12345, -3) --> 12.345
+SimTime(12345, -2) --> 123.45
+SimTime(12345, -1) --> 1234.5
+SimTime(12345, 0) --> 12345
+SimTime(12345, 1) --> 123450
+SimTime(12345, 2) --> 1234500
+SimTime(12345, 3) --> Cannot convert 1.2345e+07 to simtime_t: Out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+SimTime(12345, 4) --> simtime_t overflow: Cannot represent 12345*10^4, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+SimTime(12345, 5) --> simtime_t overflow: Cannot represent 12345*10^5, out of range (-9223372.036854775807,9223372.036854775807) allowed by scale exponent -12
+
+INT64_MAX:
+SimTime(9223372036854775807, -12) --> 9223372.036854775807
+SimTime(9223372036854775808, -12) --> Cannot convert 9.22337e+06 to simtime_t: Out of range (-9223372.036854775807,9223372.036854775807), allowed by scale exponent -12
+.
+

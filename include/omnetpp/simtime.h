@@ -94,12 +94,21 @@ class SIM_API SimTime
 
     bool haveSameSign(int64_t a, int64_t b) { return (a^b) >= 0; }
 
-    int64_t toInt64(double i64) {
-         i64 = floor(i64 + 0.5);
-         if (fabs(i64) <= INT64_MAX_DBL)
-             return (int64_t)i64;
+    void fromInt64WithUnit(int64_t d, SimTimeUnit unit);
+    void fromUint64WithUnit(uint64_t d, SimTimeUnit unit);
+
+    int64_t toInt64(double d) {
+         d = floor(d + 0.5);
+         if (fabs(d) <= INT64_MAX_DBL)
+             return (int64_t)d;
          else // out of range or NaN
-             rangeErrorInt64(i64);
+             rangeErrorInt64(d);
+    }
+
+    int64_t fromUint64(uint64_t u) {
+        if (u > (uint64_t)INT64_MAX)
+            rangeErrorInt64(u); //TODO
+        return (int64_t)u;
     }
 
     void setSeconds(int64_t sec) {
@@ -169,21 +178,40 @@ class SIM_API SimTime
     SimTime(cPar& d) {operator=(d);}
 
     /**
-     * Initialize simulation time from value specified in the given units.
-     * This constructor allows one to specify precise constants, without
-     * conversion errors incurred by the <tt>double</tt> constructor.
-     * An error will be thrown if the resulting value cannot be represented
-     * (overflow) or it cannot be represented precisely (precision loss) with
-     * the current resolution (i.e. scale exponent). Note that the unit
-     * parameter actually represents a base-10 exponent, so the constructor
-     * will also work correctly for values not in the SimTimeUnit enum.
+     * Initialize simulation time from a value specified in the given unit.
+     * This constructor allows one to specify non-integer constants more
+     * conveniently and possibly more precisely than the plain <tt>double</tt>
+     * constructor. By default, i.e. when invoked with allowRounding=false, an
+     * effort is made to ensure that the simulation time precisely represents
+     * the given value. (If it cannot, an exception will be thrown.) With
+     * allowRounding=true, rounding errors are allowed.
      *
-     * Examples:
-     *   Simtime(15, SIMTIME_US) -> 15us
-     *   Simtime(-3, SIMTIME_S) -> -1s
-     *   Simtime(5, (SimTimeUnit)2) -> 500s;
+     * Note that the unit parameter actually represents a base-10 exponent, so
+     * the constructor will also work correctly for values not in the
+     * SimTimeUnit enum.
+     *
+     * Example: SimTime(3.5, SIMTIME_MS) -> 3500us
      */
-    SimTime(int64_t value, SimTimeUnit unit);
+    SimTime(double value, SimTimeUnit unit, bool allowRounding=false);
+
+    /**
+     * This and the subsequent constructors initialize simulation time from an
+     * integer specified in the given unit. The intended purpose of this
+     * constructor is to allow specifying precise constants in model code. (The
+     * functions throws an an exception if the value cannot be precisely
+     * represented as simulation time.)
+     *
+     * Note that the unit parameter actually represents a base-10 exponent, so
+     * the constructor also accepts integers not in the SimTimeUnit enum.
+     */
+    SimTime(short d, SimTimeUnit unit) {fromInt64WithUnit(d, unit);}
+    SimTime(int d, SimTimeUnit unit) {fromInt64WithUnit(d, unit);}
+    SimTime(long d, SimTimeUnit unit) {fromInt64WithUnit(d, unit);}
+    SimTime(long long d, SimTimeUnit unit) {fromInt64WithUnit(d, unit);}
+    SimTime(unsigned short d, SimTimeUnit unit) {fromUint64WithUnit(d, unit);}
+    SimTime(unsigned int d, SimTimeUnit unit) {fromUint64WithUnit(d, unit);}
+    SimTime(unsigned long d, SimTimeUnit unit) {fromUint64WithUnit(d, unit);}
+    SimTime(unsigned long long d, SimTimeUnit unit) {fromUint64WithUnit(d, unit);}
 
     /**
      * Copy constructor.
