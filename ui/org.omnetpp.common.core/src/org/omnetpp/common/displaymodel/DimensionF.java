@@ -29,12 +29,37 @@ public class DimensionF {
     }
 
     public static DimensionF fromPixels(Dimension dim, float scale) {
-        return dim == null ? null : new DimensionF(fromPixels(dim.width, scale), fromPixels(dim.height, scale));
+        if (dim == null)
+            return null;
+        DimensionF result = new DimensionF(fromPixels(dim.width, scale), fromPixels(dim.height, scale));
+        result.adjustForZoom(scale);
+        return result;
     }
 
     private static float fromPixels(int size, float scale) {
-        Assert.isTrue(size > 0 || size == -1); 
+        Assert.isTrue(size > 0 || size == -1);
         return size == -1 ? Float.NaN : size / scale;
+    }
+
+    /**
+     * Rounds the size based on the specified zoom level.
+     * The rounding is done to ensure that the dimensions have no more digits than makes sense
+     * considering the granularity allowed by the zoom level.
+     *
+     * E.g. for a zoom of 1x..9x, round to integers; for a zoom of 10x..99x, round to 1 decimal place, etc.
+     *
+     * @param scave the zoom level
+     */
+    public void adjustForZoom(float scale) {
+        float pow10 = 1.0f;
+        while (pow10 < scale)
+            pow10 *= 10.0;
+        width = roundFloat(width, pow10);
+        height = roundFloat(height, pow10);
+    }
+
+    private static float roundFloat(float x, float pow10) {
+        return Math.round(x * pow10) / pow10;
     }
 
     @Override
@@ -53,7 +78,7 @@ public class DimensionF {
     }
 
     private static boolean eq(float a, float b) {
-        return Float.floatToIntBits(a) == Float.floatToIntBits(b); // this works for a=NaN, b=NaN too 
+        return Float.floatToIntBits(a) == Float.floatToIntBits(b); // this works for a=NaN, b=NaN too
     }
 
 }

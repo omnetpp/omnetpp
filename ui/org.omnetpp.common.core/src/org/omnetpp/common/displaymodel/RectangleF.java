@@ -44,12 +44,39 @@ public class RectangleF {
     }
 
     public static RectangleF fromPixels(Rectangle rect, float scale) {
-        return rect == null ? null : new RectangleF(rect.x / scale, rect.y / scale, fromPixels(rect.width, scale), fromPixels(rect.height, scale));
+        if (rect == null)
+            return null;
+        RectangleF result = new RectangleF(rect.x / scale, rect.y / scale, fromPixels(rect.width, scale), fromPixels(rect.height, scale));
+        result.adjustForZoom(scale);
+        return result;
     }
 
     private static float fromPixels(int size, float scale) {
         Assert.isTrue(size > 0 || size == -1); 
         return size == -1 ? Float.NaN : size / scale;
+    }
+
+    /**
+     * Rounds the coordinates of this rectangle based on the specified zoom level.
+     * The rounding is done to ensure that the coordinates have no more digits than makes sense
+     * considering the granularity allowed by the zoom level.
+     *
+     * E.g. for a zoom of 1x..9x, round to integers; for a zoom of 10x..99x, round to 1 decimal place, etc.
+     *
+     * @param scave the zoom level
+     */
+    public void adjustForZoom(float scale) {
+        float pow10 = 1.0f;
+        while (pow10 < scale)
+            pow10 *= 10.0;
+        x = roundFloat(x, pow10);
+        y = roundFloat(y, pow10);
+        width = roundFloat(width, pow10);
+        height = roundFloat(height, pow10);
+    }
+
+    private static float roundFloat(float x, float pow10) {
+        return Math.round(x * pow10) / pow10;
     }
 
     @Override
@@ -68,7 +95,12 @@ public class RectangleF {
     }
 
     private static boolean eq(float a, float b) {
-        return Float.floatToIntBits(a) == Float.floatToIntBits(b); // this works for a=NaN, b=NaN too 
+        return Float.floatToIntBits(a) == Float.floatToIntBits(b); // this works for a=NaN, b=NaN too
+    }
+
+    @Override
+    public String toString() {
+        return "RectangleF(x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ")";
     }
 
 }
