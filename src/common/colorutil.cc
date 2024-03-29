@@ -149,7 +149,7 @@ void parseColor(const char *s, uint8_t &r, uint8_t &g, uint8_t &b)
            fillColorsMap();
         std::map<std::string, rgb_t>::const_iterator it = colors().find(lc(s));
         if (it == colors().end())
-            throw opp_runtime_error("No such color: %s", s);
+            throw opp_runtime_error("No such color: '%s'", s);
         r = (*it).second.r;
         g = (*it).second.g;
         b = (*it).second.b;
