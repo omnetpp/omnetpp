@@ -14,6 +14,8 @@ import java.util.Set;
 
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.SnapToGrid;
 
 /**
  * Utility functions for editparts.
@@ -57,4 +59,25 @@ public class EditPartUtil {
         return result;
     }
 
+    protected static boolean getPropertyAsBool(EditPartViewer viewer, String propertyName) {
+        Object prop = viewer.getProperty(propertyName);
+        return prop instanceof Boolean && ((Boolean)prop).booleanValue();
+    }
+
+    protected static float getPropertyAsFloat(EditPartViewer viewer, String propertyName, float defaultValue) {
+        Object prop = viewer.getProperty(propertyName);
+        return prop instanceof Number ? ((Number)prop).floatValue() : defaultValue;
+    }
+
+    public static boolean isSnapToGridEnabled(EditPartViewer viewer) {
+        return getPropertyAsBool(viewer, SnapToGrid.PROPERTY_GRID_ENABLED);
+    }
+
+    public static boolean isSnapToGridVisible(EditPartViewer viewer) {
+        return getPropertyAsBool(viewer, SnapToGrid.PROPERTY_GRID_VISIBLE);
+    }
+
+    public static float getSnapToGridSpacing(EditPartViewer viewer) {
+        return getPropertyAsFloat(viewer, SnapToGrid.PROPERTY_GRID_SPACING, 10.0f);
+    }
 }

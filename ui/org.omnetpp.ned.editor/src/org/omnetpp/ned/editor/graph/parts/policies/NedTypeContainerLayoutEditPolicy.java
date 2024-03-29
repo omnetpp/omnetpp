@@ -17,6 +17,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -206,7 +207,9 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
             // reduce the size with the module border
             Insets inset = cfigure.getSubmoduleArea().getBorder().getInsets(cfigure);
             newSize.shrink(inset.getWidth(), inset.getHeight());
-            cmd.setSize(DimensionF.fromPixels(newSize, scale));
+            DimensionF newSizeF = DimensionF.fromPixels(newSize, scale);
+            snapDimensionToGrid(newSizeF);
+            cmd.setSize(newSizeF);
 
             // if size constraint is not specified, then remove it from the model too
             // TODO is this needed?
@@ -246,4 +249,14 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 
         return super.getCommand(request);
     }
+
+    protected void snapDimensionToGrid(DimensionF size) {
+        GraphicalViewer diagramViewer = (GraphicalViewer)getHost().getViewer();
+        if (EditPartUtil.isSnapToGridVisible(diagramViewer)) {
+            float gridSpacing = EditPartUtil.getSnapToGridSpacing(diagramViewer);
+            size.width = Math.round(size.width / gridSpacing) * gridSpacing;
+            size.height = Math.round(size.height / gridSpacing) * gridSpacing;
+        }
+    }
+
 }

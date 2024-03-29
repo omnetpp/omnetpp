@@ -40,8 +40,10 @@ import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.SelectionManager;
 import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.editparts.GridLayer;
 import org.eclipse.gef.editparts.ScalableRootEditPart;
 import org.eclipse.gef.internal.ui.palette.editparts.DrawerEditPart;
 import org.eclipse.gef.internal.ui.palette.editparts.DrawerFigure;
@@ -68,6 +70,7 @@ import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -107,7 +110,6 @@ import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
 import org.omnetpp.ned.editor.graph.actions.CutAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
@@ -124,6 +126,7 @@ import org.omnetpp.ned.editor.graph.actions.ScaleDownIconsAction;
 import org.omnetpp.ned.editor.graph.actions.ScaleUpIconsAction;
 import org.omnetpp.ned.editor.graph.actions.TogglePinAction;
 import org.omnetpp.ned.editor.graph.actions.ToggleSnapToGeometryAction;
+import org.omnetpp.ned.editor.graph.actions.ToggleSnapToGridAction;
 import org.omnetpp.ned.editor.graph.actions.ZoomInAction;
 import org.omnetpp.ned.editor.graph.actions.ZoomOutAction;
 import org.omnetpp.ned.editor.graph.commands.ExternalChangeCommand;
@@ -354,14 +357,36 @@ public class GraphicalNedEditor
             }
         });
 
-        ScalableRootEditPart root = new ScalableRootEditPart();
+        ScalableRootEditPart root = new ScalableRootEditPart() {  // need to customize this for the "snap to" grid to work
+            @Override
+            protected void refreshGridLayer() {
+                // this is called on viewer property change events, arrange a refresh to let showing/hiding the grid via property changes take effect
+                EditPart contents = getContents();
+                if (contents != null)
+                    contents.refresh();
+            }
+
+            @Override
+            protected GridLayer createGridLayer() {
+                return new GridLayer() {
+                    @Override
+                    public void paint(Graphics graphics) {
+                        // overridden to do nothing -- we don't want to see original grid
+                    }
+                };
+            }
+        };
 
         // set the root edit part as the main viewer
         viewer.setRootEditPart(root);
 
         viewer.setEditPartFactory(new NedEditPartFactory());
         ContextMenuProvider provider = new GNedContextMenuProvider(viewer, getActionRegistry(), getSite());
-        viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, NedEditorPlugin.getDefault().getPreferenceStore().getBoolean(NedEditorPreferenceInitializer.SNAP_TO_GEOMETRY));
+        IPreferenceStore preferenceStore = NedEditorPlugin.getDefault().getPreferenceStore();
+        viewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, preferenceStore.getBoolean(SnapToGeometry.PROPERTY_SNAP_ENABLED));
+        viewer.setProperty(SnapToGrid.PROPERTY_GRID_ENABLED, preferenceStore.getBoolean(SnapToGrid.PROPERTY_GRID_ENABLED));
+        viewer.setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE, preferenceStore.getBoolean(SnapToGrid.PROPERTY_GRID_VISIBLE));
+        viewer.setProperty(SnapToGrid.PROPERTY_GRID_SPACING, preferenceStore.getBoolean(SnapToGrid.PROPERTY_GRID_SPACING));
         viewer.setContextMenu(provider);
         // register the menu so we can contribute to it from other plugins BUT do not include the
         // contributions for the editor input (otherwise we will get a ton of unnecessary menus like
@@ -397,6 +422,9 @@ public class GraphicalNedEditor
 
         // create some actions here because they need an installed viewer
         IAction action = new ToggleSnapToGeometryAction(viewer);
+        getActionRegistry().registerAction(action);
+
+        action = new ToggleSnapToGridAction(viewer);
         getActionRegistry().registerAction(action);
 
         // register global actions to the keybinding service otherwise the CTRL-Z CTRL-Y and DEL

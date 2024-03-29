@@ -19,6 +19,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -65,7 +66,6 @@ import org.omnetpp.ned.model.pojo.TypesElement;
  * @author rhornig
  */
 public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy {
-
     protected Request currentRequest;
 
     public CompoundModuleLayoutEditPolicy() {
@@ -169,7 +169,9 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
 
             CreateSubmoduleCommand createCommand = new CreateSubmoduleCommand(compoundModule, (SubmoduleElementEx)element);
             Rectangle constraint = (Rectangle)getConstraintFor(request);
-            createCommand.setConstraint(RectangleF.fromPixels(constraint, getHost().getScale()));
+            RectangleF rect = RectangleF.fromPixels(constraint, getHost().getScale());
+            snapRectangleToGrid(rect, false);
+            createCommand.setConstraint(rect);
             createCommand.setLabel("Create submodule");
             return createCommand;
         }
@@ -245,7 +247,8 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         Rectangle oldBounds = childFigure.getShapeBounds();
         boolean widthChanged = modelConstraint.width != oldBounds.width;
         boolean heightChanged = modelConstraint.height != oldBounds.height;
-        if (child instanceof SubmoduleEditPart && !((SubmoduleFigure)childFigure).isShapeVisible() && (widthChanged || heightChanged)) {
+        boolean resize = widthChanged || heightChanged;
+        if (child instanceof SubmoduleEditPart && !((SubmoduleFigure)childFigure).isShapeVisible() && resize) {
             // icon resizing operation
             // calculate the desired size, if we support arbitrary resizing, we can simply set
             // the received width value, but for now we have to choose between vs, s, l, vl
@@ -272,8 +275,26 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
             // move or resize operation
             float scale = ((ModuleEditPart)child).getScale();
             SetConstraintCommand constraintCmd = new SetConstraintCommand(submodule, RectangleF.fromPixels(oldBounds, scale));
-            constraintCmd.setConstraint(RectangleF.fromPixels(modelConstraint, scale));
+            RectangleF rect = RectangleF.fromPixels(modelConstraint, scale);
+            snapRectangleToGrid(rect, resize);
+            constraintCmd.setConstraint(rect);
             return constraintCmd;
+        }
+    }
+
+    protected void snapRectangleToGrid(RectangleF rect, boolean includingSize) {
+        // NOTE: A SnapToGrid class exists in GEF, but we don't use it due to impedance mismatch:
+        // (i.e. it is not aware of the compound module scaling factor, or of the fact that we
+        // need independent grids in each compound module.
+        GraphicalViewer diagramViewer = (GraphicalViewer)getHost().getViewer();
+        if (EditPartUtil.isSnapToGridVisible(diagramViewer)) {
+            float gridSpacing = EditPartUtil.getSnapToGridSpacing(diagramViewer);
+            rect.x = Math.round(rect.x / gridSpacing) * gridSpacing;
+            rect.y = Math.round(rect.y / gridSpacing) * gridSpacing;
+            if (includingSize) {
+                rect.width = Math.round(rect.width / gridSpacing) * gridSpacing;
+                rect.height = Math.round(rect.height / gridSpacing) * gridSpacing;
+            }
         }
     }
 

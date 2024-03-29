@@ -142,6 +142,8 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             Boolean val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
             if (val) snapStrategies.add(new SnapToGeometry(this));
 
+            //NOTE: "Snap to Grid" is hardcoded into CompoundModuleLayoutEditPolicy, and NOT done here using the SnapToGrid class
+
             if (snapStrategies.size() == 0) return null;
             if (snapStrategies.size() == 1) return snapStrategies.get(0);
 
@@ -210,6 +212,11 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             iconScale = getInitialIconScale();
 
         compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString(), project, scale, iconScale);
+
+        // update "snap to" grid
+        boolean snapToGridVisible = EditPartUtil.isSnapToGridVisible(getViewer());
+        float snapToGridSpacing = EditPartUtil.getSnapToGridSpacing(getViewer());
+        getFigure().getSubmoduleArea().setSnapGridSpacing(snapToGridVisible ? snapToGridSpacing : -1.0f);
     }
 
     protected float getInitialScale(Dimension unscaledSize) {

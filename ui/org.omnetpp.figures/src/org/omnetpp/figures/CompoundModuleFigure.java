@@ -63,6 +63,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
     protected Color moduleBorderColor = ERROR_BORDER_COLOR;
     protected int moduleBorderWidth;
     protected String unit = "m";
+    protected float snapGridSpacing;  // UNSCALED! multiply by scale before use
 
     protected BackgroundLayer backgroundLayer; // compound module background: images, colors, grid, etc.
     protected Layer backDecorationLayer; // submodule background decoration (range indicators, etc), non-extensible
@@ -144,6 +145,16 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
                     for (float mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
                         graphics.drawLine((int)mx, viewportRect.y, (int)mx, viewportRect.bottom());
                 }
+            }
+
+            // draw "snap to grid" guide points
+            if (snapGridSpacing > 0) {
+                graphics.setForegroundColor(ColorFactory.BLACK);
+                float spacingInPixels = snapGridSpacing * lastScale;
+                if (spacingInPixels >= 5) // do not paint if dots would be too dense
+                    for (float x = viewportRect.x; x < viewportRect.right(); x += spacingInPixels)
+                        for (float y = viewportRect.y; y < viewportRect.bottom(); y += spacingInPixels)
+                            graphics.drawPoint((int)x, (int)y);
             }
 
             // restore the graphics state
@@ -364,6 +375,13 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
 
         layouter.invalidate();
         repaint();
+    }
+
+    public void setSnapGridSpacing(float snapGridSpacing) {
+        if (snapGridSpacing != this.snapGridSpacing) {
+            this.snapGridSpacing = snapGridSpacing;
+            repaint();
+        }
     }
 
     @Override

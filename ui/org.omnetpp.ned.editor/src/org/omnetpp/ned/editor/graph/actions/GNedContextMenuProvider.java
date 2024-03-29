@@ -129,6 +129,9 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         submenu.add(ar.getAction(MATCH_HEIGHT));
         manager.appendToGroup(GROUP_REST, submenu);
 
+        action = ar.getAction(ToggleSnapToGridAction.ID);
+        manager.appendToGroup(GROUP_REST, action);
+
         action = ar.getAction(ToggleSnapToGeometryAction.ID);
         manager.appendToGroup(GROUP_REST, action);
 

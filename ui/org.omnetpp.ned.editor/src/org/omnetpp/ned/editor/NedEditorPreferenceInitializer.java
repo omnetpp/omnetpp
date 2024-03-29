@@ -8,14 +8,17 @@
 package org.omnetpp.ned.editor;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToGrid;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 public class NedEditorPreferenceInitializer extends AbstractPreferenceInitializer {
-    public final static String SNAP_TO_GEOMETRY = "snapToGeometry";
-
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore store = NedEditorPlugin.getDefault().getPreferenceStore();
-        store.setDefault(SNAP_TO_GEOMETRY, true);
+        store.setDefault(SnapToGeometry.PROPERTY_SNAP_ENABLED, true);
+        store.setDefault(SnapToGrid.PROPERTY_GRID_ENABLED, false);
+        store.setDefault(SnapToGrid.PROPERTY_GRID_VISIBLE, false);
+        store.setDefault(SnapToGrid.PROPERTY_GRID_SPACING, 10);
     }
 }

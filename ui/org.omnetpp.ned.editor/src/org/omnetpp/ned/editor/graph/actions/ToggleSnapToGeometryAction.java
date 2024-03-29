@@ -13,7 +13,6 @@ import org.eclipse.gef.internal.GEFMessages;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
 
 /**
  * Re-implementation of GEF ToggleSnapToGeometryAction to toggle the PROPERTY_SNAP_ENABLED property
@@ -55,7 +54,7 @@ public class ToggleSnapToGeometryAction extends Action {
     }
 
     private void setSnapEnabled(boolean enabled) {
-        NedEditorPlugin.getDefault().getPreferenceStore().setValue(NedEditorPreferenceInitializer.SNAP_TO_GEOMETRY, enabled);
+        NedEditorPlugin.getDefault().getPreferenceStore().setValue(SnapToGeometry.PROPERTY_SNAP_ENABLED, enabled);
         diagramViewer.setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, Boolean.valueOf(enabled));
     }
 
