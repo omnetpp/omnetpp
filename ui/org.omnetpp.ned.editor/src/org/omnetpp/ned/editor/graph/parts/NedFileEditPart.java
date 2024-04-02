@@ -7,14 +7,10 @@
 
 package org.omnetpp.ned.editor.graph.parts;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.SnapToGeometry;
-import org.eclipse.gef.SnapToHelper;
 import org.omnetpp.ned.editor.graph.figures.NedFileFigure;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTypeContainerLayoutEditPolicy;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -47,25 +43,6 @@ public class NedFileEditPart extends NedEditPart {
     public boolean isEditable() {
         NedFileElementEx nedFileElement = getModel();
         return super.isEditable() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError();
-    }
-
-    @Override
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public Object getAdapter(Class adapter) {
-        if (adapter == SnapToHelper.class) {
-            List snapStrategies = new ArrayList();
-            Boolean val = (Boolean) getViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED);
-            if (val != null && val.booleanValue()) snapStrategies.add(new SnapToGeometry(this));
-
-            if (snapStrategies.size() == 0) return null;
-            if (snapStrategies.size() == 1) return snapStrategies.get(0);
-
-            SnapToHelper ss[] = new SnapToHelper[snapStrategies.size()];
-            for (int i = 0; i < snapStrategies.size(); i++)
-                ss[i] = (SnapToHelper) snapStrategies.get(i);
-            return new CompoundSnapToHelper(ss);
-        }
-        return super.getAdapter(adapter);
     }
 
     @Override
