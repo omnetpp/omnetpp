@@ -56,7 +56,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
     protected Image preScaledBackgroundImage;
     protected String backgroundImageArrangement = "fix";
     protected Dimension backgroundSize;
-    protected int gridTickDistance; // maximum distance between two grid lines (in pixels)
+    protected float gridTickDistance; // distance between two grid lines (in pixels, i.e. scaled)
     protected int gridNoOfMinorTics; // number of minor ticks between two major ones
     protected Color gridColor;
     protected Color moduleBackgroundColor = ERROR_BACKGROUND_COLOR;
@@ -123,12 +123,12 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
                 graphics.setForegroundColor(gridColor);
                 float minorTickDistance = 0;
                 if (gridNoOfMinorTics > 1)
-                    minorTickDistance = (float)gridTickDistance / gridNoOfMinorTics;
+                    minorTickDistance = gridTickDistance / gridNoOfMinorTics;
 
                 // horizontal grid
-                for (int y = viewportRect.y; y < viewportRect.bottom(); y += gridTickDistance) {
+                for (float y = viewportRect.y; y < viewportRect.bottom(); y += gridTickDistance) {
                     graphics.setLineStyle(SWT.LINE_SOLID);
-                    graphics.drawLine(viewportRect.x, y, viewportRect.right(), y);
+                    graphics.drawLine(viewportRect.x, (int)y, viewportRect.right(), (int)y);
                     // minor ticks
                     graphics.setLineStyle(SWT.LINE_DOT);
                     for (float my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
@@ -136,9 +136,9 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
                 }
 
                 // vertical grid
-                for (int x = viewportRect.x; x < viewportRect.right(); x += gridTickDistance) {
+                for (float x = viewportRect.x; x < viewportRect.right(); x += gridTickDistance) {
                     graphics.setLineStyle(SWT.LINE_SOLID);
-                    graphics.drawLine(x, viewportRect.y, x, viewportRect.bottom());
+                    graphics.drawLine((int)x, viewportRect.y, (int)x, viewportRect.bottom());
                     // minor ticks
                     graphics.setLineStyle(SWT.LINE_DOT);
                     for (float mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
@@ -294,7 +294,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
     /**
      * Adjusts grid parameters.
      */
-    protected void setGrid(int tickDistance, int noOfTics, Color gridColor) {
+    protected void setGrid(float tickDistance, int noOfTics, Color gridColor) {
         this.gridTickDistance = tickDistance;
         this.gridNoOfMinorTics = noOfTics;
         this.gridColor = gridColor;
@@ -314,7 +314,6 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
      * Adjusts the figure properties using a displayString object
      */
     public void setDisplayString(IDisplayString dps, float scale, float iconScale, IProject project) {
-
         // Optimization: do not change anything if the display string has not changed
         int cumulativeHashCode = dps.cumulativeHashCode();
         if (lastScale == scale && seed == newSeed && lastIconScale == iconScale && lastCumulativeHashCode != 0 && cumulativeHashCode == lastCumulativeHashCode)
@@ -339,7 +338,7 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
 
         // grid support
         setGrid(
-                unitToPixel(dps.getAsDistance(IDisplayString.Prop.MODULE_GRID_DISTANCE), scale),
+                dps.getAsDistance(IDisplayString.Prop.MODULE_GRID_DISTANCE) * scale,
                 dps.getAsInt(IDisplayString.Prop.MODULE_GRID_SUBDIVISION, -1),
                 ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRID_COLOR)));
 
@@ -425,9 +424,5 @@ public class CompoundModuleFigure extends LayeredPane implements IAnchorBounds, 
     public void setBorder(Border border) {
         Assert.isTrue(border instanceof CompoundModuleLineBorder, "Only CompoundModuleBorder is supported");
         super.setBorder(border);
-    }
-
-    static int unitToPixel(float f, float scale) {
-        return (int)(f * scale);
     }
 }
