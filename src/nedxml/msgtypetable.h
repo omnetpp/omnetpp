@@ -236,6 +236,8 @@ class NEDXML_API MsgTypeTable
         std::string enumName;         // name from MSG file
         std::string enumQName;        // qualified name from MSG (namespace :: name)
         Properties props;             // class properties
+        bool isEnumClass = false;     // whether this is an enum class
+        std::string baseType;         // underlying data type, e.g. "uint8_t"
         typedef std::vector<EnumItem> FieldList;
         bool isDeclaration = false;   // i.e. not a definition
         FieldList fieldList;          // list of fields

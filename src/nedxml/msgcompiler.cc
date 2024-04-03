@@ -44,6 +44,8 @@ const char *MsgCompiler::BUILTIN_DEFINITIONS =
         @property[supportsPtr](type=bool; usage=field,class; desc="Specifies whether this type supports creating a pointer (or pointer array) from it.");
         @property[subclassable](type=bool; usage=class; desc="Specifies whether this type can be subclassed (e.g. C++ primitive types and final classes cannot).");
         @property[polymorphic](type=bool; usage=class; desc="Specifies whether this type is polymorphic, i.e. has any virtual member function.");
+        @property[class](type=bool; usage=enum; desc="Specifies whether this enum is to be declared as 'enum class'.");
+        @property[baseType](type=string; usage=enum; desc="Specifies the underlying data type for the enum.");
         @property[defaultValue](type=string; usage=class; desc="Default value for fields of this type.");
         @property[cppType](type=string; usage=field,class; desc="C++ datatype. Provides a common default for @datamemberType, @argType and @returnType. When specified on a class, it determines the default for fields of that type.");
         @property[datamemberType](type=string; usage=field,class; desc="Data member C++ base data type. This type is decorated with '*' if the field is a pointer. When specified on a class, it determines the default for fields of that type.");

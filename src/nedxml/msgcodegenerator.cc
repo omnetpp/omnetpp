@@ -1667,7 +1667,7 @@ void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)
     H << generatePreComment(enumInfo.astNode);
     H << " */\n";
 
-    H << "enum " << enumInfo.enumName <<" {\n";
+    H << "enum " << (enumInfo.isEnumClass ? "class " : "") << enumInfo.enumName << (enumInfo.baseType.empty() ? "" : (" : " + enumInfo.baseType)) << " {\n";
     for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldList.begin(); it != enumInfo.fieldList.end(); ) {
         H << "    " << it->name << " = " << it->value;
         if (++it != enumInfo.fieldList.end())

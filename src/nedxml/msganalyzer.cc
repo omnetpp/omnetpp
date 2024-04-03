@@ -703,6 +703,8 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const 
     enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
     enumInfo.isDeclaration = false;
     enumInfo.props = extractProperties(enumElem);
+    enumInfo.isEnumClass = getPropertyAsBool(enumInfo.props, PROP_CLASS, false);
+    enumInfo.baseType = getProperty(enumInfo.props, PROP_BASETYPE, enumInfo.baseType);
 
     // prepare enum items
     for (EnumFieldElement *fieldElem = check_and_cast_nullable<EnumFieldElement *>(enumElem->getFirstChildWithTag(MSG_ENUM_FIELD)); fieldElem; fieldElem = fieldElem->getNextEnumFieldSibling()) {
