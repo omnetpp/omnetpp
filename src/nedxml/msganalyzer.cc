@@ -123,7 +123,15 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfo(ASTNode *node, const std::s
 
 MsgAnalyzer::Properties MsgAnalyzer::extractProperties(ASTNode *node)
 {
-    const char *usage = node->getTagCode()==MSG_FIELD ? "field" : node->getTagCode()==MSG_MSG_FILE ? "file" : "class";
+    const char *usage;
+    switch (node->getTagCode()) {
+        case MSG_FIELD: usage = "field"; break;
+        case MSG_ENUM: usage = "enum"; break;
+        case MSG_CLASS: case MSG_STRUCT: case MSG_MESSAGE: case MSG_PACKET: usage = "class"; break;
+        case MSG_MSG_FILE: usage = "file"; break;
+        default: throw opp_runtime_error("unexpected tag code %d", node->getTagCode());
+    }
+
     Properties props;
     for (PropertyElement *propElem = check_and_cast_nullable<PropertyElement *>(node->getFirstChildWithTag(MSG_PROPERTY)); propElem; propElem = propElem->getNextPropertySibling()) {
         Property property = extractProperty(propElem);
@@ -694,6 +702,7 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const 
     enumInfo.enumName = enumElem->getName();
     enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
     enumInfo.isDeclaration = false;
+    enumInfo.props = extractProperties(enumElem);
 
     // prepare enum items
     for (EnumFieldElement *fieldElem = check_and_cast_nullable<EnumFieldElement *>(enumElem->getFirstChildWithTag(MSG_ENUM_FIELD)); fieldElem; fieldElem = fieldElem->getNextEnumFieldSibling()) {

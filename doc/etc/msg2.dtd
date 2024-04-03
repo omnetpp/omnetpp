@@ -82,7 +82,7 @@
 
 <!-- Enums -->
 
-<!ELEMENT enum (comment*, enum-field*)>
+<!ELEMENT enum (comment*, (property|enum-field)*)>
 <!ATTLIST enum
      name                CDATA     #REQUIRED
      source-code         CDATA     #IMPLIED>

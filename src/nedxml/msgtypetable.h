@@ -233,11 +233,12 @@ class NEDXML_API MsgTypeTable
     {
       public:
         ASTNode *astNode;
-        std::string enumName;
-        std::string enumQName;
+        std::string enumName;         // name from MSG file
+        std::string enumQName;        // qualified name from MSG (namespace :: name)
+        Properties props;             // class properties
         typedef std::vector<EnumItem> FieldList;
         bool isDeclaration = false;   // i.e. not a definition
-        FieldList fieldList;
+        FieldList fieldList;          // list of fields
     };
 
   private:

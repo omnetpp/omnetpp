@@ -122,7 +122,7 @@ static struct MSG2ParserState
     PacketElement *packetp;
     ClassElement *classp;
     StructElement *structp;
-    ASTNode *msgclassorstruct;
+    ASTNode *msgclassorstruct; // or enum
     EnumFieldElement *enumfield;
     FieldElement *field;
     PropertyElement *property;
@@ -335,22 +335,27 @@ enum_decl
 enum
         : ENUM qname '{'
                 {
-                  ps.enump = (EnumElement *)createMsgElementWithTag(np, MSG_ENUM, ps.msgfile );
+                  ps.msgclassorstruct = ps.enump = (EnumElement *)createMsgElementWithTag(np, MSG_ENUM, ps.msgfile );
                   ps.enump->setName(removeSpaces(np, @2).c_str());
                   storeBannerAndRightComments(np, ps.enump,@1,@2);
                 }
-          opt_enumfields '}' opt_semicolon
-                { storeTrailingComment(np, ps.enump,@$); }
+          opt_enumfields_and_properties '}' opt_semicolon
+                {
+                  storeTrailingComment(np, ps.enump,@$);
+                  ps.msgclassorstruct = nullptr;
+                }
         ;
 
-opt_enumfields
-        : enumfields
+opt_enumfields_and_properties
+        : enumfields_and_properties
         | %empty
         ;
 
-enumfields
-        : enumfields enumfield
+enumfields_and_properties
+        : enumfields_and_properties enumfield
+        | enumfields_and_properties property
         | enumfield
+        | property
         ;
 
 enumfield
