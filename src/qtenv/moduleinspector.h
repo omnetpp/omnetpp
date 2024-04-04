@@ -169,6 +169,7 @@ public:
     QPointF getSubmodCoords(cModule *mod);
     QRectF getSubmodRect(cModule *mod);
     QLineF getConnectionLine(cGate *gate);
+    QLineF getConnectionLine(int srcModuleId, int srcGateId);
 
     bool getShowMethodCalls() const { return getPref(PREF_SHOWMETHODCALLS, true, true).toBool(); }
 

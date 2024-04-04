@@ -766,7 +766,7 @@ void SendOnConnAnimation::begin()
     }
     else {
         for (auto p : messageItems)
-            p.second->setPos(p.first->getConnectionLine(gate).p1());
+            p.second->setPos(p.first->getConnectionLine(srcModuleId, srcGateId).p1());
         requestAnimationSpeed(prop.dbl()+trans.dbl());
     }
 }
@@ -791,7 +791,7 @@ void SendOnConnAnimation::update()
         double t = getHoldPosition();
 
         for (auto p : messageItems)
-            p.second->setPos(p.first->getConnectionLine(gate).pointAt(t));
+            p.second->setPos(p.first->getConnectionLine(srcModuleId, srcGateId).pointAt(t));
     }
     else {
         SimTime progr = simTime() - start;
@@ -839,7 +839,7 @@ void SendOnConnAnimation::update()
         t2 = clip(0.0, t2, t1);
 
         for (auto p : messageItems) {
-            QLineF connLine = p.first->getConnectionLine(gate);
+            QLineF connLine = p.first->getConnectionLine(srcModuleId, srcGateId);
             p.second->positionOntoLine(connLine, t1, t2, msg->isPacket() && static_cast<cPacket*>(msg)->isUpdate());
             p.second->setVisible(visible);
         }
@@ -854,7 +854,8 @@ void SendOnConnAnimation::addToInspector(Inspector *insp)
 
     bool isUpdatePacket = msg->isPacket() && static_cast<cPacket *>(msg)->isUpdate();
 
-    cModule *mod = gate->getOwnerModule();
+    cModule *mod = getSimulation()->getModule(srcModuleId);
+    cGate *gate = mod->gate(srcGateId);
     if (gate->getType() == cGate::OUTPUT)
         mod = mod->getParentModule();
 

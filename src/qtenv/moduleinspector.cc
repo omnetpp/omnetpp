@@ -541,6 +541,12 @@ QLineF ModuleInspector::getConnectionLine(cGate *gate)
     return canvasViewer->getConnectionLine(gate);
 }
 
+QLineF ModuleInspector::getConnectionLine(int srcModuleId, int srcGateId)
+{
+    cModule *mod = getSimulation()->getModule(srcModuleId);
+    return mod ? getConnectionLine(mod->gate(srcGateId)) : QLineF();
+}
+
 QRect ModuleInspector::getModuleRect(bool includeBorder, int margin)
 {
     if (stackedLayout->currentWidget() == canvasViewer) {

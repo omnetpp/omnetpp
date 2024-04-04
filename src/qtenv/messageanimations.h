@@ -333,7 +333,7 @@ public:
 class QTENV_API SendOnConnAnimation : public MessageAnimation
 {
     int srcModuleId;
-    cGate *gate; // source
+    int srcGateId;
 
     // when the first bit of the message is sent, the propagation delay and transmission duration.
     SimTime start, prop, trans;
@@ -344,11 +344,11 @@ class QTENV_API SendOnConnAnimation : public MessageAnimation
 public:
     // The holding variant with 0 delays.
     SendOnConnAnimation(cGate *gate, cMessage *msg)
-        : MessageAnimation(msg, 1.0), srcModuleId(gate->getOwnerModule()->getId()), gate(gate) { }
+        : MessageAnimation(msg, 1.0), srcModuleId(gate->getOwnerModule()->getId()), srcGateId(gate->getId()) { }
 
     // The non-holding variant with finite delay(s). TODO: animate discarsion
     SendOnConnAnimation(cGate *gate, cMessage *msg, SimTime start, SimTime prop, SimTime trans, bool discard)
-        : MessageAnimation(msg), srcModuleId(gate->getOwnerModule()->getId()), gate(gate), start(start), prop(prop), trans(trans) { }
+        : MessageAnimation(msg), srcModuleId(gate->getOwnerModule()->getId()), srcGateId(gate->getId()), start(start), prop(prop), trans(trans) { }
 
     void begin() override;
     void update() override;
