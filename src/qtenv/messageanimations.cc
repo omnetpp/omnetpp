@@ -95,6 +95,10 @@ static PathVec findDirectPath(cModule *srcmod, cModule *destmod)
     return path;
 }
 
+static PathVec findDirectPath(int srcModuleId, int destModuleId) {
+    return findDirectPath(getSimulation()->getModule(srcModuleId), getSimulation()->getModule(destModuleId));
+}
+
 }  // namespace
 
 // --------  Animation functions  --------
@@ -912,13 +916,13 @@ QString SendOnConnAnimation::str() const {
 
 // --------  SendDirectAnimation functions  --------
 
-SendDirectAnimation::SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest)
-    : MessageAnimation(msg, 1.0), srcModuleId(src->getId()), dest(dest)
+SendDirectAnimation::SendDirectAnimation(int srcModuleId, cMessage *msg, int destModuleId)
+    : MessageAnimation(msg, 1.0), srcModuleId(srcModuleId), destModuleId(destModuleId)
 {
 }
 
-SendDirectAnimation::SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest, SimTime start, SimTime prop, SimTime trans)
-    : MessageAnimation(msg), srcModuleId(src->getId()), dest(dest), start(start), prop(prop), trans(trans)
+SendDirectAnimation::SendDirectAnimation(int srcModuleId, cMessage *msg, int destModuleId, SimTime start, SimTime prop, SimTime trans)
+    : MessageAnimation(msg), srcModuleId(srcModuleId), destModuleId(destModuleId), start(start), prop(prop), trans(trans)
 {
 }
 
@@ -950,7 +954,7 @@ void SendDirectAnimation::update()
         return;
     }
 
-    auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
+    auto path = findDirectPath(srcModuleId, destModuleId);
 
     // the "forward", and "backward" end of the message line on the given (connection) line, range is 0.0 .. 1.0
     double t1, t2; // typically t1 >= t2, otherwise the message would travel "backward"
@@ -1057,7 +1061,7 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
     if (!msg)
         return;
 
-    auto path = findDirectPath(getSimulation()->getModule(srcModuleId), dest->getOwnerModule());
+    auto path = findDirectPath(srcModuleId, destModuleId);
 
     bool isUpdatePacket = msg->isPacket() && static_cast<cPacket *>(msg)->isUpdate();
     for (auto & segment : path) {
@@ -1141,6 +1145,7 @@ void SendDirectAnimation::removeFromInspector(Inspector *insp)
 QString SendDirectAnimation::str() const
 {
     cModule *src = getSimulation()->getModule(srcModuleId);
+    cModule *dest = getSimulation()->getModule(destModuleId);
     return QString("SendDirect ") + (msgToUse() ? msgToUse()->getFullName() : "nullptr") +
             + (isHolding() ? " HOLDING" : " NONHOLDING")
             + "from: " + (src ? src->getFullPath().c_str() : "<deleted>") + " to: " + dest->getFullPath().c_str()

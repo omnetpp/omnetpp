@@ -279,9 +279,9 @@ void MessageAnimator::endSend(cMessage *msg)
             ASSERT(!h.connSrcGate);
 
             if (transDuration.isZero() && h.propDelay.isZero() && !isUpdatePacket)
-                hopAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate);
+                hopAnim = new SendDirectAnimation(h.directSrcModule->getId(), msg, h.directDestGate->getOwnerModule()->getId());
             else
-                hopAnim = new SendDirectAnimation(h.directSrcModule, msg, h.directDestGate, h.hopStartTime, h.propDelay, transDuration);
+                hopAnim = new SendDirectAnimation(h.directSrcModule->getId(), msg, h.directDestGate->getOwnerModule()->getId(), h.hopStartTime, h.propDelay, transDuration);
         }
         else {
             // it was sent on a connection

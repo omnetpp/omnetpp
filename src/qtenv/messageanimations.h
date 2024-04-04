@@ -369,16 +369,16 @@ public:
 class QTENV_API SendDirectAnimation : public MessageAnimation
 {
     int srcModuleId;
-    cGate *dest;
+    int destModuleId; // TODO: also remember the gate ID?
     SimTime start, prop, trans;
 
     std::unordered_map<ModuleInspector *, ConnectionItem *> connectionItems;
 
 public:
     // The holding variant with 0 delays.
-    SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest);
+    SendDirectAnimation(int srcModuleId, cMessage *msg, int destModuleId);
     // The non-holding variant with finite delay(s).
-    SendDirectAnimation(cModule *src, cMessage *msg, cGate *dest, SimTime start, SimTime prop, SimTime trans);
+    SendDirectAnimation(int srcModuleId, cMessage *msg, int destModuleId, SimTime start, SimTime prop, SimTime trans);
 
     void init() override;
     void begin() override;
