@@ -680,7 +680,7 @@ def _plot_enum(vectime, vecvalue, labels, label):
             x = (vectime[i] + vectime[i + 1]) / 2
             value = vecvalue[i]
             if x_min <= x and x <= x_max:
-                txt = ax.text(x, 0.5, labels_map[value], fontsize='x-small', color='white', ha='center', va='center', clip_on=True)
+                txt = ax.text(x, 0.5, labels_map.get(value,value), fontsize='x-small', color='white', ha='center', va='center', clip_on=True)
                 bbox = txt.get_window_extent(fig.canvas.get_renderer())
                 txt.set_rotation('horizontal' if bbox.width < a[i] else 'vertical')
 
