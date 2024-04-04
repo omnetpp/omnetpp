@@ -162,7 +162,7 @@ std::string cEnum::str() const
         return std::string("<empty>");
 
     std::stringstream out;
-    for (std::map<std::string, int>::const_iterator it = nameToValueMap.begin(); it != nameToValueMap.end(); ++it) {
+    for (auto it = nameToValueMap.begin(); it != nameToValueMap.end(); ++it) {
         if (it != nameToValueMap.begin())
             out << ", ";
         out << it->first << "=" << it->second;
