@@ -8,8 +8,11 @@
 package org.omnetpp.ned.editor.graph.properties;
 
 import org.eclipse.gef.ui.properties.UndoablePropertySheetEntry;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.CellEditorActionHandler;
 import org.eclipse.ui.part.IPageSite;
@@ -53,7 +56,20 @@ public class NedPropertySheetPage extends PropertySheetPage {
         // set up a context menu with undo/redo items
     }
 
-    @Override
+	@Override
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		// Should handle only structured selection changes.
+		//
+		// Other selection changes like ITextSelection may happen right after
+		// an IStructuredSelection (when the cursor in the text editor part
+		// is moved in response to a selection in the graphical editor)
+		// In response to this ITextSelection the property sheet would turn empty
+		// as Eclipse would not know what NED model objects should be displayed.
+		if (selection instanceof IStructuredSelection && !selection.isEmpty())
+			super.selectionChanged(part, selection);
+	}
+
+	@Override
     public void setActionBars(IActionBars actionBars) {
         super.setActionBars(actionBars);
         // hook the editor's global undo/redo action to the cell editor
