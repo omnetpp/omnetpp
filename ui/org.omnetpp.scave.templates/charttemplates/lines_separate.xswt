@@ -47,7 +47,7 @@
     <label text="Line width:"/>
     <spinner x:id="linewidth" x:id.default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
 
-    <button x:id="enum_as_strip" x:id.default="false" text="Display enums as colored strips" x:style="CHECK">
+    <button x:id="enum_as_strip" x:id.default="true" text="Display enums as colored strips" x:style="CHECK">
       <layoutData x:class="GridData" horizontalSpan="2"/>
     </button>
 
