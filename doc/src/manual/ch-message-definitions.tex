@@ -158,7 +158,7 @@ for \fkeyword{message}, the default base class is \cclass{cMessage}, or if a
 base class is specified, it must be a subclass of \cclass{cMessage}.
 
 For \fkeyword{class}, the default base class is \textit{none}. However, it is often a
-good idea to choose \cclass{cObject} as the base class.\footnote{Until \omnetpp
+good idea to choose \cclass{cObject} as the base class.\footnote{Until {\omnetpp}
 6.0, the default base class was \cclass{cObject}. Thus, when migrating code from
 version 5.x or earlier, one needs to add \ttt{extends cObject} to class
 definitions lacking an "extends" clause.}
@@ -812,7 +812,7 @@ void eraseRoute(size_t k);
 
 
 \subsection{Non-Owning Pointer Fields}
-\label{sec:msg-defs:pointers-fields}
+\label{sec:msg-defs:non-owning-pointer-fields}
 
 The field type may be a pointer, both for scalar and array fields. Pointer
 fields come in two flavors: owning and non-owning. A non-owning pointer field
@@ -850,7 +850,7 @@ void setContextModule(const cModule *contextModule);
 
 
 \subsection{Owning Pointer Fields}
-\label{sec:msg-defs:pointers-fields}
+\label{sec:msg-defs:owning-pointer-fields}
 
 This section discusses pointer fields that own the objects they point to, that
 is, are responsible for deallocating the object when the object containing the

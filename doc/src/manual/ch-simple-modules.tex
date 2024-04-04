@@ -359,7 +359,7 @@ class HelloModule : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-// register module class with `\opp`
+// register module class with {\opp}
 Define_Module(HelloModule);
 
 void HelloModule::initialize()
@@ -647,7 +647,7 @@ intended to be redefined by the user.
 
 The idea is that at each event\index{event} (message arrival), we
 simply call a user-defined function. This function,
-\ttt{handleMessage(cMessage *msg)}, is a
+\ffunc{handleMessage(cMessage *msg)}, is a
 virtual member function of \cclass{cSimpleModule} which does
 nothing by default -- the user has to redefine it in subclasses
 and add the message processing code.
@@ -1935,8 +1935,8 @@ as well, use \ffunc{getFullName()}. If you also want to
 include the hierarchical name of the owner module, call \ffunc{getFullPath()}.
 
 The \ffunc{getType()} method of \cclass{cGate} returns the gate type,
-either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}. (It cannot return
-\ttt{cGate::INOUT} because an inout gate is represented by a pair
+either \fvar{cGate::INPUT} or \fvar{cGate::OUTPUT}. (It cannot return
+\fvar{cGate::INOUT} because an inout gate is represented by a pair
 of \cclass{cGate}s.)
 
 If you have a gate that represents half of an inout gate (that is,
