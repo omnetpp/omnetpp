@@ -629,7 +629,7 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
             ax.xaxis.get_label().set_visible(False)
 
         if hasattr(t, "enum") and isinstance(t.enum, str) and t.enum and props.get("enum_as_strip") == "true":
-            _plot_enum(t.vectime, t.vecvalue, t.enum.split(","), label=legend_func(legend_cols, t, props))
+            _plot_enum(t.vectime, t.vecvalue, _parse_enum_spec(t.enum, True), label=legend_func(legend_cols, t, props))
         else:
             plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
@@ -640,10 +640,34 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
 
     plt.xlabel("Simulation Time [s]")
 
+def _parse_enum_spec(enum_spec, reverse_mapping=False):
+    # "A, B, C" -> {'A': 0, 'B': 1, 'C': 2}
+    # "A=1, B, C=5, D" -> {'A': 1, 'B': 2, 'C': 5, 'D': 6}
+    kv_pairs = []
+    last_value = -1  # Start with -1 so the first default value will be 0
 
-def _plot_enum(vectime, vecvalue, labels, label):
-    labels_map = {index: name for index, name in enumerate(labels)}
-    label_colors = {index: "C" + str(index) for index, label in enumerate(labels)}
+    entries = enum_spec.split(',')
+
+    for entry in entries:
+        entry = entry.strip()  # Remove any leading/trailing whitespace
+        if '=' in entry:
+            # Split on '=' and parse the key and value
+            key, value = entry.split('=')
+            value = int(value.strip())
+            kv_pairs.append((key.strip(), value))
+            last_value = value  # Update last_value to the current explicit value
+        else:
+            # Increment last_value and use it for the current entry
+            last_value += 1
+            kv_pairs.append((entry, last_value))
+
+    if reverse_mapping:
+        return dict((v, k) for k, v in kv_pairs)  # note: creating a normal dict THEN reversing it would be lossy if there are duplicates among the names
+    else:
+        return dict(kv_pairs)
+
+def _plot_enum(vectime, vecvalue, labels_map, label):
+    label_colors = {index: "C" + str(index) for index, label in enumerate(labels_map)}
     colors = [label_colors[key] for key in sorted(label_colors.keys())]
     boundaries = list(label_colors.keys()) + [max(label_colors.keys()) + 1]
     cmap = ListedColormap(colors)
@@ -1990,7 +2014,7 @@ def extract_label_columns(df, props):
                  "count", "sumweights", "mean", "stddev", "min", "max",
                  "processid", "datetime", "datetimef", "runnumber", "seedset",
                  "iterationvars", "iterationvarsf", "iterationvarsd", "repetition",
-                 "source", "recordingmode", "interpolationmode", "enum", "unit"])
+                 "source", "recordingmode", "interpolationmode", "enumname", "enum", "unit"])
 
     # if unsuccessful, try to pick from all columns, except a few that we don't like
     legend_col_candidates = [col for col in list(df.columns.values) if col not in blacklist and col not in title_cols]
