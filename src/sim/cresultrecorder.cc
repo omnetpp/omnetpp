@@ -15,10 +15,12 @@
 
 #include "common/opp_ctype.h"
 #include "common/stringutil.h"
+#include "common/stlutil.h"
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cproperty.h"
 #include "omnetpp/cstringtokenizer.h"
 #include "omnetpp/checkandcast.h"
+#include "omnetpp/cenum.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -137,6 +139,17 @@ opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
     cComponent *component = getComponent();
     if (hasDisplayNameInPath(component))
         result["moduledisplaypath"] = getComponentDisplayPath(component); // "module" is technically not correct, but probably more intuitive/useful than "component"
+
+    // resolve enumname like cOutVector does
+    if (containsKey(result, opp_string("enumname"))) {
+        if (containsKey(result, opp_string("enum")))
+            throw cRuntimeError(this, "The 'enum' and 'enumname' attributes are mutually exclusive, cannot specify both");
+        const char *registeredEnumName = result["enumname"].c_str();
+        cEnum *enumDecl = cEnum::find(registeredEnumName); // Note: we could utilize NED file's context namespace for the lookup, but it's not easily accessible from here
+        if (!enumDecl)
+            throw cRuntimeError(this, "Enum '%s' not found -- is it declared with Register_Enum()?", registeredEnumName);
+        result["enum"] = enumDecl->str().c_str();
+    }
 
     return result;
 }
