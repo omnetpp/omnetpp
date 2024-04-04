@@ -29,8 +29,8 @@ public class CreateTempChartFromTemplateAction extends AbstractScaveAction {
 
     public CreateTempChartFromTemplateAction(ChartTemplate template) {
         this.template = template;
-        setText("Plot using " + template.getName());
-        setToolTipText("Plot using " + template.getName());
+        setText("Plot using \"" + template.getName() + "\"");
+        setToolTipText(getText());
 
         String iconName = template.getMenuIconPath();
 
