@@ -292,7 +292,7 @@ public class PaletteManager {
         }
         currentEntries = newEntries;
 
-        ArrayList<PaletteContainer> drawers = new ArrayList<PaletteContainer>();
+        List<PaletteEntry> drawers = new ArrayList<PaletteEntry>();
         drawers.add(toolsContainer);
         drawers.add(typesContainer);
         drawers.add(defaultContainer);
