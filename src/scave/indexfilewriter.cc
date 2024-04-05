@@ -38,7 +38,7 @@ using Block = VectorFileIndex::Block;
 #undef CHECK
 #endif
 #define CHECK(fprintf)    if ((fprintf)<0) throw opp_runtime_error("Cannot write output file '%s'", filename.c_str())
-#define INDEX_FILE_VERSION 2
+#define INDEX_FILE_VERSION 3
 
 IndexFileWriter::IndexFileWriter(const char *filename, int precision)
     : filename(filename), precision(precision), file(nullptr)
