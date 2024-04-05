@@ -619,6 +619,14 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
     if sort:
         df.sort_values(by=legend_cols, inplace=True)
 
+    # compute endtime as the maximum timestamp in all vectors, or the upper limit of X axis
+    # TODO take the simulation duration instead, or the maximum of vector close times when they become available
+    endtimes = [t.vectime[-1] for t in df.itertuples(index=False) if t.vectime.size > 0]
+    endtime = np.max(endtimes) if endtimes else math.nan
+    xmax_prop = get_prop("xaxis_max")
+    if xmax_prop:
+        endtime = max(endtime, float(xmax_prop))
+
     ax = None
     for i, t in enumerate(df.itertuples(index=False)):
         style = _make_line_args(props, t, df)
@@ -629,7 +637,7 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
             ax.xaxis.get_label().set_visible(False)
 
         if hasattr(t, "enum") and isinstance(t.enum, str) and t.enum and props.get("enum_as_strip") == "true":
-            _plot_enum(t.vectime, t.vecvalue, _parse_enum_spec(t.enum, True), label=legend_func(legend_cols, t, props))
+            _plot_enum(t.vectime, t.vecvalue, endtime, _parse_enum_spec(t.enum, True), label=legend_func(legend_cols, t, props))
         else:
             plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
@@ -666,7 +674,7 @@ def _parse_enum_spec(enum_spec, reverse_mapping=False):
     else:
         return dict(kv_pairs)
 
-def _plot_enum(vectime, vecvalue, labels_map, label):
+def _plot_enum(vectime, vecvalue, endtime, labels_map, label):
     label_colors = {index: "C" + str(index) for index, label in enumerate(labels_map)}
     colors = [label_colors[key] for key in sorted(label_colors.keys())]
     boundaries = list(label_colors.keys()) + [max(label_colors.keys()) + 1]
@@ -677,7 +685,6 @@ def _plot_enum(vectime, vecvalue, labels_map, label):
     ax = plt.gca()
     ax.grid(alpha=0)
     ax.tick_params(axis='both', which='both', labelleft=False, bottom=True, left=False)
-    cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue[:-1]]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1)
 
     legend_handles, legend_labels = ax.get_legend_handles_labels()
     legend_handles.append(plt.Rectangle((0, 0), 1, 1, color=(0.5, 0.5, 0.5, 0.5)))
@@ -685,6 +692,13 @@ def _plot_enum(vectime, vecvalue, labels_map, label):
     legend = ax.legend(legend_handles, legend_labels)
     legend.set_picker(True)
     ax.default_legend = True
+
+    if vectime.size == 0:
+        return
+
+    endtime = max(endtime, vectime[-1])
+    vectime = np.append(vectime, endtime)
+    cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1)
 
     def compute_conversion_factor(ax):
         x_pixel_0 = ax.transData.transform((0, 0))[0]
