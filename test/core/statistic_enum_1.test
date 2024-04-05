@@ -1,0 +1,45 @@
+%description:
+Test the enumname and enum @statistic attributes
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+enum State {
+    IDLE=1;
+    BUSY=3;
+    SLEEPING=5;
+};
+
+%file: test.ned
+
+module Node
+{
+    // registered enum: enumname=<typename>
+    @signal[state];
+    @statistic[state](record=vector; enumname=@TESTNAME@::State);
+
+    // unregistered enum: enum=<name1>,<name2>,..., or enum=<name1>=<value1>,<name2>=<value2>...
+    @signal[mode];
+    @statistic[mode1](record=vector; enum=Active,Passive);
+    @statistic[mode2](record=vector; enum="ACTIVE=0,PASSIVE=1");
+
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%contains: results/General-#0.vec
+vector 0 Test.node state:vector ETV
+attr enum "BUSY=3, IDLE=1, SLEEPING=5"
+attr enumname statistic_enum_1::State
+attr recordingmode vector
+vector 1 Test.node mode1:vector ETV
+attr enum Active,Passive
+attr recordingmode vector
+vector 2 Test.node mode2:vector ETV
+attr enum ACTIVE=0,PASSIVE=1
+attr recordingmode vector

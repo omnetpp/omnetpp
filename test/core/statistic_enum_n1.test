@@ -1,0 +1,20 @@
+%description:
+Negative test for the enumname @statistic attribute: enum not found
+
+%file: test.ned
+
+module Node
+{
+    @signal[state];
+    @statistic[state](record=vector; enumname=@TESTNAME@::NoSuchEnum);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%exitcode: 1
+%contains-regex: stderr
+Error: Cannot add statistic 'state' to module Test.node .*: Enum '@TESTNAME@::NoSuchEnum' not found

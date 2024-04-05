@@ -1,0 +1,31 @@
+%description:
+Negative test for the enum and enumname @statistic attributes: both cannot be specified
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+enum State {
+    IDLE=1;
+    BUSY=3;
+    SLEEPING=5;
+};
+
+%file: test.ned
+
+module Node
+{
+    @signal[state];
+    @statistic[state](record=vector; enumname=@TESTNAME@::State; enum="IDLE,BUSY,SLEEPING");
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%exitcode: 1
+
+%contains-regex: stderr
+Error: Cannot add statistic 'state' to module Test.node .*: The 'enum' and 'enumname' attributes are mutually exclusive, cannot specify both
