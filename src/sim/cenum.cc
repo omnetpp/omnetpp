@@ -40,22 +40,6 @@ cEnum::cEnum(const char *name) : cOwnedObject(name, false)
 {
 }
 
-cEnum::cEnum(const char *name, const char *str, ...) : cOwnedObject(name, false)
-{
-    va_list va;
-    va_start(va, str);
-
-    const char *s = str;
-    int v;
-    while (s) {
-        v = va_arg(va, int);
-        insert(v, s);
-        s = va_arg(va, const char *);
-    }
-
-    va_end(va);
-}
-
 void cEnum::copy(const cEnum& other)
 {
     valueToNameMap = other.valueToNameMap;
@@ -71,7 +55,7 @@ cEnum& cEnum::operator=(const cEnum& other)
     return *this;
 }
 
-void cEnum::insert(int value, const char *name)
+void cEnum::insert(intval_t value, const char *name)
 {
     valueToNameMap[value] = name;
     nameToValueMap[name] = value;
@@ -93,21 +77,21 @@ void cEnum::bulkInsert(const char *name1, ...)
     va_end(va);
 }
 
-const char *cEnum::getStringFor(int value)
+const char *cEnum::getStringFor(intval_t value)
 {
-    std::map<int, std::string>::const_iterator it = valueToNameMap.find(value);
+    std::map<intval_t, std::string>::const_iterator it = valueToNameMap.find(value);
     return it == valueToNameMap.end() ? nullptr : it->second.c_str();
 }
 
-int cEnum::lookup(const char *name, int fallback)
+intval_t cEnum::lookup(const char *name, intval_t fallback)
 {
-    std::map<std::string, int>::const_iterator it = nameToValueMap.find(name);
+    std::map<std::string, intval_t>::const_iterator it = nameToValueMap.find(name);
     return it == nameToValueMap.end() ? fallback : it->second;
 }
 
-int cEnum::resolve(const char *name)
+intval_t cEnum::resolve(const char *name)
 {
-    std::map<std::string, int>::const_iterator it = nameToValueMap.find(name);
+    std::map<std::string, intval_t>::const_iterator it = nameToValueMap.find(name);
     if (it == nameToValueMap.end())
         throw cRuntimeError("Symbol \"%s\" not found in enum \"%s\"", name, getName());
     return it->second;
@@ -137,22 +121,6 @@ cEnum *cEnum::registerNames(const char *nameList)
             token = sep + 2;
         tmpNames.push_back(token);
     }
-    return this;
-}
-
-cEnum *cEnum::registerValues(int firstValue, ...)
-{
-    ASSERT(!tmpNames.empty());
-
-    va_list va;
-    va_start(va, firstValue);
-    insert(firstValue, tmpNames[0].c_str());
-    for (int i = 1; i < (int)tmpNames.size(); i++) {
-        int value = va_arg(va, int);
-        insert(value, tmpNames[i].c_str());
-    }
-    va_end(va);
-    tmpNames.clear();
     return this;
 }
 

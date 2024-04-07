@@ -120,10 +120,10 @@ std::string cClassDescriptor::enum2string(int e, const char *enumName) const
     return std::string(buf) + " (" + name + ")";
 }
 
-int cClassDescriptor::string2enum(const char *s, const char *enumName) const
+intval_t cClassDescriptor::string2enum(const char *s, const char *enumName) const
 {
     // return zero if string cannot be parsed
-    int value = 0;
+    intval_t value = 0;
     cEnum *enump = cEnum::find(enumName, getNamespace().c_str());
 
     // skip leading spaces
@@ -142,12 +142,12 @@ int cClassDescriptor::string2enum(const char *s, const char *enumName) const
             throw cRuntimeError("Unknown enum '%s'", enumName);
 
         // try exact match
-        const int MISSING = INT_MIN;
+        const intval_t MISSING = INT64_MIN;
         value = enump->lookup(s, MISSING);
 
         // if not found, try unique case insensitive substring match
         if (value == MISSING) {
-            std::map<std::string,int> members = enump->getNameValueMap();
+            std::map<std::string,intval_t> members = enump->getNameValueMap();
             for (auto & member : members) {
                 if (opp_strnistr(member.first.c_str(), s, 0, false) != nullptr) {
                     if (value == MISSING)

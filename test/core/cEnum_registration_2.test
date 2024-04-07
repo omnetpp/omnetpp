@@ -1,0 +1,51 @@
+%description:
+Test Register_Enum_Custom(), and the deprecated Register_Enum2() macros
+
+%global:
+
+enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
+
+Register_Enum_Custom(stateEnum, State, (
+    { "idle",     State::STATE_IDLE },
+    { "busy",     STATE_BUSY },
+    { "sleeping", STATE_SLEEPING }
+))
+
+enum class Mode { ACTIVE, PASSIVE, AUTO };
+
+Register_Enum_Custom(modeEnum, Mode, (
+    { "Active",  Mode::ACTIVE },
+    { "Passive", Mode::PASSIVE },
+    { "Auto",    Mode::AUTO }
+))
+
+// plus the now-obsolete macro:
+
+enum OldState { IDLE, BUSY, SLEEPING };
+
+Register_Enum2(oldStateEnum, "@TESTNAME@::OldState", (
+   "idle",     OldState::IDLE,
+   "busy",     BUSY,
+   "sleeping", OldState::SLEEPING,
+   nullptr));
+
+
+%activity:
+#define P(NAME)   EV << #NAME << ": " << cEnum::get("@TESTNAME@::" #NAME)->str() << std::endl
+
+P(Mode);
+P(State);
+P(OldState);
+
+ASSERT(modeEnum == cEnum::get("@TESTNAME@::Mode"));
+ASSERT(stateEnum == cEnum::get("@TESTNAME@::State"));
+ASSERT(oldStateEnum == cEnum::get("@TESTNAME@::OldState"));
+
+EV << ".\n";
+
+%contains: stdout
+Mode: Active=0, Auto=2, Passive=1
+State: busy=1, idle=0, sleeping=2
+OldState: busy=1, idle=0, sleeping=2
+.
+

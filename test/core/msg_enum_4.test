@@ -1,0 +1,47 @@
+%description:
+Check @class and @basetype in enums
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+enum Foo {
+    @class;
+    ONE = 1;
+    TWO = 2;
+};
+
+enum Foo2 {
+    @baseType(int64_t);
+    ONE = 1;
+    TWO = 2;
+};
+
+enum Foo3 {
+    @class;
+    @baseType(int8_t);
+    ONE = 1;
+    TWO = 2;
+};
+
+%activity:
+EV << "." << std::endl;
+
+%contains: test_m.h
+enum class Foo {
+    ONE = 1,
+    TWO = 2
+};
+
+%contains: test_m.h
+enum Foo2 : int64_t {
+    ONE = 1,
+    TWO = 2
+};
+
+%contains: test_m.h
+enum class Foo3 : int8_t {
+    ONE = 1,
+    TWO = 2
+};
+

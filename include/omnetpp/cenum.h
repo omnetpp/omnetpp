@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_CENUM_H
 #define __OMNETPP_CENUM_H
 
+#include <initializer_list>
 #include "cownedobject.h"
 
 namespace omnetpp {
@@ -32,8 +33,8 @@ namespace omnetpp {
 class SIM_API cEnum : public cOwnedObject
 {
   private:
-     std::map<int,std::string> valueToNameMap;
-     std::map<std::string,int> nameToValueMap;
+     std::map<intval_t,std::string> valueToNameMap;
+     std::map<std::string,intval_t> nameToValueMap;
      std::vector<std::string> tmpNames;
 
   private:
@@ -42,9 +43,26 @@ class SIM_API cEnum : public cOwnedObject
   public:
     // internal: helper for the Register_Enum() macro
     cEnum *registerNames(const char *nameList);
-    // internal: helper for the Register_Enum() macro
-    cEnum *registerValues(int first, ...);
-    cEnum *registerValues() {return this;}  // for empty enum
+
+    template<typename T>
+    cEnum *registerValues(const std::initializer_list<T>& values) {
+        int i = 0;
+        for (T value : values)
+            insert((intval_t)value, tmpNames[i++].c_str());
+        tmpNames.clear();
+        return this;
+    }
+
+    template<typename T>
+    void addPairs(const std::initializer_list<std::pair<const char*,T>> pairList) {
+        for (const auto& pair : pairList)
+            insert((intval_t)pair.second, pair.first);
+    }
+
+    // internal: helper for obsolete macro Register_Enum2()
+    // usage example: e.bulkInsert("IDLE", IDLE, "BUSY", BUSY, nullptr);
+    [[deprecated("Use Register_Enum_Custom() macro instead of Register_Enum2()")]]
+    void bulkInsert(const char *name1, ...);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -53,20 +71,6 @@ class SIM_API cEnum : public cOwnedObject
      * Constructor.
      */
     explicit cEnum(const char *name=nullptr);
-
-    /**
-     * Constructor that allows adding several values to the enum, in a way
-     * similar to bulkInsert(). The argument list begins with the object name,
-     * which should be followed by an alternating list of names and values,
-     * terminated by a nullptr: name1, value1, name2, value2, ..., nullptr.
-     *
-     * Example:
-     * <pre>
-     * enum State { IDLE=0, BUSY };
-     * cEnum stateEnum("state", "IDLE", IDLE, "BUSY", BUSY, nullptr);
-     * </pre>
-     */
-    cEnum(const char *name, const char *str, ...);
 
     /**
      * Copy constructor.
@@ -105,42 +109,29 @@ class SIM_API cEnum : public cOwnedObject
     /**
      * Add an item to the enum. If that numeric code exist, overwrite it.
      */
-    void insert(int value, const char *name);
-
-    /**
-     * Adds several values to the enum. The argument list should be an
-     * alternating list of names and values, terminated by a nullptr:
-     * name1, value1, name2, value2, ..., nullptr.
-     *
-     * Example:
-     * <pre>
-     * cEnum stateEnum("state");
-     * stateEnum.bulkInsert("IDLE", IDLE, "BUSY", BUSY, nullptr);
-     * </pre>
-     */
-    void bulkInsert(const char *name1, ...);
+    void insert(intval_t value, const char *name);
 
     /**
      * Look up value and return string representation. Return
      * nullptr if not found.
      */
-    const char *getStringFor(int value);
+    const char *getStringFor(intval_t value);
 
     /**
      * Look up string and return numeric code. If not found, return
      * second argument (or -1).
      */
-    int lookup(const char *name, int fallback=-1);
+    intval_t lookup(const char *name, intval_t fallback=-1);
 
     /**
      * Look up string and return numeric code. Throws an error if not found.
      */
-    int resolve(const char *name);
+    intval_t resolve(const char *name);
 
     /**
      * Returns a map with the enum members (names as key, and numeric value map value).
      */
-    const std::map<std::string,int>& getNameValueMap() const {return nameToValueMap;}
+    const std::map<std::string,intval_t>& getNameValueMap() const {return nameToValueMap;}
     //@}
 
     /** @name cEnum lookup. */
@@ -157,7 +148,6 @@ class SIM_API cEnum : public cOwnedObject
      */
     static cEnum *get(const char *enumName, const char *contextNamespace=nullptr);
     //@}
-
 };
 
 }  // namespace omnetpp

@@ -230,27 +230,37 @@ namespace omnetpp {
 #define Register_MessagePrinter(CLASSNAME) \
   EXECUTE_ON_STARTUP(omnetpp::internal::messagePrinters.getInstance()->add(new CLASSNAME());)
 
+// helps to remove one layer of parentheses
+#define __OPP_IDENTITY(...) __VA_ARGS__
+
 /**
  * @brief Registers an enum.
  *
  * Example:
  * <pre>
- * enum State { IDLE, BUSY, SLEEPING };
- * Register_Enum(State, (
- *    State::IDLE,
- *    State::BUSY,
- *    State::SLEEPING));
+ * enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
+ * Register_Enum(State, (STATE_IDLE, STATE_BUSY, STATE_SLEEPING));
+ *
+ * enum class Mode { ACTIVE, PASSIVE, AUTO };
+ * Register_Enum(Mode, (Mode::ACTIVE, Mode::PASSIVE, Mode::AUTO));
  * </pre>
  *
  * @see cEnum
  * @hideinitializer
  */
 #define Register_Enum(NAME, VALUES)  \
-  EXECUTE_ON_STARTUP(omnetpp::internal::enums.getInstance()->add((new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))))->registerNames(#VALUES)->registerValues VALUES))
+  EXECUTE_ON_STARTUP( \
+      omnetpp::cEnum *tmp = new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))); \
+      tmp->registerNames(#VALUES); \
+      tmp->registerValues<NAME>( std::initializer_list<NAME> { __OPP_IDENTITY VALUES } ); \
+      omnetpp::internal::enums.getInstance()->add(tmp); \
+  )
 
 /**
  * @brief Registers an enum, and makes it accessible via a global cEnum* pointer,
  * using explicit strings for the enum type and it member names.
+ *
+ * NOTE: This macro is deprecated -- use Register_Enum_Custom() instead!
  *
  * Example:
  * <pre>
@@ -262,17 +272,62 @@ namespace omnetpp {
  *    nullptr)); // see note below
  * </pre>
  *
- * Note: One may need to put (void*)nullptr as the last item, due to a bug in
- * certain compilers (they push a 32-bit zero value instead a of a 64-bit one
- * in the "..." arg list, causing the called function to be unable to determine
- * the end of the argument list).
+ * @see cEnum
+ * @hideinitializer
+ */
+#define Register_Enum2(VAR, NAMESTR, VALUES)  \
+  omnetpp::cEnum *VAR; \
+  EXECUTE_ON_STARTUP(VAR = new omnetpp::cEnum(NAMESTR); VAR->bulkInsert VALUES; omnetpp::internal::enums.getInstance()->add(VAR))
+
+/**
+ * @brief Registers an enum while giving access to the resulting cEnum object
+ * (Its pointer will be stored in the cEnum* variable given as the first argument).
+ *
+ * Example:
+  * <pre>
+ * enum State { IDLE, BUSY, SLEEPING };
+ * Register_Enum_WithVar(stateEnum, State, (IDLE, BUSY, SLEEPING));
+ *
+ * enum class Mode { ACTIVE, PASSIVE, AUTO };
+ * Register_Enum_WithVar(modeEnum, Mode, (Mode::ACTIVE, Mode::PASSIVE, Mode::AUTO));
+ * </pre>
  *
  * @see cEnum
  * @hideinitializer
  */
-#define Register_Enum2(VAR, NAME, VALUES)  \
-  static omnetpp::cEnum *VAR; \
-  EXECUTE_ON_STARTUP(VAR = new omnetpp::cEnum(NAME); VAR->bulkInsert VALUES; omnetpp::internal::enums.getInstance()->add(VAR))
+#define Register_Enum_WithVar(VAR, NAME, VALUES)  \
+  omnetpp::cEnum *VAR; \
+  EXECUTE_ON_STARTUP( \
+      omnetpp::cEnum *tmp = VAR = new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))); \
+      tmp->registerNames(#VALUES); \
+      tmp->registerValues<NAME>( std::initializer_list<NAME> { __OPP_IDENTITY VALUES } ); \
+      omnetpp::internal::enums.getInstance()->add(tmp); \
+  )
+
+/**
+ * @brief Registers an enum and makes it accessible via a global cEnum* pointer,
+ * allowing custom names for enum members.
+ *
+ * Example:
+ * <pre>
+ * enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
+ * Register_Enum_Custom(stateEnum, State, (
+ *    { "idle",     STATE_IDLE },
+ *    { "busy",     STATE_BUSY },
+ *    { "sleeping", STATE_SLEEPING }
+ * )
+ * </pre>
+ *
+ * @see cEnum
+ * @hideinitializer
+ */
+#define Register_Enum_Custom(VAR, NAME, NAME_VALUE_PAIRS)  \
+  omnetpp::cEnum *VAR; \
+  EXECUTE_ON_STARTUP( \
+      omnetpp::cEnum *tmp = VAR = new omnetpp::cEnum(omnetpp::opp_typename(typeid(NAME))); \
+      tmp->addPairs(std::initializer_list<std::pair<const char*,NAME>> { __OPP_IDENTITY NAME_VALUE_PAIRS } ); \
+      omnetpp::internal::enums.getInstance()->add(tmp); \
+  )
 
 /**
  * @brief Registers a new figure type. The macro expects a type name string

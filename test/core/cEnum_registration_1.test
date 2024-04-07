@@ -1,0 +1,42 @@
+%description:
+Test Register_Enum_WithVar()
+
+%global:
+
+namespace a {
+enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
+Register_Enum(State, (STATE_IDLE, STATE_BUSY, STATE_SLEEPING));
+
+enum class Mode { ACTIVE, PASSIVE, AUTO };
+Register_Enum(Mode, (Mode::ACTIVE, Mode::PASSIVE, Mode::AUTO));
+};
+
+namespace c {
+enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
+Register_Enum_WithVar(stateEnum, State, (STATE_IDLE, STATE_BUSY, STATE_SLEEPING));
+
+enum class Mode { ACTIVE, PASSIVE, AUTO };
+Register_Enum_WithVar(modeEnum, Mode, (Mode::ACTIVE, Mode::PASSIVE, Mode::AUTO));
+};
+
+%activity:
+#define P(NAME)   EV << #NAME << ": " << cEnum::get("@TESTNAME@::" #NAME)->str() << std::endl
+
+P(a::State);
+P(a::Mode);
+
+ASSERT(c::stateEnum == cEnum::get("@TESTNAME@::c::State"));
+ASSERT(c::modeEnum == cEnum::get("@TESTNAME@::c::Mode"));
+
+P(c::State);
+P(c::Mode);
+
+EV << ".\n";
+
+%contains: stdout
+a::State: STATE_BUSY=1, STATE_IDLE=0, STATE_SLEEPING=2
+a::Mode: ACTIVE=0, AUTO=2, PASSIVE=1
+c::State: STATE_BUSY=1, STATE_IDLE=0, STATE_SLEEPING=2
+c::Mode: ACTIVE=0, AUTO=2, PASSIVE=1
+.
+

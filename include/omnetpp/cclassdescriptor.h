@@ -75,7 +75,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     static std::string simtime2string(SimTime t) {return t.ustr();}
     static simtime_t string2simtime(const char *s) {return SimTime::parse(s);}
     std::string enum2string(int e, const char *enumName) const;
-    int string2enum(const char *s, const char *enumName) const;
+    intval_t string2enum(const char *s, const char *enumName) const;
     static std::string oppstring2string(const char *s) {return s?s:"";}
     static std::string oppstring2string(const opp_string& s) {return s.c_str();}
     static std::string oppstring2string(const std::string& s)  {return s;}
