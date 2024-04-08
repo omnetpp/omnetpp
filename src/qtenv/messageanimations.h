@@ -402,14 +402,16 @@ public:
 };
 
 class QTENV_API DeliveryAnimation : public MessageAnimation {
-    cGate *gate = nullptr; // source gate. if nullptr, this is a deliveryDirect
+    int sourceModuleId = -1;
+    int sourceGateId = -1;
 
+    cGate *getSourceGate() const;
     QLineF getLine(ModuleInspector *mi) const;
 
 public:
     // for delivery on a connection
     explicit DeliveryAnimation(cGate *gate, cMessage *msg)
-        : MessageAnimation(msg, 0.25), gate(gate) { }
+        : MessageAnimation(msg, 0.25), sourceModuleId(gate->getOwnerModule()->getId()), sourceGateId(gate->getId()) { }
     // for delivery after a sendDirect
     explicit DeliveryAnimation(cMessage *msg)
         : MessageAnimation(msg, 0.5) { }
@@ -427,7 +429,7 @@ public:
 
     QString str() const override;
 
-    int getSourceModuleId() override { return gate->getOwnerModule()->getId(); }
+    int getSourceModuleId() override { return sourceModuleId; }
 };
 
 }  // namespace qtenv

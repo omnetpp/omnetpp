@@ -1159,15 +1159,24 @@ SendDirectAnimation::~SendDirectAnimation()
         delete c.second;
 }
 
+cGate *DeliveryAnimation::getSourceGate() const
+{
+    cModule *src = getSimulation()->getModule(sourceModuleId);
+    return src ? src->gate(sourceGateId) : nullptr;
+}
+
 QLineF DeliveryAnimation::getLine(ModuleInspector *mi) const
 {
-    ASSERT(gate);
-    auto connLine = mi->getConnectionLine(gate);
+    auto connLine = mi->getConnectionLine(sourceModuleId, sourceGateId);
+    if (connLine.isNull())
+        return connLine;
 
     // the max amount of pixels an arriving message will move inside the dest submodule rectangle
     static const double msgEndCreep = 10;
 
     QPointF srcPos = connLine.p2();
+    cGate *gate = getSourceGate();
+    ASSERT(gate);
     cModule *dest = gate->getNextGate()->getOwnerModule();
 
     // handle degenerate connections (crossing module boundaries without gates) gracefully
@@ -1194,7 +1203,7 @@ void DeliveryAnimation::begin()
         end();
     else
         for (auto m : messageItems)
-            m.second->setPos(gate
+            m.second->setPos((sourceModuleId >= 0 && sourceGateId >= 0)
                              ? getLine(m.first).p1()
                              : m.first->getSubmodCoords(msgToUse()->getArrivalModule()));
 }
@@ -1209,6 +1218,7 @@ void DeliveryAnimation::update()
     }
 
     double t = getHoldPosition();
+    cGate *gate = getSourceGate();
 
     for (auto p : messageItems) {
         if (gate) {
@@ -1224,6 +1234,8 @@ void DeliveryAnimation::addToInspector(Inspector *insp)
 {
     if (!msgToUse())
         return;
+
+    cGate *gate = getSourceGate();
 
     cModule *mod;
     if (gate) {
