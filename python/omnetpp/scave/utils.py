@@ -90,7 +90,9 @@ def _check_version(module, required):
 
 _check_version(np, "1.18.0")  # Dec 22, 2019
 _check_version(pd, "1.0.0")  # January 29, 2020
-_check_version(mpl, "3.0.0")  # Sep 19, 2018
+# This bug was triggered by `_plot_enum()`, fixed in 3.5.3:
+# https://github.com/matplotlib/matplotlib/issues/21915
+_check_version(mpl, "3.5.3")  # Aug 11, 2022
 
 
 # color and marker cycles, with defaults in case _initialize_cycles() is not called
