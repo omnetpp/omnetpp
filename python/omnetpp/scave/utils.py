@@ -703,9 +703,7 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label):
     cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1)
 
     def compute_conversion_factor(ax):
-        x_pixel_0 = ax.transData.transform((0, 0))[0]
-        x_pixel_1 = ax.transData.transform((1, 0))[0]
-        return x_pixel_1 - x_pixel_0
+        return ax.transData.get_matrix()[0, 0]
 
     def on_xlim_changed(ax):
         if ax is None:
