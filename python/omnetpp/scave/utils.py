@@ -729,7 +729,7 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label):
             legend.set_picker(True)
         else:
             legend_elements = [plt.Rectangle((0, 0), 1, 1, color=color) for color in label_colors.values()]
-            legend = ax.legend(legend_elements, labels, fontsize='x-small', loc='upper right', ncol=math.ceil(len(label_colors) / 4))
+            legend = ax.legend(legend_elements, labels_map.values(), fontsize='x-small', loc='upper right', ncol=math.ceil(len(label_colors) / 4))
             legend.set_picker(True)
             legend.set_clip_on(False)
         fig.canvas.draw_idle()
