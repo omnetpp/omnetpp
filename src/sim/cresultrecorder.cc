@@ -149,7 +149,6 @@ opp_string_map cResultRecorder::getStatisticAttributesFrom(cProperty *property)
         if (!enumDecl)
             throw cRuntimeError(this, "Enum '%s' not found -- is it declared with Register_Enum()?", registeredEnumName);
         result["enum"] = enumDecl->str().c_str();
-        //TODO add tests for this feature in test/core!!!!
     }
 
     return result;
