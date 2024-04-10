@@ -55,7 +55,7 @@ def _import_scave_bindings():
             sb = importlib.import_module(modulename)
             break
         except ImportError as e:
-            logger.error("Failed to load {modulename}: {e}")
+            logger.error(f"Failed to load {modulename}: {e}")
 
     if sb is None:
         raise ImportError("Could not import omnetpp.scave.scave_bindings")
