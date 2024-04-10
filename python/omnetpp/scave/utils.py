@@ -1907,9 +1907,9 @@ def fill_missing_titles(df):
     normally come from result attributes of the same name.)
     """
     if "title" in df and "name" in df:
-        df["title"].fillna(df["name"], inplace=True)
+        df["title"] = df["title"].fillna(df["name"])
     if "moduledisplaypath" in df and "module" in df:
-        df["moduledisplaypath"].fillna(df["module"], inplace=True)
+        df["moduledisplaypath"] = df["moduledisplaypath"].fillna(df["module"])
 
 
 def extract_label_columns(df, props):
