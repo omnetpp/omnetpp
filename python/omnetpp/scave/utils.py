@@ -639,7 +639,7 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
             ax.xaxis.get_label().set_visible(False)
 
         if hasattr(t, "enum") and isinstance(t.enum, str) and t.enum and props.get("enum_as_strip") == "true":
-            _plot_enum(t.vectime, t.vecvalue, endtime, _parse_enum_spec(t.enum, True), label=legend_func(legend_cols, t, props))
+            _plot_enum(t.vectime, t.vecvalue, endtime, _parse_enum_spec(t.enum, True), label=legend_func(legend_cols, t, props), draw_edges=get_prop("enum_strip_edges") == "true")
         else:
             plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
@@ -676,8 +676,8 @@ def _parse_enum_spec(enum_spec, reverse_mapping=False):
     else:
         return dict(kv_pairs)
 
-def _plot_enum(vectime, vecvalue, endtime, labels_map, label):
-    label_colors = {index: "C" + str(index) for index, label in enumerate(labels_map)}
+def _plot_enum(vectime, vecvalue, endtime, labels_map, label, draw_edges):
+    label_colors = {index: "C" + str(index) for index, _ in enumerate(labels_map)}
     colors = [label_colors[key] for key in sorted(label_colors.keys())]
     boundaries = list(label_colors.keys()) + [max(label_colors.keys()) + 1]
     cmap = ListedColormap(colors)
@@ -700,7 +700,10 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label):
 
     endtime = max(endtime, vectime[-1])
     vectime = np.append(vectime, endtime)
-    cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1)
+    if draw_edges:
+        cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1)
+    else:
+        ax.pcolorfast(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm)
 
     def compute_conversion_factor(ax):
         return ax.transData.get_matrix()[0, 0]
@@ -710,17 +713,35 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label):
             return
         for txt in ax.texts:
             txt.remove()
+
         x_min, x_max = ax.get_xlim()
-        a = np.ediff1d(vectime) * compute_conversion_factor(ax)
-        c = np.sum((x_min < vectime) & (vectime < x_max))
-        cex.set_edgecolor((0, 0, 0, .1 * .99 ** c))
-        for i in np.where(a > 10)[0]:
-            x = (vectime[i] + vectime[i + 1]) / 2
-            value = vecvalue[i]
-            if x_min <= x and x <= x_max:
-                txt = ax.text(x, 0.5, labels_map.get(value,value), fontsize='x-small', color='white', ha='center', va='center', clip_on=True)
-                bbox = txt.get_window_extent(fig.canvas.get_renderer())
-                txt.set_rotation('horizontal' if bbox.width < a[i] else 'vertical')
+        if draw_edges:
+            c = np.sum((x_min < vectime) & (vectime < x_max))
+            cex.set_edgecolor((0, 0, 0, .5 * .99 ** c))
+
+        # Find start and end indices
+        start_idx = np.searchsorted(vectime, x_min) - 1
+        end_idx = np.searchsorted(vectime, x_max)
+        start_idx = max(start_idx, 0)
+        end_idx = min(end_idx, len(vectime))
+
+        visible_widths = np.diff(vectime[start_idx:end_idx]) * compute_conversion_factor(ax)
+
+        textwidths = {}
+
+        for i in range(start_idx, end_idx-1):
+            width = visible_widths[i - start_idx]
+            if width > 10:
+                x = (vectime[i] + vectime[i+1]) / 2
+                value = vecvalue[i]
+                label = labels_map.get(value,value)
+                txt = ax.text(x, 0.5, label, fontsize='x-small', color='white', ha='center', va='center', clip_on=True)
+                if label in textwidths:
+                    textwidth = textwidths[label]
+                else:
+                    textwidth = txt.get_window_extent(fig.canvas.get_renderer()).width
+                    textwidths[label] = textwidth
+                txt.set_rotation('horizontal' if textwidth < width else 'vertical')
 
     def on_legend_click(ax):
         ax.default_legend = not ax.default_legend

@@ -15,6 +15,15 @@
 
   <x:children>
 
+    <group text="Enums">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout"/>
+      <x:children>
+        <button x:id="enum_as_strip" x:id.default="true" text="Display enums as colored strips" x:style="CHECK" />
+        <button x:id="enum_strip_edges" x:id.default="false" text="Draw edges around regions (affects performance)" x:style="CHECK" x:id.enablerButton="enum_as_strip" />
+      </x:children>
+    </group>
+
     <group text="Lines">
       <layoutData x:class="GridData" horizontalSpan="1" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
       <layout x:class="GridLayout" numColumns="2"/>
@@ -46,10 +55,6 @@
 
     <label text="Line width:"/>
     <spinner x:id="linewidth" x:id.default="1.5" minimum="0" digits="1" selection="15" maximum="1000" x:style="BORDER"/>
-
-    <button x:id="enum_as_strip" x:id.default="true" text="Display enums as colored strips" x:style="CHECK">
-      <layoutData x:class="GridData" horizontalSpan="2"/>
-    </button>
 
       </x:children>
     </group>
