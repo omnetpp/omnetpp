@@ -1299,13 +1299,6 @@ void TextViewerWidget::mousePressEvent(QMouseEvent *event)
         viewport()->update();
     }
     else if (event->buttons() & Qt::RightButton) {
-        caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
-        caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
-        clearSelection();
-
-        revealCaret();
-        viewport()->update();
-
         Q_EMIT rightClicked(event->globalPos(), caretLineIndex, caretColumn);
     }
 }

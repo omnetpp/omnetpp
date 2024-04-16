@@ -36,6 +36,20 @@ class QTENV_API LogInspector : public Inspector
       QAction *runUntilAction;
       QAction *fastRunUntilAction;
 
+      QAction *toMessagesModeAction;
+      QAction *toLogModeAction;
+
+      QAction *findAction;
+      QAction *saveAction;
+      QAction *filterAction;
+
+      QAction *findAgainAction;
+      QAction *findAgainReverseAction;
+      QAction *copySelectionAction;
+      QAction *copySelectionWithFormattingAction;
+
+      QAction *configureMessagePrinterAction;
+
       QToolBar *createToolbar(bool isTopLevel);
       void addOwnActions(QToolBar *toolBar);
 
@@ -70,11 +84,6 @@ class QTENV_API LogInspector : public Inspector
 
       QString lastFindText;
       TextViewerWidget::FindOptions lastFindOptions;
-
-      QAction *toMessagesModeAction;
-      QAction *toLogModeAction;
-
-      QAction *configureMessagePrinterAction;
 
       QSize sizeHint() const override { return QSize(700, 300); }
 

@@ -66,7 +66,6 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     : Inspector(parent, isTopLevel, f)
 {
     logBuffer = getQtenv()->getLogBuffer();
-
     componentHistory = getQtenv()->getComponentHistory();
 
     auto layout = new QGridLayout(this);
@@ -75,14 +74,36 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     textWidget = new TextViewerWidget(this);
     textWidget->setFont(getQtenv()->getLogFont());
-    QToolBar *toolBar = createToolbar(isTopLevel);
-    if (isTopLevel)
-        layout->addWidget(toolBar);
 
-    layout->addWidget(textWidget);
-    connect(textWidget, SIGNAL(caretMoved(int, int)), this, SLOT(onCaretMoved(int, int)));
-    connect(textWidget, SIGNAL(rightClicked(QPoint, int, int)), this, SLOT(onRightClicked(QPoint, int, int)));
-    parent->setMinimumSize(100, 50);  // caution: too small widget height with heading displayed may cause notification loop!
+    toMessagesModeAction = new QAction(this);
+    toMessagesModeAction->setCheckable(true);
+    toMessagesModeAction->setIcon(QIcon(":/tools/pkheader"));
+    toMessagesModeAction->setText("Message/Packet Traffic");
+    connect(toMessagesModeAction, SIGNAL(triggered()), this, SLOT(toMessagesMode()));
+    // no hotkey, no need to "add" it
+
+    toLogModeAction = new QAction(this);
+    toLogModeAction->setCheckable(true);
+    toLogModeAction->setIcon(QIcon(":/tools/log"));
+    toLogModeAction->setText("Log");
+    connect(toLogModeAction, SIGNAL(triggered()), this, SLOT(toLogMode()));
+    // no hotkey, no need to "add" it
+
+    findAction = new QAction(QIcon(":/tools/find"), "Find...", this);
+    findAction->setToolTip("Find text in window (Ctrl+F)\nUse F3 to find next, Shift+F3 to find previous");
+    findAction->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    connect(findAction, SIGNAL(triggered()), this, SLOT(onFindButton()));
+
+    saveAction = new QAction(QIcon(":/tools/save"), "Save Window Contents...", this);
+    connect(saveAction, SIGNAL(triggered()), this, SLOT(saveContent()));
+
+    filterAction = new QAction(QIcon(":/tools/filter"), "Filter by Module...", this);
+    filterAction->setToolTip("Filter window contents by module (Ctrl+H)");
+    filterAction->setShortcut(Qt::ControlModifier + Qt::Key_H);
+    connect(filterAction, SIGNAL(triggered()), this, SLOT(onFilterButton()));
+
+    configureMessagePrinterAction = new QAction(QIcon(":/tools/winconfig"), "Configure Message Display...", this);
+    connect(configureMessagePrinterAction, SIGNAL(triggered()), this, SLOT(onMessagePrinterTagsButton()));
 
     /*
     stringContent = new StringTextViewerContentProvider(
@@ -97,23 +118,42 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
                        "Integer a lorem vitae tortor elementum facilisis quis ut orci.\n");
     */
 
-    QAction *findAgainAction = new QAction(this);
+    findAgainAction = new QAction("Find Next", this);
     findAgainAction->setShortcut(Qt::Key_F3);
+    findAgainAction->setEnabled(false);
     connect(findAgainAction, SIGNAL(triggered()), this, SLOT(findAgain()));
     addAction(findAgainAction);
 
-    QAction *findAgainReverseAction = new QAction(this);
+    findAgainReverseAction = new QAction("Find Previous", this);
     findAgainReverseAction->setShortcut(Qt::ShiftModifier + Qt::Key_F3);
+    findAgainReverseAction->setEnabled(false);
     connect(findAgainReverseAction, SIGNAL(triggered()), this, SLOT(findAgainReverse()));
     addAction(findAgainReverseAction);
 
-    QAction *copySelectionWithFormattingAction = new QAction(this);
+    // strips the ANSI control sequences, as expected
+    copySelectionAction = new QAction(QIcon(":/tools/copy"), "Copy", this);
+    connect(copySelectionAction, SIGNAL(triggered()), textWidget, SLOT(copySelectionUnformatted()));
+    copySelectionAction->setToolTip("Copy selected text to clipboard\nUse Ctrl+Shift+C to include formatting");
+    copySelectionAction->setShortcut(Qt::ControlModifier + Qt::Key_C);
+    copySelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    addAction(copySelectionAction);
+
+    copySelectionWithFormattingAction = new QAction("Copy with Formatting", this); // not on toolbar
+    connect(copySelectionWithFormattingAction, SIGNAL(triggered()), textWidget, SLOT(copySelection()));
     // we do this opposite of the usual: Hold shift to copy _formatted_ text
     // (because it's not a proper rich-text MIME content, only ANSI control sequences inline plain text)
     copySelectionWithFormattingAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_C);
     copySelectionWithFormattingAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    connect(copySelectionWithFormattingAction, SIGNAL(triggered()), textWidget, SLOT(copySelection()));
     addAction(copySelectionWithFormattingAction);
+
+    QToolBar *toolBar = createToolbar(isTopLevel);
+    if (isTopLevel)
+        layout->addWidget(toolBar);
+
+    layout->addWidget(textWidget);
+    connect(textWidget, SIGNAL(caretMoved(int, int)), this, SLOT(onCaretMoved(int, int)));
+    connect(textWidget, SIGNAL(rightClicked(QPoint, int, int)), this, SLOT(onRightClicked(QPoint, int, int)));
+    parent->setMinimumSize(100, 50);  // caution: too small widget height with heading displayed may cause notification loop!
 
     connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(onFontChanged()));
 
@@ -177,43 +217,17 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
     return toolBar;
 }
 
-//void LogInspector::setSunkenRunUntil(bool isSunken)
-//{
-//    runUntilAction->setChecked(isSunken);
-//}
-
 void LogInspector::addOwnActions(QToolBar *toolBar)
 {
-    // strips the ANSI control sequences, as expected
-    QAction *copySelectionAction = toolBar->addAction(QIcon(":/tools/copy"), "Copy selected text to clipboard (Ctrl+C)\nUse Ctrl+Shift+C to include formatting",
-                       textWidget, SLOT(copySelectionUnformatted()));
-    copySelectionAction->setShortcut(Qt::ControlModifier + Qt::Key_C);
-    copySelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    addAction(copySelectionAction);
-
-    toolBar->addAction(QIcon(":/tools/find"), "Find string in window (Ctrl+F)",
-                       this, SLOT(onFindButton()))->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    toolBar->addAction(copySelectionAction);
+    toolBar->addAction(findAction);
     if (isTopLevel()) // looks like we don't need this in embedded mode, for whatever reason...
-        toolBar->addAction(QIcon(":/tools/save"), "Save window contents to file",
-                           this, SLOT(saveContent()));
-    toolBar->addAction(QIcon(":/tools/filter"), "Filter window contents (Ctrl+H)",
-                       this, SLOT(onFilterButton()))->setShortcut(Qt::ControlModifier + Qt::Key_H);
-    configureMessagePrinterAction = toolBar->addAction(QIcon(":/tools/winconfig"), "Configure message display",
-                                 this, SLOT(onMessagePrinterTagsButton()));
+        toolBar->addAction(saveAction);
+    toolBar->addAction(filterAction);
+    toolBar->addAction(configureMessagePrinterAction);
     toolBar->addSeparator();
 
-    toMessagesModeAction = new QAction(toolBar);
-    toMessagesModeAction->setCheckable(true);
-    toMessagesModeAction->setIcon(QIcon(":/tools/pkheader"));
-    toMessagesModeAction->setText("Message/packet traffic");
-    connect(toMessagesModeAction, SIGNAL(triggered()), this, SLOT(toMessagesMode()));
     toolBar->addAction(toMessagesModeAction);
-
-    toLogModeAction = new QAction(toolBar);
-    toLogModeAction->setCheckable(true);
-    toLogModeAction->setIcon(QIcon(":/tools/log"));
-    toLogModeAction->setText("Log");
-    connect(toLogModeAction, SIGNAL(triggered()), this, SLOT(toLogMode()));
     toolBar->addAction(toLogModeAction);
 }
 
@@ -319,6 +333,8 @@ void LogInspector::onFindButton()
         lastFindOptions = dialog->getOptions();
         if (!lastFindText.isEmpty())
             textWidget->find(lastFindText, lastFindOptions);
+        findAgainAction->setEnabled(!lastFindText.isEmpty());
+        findAgainReverseAction->setEnabled(!lastFindText.isEmpty());
     }
     delete dialog;
 }
@@ -355,43 +371,55 @@ void LogInspector::onCaretMoved(int lineIndex, int column)
 void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 {
     auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
-    if (msg) {
-        QMenu *menu = InspectorUtil::createInspectorContextMenu(msg, this);
+    QMenu *menu = msg
+        ? InspectorUtil::createInspectorContextMenu(msg, this)
+        : new QMenu(this);
 
-        if (mode == LogInspector::MESSAGES) {
-            menu->addSeparator();
-            menu->addAction("Set Sending Time as Reference", [=]() {
-                EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
+    if (mode == LogInspector::MESSAGES) {
+        menu->addSeparator();
+        menu->addAction("Set Sending Time as Reference", [=]() {
+            EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
+        });
+
+        SimTime refTime = EventEntryMessageLinesProvider::getReferenceTime();
+        if (refTime > 0) {
+            QString refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'").c_str();
+            refTimeStr = stripSuffixes(refTimeStr, "'000");
+            menu->addAction("Clear Time Reference (=" + refTimeStr + ")", [=]() {
+                EventEntryMessageLinesProvider::setReferenceTime(0);
             });
-
-            SimTime refTime = EventEntryMessageLinesProvider::getReferenceTime();
-            if (refTime > 0) {
-                QString refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'").c_str();
-                refTimeStr = stripSuffixes(refTimeStr, "'000");
-                menu->addAction("Clear Time Reference (=" + refTimeStr + ")", [=]() {
-                    EventEntryMessageLinesProvider::setReferenceTime(0);
-                });
-            }
-
-            menu->addSeparator();
-
-            QAction *reverseHopsAction = menu->addAction("Allow Backward Arrows for Hops", [=](bool checked) {
-                getQtenv()->opt->allowBackwardArrowsForHops = checked;
-                getQtenv()->refreshInspectors();
-            });
-            reverseHopsAction->setCheckable(true);
-            reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
-
-            QAction *groupDigitsAction = menu->addAction("Digit Grouping for Simulation Time", [=](bool checked) {
-                getQtenv()->opt->messageLogDigitGrouping = checked;
-                getQtenv()->refreshInspectors();
-            });
-            groupDigitsAction->setCheckable(true);
-            groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
         }
 
-        menu->exec(globalPos);
+        menu->addSeparator();
+
+        QAction *reverseHopsAction = menu->addAction("Allow Backward Arrows for Hops", [=](bool checked) {
+            getQtenv()->opt->allowBackwardArrowsForHops = checked;
+            getQtenv()->refreshInspectors();
+        });
+        reverseHopsAction->setCheckable(true);
+        reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
+
+        QAction *groupDigitsAction = menu->addAction("Digit Grouping for Simulation Time", [=](bool checked) {
+            getQtenv()->opt->messageLogDigitGrouping = checked;
+            getQtenv()->refreshInspectors();
+        });
+        groupDigitsAction->setCheckable(true);
+        groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
+
+        menu->addSeparator();
     }
+    menu->addAction(filterAction);
+    menu->addAction(saveAction);
+    if (mode == MESSAGES)
+        menu->addAction(configureMessagePrinterAction);
+    menu->addSeparator();
+    menu->addAction(findAction);
+    menu->addAction(findAgainAction);
+    menu->addAction(findAgainReverseAction);
+    menu->addSeparator();
+    menu->addAction(copySelectionAction);
+
+    menu->exec(globalPos);
 }
 
 void LogInspector::findAgain()
