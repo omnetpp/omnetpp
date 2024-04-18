@@ -16,6 +16,7 @@
 #ifndef __OMNETPP_CHASHER_H
 #define __OMNETPP_CHASHER_H
 
+#include <cmath>  // NAN
 #include <cstdint>
 #include <cstring>
 #include <cstdlib>
@@ -70,7 +71,12 @@ class SIM_API cHasher : noncopyable
     void add(unsigned int d)   {merge((uint32_t)d);}
     void add(unsigned long d)  {uint64_t tmp=d; merge2(tmp);}
     void add(unsigned long long d)  {merge2(d);}
-    void add(double d)         {union _ {double d; uint64_t i;}; merge2(((union _ *)&d)->i);} // hint: "safe type punning in C++"
+    void add(double d) {
+        if (std::isnan(d)) d = NAN;  // force standard representation
+        //merge2(std::bit_cast<uint64_t>(d));  // requires C++20
+        union _ {double _; uint64_t i;};
+        merge2(((union _ *)&d)->i);  // hint: "safe type punning in C++"
+    }
     void add(simtime_t t)      {merge2(t.raw());}
     void add(const char *s)    {if (s) add(s, strlen(s)+1); else add(0);}
     void add(const std::string& s) {add(s.c_str(), s.size()+1);}
