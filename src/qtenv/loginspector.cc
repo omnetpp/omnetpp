@@ -91,20 +91,20 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     connect(toLogModeAction, SIGNAL(triggered()), this, SLOT(toLogMode()));
     // no hotkey, no need to "add" it
 
-    findAction = new QAction(QIcon(":/tools/find"), "Find...", this);
+    findAction = new QAction(QIcon(":/tools/find"), "&Find...", this);
     findAction->setToolTip("Find text in window (Ctrl+F)\nUse F3 to find next, Shift+F3 to find previous");
     findAction->setShortcut(Qt::ControlModifier + Qt::Key_F);
     connect(findAction, SIGNAL(triggered()), this, SLOT(onFindButton()));
 
-    saveAction = new QAction(QIcon(":/tools/save"), "Save Window Contents...", this);
+    saveAction = new QAction(QIcon(":/tools/save"), "&Save Window Contents...", this);
     connect(saveAction, SIGNAL(triggered()), this, SLOT(saveContent()));
 
-    filterAction = new QAction(QIcon(":/tools/filter"), "Filter by Module...", this);
+    filterAction = new QAction(QIcon(":/tools/filter"), "Filter by &Module...", this);
     filterAction->setToolTip("Filter window contents by module (Ctrl+H)");
     filterAction->setShortcut(Qt::ControlModifier + Qt::Key_H);
     connect(filterAction, SIGNAL(triggered()), this, SLOT(onFilterButton()));
 
-    configureMessagePrinterAction = new QAction(QIcon(":/tools/winconfig"), "Configure Message Display...", this);
+    configureMessagePrinterAction = new QAction(QIcon(":/tools/winconfig"), "C&onfigure Columns and More...", this);
     connect(configureMessagePrinterAction, SIGNAL(triggered()), this, SLOT(onMessagePrinterTagsButton()));
 
     /*
@@ -120,20 +120,20 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
                        "Integer a lorem vitae tortor elementum facilisis quis ut orci.\n");
     */
 
-    findAgainAction = new QAction("Find Next", this);
+    findAgainAction = new QAction("Find &Next", this);
     findAgainAction->setShortcut(Qt::Key_F3);
     findAgainAction->setEnabled(false);
     connect(findAgainAction, SIGNAL(triggered()), this, SLOT(findAgain()));
     addAction(findAgainAction);
 
-    findAgainReverseAction = new QAction("Find Previous", this);
+    findAgainReverseAction = new QAction("Find &Previous", this);
     findAgainReverseAction->setShortcut(Qt::ShiftModifier + Qt::Key_F3);
     findAgainReverseAction->setEnabled(false);
     connect(findAgainReverseAction, SIGNAL(triggered()), this, SLOT(findAgainReverse()));
     addAction(findAgainReverseAction);
 
     // strips the ANSI control sequences, as expected
-    copySelectionAction = new QAction(QIcon(":/tools/copy"), "Copy", this);
+    copySelectionAction = new QAction(QIcon(":/tools/copy"), "&Copy", this);
     connect(copySelectionAction, SIGNAL(triggered()), textWidget, SLOT(copySelectionUnformatted()));
     copySelectionAction->setToolTip("Copy selected text to clipboard\nUse Ctrl+Shift+C to include formatting");
     copySelectionAction->setShortcut(Qt::ControlModifier + Qt::Key_C);
@@ -433,7 +433,23 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 
     if (mode == LogInspector::MESSAGES) {
         menu->addSeparator();
-        menu->addAction("Set Sending Time as Reference", [=]() {
+
+        QAction *reverseHopsAction = menu->addAction("Allow Backward &Arrows for Hops", [=](bool checked) {
+            getQtenv()->opt->allowBackwardArrowsForHops = checked;
+            getQtenv()->refreshInspectors();
+        });
+        reverseHopsAction->setCheckable(true);
+        reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
+
+        QAction *groupDigitsAction = menu->addAction("Digit &Grouping for Simulation Time", [=](bool checked) {
+            getQtenv()->opt->messageLogDigitGrouping = checked;
+            getQtenv()->refreshInspectors();
+        });
+        groupDigitsAction->setCheckable(true);
+        groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
+
+        menu->addSeparator();
+        menu->addAction("Set Sending Time as &Reference", [=]() {
             EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
         });
 
@@ -447,37 +463,24 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
         }
 
         menu->addSeparator();
-
-        QAction *reverseHopsAction = menu->addAction("Allow Backward Arrows for Hops", [=](bool checked) {
-            getQtenv()->opt->allowBackwardArrowsForHops = checked;
-            getQtenv()->refreshInspectors();
-        });
-        reverseHopsAction->setCheckable(true);
-        reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
-
-        QAction *groupDigitsAction = menu->addAction("Digit Grouping for Simulation Time", [=](bool checked) {
-            getQtenv()->opt->messageLogDigitGrouping = checked;
-            getQtenv()->refreshInspectors();
-        });
-        groupDigitsAction->setCheckable(true);
-        groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
-
-        menu->addSeparator();
     }
-    menu->addAction(filterAction);
-    menu->addAction(saveAction);
-    if (mode == MESSAGES)
-        menu->addAction(configureMessagePrinterAction);
-    menu->addSeparator();
-    menu->addAction(findAction);
-    menu->addAction(findAgainAction);
-    menu->addAction(findAgainReverseAction);
+
+    menu->addAction("Go to Simulation &Time...", this, SLOT(onGoToSimTimeAction()));
+    menu->addAction("Go to &Event...", this, SLOT(onGoToEventAction()));
+
     menu->addSeparator();
     menu->addAction(copySelectionAction);
 
     menu->addSeparator();
-    menu->addAction("Go to Simulation Time...", this, SLOT(onGoToSimTimeAction()));
-    menu->addAction("Go to Event...", this, SLOT(onGoToEventAction()));
+    menu->addAction(findAction);
+    menu->addAction(findAgainAction);
+    menu->addAction(findAgainReverseAction);
+
+    menu->addSeparator();
+    if (mode == MESSAGES)
+        menu->addAction(configureMessagePrinterAction);
+    menu->addAction(filterAction);
+    menu->addAction(saveAction);
 
     menu->exec(globalPos);
 }
