@@ -95,6 +95,12 @@ Q_SIGNALS:
       void findAgain(); // when F3 is pressed, uses the last set options
       void findAgainReverse(); // same, but in the other direction (with shift)
 
+      void onGoToSimTimeAction();
+      void onGoToEventAction();
+
+      void goToSimTime(SimTime t);
+      void goToEvent(eventnumber_t e);
+
       void onFilterButton();
       void onMessagePrinterTagsButton();
 

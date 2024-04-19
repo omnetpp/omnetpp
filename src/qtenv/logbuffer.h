@@ -131,8 +131,12 @@ class QTENV_API LogBuffer : public QObject
     const circular_buffer<Entry*>& getEntries() const {return entries;}
     int getNumEntries() const {return entries.size();}
     int getNumEntriesDiscarded() const {return entriesDiscarded;}
+    // NOTE: Unlike `findEntryBySimTime`, looks for an exact match.
     int findEntryByEventNumber(eventnumber_t eventNumber);
     Entry *getEntryByEventNumber(eventnumber_t eventNumber);
+    // NOTE: Unlike `findEntryByEventNumber`, returns an approximate match.
+    int findEntryBySimTime(simtime_t simTime);
+    Entry *getEntryBySimTime(simtime_t simTime);
 
     // Returns the last private copy we made of a given message,
     // ot nullptr if no copy is found. The parameter doesn't have

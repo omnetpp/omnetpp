@@ -212,6 +212,25 @@ int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
     return entryStartLineNumbers[entryIndex];
 };
 
+simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
+{
+    int entryIndex = getIndexOfEntryAt(lineIndex);
+    if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
+        return -1;
+    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
+    return eventEntry->simtime;
+};
+
+int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
+{
+    int entryIndex = logBuffer->findEntryBySimTime(simTime);
+    if (!isIndexValid())
+        rebuildIndex();
+    if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
+        return -1;
+    return entryStartLineNumbers[entryIndex];
+};
+
 int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
 {
     // The lineIndex parameter here is already corrected for the single

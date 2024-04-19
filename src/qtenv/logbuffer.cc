@@ -257,6 +257,31 @@ LogBuffer::Entry *LogBuffer::getEntryByEventNumber(eventnumber_t eventNumber)
     return i == -1 ? nullptr : entries[i];
 }
 
+int LogBuffer::findEntryBySimTime(simtime_t simTime)
+{
+    if (entries.empty())
+        return -1;
+    int first = 0, last = entries.size()-1;
+    int middle = (first + last)/2;
+    while (first <= last) {
+        if (entries[middle]->simtime < simTime)
+            first = middle + 1;
+        else if (entries[middle]->simtime == simTime)
+            return middle;
+        else
+            last = middle - 1;
+
+        middle = (first + last)/2;
+    }
+    return middle;
+}
+
+LogBuffer::Entry *LogBuffer::getEntryBySimTime(simtime_t simTime)
+{
+    int i = findEntryBySimTime(simTime);
+    return i == -1 ? nullptr : entries[i];
+}
+
 cMessage *LogBuffer::getLastMessageDup(cMessage *of) const
 {
     auto range = messageDups.equal_range(of);

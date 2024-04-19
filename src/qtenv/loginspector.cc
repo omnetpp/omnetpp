@@ -23,6 +23,7 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QInputDialog>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QDebug>
@@ -40,6 +41,7 @@
 #include "logfilterdialog.h"
 #include "messageprintertagsdialog.h"
 #include "textviewerproviders.h"
+#include "omnetpp/simtime.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -361,6 +363,60 @@ void LogInspector::onMessagePrinterTagsButton()
     }
 }
 
+void LogInspector::onGoToSimTimeAction()
+{
+    QInputDialog dialog(this);
+    dialog.setWindowTitle("Go to simulation time...");
+    dialog.setLabelText("Enter simulation time (e.g. '12', '1.5us', '3s 125ms'):\n"
+                        "You can also start with + or - for relative navigation.");
+    dialog.setInputMode(QInputDialog::TextInput);
+
+    int line = textWidget->getCaretPosition().line;
+    SimTime t = contentProvider->getSimTimeAtLine(line);
+
+    if (t >= 0)
+        dialog.setTextValue(t.ustr().c_str());
+
+    if (dialog.exec() == QDialog::Accepted) {
+        QString text = dialog.textValue();
+        try {
+            if (text.startsWith('+') || text.startsWith('-')) {
+                SimTime delta = SimTime::parse(text.mid(1).toUtf8());
+                if (text.startsWith('+'))
+                    t += delta;
+                else
+                    t -= delta;
+            } else {
+                t = SimTime::parse(text.toUtf8());
+            }
+            goToSimTime(t);
+        }
+        catch (cRuntimeError& e) {
+            QMessageBox::warning(this, "Error", e.what());
+        }
+    }
+}
+
+void LogInspector::onGoToEventAction()
+{
+    QInputDialog dialog(this);
+    dialog.setWindowTitle("Go to event...");
+    dialog.setLabelText("Enter event number:");
+    dialog.setInputMode(QInputDialog::IntInput);
+
+    int line = textWidget->getCaretPosition().line;
+    eventnumber_t e = contentProvider->getEventNumberAtLine(line);
+
+    dialog.setIntMinimum(0);
+    dialog.setIntMaximum(getSimulation()->getEventNumber());
+
+    if (e >= 0)
+        dialog.setIntValue(e);
+
+    if (dialog.exec() == QDialog::Accepted)
+        goToEvent(dialog.intValue());
+}
+
 void LogInspector::onCaretMoved(int lineIndex, int column)
 {
     auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
@@ -419,6 +475,10 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
     menu->addSeparator();
     menu->addAction(copySelectionAction);
 
+    menu->addSeparator();
+    menu->addAction("Go to Simulation Time...", this, SLOT(onGoToSimTimeAction()));
+    menu->addAction("Go to Event...", this, SLOT(onGoToEventAction()));
+
     menu->exec(globalPos);
 }
 
@@ -432,6 +492,28 @@ void LogInspector::findAgainReverse()
 {
     if (!lastFindText.isEmpty())
         textWidget->find(lastFindText, lastFindOptions ^ TextViewerWidget::FIND_BACKWARDS);
+}
+
+void LogInspector::goToSimTime(SimTime t)
+{
+    Pos pos = textWidget->getCaretPosition();
+    pos.line = contentProvider->getLineAtSimTime(t);
+    textWidget->setCaretPosition(pos.line, pos.column);
+    int horizontalMargin = textWidget->viewport()->width() / 5;
+    int verticalMargin = textWidget->viewport()->height() / 5;
+    // 20% on the top and left, 40% on the bottom and right
+    textWidget->revealCaret(QMargins(horizontalMargin, verticalMargin, horizontalMargin * 2, verticalMargin * 2));
+}
+
+void LogInspector::goToEvent(eventnumber_t e)
+{
+    Pos pos = textWidget->getCaretPosition();
+    pos.line = contentProvider->getLineAtEvent(e);
+    textWidget->setCaretPosition(pos.line, pos.column);
+    int horizontalMargin = textWidget->viewport()->width() / 5;
+    int verticalMargin = textWidget->viewport()->height() / 5;
+    // 20% on the top and left, 40% on the bottom and right
+    textWidget->revealCaret(QMargins(horizontalMargin, verticalMargin, horizontalMargin * 2, verticalMargin * 2));
 }
 
 void LogInspector::toMessagesMode()
