@@ -609,7 +609,7 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
 
 
 @_guarded_result_query_func
-def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, start_time=-inf, end_time=inf, convert_to_base_unit=True):
+def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=False, include_itervars=False, include_param_assignments=False, include_config_entries=False, start_time=-inf, end_time=inf, convert_to_base_unit=True, omit_empty_vectors=False):
     """
     Returns a filtered list of vector results.
 
@@ -632,6 +632,8 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
       right-open.
     - `convert_to_base_unit` (bool): Optional. If `True`, the values in the
       vectors are converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
+    - `omit_empty_vectors` (bool): Optional. If `True`, empty vectors are discarded
+      from the output.
 
     Columns of the returned DataFrame:
 
@@ -649,6 +651,7 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
         params["filter_expression"] = filter_or_dataframe
         del params["filter_or_dataframe"]
         del params["convert_to_base_unit"]
+        del params["omit_empty_vectors"]
         result = impl.get_vectors(**params)
     else:
         df = filter_or_dataframe
@@ -673,6 +676,10 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
     _dropna_except(result, VECTOR_COLUMN_NAMES)
     _ensure_columns_exist(result, VECTOR_COLUMN_NAMES)
     _fix_ndarray_shapes(result, ["vectime", "vecvalue"])
+
+    if omit_empty_vectors:
+        empty_indices = result[result['vectime'].apply(lambda x: x.size == 0)].index
+        result.drop(index=empty_indices, inplace=True)
 
     if convert_to_base_unit:
         convert_to_base_unit_func(result)
