@@ -22,8 +22,8 @@
       <x:children>
 
         <!-- ordering_regex_list -->
-        <label text='Ordering rules (one regex per line):'/>
-        <label text='Rules for secondary ordering:'/>
+        <label text='Primary ordering (one regex per line):'/>
+        <label text='Secondary ordering (one regex per line):'/>
         <text x:id='ordering_regex_list' x:style='BORDER|WRAP|MULTI|V_SCROLL'>
           <layoutData x:class='GridData' heightHint='60' horizontalAlignment='FILL' verticalAlignment='FILL' grabExcessHorizontalSpace='true' grabExcessVerticalSpace='true'/>
         </text>
@@ -39,7 +39,7 @@
         </label>
 
         <!-- sorting -->
-        <button x:id='sorting' text='Alphabetical tertiary ordering' x:style='CHECK' x:id.default="true">
+        <button x:id='sorting' text='Use alphabetical sorting as tertiary ordering' x:style='CHECK' x:id.default="true">
           <layoutData x:class='GridData' horizontalSpan='2'/>
         </button>
 
