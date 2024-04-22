@@ -689,7 +689,7 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label):
     legend_handles, legend_labels = ax.get_legend_handles_labels()
     legend_handles.append(plt.Rectangle((0, 0), 1, 1, color=(0.5, 0.5, 0.5, 0.5)))
     legend_labels.append(label)
-    legend = ax.legend(legend_handles, legend_labels)
+    legend = ax.legend(legend_handles, legend_labels, markerscale = 0, handlelength = 0)  # hide marker
     legend.set_picker(True)
     ax.default_legend = True
 
@@ -1235,6 +1235,10 @@ def postconfigure_plot(props):
                     args.update(_legend_loc_outside_args(loc))
                 args["frameon"] =_parse_optional_bool(get_prop("legend_border"))
                 handles, labels = ax.get_legend_handles_labels()
+                # if there is only one legend entry, make the symbol invisible -- this is especially useful for plot_vectors_separate()
+                if len(handles) <= 1:
+                    args["markerscale"] = 0
+                    args["handlelength"] = 0
                 if handles:
                     plt.legend(**args)
         plt.tight_layout()
