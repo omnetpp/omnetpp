@@ -455,9 +455,9 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 
         SimTime refTime = EventEntryMessageLinesProvider::getReferenceTime();
         if (refTime > 0) {
-            QString refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'").c_str();
+            std::string refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'");
             refTimeStr = stripSuffixes(refTimeStr, "'000");
-            menu->addAction("Clear Time Reference (=" + refTimeStr + ")", [=]() {
+            menu->addAction("Clear Time Reference (=" + QString::fromStdString(refTimeStr) + ")", [=]() {
                 EventEntryMessageLinesProvider::setReferenceTime(0);
             });
         }
@@ -605,7 +605,7 @@ void LogInspector::saveContent()
     QTextStream out(&file);
 
     for (int i = 0; i < lineNumber; ++i)
-        out << stripFormatting(contentProvider->getLineText(i)) << '\n';
+        out << QString::fromStdString(stripFormatting(contentProvider->getLineText(i))) << '\n';
 
     file.close();
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());

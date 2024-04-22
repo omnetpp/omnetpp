@@ -110,9 +110,9 @@ const char *getObjectFullTypeName(cObject *object);
 
 QTENV_API QString makeObjectTooltip(cObject *obj);
 
-const QChar *skipEscapeSequences(const QChar *start);
-QString stripFormatting(const QString& input);
-QString stripSuffixes(const QString& from, const QString& suffix);
+const char *skipEscapeSequences(const char *start);
+std::string stripFormatting(const std::string& input);
+std::string stripSuffixes(const std::string& from, const std::string& suffix);
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);

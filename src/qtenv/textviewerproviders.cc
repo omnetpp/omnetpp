@@ -118,7 +118,7 @@ int ModuleOutputContentProvider::getLineCount()
     return lineCount + (numDiscarded > 0 ? 1 : 0);
 }
 
-QString ModuleOutputContentProvider::getLineText(int lineIndex)
+std::string ModuleOutputContentProvider::getLineText(int lineIndex)
 {
     if (!isIndexValid())
         rebuildIndex();
@@ -126,7 +126,8 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
     int numDiscarded = logBuffer->getNumEntriesDiscarded();
     if (numDiscarded > 0) {
         if (lineIndex == 0)
-            return QString(SGR(FG_RED) "[Partial history, %1 earlier entries already discarded]" SGR(RESET)).arg(numDiscarded);
+            return std::string(SGR(FG_RED) "[Partial history, ") + std::to_string(numDiscarded)
+                + std::string(" earlier entries already discarded]" SGR(RESET));
         --lineIndex;
     }
 
@@ -141,8 +142,8 @@ QString ModuleOutputContentProvider::getLineText(int lineIndex)
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
 
     auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
-    while (lineText.endsWith('\n'))
-        lineText.chop(1);
+    while (!lineText.empty() && lineText.back() == '\n')
+        lineText.pop_back();
     return lineCache[lineIndex] = lineText;
 }
 
@@ -288,19 +289,23 @@ void ModuleOutputContentProvider::onEntryDiscarded(LogBuffer::Entry *entry)
     Q_EMIT textChanged();
 }
 
-StringTextViewerContentProvider::StringTextViewerContentProvider(QString text)
+StringTextViewerContentProvider::StringTextViewerContentProvider(std::string text)
 {
-    lines = text.split("\n");  // XXX split() discards trailing blank lines
-    if (lines.length() == 0)
-        lines.append("");
+    std::istringstream f(text);
+    std::string temp;
+    while (std::getline(f, temp))
+        lines.push_back(temp);
+
+    if (lines.empty())
+        lines.push_back("");
 }
 
 int StringTextViewerContentProvider::getLineCount()
 {
-    return lines.length();
+    return lines.size();
 }
 
-QString StringTextViewerContentProvider::getLineText(int lineIndex)
+std::string StringTextViewerContentProvider::getLineText(int lineIndex)
 {
     return lines[lineIndex];
 }
@@ -403,11 +408,11 @@ bool EventEntryLinesProvider::shouldShowAnyLine(LogBuffer::Entry *entry)
     return false;
 }
 
-QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
+std::string EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
 {
     if (shouldShowBanner(entry, shouldShowAnyLine(entry))) {
         if (lineIndex == 0) // it's an event banner, or if no component, an info line
-            return (entry->isSystemMessage() || entry->isScheduler() ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + QString(entry->banner) + SGR(RESET);
+            return (entry->isSystemMessage() || entry->isScheduler() ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + std::string(entry->banner) + SGR(RESET);
         else
             lineIndex--; // skipping the banner
     }
@@ -428,7 +433,7 @@ QString EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIn
 
     LogBuffer::Line& line = entry->lines[entryLineIndex];
 
-    QString text;
+    std::string text;
     if (line.prefix) {
         switch (entry->lines[entryLineIndex].logLevel) {
             case LOGLEVEL_WARN: text += SGR(FG_YELLOW); break;
@@ -529,7 +534,7 @@ LogBuffer::MessageSend &EventEntryMessageLinesProvider::messageSendForLineIndex(
     return entry->msgs.front(); // meh.
 }
 
-QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::MessageSend& msgsend)
+std::string EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::MessageSend& msgsend)
 {
     bool lastHopIncluded;
     std::vector<int> hops = findRelevantHopModuleIds(msgsend, &lastHopIncluded);
@@ -546,19 +551,19 @@ QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::M
     if (reversed)
         std::reverse(hops.begin(), hops.end());
 
-    QString result;
+    std::string result;
     if (hops.size() == 2 && incoming && outgoing)
         // simple passthrough
-        result = QString("^.") + componentHistory->getComponentFullName(hops[0])
+        result = std::string("^.") + componentHistory->getComponentFullName(hops[0])
             + (reversed ? " <-- " : " --> ")
-            + QString("^.") + componentHistory->getComponentFullName(hops[1]);
+            + std::string("^.") + componentHistory->getComponentFullName(hops[1]);
     else {
 
         int parentId = componentHistory->getParentModuleId(inspectedComponentId);
 
         bool first = true;
         for (size_t i = 0; i < hops.size(); ++i) {
-            QString hopName = componentHistory->getComponentFullName(hops[i]);
+            std::string hopName = componentHistory->getComponentFullName(hops[i]);
             int hopParentId = componentHistory->getParentModuleId(hops[i]);
 
             if (hopParentId != inspectedComponentId) {
@@ -586,11 +591,11 @@ QString EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::M
 
     if (lastIsDiscard) {
         if (reversed) {
-            int firstIndex = result.indexOf("<-");
+            size_t firstIndex = result.find("<-");
             result.replace(firstIndex, 2, "<-X");
         }
         else {
-            int lastIndex = result.lastIndexOf("->");
+            size_t lastIndex = result.rfind("->");
             result.replace(lastIndex, 2, "X->");
         }
     }
@@ -633,12 +638,12 @@ static inline int getLengthWithSeparators(int digits)
     int numGroups = std::ceil(digits / 3.0);
     return digits + std::max(0, numGroups - 1);
 }
-
-QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
+std::string EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
 {
     // ---- formatting the Event# column ----
     int eventNumberLength = getNumWholeDigits(cSimulation::getActiveSimulation()->getEventNumber()) + 1; // + 1 is for the #
-    QString eventNumberText = ("#" + QString::number(entry->eventNumber)).rightJustified(eventNumberLength);
+    std::string eventNumberText = "#" + std::to_string(entry->eventNumber);
+    eventNumberText = std::string(eventNumberLength - eventNumberText.length(), ' ') + eventNumberText;
 
     // ---- formatting the Time column ----
     SimTime refTime = getReferenceTime();
@@ -659,7 +664,7 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
         ? SGR(FG_WHITE) "'" SGR(FG_DEFAULT) // FG_WHITE is actually gray
         : "";
 
-    QString simTimeText = timeToPrint.format(SimTime::getScaleExp(), ".", digitSeparator).c_str();
+    std::string simTimeText = timeToPrint.format(SimTime::getScaleExp(), ".", digitSeparator);
 
     if (refTime > 0) {
         if (timeIsReference)
@@ -686,15 +691,15 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
         int maxNumDigitsWithSep = getLengthWithSeparators(maxNumWholeDigits);
         int numDigitsWithSep = getLengthWithSeparators(numWholeDigits);
         ASSERT(maxNumDigitsWithSep >= numDigitsWithSep);
-        simTimeText = QString(" ").repeated(maxNumDigitsWithSep - numDigitsWithSep) + simTimeText;
+        simTimeText = std::string(maxNumDigitsWithSep - numDigitsWithSep, ' ') + simTimeText;
 
         // remove all trailing '000 groups (incl. escape sequences)
-        QString suffix = QString(digitSeparator) + "000";
+        std::string suffix = std::string(digitSeparator) + "000";
         simTimeText = stripSuffixes(simTimeText, suffix);
     }
     else {
         ASSERT(maxNumWholeDigits >= numWholeDigits);
-        simTimeText = QString(" ").repeated(maxNumWholeDigits - numWholeDigits) + simTimeText;
+        simTimeText = std::string(maxNumWholeDigits - numWholeDigits, ' ') + simTimeText;
 
         // remove all trailing zeroes
         simTimeText = stripSuffixes(simTimeText, "0");
@@ -711,12 +716,14 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
     LogBuffer::MessageSend& messageSend = messageSendForLineIndex(entry, lineIndex);
     cMessage *msg = messageSend.msg;
 
-    QString text = QString(SGR(FG_WHITE) "%1\t" SGR(FG_DEFAULT) "%2\t" SGR(FG_GREEN) "%3\t"                  SGR(FG_RED) "%4\t" SGR(FG_DEFAULT))
-                      .arg(               eventNumberText,       simTimeText,         getRelevantHopsString(messageSend), msg ? msg->getFullName() : "<nullptr>");
-
+    std::ostringstream os;
+    os << SGR(FG_WHITE) << eventNumberText << "\t"
+          SGR(FG_DEFAULT) << simTimeText << "\t"
+          SGR(FG_GREEN) << getRelevantHopsString(messageSend) << "\t"
+          SGR(FG_RED) << (msg ? msg->getFullName() : "<nullptr>") << "\t"
+          SGR(FG_DEFAULT);
 
     cMessagePrinter *printer = msg ? chooseMessagePrinter(msg) : nullptr;
-    std::stringstream os;
 
     if (printer)
         try {
@@ -729,9 +736,7 @@ QString EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry, int
     else
         os << SGR(FG_RED) "[no message printer for this object]" SGR(FG_DEFAULT);
 
-    text += QString(os.str().c_str());
-
-    return text;
+    return os.str();
 }
 
 cMessage *EventEntryMessageLinesProvider::getMessageForLine(LogBuffer::Entry *entry, int lineIndex)

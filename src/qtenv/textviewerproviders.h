@@ -57,7 +57,7 @@ public:
      *  content.
      * @return the line text without delimiters
      */
-    virtual QString getLineText(int lineIndex) = 0;
+    virtual std::string getLineText(int lineIndex) = 0;
 
     virtual bool showHeaders() = 0;
     virtual QStringList getHeaders() = 0;
@@ -93,13 +93,13 @@ Q_SIGNALS:
 class QTENV_API StringTextViewerContentProvider: public TextViewerContentProvider {
     Q_OBJECT
 
-    QStringList lines;  // text, split to lines
+    std::vector<std::string> lines;  // text, split to lines
 
 public:
-    StringTextViewerContentProvider(QString text);
+    StringTextViewerContentProvider(std::string text);
 
     int getLineCount() override;
-    QString getLineText(int lineIndex) override;
+    std::string getLineText(int lineIndex) override;
     bool showHeaders() override;
     QStringList getHeaders() override;
 };
@@ -122,7 +122,7 @@ public:
     virtual ~AbstractEventEntryLinesProvider() { }
 
     virtual int getNumLines(LogBuffer::Entry *entry) = 0;
-    virtual QString getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
+    virtual std::string getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
 
     // Optional.
     virtual cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) { ASSERT2(false, "Unimplemented."); return nullptr; };
@@ -143,7 +143,7 @@ public:
     using AbstractEventEntryLinesProvider::AbstractEventEntryLinesProvider;
 
     int getNumLines(LogBuffer::Entry *entry) override;
-    QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
+    std::string getLineText(LogBuffer::Entry *entry, int lineIndex) override;
 };
 
 class QTENV_API EventEntryMessageLinesProvider : public AbstractEventEntryLinesProvider {
@@ -158,7 +158,7 @@ protected:
     std::vector<int> findRelevantHopModuleIds(const LogBuffer::MessageSend& msgSend, bool *lastHopIncluded = nullptr);
     LogBuffer::MessageSend& messageSendForLineIndex(LogBuffer::Entry *entry, int lineIndex);
 
-    QString getRelevantHopsString(const LogBuffer::MessageSend &msg);
+    std::string getRelevantHopsString(const LogBuffer::MessageSend &msg);
 
 public:
 
@@ -166,7 +166,7 @@ public:
         : AbstractEventEntryLinesProvider(inspectedComponentId, excludedComponents, componentHistory), messagePrinterOptions(messagePrinterOptions) { }
 
     int getNumLines(LogBuffer::Entry *entry) override;
-    QString getLineText(LogBuffer::Entry *entry, int lineIndex) override;
+    std::string getLineText(LogBuffer::Entry *entry, int lineIndex) override;
 
     cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) override;
 
@@ -192,7 +192,7 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     // cached data
     int lineCount = 1; // the empty line, the "earlier history discarded" is added over this
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
-    std::map<int, QString> lineCache;
+    std::map<int, std::string> lineCache;
 
 public:
     ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);
@@ -208,7 +208,7 @@ public:
     void refresh();
 
     int getLineCount() override;
-    QString getLineText(int lineIndex) override;
+    std::string getLineText(int lineIndex) override;
     bool showHeaders() override;
     QStringList getHeaders() override;
     void *getUserData(int lineIndex) override;

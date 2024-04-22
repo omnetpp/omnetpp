@@ -282,15 +282,15 @@ void TextViewerWidget::find(QString text, FindOptions options)
     for (  /* nothing */; (line >= 0) && (line < content->getLineCount()); line += (backwards ? -1 : 1)) {
         int index = -1;
 
-        QString lineText = content->getLineText(line);
-        QString strippedText = stripFormatting(lineText);
+        std::string lineText = content->getLineText(line);
+        std::string strippedText = stripFormatting(lineText);
 
         if (backwards) {
-            index = re.lastIndexIn(strippedText, offset);
+            index = re.lastIndexIn(QString::fromStdString(strippedText), offset);
             offset = -1;  // was needed only for the first searched line
         }
         else {
-            index = re.indexIn(strippedText, offset);
+            index = re.indexIn(QString::fromStdString(strippedText), offset);
             offset = 0;  // was needed only for the first searched line
         }
 
@@ -345,7 +345,7 @@ int TextViewerWidget::getMaxVisibleLineWidth(int contentPixelBegin, int contentP
 
     int maxWidth = 0;
     for (int lineIndex = firstLine; lineIndex <= lastLine; ++lineIndex) {
-        const QString& line = content->getLineText(lineIndex);
+        std::string line = content->getLineText(lineIndex);
         // left margin is included in getLineColumnOffset, adding the right one here
         maxWidth = std::max(maxWidth, getLineColumnOffset(metrics, lineIndex, line.length()) + horizontalMargin);
     }
@@ -362,8 +362,8 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
 {
     auto line = content->getLineText(lineIndex);
 
-    const QChar *const textStart = line.unicode();
-    const QChar *textPointer = line.unicode();
+    const char *const textStart = line.data();
+    const char *textPointer = line.data();
 
     int inColumn = 0;
     int x = horizontalMargin;
@@ -387,18 +387,18 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
             // tab, an escape sequence, or the end of the string, and print
             // the text before that
 
-            const QChar *start = textPointer;
+            const char *start = textPointer;
 
             while (*textPointer != '\t' && *textPointer != '\x1b' && *textPointer != 0)
                 ++textPointer;
 
             if ((textPointer - textStart) >= columnIndex) {
-                QString text(start, columnIndex - (start - textStart));
+                QString text = QString::fromUtf8(start, columnIndex - (start - textStart));
                 x += metrics.width(text);
                 break;
             }
 
-            QString text(start, textPointer - start);
+            QString text = QString::fromUtf8(start, textPointer - start);
 
             x += metrics.width(text);
         }
@@ -422,8 +422,8 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
     auto line = content->getLineText(lineIndex);
     auto metrics = QFontMetrics(font, viewport());
 
-    const QChar *const textStart = line.unicode();
-    const QChar *textPointer = line.unicode();
+    const char *const textStart = line.data();
+    const char *textPointer = line.data();
     int curX = horizontalMargin - horizontalScrollOffset + metrics.averageCharWidth()/2;
 
     int inColumn = 0;
@@ -448,13 +448,13 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
             // tab, an escape sequence, or the end of the string, and print
             // the text before that
 
-            const QChar *start = textPointer;
+            const char *start = textPointer;
 
             while (*textPointer != '\t' && *textPointer != '\x1b' && *textPointer != 0)
                 ++textPointer;
 
             int len = textPointer - start;
-            QString text(start, len);
+            QString text = QString::fromUtf8 (start, len);
 
             int width = metrics.width(text);
 
@@ -576,9 +576,9 @@ void TextViewerWidget::doCursorPrevious(bool select)
 {
     auto text = content->getLineText(caretLineIndex);
 
-    caretColumn = std::min(caretColumn, text.length());
+    caretColumn = std::min(caretColumn, (int)text.length());
     if (caretColumn > 0)
-         caretColumn = mapColumnToUnformatted(text.unicode(), mapColumnToFormatted(text.unicode(), caretColumn)-1);
+         caretColumn = mapColumnToUnformatted(text.data(), mapColumnToFormatted(text.data(), caretColumn)-1);
     else if (caretLineIndex > 0) {
         caretLineIndex--;
         caretColumn = text.length();
@@ -593,7 +593,7 @@ void TextViewerWidget::doCursorNext(bool select)
     auto text = content->getLineText(caretLineIndex);
 
     if (caretColumn < text.length())
-         caretColumn = mapColumnToUnformatted(text.unicode(), mapColumnToFormatted(text.unicode(), caretColumn)+1);
+         caretColumn = mapColumnToUnformatted(text.data(), mapColumnToFormatted(text.data(), caretColumn)+1);
     else if (caretLineIndex < content->getLineCount()-1) {
         caretLineIndex++;
         caretColumn = 0;
@@ -647,8 +647,8 @@ void TextViewerWidget::doLineEnd(bool select)
 
 void TextViewerWidget::doWordPrevious(bool select)
 {
-    QString line = content->getLineText(caretLineIndex);
-    int pos = mapColumnToFormatted(line.unicode(), caretColumn);
+    std::string line = content->getLineText(caretLineIndex);
+    int pos = mapColumnToFormatted(line.data(), caretColumn);
     if (pos == 0) {
         // go to end of previous line
         if (caretLineIndex > 0) {
@@ -657,14 +657,14 @@ void TextViewerWidget::doWordPrevious(bool select)
         }
     }
     else {
-        QString unformattedLine = stripFormatting(line);
+        std::string unformattedLine = stripFormatting(line);
 
         // go to start of current or previous word
         while (pos > 0 && (pos >= unformattedLine.length() || !isWordChar(unformattedLine.at(pos))))
             pos--;
         while (pos > 0 && isWordChar(unformattedLine.at(pos-1)))
             pos--;
-        caretColumn = mapColumnToUnformatted(line.unicode(), pos);
+        caretColumn = mapColumnToUnformatted(line.data(), pos);
     }
     if (!select)
         clearSelection();
@@ -673,7 +673,7 @@ void TextViewerWidget::doWordPrevious(bool select)
 
 void TextViewerWidget::doWordNext(bool select)
 {
-    QString line = content->getLineText(caretLineIndex);
+    std::string line = content->getLineText(caretLineIndex);
     int pos = caretColumn;
     if (pos == line.length()) {
         // go to start of next line
@@ -747,44 +747,44 @@ void TextViewerWidget::clearSelection()
     selectionAnchorColumn = caretColumn;
 }
 
-QString TextViewerWidget::getSelectedText()
+std::string TextViewerWidget::getSelectedText()
 {
-    QString text;
-
     Pos start = getSelectionStart();
     Pos end = getSelectionEnd();
 
     if (start.line == end.line) {
-        text = content->getLineText(start.line).mid(start.column, end.column - start.column);
+        if (start.column == end.column)
+            return std::string();
+        return content->getLineText(start.line).substr(start.column, end.column - start.column);
     }
     else {
-        text = content->getLineText(start.line).mid(start.column).trimmed() + "\n";
+        std::ostringstream ss;
+        ss << content->getLineText(start.line).substr(start.column) << "\n";
         for (int l = start.line + 1; l < end.line; ++l)
-            text += content->getLineText(l).trimmed() + "\n";
-        text += content->getLineText(end.line).left(end.column).trimmed();
+            ss << content->getLineText(l) << "\n";
+        ss << content->getLineText(end.line).substr(0, end.column);
+        return ss.str();
     }
-
-    return text;
 }
 
-QString TextViewerWidget::getSelectedTextUnformatted()
+std::string TextViewerWidget::getSelectedTextUnformatted()
 {
-    QString text;
-
     Pos start = getSelectionStart();
     Pos end = getSelectionEnd();
 
     if (start.line == end.line) {
-        text = stripFormatting(content->getLineText(start.line).mid(start.column, end.column - start.column));
+        if (start.column == end.column)
+            return std::string();
+        return stripFormatting(content->getLineText(start.line).substr(start.column, end.column - start.column));
     }
     else {
-        text = stripFormatting(content->getLineText(start.line).mid(start.column).trimmed()) + "\n";
+        std::ostringstream ss;
+        ss << stripFormatting(content->getLineText(start.line).substr(start.column)) << "\n";
         for (int l = start.line + 1; l < end.line; ++l)
-            text += stripFormatting(content->getLineText(l).trimmed()) + "\n";
-        text += stripFormatting(content->getLineText(end.line).left(end.column).trimmed());
+            ss << stripFormatting(content->getLineText(l)) << "\n";
+        ss << stripFormatting(content->getLineText(end.line).substr(0, end.column));
+        return ss.str();
     }
-
-    return text;
 }
 
 int TextViewerWidget::clip(int lower, int upper, int x)
@@ -801,12 +801,12 @@ bool TextViewerWidget::isWordChar(QChar ch)
     return ch.isLetterOrNumber() || ch == '_' || ch == '@';
 }
 
-int TextViewerWidget::mapColumnToFormatted(const QChar *textPointer, int unformattedColumn)
+int TextViewerWidget::mapColumnToFormatted(const char *textPointer, int unformattedColumn)
 {
     if (unformattedColumn == 0)
         return 0;
 
-    const QChar *const textStart = textPointer;
+    const char *const textStart = textPointer;
 
     int formattedColumn = 0;
 
@@ -829,12 +829,12 @@ int TextViewerWidget::mapColumnToFormatted(const QChar *textPointer, int unforma
     return formattedColumn;
 }
 
-int TextViewerWidget::mapColumnToUnformatted(const QChar *textPointer, int formattedColumn)
+int TextViewerWidget::mapColumnToUnformatted(const char *textPointer, int formattedColumn)
 {
     if (formattedColumn == 0)
         return 0;
 
-    const QChar *const textStart = textPointer;
+    const char *const textStart = textPointer;
 
     int formattedChars = 0;
 
@@ -950,11 +950,11 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
     }
 }
 
-static int readInt(const QChar *&textPointer)
+static int readInt(const char *&textPointer)
 {
     int result = 0;
     while (*textPointer >= '0' && *textPointer <= '9') {
-        result = result * 10 + (textPointer->unicode() - '0');
+        result = result * 10 + (*textPointer - '0');
         ++textPointer;
     }
     if (*textPointer == ';')
@@ -963,7 +963,7 @@ static int readInt(const QChar *&textPointer)
     return result;
 }
 
-static void readColor(const QChar *&textPointer, QColor& color)
+static void readColor(const char *&textPointer, QColor& color)
 {
     int format = readInt(textPointer);
 
@@ -1003,7 +1003,7 @@ static void readColor(const QChar *&textPointer, QColor& color)
     }
 }
 
-static void performSgrControlSequence(const QChar *&textPointer, const QFont &defaultFont, QColor &fgColor, QColor &bgColor, QFont &font, bool &faint)
+static void performSgrControlSequence(const char *&textPointer, const QFont &defaultFont, QColor &fgColor, QColor &bgColor, QFont &font, bool &faint)
 {
     // "\x1b[m"
     // "\x1b[34m"
@@ -1108,9 +1108,9 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
     painter.setFont(curFont);
     QFontMetrics metrics = painter.fontMetrics();
 
-    QString lineText = content->getLineText(lineIndex);
+    std::string lineText = content->getLineText(lineIndex);
 
-    const QChar *textPointer = lineText.unicode();
+    const char *textPointer = lineText.data();
 
     int inColumn = 0;
 
@@ -1160,7 +1160,7 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
             // tab, an escape sequence, or the end of the string, and print
             // the text before that
 
-            const QChar *start = textPointer;
+            const char *const start = textPointer;
 
             while (*textPointer != '\t' && *textPointer != '\x1b' && *textPointer != 0)
                 ++textPointer;
@@ -1171,7 +1171,7 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
                 curFgColor = selectionForegroundColor;
             }
 
-            QString text(start, textPointer - start);
+            QString text = QString::fromUtf8(start, textPointer - start);
 
             QColor actualTextColor = curFgColor;
             actualTextColor.setAlpha(faint ? 128 : 255);
@@ -1240,7 +1240,7 @@ void TextViewerWidget::keyPressEvent(QKeyEvent *event)
     }
 
     if (shiftPressed)
-        QApplication::clipboard()->setText(getSelectedTextUnformatted(), QClipboard::Selection);
+        QApplication::clipboard()->setText(QString::fromStdString(getSelectedTextUnformatted()), QClipboard::Selection);
 
     caretShown = true;
     caretBlinkTimer.start();
@@ -1266,7 +1266,7 @@ void TextViewerWidget::mouseReleaseEvent(QMouseEvent *event)
     stopAutoScroll();
 
     if (getSelectionStart() != getSelectionEnd())
-        QApplication::clipboard()->setText(getSelectedTextUnformatted(), QClipboard::Selection);
+        QApplication::clipboard()->setText(QString::fromStdString(getSelectedTextUnformatted()), QClipboard::Selection);
 }
 
 void TextViewerWidget::mousePressEvent(QMouseEvent *event)
@@ -1565,11 +1565,11 @@ void TextViewerWidget::onHeaderSectionResized(int logicalIndex, int oldSize, int
 
 void TextViewerWidget::copySelection()
 {
-    QApplication::clipboard()->setText(getSelectedText());
+    QApplication::clipboard()->setText(QString::fromStdString(getSelectedText()));
 }
 void TextViewerWidget::copySelectionUnformatted()
 {
-    QApplication::clipboard()->setText(getSelectedTextUnformatted());
+    QApplication::clipboard()->setText(QString::fromStdString(getSelectedTextUnformatted()));
 }
 
 void TextViewerWidget::onContentChanged()

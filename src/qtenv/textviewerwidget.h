@@ -136,14 +136,14 @@ protected:
 
     void selectAll();
     void clearSelection();
-    QString getSelectedText();
-    QString getSelectedTextUnformatted();
+    std::string getSelectedText();
+    std::string getSelectedTextUnformatted();
 
 
     static int clip(int lower, int upper, int x);
     static bool isWordChar(QChar ch);
-    static int mapColumnToFormatted(const QChar *textPointer, int unformattedColumn);
-    static int mapColumnToUnformatted(const QChar *textPointer, int formattedColumn);
+    static int mapColumnToFormatted(const char *textPointer, int unformattedColumn);
+    static int mapColumnToUnformatted(const char *textPointer, int formattedColumn);
 
     void resizeEvent(QResizeEvent *event) override;
     void paintEvent(QPaintEvent *event) override;

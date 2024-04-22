@@ -578,7 +578,7 @@ std::vector<std::pair<ChartTickDecimal, bool>> getLinearTicks(double start, doub
 }
 
 
-const QChar *skipEscapeSequences(const QChar *start)
+const char *skipEscapeSequences(const char *start)
 {
     while (*start != 0) {
         if (*start == '\x1b') {
@@ -602,12 +602,12 @@ const QChar *skipEscapeSequences(const QChar *start)
     return start;
 }
 
-QString stripFormatting(const QString& input)
+std::string stripFormatting(const std::string& input)
 {
-    QString output;
+    std::string output;
     output.reserve(input.length());
 
-    const QChar *textPointer = input.unicode();
+    const char *textPointer = input.c_str();
 
     while (*textPointer != 0) {
         textPointer = skipEscapeSequences(textPointer);
@@ -620,11 +620,12 @@ QString stripFormatting(const QString& input)
     return output;
 }
 
-QString stripSuffixes(const QString& from, const QString& suffix)
+std::string stripSuffixes(const std::string& from, const std::string& suffix)
 {
-    QString result = from;
-    while (result.endsWith(suffix))
-        result = result.left(result.length() - suffix.length());
+    std::string result = from;
+    size_t ss = suffix.size();
+    while (result.size() >= ss && result.compare(result.size() - ss, ss, suffix) == 0)
+        result.resize(result.size() - ss);
     return result;
 }
 
