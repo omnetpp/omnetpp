@@ -252,6 +252,7 @@ Pos TextViewerWidget::getSelectionEnd()
 
 void TextViewerWidget::find(QString text, FindOptions options)
 {
+    setCursor(QCursor(Qt::WaitCursor));
     QString originalText = text;  // for the dialog if not found
 
     // just for convenience
@@ -316,6 +317,7 @@ void TextViewerWidget::find(QString text, FindOptions options)
         QMessageBox::information(this, "Not found", "No match for \"" + originalText + "\".");
     }
 
+    setCursor(QCursor(Qt::IBeamCursor));
     viewport()->update();
 }
 
