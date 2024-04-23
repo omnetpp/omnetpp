@@ -1213,8 +1213,6 @@ public class ScaveEditor extends MultiPageEditorPartExt
 
         firePropertyChange(ISaveablePart2.PROP_DIRTY);
 
-        //TODO temp chart name changes currently do not propagate to the tabitem text, as we do not receive model change notification about their change!
-
         // close pages whose content was deleted, except temporary charts
         for (AnalysisItem item : closablePages.keySet().toArray(new AnalysisItem[0])) { // toArray() is for preventing ConcurrentModificationException
             if (!analysis.contains(item) && !(item instanceof Chart && ((Chart)item).isTemporary()))

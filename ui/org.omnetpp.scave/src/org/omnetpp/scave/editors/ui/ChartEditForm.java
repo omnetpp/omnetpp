@@ -73,7 +73,7 @@ import org.xml.sax.SAXException;
 import com.swtworkbench.community.xswt.XSWT;
 
 /**
- * This is the guts of EditChartDialog.
+ * This is the guts of ConfigureChartDialog.
  */
 public class ChartEditForm {
 
