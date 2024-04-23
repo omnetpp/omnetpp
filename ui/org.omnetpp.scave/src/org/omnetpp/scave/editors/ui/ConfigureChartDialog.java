@@ -14,6 +14,7 @@ import java.util.Map;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -208,6 +209,14 @@ public class ConfigureChartDialog extends TitleAreaDialog {
             ChartScriptEditor chartScriptEditor = ((ChartPage)editorPage).chartScriptEditor;
             chartScriptEditor.getCommandStack().execute(command);
             chartScriptEditor.refreshChart();
+
+            if (chart.isTemporary()) {
+                // KLUDGE: Fake a selection change so that the Properties view is updated.
+                // (This is needed because temp charts are not part of the Analysis, so changing
+                // them does not result in a model change notification.)
+                editor.setSelection(new StructuredSelection());
+                editor.setSelection(new StructuredSelection(chart));
+            }
         }
         else {
             editor.getChartsPage().getCommandStack().execute(command);
