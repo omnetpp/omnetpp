@@ -617,7 +617,7 @@ std::string stripFormatting(const std::string& input)
         }
     }
 
-    return output;
+    return stripSuffixes(output, '\n');
 }
 
 std::string stripSuffixes(const std::string& from, const std::string& suffix)
@@ -626,6 +626,14 @@ std::string stripSuffixes(const std::string& from, const std::string& suffix)
     size_t ss = suffix.size();
     while (result.size() >= ss && result.compare(result.size() - ss, ss, suffix) == 0)
         result.resize(result.size() - ss);
+    return result;
+}
+
+std::string stripSuffixes(const std::string& from, char suffix)
+{
+    std::string result = from;
+    while (!result.empty() && result.back() == suffix)
+        result.pop_back();
     return result;
 }
 

@@ -135,15 +135,14 @@ std::string ModuleOutputContentProvider::getLineText(int lineIndex)
     if (lineIndex == lineCount-1)  // empty last line
         return "";
 
-    if (lineCache.count(lineIndex) > 0)
-        return lineCache[lineIndex];
+    auto it = lineCache.find(lineIndex);
+    if (it != lineCache.end())
+        return it->second;
 
     int entryIndex = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
 
     auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
-    while (!lineText.empty() && lineText.back() == '\n')
-        lineText.pop_back();
     return lineCache[lineIndex] = lineText;
 }
 

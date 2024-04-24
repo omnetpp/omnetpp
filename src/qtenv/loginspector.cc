@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <fstream>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QToolButton>
@@ -596,18 +597,15 @@ void LogInspector::saveContent()
     QString fileName = getPref(PREF_SAVE_FILENAME, "omnetpp.out").toString();
     fileName = QFileDialog::getSaveFileName(this, "Save Log Window Contents", fileName, "Log files (*.out);;All files (*)");
 
-    int lineNumber = contentProvider->getLineCount();
+    std::ofstream fs(fileName.toStdString());
 
-    QFile file(fileName);
-    if (fileName.isEmpty() || !file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!fs)
         return;
 
-    QTextStream out(&file);
-
+    int lineNumber = contentProvider->getLineCount();
     for (int i = 0; i < lineNumber; ++i)
-        out << QString::fromStdString(stripFormatting(contentProvider->getLineText(i))) << '\n';
+        fs << stripFormatting(contentProvider->getLineText(i)) << '\n';
 
-    file.close();
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());
 }
 

@@ -136,6 +136,8 @@ protected:
 
     void selectAll();
     void clearSelection();
+    // NOTE: There may be stray '\n' characters near the end of the lines,
+    // only followed by ANSI escape sequences. They are difficult to skip.
     std::string getSelectedText();
     std::string getSelectedTextUnformatted();
 
