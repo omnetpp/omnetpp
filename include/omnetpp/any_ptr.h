@@ -34,8 +34,9 @@ namespace omnetpp {
  *
  * The primary use of any_ptr is with cClassDescriptor.
  *
- * IMPORTANT: Since std::type_info knows nothing about inheritance relationships,
+ * Important: Since std::type_info knows nothing about inheritance relationships,
  * any_ptr cannot perform any upcast or downcast when extracting the pointer.
+ * 
  * The following code snippet raises a runtime error:
  *
  * ```

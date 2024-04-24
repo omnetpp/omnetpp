@@ -246,8 +246,8 @@ class SIM_API cPacket : public cMessage
     /**
      * Encapsulates packet in the packet. The packet length gets increased
      * by the length of the encapsulated packet.
-     *
-     * IMPORTANT NOTE: IT IS FORBIDDEN TO KEEP A POINTER TO A MESSAGE
+     * 
+     * Important: IT IS FORBIDDEN TO KEEP A POINTER TO A MESSAGE
      * AFTER IT WAS ENCAPSULATED. For performance reasons, encapsulated
      * packets are reference counted, meaning that the encapsulated
      * packet is not duplicated when you duplicate a packet, but rather,
@@ -271,7 +271,7 @@ class SIM_API cPacket : public cMessage
      * Returns a pointer to the encapsulated packet, or nullptr if there
      * is no encapsulated packet.
      *
-     * IMPORTANT: see notes at encapsulate() about reference counting
+     * Note: See notes at encapsulate() about reference counting
      * of encapsulated packets.
      */
     virtual cPacket *getEncapsulatedPacket() const;

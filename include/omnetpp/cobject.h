@@ -399,10 +399,10 @@ as_cObject(const T *p) { return nullptr; }
  * @brief Utility class, to make it impossible to call the operator= and copy
  * constructor of any class derived from it.
  *
- * NOTE: <tt>dup()</tt> must be redefined as <tt>{copyNotSupported(); return nullptr;}</tt>
+ * Note: `dup()` must be redefined as `{copyNotSupported(); return nullptr;}`
  * in classes directly subclassing from noncopyable, but this is not needed
  * in classes derived from them. For example, cSoftOwner is noncopyable,
- * so cModule and cSimpleModule no longer need to redefine <tt>dup()</tt>.
+ * so cModule and cSimpleModule no longer need to redefine `dup()`.
  *
  * This class is from boost, which bears the following copyright:
  *

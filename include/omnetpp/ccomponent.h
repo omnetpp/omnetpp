@@ -298,7 +298,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * One must be extremely careful when changing parameters from inside
      * handleParameterChange(), to avoid creating infinite notification loops.
      *
-     * Note: before \opp version 6.0, handleParameterChange() was disabled during
+     * Note: Before \opp version 6.0, handleParameterChange() was disabled during
      * the whole initialization process, and handleParameterChange(nullptr) was
      * called after the last stage of the initialization. This is no longer so
      * in version 6.0 or later.

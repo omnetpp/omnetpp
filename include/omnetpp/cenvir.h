@@ -881,7 +881,7 @@ class SIM_API cEnvir
     /**
      * Adds a listener that will be notified about simulation lifecycle events.
      * It has no effect if the listener is already subscribed.
-     * NOTE: The listeners will NOT be deleted when the program exits.
+     * Note: The listeners will NOT be deleted when the program exits.
      */
     virtual void addLifecycleListener(cISimulationLifecycleListener *listener);
 

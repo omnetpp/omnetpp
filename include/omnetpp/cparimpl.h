@@ -171,7 +171,9 @@ class SIM_API cParImpl : public cNamedObject
     virtual bool isSet() const {return flags & FL_ISSET;}
 
     /**
-     * Sets the isVolatile flag. NOTE: It may be necessary to invoke
+     * Sets the isVolatile flag. 
+     * 
+     * Note: It may be necessary to invoke
      * convertToConst(cComponent *context) as well.
      */
     virtual void setIsVolatile(bool f) {setFlag(FL_ISVOLATILE,f);}
@@ -276,7 +278,7 @@ class SIM_API cParImpl : public cNamedObject
      * Sets the value to the given expression. This object will assume
      * the responsibility to delete the expression object.
      *
-     * Note: if the parameter is marked as non-volatile (isVolatile()==false),
+     * Note: If the parameter is marked as non-volatile (isVolatile()==false),
      * one should not set an expression as value. This is not enforced
      * by cParImpl though.
      */

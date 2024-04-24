@@ -2551,7 +2551,7 @@ class SIM_API cAbstractTextFigure : public cFigure
          * that has similar color as the text, or when it overlaps with other
          * text items. The default setting is false (no halo).
          *
-         * Note: in Qtenv, halo may be slow to render for text figures
+         * Note: In Qtenv, halo may be slow to render for text figures
          * (cTextFigure) under some circumstances. There is no such penalty
          * for label figures (cLabelFigure).
          */

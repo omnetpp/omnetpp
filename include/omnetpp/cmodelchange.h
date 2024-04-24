@@ -257,7 +257,7 @@ class SIM_API cPostModuleReparentNotification : public cModelChangeNotification
  *
  * This notification is fired at the top of cModule::addGate().
  *
- * Note: this notification is fired for the gate or gate vector as a
+ * Note: This notification is fired for the gate or gate vector as a
  * whole, and not for individual gate objects in it. That is, a single
  * notification is fired for an inout gate (which is a gate pair) and
  * for gate vectors as well.
@@ -285,7 +285,7 @@ class SIM_API cPreGateAddNotification : public cModelChangeNotification
  *
  * This notification is fired at the bottom of cModule::addGate().
  *
- * Note: this notification is fired for the gate or gate vector as a
+ * Note: This notification is fired for the gate or gate vector as a
  * whole, and not for individual gate objects in it. That is, a single
  * notification is fired for an inout gate (which is a gate pair) and
  * for gate vectors as well.
@@ -310,7 +310,7 @@ class SIM_API cPostGateAddNotification : public cModelChangeNotification
  * This notification is fired at the top of cModule::deleteGate(). The gate
  * or gate vector in question still exists at this point.
  *
- * Note: this notification is fired for the gate or gate vector as a
+ * Note: This notification is fired for the gate or gate vector as a
  * whole, and not for individual gate objects in it. That is, a single
  * notification is fired for an inout gate (which is a gate pair) and
  * for gate vectors as well.
@@ -332,7 +332,7 @@ class SIM_API cPreGateDeleteNotification : public cModelChangeNotification
  * This notification is fired at the end of cModule::deleteGate(). The gate
  * or gate vector no longer exists at this point.
  *
- * Note: this notification is fired for the gate or gate vector as a
+ * Note: This notification is fired for the gate or gate vector as a
  * whole, and not for individual gate objects in it. That is, a single
  * notification is fired for an inout gate (which is a gate pair) and
  * for gate vectors as well.

@@ -566,7 +566,9 @@ class SIM_API cValue
     operator cObject *() const  {return objectValue();}
 
     /**
-     * Equivalent to xmlValue(). NOTE: The lifetime of the returned object tree
+     * Equivalent to xmlValue(). 
+     * 
+     * Note: The lifetime of the returned object tree
      * is limited; see xmlValue() for details.
      */
     operator cXMLElement *() const  {return xmlValue();}

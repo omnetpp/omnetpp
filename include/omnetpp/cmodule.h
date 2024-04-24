@@ -423,7 +423,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     cModule();
 
     /**
-     * Destructor. Note: it is not allowed delete modules directly, only via
+     * Destructor. 
+     * 
+     * Note: It is not allowed delete modules directly, only via
      * the deleteModule() method.
      */
     virtual ~cModule();
@@ -800,7 +802,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns a gate by its ID. It throws an error for invalid (or stale) IDs.
      *
-     * Note: as of \opp 4.0, gate IDs are no longer small integers and are
+     * Note: As of \opp 4.0, gate IDs are no longer small integers and are
      * not suitable for enumerating all gates of a module. Use GateIterator
      * for that purpose.
      */
@@ -809,7 +811,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /**
      * Returns a gate by its ID. It throws an error for invalid (or stale) IDs.
      *
-     * Note: as of \opp 4.0, gate IDs are no longer small integers and are
+     * Note: As of \opp 4.0, gate IDs are no longer small integers and are
      * not suitable for enumerating all gates of a module. Use GateIterator
      * for that purpose.
      */
@@ -981,7 +983,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Moves the module under a new parent module. This functionality
      * may be useful for some (rare) mobility scenarios.
      *
-     * NOTE: THIS METHOD CHANGES THE MODULE ID. To maintain a time-independent
+     * Note: THIS METHOD CHANGES THE MODULE ID. To maintain a time-independent
      * moduleId-to-fullPath mapping, this method will cause this module, and all
      * modules under it in the module hierarchy, to be assigned a new ID.
      * This usually causes no problem in the simulation's operation, but

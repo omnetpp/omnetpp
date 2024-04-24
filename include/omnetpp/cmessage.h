@@ -320,9 +320,9 @@ class SIM_API cMessage : public cEvent
      * or several convenience methods (addPar(), addObject(), par(), etc.)
      * to add, retrieve or remove cMsgPars and other objects.
      *
-     * <i>NOTE: using the object list has alternatives which may better
+     * Note: Using the object list has alternatives which may better
      * suit your needs. For more information, see class description for discussion
-     * about message subclassing vs dynamically attached objects.</i>
+     * about message subclassing vs dynamically attached objects.
      */
     virtual cArray& getParList()  {if (!parList) _createparlist(); return *parList;}
 
@@ -330,9 +330,9 @@ class SIM_API cMessage : public cEvent
      * Add a new, empty parameter (cMsgPar object) with the given name
      * to the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::add() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -341,9 +341,9 @@ class SIM_API cMessage : public cEvent
     /**
      * Add a parameter object to the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::add() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -354,9 +354,9 @@ class SIM_API cMessage : public cEvent
      * If the object does not exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::get() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -368,9 +368,9 @@ class SIM_API cMessage : public cEvent
      * If the object does not exist or it cannot be cast to cMsgPar (using dynamic_cast\<\>),
      * the method throws a cRuntimeError.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::get() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -380,9 +380,9 @@ class SIM_API cMessage : public cEvent
      * Returns the index of the parameter with the given name in the message's
      * object list, or -1 if it could not be found.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::find() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -392,9 +392,9 @@ class SIM_API cMessage : public cEvent
      * Check if a parameter with the given name exists in the message's
      * object list.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::exist() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -403,9 +403,9 @@ class SIM_API cMessage : public cEvent
     /**
      * Add an object to the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::add() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -415,9 +415,9 @@ class SIM_API cMessage : public cEvent
      * Returns the object with the given name in the message's object list.
      * If the object is not found, it returns nullptr.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::get() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -426,9 +426,9 @@ class SIM_API cMessage : public cEvent
     /**
      * Check if an object with the given name exists in the message's object list.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::exist() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -438,9 +438,9 @@ class SIM_API cMessage : public cEvent
      * Remove the object with the given name from the message's object list, and
      * return its pointer. If the object does not exist, nullptr is returned.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */
@@ -450,9 +450,9 @@ class SIM_API cMessage : public cEvent
      * Remove the object with the given name from the message's object list, and
      * return its pointer. If the object does not exist, nullptr is returned.
      *
-     * <i>NOTE: This is a convenience function: one may use getParList() and
+     * Note: This is a convenience function: one may use getParList() and
      * cArray::remove() instead. See also class description for discussion about
-     * message subclassing vs dynamically attached objects.</i>
+     * message subclassing vs dynamically attached objects.
      *
      * @see getParList()
      */

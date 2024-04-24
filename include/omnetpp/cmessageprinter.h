@@ -79,7 +79,7 @@ class SIM_API cMessagePrinter : public cNoncopyableOwnedObject
         /**
          * Returns the tags supported by this printer.
          *
-         * @note These are normally presented to the user on the graphical
+         * Note: These are normally presented to the user on the graphical
          * interfaces unmodified, and there are no constraints on the format
          * or content of the tags, so for example using "Show 'Details' column"
          * is preferred to using "col_details".

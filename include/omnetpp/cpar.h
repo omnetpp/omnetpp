@@ -291,7 +291,7 @@ class SIM_API cPar : public cObject
      * context of which the expression will be evaluated. If evalcontext
      * is nullptr, the owner of this parameter will be used.
      *
-     * Note: if the parameter is marked as non-volatile (isVolatile()==false),
+     * Note: If the parameter is marked as non-volatile (isVolatile()==false),
      * one should not set an expression as value. This is not enforced
      * by cPar though.
      *
@@ -448,7 +448,7 @@ class SIM_API cPar : public cObject
      * If the text cannot be parsed, an exception is thrown, which
      * can be caught as std::runtime_error& if necessary.
      *
-     * Note: this method understands expressions too, but does NOT handle
+     * Note: This method understands expressions too, but does NOT handle
      * the special values "default" and "ask".
      */
     void parse(const char *text, const char *baseDirectory=nullptr, FileLine loc=FileLine(), bool resetEvalContext=true);
@@ -633,7 +633,9 @@ class SIM_API cPar : public cObject
     operator cObject *() const  {return objectValue();}
 
     /**
-     * Equivalent to xmlValue(). NOTE: The lifetime of the returned object tree
+     * Equivalent to xmlValue(). 
+     * 
+     * Note: The lifetime of the returned object tree
      * is limited; see xmlValue() for details.
      */
     operator cXMLElement *() const  {return xmlValue();}
