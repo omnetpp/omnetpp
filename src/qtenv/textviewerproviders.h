@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_QTENV_TEXTVIEWERPROVIDERS_H
 #define __OMNETPP_QTENV_TEXTVIEWERPROVIDERS_H
 
+#include <unordered_map>
 #include <QtCore/QObject>
 #include <QtGui/QColor>
 #include <QtCore/QDebug>
@@ -192,7 +193,7 @@ class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     // cached data
     int lineCount = 1; // the empty line, the "earlier history discarded" is added over this
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
-    std::map<int, std::string> lineCache;
+    std::unordered_map<int, std::string> lineCache;
 
 public:
     ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);
