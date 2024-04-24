@@ -36,10 +36,10 @@ class cConfiguration;
  * with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
- * <pre>
+ * ```
  * [General]
  * rng-class="MyClass"
- * </pre>
+ * ```
  *
  * See also cModule::getRNG().
  *

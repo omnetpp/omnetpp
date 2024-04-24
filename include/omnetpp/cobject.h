@@ -253,10 +253,10 @@ class SIM_API cObject
 
     /**
      * This is a shortcut for the sequence
-     * <pre>
+     * ```
      *   drop(obj);
      *   delete obj;
-     * </pre>
+     * ```
      *
      * It is especially useful when writing destructors and assignment operators.
      *

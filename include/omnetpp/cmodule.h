@@ -57,12 +57,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * @brief Iterates through the gates of a module.
      *
      * Usage:
-     * \code
+     * ```
      * for (cModule::GateIterator it(module); !it.end(); ++it) {
      *     cGate *gate = *it;
      *     ...
      * }
-     * \endcode
+     * ```
      */
     class SIM_API GateIterator
     {
@@ -123,16 +123,16 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * or query the submodule list in advance.
      *
      * Usage:
-     * \code
+     * ```
      * for (cModule::SubmoduleIterator it(module); !it.end(); ++it) {
      *     cModule *submodule = *it;
      *     ...
      * }
-     * \endcode
+     * ```
      *
      * When submodules may be created in the loop body:
      *
-     * \code
+     * ```
      * for (cModule::SubmoduleIterator it(module); !it.end();) {
      *     cModule *submodule = *it;
      *     ...
@@ -143,7 +143,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      *     else
      *         it.reset(); // start over
      * }
-     * \endcode
+     * ```
      */
     class SIM_API SubmoduleIterator
     {
@@ -217,12 +217,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * the iterated module.
      *
      * Usage:
-     * \code
+     * ```
      * for (cModule::ChannelIterator it(module); !it.end(); ++it) {
      *     cChannel *channel = *it;
      *     ...
      * }
-     * \endcode
+     * ```
      */
     class SIM_API ChannelIterator
     {

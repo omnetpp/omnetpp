@@ -50,10 +50,10 @@ void check_and_cast_failure(T *p, P ret)
  * In the following example, DHCPPacket is a subclass of cMessage, and we want
  * to assert that the message received is actually a DHCPPacket. If not,
  * the simulation stops with an error message as the result of the exception.
- * <pre>
+ * ```
  *   cMessage *msg = ...;
  *   DHCPPacket *pk = check_and_cast\<DHCPPacket *\>(msg);
- * </pre>
+ * ```
  *
  * @ingroup UtilityFunctions
  */

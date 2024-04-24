@@ -35,21 +35,21 @@ class cObject;
  * to perform recursive traversal, and to throw EndTraversalException
  * if it finds the given object. The class can be used like this:
  *
- * \code
+ * ```
  * cRecursiveObjectFinderVisitor v(objectName);
  * v.process(root);
  * cObject *result = v.getResult();
- * \endcode
+ * ```
  *
  * The above code will find the root object as well, if its name matches.
  * The second version (below) starts the traversal at the children,
  * so the root object is ignored.
  *
- * \code
+ * ```
  * cRecursiveObjectFinderVisitor v(objectName);
  * v.processChildrenOf(root);
  * cObject *result = v.getResult();
- * \endcode
+ * ```
  *
  * @ingroup Misc
  */

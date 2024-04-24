@@ -36,14 +36,14 @@ namespace omnetpp {
  * (.msg), which are translated into C++ classes.
  * An example message declaration:
  *
- * \code
+ * ```
  * packet Datagram
  * {
  *     int destAddr = -1; // destination address
  *     int srcAddr = -1;  // source address
  *     int ttl =  32;     // time to live
  * }
- * \endcode
+ * ```
  *
  * @see cSimpleModule, cDatarateChannel, cPacketQueue
  *

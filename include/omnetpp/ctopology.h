@@ -451,11 +451,11 @@ class SIM_API cTopology : public cOwnedObject
      * all modules that contain the <tt>@node</tt> property, like the following
      * one:
      *
-     * <pre>
+     * ```
      * module X {
      *     @node;
      * }
-     * </pre>
+     * ```
      *
      */
     virtual void extractByProperty(const char *propertyName, const char *value=nullptr);

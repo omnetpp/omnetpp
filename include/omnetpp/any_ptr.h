@@ -38,11 +38,11 @@ namespace omnetpp {
  * any_ptr cannot perform any upcast or downcast when extracting the pointer.
  * The following code snippet raises a runtime error:
  *
- * <pre>
+ * ```
  * cMessage *msg = new cMessage();
  * any_ptr ptr = any_ptr(msg);
  * cObject *obj = ptr.get<cObject>(); // ==> "Attempt to read any_ptr(cMessage) as cObject*"
- * </pre>
+ * ```
  *
  * When casting is important (~always), the toAnyPtr()/fromAnyPtr() functions should be
  * used for converting an object pointer to and from any_ptr. Most toAnyPtr()/fromAnyPtr()
@@ -50,11 +50,11 @@ namespace omnetpp {
  *
  * Updated code snippet:
  *
- * <pre>
+ * ```
  * cMessage *msg = new cMessage();
  * any_ptr ptr = toAnyPtr(msg);
  * cObject *obj = fromAnyPtr<cObject>(ptr); // works as expected
- * </pre>
+ * ```
  *
  * @ingroup Misc
  */

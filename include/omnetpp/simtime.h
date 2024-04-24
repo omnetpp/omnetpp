@@ -381,10 +381,10 @@ class SIM_API SimTime
      * fractional part with regard to a time unit.
      * <tt>t.split(exponent, outValue, outRemainder)</tt> is equivalent to:
      *
-     * <pre>
+     * ```
      * outValue = t.inUnit(unit);
      * outRemainder = t.remainderForUnit(unit);
-     * </pre>
+     * ```
      */
     void split(SimTimeUnit unit, int64_t& outValue, SimTime& outRemainder) const;
 

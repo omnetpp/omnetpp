@@ -134,9 +134,10 @@ class SIM_API cEnum : public cOwnedObject
      * with one of the Register_Enum() macros.
      *
      * Example:
-     * <pre>
+     *
+     * ```
      * State state = cEnum::resolveName<State>("IDLE");
-     * </pre>
+     * ```
      */
     template<typename E>
     static E resolveName(const char *name) {
@@ -150,10 +151,11 @@ class SIM_API cEnum : public cOwnedObject
      * the Register_Enum() macros.
      *
      * Example:
-     * <pre>
+     *
+     * ```
      * State state = State::IDLE;
      * const char *stateName = cEnum::getNameForValue(state);
-     * </pre>
+     * ```
      */
     template<typename E>
     static const char *getNameForValue(E value) {

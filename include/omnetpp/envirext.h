@@ -49,10 +49,10 @@ struct ChannelResult;
  * register your new class with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
- * <pre>
+ * ```
  * [General]
  * outputvectormanager-class="MyClass"
- * </pre>
+ * ```
  *
  * @ingroup EnvirAndExtensions
  */
@@ -148,10 +148,10 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
  * register your new class with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
- * <pre>
+ * ```
  * [General]
  * outputscalarmanager-class="MyClass"
- * </pre>
+ * ```
  *
  * @ingroup EnvirAndExtensions
  */
@@ -248,10 +248,10 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
  * register your new class with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
- * <pre>
+ * ```
  * [General]
  * snapshotmanager-class="MyClass"
- * </pre>
+ * ```
  *
  * @ingroup EnvirAndExtensions
  */
@@ -327,10 +327,10 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
  * register your new class with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
- * <pre>
+ * ```
  * [General]
  * eventlogmanager-class="MyClass"
- * </pre>
+ * ```
  *
  * @ingroup EnvirAndExtensions
  */

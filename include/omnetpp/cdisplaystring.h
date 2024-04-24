@@ -51,14 +51,15 @@ namespace omnetpp {
  * semicolons, equal signs and commas.
  *
  * An example:
- * <pre>
- *   cDisplayString dispstr("a=1,2;p=alpha,,3");
- *   dispstr.insertTag("x");
- *   dispstr.setTagArg("x",0,"joe");
- *   dispstr.setTagArg("x",2,"jim");
- *   dispstr.setTagArg("p",0,"beta");
- *   EV << dispstr.str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
- * </pre>
+ * 
+ * ```
+ * cDisplayString dispstr("a=1,2;p=alpha,,3");
+ * dispstr.insertTag("x");
+ * dispstr.setTagArg("x",0,"joe");
+ * dispstr.setTagArg("x",2,"jim");
+ * dispstr.setTagArg("p",0,"beta");
+ * EV << dispstr.str();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
+ * ```
  *
  * Limitation: a tag may have at most 16 arguments.
  *

@@ -32,9 +32,9 @@ class cCoroutine;
  * A convenient way to produce an appropriately configured instance for a send() call
  * is by creating a default instance, and chaining mutator methods:
  *
- * <pre>
+ * ```
  * send(msg, SendOptions().updateTx(transmissionId, remainingDuration).duration(duration), "out");
- * </pre>
+ * ```
  *
  * Transmission updates:
  *

@@ -207,11 +207,11 @@ class SIM_API cFigure : public cOwnedObject
          * @brief Homogeneous 2D transformation matrix.
          *
          * Note that the last row is not stored.
-         * <pre>
+         * ```
          *  | a  c  t1 |
          *  | b  d  t2 |
          *  | 0  0   1 |
-         * </pre>
+         * ```
          *
          * @ingroup Canvas
          */

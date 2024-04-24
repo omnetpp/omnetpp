@@ -38,7 +38,7 @@ namespace omnetpp {
  *
  * Example usage:
  *
- * <pre>
+ * ```
  * cModule *carModule = ...
  * osg::Node *carModel = ...
  * osg::Group *parent = ...
@@ -46,7 +46,7 @@ namespace omnetpp {
  * wrapperNode->setObject(carModule);
  * wrapperNode->addChild(carModel);
  * parent->addChild(wrapperNode);
- * </pre>
+ * ```
  *
  * The \opp object should exist as long as the wrapper node exists. Otherwise,
  * clicking child nodes with the mouse is likely to result in a crash.

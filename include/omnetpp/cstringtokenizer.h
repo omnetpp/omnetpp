@@ -60,21 +60,18 @@ class StringTokenizer;
  * mismatches, unterminated and unmatched parens are reported with an exception.
  *
  * Example 1:
- *
- * <pre>
+ * ```
  * const char *str = "one two three four";
  * cStringTokenizer tokenizer(str);
  * while (tokenizer.hasMoreTokens())
  *     EV << " " << tokenizer.nextToken();
- * </pre>
+ * ```
  *
  * Example 2:
- *
- * <pre>
+ * ```
  * const char *str = "42 13 46 72 41";
  * std::vector<string> array = cStringTokenizer(str).asVector();
- * </pre>
- *
+ * ```
  * @ingroup Misc
  */
 class SIM_API cStringTokenizer

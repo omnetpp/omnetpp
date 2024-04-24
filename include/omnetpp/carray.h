@@ -43,12 +43,12 @@ class SIM_API cArray : public cOwnedObject
      * nullptr).
      *
      * Usage:
-     * \code
+     * ```
      * for (cArray::Iterator it(array); !it.end(); ++it) {
      *     cObject *item = *it;
      *     ...
      * }
-     * \endcode
+     * ```
      */
     class Iterator
     {

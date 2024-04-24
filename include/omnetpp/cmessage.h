@@ -80,13 +80,13 @@ enum eMessageKind
  * Further fields can be added to cMessage via message declaration files (.msg)
  * which are translated into C++ classes. An example message declaration:
  *
- * \code
+ * ```
  * message Job
  * {
  *        string label;
  *        int color = -1;
  * }
- * \endcode
+ * ```
  *
  * @see cSimpleModule, cQueue, cPacket
  *

@@ -44,7 +44,7 @@ namespace omnetpp {
  * The actual FSM is embedded in an FSM_Switch(), which has cases for
  * entering and leaving each state:
  *
- * <pre>
+ * ```
  * FSM_Switch(fsm)
  * {
  *     case FSM_Exit(state1):
@@ -61,7 +61,7 @@ namespace omnetpp {
  *         break;
  *     //...
  * }
- * </pre>
+ * ```
  *
  * States are declared in enums, using the FSM_Transient() and FSM_Steady() macros.
  *
@@ -93,14 +93,14 @@ namespace omnetpp {
  * @brief Declares a transient state; to be used in enum which declares states.
  *
  * Example:
- * <pre>
+ * ```
  * enum {
  *    INIT = 0,
  *    SLEEP = FSM_Steady(1),
  *    ACTIVE = FSM_Steady(2),
  *    SEND = FSM_Transient(1),
  * };
- * </pre>
+ * ```
  *
  * The numbers in parens must be unique within the state type and they are
  * used for constructing numeric IDs for the states.

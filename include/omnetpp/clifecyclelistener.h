@@ -173,9 +173,9 @@ enum SimulationLifecycleEventType
  * use the <tt>EXECUTE_ON_STARTUP(code)</tt> macro to automatically add a
  * listener when the program starts:
  *
- * <pre>
+ * ```
  * EXECUTE_ON_STARTUP(getEnvir()->addLifecycleListener(new MyListener()));
- * </pre>
+ * ```
  *
  * Note that listeners will not be deleted automatically when the program
  * exits. To delete a listener on shutdown, add <tt>delete this;</tt>

@@ -60,28 +60,28 @@ class cAutoRangeHistogramStrategy;
  *
  * Automatic mode:
  *
- * \code
+ * ```
  * cHistogram histogram("histogram");
- * \endcode
+ * ```
  *
  * Setting up a 50-bin histogram on the range [0,100):
  *
- * \code
+ * ```
  * cAutoRangeHistogramStrategy *strategy = new cAutoRangeHistogramStrategy();
  * strategy->setRange(0, 100);
  * strategy->setNumBins(50);
  * strategy->setMode(cHistogram::MODE_INTEGERS);
  * cHistogram histogram("histogram", strategy);
- * \endcode
+ * ```
  *
  * The same effect using convenience methods:
  *
- * \code
+ * ```
  * cHistogram histogram("histogram");
  * histogram.setRange(0, 100);
  * histogram.setNumBins(50);
  * histogram.setMode(cHistogram::MODE_INTEGERS);
- * \endcode
+ * ```
  *
  * @ingroup Statistics
  */

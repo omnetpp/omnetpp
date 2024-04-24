@@ -957,9 +957,9 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * between runs, so it is possible to assign global simsignal_t variables
      * using static initialization:
      *
-     * <pre>
+     * ```
      * simsignal_t somethingHappenedSignal = cComponent::registerSignal("somethingHappened");
-     * </pre>
+     * ```
      */
     static simsignal_t registerSignal(const char *name);
 

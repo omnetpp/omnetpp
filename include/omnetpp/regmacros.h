@@ -74,10 +74,10 @@ namespace omnetpp {
  * signature in NED.
  *
  * The C++ function can have either of the following two signatures:
- * <pre>
+ * ```
  * cValue f(cComponent *context, cValue argv[], int argc);  // typedef NedFunction
  * cValue f(cExpression::Context *context, cValue argv[], int argc);  // typedef NedFunctionExt
- * </pre>
+ * ```
  *
  * SIGNATURE is a string with the following syntax:
  * <tt>returntype functionname(argtype1 argname1, ...)</tt>, where a type
@@ -87,9 +87,9 @@ namespace omnetpp {
  * additional arguments of arbitrary types, add ',...' to the signature.
  *
  * Example:
- * <pre>
+ * ```
  * Define_NED_Function(uniformFunc,"quantity uniform(quantity a, quantity b, long rng?)")
- * </pre>
+ * ```
  *
  * @hideinitializer
  */
@@ -237,13 +237,13 @@ namespace omnetpp {
  * @brief Registers an enum.
  *
  * Example:
- * <pre>
+ * ```
  * enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
  * Register_Enum(State, (STATE_IDLE, STATE_BUSY, STATE_SLEEPING));
  *
  * enum class Mode { ACTIVE, PASSIVE, AUTO };
  * Register_Enum(Mode, (Mode::ACTIVE, Mode::PASSIVE, Mode::AUTO));
- * </pre>
+ * ```
  *
  * @see cEnum
  * @hideinitializer
@@ -263,14 +263,14 @@ namespace omnetpp {
  * NOTE: This macro is deprecated -- use Register_Enum_Custom() instead!
  *
  * Example:
- * <pre>
+ * ```
  * enum State { IDLE, BUSY, SLEEPING };
  * Register_Enum2(stateEnum, "State", (
  *    "idle",     State::IDLE,
  *    "busy",     State::BUSY,
  *    "sleeping", State::SLEEPING,
  *    nullptr)); // see note below
- * </pre>
+ * ```
  *
  * @see cEnum
  * @hideinitializer
@@ -284,13 +284,13 @@ namespace omnetpp {
  * (Its pointer will be stored in the cEnum* variable given as the first argument).
  *
  * Example:
-  * <pre>
+ * ```
  * enum State { IDLE, BUSY, SLEEPING };
  * Register_Enum_WithVar(stateEnum, State, (IDLE, BUSY, SLEEPING));
  *
  * enum class Mode { ACTIVE, PASSIVE, AUTO };
  * Register_Enum_WithVar(modeEnum, Mode, (Mode::ACTIVE, Mode::PASSIVE, Mode::AUTO));
- * </pre>
+ * ```
  *
  * @see cEnum
  * @hideinitializer
@@ -309,14 +309,15 @@ namespace omnetpp {
  * allowing custom names for enum members.
  *
  * Example:
- * <pre>
+ *
+ * ```
  * enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
  * Register_Enum_Custom(stateEnum, State, (
  *    { "idle",     STATE_IDLE },
  *    { "busy",     STATE_BUSY },
  *    { "sleeping", STATE_SLEEPING }
  * )
- * </pre>
+ * ```
  *
  * @see cEnum
  * @hideinitializer
@@ -337,9 +338,9 @@ namespace omnetpp {
  * Note: Register_Figure() includes registration the figure class via a Register_Class().
  *
  * Example:
- * <pre>
+ * ```
  * Register_Figure("polyline", cPolylineFigure);
- * </pre>
+ * ```
  *
  * @hideinitializer
  */

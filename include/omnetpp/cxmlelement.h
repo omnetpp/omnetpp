@@ -275,12 +275,12 @@ class SIM_API cXMLElement : public cOwnedObject
      * getFirstChild() and getNextSibling() can be used to loop through
      * the child list:
      *
-     * <pre>
+     * ```
      * for (cXMLElement *child=element->getFirstChild(); child; child = child->getNextSibling())
      * {
      *    ...
      * }
-     * </pre>
+     * ```
      *
      */
     virtual cXMLElement *getNextSibling() const;
@@ -305,12 +305,12 @@ class SIM_API cXMLElement : public cOwnedObject
      * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
      * to loop through elements with a certain tag name in the child list:
      *
-     * <pre>
+     * ```
      * for (cXMLElement *child=element->getFirstChildWithTag("foo"); child; child = child->getNextSiblingWithTag("foo"))
      * {
      *     ...
      * }
-     * </pre>
+     * ```
      */
     virtual cXMLElement *getNextSiblingWithTag(const char *tagname) const;
 

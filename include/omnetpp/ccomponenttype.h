@@ -272,7 +272,7 @@ class SIM_API cModuleType : public cComponentType
      * After creation, the module still needs to go through a setup of several
      * steps before it is ready to use. The full process is the following:
      *
-     * <pre>
+     * ```
      * cModule *module = create("foo", parentModule);
      * [set parameters]
      * module->finalizeParameters();
@@ -280,16 +280,16 @@ class SIM_API cModuleType : public cComponentType
      * module->buildInside();
      * module->scheduleStart(simTime());
      * module->callInitialize();
-     * </pre>
+     * ```
      *
      * As callInitialize() and some of the other functions perform the preceding
      * steps if they are not yet done, the above code can be abbreviated to:
      *
-     * <pre>
+     * ```
      * cModule *module = create("foo", parentModule);
      * [set parameters]
      * module->callInitialize();
-     * </pre>
+     * ```
      */
     virtual cModule *create(const char *name, cModule *parentmod, int index=-1);
 

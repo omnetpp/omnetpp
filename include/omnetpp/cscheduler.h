@@ -37,10 +37,10 @@ class cSimulation;
  * the Register_Class() macro, then add the following to
  * <tt>omnetpp.ini</tt>:
  *
- * <pre>
+ * ```
  * [General]
  * scheduler-class = "MyClass"
- * </pre>
+ * ```
  *
  * @ingroup SimCore
  */
@@ -138,11 +138,11 @@ class SIM_API cScheduler : public cObject, public cISimulationLifecycleListener
      * takeNextEvent() again does NOT repeat the side effects of the
      * first takeNextEvent()! That is, the sequence
      *
-     * <pre>
+     * ```
      * e = takeNextEvent();
      * putBackEvent(e);
      * e = takeNextEvent();
-     * </pre>
+     * ```
      *
      * should be equivalent to a single takeNextEvent() call.
      */
