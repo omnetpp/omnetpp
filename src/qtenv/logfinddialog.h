@@ -20,6 +20,7 @@
 #include <QtWidgets/QDialog>
 #include "textviewerwidget.h"
 #include "qtenvdefs.h"
+#include "qtutil.h"
 
 namespace Ui {
 class LogFindDialog;
@@ -36,11 +37,11 @@ class QTENV_API LogFindDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LogFindDialog(QWidget *parent = 0, QString lastText = "", TextViewerWidget::FindOptions options = 0);
+    explicit LogFindDialog(QWidget *parent = 0, QString lastText = "", SearchFlags options = 0);
     ~LogFindDialog();
 
     QString getText();
-    TextViewerWidget::FindOptions getOptions();
+    SearchFlags getOptions();
 
 private:
     Ui::LogFindDialog *ui;

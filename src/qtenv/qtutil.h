@@ -116,6 +116,17 @@ std::string stripFormattingAndRemoveTrailingNewLine(const std::string& input);
 std::string stripSuffixes(const std::string& from, const std::string& suffix);
 std::string stripSuffixes(const std::string& from, char suffix);
 
+
+enum SearchFlag {
+    FIND_REGULAR_EXPRESSION = 1<<0, // 0b0001
+    FIND_WHOLE_WORDS        = 1<<1, // 0b0010
+    FIND_CASE_SENSITIVE     = 1<<2, // 0b0100
+    FIND_BACKWARDS          = 1<<3, // 0b1000
+};
+
+Q_DECLARE_FLAGS(SearchFlags, SearchFlag)
+Q_DECLARE_OPERATORS_FOR_FLAGS(SearchFlags)
+
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);
 

@@ -250,7 +250,7 @@ Pos TextViewerWidget::getSelectionEnd()
     return anchor < caret ? caret : anchor;
 }
 
-void TextViewerWidget::find(QString text, FindOptions options)
+void TextViewerWidget::find(QString text, SearchFlags options)
 {
     setCursor(QCursor(Qt::WaitCursor));
     QString originalText = text;  // for the dialog if not found

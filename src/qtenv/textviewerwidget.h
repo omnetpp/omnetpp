@@ -27,6 +27,7 @@
 #include <QtCore/QTimer>
 #include <QtWidgets/QToolBar>
 #include "qtenvdefs.h"
+#include "qtutil.h"
 
 namespace omnetpp {
 namespace qtenv {
@@ -59,17 +60,6 @@ public:
 class QTENV_API TextViewerWidget : public QAbstractScrollArea
 {
     Q_OBJECT
-
-public:
-
-    enum FindOption {
-        FIND_REGULAR_EXPRESSION = 1<<0,
-        FIND_CASE_SENSITIVE     = 1<<1,
-        FIND_WHOLE_WORDS        = 1<<2,
-        FIND_BACKWARDS          = 1<<3
-    };
-
-    Q_DECLARE_FLAGS(FindOptions, FindOption)
 
 protected:
     enum ScrollDirection {
@@ -246,7 +236,7 @@ public:
     Pos getSelectionStart();
     Pos getSelectionEnd();
 
-    void find(QString text, FindOptions options);
+    void find(QString text, SearchFlags options);
 
     int getMaxVisibleLineWidth();
     int getMaxVisibleLineWidth(int contentPixelBegin, int contentPixelEnd); // begin (top) included, end (bottom) excluded
@@ -258,9 +248,6 @@ public:
     Pos getLineColumnAt(int x, int y);
     Pos getColumnInLineAt(int x, int lineIndex);
 };
-
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(TextViewerWidget::FindOptions)
 
 }  // namespace qtenv
 }  // namespace omnetpp

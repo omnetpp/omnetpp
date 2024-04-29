@@ -21,7 +21,7 @@
 namespace omnetpp {
 namespace qtenv {
 
-LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, TextViewerWidget::FindOptions options) :
+LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, SearchFlags options) :
     QDialog(parent),
     ui(new Ui::LogFindDialog)
 {
@@ -30,10 +30,10 @@ LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, TextViewerWidget
 
     ui->text->setText(lastText);
     ui->text->selectAll();
-    ui->caseCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_CASE_SENSITIVE));
-    ui->regexpCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_REGULAR_EXPRESSION));
-    ui->wholeWordsCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_WHOLE_WORDS));
-    ui->backwardsCheckBox->setChecked(options.testFlag(TextViewerWidget::FIND_BACKWARDS));
+    ui->caseCheckBox->setChecked(options.testFlag(FIND_CASE_SENSITIVE));
+    ui->regexpCheckBox->setChecked(options.testFlag(FIND_REGULAR_EXPRESSION));
+    ui->wholeWordsCheckBox->setChecked(options.testFlag(FIND_WHOLE_WORDS));
+    ui->backwardsCheckBox->setChecked(options.testFlag(FIND_BACKWARDS));
 }
 
 LogFindDialog::~LogFindDialog()
@@ -46,18 +46,18 @@ QString LogFindDialog::getText()
     return ui->text->text();
 }
 
-TextViewerWidget::FindOptions LogFindDialog::getOptions()
+SearchFlags LogFindDialog::getOptions()
 {
-    TextViewerWidget::FindOptions options;
+    SearchFlags options;
 
     if (ui->regexpCheckBox->isChecked())
-        options |= TextViewerWidget::FIND_REGULAR_EXPRESSION;
+        options |= FIND_REGULAR_EXPRESSION;
     if (ui->caseCheckBox->isChecked())
-        options |= TextViewerWidget::FIND_CASE_SENSITIVE;
+        options |= FIND_CASE_SENSITIVE;
     if (ui->wholeWordsCheckBox->isChecked())
-        options |= TextViewerWidget::FIND_WHOLE_WORDS;
+        options |= FIND_WHOLE_WORDS;
     if (ui->backwardsCheckBox->isChecked())
-        options |= TextViewerWidget::FIND_BACKWARDS;
+        options |= FIND_BACKWARDS;
 
     return options;
 }

@@ -110,15 +110,15 @@ void FileEditor::findNext()
 {
     QTextDocument::FindFlags flags = 0;
 
-    if (findOptions & TextViewerWidget::FIND_CASE_SENSITIVE)
+    if (findOptions & FIND_CASE_SENSITIVE)
         flags |= QTextDocument::FindCaseSensitively;
-    if (findOptions & TextViewerWidget::FIND_WHOLE_WORDS)
+    if (findOptions & FIND_WHOLE_WORDS)
         flags |= QTextDocument::FindWholeWords;
-    if (findOptions & TextViewerWidget::FIND_BACKWARDS)
+    if (findOptions & FIND_BACKWARDS)
         flags |= QTextDocument::FindBackward;
 
     QTextCursor textCursor;
-    if (findOptions & TextViewerWidget::FIND_REGULAR_EXPRESSION) {
+    if (findOptions & FIND_REGULAR_EXPRESSION) {
         Qt::CaseSensitivity regExpFlag = flags & QTextDocument::FindCaseSensitively ?
                     Qt::CaseSensitive : Qt::CaseInsensitive;
         textCursor = ui->plainTextEdit->document()->find(QRegExp(searchString, regExpFlag),
@@ -144,25 +144,25 @@ void FileEditor::find()
 {
     findOptions = 0;
     if (getQtenv()->getPref("editor-case-sensitive", false).value<bool>())
-        findOptions |= TextViewerWidget::FIND_CASE_SENSITIVE;
+        findOptions |= FIND_CASE_SENSITIVE;
     if (getQtenv()->getPref("editor-whole-words", false).value<bool>())
-        findOptions |= TextViewerWidget::FIND_WHOLE_WORDS;
+        findOptions |= FIND_WHOLE_WORDS;
     if (getQtenv()->getPref("editor-regexp", false).value<bool>())
-        findOptions |= TextViewerWidget::FIND_REGULAR_EXPRESSION;
+        findOptions |= FIND_REGULAR_EXPRESSION;
     if (getQtenv()->getPref("editor-backwards", false).value<bool>())
-        findOptions |= TextViewerWidget::FIND_BACKWARDS;
+        findOptions |= FIND_BACKWARDS;
 
     QString lastText = ui->plainTextEdit->textCursor().selectedText().isEmpty() ?
         getQtenv()->getPref("editor-last-text").value<QString>() : ui->plainTextEdit->textCursor().selectedText();
 
-    LogFindDialog findDialog(this, lastText, static_cast<TextViewerWidget::FindOptions>(findOptions));
+    LogFindDialog findDialog(this, lastText, static_cast<SearchFlags>(findOptions));
     findDialog.exec();
 
     findOptions = findDialog.getOptions();
-    getQtenv()->setPref("editor-case-sensitive", bool(findOptions & TextViewerWidget::FIND_CASE_SENSITIVE));
-    getQtenv()->setPref("editor-whole-words", bool(findOptions & TextViewerWidget::FIND_WHOLE_WORDS));
-    getQtenv()->setPref("editor-regexp", bool(findOptions & TextViewerWidget::FIND_REGULAR_EXPRESSION));
-    getQtenv()->setPref("editor-backwards", bool(findOptions & TextViewerWidget::FIND_BACKWARDS));
+    getQtenv()->setPref("editor-case-sensitive", bool(findOptions & FIND_CASE_SENSITIVE));
+    getQtenv()->setPref("editor-whole-words", bool(findOptions & FIND_WHOLE_WORDS));
+    getQtenv()->setPref("editor-regexp", bool(findOptions & FIND_REGULAR_EXPRESSION));
+    getQtenv()->setPref("editor-backwards", bool(findOptions & FIND_BACKWARDS));
     getQtenv()->setPref("editor-last-text", findDialog.getText());
 
     if (findDialog.result() == QDialog::Rejected || findDialog.getText().isEmpty())

@@ -83,7 +83,7 @@ class QTENV_API LogInspector : public Inspector
       bool isAncestorModule(int componentId, int potentialAncestorModuleId);
 
       QString lastFindText;
-      TextViewerWidget::FindOptions lastFindOptions;
+      SearchFlags lastFindOptions;
 
       QSize sizeHint() const override { return QSize(700, 300); }
 

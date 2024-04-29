@@ -495,7 +495,7 @@ void LogInspector::findAgain()
 void LogInspector::findAgainReverse()
 {
     if (!lastFindText.isEmpty())
-        textWidget->find(lastFindText, lastFindOptions ^ TextViewerWidget::FIND_BACKWARDS);
+        textWidget->find(lastFindText, lastFindOptions ^ FIND_BACKWARDS);
 }
 
 void LogInspector::goToSimTime(SimTime t)
