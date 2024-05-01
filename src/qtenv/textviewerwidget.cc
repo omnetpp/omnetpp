@@ -362,8 +362,8 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
 {
     auto line = content->getLineText(lineIndex);
 
-    const char *const textStart = line.data();
-    const char *textPointer = line.data();
+    const char *const textStart = line.c_str();
+    const char *textPointer = line.c_str();
 
     int inColumn = 0;
     int x = horizontalMargin;
@@ -422,8 +422,8 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
     auto line = content->getLineText(lineIndex);
     auto metrics = QFontMetrics(font, viewport());
 
-    const char *const textStart = line.data();
-    const char *textPointer = line.data();
+    const char *const textStart = line.c_str();
+    const char *textPointer = line.c_str();
     int curX = horizontalMargin - horizontalScrollOffset + metrics.averageCharWidth()/2;
 
     int inColumn = 0;
@@ -578,7 +578,7 @@ void TextViewerWidget::doCursorPrevious(bool select)
 
     caretColumn = std::min(caretColumn, (int)text.length());
     if (caretColumn > 0)
-         caretColumn = mapColumnToUnformatted(text.data(), mapColumnToFormatted(text.data(), caretColumn)-1);
+         caretColumn = mapColumnToUnformatted(text.c_str(), mapColumnToFormatted(text.c_str(), caretColumn)-1);
     else if (caretLineIndex > 0) {
         caretLineIndex--;
         caretColumn = text.length();
@@ -593,7 +593,7 @@ void TextViewerWidget::doCursorNext(bool select)
     auto text = content->getLineText(caretLineIndex);
 
     if (caretColumn < text.length())
-         caretColumn = mapColumnToUnformatted(text.data(), mapColumnToFormatted(text.data(), caretColumn)+1);
+         caretColumn = mapColumnToUnformatted(text.c_str(), mapColumnToFormatted(text.c_str(), caretColumn)+1);
     else if (caretLineIndex < content->getLineCount()-1) {
         caretLineIndex++;
         caretColumn = 0;
@@ -648,7 +648,7 @@ void TextViewerWidget::doLineEnd(bool select)
 void TextViewerWidget::doWordPrevious(bool select)
 {
     std::string line = content->getLineText(caretLineIndex);
-    int pos = mapColumnToFormatted(line.data(), caretColumn);
+    int pos = mapColumnToFormatted(line.c_str(), caretColumn);
     if (pos == 0) {
         // go to end of previous line
         if (caretLineIndex > 0) {
@@ -664,7 +664,7 @@ void TextViewerWidget::doWordPrevious(bool select)
             pos--;
         while (pos > 0 && isWordChar(unformattedLine.at(pos-1)))
             pos--;
-        caretColumn = mapColumnToUnformatted(line.data(), pos);
+        caretColumn = mapColumnToUnformatted(line.c_str(), pos);
     }
     if (!select)
         clearSelection();
@@ -1110,7 +1110,7 @@ void TextViewerWidget::drawLine(QPainter& painter, int lineIndex, int x, int y, 
 
     std::string lineText = content->getLineText(lineIndex);
 
-    const char *textPointer = lineText.data();
+    const char *textPointer = lineText.c_str();
 
     int inColumn = 0;
 
