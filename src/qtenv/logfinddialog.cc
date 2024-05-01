@@ -16,6 +16,8 @@
 
 #include "logfinddialog.h"
 #include "ui_logfinddialog.h"
+#include <QtWidgets/QPushButton>
+#include <QtCore/QRegExp>
 #include "qtenv.h"
 
 namespace omnetpp {
@@ -30,10 +32,23 @@ LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, SearchFlags opti
 
     ui->text->setText(lastText);
     ui->text->selectAll();
-    ui->caseCheckBox->setChecked(options.testFlag(FIND_CASE_SENSITIVE));
-    ui->regexpCheckBox->setChecked(options.testFlag(FIND_REGULAR_EXPRESSION));
-    ui->wholeWordsCheckBox->setChecked(options.testFlag(FIND_WHOLE_WORDS));
-    ui->backwardsCheckBox->setChecked(options.testFlag(FIND_BACKWARDS));
+    ui->caseCheckBox->setChecked(options & FIND_CASE_SENSITIVE);
+    ui->regexpCheckBox->setChecked(options & FIND_REGULAR_EXPRESSION);
+    ui->wholeWordsCheckBox->setChecked(options & FIND_WHOLE_WORDS);
+    ui->backwardsCheckBox->setChecked(options & FIND_BACKWARDS);
+
+    connect(ui->text, SIGNAL(textChanged(QString)), this, SLOT(updateRegExpValidation()));
+    connect(ui->regexpCheckBox, SIGNAL(toggled(bool)), this, SLOT(updateRegExpValidation()));
+    updateRegExpValidation();
+}
+
+void LogFindDialog::updateRegExpValidation()
+{
+    QRegExp regexp;
+    bool isValid = !ui->regexpCheckBox->isChecked() || (regexp = QRegExp(ui->text->text())).isValid();
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
+    ui->text->setStyleSheet(isValid ? "" : "QTextEdit { background-color: #ffcccc }");
+    ui->text->setToolTip(isValid ? "" : regexp.errorString());
 }
 
 LogFindDialog::~LogFindDialog()

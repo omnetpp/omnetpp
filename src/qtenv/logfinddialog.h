@@ -43,6 +43,10 @@ public:
     QString getText();
     SearchFlags getOptions();
 
+
+protected Q_SLOTS:
+    void updateRegExpValidation();
+
 private:
     Ui::LogFindDialog *ui;
 };
