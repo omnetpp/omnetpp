@@ -189,6 +189,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Output Vector Recording");
             addCheckboxFieldEditor(group, CFGID_VECTOR_RECORDING, "Enable recording of vectors", c("Vector (module-path.vectorname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EMPTY, "Record empty vectors too", c("Vector (module-path.vectorname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
             addTextFieldEditor(group, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals", c("Vector (module-path.vectorname pattern)", "Intervals"));
             addSpacer(form);
@@ -205,7 +206,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_DEBUGGING)) {
             group = createGroup(form, "General");
-            addCheckboxFieldEditor(group, CFGID_DEBUG_ON_ERRORS, "Generate debug trap on errors");
+            addCheckboxFieldEditor(group, CFGID_DEBUG_ON_ERRORS, "Drop into the debugger on runtime errors");
             addSpacer(form);
             group = createGroup(form, "External Debugger");
             addCheckboxFieldEditor(group, CFGID_DEBUGGER_ATTACH_ON_STARTUP, "Attach debugger on startup");
@@ -217,6 +218,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Related Options");
             addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
             addCheckboxFieldEditor(group, CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "Allow object stealing on component deletion");
+            addCheckboxFieldEditor(group, CFGID_PARAMETER_MUTABILITY_CHECK, "Do not allow runtime changes made to parameters not marked as @mutable");
             addCheckboxFieldEditor(group, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
             addCheckboxFieldEditor(group, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
             addCheckboxFieldEditor(group, CFGID_WARNINGS, "Warnings"); //XXX
@@ -235,7 +237,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_FINGERPRINT_MODULES, "Modules to include");
             addTextFieldEditor(group, CFGID_FINGERPRINT_RESULTS, "Results to include");
             addSpacer(form);
-            group = createGroup(form, "Frequency of refreshDisplay() calls in Fake GUI mode");
+            group = createGroup(form, "Frequency of refreshDisplay() calls in FakeGUI mode");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY, "After-event probability");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_BEFORE_EVENT_PROBABILITY, "Before-event probability");
             addTextFieldEditor(group, CFGID_CMDENV_FAKE_GUI_ON_HOLD_NUMSTEPS, "On-hold numsteps");
@@ -279,7 +281,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
         }
         else if (category.equals(CAT_CMDENV)) {
-            group = createGroup(form, "Default inifile configuration and run number:");
+            group = createGroup(form, "Default inifile configuration and run number");
             addTextFieldEditor(group, CFGID_CMDENV_CONFIG_NAME, "Config name");
             addTextFieldEditor(group, CFGID_CMDENV_RUNS_TO_EXECUTE, "Runs to execute");
             addNote(group, "Note: Command line options (-c, -r) override the above settings");

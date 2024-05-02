@@ -222,10 +222,6 @@ public class ConfigRegistry {
         "cmdenv-fake-gui", CFG_BOOL, "false",
         "Causes Cmdenv to lie to simulations that is a GUI (isGui()=true), and to " +
         "periodically invoke refreshDisplay() during simulation execution.");
-    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_SEED = addPerRunOption(
-        "cmdenv-fake-gui-seed", CFG_INT, "1",
-        "When `cmdenv-fake-gui=true`: The seed for the RNG governing the operation of " +
-        "the fake GUI component. This is entirely independent of the RNGs used by the model.");
     public static final ConfigOption CFGID_CMDENV_FAKE_GUI_AFTER_EVENT_PROBABILITY = addPerRunOption(
         "cmdenv-fake-gui-after-event-probability", CFG_DOUBLE, "1",
         "When `cmdenv-fake-gui=true`: The probability with which `refreshDisplay()` " +
@@ -260,6 +256,11 @@ public class ConfigRegistry {
         "is called (possibly multiple times, see " +
         "`cmdenv-fake-gui-on-simtime-numsteps`) when simulation time advances from " +
         "one simulation event to the next.");
+    public static final ConfigOption CFGID_CMDENV_FAKE_GUI_SEED = addPerRunOption(
+        "cmdenv-fake-gui-seed", CFG_INT, "1",
+        "When `cmdenv-fake-gui=true`: The seed for the RNG governing the operation " +
+        "of the fake GUI component. This is entirely independent of the RNGs used by " +
+        "the model.");
     public static final ConfigOption CFGID_CMDENV_INTERACTIVE = addPerRunOption(
         "cmdenv-interactive", CFG_BOOL, "false",
         "Defines what Cmdenv should do when the model contains unassigned " +
@@ -345,13 +346,14 @@ public class ConfigRegistry {
         "Turns on the printing of debugging information related to statistics " +
         "recording (`@statistic` properties)");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_COMMAND = addGlobalOption(
-        "debugger-attach-command", CFG_STRING, "opp_ide omnetpp://cdt/debugger/attach?pid=%u",
-        "The command line to launch the debugger. It must contain exactly one percent " +
-        "sign, as `%u`, which will be replaced by the PID of this process. The " +
-        "command must not block (i.e. it should end in `&` on Unix-like systems). " +
-        "It will be executed by the default system shell (on Windows, usually cmd.exe). " +
-        "Default on this platform: `opp_ide omnetpp://cdt/debugger/attach?pid=%u`. This default can be " +
-        "overridden with the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
+        "debugger-attach-command", CFG_STRING, null,
+        "The command line to launch the debugger. It must contain exactly one " +
+        "percent sign, as `%u`, which will be replaced by the PID of this process. " +
+        "The command must not block (i.e. it should end in `&` on Unix-like " +
+        "systems). It will be executed by the default system shell (on Windows, " +
+        "usually cmd.exe). Default on this platform: `opp_ide " +
+        "omnetpp://cdt/debugger/attach?pid=%u`. This default can be overridden with " +
+        "the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_ERROR = addGlobalOption(
         "debugger-attach-on-error", CFG_BOOL, "false",
         "When set to true, runtime errors and crashes will trigger an external " +
@@ -426,11 +428,10 @@ public class ConfigRegistry {
         "kept.");
     public static final ConfigOption CFGID_EVENTLOG_OPTIONS = addPerRunOption(
         "eventlog-options", CFG_CUSTOM, null,
-        "The content of the eventlog is diveded into categories. This option allows " +
-        "to record only certain categories reducing the file size. Specify a comma " +
-        "separated subset of the following keywords: text, message, module, " +
-        "methodcall, displaystring and custom. By default all categories are " +
-        "enabled.");
+        "Allows for reducing the size of the eventlog file by recording only " +
+        "specific types of content. Specify a comma-separated subset of the " +
+        "following keywords: text, message, module, methodcall, displaystring and " +
+        "custom. By default, all categories are enabled.");
     public static final ConfigOption CFGID_EVENTLOG_RECORDING_INTERVALS = addPerRunOption(
         "eventlog-recording-intervals", CFG_CUSTOM, null,
         "Simulation time interval(s) when events should be recorded. Syntax: " +
@@ -439,10 +440,11 @@ public class ConfigRegistry {
         "22.2..100, 233.3..`");
     public static final ConfigOption CFGID_EVENTLOG_SNAPSHOT_FREQUENCY = addPerRunOptionU(
         "eventlog-snapshot-frequency", "B", "100 MiB",
-        "The eventlog file contains snapshots periodically. Each one describes the " +
-        "complete simulation state at a specific event. Snapshots help various tools " +
-        "to handle large eventlog files more efficiently. Specifying greater value " +
-        "means less help, while smaller value means bigger eventlog files.");
+        "The eventlog file contains periodically recorded snapshots. Each one " +
+        "describes the complete simulation state at a specific event. Snapshots help " +
+        "various tools to handle large eventlog files more efficiently. Specifying " +
+        "greater value means less help, while smaller value means bigger eventlog " +
+        "files.");
     public static final ConfigOption CFGID_EVENTLOGMANAGER_CLASS = addPerRunOption(
         "eventlogmanager-class", CFG_STRING, "omnetpp::envir::EventlogFileManager",
         "Part of the Envir plugin mechanism: selects the eventlog manager class to " +
@@ -643,6 +645,12 @@ public class ConfigRegistry {
         "Whether the matching module (and channel) parameters should be recorded.\n" +
         "Usage: `<module-full-path>.<parameter-name>.param-recording=true/false`.\n" +
         "Example: `**.app.pkLen.param-recording=true`");
+    public static final ConfigOption CFGID_PARAMETER_MUTABILITY_CHECK = addPerRunOption(
+        "parameter-mutability-check", CFG_BOOL, "true",
+        "Setting to false will disable errors raised when trying to change the " +
+        "values of module/channel parameters not marked as @mutable. This is " +
+        "primarily a compatibility setting intended to facilitate running simulation " +
+        "models that were not yet annotated with @mutable.");
     public static final ConfigOption CFGID_PARSIM_COMMUNICATIONS_CLASS = addGlobalOption(
         "parsim-communications-class", CFG_STRING, "omnetpp::cFileCommunications",
         "If `parallel-simulation=true`, it selects the class that implements " +
@@ -895,6 +903,14 @@ public class ConfigRegistry {
         "values before writing them out as a block into the output vector file. " +
         "There is also a total limit, see `output-vectors-memory-limit`.\n" +
         "Usage: `<module-full-path>.<vector-name>.vector-buffer=<amount>`.");
+    public static final ConfigOption CFGID_VECTOR_RECORD_EMPTY = addPerObjectOption(
+        "vector-record-empty", KIND_VECTOR, CFG_BOOL, "true",
+        "Whether output vectors that have no data recorded into them should appear " +
+        "in the result file. Turning off this option will delay writing the vector " +
+        "declaration into the result file until there is data recorded into the " +
+        "vector. Usage: " +
+        "`<module-full-path>.<vector-name>.vector-record-empty=true/false`.\n" +
+        "Example: `**.ping.roundTripTime:vector.vector-record-empty=false`");
     public static final ConfigOption CFGID_VECTOR_RECORD_EVENTNUMBERS = addPerObjectOption(
         "vector-record-eventnumbers", KIND_VECTOR, CFG_BOOL, "true",
         "Whether to record event numbers for an output vector. (Values and " +
