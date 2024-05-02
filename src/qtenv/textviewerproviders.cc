@@ -195,6 +195,12 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
 
 eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
 {
+    if (logBuffer->getNumEntriesDiscarded() > 0) {
+        if (lineIndex == 0)
+            return -1;
+        --lineIndex;
+    }
+
     int entryIndex = getIndexOfEntryAt(lineIndex);
     if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
         return -1;
@@ -209,11 +215,17 @@ int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
         rebuildIndex();
     if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
         return -1;
-    return entryStartLineNumbers[entryIndex];
+    return entryStartLineNumbers[entryIndex] + ((logBuffer->getNumEntriesDiscarded() > 0) ? 1 : 0);
 };
 
 simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
 {
+    if (logBuffer->getNumEntriesDiscarded() > 0) {
+        if (lineIndex == 0)
+            return -1;
+        --lineIndex;
+    }
+
     int entryIndex = getIndexOfEntryAt(lineIndex);
     if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
         return -1;
@@ -228,7 +240,7 @@ int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
         rebuildIndex();
     if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
         return -1;
-    return entryStartLineNumbers[entryIndex];
+    return entryStartLineNumbers[entryIndex] + ((logBuffer->getNumEntriesDiscarded() > 0) ? 1 : 0);
 };
 
 int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
