@@ -7,6 +7,7 @@
 
 package org.omnetpp.inifile.editor.form;
 
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_ABSTRACT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
@@ -155,9 +156,13 @@ public class SectionsPage extends FormPage {
             @Override
             public String getText(Object element) {
                 String section = getSectionNameFromTreeNode(element);
-                String networkName = getInifileDocument().getValue(section, CFGID_NETWORK.getName());
-                String description = getInifileDocument().getValue(section, CFGID_DESCRIPTION.getName());
+                IInifileDocument doc = getInifileDocument();
+                String networkName = doc.getValue(section, CFGID_NETWORK.getName());
+                boolean isAbstract = "true".equals(doc.getValue(section, CFGID_ABSTRACT.getName()));
+                String description = doc.getValue(section, CFGID_DESCRIPTION.getName());
                 String text = section;
+                if (isAbstract)
+                    text += " (abstract)";
                 if (networkName != null)
                     text += " (network: " + networkName+")";
                 if (description != null)

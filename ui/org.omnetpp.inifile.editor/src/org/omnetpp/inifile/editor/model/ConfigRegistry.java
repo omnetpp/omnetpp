@@ -171,6 +171,11 @@ public class ConfigRegistry {
     // Set InifileFormEditor.DUMP_FORGOTTEN_CONFIG_KEYS = true, run the IDE,
     // open an omnetpp.ini, and watch the console.
 
+    public static final ConfigOption CFGID_ABSTRACT = addPerRunOption(
+        "abstract", CFG_BOOL, "false",
+        "Declares whether this configuration is an abstract one. Abstract " +
+        "configurations serve as a base for other configurations, and are not meant " +
+        "to be run directly.");
     public static final ConfigOption CFGID_ALLOW_OBJECT_STEALING_ON_DELETION = addPerRunOption(
         "allow-object-stealing-on-deletion", CFG_BOOL, "false",
         "Setting it to true disables the \"Context component is deleting an object it " +

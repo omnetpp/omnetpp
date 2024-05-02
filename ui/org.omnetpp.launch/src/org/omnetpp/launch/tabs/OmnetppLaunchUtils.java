@@ -116,9 +116,11 @@ public class OmnetppLaunchUtils {
             String network;
             String extendsName;
             String description;
+            boolean isAbstract;
             @Override
             public String toString() {
                 String additional = (StringUtils.isEmpty(description) ? "" : " " + description) +
+                (isAbstract ? " (abstract=true)" : "") +
                 (StringUtils.isEmpty(extendsName) ?  "" : " (extends: " + extendsName + ")") +
                 (StringUtils.isEmpty(network) ? "" : " (network: " + network + ")");
                 return name +(StringUtils.isEmpty(additional) ? "" : " --"+additional);
@@ -171,6 +173,9 @@ public class OmnetppLaunchUtils {
 
             if ("network".equals(key))
                 currentSection.network = value;
+
+            if ("abstract".equals(key))
+                currentSection.isAbstract = value.equals("true");
         }
 
         @Override

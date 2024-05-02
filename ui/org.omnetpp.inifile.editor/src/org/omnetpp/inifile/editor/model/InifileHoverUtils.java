@@ -8,6 +8,8 @@
 package org.omnetpp.inifile.editor.model;
 
 import static org.omnetpp.common.util.Pair.pair;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_ABSTRACT;
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 
@@ -89,9 +91,12 @@ public class InifileHoverUtils {
 
         String text = getProblemsHoverText(markersDisplayed.toArray(new IMarker[]{}), false) + numErrorsText;
 
-        // name and description
+        // name, abstractness, and description
         text += "<b>"+section+"</b>";
-        String description = doc.getValue(section, "description");
+        boolean isAbstract = "true".equals(doc.getValue(section, CFGID_ABSTRACT.getName()));
+        if (isAbstract)
+            text += " (abstract config)";
+        String description = doc.getValue(section, CFGID_DESCRIPTION.getName());
         if (description != null)
             text += " -- " + description;
         text += "<br>\n";

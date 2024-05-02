@@ -721,6 +721,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
     /**
      * Returns all the configuration names found in the supplied inifiles, together
      * with their descriptions (extends, network, description, etc.)
+     * Abstract configurations are skipped.
      */
     private String[] getConfigNames(IFile[] inifiles) {
         Map<String,OmnetppLaunchUtils.ConfigEnumeratorCallback.Section> sections = new LinkedHashMap<>();
@@ -737,7 +738,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
         List<String> result = new ArrayList<>();
         result.add("");
         for (OmnetppLaunchUtils.ConfigEnumeratorCallback.Section section : sections.values())
-            result.add(section.toString());
+            if (!section.isAbstract)
+                result.add(section.toString());
         return result.toArray(new String[] {});
     }
 
