@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_LOGFINDDIALOG_H
 
 #include <QtWidgets/QDialog>
+#include <QtWidgets/QLabel>
 #include "textviewerwidget.h"
 #include "qtenvdefs.h"
 #include "qtutil.h"
@@ -43,6 +44,7 @@ public:
     QString getText();
     SearchFlags getOptions();
 
+    QLabel *regexpErrorLabel = nullptr;
 
 protected Q_SLOTS:
     void updateRegExpValidation();

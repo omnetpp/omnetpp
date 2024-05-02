@@ -47,8 +47,19 @@ void LogFindDialog::updateRegExpValidation()
     QRegExp regexp;
     bool isValid = !ui->regexpCheckBox->isChecked() || (regexp = QRegExp(ui->text->text())).isValid();
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
-    ui->text->setStyleSheet(isValid ? "" : "QTextEdit { background-color: #ffcccc }");
-    ui->text->setToolTip(isValid ? "" : regexp.errorString());
+    if (!isValid) {
+        if (regexpErrorLabel == nullptr) {
+            regexpErrorLabel = new QLabel(regexp.errorString(), this);
+            regexpErrorLabel->setAlignment(Qt::AlignTop);
+            regexpErrorLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            ui->verticalLayout->insertWidget(1, regexpErrorLabel);
+        }
+        regexpErrorLabel->setText("Invalid regular expression: " + regexp.errorString());
+    }
+    else {
+        delete regexpErrorLabel;
+        regexpErrorLabel = nullptr;
+    }
 }
 
 LogFindDialog::~LogFindDialog()
