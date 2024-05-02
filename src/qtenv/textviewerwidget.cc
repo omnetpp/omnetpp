@@ -283,7 +283,7 @@ void TextViewerWidget::find(QString text, FindOptions options)
         int index = -1;
 
         std::string lineText = content->getLineText(line);
-        std::string strippedText = stripFormatting(lineText);
+        std::string strippedText = stripFormattingAndRemoveTrailingNewLine(lineText);
 
         if (backwards) {
             index = re.lastIndexIn(QString::fromStdString(strippedText), offset);
@@ -657,7 +657,7 @@ void TextViewerWidget::doWordPrevious(bool select)
         }
     }
     else {
-        std::string unformattedLine = stripFormatting(line);
+        std::string unformattedLine = stripFormattingAndRemoveTrailingNewLine(line);
 
         // go to start of current or previous word
         while (pos > 0 && (pos >= unformattedLine.length() || !isWordChar(unformattedLine.at(pos))))
@@ -775,14 +775,14 @@ std::string TextViewerWidget::getSelectedTextUnformatted()
     if (start.line == end.line) {
         if (start.column == end.column)
             return std::string();
-        return stripFormatting(content->getLineText(start.line).substr(start.column, end.column - start.column));
+        return stripFormattingAndRemoveTrailingNewLine(content->getLineText(start.line).substr(start.column, end.column - start.column));
     }
     else {
         std::ostringstream ss;
-        ss << stripFormatting(content->getLineText(start.line).substr(start.column)) << "\n";
+        ss << stripFormattingAndRemoveTrailingNewLine(content->getLineText(start.line).substr(start.column)) << "\n";
         for (int l = start.line + 1; l < end.line; ++l)
-            ss << stripFormatting(content->getLineText(l)) << "\n";
-        ss << stripFormatting(content->getLineText(end.line).substr(0, end.column));
+            ss << stripFormattingAndRemoveTrailingNewLine(content->getLineText(l)) << "\n";
+        ss << stripFormattingAndRemoveTrailingNewLine(content->getLineText(end.line).substr(0, end.column));
         return ss.str();
     }
 }

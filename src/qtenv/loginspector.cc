@@ -604,7 +604,7 @@ void LogInspector::saveContent()
 
     int lineNumber = contentProvider->getLineCount();
     for (int i = 0; i < lineNumber; ++i)
-        fs << stripFormatting(contentProvider->getLineText(i)) << '\n';
+        fs << stripFormattingAndRemoveTrailingNewLine(contentProvider->getLineText(i)) << '\n';
 
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());
 }

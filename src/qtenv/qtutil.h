@@ -112,7 +112,7 @@ QTENV_API QString makeObjectTooltip(cObject *obj);
 
 const char *skipEscapeSequences(const char *start);
 // NOTE: On top of ANSI escape sequences, it also strips trailing newlines!
-std::string stripFormatting(const std::string& input);
+std::string stripFormattingAndRemoveTrailingNewLine(const std::string& input);
 std::string stripSuffixes(const std::string& from, const std::string& suffix);
 std::string stripSuffixes(const std::string& from, char suffix);
 

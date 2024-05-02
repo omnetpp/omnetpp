@@ -602,7 +602,7 @@ const char *skipEscapeSequences(const char *start)
     return start;
 }
 
-std::string stripFormatting(const std::string& input)
+std::string stripFormattingAndRemoveTrailingNewLine(const std::string& input)
 {
     std::string output;
     output.reserve(input.length());
