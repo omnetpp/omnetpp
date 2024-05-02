@@ -49,7 +49,7 @@ void LogFindDialog::updateRegExpValidation()
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
     if (!isValid) {
         if (regexpErrorLabel == nullptr) {
-            regexpErrorLabel = new QLabel(regexp.errorString(), this);
+            regexpErrorLabel = new QLabel(this);
             regexpErrorLabel->setAlignment(Qt::AlignTop);
             regexpErrorLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             ui->verticalLayout->insertWidget(1, regexpErrorLabel);
