@@ -335,7 +335,7 @@ void LogInspector::onFindButton()
         lastFindText = dialog->getText();
         lastFindOptions = dialog->getOptions();
         if (!lastFindText.isEmpty())
-            textWidget->find(lastFindText, lastFindOptions);
+            textWidget->find(lastFindText.toStdString(), lastFindOptions);
         findAgainAction->setEnabled(!lastFindText.isEmpty());
         findAgainReverseAction->setEnabled(!lastFindText.isEmpty());
     }
@@ -489,13 +489,13 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 void LogInspector::findAgain()
 {
     if (!lastFindText.isEmpty())
-        textWidget->find(lastFindText, lastFindOptions);
+        textWidget->find(lastFindText.toStdString(), lastFindOptions);
 }
 
 void LogInspector::findAgainReverse()
 {
     if (!lastFindText.isEmpty())
-        textWidget->find(lastFindText, lastFindOptions ^ FIND_BACKWARDS);
+        textWidget->find(lastFindText.toStdString(), lastFindOptions ^ FIND_BACKWARDS);
 }
 
 void LogInspector::goToSimTime(SimTime t)

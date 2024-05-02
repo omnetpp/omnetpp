@@ -250,60 +250,45 @@ Pos TextViewerWidget::getSelectionEnd()
     return anchor < caret ? caret : anchor;
 }
 
-void TextViewerWidget::find(QString text, SearchFlags options)
+void TextViewerWidget::find(const std::string& text, SearchFlags flags)
 {
     setCursor(QCursor(Qt::WaitCursor));
-    QString originalText = text;  // for the dialog if not found
+    std::string originalText = text;  // for the dialog if not found
 
-    // just for convenience
-    bool regExp = options.testFlag(FIND_REGULAR_EXPRESSION);
-    bool wholeWords = options.testFlag(FIND_WHOLE_WORDS);
-    bool backwards = options.testFlag(FIND_BACKWARDS);
-    bool caseSensitive = options.testFlag(FIND_CASE_SENSITIVE);
 
-    bool found = false;  // sticky!
+    // Where the search should start (or end) within the current line for forward (or backward) searching,
+    // respectively. A negative value means that the entire line should be searched in the given direction.
+    bool backwards = flags & FIND_BACKWARDS;
+    int offset = backwards ? getSelectionEnd().column - 1 : getSelectionStart().column + 1;
+    int line = backwards ? getSelectionEnd().line : getSelectionStart().line;
 
-    if (!regExp) {  // yes, we cheat, but it's way simpler like this
-        text = QRegExp::escape(text);
-    }
+    offset = mapColumnToFormatted(content->getLineText(line).c_str(), offset);
+    int lineNumberIncrement = (backwards ? -1 : 1);
 
-    if (wholeWords) {  // \b matches a "word boundary"
-        text = "\\b" + text + "\\b";
-    }
+    std::string lineBuffer;
+    bool found = false;
 
-    QRegExp re(text, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
-
-    // the -1 is to actually find the previous match, not the currently selected (using F3)
-    int offset = backwards ? getSelectionStart().column - 1 : getSelectionEnd().column;
-    int line = backwards ? getSelectionStart().line : getSelectionEnd().line;
-
-    offset = mapColumnToFormatted(content->getLineText(line).data(), offset);
-
-    for (  /* nothing */; (line >= 0) && (line < content->getLineCount()); line += (backwards ? -1 : 1)) {
-        int index = -1;
+    for (  /* nothing */; (line >= 0) && (line < content->getLineCount()); line += lineNumberIncrement) {
 
         std::string lineText = content->getLineText(line);
-        std::string strippedText = stripFormattingAndRemoveTrailingNewLine(lineText);
+        const std::string& strippedLine = stripFormatting(lineText, lineBuffer);
+        if (offset == -1)
+            offset = backwards ? strippedLine.length() : 0;
 
-        if (backwards) {
-            index = re.lastIndexIn(QString::fromStdString(strippedText), offset);
-            offset = -1;  // was needed only for the first searched line
-        }
-        else {
-            index = re.indexIn(QString::fromStdString(strippedText), offset);
-            offset = 0;  // was needed only for the first searched line
-        }
+        SearchResult match = findSubstring(strippedLine.c_str(), text.c_str(), offset, flags);
+        if (match.matchStart) {
+            int index = match.matchStart - strippedLine.c_str();
+            int endIndex = index + match.matchLength;
 
-        if (index >= 0) {
-            int endIndex = index + re.matchedLength();
-
-            index = mapColumnToUnformatted(lineText.data(), index);
-            endIndex = mapColumnToUnformatted(lineText.data(), endIndex);
+            index = mapColumnToUnformatted(lineText.c_str(), index);
+            endIndex = mapColumnToUnformatted(lineText.c_str(), endIndex);
 
             setSelection(line, index, line, endIndex);
             found = true;  // yay!
             break;  // ouch.
         }
+
+        offset = -1;  // search the entire line from now on
     }
 
     if (found) {
@@ -314,7 +299,7 @@ void TextViewerWidget::find(QString text, SearchFlags options)
     }
     else {
         clearSelection();
-        QMessageBox::information(this, "Not found", "No match for \"" + originalText + "\".");
+        QMessageBox::information(this, "Not found", "No match for \"" + QString::fromStdString(originalText) + "\".");
     }
 
     setCursor(QCursor(Qt::IBeamCursor));

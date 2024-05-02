@@ -236,7 +236,7 @@ public:
     Pos getSelectionStart();
     Pos getSelectionEnd();
 
-    void find(QString text, SearchFlags options);
+    void find(const std::string& text, SearchFlags options);
 
     int getMaxVisibleLineWidth();
     int getMaxVisibleLineWidth(int contentPixelBegin, int contentPixelEnd); // begin (top) included, end (bottom) excluded

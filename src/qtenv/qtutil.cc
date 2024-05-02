@@ -602,21 +602,35 @@ const char *skipEscapeSequences(const char *start)
     return start;
 }
 
-std::string stripFormattingAndRemoveTrailingNewLine(const std::string& input)
+const std::string& stripFormatting(const std::string& input, std::string& buffer)
 {
-    std::string output;
-    output.reserve(input.length());
+    if (strchr(input.c_str(), '\x1b') == nullptr)
+        return input;
 
-    const char *textPointer = input.c_str();
+    buffer.clear();
+    if (buffer.capacity() < input.length())
+        buffer.reserve(input.length());
 
-    while (*textPointer != 0) {
-        textPointer = skipEscapeSequences(textPointer);
-        while (*textPointer != 0 && *textPointer != '\x1b') {
-            output += *textPointer;
-            ++textPointer;
+    const char *p = input.c_str();
+    while (*p) {
+        if (*p == '\x1b' && *(p+1) == '[') {
+            p += 2;
+            while (*p && !isalpha(*p))  // skip until "m"
+                p++;
+            if (*p)
+                p++; // skip past 'm'
+        }
+        else {
+            buffer += *p++;
         }
     }
+    return buffer;
+}
 
+std::string stripFormattingAndRemoveTrailingNewLine(const std::string& input)
+{
+    std::string tmp;
+    std::string output = stripFormatting(input, tmp);
     return stripSuffixes(output, '\n');
 }
 
@@ -635,6 +649,88 @@ std::string stripSuffixes(const std::string& from, char suffix)
     while (!result.empty() && result.back() == suffix)
         result.pop_back();
     return result;
+}
+
+#ifdef _WIN32
+// This is part of POSIX.1-2008, but not available on Windows.
+static const char *strcasestr(const char *haystack, const char *needle)
+{
+    if (!*needle) {
+        return haystack;
+    }
+    for (; *haystack; ++haystack) {
+        if (toupper(*haystack) == toupper(*needle)) {
+            const char* h, *n;
+            for (h = haystack, n = needle; *h && *n; ++h, ++n) {
+                if (toupper(*h) != toupper(*n)) {
+                    break;
+                }
+            }
+            if (!*n) { // Found needle
+                return haystack;
+            }
+        }
+    }
+    return nullptr;
+}
+#endif
+
+inline bool is_wordchar(char c) { return isalnum(c) || c == '_' || c == '@'; }
+
+static const char *strstr_wholeword(const char *haystack, const char *needle, bool caseSensitive)
+{
+    size_t needle_len = strlen(needle);
+    const char *p = haystack;
+    while ((p = caseSensitive ? strstr(p, needle) : strcasestr(p, needle)) != nullptr) {
+        if (p == haystack || !is_wordchar(p[-1])) {
+            const char *end = p + needle_len;
+            if (end[0] == '\0' || !is_wordchar(end[0]))
+                return p;
+        }
+        p += needle_len;
+    }
+    return nullptr;
+}
+
+SearchResult findSubstring(const char *haystack, const char *needle, int startIndex, SearchFlags flags)
+{
+    if (flags & FIND_BACKWARDS) {
+        // find last match (that finishes before startIndex)
+        SearchResult lastMatch = {nullptr, 0};
+        const char *p = haystack;
+        while (true) {
+            SearchResult newMatch = findSubstring(p, needle, 0, flags & ~FIND_BACKWARDS);
+            if (!newMatch.matchStart || (newMatch.matchStart + newMatch.matchLength) >= (haystack + startIndex))
+                return lastMatch;
+            lastMatch = newMatch;
+            p = newMatch.matchStart + 1;
+        }
+    }
+
+    bool caseSensitive = flags & FIND_CASE_SENSITIVE;
+    bool wholeWords = flags & FIND_WHOLE_WORDS;
+
+    if (flags & FIND_REGULAR_EXPRESSION) {
+        // NOTE: QRegExp seems to be quite a bit faster than std::regex, that's why we use it here
+        QString qhaystack = QString::fromUtf8(haystack + startIndex);
+        QString qneedle = QString::fromUtf8(needle);
+
+        if (wholeWords)
+            qneedle = "\\b" + qneedle + "\\b";
+        QRegExp re(qneedle, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+        int index = re.indexIn(qhaystack);
+        if (index == -1)
+            return {nullptr, 0};
+        return {haystack + startIndex + index, re.matchedLength()};
+    }
+
+    // not a regular expression search
+    const char *startPos = haystack + startIndex;
+    const char *matchStart = wholeWords
+        ? strstr_wholeword(startPos, needle, caseSensitive)
+        : (caseSensitive ? strstr(startPos, needle) : strcasestr(startPos, needle));
+
+    return {matchStart, matchStart ? (int)strlen(needle) : 0};
 }
 
 }  // namespace qtenv

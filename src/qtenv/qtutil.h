@@ -110,8 +110,9 @@ const char *getObjectFullTypeName(cObject *object);
 
 QTENV_API QString makeObjectTooltip(cObject *obj);
 
+const std::string& stripFormatting(const std::string& input, std::string& buffer);
+
 const char *skipEscapeSequences(const char *start);
-// NOTE: On top of ANSI escape sequences, it also strips trailing newlines!
 std::string stripFormattingAndRemoveTrailingNewLine(const std::string& input);
 std::string stripSuffixes(const std::string& from, const std::string& suffix);
 std::string stripSuffixes(const std::string& from, char suffix);
@@ -126,6 +127,13 @@ enum SearchFlag {
 
 Q_DECLARE_FLAGS(SearchFlags, SearchFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(SearchFlags)
+
+struct SearchResult {
+    const char *matchStart = nullptr;
+    int matchLength = 0;
+};
+
+SearchResult findSubstring(const char *haystack, const char *needle, int startIndex, SearchFlags flags);
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp);
 ModuleInspector *isModuleInspectorFor(cModule *mod, Inspector *insp);
