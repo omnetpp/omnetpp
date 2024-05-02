@@ -212,6 +212,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<std::string> getConfigNames() override;
     virtual void activateConfig(const char *configName, int runNumber=0) override;
     virtual std::string getConfigDescription(const char *configName) const override;
+    virtual bool isAbstractConfig(const char *configName) const override;
     virtual std::vector<std::string> getBaseConfigs(const char *configName) const override;
     virtual std::vector<std::string> getConfigChain(const char *configName) const override;
     virtual int getNumRunsInConfig(const char *configName) const override;

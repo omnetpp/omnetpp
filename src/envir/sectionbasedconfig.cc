@@ -192,6 +192,15 @@ std::string SectionBasedConfiguration::getConfigDescription(const char *configNa
     return internalGetValueAsString(sectionChain, CFGID_DESCRIPTION->getName());
 }
 
+bool SectionBasedConfiguration::isAbstractConfig(const char *configName) const
+{
+    int sectionId = resolveConfigName(configName);
+    if (sectionId == -1 && strcmp(configName, "General") != 0)
+        throw cRuntimeError("No such config: %s", configName);
+    std::vector<int> sectionChain { sectionId };
+    return internalGetConfigAsBool(CFGID_ABSTRACT, sectionChain, StringMap(), StringMap());
+}
+
 std::vector<std::string> SectionBasedConfiguration::getBaseConfigs(const char *configName) const
 {
     int sectionId = resolveConfigName(configName);

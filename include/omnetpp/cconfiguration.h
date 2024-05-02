@@ -367,6 +367,12 @@ class SIM_API cConfigurationEx : public cConfiguration
     virtual std::string getConfigDescription(const char *configName) const = 0;
 
     /**
+     * Returns true if the given configuration is abstract, i.e. it only
+     * serves as a base for other configuration.
+     */
+    virtual bool isAbstractConfig(const char *configName) const = 0;
+
+    /**
      * Returns the names of the configurations the given configuration extends directly.
      * Only names of *existing* configurations are returned (that is,
      * if "extends" is bogus and refers to a nonexistent configuration,
