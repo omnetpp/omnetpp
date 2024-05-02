@@ -724,19 +724,20 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab {
      */
     private String[] getConfigNames(IFile[] inifiles) {
         Map<String,OmnetppLaunchUtils.ConfigEnumeratorCallback.Section> sections = new LinkedHashMap<>();
-        if (inifiles != null)
+        if (inifiles != null) {
             for (IFile inifile : inifiles) {
-                InifileParser iparser = new InifileParser();
                 try {
-                    iparser.parse(inifile, new OmnetppLaunchUtils.ConfigEnumeratorCallback(inifile, sections));
+                    InifileParser parser = new InifileParser();
+                    parser.parse(inifile, new OmnetppLaunchUtils.ConfigEnumeratorCallback(inifile, sections));
                 } catch (CoreException e) {
                     setErrorMessage("Error reading inifile: " + e.getMessage());
                 }
             }
+        }
         List<String> result = new ArrayList<>();
         result.add("");
-        for (OmnetppLaunchUtils.ConfigEnumeratorCallback.Section sec : sections.values())
-            result.add(sec.toString());
+        for (OmnetppLaunchUtils.ConfigEnumeratorCallback.Section section : sections.values())
+            result.add(section.toString());
         return result.toArray(new String[] {});
     }
 

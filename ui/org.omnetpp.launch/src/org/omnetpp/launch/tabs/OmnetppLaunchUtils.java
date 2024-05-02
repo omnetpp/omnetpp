@@ -7,6 +7,16 @@
 
 package org.omnetpp.launch.tabs;
 
+import static org.omnetpp.common.IConstants.PREF_OMNETPP_IMAGE_PATH;
+import static org.omnetpp.common.IConstants.VAR_ADDITIONAL_PATH;
+import static org.omnetpp.common.IConstants.VAR_IMAGE_PATH;
+import static org.omnetpp.common.IConstants.VAR_LD_LIBRARY_PATH;
+import static org.omnetpp.common.IConstants.VAR_NED_PACKAGE_EXCLUSIONS;
+import static org.omnetpp.common.IConstants.VAR_NED_PATH;
+import static org.omnetpp.common.IConstants.VAR_OMNETPP_BIN_DIR;
+import static org.omnetpp.common.IConstants.VAR_OMNETPP_LIB_DIR;
+import static org.omnetpp.common.IConstants.VAR_SHARED_LIBS;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -77,8 +87,6 @@ import org.omnetpp.inifile.editor.model.InifileParser;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 import org.omnetpp.launch.LaunchPlugin;
 
-import static org.omnetpp.common.IConstants.*;
-
 /**
  * Various utility methods for the launcher.
  */
@@ -106,13 +114,13 @@ public class OmnetppLaunchUtils {
         class Section {
             String name;
             String network;
-            String extnds;
-            String descr;
+            String extendsName;
+            String description;
             @Override
             public String toString() {
-                String additional = (StringUtils.isEmpty(descr)? "" : " "+descr)+
-                (StringUtils.isEmpty(extnds)? "" : " (extends: "+extnds+")")+
-                (StringUtils.isEmpty(network)? "" : " (network: "+network+")");
+                String additional = (StringUtils.isEmpty(description) ? "" : " " + description) +
+                (StringUtils.isEmpty(extendsName) ?  "" : " (extends: " + extendsName + ")") +
+                (StringUtils.isEmpty(network) ? "" : " (network: " + network + ")");
                 return name +(StringUtils.isEmpty(additional) ? "" : " --"+additional);
             }
         }
@@ -156,10 +164,10 @@ public class OmnetppLaunchUtils {
             }
 
             if ("extends".equals(key))
-                currentSection.extnds = value;
+                currentSection.extendsName = value;
 
             if ("description".equals(key))
-                currentSection.descr = value;
+                currentSection.description = value;
 
             if ("network".equals(key))
                 currentSection.network = value;
