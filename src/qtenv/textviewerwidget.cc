@@ -358,6 +358,12 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
 
     while (*textPointer != 0) {
         textPointer = skipEscapeSequences(textPointer);
+
+        if ((textPointer - textStart) >= columnIndex) {
+            // The column of interest is within an escape sequence, which has no width.
+            break;
+        }
+
         if (*textPointer == '\t') {
             // this is a tab, so let's jump forward to the next header segment position
             ++inColumn;
@@ -371,6 +377,9 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
             // this is regular text, see how many characters until we hit a
             // tab, an escape sequence, or the end of the string, and print
             // the text before that
+
+            // if this fails, we are already past the desired column, which shouldn't happen
+            ASSERT((textPointer - textStart) < columnIndex);
 
             const char *start = textPointer;
 
