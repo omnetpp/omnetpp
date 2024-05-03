@@ -253,8 +253,6 @@ Pos TextViewerWidget::getSelectionEnd()
 void TextViewerWidget::find(const std::string& text, SearchFlags flags)
 {
     setCursor(QCursor(Qt::WaitCursor));
-    std::string originalText = text;  // for the dialog if not found
-
 
     // Where the search should start (or end) within the current line for forward (or backward) searching,
     // respectively. A negative value means that the entire line should be searched in the given direction.
@@ -299,7 +297,7 @@ void TextViewerWidget::find(const std::string& text, SearchFlags flags)
     }
     else {
         clearSelection();
-        QMessageBox::information(this, "Not found", "No match for \"" + QString::fromStdString(originalText) + "\".");
+        QMessageBox::information(this, "Not found", "No match for \"" + QString::fromStdString(text) + "\".");
     }
 
     setCursor(QCursor(Qt::IBeamCursor));
