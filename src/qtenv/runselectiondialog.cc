@@ -49,6 +49,9 @@ RunSelectionDialog::RunSelectionDialog(cConfigurationEx *configuration, const st
 
     // filling the configname combobox
     for (auto name : configNames) {
+        if (configuration->isAbstractConfig(name.c_str()))
+            continue;
+
         std::string desc = configuration->getConfigDescription(name.c_str());
         int runs = configuration->getNumRunsInConfig(name.c_str());
 
