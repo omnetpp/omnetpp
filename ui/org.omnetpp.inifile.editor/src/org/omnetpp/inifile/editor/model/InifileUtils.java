@@ -7,6 +7,7 @@
 
 package org.omnetpp.inifile.editor.model;
 
+import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_ABSTRACT;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_DESCRIPTION;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
@@ -27,7 +28,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
@@ -48,16 +48,13 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  */
 public class InifileUtils {
     // for getSectionImage():
-    public static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.png");
-    public static final Image ICON_SECTION_NONEXISTENT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_nonexistent.png");
-    public static final Image ICON_SECTION_SINGLE = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_single.png");
-    public static final Image ICON_SECTION_REPEAT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_repeat.png");
-    public static final Image ICON_SECTION_ITER = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iter.png");
-    public static final Image ICON_SECTION_ITERREP = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iterrep.png");
-
-    public static final Image ICON_OVR_ERROR = UIUtils.ICON_ERROR_SMALL;
-    public static final Image ICON_OVR_WARNING = UIUtils.ICON_WARNING_SMALL;
-    public static final Image ICON_OVR_INFO = UIUtils.ICON_INFO_SMALL;
+    private static final String ICON_SECTION_PNG = "icons/full/obj16/section.png";
+    private static final String ICON_SECTION_ABSTRACT_PNG = "icons/full/obj16/section_abstract.png";
+    private static final String ICON_SECTION_NONEXISTENT_PNG = "icons/full/obj16/section_nonexistent.png";
+    private static final String ICON_REPEAT_PNG = "icons/full/ovr16/section_repeat.png";
+    private static final String ICON_ITER_PNG = "icons/full/ovr16/section_iter.png";
+    private static final String ICON_WARNING_PNG = "icons/full/ovr16/warning.png";
+    private static final String ICON_ERROR_PNG = "icons/full/ovr16/error.png";
 
     // for getKeyImage()
     public static final Image ICON_ERROR = UIUtils.ICON_ERROR;
@@ -513,27 +510,23 @@ public class InifileUtils {
      */
     public static Image getSectionImage(String sectionName, InifileAnalyzer analyzer) {
         IReadonlyInifileDocument doc = analyzer.getDocument();
-
-        // base image
-        boolean exists = analyzer.getDocument().containsSection(sectionName);
+        boolean exists = doc.containsSection(sectionName);
         boolean containsIteration = exists ? analyzer.containsIteration(sectionName) : false;
         boolean containsRepeat = exists ? lookupConfig(sectionName, CFGID_REPEAT.getName(), doc) != null : false;
-        Image sectionImage = !exists ? ICON_SECTION_NONEXISTENT :
-            (containsIteration && containsRepeat) ? ICON_SECTION_ITERREP :
-                (containsIteration && !containsRepeat) ? ICON_SECTION_ITER :
-                    (!containsIteration && containsRepeat) ? ICON_SECTION_REPEAT :
-                        (!containsIteration && !containsRepeat) ? ICON_SECTION_SINGLE :
-                        ICON_SECTION; // never happens
-
-        // error/warning decoration
+        boolean isAbstract = exists ? "true".equals(doc.getValue(sectionName, CFGID_ABSTRACT.getName())) : false;
         IMarker[] markers = getProblemMarkersForWholeSection(sectionName, doc);
         int maxProblemSeverity = getMaximumSeverity(markers);
-        Image overlayImage = maxProblemSeverity == IMarker.SEVERITY_ERROR ? ICON_OVR_ERROR :
-            maxProblemSeverity == IMarker.SEVERITY_WARNING ? ICON_OVR_WARNING : null; // note: ignore Infos
+        boolean hasError =  maxProblemSeverity == IMarker.SEVERITY_ERROR;
+        boolean hasWarning = maxProblemSeverity == IMarker.SEVERITY_WARNING;
 
-        // return decorated image
-        String key = "section:"+exists+":"+containsIteration+":"+containsRepeat+":"+maxProblemSeverity;
-        return InifileEditorPlugin.getDecoratedImage(sectionImage, overlayImage, SWT.BEGINNING|SWT.BOTTOM, key);
+        return InifileEditorPlugin.getCachedDecoratedImage(
+                !exists ? ICON_SECTION_NONEXISTENT_PNG : isAbstract ? ICON_SECTION_ABSTRACT_PNG : ICON_SECTION_PNG,
+                new String[] {
+                    containsIteration ? ICON_ITER_PNG : null, // TOP_LEFT
+                    containsRepeat ? ICON_REPEAT_PNG : null,  // TOP_RIGHT
+                    hasError ? ICON_ERROR_PNG : hasWarning ? ICON_WARNING_PNG : null, // BOTTOM_LEFT
+                    null  // BOTTOM_RIGHT
+                });
     }
 
     /**

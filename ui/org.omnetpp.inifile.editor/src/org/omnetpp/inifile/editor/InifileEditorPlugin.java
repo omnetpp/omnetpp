@@ -15,6 +15,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -147,6 +149,36 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
                 gc.dispose();
             }
             imageRegistry.put(key, result);
+        }
+        return result;
+    }
+
+    /**
+     * Decorates the given image with the overlay images (any element may be null),
+     * and returns the result as a new image. The index of images in the overlayImagePath
+     * array is determined by the {@link IDecoration#TOP_LEFT}, {@link IDecoration#TOP_RIGHT},
+     * {@link IDecoration#BOTTOM_LEFT} and {@link IDecoration#BOTTOM_RIGHT} and
+     * {@link IDecoration#UNDERLAY} constant values.
+     * The result image gets cached in an internal image registry,
+     * so clients do not need to (moreover, must not) dispose of the image.
+     *
+     * XXX This is a copy of org.omnetpp.cdt.Activator.getCachedDecoratedImage()
+     */
+    public static Image getCachedDecoratedImage(String baseImagePath, String overlayImagePath[]) {
+        Image baseImage = getCachedImage(baseImagePath);
+        ImageDescriptor[] overlayDescs = new ImageDescriptor[overlayImagePath.length];
+        String key = baseImagePath;
+        // Calculate a unique key for the decorated image. If all decoration is null
+        // the base image key is used and the base image will be returned from the registry.
+        for (int i=0; i<overlayImagePath.length; i++)
+            if (overlayImagePath[i] != null) {
+                overlayDescs[i] = getImageDescriptor(overlayImagePath[i]);
+                key += ":"+i+"="+overlayImagePath[i];
+            }
+        Image result = getDefault().getImageRegistry().get(key);
+        if (result == null) {
+            result = new DecorationOverlayIcon(baseImage, overlayDescs).createImage();
+            getDefault().getImageRegistry().put(key, result);
         }
         return result;
     }
