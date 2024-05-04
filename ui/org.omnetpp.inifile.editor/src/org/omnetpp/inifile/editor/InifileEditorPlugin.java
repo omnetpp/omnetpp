@@ -7,6 +7,8 @@
 
 package org.omnetpp.inifile.editor;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -16,6 +18,8 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -117,8 +121,9 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
      * retrieve the cached image from the plugin image registry, must be unique.
      * Flags affects the alignment of the overlay image, use SWT constants like
      * BEGINING, END, TOP, BOTTOM.
+     *
+     * See also: org.omnetpp.cdt.Activator.getCachedDecoratedImage()
      */
-    //FIXME copy org.omnetpp.cdt.Activator.getCachedDecoratedImage() instead!
     public static Image getDecoratedImage(Image image, Image overlayImage, int flags, String key) {
         key = "decorated-image:" + key;
         ImageRegistry imageRegistry = getDefault().getImageRegistry();
@@ -129,11 +134,15 @@ public class InifileEditorPlugin extends AbstractUIPlugin {
             else {
                 int width = image == null ? 16 : image.getBounds().width;
                 int height = image == null ? 16 : image.getBounds().height;
+                ImageData resultData = new ImageData(width, height, 32, new PaletteData(0xFF000000, 0xFF0000, 0xFF00));
+                resultData.alphaData = new byte[width*height];
+                Arrays.fill(resultData.alphaData, (byte) 0);
+                result = new Image(null, resultData);
+                GC gc = new GC(result);
+                if (image != null)
+                    gc.drawImage(image, 0, 0);
                 int x = (flags&SWT.BEGINNING)!=0 ? 0 : (flags&SWT.END)!=0 ? width - overlayImage.getBounds().width : 0;
                 int y = (flags&SWT.TOP)!=0 ? 0 : (flags&SWT.BOTTOM)!=0 ? height - overlayImage.getBounds().height : 0;
-                result = new Image(null, width, height); // SWT.IMAGE_COPY does not seem to work (exception)
-                GC gc = new GC(result);
-                if (image != null) gc.drawImage(image, 0, 0);
                 gc.drawImage(overlayImage, x, y);
                 gc.dispose();
             }
