@@ -348,7 +348,7 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
     const char *const textStart = line.c_str();
     const char *textPointer = line.c_str();
 
-    int inColumn = 0;
+    int inTableColumn = 0;
     int x = horizontalMargin;
 
     if (columnIndex == 0)
@@ -364,8 +364,8 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
 
         if (*textPointer == '\t') {
             // this is a tab, so let's jump forward to the next header segment position
-            ++inColumn;
-            int sectionPosition = header->sectionPosition(inColumn); // TODO range check
+            ++inTableColumn;
+            int sectionPosition = header->sectionPosition(inTableColumn); // TODO range check
 
             x = std::max(sectionPosition, x + metrics.width(" "));
 
