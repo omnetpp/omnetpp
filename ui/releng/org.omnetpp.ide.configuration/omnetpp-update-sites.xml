@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bookmarks>
-   <site url="https://download.eclipse.org/releases/2023-12" selected="true" name="Eclipse release 2023-12"/>
+   <site url="https://download.eclipse.org/releases/2024-03" selected="true" name="Eclipse release 2024-03"/>
    <site url="https://www.pydev.org/updates/" selected="true" name="PyDev"/> <!-- from: https://www.pydev.org/update_sites/ -->
    <site url="https://download.eclipse.org/tools/gef/updates/legacy/releases/" selected="false" name="GEF3 Legacy SDK"/>
-   <site url="https://download.eclipse.org/eclipse/updates/4.30" selected="false" name="Eclipse 4.30 SDK"/>
+   <site url="https://download.eclipse.org/eclipse/updates/4.31" selected="false" name="Eclipse 4.31 SDK"/>
 </bookmarks>
