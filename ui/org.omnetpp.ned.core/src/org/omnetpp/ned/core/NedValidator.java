@@ -374,7 +374,6 @@ public class NedValidator extends AbstractNedValidatorEx {
         else if (submoduleNode!=null) {
             // inside a submodule's definition
             if (submoduleType==null) {
-                errors.addError(node, "cannot assign parameters of a submodule of unknown type");
                 return;
             }
 
