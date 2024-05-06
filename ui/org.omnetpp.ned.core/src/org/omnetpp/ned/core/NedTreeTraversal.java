@@ -137,8 +137,10 @@ public class NedTreeTraversal {
                 else {
                     // effectiveTypeName is likely unqualified -- look it up according to the "like" type name resolution rules
                     result = resolver.lookupLikeType(effectiveTypeName, interfaceType, contextProject); // actual type
-                    if (result == null)
+                    if (result == null) {
                         visitor.unresolvedType(element, effectiveTypeName); // no such type
+                        result = interfaceType;
+                    }
                 }
             }
         }
