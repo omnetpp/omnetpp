@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,6 +51,8 @@ import org.omnetpp.inifile.editor.model.Timeout;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -278,14 +281,9 @@ s    * before getting presented to the user.
             }
         }
 
-        // generate proposals
-        //TODO make use of parameter properties (like @choice)
-
         // after "${", offer variable names
         if (prefix.matches(".*\\$\\{[A-Za-z0-9_]*"))
             addConfigVariableProposals(p);
-
-        p.addAll(toProposals(new String[] {"default", "ask"}));
 
         switch (dataType) {
         case NedElementConstants.NED_PARTYPE_BOOL:
@@ -306,6 +304,16 @@ s    * before getting presented to the user.
             p.addAll(toProposals(templatesToProposals(NedCompletionHelper.proposedNedDiscreteDistributionsTemplExt), "using a given RNG"));
             break;
         case NedElementConstants.NED_PARTYPE_STRING:
+            // generate proposals from @enum properties
+            Set<String> enumValues = new LinkedHashSet<>();
+            for (ParamElement par : paramSet) {
+                PropertyElementEx enumProp = ((ParamElementEx)par).getProperties().get("enum");
+                if (enumProp != null)
+                    enumValues.addAll(enumProp.getValueAsList()); // strictly speaking, we should take their intersection
+            }
+            for (String enumValue : enumValues)
+                p.add(new ContentProposalEx(StringUtils.quoteString(enumValue)));
+
             // if the param is used in a "<param> like IFoo", propose all modules that implement IFoo
             if (resList != null) {
                 Collection<INedTypeInfo> types = getProposedNedTypesFor(resList);
@@ -315,14 +323,18 @@ s    * before getting presented to the user.
                         docu += StringUtils.nullToEmpty(NedCommentFormatter.makeTextDocu(type.getNedElement().getComment()));
                         p.add(new ContentProposalEx("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
                     }
-                p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
             }
+            if (enumValues.isEmpty())
+                p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
             break;
         case NedElementConstants.NED_PARTYPE_XML:
             p.addAll(toProposals(new String[] {"xml(\"string\")", "xml(\"string\", \"xpath\")"}));
             p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}));
             break;
         }
+
+        p.addAll(toProposals(new String[] {"default", "ask"}));
+
         return p;
     }
 

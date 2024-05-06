@@ -7,7 +7,9 @@
 
 package org.omnetpp.ned.model.ex;
 
-import org.omnetpp.common.util.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.LiteralElement;
@@ -34,14 +36,12 @@ public class PropertyElementEx extends PropertyElement implements IHasName {
      * otherwise returns null.
      */
     public String getSimpleValue() {
-        for (INedElement child : this)
-            if (child instanceof PropertyKeyElement && StringUtils.isEmpty(((PropertyKeyElement)child).getName()))
-                for (INedElement grandChild : child)
-                    if (grandChild instanceof LiteralElement)
-                        return ((LiteralElement)grandChild).getValue();
-        return null;
+        return getValue(DEFAULT_PROPERTY_INDEX);
     }
 
+    /**
+     * Return the first value from the specified key's value list, or null.
+     */
     public String getValue(String key) {
         for (INedElement child : this)
             if (child instanceof PropertyKeyElement && key.equals(((PropertyKeyElement)child).getName()))
@@ -50,4 +50,28 @@ public class PropertyElementEx extends PropertyElement implements IHasName {
                         return ((LiteralElement)grandChild).getValue();
         return null;
     }
+
+    /**
+     * Return the default key's value list, or null if there is no such key.
+     */
+    public List<String> getValueAsList() {
+        return getValueAsList(DEFAULT_PROPERTY_INDEX);
+    }
+
+    /**
+     * Return the specified key's value list, or null if there is no such key.
+     */
+    public List<String> getValueAsList(String key) {
+        for (INedElement child : this) {
+            if (child instanceof PropertyKeyElement && key.equals(((PropertyKeyElement)child).getName())) {
+                List<String> result = new ArrayList<>();
+                for (INedElement grandChild : child)
+                    if (grandChild instanceof LiteralElement)
+                        result.add(((LiteralElement)grandChild).getValue());
+                return result;
+            }
+        }
+        return null;
+    }
+
 }
