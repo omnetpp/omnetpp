@@ -26,6 +26,7 @@ namespace internal {
 cStringParImpl::~cStringParImpl()
 {
     deleteOld();
+    delete enumValues;
 }
 
 void cStringParImpl::copy(const cStringParImpl& other)
@@ -34,6 +35,9 @@ void cStringParImpl::copy(const cStringParImpl& other)
         expr = other.expr->dup();
     else
         val = other.val;
+
+    delete enumValues;
+    enumValues = other.enumValues ? new std::vector<std::string>(*other.enumValues) : nullptr;
 }
 
 void cStringParImpl::operator=(const cStringParImpl& other)
@@ -43,6 +47,32 @@ void cStringParImpl::operator=(const cStringParImpl& other)
     deleteOld();
     cParImpl::operator=(other);
     copy(other);
+}
+
+void cStringParImpl::validate(const char *value) const
+{
+    if (enumValues) {
+        bool found = false;
+        for (auto& allowedValue : *enumValues) {
+            if (opp_streq(allowedValue.c_str(), value)) {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            throw cRuntimeError("Value %s is not allowed, must be one of: %s", opp_quotestr(value).c_str(), opp_join(*enumValues, ",", false, '"').c_str());
+    }
+}
+
+void cStringParImpl::setEnumValues(const std::vector<std::string>& values)
+{
+    delete enumValues;
+    enumValues = values.empty() ? nullptr : new std::vector<std::string>(values);
+}
+
+std::vector<std::string> cStringParImpl::getEnumValues() const
+{
+    return enumValues ? *enumValues : std::vector<std::string>();
 }
 
 void cStringParImpl::setBoolValue(bool b)
@@ -62,6 +92,7 @@ void cStringParImpl::setDoubleValue(double d)
 
 void cStringParImpl::setStringValue(const char *s)
 {
+    validate(s);
     deleteOld();
     val = (s ? s : "");
     flags |= FL_CONTAINSVALUE | FL_ISSET;
@@ -124,7 +155,9 @@ std::string cStringParImpl::stdstringValue(cComponent *context) const
             cValue v = evaluate(expr, context);
             if (v.type != cValue::STRING)
                 throw cRuntimeError(E_BADCAST, v.getTypeName(), "string");
-            return v.stringValue();
+            const char *s = v.stringValue();
+            validate(s);
+            return s;
         }
         catch (std::exception& e) {
             throw cRuntimeError(e, expr->getSourceLocation().c_str());

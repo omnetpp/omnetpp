@@ -36,8 +36,12 @@ class SIM_API cStringParImpl : public cParImpl
     cExpression *expr = nullptr;
     std::string val;
 
+    // if not null: list of acceptable values
+    std::vector<std::string> *enumValues = nullptr;
+
   private:
     void copy(const cStringParImpl& other);
+    void validate(const char *value) const;
 
   protected:
     void deleteOld() {cParImpl::deleteOld(expr);}
@@ -74,6 +78,20 @@ class SIM_API cStringParImpl : public cParImpl
      * Creates and returns an exact copy of this object.
      */
     virtual cStringParImpl *dup() const override  {return new cStringParImpl(*this);}
+    //@}
+
+    /** @name Misc. */
+    //@{
+
+    /**
+     * Set the list of accepted values. Empty vector means no enum.
+     */
+    virtual void setEnumValues(const std::vector<std::string>& values);
+
+    /**
+     * Returns the list of accepted values.
+     */
+    virtual std::vector<std::string> getEnumValues() const;
     //@}
 
     /** @name Redefined cParImpl setter functions. */

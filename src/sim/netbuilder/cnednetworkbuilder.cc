@@ -228,6 +228,17 @@ void cNedNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             const char *declUnit = unitProp ? unitProp->getValue(cProperty::DEFAULTKEY) : nullptr;
             impl->setUnit(declUnit);
 
+            cProperty *enumProp = paramProps->get("enum");
+            if (enumProp) {
+                std::vector<std::string> enumValues;
+                for (int i = 0; i < enumProp->getNumValues(""); i++)
+                    enumValues.push_back(enumProp->getValue("", i));
+                if (cStringParImpl *stringParImpl = dynamic_cast<cStringParImpl*>(impl))
+                    stringParImpl->setEnumValues(enumValues);
+                else
+                    throw cRuntimeError(component, "The @enum property is only allowed on string parameters");
+            }
+
             if (impl->getType() == cPar::OBJECT) {
                 cProperty *classProp = paramProps->get("class");
                 const char *declClass = classProp ? classProp->getValue(cProperty::DEFAULTKEY) : nullptr;
