@@ -9,11 +9,13 @@ package org.omnetpp.ned.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.ParamUtil.FindParamResult;
@@ -475,7 +477,7 @@ public class NedValidator extends AbstractNedValidatorEx {
                 assignmentType = NED_PARTYPE_DOUBLE;
         }
 
-        // determine declaraion's unit
+        // determine declaration's unit
         PropertyElementEx unitProperty = paramDeclaration.getLocalProperties().get("unit");
         String declarationUnit = unitProperty == null ? "" : StringUtils.nullToEmpty(unitProperty.getSimpleValue());
 
@@ -497,6 +499,20 @@ public class NedValidator extends AbstractNedValidatorEx {
                 errors.addError(paramAssignment, e.getMessage());
             }
         }
+
+        // if string, check against potential @enum
+        if (declarationType == NED_PARTYPE_STRING) {
+            PropertyElementEx enumProperty = paramDeclaration.getProperties().get("enum");
+            if (enumProperty != null) {
+                if (StringUtils.isQuotedString(assignmentValue)) {
+                    String value = Common.parseQuotedString(assignmentValue);
+                    List<String> enumValues = enumProperty.getValueAsList();
+                    if (!enumValues.contains(value))
+                        errors.addError(paramAssignment, "Invalid value " + assignmentValue + ", should be one of: " + StringUtils.quoteAndJoin(enumValues, ","));
+                }
+            }
+        }
+
     }
 
     @Override

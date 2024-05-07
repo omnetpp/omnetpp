@@ -654,6 +654,15 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
         return s1+separator+s2;
     }
 
+    public static String quoteAndJoin(Iterable<?> iterable, String separator) {
+        StringBuilder sb = new StringBuilder();
+        for (Object item : iterable)
+            sb.append("\"").append(item).append("\"").append(separator);
+        if (sb.length() > 0)
+            sb.delete(sb.length() - separator.length(), sb.length());
+        return sb.toString();
+    }
+
     /**
      * Performs template substitution. Constructs understood are:
      *  - {foo} gets replaced by (String)m.get("foo");

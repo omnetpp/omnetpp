@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -846,6 +848,22 @@ public final class InifileAnalyzer {
                 }
                 catch (RuntimeException e) {
                     markers.addError(section, key, e.getMessage());
+                }
+            }
+
+            // if string, check against potential @enum
+            if (paramType == NED_PARTYPE_STRING) {
+                if (StringUtils.isQuotedString(value)) {
+                    String unquotedValue = Common.parseQuotedString(value);
+                    // collect values from relevant @enum properties
+                    Set<String> enumValues = new LinkedHashSet<>();
+                    for (ParamResolution res : resList) {
+                        PropertyElementEx enumProperty = res.paramDeclaration.getLocalProperties().get("enum");
+                        if (enumProperty != null)
+                            enumValues.addAll(enumProperty.getValueAsList()); // strictly speaking, we should take their intersection
+                    }
+                    if (!enumValues.isEmpty() && !enumValues.contains(unquotedValue))
+                        markers.addError(section, key, "Invalid value " + value + ", should be one of: " + StringUtils.quoteAndJoin(enumValues, ","));
                 }
             }
 
