@@ -125,6 +125,9 @@ public:
     virtual int getNumLines(LogBuffer::Entry *entry) = 0;
     virtual std::string getLineText(LogBuffer::Entry *entry, int lineIndex) = 0;
 
+    virtual int textLineToBufferIndex(LogBuffer::Entry *entry, int lineIndex) = 0;
+    virtual int bufferIndexToTextLine(LogBuffer::Entry *entry, int bufferIndex) = 0;
+
     // Optional.
     virtual cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) { ASSERT2(false, "Unimplemented."); return nullptr; };
 };
@@ -145,6 +148,9 @@ public:
 
     int getNumLines(LogBuffer::Entry *entry) override;
     std::string getLineText(LogBuffer::Entry *entry, int lineIndex) override;
+
+    int textLineToBufferIndex(LogBuffer::Entry *entry, int lineIndex) override;
+    int bufferIndexToTextLine(LogBuffer::Entry *entry, int bufferIndex) override;
 };
 
 class QTENV_API EventEntryMessageLinesProvider : public AbstractEventEntryLinesProvider {
@@ -168,6 +174,9 @@ public:
 
     int getNumLines(LogBuffer::Entry *entry) override;
     std::string getLineText(LogBuffer::Entry *entry, int lineIndex) override;
+
+    int textLineToBufferIndex(LogBuffer::Entry *entry, int lineIndex) override;
+    int bufferIndexToTextLine(LogBuffer::Entry *entry, int bufferIndex) override;
 
     cMessage *getMessageForLine(LogBuffer::Entry *entry, int lineIndex) override;
 

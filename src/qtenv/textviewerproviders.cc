@@ -421,23 +421,9 @@ bool EventEntryLinesProvider::shouldShowAnyLine(LogBuffer::Entry *entry)
 
 std::string EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int lineIndex)
 {
-    if (shouldShowBanner(entry, shouldShowAnyLine(entry))) {
-        if (lineIndex == 0) // it's an event banner, or if no component, an info line
-            return (entry->isSystemMessage() || entry->isScheduler() ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + std::string(entry->banner) + SGR(RESET);
-        else
-            lineIndex--; // skipping the banner
-    }
-
-    size_t entryLineIndex = 0;
-
-    // looking up which actually stored line is the one that should be shown as the given lineIndex,
-    // according to the line-level filtering
-    for (; entryLineIndex < entry->lines.size(); ++entryLineIndex)
-        if (shouldShowLine(entry, entryLineIndex)) {
-            if (lineIndex == 0)
-                break;
-            --lineIndex;
-        }
+    int entryLineIndex = textLineToBufferIndex(entry, lineIndex);
+    if (entryLineIndex == -1)
+        return (entry->isSystemMessage() || entry->isScheduler() ? SGR(FG_GREEN) : SGR(FG_BRIGHT_BLUE)) + std::string(entry->banner) + SGR(RESET);
 
     if (entryLineIndex >= entry->lines.size())
         throw std::runtime_error("Log entry line index out of bounds");
@@ -465,6 +451,51 @@ std::string EventEntryLinesProvider::getLineText(LogBuffer::Entry *entry, int li
         text += entry->lines[entryLineIndex].line;
 
     return text;
+}
+
+int EventEntryLinesProvider::textLineToBufferIndex(LogBuffer::Entry *entry, int lineIndex)
+{
+    if (shouldShowBanner(entry, shouldShowAnyLine(entry))) {
+        if (lineIndex == 0) // it's an event banner, or if no component, an info line
+            return -1;
+        else
+            lineIndex--; // skipping the banner
+    }
+
+    size_t entryLineIndex = 0;
+
+    // looking up which actually stored line is the one that should be shown as the given lineIndex,
+    // according to the line-level filtering
+    for (; entryLineIndex < entry->lines.size(); ++entryLineIndex)
+        if (shouldShowLine(entry, entryLineIndex)) {
+            if (lineIndex == 0)
+                break;
+            --lineIndex;
+        }
+
+    return entryLineIndex;
+}
+
+int EventEntryLinesProvider::bufferIndexToTextLine(LogBuffer::Entry *entry, int bufferIndex)
+{
+    int lineIndex = 0;
+    if (shouldShowBanner(entry, shouldShowAnyLine(entry))) {
+        if (bufferIndex == -1)
+            return 0;
+        lineIndex++; // skipping the banner
+    }
+
+    if (bufferIndex == -1)
+        return -1;
+
+    for (size_t entryLineIndex = 0; entryLineIndex < entry->lines.size(); ++entryLineIndex)
+        if (shouldShowLine(entry, entryLineIndex)) {
+            if (entryLineIndex == bufferIndex)
+                return lineIndex;
+            ++lineIndex;
+        }
+
+    return lineIndex;
 }
 
 cMessagePrinter *EventEntryMessageLinesProvider::chooseMessagePrinter(cMessage *msg)
@@ -532,17 +563,9 @@ std::vector<int> EventEntryMessageLinesProvider::findRelevantHopModuleIds(const 
 
 LogBuffer::MessageSend &EventEntryMessageLinesProvider::messageSendForLineIndex(LogBuffer::Entry *entry, int lineIndex)
 {
-    int i = 0;
-    for (auto& msgSend : entry->msgs) {
-        if (isMatchingMessageSend(msgSend)) {
-            if (lineIndex == i)
-                return msgSend;
-            else
-                ++i;
-        }
-    }
-    ASSERT(false);
-    return entry->msgs.front(); // meh.
+    int msgSendIndex = textLineToBufferIndex(entry, lineIndex);
+    ASSERT(msgSendIndex >= 0 && msgSendIndex < (int)entry->msgs.size());
+    return entry->msgs[msgSendIndex];
 }
 
 std::string EventEntryMessageLinesProvider::getRelevantHopsString(const LogBuffer::MessageSend& msgsend)
@@ -748,6 +771,34 @@ std::string EventEntryMessageLinesProvider::getLineText(LogBuffer::Entry *entry,
         os << SGR(FG_RED) "[no message printer for this object]" SGR(FG_DEFAULT);
 
     return os.str();
+}
+
+int EventEntryMessageLinesProvider::textLineToBufferIndex(LogBuffer::Entry *entry, int lineIndex)
+{
+    int msgSendIndex = 0;
+    for (auto& msgSend : entry->msgs) {
+        if (isMatchingMessageSend(msgSend)) {
+            if (lineIndex == 0)
+                return msgSendIndex;
+            else
+                --lineIndex;
+        }
+        ++msgSendIndex;
+    }
+    return -1;
+}
+
+int EventEntryMessageLinesProvider::bufferIndexToTextLine(LogBuffer::Entry *entry, int bufferIndex)
+{
+    int textLine = 0;
+    for (auto& msgSend : entry->msgs) {
+        if (bufferIndex == 0)
+            return textLine;
+        if (isMatchingMessageSend(msgSend))
+            ++textLine;
+        --bufferIndex;
+    }
+    return -1;
 }
 
 cMessage *EventEntryMessageLinesProvider::getMessageForLine(LogBuffer::Entry *entry, int lineIndex)
