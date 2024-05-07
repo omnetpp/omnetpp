@@ -1268,33 +1268,33 @@ void TextViewerWidget::mousePressEvent(QMouseEvent *event)
     caretShown = true;
     caretBlinkTimer.start();
 
-    if (event->buttons() & Qt::LeftButton) {
-        if (timeSinceLastDoubleClick.isValid() // triple click event emulation
-                && timeSinceLastDoubleClick.elapsed() < TRIPLE_CLICK_THRESHOLD_MS) {
-            // selecting the whole line
-            doLineStart(false);
-            doLineEnd(true);
+    if ((event->buttons() & Qt::LeftButton)
+            && timeSinceLastDoubleClick.isValid() // triple click event emulation
+            && timeSinceLastDoubleClick.elapsed() < TRIPLE_CLICK_THRESHOLD_MS) {
+        // selecting the whole line
+        doLineStart(false);
+        doLineEnd(true);
 
-            clickCount = 3;
-            timeSinceLastDoubleClick.invalidate();
-        }
-        else {  // it is really a single click
-            caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
-            caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
-            clickCount = 1;
-
-            bool select = event->modifiers() & Qt::ShiftModifier;
-            if (!select)
-                clearSelection();
-            Q_EMIT caretMoved(caretLineIndex, caretColumn);
-        }
-
-        revealCaret();
-        viewport()->update();
+        clickCount = 3;
+        timeSinceLastDoubleClick.invalidate();
+        return;
     }
-    else if (event->buttons() & Qt::RightButton) {
+
+    caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
+    caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
+    clickCount = 1;
+
+    bool select = event->modifiers() & Qt::ShiftModifier;
+    if (!select)
+        clearSelection();
+    Q_EMIT caretMoved(caretLineIndex, caretColumn);
+
+    revealCaret();
+    viewport()->update();
+
+     if (event->buttons() & Qt::RightButton)
         Q_EMIT rightClicked(event->globalPos(), caretLineIndex, caretColumn);
-    }
+
 }
 
 void TextViewerWidget::mouseDoubleClickEvent(QMouseEvent *event)
