@@ -675,10 +675,10 @@ Total number of messages created since start of the simulation</string>
     <string>&amp;Timeline</string>
    </property>
    <property name="toolTip">
-    <string>Show/hide timeline (Ctrl+T)</string>
+    <string>Show/hide timeline (Ctrl+Shift+T)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+T</string>
+    <string>Ctrl+Shift+T</string>
    </property>
   </action>
   <action name="actionPreferences">

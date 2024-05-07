@@ -48,6 +48,9 @@ class QTENV_API LogInspector : public Inspector
       QAction *copySelectionAction;
       QAction *copySelectionWithFormattingAction;
 
+      QAction *goToSimTimeAction;
+      QAction *goToEventAction;
+
       QAction *configureMessagePrinterAction;
 
       QToolBar *createToolbar(bool isTopLevel);

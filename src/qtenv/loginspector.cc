@@ -149,6 +149,16 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     copySelectionWithFormattingAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(copySelectionWithFormattingAction);
 
+    goToSimTimeAction = new QAction("Go to Simulation &Time...");
+    connect(goToSimTimeAction, SIGNAL(triggered()), this, SLOT(onGoToSimTimeAction()));
+    goToSimTimeAction->setShortcut(Qt::CTRL + Qt::Key_T);
+    addAction(goToSimTimeAction);
+
+    goToEventAction = new QAction("Go to &Event...");
+    connect(goToEventAction, SIGNAL(triggered()), this, SLOT(onGoToEventAction()));
+    goToEventAction->setShortcut(Qt::CTRL + Qt::Key_E);
+    addAction(goToEventAction);
+
     QToolBar *toolBar = createToolbar(isTopLevel);
     if (isTopLevel)
         layout->addWidget(toolBar);
@@ -466,8 +476,8 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
         menu->addSeparator();
     }
 
-    menu->addAction("Go to Simulation &Time...", this, SLOT(onGoToSimTimeAction()));
-    menu->addAction("Go to &Event...", this, SLOT(onGoToEventAction()));
+    menu->addAction(goToSimTimeAction);
+    menu->addAction(goToEventAction);
 
     menu->addSeparator();
     menu->addAction(copySelectionAction);
