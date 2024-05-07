@@ -73,7 +73,7 @@ public:
     virtual int getLineAtEvent(eventnumber_t eventNumber) { return -1; }
 
     virtual simtime_t getSimTimeAtLine(int lineIndex) { return -1; }
-    virtual int getLineAtSimTime(simtime_t simTmie) { return -1; }
+    virtual int getLineAtSimTime(simtime_t simTime) { return -1; }
 
 Q_SIGNALS:
     void textChanged();
