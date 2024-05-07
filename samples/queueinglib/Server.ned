@@ -21,7 +21,7 @@ simple Server
         @signal[busy](type="bool");
         @statistic[busy](title="server busy state";record=vector?,timeavg;interpolationmode=sample-hold);
 
-        string fetchingAlgorithm @enum("priority","random","roundRobin","longestQueue") = default("priority");
+        string fetchingAlgorithm @enum("priority","random","roundRobin","shortestQueue","longestQueue") = default("priority");
              // how the next job will be choosen from the attached queues
         volatile double serviceTime @unit(s); // service time of a job
     gates:
