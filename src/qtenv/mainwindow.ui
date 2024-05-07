@@ -810,10 +810,10 @@ Total number of messages created since start of the simulation</string>
     <string>&amp;Video Recording</string>
    </property>
    <property name="toolTip">
-    <string>Record Video (Ctrl+M)</string>
+    <string>Record Video (Ctrl+Shift+M)</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+M</string>
+    <string>Ctrl+Shift+M</string>
    </property>
   </action>
   <action name="actionShowAnimationParams">

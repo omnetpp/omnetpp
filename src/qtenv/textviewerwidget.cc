@@ -903,6 +903,16 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
     painter.setBrush(palette().color(QPalette::AlternateBase));
     painter.drawRect(0, highlightY, contentsRect().width(), lineSpacing);
 
+    int markedLineIndex = content->getBookmarkedLineIndex();
+
+    if (markedLineIndex >= 0) {
+        // Drawing the black frame around the line which is marked.
+        int bookmarkY = startY + (markedLineIndex-lineIndex) * lineSpacing;
+        painter.setPen(palette().color(QPalette::Text));
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRect(0, bookmarkY, viewport()->size().width()-1, lineSpacing-1);
+    }
+
     Pos selectionStart = getSelectionStart();
     Pos selectionEnd = getSelectionEnd();
 

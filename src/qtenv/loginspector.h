@@ -48,6 +48,9 @@ class QTENV_API LogInspector : public Inspector
       QAction *copySelectionAction;
       QAction *copySelectionWithFormattingAction;
 
+      QAction *setBookmarkAction;
+      QAction *goToBookmarkAction;
+
       QAction *goToSimTimeAction;
       QAction *goToEventAction;
 
@@ -76,7 +79,7 @@ class QTENV_API LogInspector : public Inspector
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
       TextViewerWidget *textWidget;
-      ModuleOutputContentProvider *contentProvider; // owned by textWidget
+      ModuleOutputContentProvider *contentProvider = nullptr; // owned by textWidget
 
       std::set<int> excludedModuleIds;
       cMessagePrinter::Options messagePrinterOptions;
@@ -100,6 +103,9 @@ Q_SIGNALS:
 
       void onGoToSimTimeAction();
       void onGoToEventAction();
+
+      void onSetBookmarkAction();
+      void onGoToBookmarkAction();
 
       void goToSimTime(SimTime t);
       void goToEvent(eventnumber_t e);

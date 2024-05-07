@@ -75,6 +75,11 @@ public:
     virtual simtime_t getSimTimeAtLine(int lineIndex) { return -1; }
     virtual int getLineAtSimTime(simtime_t simTime) { return -1; }
 
+    // These are useful for implementing user-facing functionality.
+    virtual int getBookmarkedLineIndex() { return -1; }
+    virtual void bookmarkLine(int lineIndex) { }
+    virtual void clearBookmark() { }
+
 Q_SIGNALS:
     void textChanged();
     // This is used to move the cursor and anchor up in the viewer
@@ -187,8 +192,28 @@ public:
 class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     Q_OBJECT
 
+public:
+
+    // Instead of storing the bookmark as a simple line index, it is stored
+    // as a semantic marker, matching the LogBuffer structure. This way,
+    // it can even be preserved across mode and target object changes.
+    struct Bookmark {
+        // -1 is invalid, meaning the bookmark is "not set".
+        eventnumber_t eventNumber = -1;
+        // in which mode `bufferIndex` is valid for
+        LogInspector::Mode mode = LogInspector::LOG;
+        // Index into the `LogBuffer::Entry` for the given event
+        // (the `lines` or the `msgs` vector, depending on `lineMode`), not in the filtered view.
+        // In LOG mode, it can be -1 to refer to the event banner line.
+        int bufferIndex = -1;
+
+        bool isValid() const { return eventNumber != -1; }
+    };
+
+private:
     LogBuffer *logBuffer;
     LogInspector::Mode mode;
+    Bookmark bookmark;
 
     ComponentHistory *componentHistory;
     cComponent *inspectedComponent;
@@ -228,6 +253,19 @@ public:
 
     simtime_t getSimTimeAtLine(int lineIndex) override;
     int getLineAtSimTime(simtime_t eventNumber) override;
+
+    int getBookmarkedLineIndex() override;
+    void bookmarkLine(int lineIndex) override;
+    void clearBookmark() override { setBookmark(Bookmark()); }
+
+    // These are useful for carrying over a semantic bookmark
+    // (not a plain line index) to a new content provider instance.
+    Bookmark getBookmark() const { return bookmark; }
+    void setBookmark(const Bookmark& bookmark);
+
+    // These can be used to convert between semantic bookmarks and line indices.
+    Bookmark createBookmarkForLine(int lineIndex);
+    int getLineForBookmark(const Bookmark& bookmark);
 
 protected:
     int getIndexOfEntryAt(int lineIndex);

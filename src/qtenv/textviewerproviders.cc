@@ -243,6 +243,61 @@ int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
     return entryStartLineNumbers[entryIndex] + ((logBuffer->getNumEntriesDiscarded() > 0) ? 1 : 0);
 };
 
+using Bookmark = ModuleOutputContentProvider::Bookmark;
+
+void ModuleOutputContentProvider::setBookmark(const Bookmark &bookmark)
+{
+    this->bookmark = bookmark;
+    Q_EMIT textChanged();
+}
+
+int ModuleOutputContentProvider::getBookmarkedLineIndex()
+{
+    return bookmark.isValid() ? getLineForBookmark(bookmark) : -1;
+}
+
+void ModuleOutputContentProvider::bookmarkLine(int lineIndex)
+{
+    setBookmark(createBookmarkForLine(lineIndex));
+}
+
+Bookmark ModuleOutputContentProvider::createBookmarkForLine(int lineIndex)
+{
+    int origLineIndex = lineIndex;
+    if (logBuffer->getNumEntriesDiscarded() > 0) {
+        if (lineIndex == 0)
+            return Bookmark();
+        --lineIndex;
+    }
+
+    int entryIndex = getIndexOfEntryAt(lineIndex);
+    if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
+        return Bookmark();
+    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
+
+    eventnumber_t eventNumber = eventEntry->eventNumber;
+    int eventStartLine = getLineAtEvent(eventNumber);
+    int textLine = linesProvider->textLineToBufferIndex(eventEntry, origLineIndex - eventStartLine);
+
+    return { eventNumber, mode, textLine };
+}
+
+int ModuleOutputContentProvider::getLineForBookmark(const Bookmark& bookmark)
+{
+    if (bookmark.isValid()) {
+        LogBuffer::Entry *entry = logBuffer->getEntryByEventNumber(bookmark.eventNumber);
+        if (!entry)
+            return -1;
+        int li = linesProvider->bufferIndexToTextLine(entry, bookmark.bufferIndex);
+
+        int line = getLineAtEvent(bookmark.eventNumber);
+        if (bookmark.mode == mode)
+            line += li;
+        return line;
+    }
+    return -1;
+}
+
 int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
 {
     // The lineIndex parameter here is already corrected for the single

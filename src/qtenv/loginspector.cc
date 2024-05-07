@@ -159,6 +159,16 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     goToEventAction->setShortcut(Qt::CTRL + Qt::Key_E);
     addAction(goToEventAction);
 
+    setBookmarkAction = new QAction("Set Boo&kmark");
+    connect(setBookmarkAction, SIGNAL(triggered()), this, SLOT(onSetBookmarkAction()));
+    setBookmarkAction->setShortcut(Qt::CTRL + Qt::Key_M);
+    addAction(setBookmarkAction);
+
+    goToBookmarkAction = new QAction("Go to &Bookmark");
+    connect(goToBookmarkAction, SIGNAL(triggered()), this, SLOT(onGoToBookmarkAction()));
+    goToBookmarkAction->setShortcut(Qt::CTRL + Qt::Key_B);
+    addAction(goToBookmarkAction);
+
     QToolBar *toolBar = createToolbar(isTopLevel);
     if (isTopLevel)
         layout->addWidget(toolBar);
@@ -280,8 +290,14 @@ void LogInspector::setMode(Mode mode)
     toLogModeAction->setChecked(mode == LOG);
     toMessagesModeAction->setChecked(mode == MESSAGES);
 
+    ModuleOutputContentProvider::Bookmark bookmark;
+    if (contentProvider)
+        bookmark = contentProvider->getBookmark();
     contentProvider = new ModuleOutputContentProvider(getQtenv(), dynamic_cast<cComponent *>(object), mode, &messagePrinterOptions);
     contentProvider->setExcludedModuleIds(excludedModuleIds);
+    if (bookmark.isValid())
+        contentProvider->setBookmark(bookmark);
+
     textWidget->setContentProvider(contentProvider);
 
     this->mode = mode;
@@ -428,6 +444,27 @@ void LogInspector::onGoToEventAction()
         goToEvent(dialog.intValue());
 }
 
+void LogInspector::onSetBookmarkAction()
+{
+    int lineIndex = textWidget->getCaretPosition().line;
+    contentProvider->bookmarkLine(lineIndex);
+}
+
+void LogInspector::onGoToBookmarkAction()
+{
+    int markedLine = contentProvider->getBookmarkedLineIndex();
+
+    if (markedLine >= 0) {
+        Pos pos = textWidget->getCaretPosition();
+        pos.line = markedLine;
+        textWidget->setCaretPosition(pos.line, pos.column);
+        int horizontalMargin = textWidget->viewport()->width() / 5;
+        int verticalMargin = textWidget->viewport()->height() / 5;
+        // 20% on the top and left, 40% on the bottom and right
+        textWidget->revealCaret(QMargins(horizontalMargin, verticalMargin, horizontalMargin * 2, verticalMargin * 2));
+    }
+}
+
 void LogInspector::onCaretMoved(int lineIndex, int column)
 {
     auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
@@ -478,6 +515,21 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 
     menu->addAction(goToSimTimeAction);
     menu->addAction(goToEventAction);
+
+    menu->addSeparator();
+
+    int bookmarkedLine = contentProvider->getBookmarkedLineIndex();
+
+    if (lineIndex == bookmarkedLine) {
+        menu->addAction("C&lear Bookmark", [=] {
+            contentProvider->bookmarkLine(-1);
+        });
+    }
+    else {
+        if (bookmarkedLine >= 0)
+            menu->addAction(goToBookmarkAction);
+        menu->addAction(setBookmarkAction);
+    }
 
     menu->addSeparator();
     menu->addAction(copySelectionAction);
