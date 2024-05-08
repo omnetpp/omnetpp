@@ -589,7 +589,7 @@ public class InifileUtils {
         if (res.key!=null)
             remark += "; see [" + res.section + "] / " + res.key + "=" + doc.getValue(res.section, res.key);
         else if (res.paramAssignment != null && res.paramAssignment.getIsPattern())
-            remark += "; see (" + res.paramAssignment.getEnclosingTypeElement().getName() + ") / " + res.paramAssignment.getNedSource();
+            remark += "; see (" + res.paramAssignment.getEnclosingTypeElement().getName() + ") / " + res.paramAssignment.getNedSource().trim();
         return remark;
     }
 
