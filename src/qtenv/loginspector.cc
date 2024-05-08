@@ -159,12 +159,12 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     goToEventAction->setShortcut(Qt::CTRL + Qt::Key_E);
     addAction(goToEventAction);
 
-    setBookmarkAction = new QAction("Set Boo&kmark");
+    setBookmarkAction = new QAction(QIcon(":/tools/bookmark_add"), "Set Boo&kmark");
     connect(setBookmarkAction, SIGNAL(triggered()), this, SLOT(onSetBookmarkAction()));
     setBookmarkAction->setShortcut(Qt::CTRL + Qt::Key_M);
     addAction(setBookmarkAction);
 
-    goToBookmarkAction = new QAction("Go to &Bookmark");
+    goToBookmarkAction = new QAction(QIcon(":/tools/bookmark"), "Go to &Bookmark");
     connect(goToBookmarkAction, SIGNAL(triggered()), this, SLOT(onGoToBookmarkAction()));
     goToBookmarkAction->setShortcut(Qt::CTRL + Qt::Key_B);
     addAction(goToBookmarkAction);
@@ -497,7 +497,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
         groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
 
         menu->addSeparator();
-        menu->addAction("Set Sending Time as &Reference", [=]() {
+        menu->addAction(QIcon(":/tools/label"), "Set Sending Time as &Reference", [=]() {
             EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
         });
 
@@ -505,7 +505,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
         if (refTime > 0) {
             std::string refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'");
             refTimeStr = stripSuffixes(refTimeStr, "'000");
-            menu->addAction("Clear Time Reference (=" + QString::fromStdString(refTimeStr) + ")", [=]() {
+            menu->addAction(QIcon(":/tools/label_off"), "Clear Time Reference (=" + QString::fromStdString(refTimeStr) + ")", [=]() {
                 EventEntryMessageLinesProvider::setReferenceTime(0);
             });
         }
@@ -521,7 +521,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
     int bookmarkedLine = contentProvider->getBookmarkedLineIndex();
 
     if (lineIndex == bookmarkedLine) {
-        menu->addAction("C&lear Bookmark", [=] {
+        menu->addAction(QIcon(":/tools/bookmark_remove"), "C&lear Bookmark", [=] {
             contentProvider->bookmarkLine(-1);
         });
     }
