@@ -72,6 +72,12 @@
         <file alias="winconfig">icons/tools/winconfig.svg</file>
         <file alias="zoomin">icons/tools/zoomin.svg</file>
         <file alias="zoomout">icons/tools/zoomout.svg</file>
+        <file alias="bookmark">icons/tools/bookmark.svg</file>
+        <file alias="bookmark_tick">icons/tools/bookmark_tick.svg</file>
+        <file alias="bookmark_add">icons/tools/bookmark_add.svg</file>
+        <file alias="bookmark_remove">icons/tools/bookmark_remove.svg</file>
+        <file alias="label">icons/tools/label.svg</file>
+        <file alias="label_off">icons/tools/label_off.svg</file>
         <file alias="treemode_children">icons/tools/treemode_children.svg</file>
         <file alias="treemode_flat">icons/tools/treemode_flat.svg</file>
         <file alias="treemode_grouped">icons/tools/treemode_grouped.svg</file>
