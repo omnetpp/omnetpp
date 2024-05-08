@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.Vector;
 import java.util.WeakHashMap;
 
@@ -38,6 +39,7 @@ import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
@@ -68,6 +70,7 @@ import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -611,6 +614,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
     class TreeBuilder implements IModuleTreeVisitor {
         private GenericTreeNode current;
         private boolean createNode;
+        protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
+        protected Stack<INedTypeInfo> typeInfoPath = new Stack<INedTypeInfo>();
 
         public TreeBuilder(GenericTreeNode root, boolean isContinued) {
             this.current = root;
@@ -618,6 +623,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
 
         public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
+            elementPath.push(element);
+            typeInfoPath.push(typeInfo);
             //Debug.format("enter(%s,%s,%b)\n", element, typeInfo, createNode);
             if (!createNode) {
                 addParamsAndProperties((SubmoduleOrConnectionNode)current, element);
@@ -632,6 +639,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
         }
 
         public void leave() {
+            elementPath.pop();
+            typeInfoPath.pop();
             current = current.getParent();
         }
 
@@ -681,10 +690,54 @@ public class ModuleHierarchyView extends AbstractModuleView {
             current.addChild(new GenericTreeNode(new ErrorNode(fullName+" : "+typeInfo.getName()+" -- recursive use of type '"+typeInfo.getName()+"'")));
         }
 
+        protected String evaluateLikeExpr(String expr) {
+            if (expr.length() > 0 && expr.charAt(0)=='"')
+                return StringUtils.isQuotedString(expr) ? Common.parseQuotedString(expr) : null;
+            else
+                return null;
+        }
+
         public String resolveLikeType(ISubmoduleOrConnection element) {
             try {
-                if (inifileAnalyzer == null)
-                    return null;  //FIXME now we have default typename, so we can do more...
+                if (inifileAnalyzer == null) {
+                    // TODO: extract common parts from ModuleHierarchyView.TreeBuilder, ParamUtil.RecursiveParamDeclarationVisitor, 
+
+                    // Note: we cannot use InifileUtils.resolveLikeExpr(), as that calls
+                    // resolveLikeExpr() which relies on the data structure we are currently building
+
+                    // TODO: we should probably return a string array, because if the submodule is a vector,
+                    // different indices may have different NED types.
+
+                    // get module type expression
+                    String likeExpr = element.getLikeExpr();
+
+                    // first, try to use expression between angle braces from the NED file
+                    if (!element.getIsDefault() && StringUtils.isNotEmpty(likeExpr))
+                        return evaluateLikeExpr(likeExpr);
+
+                    // then try **.typename assignments in NED and ini files.
+                    // We pretend as if "typename" was a parameter of the module in question,
+                    // so we can useParamCollector.resolveParameter() for it.
+                    ParamElementEx fakeParamDecl = (ParamElementEx) NedElementFactoryEx.getInstance().createElement(INedElement.NED_PARAM, null);
+                    fakeParamDecl.setName("typename");
+                    fakeParamDecl.setType(INedElement.NED_PARTYPE_STRING);
+                    elementPath.push(element);
+                    typeInfoPath.push(null);
+                    ArrayList<ParamElementEx> typenameAssignments = ParamUtil.findParamAssignmentsForParamDeclaration(typeInfoPath, elementPath, fakeParamDecl);
+                    elementPath.pop();
+                    typeInfoPath.pop();
+                    for (ParamElementEx e : typenameAssignments) {
+                        String value = e.getValue();
+                        if (!StringUtils.isEmpty(value))
+                            return evaluateLikeExpr(value);
+                    }
+
+                    // as last resort, try to use default() expression between angle braces from the NED file
+                    if (!StringUtils.isEmpty(likeExpr))
+                        return evaluateLikeExpr(likeExpr);
+
+                    return null;
+                }
 
                 String moduleFullPath = current instanceof SubmoduleOrConnectionNode ? ((SubmoduleOrConnectionNode)current).getFullPath() : "";
                 Timeout timeout = new Timeout(100); //XXX

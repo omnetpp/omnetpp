@@ -52,13 +52,14 @@ public interface IModuleTreeVisitor {
      * actual (resolved) module type, or null if it cannot (or does not wish to)
      * resolve it.
      */
+    // TODO: extract common parts from ModuleHierarchyView.TreeBuilder, ParamUtil.RecursiveParamDeclarationVisitor, ModuleTreeVisitor
     // TODO: this should probably return a string array, because if the submodule is a vector, different indices may have different NED types
     String resolveLikeType(ISubmoduleOrConnection element);
 
     /**
      * Example visitor 1: builds a tree
      */
-    public static class TreeBuilder implements IModuleTreeVisitor {
+    static class TreeBuilderExample implements IModuleTreeVisitor {
         private GenericTreeNode root = new GenericTreeNode("root");
         private GenericTreeNode current = root;
 
@@ -91,7 +92,7 @@ public interface IModuleTreeVisitor {
     /**
      * Example visitor 2: prints module full paths
      */
-    public static class FullPathBuilder implements IModuleTreeVisitor {
+    static class FullPathBuilderExample implements IModuleTreeVisitor {
         Stack<String> fullPath = new Stack<String>();
 
         public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {

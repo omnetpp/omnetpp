@@ -14,6 +14,7 @@ import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -299,17 +300,48 @@ public class ParamUtil {
         public void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
         }
 
+        protected String evaluateLikeExpr(String expr) {
+            if (expr.length() > 0 && expr.charAt(0)=='"')
+                return StringUtils.isQuotedString(expr) ? Common.parseQuotedString(expr) : null;
+            else
+                return null;
+        }
+
         public String resolveLikeType(ISubmoduleOrConnection element) {
-            // note: we can only make a local decision here; we also ignore getIsDefault()
-            String expr = element.getLikeExpr();
-            if (expr.length() > 0 && expr.charAt(0)=='"') {
-                try {
-                    return Common.parseQuotedString(expr);
-                }
-                catch (RuntimeException e) {
-                    return null;
-                }
+            // Note: we cannot use InifileUtils.resolveLikeExpr(), as that calls
+            // resolveLikeExpr() which relies on the data structure we are currently building
+
+            // TODO: we should probably return a string array, because if the submodule is a vector,
+            // different indices may have different NED types.
+
+            // get module type expression
+            String likeExpr = element.getLikeExpr();
+
+            // first, try to use expression between angle braces from the NED file
+            if (!element.getIsDefault() && StringUtils.isNotEmpty(likeExpr))
+                return evaluateLikeExpr(likeExpr);
+
+            // then try **.typename assignments in NED and ini files.
+            // We pretend as if "typename" was a parameter of the module in question,
+            // so we can useParamCollector.resolveParameter() for it.
+            ParamElementEx fakeParamDecl = (ParamElementEx) NedElementFactoryEx.getInstance().createElement(INedElement.NED_PARAM, null);
+            fakeParamDecl.setName("typename");
+            fakeParamDecl.setType(INedElement.NED_PARTYPE_STRING);
+            elementPath.push(element);
+            typeInfoPath.push(null);
+            ArrayList<ParamElementEx> typenameAssignments = ParamUtil.findParamAssignmentsForParamDeclaration(typeInfoPath, elementPath, fakeParamDecl);
+            elementPath.pop();
+            typeInfoPath.pop();
+            for (ParamElementEx e : typenameAssignments) {
+                String value = e.getValue();
+                if (!StringUtils.isEmpty(value))
+                    return evaluateLikeExpr(value);
             }
+
+            // as last resort, try to use default() expression between angle braces from the NED file
+            if (!StringUtils.isEmpty(likeExpr))
+                return evaluateLikeExpr(likeExpr);
+
             return null;
         }
 
