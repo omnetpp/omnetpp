@@ -134,6 +134,9 @@ public class NedTreeTraversal {
                 if (effectiveTypeName == null) {
                     result = interfaceType; // no actual type given, return the interface
                 }
+                else if (effectiveTypeName.equals("")) {
+                    result = interfaceType; // empty string as typename for conditional submodule
+                }
                 else {
                     // effectiveTypeName is likely unqualified -- look it up according to the "like" type name resolution rules
                     result = resolver.lookupLikeType(effectiveTypeName, interfaceType, contextProject); // actual type
