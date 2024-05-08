@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IProject;
+import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -115,7 +116,7 @@ public class NedTreeTraversal {
      * already calls visitor.unresolvedType().
      */
     protected INedTypeInfo resolveEffectiveType(ISubmoduleOrConnection element, INedTypeLookupContext compoundModule) {
-        INedTypeInfo result;
+        INedTypeInfo result = null;
         if (!element.isParametricType()) {
             result = element.getNedTypeInfo();  // note: this resolves connections with getType()==null as well (to ned.IdealChannel)
             if (result == null)
@@ -125,10 +126,8 @@ public class NedTreeTraversal {
         {
             // resolve "like" type
             INedTypeInfo interfaceType = resolver.lookupNedType(element.getLikeType(), element.getEnclosingLookupContext());
-            if (interfaceType == null) {
+            if (interfaceType == null)
                 visitor.unresolvedType(element, element.getLikeType()); // undefined interface
-                result = null;
-            }
             else {
                 String effectiveTypeName = visitor.resolveLikeType(element);  // value of the "like" parameter
                 if (effectiveTypeName == null) {
@@ -140,10 +139,8 @@ public class NedTreeTraversal {
                 else {
                     // effectiveTypeName is likely unqualified -- look it up according to the "like" type name resolution rules
                     result = resolver.lookupLikeType(effectiveTypeName, interfaceType, contextProject); // actual type
-                    if (result == null) {
+                    if (result == null)
                         visitor.unresolvedType(element, effectiveTypeName); // no such type
-                        result = interfaceType;
-                    }
                 }
             }
         }
