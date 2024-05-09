@@ -600,8 +600,8 @@ void MsgCodeGenerator::generateClassImpl(const ClassInfo& classInfo)
         else {
             CC << releaseElem.str();
         }
-        generateMethodCplusplusBlock(classInfo, std::string("~") + classInfo.className);
     }
+    generateMethodCplusplusBlock(classInfo, std::string("~") + classInfo.className);
     CC << "}\n\n";
 
     // operator = :
