@@ -674,7 +674,7 @@ paramsitem
 
 param
         : param_typenamevalue
-        | pattern_value
+        | parampattern_value
         ; /* no error recovery rule -- see discussion at top */
 
 /*
@@ -719,16 +719,12 @@ param_typename
                 }
         ;
 
-pattern_value
-        : pattern '=' paramvalue ';'
+parampattern_value
+        : parampattern opt_inline_properties '=' paramvalue ';'
                 {
-                  ps.param = addParameter(np, ps.parameters, @1);
-                  ps.param->setIsPattern(true);
-                  const char *patt = ps.param->getName();
-                  if (strchr(patt,' ') || strchr(patt,'\t') || strchr(patt,'\n'))
-                      np->getErrors()->addError(ps.param,"parameter name patterns may not contain whitespace");
-                  if (!isEmpty(ps.exprPos))  // note: $3 cannot be checked, as it's always nullptr when expression parsing is off
-                      addExpression(np, ps.param, "value",ps.exprPos,$3);
+                  ps.propertyscope.pop();
+                  if (!isEmpty(ps.exprPos))  // note: $4 cannot be checked, as it's always nullptr when expression parsing is off
+                      addExpression(np, ps.param, "value",ps.exprPos,$4);
                   else {
                       // Note: "=default" is currently not accepted in NED files, because
                       // it would be complicated to support in the Inifile Editor.
@@ -787,6 +783,18 @@ opt_inline_properties
 inline_properties
         : inline_properties property_namevalue
         | property_namevalue
+        ;
+
+parampattern
+        : pattern
+                {
+                  ps.param = addParameter(np, ps.parameters, @1);
+                  ps.param->setIsPattern(true);
+                  const char *patt = ps.param->getName();
+                  if (strchr(patt,' ') || strchr(patt,'\t') || strchr(patt,'\n'))
+                      np->getErrors()->addError(ps.param,"parameter name patterns may not contain whitespace");
+                  ps.propertyscope.push(ps.param);
+                }
         ;
 
 pattern
