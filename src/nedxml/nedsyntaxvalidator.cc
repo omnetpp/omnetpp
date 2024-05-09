@@ -206,6 +206,9 @@ void NedSyntaxValidator::validateElement(PropertyElement *node)
     checkPropertyNameAttribute(node, "name");
     checkPropertyIndexAttribute(node, "index");
 
+    if (opp_streq(node->getName(), "suppressWarnings"))
+        return;
+
     // properties cannot occur on submodule or connection parameters/gates.
     // structure: submodule>parameters>parameter>property
     ASTNode *parent = node->getParent();
