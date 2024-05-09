@@ -16,8 +16,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.AbstractNedErrorStore;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedElement;
+import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 /**
@@ -56,6 +60,8 @@ public class NedMarkerErrorStore extends AbstractNedErrorStore {
     public void add(int severity, INedElement context, int line, String message) {
         Assert.isNotNull(file, "setFile() needs to be called first");
         Assert.isNotNull(context);
+        if (isWarningSuppressed(context, message))
+            return;
         problemsAdded++;
 
         // create would-be marker
@@ -73,6 +79,17 @@ public class NedMarkerErrorStore extends AbstractNedErrorStore {
         else
             throw new IllegalArgumentException(); // wrong marker type
         affectedElements.add(context);
+    }
+
+    private boolean isWarningSuppressed(INedElement context, String message) {
+        for (INedElement child : context.getChildrenWithTag(NedElement.NED_PROPERTY)) {
+            PropertyElementEx property = (PropertyElementEx)child;
+            if (property.getName().equals("suppressWarnings")) {
+                if (property.getSimpleValue() == null || message.contains(property.getSimpleValue()))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public int getNumProblems() {
