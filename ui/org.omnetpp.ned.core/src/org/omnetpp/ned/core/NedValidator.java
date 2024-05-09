@@ -399,7 +399,6 @@ public class NedValidator extends AbstractNedValidatorEx {
         else if (connectionElement!=null) {
             // inside a connection's channel spec
             if (connectionType==null) {
-                errors.addError(node, "cannot assign parameters of a channel of unknown type");
                 return;
             }
 
