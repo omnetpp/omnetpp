@@ -189,6 +189,25 @@ public:
     static SimTime getReferenceTime() { return referenceTime; }
 };
 
+/**
+ * The main content provider for LogInspector that displays either textual log,
+ * or the sent messages, which are relevant for a given component.
+ *
+ * The output text looks like this:
+ *
+ *  [<preface line>]                   <- optional, based on `LogBuffer::getNumEntriesDiscarded()`
+ *  <lines for LogBuffer entries>*     <- 0 or more
+ *     - Lines for each entry provided by an AbstractEventEntryLinesProvider, a separate
+ *       implementation for each mode (LOG, MESSAGES), 0 or more for each.
+ *  <empty last line>                  <- mandatory
+ *
+ * Depending on whether there's a preface present or not, there may or may not
+ * be an offset of 1 between the line indices of the provided text, and the
+ * lines gathered from the LogBuffer entries. Pay attention to this!
+ * This preface line shows a message about the number of discarded entries.
+ * The last empty line ensures that the content is never empty.
+ * See also: isPrefacePresent(), adjustLineIndexForPrefaceIn(), and adjustLineIndexForPrefaceOut()
+ */
 class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     Q_OBJECT
 
@@ -224,8 +243,9 @@ private:
 
     QStringList gatherEnabledColumnNames();
 
-    // cached data
-    int lineCount = 1; // the empty line, the "earlier history discarded" is added over this
+    // Cached data - NOTE that NONE of these include the line index offset caused by the preface, if present!
+    // Use adjustLineIndexForPrefaceIn() and adjustLineIndexForPrefaceOut() to correct for this!
+    int lineCount = 1; // for the last empty line
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
     std::unordered_map<int, std::string> lineCache;
 
@@ -268,7 +288,12 @@ public:
     int getLineForBookmark(const Bookmark& bookmark);
 
 protected:
+    // NOTE: The lineIndex parameter here should be corrected for the preface offset!
     int getIndexOfEntryAt(int lineIndex);
+
+    bool isPrefacePresent() const { return logBuffer->getNumEntriesDiscarded() > 0; }
+    int adjustLineIndexForPrefaceIn(int lineIndex) const { return isPrefacePresent() ? lineIndex - 1 : lineIndex; }
+    int adjustLineIndexForPrefaceOut(int lineIndex) const { return isPrefacePresent() ? lineIndex + 1 : lineIndex; }
 
     void invalidateIndex();
     bool isIndexValid();

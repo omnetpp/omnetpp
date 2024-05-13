@@ -114,8 +114,7 @@ int ModuleOutputContentProvider::getLineCount()
 {
     if (!isIndexValid())
         rebuildIndex();
-    int numDiscarded = logBuffer->getNumEntriesDiscarded();
-    return lineCount + (numDiscarded > 0 ? 1 : 0);
+    return adjustLineIndexForPrefaceOut(lineCount);
 }
 
 std::string ModuleOutputContentProvider::getLineText(int lineIndex)
@@ -123,6 +122,7 @@ std::string ModuleOutputContentProvider::getLineText(int lineIndex)
     if (!isIndexValid())
         rebuildIndex();
 
+    // see also: isPrefacePresent(), adjustLineIndexForPrefaceIn(), and adjustLineIndexForPrefaceOut()
     int numDiscarded = logBuffer->getNumEntriesDiscarded();
     if (numDiscarded > 0) {
         if (lineIndex == 0)
@@ -174,12 +174,9 @@ QStringList ModuleOutputContentProvider::getHeaders()
 
 void *ModuleOutputContentProvider::getUserData(int lineIndex)
 {
-    int numDiscarded = logBuffer->getNumEntriesDiscarded();
-    if (numDiscarded > 0) {
-        if (lineIndex == 0)
-            return nullptr;
-        --lineIndex;
-    }
+    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
+    if (lineIndex < 0)
+        return nullptr;
 
     if (mode != LogInspector::MESSAGES)
         return nullptr;
@@ -195,11 +192,9 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
 
 eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
 {
-    if (logBuffer->getNumEntriesDiscarded() > 0) {
-        if (lineIndex == 0)
-            return -1;
-        --lineIndex;
-    }
+    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
+    if (lineIndex < 0)
+        return -1;
 
     int entryIndex = getIndexOfEntryAt(lineIndex);
     if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
@@ -215,16 +210,14 @@ int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
         rebuildIndex();
     if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
         return -1;
-    return entryStartLineNumbers[entryIndex] + ((logBuffer->getNumEntriesDiscarded() > 0) ? 1 : 0);
+    return adjustLineIndexForPrefaceOut(entryStartLineNumbers[entryIndex]);
 };
 
 simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
 {
-    if (logBuffer->getNumEntriesDiscarded() > 0) {
-        if (lineIndex == 0)
-            return -1;
-        --lineIndex;
-    }
+    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
+    if (lineIndex < 0)
+        return -1;
 
     int entryIndex = getIndexOfEntryAt(lineIndex);
     if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
@@ -240,7 +233,7 @@ int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
         rebuildIndex();
     if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
         return -1;
-    return entryStartLineNumbers[entryIndex] + ((logBuffer->getNumEntriesDiscarded() > 0) ? 1 : 0);
+    return adjustLineIndexForPrefaceOut(entryStartLineNumbers[entryIndex]);
 };
 
 using Bookmark = ModuleOutputContentProvider::Bookmark;
@@ -264,11 +257,9 @@ void ModuleOutputContentProvider::bookmarkLine(int lineIndex)
 Bookmark ModuleOutputContentProvider::createBookmarkForLine(int lineIndex)
 {
     int origLineIndex = lineIndex;
-    if (logBuffer->getNumEntriesDiscarded() > 0) {
-        if (lineIndex == 0)
-            return Bookmark();
-        --lineIndex;
-    }
+    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
+    if (lineIndex < 0)
+        return Bookmark();
 
     int entryIndex = getIndexOfEntryAt(lineIndex);
     if (entryIndex < 0 || entryIndex >= logBuffer->getNumEntries())
@@ -276,6 +267,8 @@ Bookmark ModuleOutputContentProvider::createBookmarkForLine(int lineIndex)
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
 
     eventnumber_t eventNumber = eventEntry->eventNumber;
+    // This is adjusted for the preface, so we would need to adjust it back to
+    // subtract from lineIndex, instead, we just use the original lineIndex.
     int eventStartLine = getLineAtEvent(eventNumber);
     int textLine = linesProvider->textLineToBufferIndex(eventEntry, origLineIndex - eventStartLine);
 
@@ -300,8 +293,6 @@ int ModuleOutputContentProvider::getLineForBookmark(const Bookmark& bookmark)
 
 int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
 {
-    // The lineIndex parameter here is already corrected for the single
-    // line offset caused by the "incomplete history" notification.
     if (!isIndexValid())
         rebuildIndex();
 
@@ -322,10 +313,6 @@ int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
 
 void ModuleOutputContentProvider::rebuildIndex()
 {
-    /*if (!inspectedComponent) { // this caused the nasty assertion failures in the viewer.cc,
-        return;                  // but it seems like this is not even needed
-    }*/
-
     // recompute line numbers. note: entryStartLineNumber[] contains one slot
     // for ALL event entries, even those that contribute zero lines!
     int n = logBuffer->getNumEntries();
