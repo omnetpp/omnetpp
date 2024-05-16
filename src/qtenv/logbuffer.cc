@@ -296,13 +296,13 @@ void LogBuffer::dump() const
 
     for (int i = 0; i < entries.size(); i++) {
         const Entry *entry = entries[i];
-        printf("[%d] #%" PRId64 " t=%s componentId=%d: %s", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
-        for (const auto & line : entry->lines)
-            printf("\t[l%d]:%s%s", i, line.prefix, line.line);
-        for (const auto & msg : entry->msgs) {
-            printf("\t[l%d]:%s\n", i, msg.msg->str().c_str());
-            for (auto id : msg.hopModuleIds)
-                printf("\t\t[l%d]:%s\n", i, getSimulation()->getComponent(id)->getFullPath().c_str());
+        printf("[e %d] #%" PRId64 " t=%s componentId=%d: %s\n", i, entry->eventNumber, SIMTIME_STR(entry->simtime), entry->componentId, entry->banner);
+        for (int j = 0; j < entry->lines.size(); j++)
+            printf("\t[l %d]: contextComponentId=%d: %s%s\n", j, entry->lines[j].contextComponentId, entry->lines[j].prefix, entry->lines[j].line);
+        for (int j = 0; j < entry->msgs.size(); j++) {
+            printf("\t[m %d]:%s\n", j, entry->msgs[j].msg->str().c_str());
+            for (int k = 0; k < entry->msgs[j].hopModuleIds.size(); k++)
+                printf("\t\t[h %d]:%s\n", k, getSimulation()->getComponent(entry->msgs[j].hopModuleIds[k])->getFullPath().c_str());
         }
     }
 }
