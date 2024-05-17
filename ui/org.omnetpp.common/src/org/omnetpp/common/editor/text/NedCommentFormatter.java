@@ -86,6 +86,9 @@ public class NedCommentFormatter {
         if (brief)
            comment = comment.replaceAll("(?s)(.*?[^ \t\n].*?)\n\n.*", "$1\n\n");
 
+        // format `backticks` as <tt>
+        comment = comment.replaceAll("`(.*?)`", "<tt>$1</tt>");
+
         // format @author, @date, @todo, @bug, @see, @since, @warning, @version
         comment = comment.replaceAll("@author\\b", "\n\n<b>Author:</b>");
         comment = comment.replaceAll("@date\\b", "\n\n<b>Date:</b>");
