@@ -7,6 +7,7 @@
 
 package org.omnetpp.ide;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -38,6 +39,7 @@ import org.eclipse.ui.internal.browser.WebBrowserEditorInput;
 import org.eclipse.ui.internal.help.WorkbenchHelpSystem;
 import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.common.util.ReflectionUtils;
+import org.omnetpp.common.util.ScriptUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.installer.FirstStepsDialog;
 import org.omnetpp.ide.installer.OnClosingWelcomeView;
@@ -91,6 +93,17 @@ public class OmnetppStartup implements IStartup {
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
 
+            	// If exists, execute the startup.bsh file in the .metadata directory as a bean shell script.
+            	// The script can be used to customize the workspace on the IDE start.
+            	File startupScriptFile = ResourcesPlugin.getWorkspace().getRoot().getLocation()
+            			.append(".metadata").append("startup.bsh").toFile();
+				try {
+					if (startupScriptFile.canRead())
+						ScriptUtils.sourceBeanScript(startupScriptFile.toString());
+				} catch (CoreException e) {
+		            OmnetppMainPlugin.logError("Error during executing the script: " + startupScriptFile.toString(), e);
+				}
+                
                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
                 if (isWorkspaceEmpty()) {
                     IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
