@@ -1,5 +1,3 @@
-
-
 Extending the IDE
 =================
 
@@ -30,9 +28,9 @@ Adding New Wizards
 
 The Simulation IDE makes it possible to contribute new wizards into the wizard dialogs under the :menuselection:`File --> New`
 menu without writing Java code or requiring any knowledge of Eclipse internals. Wizards can create new simulation
-projects, new simulations, new NED files or other files by using templates, or perform export/import functions. Wizard
+projects, new simulations, new NED files, or other files by using templates, or perform export/import functions. Wizard
 code is placed under the :file:`templates` folder of an |omnet++| project, which makes it easy to distribute wizards
-with the model. When the user imports and opens a project which contains wizards, the wizards will automatically become
+with the model. When the user imports and opens a project that contains wizards, the wizards will automatically become
 available.
 
 .. tip::
@@ -54,5 +52,5 @@ contain the PDE by default; however, it can be easily installed, if necessary.
 
 .. tip::
 
-   Read the :ref:`ide-developers-guide` for more information about how to install the PDE and how to
+   Read the :ref:`ide-developers-guide` for more information on how to install the PDE and how to
    develop plug-in extensions for the IDE.

@@ -1,5 +1,3 @@
-
-
 The Qtenv Graphical Runtime Environment
 =======================================
 
@@ -204,7 +202,7 @@ Recording an Event Log
 The |omnet++| simulation kernel allows you to record event related information into a file which later can be used to
 analyze the simulation run using the :guilabel:`Sequence Chart` tool in the IDE. Eventlog recording can be turned on
 with the ``record-eventlog=true`` ini file option, but also interactively, via the respective item in the
-:guilabel:`Simulate` menu, or using a toobar button.
+:guilabel:`Simulate` menu, or using a toolbar button.
 
 Note that the starting Qtenv with ``record-eventlog=true`` and turning on recording later does not result in exactly the
 same eventlog file. In the former case, all steps of setting up the network, such as module creations, are recorded as

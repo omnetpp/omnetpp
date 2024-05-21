@@ -74,7 +74,7 @@ automatic eventlog recording. To enable it, simply put a checkmark next to its c
 
    record-eventlog = true
 
-into the INI file. Additionally, you can use the :literal:`--record-evenlog` command line option or just click the
+into the INI file. Additionally, you can use the :literal:`--record-eventlog` command line option or just click the
 record button on the Qtenv toolbar before starting the simulation.
 
 .. figure:: pictures/INI-Eventlog.png
@@ -107,18 +107,18 @@ Sequence Chart
 
 This section describes the Sequence Chart in detail, focusing on its features without a particular example.
 
-The Sequence Chart is divided into three parts: the top gutter, the bottom gutter and the main area. The gutters show
-the simulation time while the main area displays module axes, events and message sends. The chart grows horizontally
+The Sequence Chart is divided into three parts: the top gutter, the bottom gutter, and the main area. The gutters show
+the simulation time while the main area displays module axes, events, and message sends. The chart grows horizontally
 with simulation time and vertically with the number of modules. Module axes can optionally display enumerated or
 numerical vector data.
 
-There are various options, which control how and what the Sequence Chart displays. Some of these are available on the
+There are various options that control how and what the Sequence Chart displays. Some of these are available on the
 toolbar, while others are accessible only from the context menu.
 
 Legend
 ~~~~~~
 
-Graphical elements on the Sequence Chart represent modules, events and messages, as listed in the following table.
+Graphical elements on the Sequence Chart represent modules, events, and messages, as listed in the following table.
 
 .. list-table::
    :widths: 10 90
@@ -158,7 +158,7 @@ Graphical elements on the Sequence Chart represent modules, events and messages,
      - (greendotted arrow) message reuse
 
    * - .. image:: pictures/SequenceChart-Legend-MethodCall.png
-     - (browndotted arrow)method call
+     - (browndotted arrow) method call
 
    * - .. image:: pictures/SequenceChart-Legend-SplitArrow.png
      - (arrow with a dashed segment) message send that goes far away; split arrow
@@ -242,13 +242,13 @@ turned on. The discovery process is done lazily as you navigate through the char
 as soon as it turns out that they actually have events.
 
 Module axes can be reordered with the option :guilabel:`Axis Ordering Mode` |axisordering_image|. Ordering
-can be manual, or sorted by module name, by module id or by minimizing the total number of axes that arrows cross.
+can be manual or sorted by module name, module ID, or by minimizing the total number of axes that arrows cross.
 
 .. note::
 
    The algorithm that minimizes crossings works by taking a random sample from the file and determines the order of axes
    from that (which means that the resulting order will only be an approximation). A more precise algorithm, which takes
-   all arrows into account would not be practical because of the typically large size of eventlog files.
+   all arrows into account, would not be practical because of the typically large size of eventlog files.
 
 Gutter
 ~~~~~~
@@ -293,12 +293,12 @@ message and ends at the module which processed the message. Horizontally, the st
 correspond to the sender and receiver events. The message name is displayed near the middle of the arrow, but not
 exactly in the middle to avoid overlapping with other names between the same modules.
 
-Sometimes, when a message arrives at a module, it simply stores it and later sends the very same message out. The
-events, where the message arrived, and where the message was actually sent, are in a so-called "message reuse"
-relationship. This is represented by a green dotted arrow between the two events. These arrows are not shown by default
-because timer self-messages are usually reused continuously. This would add unnecessary clutter to the chart and would
-make it hard to understand. To show and hide these arrows, use the :guilabel:`Show Reuse Messages` 
-|reusearrows_image| button on the toolbar.
+Sometimes, when a message arrives at a module, it simply stores it and later sends the very same message out. The events,
+where the message arrived and where the message was actually sent, are in a so-called "message reuse" relationship. This
+is represented by a green dotted arrow. These arrows are not shown by default because timer self-messages are usually
+reused continuously. This would add unnecessary complexity to the chart and would make it hard to understand.
+To show and hide these arrows, use the button :guilabel:`Show Reuse Messages` |reusearrows_image| on the
+toolbar.
 
 Sometimes, depending on the zoom factor, a message send goes far away on the chart. In this case, the line is split into
 two smaller parts that are displayed at the two ends pointing towards each other, but without a continuous line
@@ -315,9 +315,9 @@ horizontally.
 Displaying Module State on Axes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-It is possible to display a module's state on an axis. The axis is then rendered as a colored strip that changes color
-every time the module state changes. The data are taken from an output vector in an *output vector file*,
-normally recorded by the simulation together with the eventlog file.
+It is possible to display module state on an axis. The axis is then rendered as a colored strip that changes color every
+time the module state changes. The data is taken from an output vector in an *output vector file*, normally recorded by
+the simulation together with the eventlog file.
 
 .. figure:: pictures/SequenceChart-AxisWithState.png
    :width: 60%
@@ -342,7 +342,7 @@ display the values as numbers. The background coloring for the strip is automati
    will be an ``attr enum`` line after the vector declaration. An example vector declaration with an enum:
 
    .. code-block
-   
+
       vector 5 Net.host[2].radio state ETV
       attr enum "IDLE=0,TRANSMIT=1,RECEIVE=2"
 

@@ -1,26 +1,24 @@
-
-
 Analyzing the Results
-=====================
+=============
 
 Overview
 --------
 
-Analyzing the simulation result is a time consuming process. The result
+Analyzing the simulation result is a time-consuming process. The result
 of the simulation is recorded as scalar values, vector values,
 histograms, and evaluated parameters. Information about each run, such
 as iteration variables, configuration entries, and run attributes, are
 also stored. You can then apply statistical methods to extract the
-relevant information and to draw a conclusion. This process may include
-several steps. Usually you need to filter and transform the data, and
+relevant information and draw a conclusion. This process may include
+several steps. Usually, you need to filter and transform the data, and
 chart the result. Automation is very important here - you do not want to
-repeat the steps of recreating charts every time you rerun simulations.
+repeat the steps of recreating charts every time you re-run simulations.
 
 In |omnet++| 6.x, the statistical analysis tool is integrated into the
-Eclipse environment. Querying, processing and plotting the simulation
+Eclipse environment. Querying, processing, and plotting the simulation
 results is done with Python 3 scripts, using APIs provided by the IDE.
 These scripts and APIs rely heavily on the NumPy, Pandas, and Matplotlib
-Python packages. Your scripts and settings (i.e. your recipe for finding
+Python packages. Your scripts and settings (i.e., your recipe for finding
 results from the raw data) will be recorded in analysis files (.anf) and
 will become instantly reproducible. This means that if simulations need
 to be rerun due to a model bug or misconfiguration, existing charts need
@@ -30,16 +28,15 @@ displayed with the new data.
 
 When creating an analysis, the user first selects the input of the
 analysis by specifying file names or file name patterns (e.g.
-``adhoc-*.vec``). Data in result files are tagged with meta information.
-Experiment, measurement and replication labels are added to the result
+``adhoc-*.vec``). Data in result files are tagged with meta-information.
+Experiment, measurement, and replication labels are added to the result
 files to make the filtering process easy. It is possible to create very
 sophisticated filtering rules (e.g. all 802.11 retry counts of
 host[5..10] in experiment X, where the iteration variable numHost had a
 value of 7).
 
-
 You can open charts from the selected data with one click. The Analysis
-Editor supports bar charts, line charts, histogram charts and scatter
+Editor supports bar charts, line charts, histogram charts, and scatter
 charts. Charts are interactive; users can zoom, scroll, and access
 tooltips that give information about the data items.
 
@@ -48,26 +45,26 @@ titles, fonts, legends, grid lines, colors, line styles, and symbols.
 
 The charts made in the IDE can also be viewed and exported later
 from the command line, using a tool called ``opp_charttool``. Its
-usage and operation is detailed in the Simulation Manual.
+usage and operation are detailed in the Simulation Manual.
 
 Creating Analysis Files
 -----------------------
 
 The usual way of creating an analysis file is to "imitate" opening an |omnet++|
-result file by double-clicking it in the :guilabel:`Project Explorer` view.
+result file by double-clicking it in the Project Explorer view.
 Result files cannot be opened directly, so the IDE will offer creating an
 analysis file for it instead.
 
 If the result file name looks like the file was created as part of an experiment
 or parameter study, the IDE creates an analysis file that includes all result
-files from that experiment as input. The variable part of the file name will be replaced by
-an asterisk (``*``), will be added with both the ``.sca`` and ``.vec`` file extension.
+files from that experiment as input. In the resulting inputs, the variable part of the file name will be replaced by
+an asterisk (``*``), and an input will be added with both the ``.sca`` and ``.vec`` file extensions.
 For example, double-clicking a file called ``PureAloha-numHosts=10,iaMean=1-#3.sca``
 will add ``PureAloha-*.sca`` and ``PureAloha-*.vec`` to the analysis.
 
 Upon double-clicking, the :guilabel:`New Analysis File` dialog will open. The
 folder and the file name are pre-filled according to the location and name of
-the result file. Press :guilabel:`Finish` to create the new analysis file.
+the result file. Press Finish to create the new analysis file.
 
 The same dialog is also available from the menu as :menuselection:`File --> New
 --> Analysis File`. However, analysis files created that way will contain no

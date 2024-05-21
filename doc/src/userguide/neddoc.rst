@@ -1,5 +1,3 @@
-
-
 NED Documentation Generator
 ===========================
 

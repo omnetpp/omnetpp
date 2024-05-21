@@ -34,7 +34,7 @@ program (:command:`opp_nedtool`).
 
 The ``gned`` program from |omnet++| 3.x viewed NED files in isolation. In contrast, the |omnet++| IDE gathers information
 from all ``.ned`` files in all open |omnet++| projects and makes this information available to the NED editor. This is
-necessary because |omnet++| 4.x modules may inherit parameters, visual appearance or even submodules and connections from
+necessary because |omnet++| 4.x modules may inherit parameters, visual appearance, or even submodules and connections from
 other modules, so it is only possible to display a compound module correctly if all related NED definitions are
 available.
 
@@ -83,17 +83,17 @@ opened and the text will be annotated with error markers.
    Only files located in NED Source Folders will be opened with the graphical editor. If a NED file is not in the NED
    Source Folders, it will be opened in a standard text editor.
 
-You can switch between graphical and source editing mode by clicking the tabs at the bottom of the editor, or by using
+You can switch between graphical and source editing mode by clicking the tabs at the bottom of the editor or by using
 the :kbd:`Alt+PGUP` / :kbd:`Alt+PGDN` key combinations. The editor will try to keep the selection during the switch.
 Selecting an element in a graphical view and then switching to text view will move the cursor to the related element
-in the NED file. When switching back to graphical view, the graphical editor will try to select the element that
+in the NED file. When switching back to the graphical view, the graphical editor will try to select the element that
 corresponds to the cursor location in the NED source. This allows you to keep the context, even when switching
 back and forth.
 
 Editing in Graphical Mode
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The graphical editor displays the visible elements of the loaded NED file. Simple modules, compound modules and networks
+The graphical editor displays the visible elements of the loaded NED file. Simple modules, compound modules, and networks
 are represented by figures or icons. Each NED file can contain more than one module or network. If it does, the
 corresponding figures will appear in the same order as they are found in the NED file.
 
@@ -140,7 +140,7 @@ element. Submodules can be placed only inside compound modules or networks.
 Creating Types and Inner Types
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To create a type, or an inner type inside a compound module, click on the appropriate palette item in the "Types"
+To create a type or an inner type inside a compound module, click on the appropriate palette item in the "Types"
 drawer, and then click where you want to place the new element. If you click on the background, a new top-level type
 will be created. Clicking on an existing compound module or network creates an inner type inside that module.
 
@@ -148,7 +148,7 @@ Creating and Changing Connections
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Select the :guilabel:`connection tool` (if there are channels defined in the project, you can use the dropdown to select
-the connection channel type). First, click the source module and then, the destination. A popup menu will appear, asking
+the connection channel type). First, click the source module and then the destination. A popup menu will appear, asking
 which gates should be connected on the two selected modules. The tool will offer only valid connections (e.g. it will
 not offer to connect two output gates).
 
@@ -193,7 +193,7 @@ group selection.
 Zooming
 ^^^^^^^
 
-Zooming in and out is possible from the :guilabel:`View` menu, or using :kbd:`Ctrl+-`, :kbd:`Ctrl+=`, or holding down :kbd:`Ctrl` and using
+Zooming in and out is possible from the :guilabel:`View` menu or using :kbd:`Ctrl+-`, :kbd:`Ctrl+=`, or holding down :kbd:`Ctrl` and using
 the mouse wheel.
 
 Pinning, Unpinning, Re-Layouting
@@ -212,8 +212,8 @@ Changing a Module Property
 
 To change a module property, right-click on it and select the :guilabel:`Properties` menu item from the context menu
 or select the module and modify that property in the :guilabel:`Properties View`. Alternatively, you can press
-:kbd:`Ctrl+Enter` when the module is selected. NED properties like name, type and vector size are available on
-:guilabel:`General` tab. Visual properties like icon, size, color, border etc. can be set on the :guilabel:`Appearance`
+:kbd:`Ctrl+Enter` when the module is selected. NED properties like name, type, and vector size are available on
+:guilabel:`General` tab. Visual properties like icon, size, color, border, etc. can be set on the :guilabel:`Appearance`
 tab. You may check how your module will look like in the preview panel at the bottom of the dialog.
 
 .. figure:: pictures/NED-Properties.png
@@ -230,7 +230,7 @@ Changing a Module Parameter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To change a module parameter, right-click on it and select the :guilabel:`Parameters` menu item from the context
-menu. The dialog allows you to add or remove module parameters or assign value to them.
+menu. The dialog allows you to add or remove module parameters or assign values to them.
 
 .. figure:: pictures/NED-Parameters.png
    :width: 50%
@@ -240,9 +240,9 @@ menu. The dialog allows you to add or remove module parameters or assign value t
 Renaming Modules
 ^^^^^^^^^^^^^^^^
 
-To rename an existing module select its context menu and choose :guilabel:`Rename` or click on an already selected
+To rename an existing module, select its context menu and choose :guilabel:`Rename` or click on an already selected
 module a second time. You can specify a new name for the module or even turn a submodule into a vector by adding
-``[vectorsize]`` after its name. Alternatively the name of a module can be set in the :guilabel:`Properties` dialog or can
+``[vectorsize]`` after its name. Alternatively, the name of a module can be set in the :guilabel:`Properties` dialog or can
 be edited by pressing :kbd:`F6` when the module is selected.
 
 Exporting a Module as an Image
@@ -262,7 +262,7 @@ Navigating inside a longer NED file is easier if you open the :guilabel:`Outline
 Selecting an element in the outline will select the same element in the graphical editor.
 
 If you want to see the selected element in a different view, select the element and right-click on it. Choose
-:guilabel:`Show In` from the context menu, and select the desired view.
+:guilabel:`Show In` from the context menu and select the desired view.
 
 Opening a NED Type
 ^^^^^^^^^^^^^^^^^^

@@ -4,7 +4,7 @@ C++ Development
 Introduction
 ------------
 
-The |omnet++| IDE contains editors, views and other tools to assist you while developing your C++ code. C++ files open in
+The |omnet++| IDE contains editors, views, and other tools to assist you while developing your C++ code. C++ files open in
 the IDE in the C++ source editor. The C++ source editor supports syntax highlighting, documentation tooltips, content
 assist, automatic indentation, code formatting, refactoring, and several other useful features. The IDE also allows you
 to configure the build, start the build process, launch simulations, and debug the model without leaving the IDE.
@@ -19,9 +19,9 @@ The |omnet++| IDE extends CDT with the following features to make model developm
 -  Makefiles are automatically generated for your project based on the project build configuration. The built-in
    makefile generator is compatible with the command line :command:`opp_makemake` tool, and features deep makefiles, recursive
    make, cross-project references, invoking the message compiler, automatic linking with the |omnet++| libraries; and can
-   build executables, shared libraries or static libraries.
+   build executables, shared libraries, or static libraries.
 -  Makefile generation and the project build system can be configured using a GUI interface.
--  Project Features: Large projects can be partitioned into smaller units which can be independently excluded or
+-  Project Features: Large projects can be partitioned into smaller units that can be independently excluded or
    included in the build. Disabling parts of the project can significantly reduce build time or make it possible to
    build the project at all.
 
@@ -51,7 +51,7 @@ To create an |omnet++| project that supports C++ development, select :menuselect
    Creating an |omnet++| project
 
 This menu item will bring up the :guilabel:`New |omnet++| Project` wizard. The wizard lets you create an |omnet++|-specific
-project, which includes support for NED, MSG and INI file editing, as well as C++ development of simple modules.
+project, which includes support for NED, MSG, and INI file editing, as well as C++ development of simple modules.
 
 On the first page of the wizard, specify the project name and ensure that the :guilabel:`Support C++ Development`
 checkbox is selected.
@@ -68,7 +68,7 @@ Select a project template. A template defines the initial content and layout of 
 
    Selecting a project template
 
-Select a toolchain that is supported on your platform. Usually you will see only a single supported toolchain, so there
+Select a toolchain that is supported on your platform. Usually, you will see only a single supported toolchain, so there
 is no need to change anything on the page.
 
 .. figure:: pictures/CPP-NewProjectWizard2.png
@@ -104,7 +104,7 @@ The C++ Editor
 The C++ source editor provides the usual features of Eclipse-based text editors, such as syntax highlighting, clipboard
 cut/copy/paste, unlimited undo/redo, folding, find/replace and incremental search.
 
-The IDE scans and indexes the C++ files in your project in the background, and provides navigation and code analysis
+The IDE scans and indexes the C++ files in your project in the background and provides navigation and code analysis
 features on top of that knowledge; this database is kept up to date as you edit the source.
 
 Basic Functions
@@ -121,7 +121,7 @@ Some of the most useful features of the source editor:
 
 .. tip::
 
-   The following functions can help you explore the IDE:
+   The following functions to help you explore the IDE:
 
    -  :kbd:`Ctrl+Shift+L` pops up a window that lists all keyboard bindings, and
    -  :kbd:`Ctrl+3` brings up a filtered list of all available commands.
@@ -158,8 +158,8 @@ To comment out the selected lines, press :kbd:`Ctrl+/`. To remove the comment, p
 Open Type
 ^^^^^^^^^
 
-Pressing Ctrl+Shift+T will bring up the :guilabel:`Open Element` dialog which lets you type a class name, method name or
-other identifier, and opens its declaration in a new editor.
+Pressing Ctrl+Shift+T will bring up the :guilabel:`Open Element` dialog, which lets you type a class name, method name, or
+other identifier and opens its declaration in a new editor.
 
 Exploring the Code
 ^^^^^^^^^^^^^^^^^^
@@ -175,7 +175,7 @@ Several refactoring operations are available, for example Rename :kbd:`Shift+Alt
 
 .. note::
 
-   Several features such as content assist, go to definition, type hierarchy and refactorings rely on the
+   Several features such as content assist, go to definition, type hierarchy, and refactorings rely on the
    *Index*. The index contains the locations of all functions, classes, enums, defines, etc. in the project
    and referenced projects. Initial indexing of large projects may take a significant amount of time. The index is kept
    up to date mostly automatically, but occasionally it may be necessary to manually request reindexing the project.
@@ -254,7 +254,7 @@ configured. After that, make will be invoked with the ``all`` target in the fold
 Cleaning the Project
 ^^^^^^^^^^^^^^^^^^^^
 
-To clean the project, choose :guilabel:`Clean` from the :guilabel:`Project` menu, or :guilabel:`Clean Project` from
+To clean the project, choose :guilabel:`Clean` from the :guilabel:`Project` menu or :guilabel:`Clean Project` from
 the project context menu. This will invoke :command:`make` with the ``clean`` target in the project's build root folder, and
 also in referenced projects. To only clean the local project and keep referenced projects intact, use :guilabel:`Clean
 Local` item from the project context menu (see next section).
@@ -308,7 +308,7 @@ Configuring the Project
 Configuring the Build Process
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The make invocation can be configured on :guilabel:`C/C++ Build` page of the :guilabel:`Project Properties` dialog. Most
+The make invocation can be configured on the :guilabel:`C/C++ Build` page of the :guilabel:`Project Properties` dialog. Most
 settings are already set correctly and do not need to be changed. One exception is the :guilabel:`Enable parallel build`
 option on the :guilabel:`Behavior` tab that you may want to enable, especially if you have a multi-core computer.
 
@@ -316,7 +316,7 @@ option on the :guilabel:`Behavior` tab that you may want to enable, especially i
 
    Do not set the number of parallel jobs to be significantly higher than the number of CPU cores you have. In
    particular, never turn on the :guilabel:`Use unlimited jobs` option, as it will start an excessive number of compile
-   processes, and can easy consume all available memory in the system.
+   processes and can easily consume all available memory in the system.
 
 We do not recommend that you change any setting on property pages under the :guilabel:`C/C++ Build` tree node.
 
@@ -324,24 +324,24 @@ Managing Build Configurations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A project may have several build configurations, where each configuration describes the selected compiler toolchain,
-debug or release mode, any potential extra include and linker paths, defined symbols, etc. You can activate, create or
+debug or release mode, any potential extra include and linker paths, defined symbols, etc. You can activate, create, or
 delete build configurations under the :guilabel:`Build Configurations` submenu of the project context menu.
 
 .. note::
 
-   Make sure that the names of all configurations contain the ``debug`` or the ``release``
-   substring. The IDE launcher uses the name of the configuration to switch the matching configuration depending whether
-   you want to debug or run the simulation.
+   Make sure that the names of all configurations contain the ``debug`` or ``release``
+   substring. The IDE launcher uses the name of the configuration to switch the matching configuration depending on
+   whether you want to debug or run the simulation.
 
 Configuring the Project Build System
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-|omnet++| uses makefiles to build the project. You can use a single makefile for the whole project, or a hiearchy of
-makefiles. Each makefile may be hand-written (i.e. provided by you), or generated automatically. The IDE provides
+|omnet++| uses makefiles to build the project. You can use a single makefile for the whole project or a hierarchy of
+makefiles. Each makefile may be hand-written (provided by you) or generated automatically. The IDE provides
 several options for automatically created makefiles.
 
 The build system for an |omnet++| project can be configured on the :menuselection:`|omnet++| --> Makemake` page of the
-:guilabel:`Project Properties` dialog. All settings you do in this page will affect all build configurations.
+:guilabel:`Project Properties` dialog. All settings you do on this page will affect all build configurations.
 
 .. figure:: pictures/CPP-SourceFolder.png
    :width: 60%
@@ -352,7 +352,7 @@ Folders and Makefiles
 ^^^^^^^^^^^^^^^^^^^^^
 
 The page displays the folder tree of the project. Using controls on the page (:guilabel:`Build` group in the top-right
-corner), you can declare that a selected folder contains a hand-written (custom) makefile, or tell the IDE to generate a
+corner), you can declare that a selected folder contains a hand-written (custom) makefile or tell the IDE to generate a
 makefile for you. Generated makefiles will be automatically refreshed before each build. If a makefile is configured for
 a folder, the makefile kind will be indicated with a small decoration on the folder icon.
 
@@ -370,21 +370,21 @@ Source Folders
 ^^^^^^^^^^^^^^
 
 In addition to makefiles, you also need to specify where your C++ files are located (source folders). This is usually
-the :file:`src` folder of the project, or, for small projects, the project root. It is also possible to exclude folders from
-a source folder. The controls on the right-bottom part of the dialog (:guilabel:`Source` group) allow you to set up
+the :file:`src` folder of the project or, for small projects, the project root. It is also possible to exclude folders from
+a source folder. The controls on the bottom-right part of the dialog (:guilabel:`Source` group) allow you to set up
 source folders and exclusions on the project. Source files that are outside source folders or are in an excluded folder
 will be ignored by both the IDE and the build process.
 
 .. note::
 
    Source folders and exclusions that you configure on this page actually modify the contents of the :guilabel:`Source
-   Location` tab of the :menuselection:`C++ General --> Paths and Symbols` page of the project properties dialog; the changes
-   will affect all build configurations.
+   Location` tab of the :menuselection:`C++ General --> Paths and Symbols` page of the project properties dialog, and the
+   changes will affect all build configurations.
 
 Automatically created makefiles are by default :guilabel:`deep`, meaning that they include all (non-excluded) source
 files under them in the build. That is, a source file will be included in the build if it is both under a source folder
-and covered by a makefile. (This applies to automatically generated makefiles; the IDE has obviously no control over the
-behaviour of custom makefiles.)
+and covered by a makefile. (This applies to automatically generated makefiles; the IDE has no control over the behavior
+of custom makefiles.)
 
 Makefile Generation
 ^^^^^^^^^^^^^^^^^^^
@@ -402,7 +402,7 @@ This action will create a file with the name :file:`makemakefiles`. After export
 Configuring Makefile Generation for a Folder
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Makefile generation for a folder can be configured in the :guilabel:`Makemake Options` dialog. To access the dialog,
+Makefile generation for a folder can be configured on the :guilabel:`Makemake Options` dialog. To access the dialog,
 open the :menuselection:`|omnet++| --> Makemake` page in the :guilabel:`Project Properties` dialog, select the folder, make sure
 makefile generation is enabled for it, and click the :guilabel:`Options` button.
 
@@ -416,7 +416,7 @@ On the first, :guilabel:`Target` tab of the dialog, you can specify how the fina
 -  :guilabel:`Target type`: The build target can be an executable, a shared or static library, or the linking step may
    be omitted altogether. Makemake options: :literal:`--make-so`, :literal:`--make-lib`, :literal:`--nolink`
 -  :guilabel:`Export this shared/static library for other projects`: This option is observed if a library (shared or
-   static) is selected as target type, and works in conjunction with the :guilabel:`Link with libraries exported from
+   static) is selected as the target type and works in conjunction with the :guilabel:`Link with libraries exported from
    referenced projects` option on the :guilabel:`Link` tab. Namely, referencing projects will automatically link with
    this library if both the library is exported from this project AND linking with exported libraries is enabled in the
    referencing project. Makemake option: :literal:`--meta:export-library`
@@ -442,7 +442,7 @@ The :guilabel:`Scope` Tab
 The :guilabel:`Scope` tab allows you to configure the scope of the makefile and which source files will be included.
 
 -  :guilabel:`Deep compile`: When enabled, the makefile will compile the source files in the whole subdirectory tree
-   (except excluded folders and folder covered by other makefiles). When disabled, the makefile only compiles sources in
+   (except excluded folders and folders covered by other makefiles). When disabled, the makefile only compiles sources in
    the makefile's folder. Makemake option: :literal:`--deep`
 -  :guilabel:`Recursive make`: When enabled, the build will invoke make in all descendant folders that are configured to
    contain a makefile. Makemake option: :literal:`--meta:recurse` (resolves to multiple :literal:`-d` options)
@@ -466,9 +466,9 @@ Settings that affect the include path:
    projects. This is usually required if your project expects that other independent models will extend it in the
    future.
 -  :guilabel:`Add include paths exported from referenced projects` allows a dependent project to use header files from
-   the dependencies if those projects have exported their include path (i.e. the above option was turned on.)
+   the dependencies if those projects have exported their include path (i.e., the above option was turned on.)
 -  :guilabel:`Add include dirs and other compile options from enabled project features`: Project features may require
-   additional include paths and defines to compile properly. Enabling this option will add those command line arguments
+   additional include paths and defines to compile properly. Enabling this option will add those command-line arguments
    (specified in the :file:`.oppfeatures` file) to the compiler command line.
 
 Source files:
@@ -477,9 +477,9 @@ Source files:
    :file:`.cpp`). We recommend that you use :file:`.cc` in your projects. Makemake option: :literal:`-e`
 
 If you build a Windows DLL, symbols you want to be available from other DLLs (or executables) need to be explicitly
-exported from the DLL. Functions, variables and classes must be marked with ``__declspec(dllexport)`` when the DLL is
+exported from the DLL. Functions, variables, and classes must be marked with ``__declspec(dllexport)`` when the DLL is
 compiled, and with ``__declspec(dllimport)`` when you reference them from external code. This is achieved by defining a
-macro which expands differently in the two cases. The |omnet++| convention is to name the macro ``FOO_API``, where
+macro that expands differently in the two cases. The |omnet++| convention is to name the macro ``FOO_API``, where
 ``FOO`` is your project's short name. The macro should be defined as follows:
 
 .. code-block:: cpp
@@ -493,9 +493,9 @@ macro which expands differently in the two cases. The |omnet++| convention is to
    #endif
              
 
-and the above definition should be manually placed into a header file which is included by all headers where the macro
-is used. ``OPP_DLLEXPORT`` and ``OPP_DLLIMPORT`` are provided by ``<omnetpp.h>``, and ``FOO_EXPORT`` / ``FOO_IMPORT``
-that control the macro expansion will be provided by the generated makefile via a compile option.
+The above definition should be manually placed into a header file that is included by all headers where the macro is
+used. ``OPP_DLLEXPORT`` and ``OPP_DLLIMPORT`` are provided by ``<omnetpp.h>``, and ``FOO_EXPORT`` / ``FOO_IMPORT`` that
+control the macro expansion will be provided by the generated makefile via a compile option.
 
 The ``FOO_API`` macro is used as illustrated in the following code:
 
@@ -553,8 +553,8 @@ the automatically generated makefile. This lets you contribute additional target
 
 -  :guilabel:`Makefrag`: If the folder contains a file named :file:`makefrag`, its contents will be automatically copied
    into the generated makefile, just above the first target rule. :file:`makefrag` allows you to customize the generated
-   makefile to some extent; for example, you can add new targets (e.g. to generate documentation or run a test suite),
-   new rules (e.g. to generate source files during the build), override the default target, add new dependencies to
+   makefile to some extent; for example, you can add new targets (e.g., to generate documentation or run a test suite),
+   new rules (e.g., to generate source files during the build), override the default target, add new dependencies to
    existing targets, overwrite variables, etc. The dialog lets you edit the contents of the :file:`makefrag` file directly
    (it will be saved when you accept the dialog).
 -  :guilabel:`More » Fragment files to include`: Here, it is possible to explicitly specify a list of makefile fragment

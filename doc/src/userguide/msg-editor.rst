@@ -1,5 +1,3 @@
-
-
 Editing Message Files
 =====================
 
@@ -28,4 +26,4 @@ The message file editor is a basic text editor with syntax highlight support.
 
 .. note::
 
-   Currently the editor does not support advanced features like content assistance or syntax aware folding.
+   Currently, the editor does not support advanced features like content assistance or syntax-aware folding.
