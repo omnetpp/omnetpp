@@ -32,6 +32,7 @@ case $PLATFORM in
 	$IDEDIR/${LAUNCHER}.exe --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Linux*)
+	export WEBKIT_DISABLE_DMABUF_RENDERER=1 # workaround for crashes on eclipse 24-03. (later versions should not need this)
 	$IDEDIR/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
