@@ -36,6 +36,7 @@ case $PLATFORM in
             # on WSLg we have to force an x11 backend because the default wayland backend has rendering issues
             export GDK_BACKEND=x11
         fi
+        export WEBKIT_DISABLE_DMABUF_RENDERER=1 # workaround for crashes on eclipse 24-03. (later versions should not need this)
         $IDEDIR/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
