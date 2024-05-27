@@ -290,6 +290,8 @@ const char *InifileReader::findEndContent(const char *line, const char *filename
                 s++;
         }
     }
+    while ((s-1) > line && opp_isspace(*(s-1)))
+        s--;
     return s;
 }
 
