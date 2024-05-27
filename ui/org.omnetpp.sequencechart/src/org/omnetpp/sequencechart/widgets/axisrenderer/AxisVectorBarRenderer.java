@@ -137,22 +137,26 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
                     x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(event));
                 else {
                     event = sequenceChartFacade.getNonFilteredEventForEventNumber(eventNumber);
-                    BigDecimal eventSimulationTime = event.getSimulationTime();
-                    double eventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, false);
+                    if (event != null) {
+                        BigDecimal eventSimulationTime = event.getSimulationTime();
+                        double eventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, false);
 
-                    if (eventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, true))
-                        x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(eventTimelineCoordinate);
+                        if (eventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(eventSimulationTime, true))
+                            x1 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(eventTimelineCoordinate);
+                    }
                 }
 
                 if (nextEvent != null)
                     x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(sequenceChartFacade.getTimelineCoordinateBegin(nextEvent));
                 else {
                     nextEvent = sequenceChartFacade.getNonFilteredEventForEventNumber(nextEventNumber);
-                    BigDecimal nextEventSimulationTime = nextEvent.getSimulationTime();
-                    double nextEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, false);
+                    if (nextEvent != null) {
+                        BigDecimal nextEventSimulationTime = nextEvent.getSimulationTime();
+                        double nextEventTimelineCoordinate = sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, false);
 
-                    if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
-                        x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(nextEventTimelineCoordinate);
+                        if (nextEventTimelineCoordinate == sequenceChartFacade.getTimelineCoordinateForSimulationTime(nextEventSimulationTime, true))
+                            x2 = (int)sequenceChart.getViewportCoordinateForTimelineCoordinate(nextEventTimelineCoordinate);
+                    }
                 }
 
                 if (x1 == Integer.MAX_VALUE || x2 == Integer.MAX_VALUE)
