@@ -198,6 +198,22 @@ represented as \ttt{None} or \ttt{nan}). The Pandas \ttt{to\_numeric()} function
 \ttt{utils.to\_numeric()} can be used to convert values to \ttt{float} or \ttt{int} where
 needed.
 
+\subsubsection{convert\_to\_base\_unit\_func()}
+\label{cha:chart-api:omnetpp.scave.results:convert-to-base-unit-func}
+
+\begin{flushleft}
+\ttt{convert\_to\_base\_unit(df, columns\_to\_convert=["value", "min", "max", "mean", "stddev", "vecvalue", "binedges"])}
+\end{flushleft}
+
+\par Converts results with units in the passed DataFrame to their base units in-place.
+The DataFrame needs to have a "unit" column - which is updated to the base unit.
+By default, the following columns are converted:
+"value", "min", "max", "mean", "stddev", "vecvalue", "binedges"
+Every converted column must contain either all numbers or all \ttt{np.ndarray} instances.
+
+\par This works for example on the DataFrames returned by \ttt{get\_scalars}, \ttt{get\_vectors}, \ttt{get\_statistics},
+and \ttt{get\_histograms} in \ttt{omnetpp.scave}, but NOT on those returned by \ttt{get\_results}.
+
 \subsubsection{Class ResultQueryError}
 \label{cha:chart-api:omnetpp.scave.results:ResultQueryError}
 
@@ -549,6 +565,8 @@ of vector type results. The unit is seconds, both the \ttt{vectime} and
 right-open.
   \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, the values in the
 vectors are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
+  \item \ttt{omit\_empty\_vectors} \textit{(bool)}: Optional. If \ttt{True}, empty vectors are discarded
+from the output.
 
 \end{itemize}
 
@@ -1170,6 +1188,18 @@ These are the following.
 
 \end{itemize}
 
+\subsubsection{set\_verbose\_export()}
+\label{cha:chart-api:omnetpp.scave.utils:set-verbose-export}
+
+\begin{flushleft}
+\ttt{set\_verbose\_export(v)}
+\end{flushleft}
+
+\par Sets the \ttt{verbose\_export} flag, which controls whether the
+export\_image\_if\_needed() and export\_data\_if\_needed() functions
+will print an "Exported <filename>" message after the export.
+The default setting is \ttt{False}.
+
 \subsubsection{convert\_to\_base\_unit()}
 \label{cha:chart-api:omnetpp.scave.utils:convert-to-base-unit}
 
@@ -1209,25 +1239,20 @@ a list whose contents is usually produced using the \ttt{extract\_label\_columns
 \end{enumerate}
 
 
-\par Second, if there is a \ttt{legend\_replacements} property, the series of regular expression
-find/replace operations described in it are performed. \ttt{legend\_replacements} is expected
-to be a multi-line string, where each line contains a replacement in the customary
-"/findstring/replacement/" form. "findstring" should be a valid regex, and "replacement"
-is a string that may contain match group references ("{\textbackslash}1", "{\textbackslash}2", etc.). If "/" is unsuitable
-as separator, other characters may also be used; common choices are "|" and "!".
-Similar to the format string (\ttt{legend\_format}), both "findstring" and "replacement"
-may contain column references in the "\$name" or "\$\{name\}" form. (Note that "findstring"
-may still end in "\$" to match the end of the string, it won't collide with column references.)
-
-\par Possible errors:
-
-\begin{itemize}
-  \item References to nonexistent columns in \ttt{legend\_format} or \ttt{legend\_replacements} (\ttt{KeyError})
-  \item Malformed regex in the "findstring" parts of \ttt{legend\_replacements} (\ttt{re.error})
-  \item Invalid group reference in the "replacement" parts of \ttt{legend\_replacements} (\ttt{re.error})
-
-\end{itemize}
-
+\par Second, if there is a \ttt{legend\_replacements} property, it defines a series of
+replacements to be done on the legend labels. \ttt{legend\_replacements} is
+expected to be a multi-line string, where each line contains a replacement.
+A replacement line can be a plain substring replacement in the
+\ttt{findstring --> replacement} syntax, or a regex replacement in the sed-style
+\ttt{/findregex/replacement/} syntax. With the latter, "findregex" should be
+a valid regular expression, and "replacement" a string that may contain
+match group references ("{\textbackslash}1", "{\textbackslash}2", etc.). If "/" is unsuitable as
+separator, other characters may also be used; common choices are "|" and
+"!". Similar to the \ttt{legend\_format} property, "findstring", "findregex" and
+"replacement" may contain column references in the "\$name" or "\$\{name\}"
+form. Use "\$\$" to mean a single "\$" sign. Also note that "findregex" may
+still end in "\$" to match the end of the string, it won't collide with
+column references.
 
 \par Parameters:
 
@@ -1238,21 +1263,96 @@ may still end in "\$" to match the end of the string, it won't collide with colu
 
 \end{itemize}
 
+
+\par Properties that affect the generated legend label:
+
+\begin{itemize}
+  \item \ttt{legend\_automatic} \textit{(string)}: If \ttt{true}, do not use the legend format string even if present.
+  \item \ttt{legend\_format} \textit{(string)}: A format string to produce the label from columns.
+  \item \ttt{legend\_replacements} \textit{(string)}: A multi-line string of regex find/replace operations to modify the label.
+
+\end{itemize}
+
+
+\par Possible errors:
+
+\begin{itemize}
+  \item References to nonexistent columns in \ttt{legend\_format} or \ttt{legend\_replacements} (\ttt{KeyError})
+  \item Malformed regex in the "findstring" parts of \ttt{legend\_replacements} (\ttt{re.error})
+  \item Invalid group reference in the "replacement" parts of \ttt{legend\_replacements} (\ttt{re.error})
+
+\end{itemize}
+
+\subsubsection{add\_legend\_labels()}
+\label{cha:chart-api:omnetpp.scave.utils:add-legend-labels}
+
+\begin{flushleft}
+\ttt{add\_legend\_labels(df, props, legend\_cols=None)}
+\end{flushleft}
+
+\par Adds a \ttt{legend} column to the dataframe. In the dataframe, each row is
+expected to represent an item to be plotted. The legend label will be
+computed for each item individually by the \ttt{make\_legend\_label()} function.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{df}: The dataframe.
+  \item \ttt{props} \textit{(dict)}: The properties.
+
+\end{itemize}
+
+
+\par Notable properties that affect the legend generation: See the documentation
+of \ttt{make\_legend\_label()}.
+
+\subsubsection{sort\_rows\_by\_legend()}
+\label{cha:chart-api:omnetpp.scave.utils:sort-rows-by-legend}
+
+\begin{flushleft}
+\ttt{sort\_rows\_by\_legend(df, props=())}
+\end{flushleft}
+
+\par Sorts the rows of the dataframe, where each row represents an item to be
+plotted. The dataframe is expected to have a \ttt{legend} column, which will
+serve as the basis for ordering.
+
+\par Ordering is based on two lists of regexes, one for primary ordering and
+another one for secondary ordering. Each item's rank will be determined by
+the index of the first regex the item's legend matches. After sorting, items
+matching the first regex will appear at the top, those matching the second
+regex will be placed below, and so forth. Case-sensitive substring match is
+used.
+
+\par Parameters:
+
+\begin{itemize}
+  \item \ttt{df}: The dataframe.
+  \item \ttt{props} \textit{(dict)}: The properties.
+
+\end{itemize}
+
+
+\par Notable properties that affect the ordering:
+
+\begin{itemize}
+  \item \ttt{ordering\_regex\_list}: Regex list for primary ordering, as multi-line string (one regex per line).
+  \item \ttt{secondary\_ordering\_regex\_list}: Regex list for secondary ordering, as multi-line string (one regex per line).
+  \item \ttt{sorting}: Boolean to determine if sorting should be applied
+
+\end{itemize}
+
 \subsubsection{plot\_bars()}
 \label{cha:chart-api:omnetpp.scave.utils:plot-bars}
 
 \begin{flushleft}
-\ttt{plot\_bars(df, errors\_df=None, meta\_df=None, props=\{\})}
+\ttt{plot\_bars(df, errors\_df=None, meta\_df=None, props=\{\}, sort=True)}
 \end{flushleft}
 
 \par Creates a bar plot from the dataframe, with styling and additional input
 coming from the properties. Each row in the dataframe defines a series.
 
 \par Group names (displayed on the x axis) are taken from the column index.
-
-\par The name of the variable represented by the values can be passed in as
-the \ttt{variable\_name} argument (as it is not present in the dataframe); if so,
-it will become the y axis label.
 
 \par Error bars can be drawn by providing an extra dataframe of identical
 dimensions as the main one. Error bars will protrude by the values in the
@@ -1267,11 +1367,12 @@ to select other combinations if the default one is not suitable.
 \par Parameters:
 
 \begin{itemize}
-  \item \ttt{df}: the dataframe
-  \item \ttt{props} \textit{(dict)}: the properties
-  \item \ttt{variable\_name} \textit{(string)}: The name of the variable represented by the values.
-  \item \ttt{errors\_df}: dataframe with the errors (in y axis units)
-  \item \ttt{meta\_df}: dataframe with the metadata about each series
+  \item \ttt{df}: The dataframe.
+  \item \ttt{errors\_df}: Dataframe with the errors (in y axis units).
+  \item \ttt{meta\_df}: Dataframe with the metadata about each series.
+  \item \ttt{props} \textit{(dict)}: The properties.
+  \item \ttt{sort} \textit{(bool)}: Whether to sort the values by the column and row indices
+ (which are the labels of the bar series and groups).
 
 \end{itemize}
 
@@ -1292,7 +1393,7 @@ to select other combinations if the default one is not suitable.
 \label{cha:chart-api:omnetpp.scave.utils:plot-vectors}
 
 \begin{flushleft}
-\ttt{plot\_vectors(df, props, legend\_func=make\_legend\_label)}
+\ttt{plot\_vectors(df, props, legend\_func=make\_legend\_label, sort=True)}
 \end{flushleft}
 
 \par Creates a line plot from the dataframe, with styling and additional input
@@ -1310,9 +1411,12 @@ differentiate among the vectors.
 \par Parameters:
 
 \begin{itemize}
-  \item \ttt{df}: the dataframe
-  \item \ttt{props} \textit{(dict)}: the properties
-  \item \ttt{legend\_func}: the function to produce custom legend labels
+  \item \ttt{df}: The dataframe.
+  \item \ttt{props} \textit{(dict)}: The properties.
+  \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
+ See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+  \item \ttt{sort} \textit{(bool)}: Whether to sort the vectors by the columns used for the legend
+ (before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1355,7 +1459,7 @@ arranged vertically, with a shared X axis during navigation.
 \label{cha:chart-api:omnetpp.scave.utils:plot-histograms}
 
 \begin{flushleft}
-\ttt{plot\_histograms(df, props, legend\_func=make\_legend\_label)}
+\ttt{plot\_histograms(df, props, legend\_func=make\_legend\_label, sort=True)}
 \end{flushleft}
 
 \par Creates a histogram plot from the dataframe, with styling and additional input
@@ -1377,6 +1481,8 @@ differentiate among the histograms.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
  See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+  \item \ttt{sort} \textit{(bool)}: Whether to sort the histograms by the columns used for the legend
+(before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1418,7 +1524,7 @@ differentiate among the histograms.
 \label{cha:chart-api:omnetpp.scave.utils:plot-lines}
 
 \begin{flushleft}
-\ttt{plot\_lines(df, props, legend\_func=make\_legend\_label)}
+\ttt{plot\_lines(df, props, legend\_func=make\_legend\_label, sort=True)}
 \end{flushleft}
 
 \par Creates a line plot from the dataframe, with styling and additional input
@@ -1440,6 +1546,8 @@ differentiate among the lines.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
  See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+  \item \ttt{sort} \textit{(bool)}: Whether to sort the series by the columns used for the legend
+(before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1475,7 +1583,7 @@ differentiate among the lines.
 \label{cha:chart-api:omnetpp.scave.utils:plot-boxwhiskers}
 
 \begin{flushleft}
-\ttt{plot\_boxwhiskers(df, props, legend\_func=make\_legend\_label)}
+\ttt{plot\_boxwhiskers(df, props, legend\_func=make\_legend\_label, sort=True)}
 \end{flushleft}
 
 \par Creates a box and whiskers plot from the dataframe, with styling and additional
@@ -1497,7 +1605,9 @@ differentiate among the boxes.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
- See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+  \item \ttt{sort} \textit{(bool)}: Whether to sort the series by the columns used for the legend
+(before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1781,7 +1891,7 @@ normal distribution, for the given confidence level \ttt{alpha}.
 \label{cha:chart-api:omnetpp.scave.utils:pivot-for-barchart}
 
 \begin{flushleft}
-\ttt{pivot\_for\_barchart(df, groups, series, confidence\_level=None)}
+\ttt{pivot\_for\_barchart(df, groups, series, confidence\_level=None, sort=True)}
 \end{flushleft}
 
 \par Turns a DataFrame containing scalar results (in the format returned
@@ -1799,6 +1909,8 @@ The error dataframe is None if no confidence level is given.
  be used as names for the bar series.
   \item \ttt{confidence\_level} \textit{(float, optional)}:
  The confidence level to use when computing the sizes of the error bars.
+  \item \ttt{sort} \textit{(bool)}: Whether to sort the values by the columns in \ttt{groups}
+ and \ttt{series} before pivoting.
 
 \end{itemize}
 
