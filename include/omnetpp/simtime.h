@@ -155,25 +155,36 @@ class SIM_API SimTime
     /** @name Constructors */
     //@{
     /**
-     * Constructor initializes to zero.
+     * Initialize to zero.
      */
     SimTime(): t(0) {}
 
     /**
-     * Initialize simulation time from a double-precision number. This constructor
-     * is recommended if the value is the result of some computation done in
-     * <tt>double</tt>. For integer-based computations and time constants, the
-     * <tt>SimTime(int64_t x, int exponent)</tt> constructor is usually a better
-     * choice, because it does not have rounding errors caused by double-to-integer
-     * conversion.
+     * Initialize simulation time from a double-precision number. The value is
+     * understood in seconds. This constructor is recommended if the value is
+     * the result of some computation done in <tt>double</tt>. See also the
+     * <tt>SimTime(double x, int exponent)</tt> constructor.
      */
     SimTime(double d) {operator=(d);}
 
     /**
-     * Initialize simulation time from a module or channel parameter. It uses
-     * conversion to <tt>double</tt>. It currently does not check the measurement
-     * unit of the parameter (@unit NED property), although this may change in
-     * future releases.
+     * This and the subsequent constructors initialize simulation time from an
+     * integer number of seconds.
+     */
+    SimTime(short d) {operator=(d);}
+    SimTime(int d) {operator=(d);}
+    SimTime(long d) {operator=(d);}
+    SimTime(long long d) {operator=(d);}
+    SimTime(unsigned short d) {operator=(d);}
+    SimTime(unsigned int d) {operator=(d);}
+    SimTime(unsigned long d) {operator=(d);}
+    SimTime(unsigned long long d) {operator=(d);}
+
+    /**
+     * Initialize simulation time from a module or channel parameter via a
+     * double or intval_t conversion, depending on the parameter's type. It
+     * currently does not check the measurement unit of the parameter (@unit NED
+     * property), although this may change in future releases.
      */
     SimTime(cPar& d) {operator=(d);}
 
