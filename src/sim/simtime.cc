@@ -92,35 +92,35 @@ void SimTime::initError(double d)
                         "Please use double or const_simtime_t instead", d);
 }
 
-void SimTime::rangeErrorInt64(double i64)
+void SimTime::rangeErrorInt64(double d)
 {
-    throw cRuntimeError("Cannot convert %g to simtime_t: Out of range %s, allowed by scale exponent %d",
-            i64*invfscale, range().c_str(), scaleexp);
+    throw cRuntimeError("simtime_t: Cannot represent %g, out of the range %s allowed by the current scale exponent %d",
+            d*invfscale, range().c_str(), scaleexp);
 }
 
 void SimTime::rangeErrorSeconds(int64_t sec)
 {
-    throw cRuntimeError("Cannot convert % " PRId64 "D to simtime_t: Out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t: Cannot represent % " PRId64 "D, out of the range %s allowed by the current scale exponent %d",
             sec, range().c_str(), scaleexp);
 }
 
 void SimTime::overflowAdding(const SimTime& x)
 {
     t -= x.t;  // restore original value
-    throw cRuntimeError("simtime_t overflow adding %s to %s: Result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t: overflow adding %s to %s: Result is out of the range %s allowed by the current scale exponent %d",
             x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
 void SimTime::overflowSubtracting(const SimTime& x)
 {
     t += x.t;  // restore original value
-    throw cRuntimeError("simtime_t overflow subtracting %s from %s: Result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t: overflow subtracting %s from %s: Result is out of the range %s allowed by the current scale exponent %d",
             x.str().c_str(), str().c_str(), range().c_str(), scaleexp);
 }
 
 void SimTime::overflowNegating()
 {
-    throw cRuntimeError("Cannot negate simtime_t %s: It is internally represented with INT64_MIN "
+    throw cRuntimeError("simtime_t: Cannot negate simtime_t %s: It is internally represented with INT64_MIN "
             "that has no positive equivalent (try decreasing precision)", str().c_str());
 }
 
@@ -137,7 +137,7 @@ void SimTime::fromInt64WithUnit(int64_t value, SimTimeUnit unit)
         int64_t mul = exp10(-expdiff);
         t = value / mul;
         if (mul == -1 || t * mul != value)
-            throw cRuntimeError("simtime_t: %" PRId64 "*10^%d cannot be represented precisely using the current scale exponent %d, "
+            throw cRuntimeError("simtime_t: Cannot represent %" PRId64 "*10^%d using the current scale exponent %d, "
                     "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
                     value, exponent, scaleexp);
     }
@@ -167,7 +167,7 @@ void SimTime::fromUint64WithUnit(uint64_t value, SimTimeUnit unit)
         uint64_t mul = (uint64_t)exp10(-expdiff);
         tmp = value / mul;
         if (mul == (uint64_t)-1 || tmp * mul != value)
-            throw cRuntimeError("simtime_t: %" PRIu64 "*10^%d cannot be represented precisely using the current scale exponent %d, "
+            throw cRuntimeError("simtime_t: Cannot represent %" PRIu64 "*10^%d precisely using the current scale exponent %d, "
                     "increase resolution by configuring a smaller scale exponent or use 'double' conversion",
                     value, exponent, scaleexp);
     }
@@ -203,7 +203,7 @@ SimTime::SimTime(double value, SimTimeUnit unit, bool allowRounding)
     int expdiff = exponent - scaleexp;
     double tmp = expdiff < 0 ? value / pow(10,-expdiff) : value * pow(10,expdiff);
     if (!allowRounding && tmp != floor(tmp) && !isAlmostInteger(tmp))
-        throw cRuntimeError("simtime_t: %g*10^%d cannot be represented precisely using the current scale exponent %d",
+        throw cRuntimeError("simtime_t: Cannot represent %g*10^%d precisely using the current scale exponent %d",
                 value, exponent, scaleexp);
     t = toInt64(tmp);
 }
@@ -216,7 +216,7 @@ void SimTime::checkedMul(int64_t x)
         return;
     }
 
-    throw cRuntimeError("simtime_t overflow multiplying %s by %" PRId64 ": Result is out of range %s, allowed by scale exponent %d",
+    throw cRuntimeError("simtime_t: overflow multiplying %s by %" PRId64 ": Result is out of the range %s allowed by the current scale exponent %d",
         str().c_str(), x, range().c_str(), scaleexp);
 }
 

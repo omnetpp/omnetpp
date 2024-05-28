@@ -39,17 +39,17 @@ P(SimTime(3.2, SIMTIME_FS));
 EV << ".\n";
 
 %contains: stdout
-SimTime(5, -15) =  ==> simtime_t: 5*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(5, -15) =  ==> simtime_t: Cannot represent 5*10^-15 precisely using the current scale exponent -12
 SimTime(0, -12) = 0
 SimTime(3, -9) = 0.000000003
 SimTime(3, -6) = 0.000003
 SimTime(7, -3) = 0.007
 SimTime(9, 0) = 9
 
-SimTime(83, -15) =  ==> simtime_t: 83*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(2.1, -15) =  ==> simtime_t: 2.1*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(83, -15) =  ==> simtime_t: Cannot represent 83*10^-15 precisely using the current scale exponent -12
+SimTime(2.1, -15) =  ==> simtime_t: Cannot represent 2.1*10^-15 precisely using the current scale exponent -12
 SimTime(36, -12) = 0.000000000036
-SimTime(8.7, -12) =  ==> simtime_t: 8.7*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(8.7, -12) =  ==> simtime_t: Cannot represent 8.7*10^-12 precisely using the current scale exponent -12
 SimTime(70, -9) = 0.00000007
 SimTime(8.8, -9) = 0.0000000088
 SimTime(88, -6) = 0.000088
@@ -59,12 +59,12 @@ SimTime(6.5, -3) = 0.0065
 SimTime(39, 0) = 39
 SimTime(8.7, 0) = 8.7
 
-SimTime(174, -15) =  ==> simtime_t: 174*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(60, -15) =  ==> simtime_t: 60*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(8.49, -15) =  ==> simtime_t: 8.49*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(174, -15) =  ==> simtime_t: Cannot represent 174*10^-15 precisely using the current scale exponent -12
+SimTime(60, -15) =  ==> simtime_t: Cannot represent 60*10^-15 precisely using the current scale exponent -12
+SimTime(8.49, -15) =  ==> simtime_t: Cannot represent 8.49*10^-15 precisely using the current scale exponent -12
 SimTime(677, -12) = 0.000000000677
-SimTime(53.7, -12) =  ==> simtime_t: 53.7*10^-12 cannot be represented precisely using the current scale exponent -12
-SimTime(8.45, -12) =  ==> simtime_t: 8.45*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(53.7, -12) =  ==> simtime_t: Cannot represent 53.7*10^-12 precisely using the current scale exponent -12
+SimTime(8.45, -12) =  ==> simtime_t: Cannot represent 8.45*10^-12 precisely using the current scale exponent -12
 SimTime(72, -9) = 0.000000072
 SimTime(77.7, -9) = 0.0000000777
 SimTime(9.16, -9) = 0.00000000916
@@ -78,14 +78,14 @@ SimTime(448, 0) = 448
 SimTime(85, 0) = 85
 SimTime(0.99, 0) = 0.99
 
-SimTime(755, -15) =  ==> simtime_t: 755*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(79.7, -15) =  ==> simtime_t: 79.7*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(6.59, -15) =  ==> simtime_t: 6.59*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(3.219, -15) =  ==> simtime_t: 3.219*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(755, -15) =  ==> simtime_t: Cannot represent 755*10^-15 precisely using the current scale exponent -12
+SimTime(79.7, -15) =  ==> simtime_t: Cannot represent 79.7*10^-15 precisely using the current scale exponent -12
+SimTime(6.59, -15) =  ==> simtime_t: Cannot represent 6.59*10^-15 precisely using the current scale exponent -12
+SimTime(3.219, -15) =  ==> simtime_t: Cannot represent 3.219*10^-15 precisely using the current scale exponent -12
 SimTime(8615, -12) = 0.000000008615
-SimTime(745.6, -12) =  ==> simtime_t: 745.6*10^-12 cannot be represented precisely using the current scale exponent -12
-SimTime(33.37, -12) =  ==> simtime_t: 33.37*10^-12 cannot be represented precisely using the current scale exponent -12
-SimTime(2.745, -12) =  ==> simtime_t: 2.745*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(745.6, -12) =  ==> simtime_t: Cannot represent 745.6*10^-12 precisely using the current scale exponent -12
+SimTime(33.37, -12) =  ==> simtime_t: Cannot represent 33.37*10^-12 precisely using the current scale exponent -12
+SimTime(2.745, -12) =  ==> simtime_t: Cannot represent 2.745*10^-12 precisely using the current scale exponent -12
 SimTime(4735, -9) = 0.000004735
 SimTime(873.6, -9) = 0.0000008736
 SimTime(66.87, -9) = 0.00000006687
@@ -103,21 +103,21 @@ SimTime(894.8, 0) = 894.8
 SimTime(16.41, 0) = 16.41
 SimTime(4.984, 0) = 4.984
 
-SimTime(20737, -15) =  ==> simtime_t: 20737*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(2864.7, -15) =  ==> simtime_t: 2864.7*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(613.53, -15) =  ==> simtime_t: 613.53*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(92.217, -15) =  ==> simtime_t: 92.217*10^-15 cannot be represented precisely using the current scale exponent -12
-SimTime(8.0163, -15) =  ==> simtime_t: 8.0163*10^-15 cannot be represented precisely using the current scale exponent -12
+SimTime(20737, -15) =  ==> simtime_t: Cannot represent 20737*10^-15 precisely using the current scale exponent -12
+SimTime(2864.7, -15) =  ==> simtime_t: Cannot represent 2864.7*10^-15 precisely using the current scale exponent -12
+SimTime(613.53, -15) =  ==> simtime_t: Cannot represent 613.53*10^-15 precisely using the current scale exponent -12
+SimTime(92.217, -15) =  ==> simtime_t: Cannot represent 92.217*10^-15 precisely using the current scale exponent -12
+SimTime(8.0163, -15) =  ==> simtime_t: Cannot represent 8.0163*10^-15 precisely using the current scale exponent -12
 SimTime(12134, -12) = 0.000000012134
-SimTime(6053.5, -12) =  ==> simtime_t: 6053.5*10^-12 cannot be represented precisely using the current scale exponent -12
-SimTime(478.83, -12) =  ==> simtime_t: 478.83*10^-12 cannot be represented precisely using the current scale exponent -12
-SimTime(86.107, -12) =  ==> simtime_t: 86.107*10^-12 cannot be represented precisely using the current scale exponent -12
-SimTime(6.336, -12) =  ==> simtime_t: 6.336*10^-12 cannot be represented precisely using the current scale exponent -12
+SimTime(6053.5, -12) =  ==> simtime_t: Cannot represent 6053.5*10^-12 precisely using the current scale exponent -12
+SimTime(478.83, -12) =  ==> simtime_t: Cannot represent 478.83*10^-12 precisely using the current scale exponent -12
+SimTime(86.107, -12) =  ==> simtime_t: Cannot represent 86.107*10^-12 precisely using the current scale exponent -12
+SimTime(6.336, -12) =  ==> simtime_t: Cannot represent 6.336*10^-12 precisely using the current scale exponent -12
 SimTime(51811, -9) = 0.000051811
 SimTime(978.1, -9) = 0.0000009781
 SimTime(193.4, -9) = 0.0000001934
 SimTime(27.257, -9) = 0.000000027257
-SimTime(1.6298, -9) =  ==> simtime_t: 1.6298*10^-9 cannot be represented precisely using the current scale exponent -12
+SimTime(1.6298, -9) =  ==> simtime_t: Cannot represent 1.6298*10^-9 precisely using the current scale exponent -12
 SimTime(12372, -6) = 0.012372
 SimTime(442, -6) = 0.000442
 SimTime(829.91, -6) = 0.00082991

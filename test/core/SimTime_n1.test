@@ -52,21 +52,21 @@ EV << ".\n";
 %contains-regex: stdout
 t=dmax; -> OK
 t=-dmax; -> OK
-t=dmax\+1\.0; -> Cannot convert.*
-t=-dmax-1\.0; -> Cannot convert.*
-t=1e100; -> Cannot convert.*
-t=-1e100; -> Cannot convert.*
-t=dmax; t2=1; t=t\+t2; -> simtime_t overflow.*
-t=-dmax; t2=-1; t=t\+t2; -> simtime_t overflow.*
-t=dmax; t2=dmax; t=t\+t2; -> simtime_t overflow.*
-t=-dmax; t2=-dmax; t=t\+t2; -> simtime_t overflow.*
-t=dmax; t2=-1; t=t-t2; -> simtime_t overflow.*
-t=-dmax; t2=1; t=t-t2; -> simtime_t overflow.*
-t=dmax; t2=-dmax; t=t-t2; -> simtime_t overflow.*
-t=-dmax; t2=dmax; t=t-t2; -> simtime_t overflow.*
-t=1; t = t \* 1e100; -> Cannot convert.*
-t=1; t = t \* -1e100; -> Cannot convert.*
-t=1; t = t / 1e-100; -> Cannot convert.*
-t=1; t = t / -1e-100; -> Cannot convert.*
+t=dmax\+1\.0; -> simtime_t: Cannot represent.*
+t=-dmax-1\.0; -> simtime_t: Cannot represent.*
+t=1e100; -> simtime_t: Cannot represent.*
+t=-1e100; -> simtime_t: Cannot represent.*
+t=dmax; t2=1; t=t\+t2; -> simtime_t: overflow.*
+t=-dmax; t2=-1; t=t\+t2; -> simtime_t: overflow.*
+t=dmax; t2=dmax; t=t\+t2; -> simtime_t: overflow.*
+t=-dmax; t2=-dmax; t=t\+t2; -> simtime_t: overflow.*
+t=dmax; t2=-1; t=t-t2; -> simtime_t: overflow.*
+t=-dmax; t2=1; t=t-t2; -> simtime_t: overflow.*
+t=dmax; t2=-dmax; t=t-t2; -> simtime_t: overflow.*
+t=-dmax; t2=dmax; t=t-t2; -> simtime_t: overflow.*
+t=1; t = t \* 1e100; -> simtime_t: Cannot represent.*
+t=1; t = t \* -1e100; -> simtime_t: Cannot represent.*
+t=1; t = t / 1e-100; -> simtime_t: Cannot represent.*
+t=1; t = t / -1e-100; -> simtime_t: Cannot represent.*
 \.
 
