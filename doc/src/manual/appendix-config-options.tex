@@ -19,6 +19,11 @@ with the \fopt{-h configdetails} option.
 
 % @BEGINFILE tools/config.txt
 \begin{description}
+\item[abstract] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    Declares whether this configuration is an abstract one. Abstract
+    configurations serve as a base for other configurations, and are not meant
+    to be run directly.
 \item[allow-object-stealing-on-deletion] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Per-simulation-run setting.}\\
     Setting it to true disables the "Context component is deleting an object it
@@ -322,11 +327,10 @@ with the \fopt{-h configdetails} option.
     kept.
 \item[eventlog-options] = \textit{<custom>}\\
     \textit{Per-simulation-run setting.}\\
-    The content of the eventlog is diveded into categories. This option allows
-    to record only certain categories reducing the file size. Specify a comma
-    separated subset of the following keywords: text, message, module,
-    methodcall, displaystring and custom. By default all categories are
-    enabled.
+    Allows for reducing the size of the eventlog file by recording only
+    specific types of content. Specify a comma-separated subset of the
+    following keywords: text, message, module, methodcall, displaystring and
+    custom. By default, all categories are enabled.
 \item[eventlog-recording-intervals] = \textit{<custom>}\\
     \textit{Per-simulation-run setting.}\\
     Simulation time interval(s) when events should be recorded. Syntax:
@@ -337,10 +341,11 @@ with the \fopt{-h configdetails} option.
     {\allowbreak}233.{\allowbreak}3..{\allowbreak}}
 \item[eventlog-snapshot-frequency] = \textit{<double>}, unit=\ttt{B}, default: \ttt{100 {\allowbreak}Mi\-B}\\
     \textit{Per-simulation-run setting.}\\
-    The eventlog file contains snapshots periodically. Each one describes the
-    complete simulation state at a specific event. Snapshots help various tools
-    to handle large eventlog files more efficiently. Specifying greater value
-    means less help, while smaller value means bigger eventlog files.
+    The eventlog file contains periodically recorded snapshots. Each one
+    describes the complete simulation state at a specific event. Snapshots help
+    various tools to handle large eventlog files more efficiently. Specifying
+    greater value means less help, while smaller value means bigger eventlog
+    files.
 \item[eventlogmanager-class] = \textit{<string>}, default: \ttt{omnetpp::{\allowbreak}envir::{\allowbreak}Eventlog\-File\-Manager}\\
     \textit{Per-simulation-run setting.}\\
     Part of the Envir plugin mechanism: selects the eventlog manager class to
@@ -835,6 +840,15 @@ with the \fopt{-h configdetails} option.
     \ttt{output-{\allowbreak}vectors-{\allowbreak}memory-{\allowbreak}limit}.\\
     Usage:
     \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}buffer={\allowbreak}<amount>}.
+\item[**.vector-record-empty] = \textit{<bool>}, default: \ttt{true}\\
+    \textit{Per-object setting for vector results.}\\
+    Whether output vectors that have no data recorded into them should appear
+    in the result file. Turning off this option will delay writing the vector
+    declaration into the result file until there is data recorded into the
+    vector. Usage:
+    \ttt{<module-{\allowbreak}full-{\allowbreak}path>.{\allowbreak}<vector-{\allowbreak}name>.{\allowbreak}vector-{\allowbreak}record-{\allowbreak}empty={\allowbreak}true/{\allowbreak}false}.\\
+    Example:
+    \ttt{**.{\allowbreak}ping.{\allowbreak}round\-Trip\-Time:{\allowbreak}vector.{\allowbreak}vector-{\allowbreak}record-{\allowbreak}empty={\allowbreak}false}
 \item[**.vector-record-eventnumbers] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-object setting for vector results.}\\
     Whether to record event numbers for an output vector. (Values and

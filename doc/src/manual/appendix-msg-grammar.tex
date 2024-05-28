@@ -131,17 +131,19 @@ enum\_decl
 
 enum
         : ENUM qname '\{'
-          opt\_enumfields '\}' opt\_semicolon
+          opt\_enumfields\_and\_properties '\}' opt\_semicolon
         ;
 
-opt\_enumfields
-        : enumfields
+opt\_enumfields\_and\_properties
+        : enumfields\_and\_properties
         | %empty
         ;
 
-enumfields
-        : enumfields enumfield
+enumfields\_and\_properties
+        : enumfields\_and\_properties enumfield
+        | enumfields\_and\_properties property
         | enumfield
+        | property
         ;
 
 enumfield

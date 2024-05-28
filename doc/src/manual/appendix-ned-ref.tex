@@ -2024,14 +2024,14 @@ d & day & 86400s \\\hline
   Gbps & gigabit/sec & 1e9bps \\\hline
   Tbps & terabit/sec & 1e12bps \\\hline
   B & byte & 8b \\\hline
-  KiB & kibibyte & 1024B \\\hline
-  MiB & mebibyte & 1.04858e6B \\\hline
-  GiB & gibibyte & 1.07374e9B \\\hline
-  TiB & tebibyte & 1.09951e12B \\\hline
-  kB & kilobyte & 1000B \\\hline
-  MB & megabyte & 1e6B \\\hline
-  GB & gigabyte & 1e9B \\\hline
-  TB & terabyte & 1e12B \\\hline
+  KiB & kibibyte & 8192b \\\hline
+  MiB & mebibyte & 8.38861e6b \\\hline
+  GiB & gibibyte & 8.58993e9b \\\hline
+  TiB & tebibyte & 8.79609e12b \\\hline
+  kB & kilobyte & 8000b \\\hline
+  MB & megabyte & 8e6b \\\hline
+  GB & gigabyte & 8e9b \\\hline
+  TB & terabyte & 8e12b \\\hline
   b & bit & \\\hline
   Kib & kibibit & 1024b \\\hline
   Mib & mebibit & 1.04858e6b \\\hline
@@ -2044,6 +2044,7 @@ d & day & 86400s \\\hline
   rad & radian & \\\hline
   deg & degree & 0.0174533rad \\\hline
   m & meter & \\\hline
+  dm & decimeter & 0.1m \\\hline
   cm & centimeter & 0.01m \\\hline
   mm & millimeter & 0.001m \\\hline
   um & micrometer & 1e-6m \\\hline
@@ -2065,6 +2066,7 @@ d & day & 86400s \\\hline
   THz & terahertz & 1e12Hz \\\hline
   kg & kilogram & \\\hline
   g & gram & 0.001kg \\\hline
+  t & tonne & 1000kg \\\hline
   K & kelvin & \\\hline
   J & joule & \\\hline
   kJ & kilojoule & 1000J \\\hline
@@ -2091,8 +2093,7 @@ d & day & 86400s \\\hline
   mAs & milliampere-second & 0.001As \\\hline
   Ah & ampere-hour & 3600As \\\hline
   mAh & milliampere-hour & 3.6As \\\hline
-  ratio & ratio & \\\hline
-  pct & percent & 0.01ratio \\\hline
+  x & times & \\\hline
   dBW & decibel-watt & 10*log10(W) \\\hline
   dBm & decibel-milliwatt & 10*log10(mW) \\\hline
   dBmW & decibel-milliwatt & 10*log10(mW) \\\hline
@@ -2100,7 +2101,7 @@ d & day & 86400s \\\hline
   dBmV & decibel-millivolt & 20*log10(mV) \\\hline
   dBA & decibel-ampere & 20*log10(A) \\\hline
   dBmA & decibel-milliampere & 20*log10(mA) \\\hline
-  dB & decibel & 20*log10(ratio) \\\hline
+  dB & decibel & 20*log10(x) \\\hline
 % @ENDFILE
 \end{longtable}
 

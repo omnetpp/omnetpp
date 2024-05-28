@@ -247,7 +247,7 @@ paramsitem
 
 param
         : param\_typenamevalue
-        | pattern\_value
+        | parampattern\_value
         ;
 
 param\_typenamevalue
@@ -260,8 +260,8 @@ param\_typename
         | NAME
         ;
 
-pattern\_value
-        : pattern '=' paramvalue ';'
+parampattern\_value
+        : parampattern opt\_inline\_properties '=' paramvalue ';'
         ;
 
 paramtype
@@ -293,6 +293,10 @@ opt\_inline\_properties
 inline\_properties
         : inline\_properties property\_namevalue
         | property\_namevalue
+        ;
+
+parampattern
+        : pattern
         ;
 
 pattern

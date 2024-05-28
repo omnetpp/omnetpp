@@ -34,6 +34,9 @@ generated from message descriptions.
   and '*'/'\&' to produce the actual argument type. When specified on a class,
   it determines the default for fields of that type.
 
+\item[@baseType] \textit{(type: string, use: enum)} \\
+  Specifies the underlying data type for the enum.
+
 \item[@beforeChange] \textit{(type: string, use: class)} \\
   Method to be called before mutator code (in setters, non-const getters,
   operator=, etc.).
@@ -48,6 +51,9 @@ generated from message descriptions.
   class. Useful for preventing compile errors if the function already exists,
   e.g. in hand-written form, or generated for another type (think aliased
   typedefs).
+
+\item[@class] \textit{(type: bool, use: enum)} \\
+  Specifies whether this enum is to be declared as 'enum class'.
 
 \item[@clone] \textit{(type: string, use: field, class)} \\
   For owned pointer fields: Code to duplicate (one array element of) the field
