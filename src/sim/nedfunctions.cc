@@ -1117,7 +1117,7 @@ DEF2(nedf_parseCSV,
     "with or without measurement unit), quoted string, or unquoted string. "
     "Items that cannot be parsed as any of the more specific types are interpreted "
     "as unquoted strings. "
-    "See readCSV() for details of the the accepted CSV flavor.")
+    "See readCSV() for details of the accepted CSV flavor.")
 
 cValue nedf_parseCSV(cExpression::Context *context, cValue argv[], int argc)
 {
@@ -1144,7 +1144,7 @@ DEF2(nedf_parseExtendedCSV,
     "Parses the given string as a comma-separated CSV, and returns it as "
     "an array of arrays. Elements are parsed as NED expressions, and are "
     "evaluated in the caller's context. "
-    "See readCSV() for details of the the accepted CSV flavor.")
+    "See readCSV() for details of the accepted CSV flavor.")
 
 cValue nedf_parseExtendedCSV(cExpression::Context *context, cValue argv[], int argc)
 {
@@ -1194,7 +1194,7 @@ DEF2(nedf_readExtendedCSV,
     "i/o",
     "Parses the content of the given text file as comma-separated CSV, and returns it "
     "as an array of arrays. Elements are parsed as NED expressions, and are evaluated "
-    "in the caller's context. See readCSV() for details of the the accepted CSV flavor.")
+    "in the caller's context. See readCSV() for details of the accepted CSV flavor.")
 
 cValue nedf_readExtendedCSV(cExpression::Context *context, cValue argv[], int argc)
 {
