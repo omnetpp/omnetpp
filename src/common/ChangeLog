@@ -1,3 +1,183 @@
+2023-01-09  Andras Varga
+
+	* fileutil.cc/h: added canonicalize()
+
+2023-04-25  Attila Torok
+
+	* Update SQLite amalgamation to version 3.42.0. On top of the regular
+	maintenance, this also fixes a warning about `nUri` being set but not used.
+
+2023-04-25  Attila Torok
+
+	* Fix assertion in the form `x <= y < z` (-Wparentheses)
+
+2023-02-23  Rudolf Hornig
+
+	* Added support for pretty printed stack traces on exceptions using
+	the 'backward' library when WITH_BACKTRACE=yes.
+
+	To have an enhanced stack frame with line numbers and source snippets on
+	Linux, you must install `libdw-dev`,`libdw-devel` or `elfutils` depending
+	on your package manager otherwise only function names and addresses will
+	be displayed in stack frames.
+
+	The feature can be disabled by setting WITH_BACKTRACE=no in
+	configure.user.
+
+2023-02-22  Rudolf Hornig
+
+	* Added backward.cc/h source files for stack pretty printing
+	on exceptions. 'backward' is a stack trace pretty printer for
+	C++ distributed under the MIT License.
+
+	Source: https://github.com/bombela/backward-cpp commit:90398ee
+
+2023-02-16  Andras Varga
+
+	* QuantityFormatter: ported to UnitConversion::getBestUnit() due to limitations.
+
+	- removed functions related to unit conversion
+	- determineOutputUnit() merged into computeValueInOutputUnit(), in the
+	  form of 2 extra lines
+	- make it work for logarithmic output units
+	- optionally output unit "long names"
+	- made nan/inf text configurable
+
+2023-02-21  Andras Varga
+
+	* UnitConversion: units table refined
+
+	- kmps, kmph: convert to mps by default
+	- added tonne a.k.a, metric ton
+	- renamed "ratio" to x (as in "times")
+	- dBW dBmW etc: added best unit candidates
+	- min, h, d added as best unit candidates to time units (otherwise
+	 they're never chosen)
+	- pct (percent) removed (little utility value)
+	- added decimeter as unit (nt bestUnitCandidate, so getBestUnit() will
+	  only return it if it is contained in allowedUnits
+
+2023-03-09  Andras Varga
+
+	* UnitConversion: getBestUnit() reimplemented, accepts Options
+	struct; etc. NOTE: now it converts minutes, hours, days to seconds
+
+2023-03-09  Andras Varga
+
+	* UnitConversion: added getShortName(), getLongName(const char
+	*unit, bool plural).
+
+2023-03-09  Andras Varga
+
+	* UnitConversion: added getCompatibleKnownUnits(),
+	areCompatibleUnits()
+
+	Precompute compatibleUnits, prefixType etc; will be needed for
+	getBestUnit() reimplementation
+
+2023-02-21  Andras Varga
+
+	* UnitConversion: renaming: UnitDesc -> Unit, unit -> unitName,
+	unitDesc -> unit.
+
+2023-02-16  Andras Varga
+
+	* UnitConversion: renaming: isUnit() -> isKnownUnit(), getAllUnits
+	-> getKnownUnits()
+
+2023-02-13  Andras Varga
+
+	* UnitConversion: best unit candidates, for byte and bit units, too.
+
+2023-02-13  Andras Varga
+
+	* UnitConversion: break UnitDesc declaration to multiple lines
+
+2023-02-09  Andras Varga
+
+	* UnitConversion::formatQuantity() improved; use in cValue
+
+2023-03-09  Andras Varga
+
+	* stringutil: added opp_cstrings()
+
+2023-01-28  Andras Varga
+
+	* QuantityFormatter: added allowOriginalUnit option
+
+2023-01-30  Andras Varga
+
+	* QuantityFormatter: use stlutil.h
+
+2023-01-30  Andras Varga
+
+	* QuantityFormatter: fix wrong counting of unicode chars.
+	Fixes "≈" being counted as 3 chars, causing the output mask to be off
+
+2023-01-16  Andras Varga
+
+	* QuantityFormatter: test helpers moved to test/common/lib/quantityformattertester.h
+
+2023-01-16  Andras Varga
+
+	* QuantityFormatter: method implementations moved to .cc file
+
+2022-09-20  Levente Mészáros
+
+	* Added QuantityFormatter, a class for versatile formatting of doubles
+	with optional units.
+
+2022-02-17  Levente Mészáros
+
+	* UnitConversion: Changed base units for all byte related units to bit.
+
+2023-01-18  Andras Varga
+
+	* PatternMatcher: added covers()
+
+2023-01-18  Andras Varga
+
+	* stringutil.h: added opp_abbreviate()
+
+2023-01-13  Andras Varga
+
+	* stlutil.h: added missing function addAll() for std::unordered_set
+
+2022-10-04  Rudolf Hornig
+
+	* expression.y: use std::numeric_limits for infinity instead of using a
+	division by 0.
+
+2022-08-30  Andras Varga
+
+	* stringutil.cc/h: added opp_splitpath()
+
+2022-06-18  Andras Varga
+
+	* Remove old, unused DisplayString class
+
+2022-05-16  Attila Torok
+
+	* Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>
+
+2022-05-21  Andras Varga
+
+	* UnitConversion: change on-demand to static initialization, so that
+	it doesn't cause problems with future multi-threaded execution.
+
+2022-05-09  Andras Varga
+
+	* UnitConversion, etc: Added more 'const' qualifiers throughout.
+
+2022-05-20  Andras Varga
+
+	* matchexpression.y cosmetics (parser is already reentrant).
+
+2022-05-12  Andras Varga
+
+	* Expression lexer/parser modernization, made reentrant
+	modulo the "extendbuf" global variable in the lexer.
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2023-10-06  ------ omnetpp-6.0.2 released ------

@@ -1,3 +1,36 @@
+2024-05-28  Andras Varga
+
+	* A number of tests were updated and added during the development of omnetpp-6.1.
+	It would be pointless to provide a detailed list of all changes here. The new files
+	are listed below; otherwise, use `git log` for a more details.
+
+	- anim/deletesender/*
+	- anim/inspectorsafety/*
+	- common/lib/quantityformattertester.h
+	- common/lib/testutil.h
+	- common/QuantityFormatter_*.test
+	- common/unitconversion_bestUnit_bitbyte_1.test
+	- common/unitconversion_bestUnit_options_1.test
+	- core/cEnum_registration_1.test
+	- core/cEnum_registration_2.test
+	- core/msg_enum_4.test
+	- core/NED_display_n7.test
+	- core/NED_inheritance_unresolved_n1.test
+	- core/NED_inheritance_unresolved_n2.test
+	- core/NED_inheritance_unresolved_n3.test
+	- core/NED_jsonparam_xml_1.test
+	- core/NED_param_index.test
+	- core/NED_param_srcloc_1.test
+	- core/NED_xml_4.test
+	- core/SimTime_6.test
+	- core/SimTime_7.test
+	- core/statistic_enum_1.test
+	- core/statistic_enum_n1.test
+	- core/statistic_enum_n2.test
+	- core/statistic_vector_1.test
+	- envir/qtenv_displaystringaccess_1.test
+	- makemake2/*
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2024-01-05  Rudolf Hornig

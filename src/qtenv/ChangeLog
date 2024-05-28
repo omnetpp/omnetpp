@@ -1,3 +1,135 @@
+2024-05-08  Attila Torok
+
+	* Log: Set icons for the bookmark and reference time actions
+
+2024-05-07  Attila Torok
+
+	* Log: Add bookmark feature
+
+2024-05-02  Attila Torok
+
+	* Log: Fix off-by-one line index error when there are
+	discarded entries
+
+2024-05-07  Attila Torok
+
+	* Log: Add keyboard shortcuts for "Go to ..." actions
+
+	Ctrl+E for "Go to Event", and stealing "Ctrl+T" for "Go to Simulation
+	Time" from the Timeline visibility toggling action.
+
+2024-05-03  Attila Torok
+
+	* Log: Fix a crash while setting/clearing reference time
+
+2024-05-03  Andras Varga
+
+	* Do not list abstract configurations (ini sections marked as abstract=true)
+	in the run selection dialog.
+
+2024-05-02  Attila Torok
+
+	* Display error in LogFindDialog if regular expression is invalid.
+
+2024-05-02  Attila Torok
+
+	* Log inspector: Fix: Search in was slow. Seach could take over one minute
+	for searching a log of ~200,000 events.
+
+	* Log inspector: Fix: Set a spinner cursor during search
+
+2024-04-19  Attila Torok
+
+	* Log: Reorder context menu items, add mnemonics
+
+2024-04-19  Attila Torok
+
+	* Log: Add "Go to simulation time" and "Go to event" features
+
+2024-04-16  Attila Torok
+
+	* Log: Added text-related actions to context menu
+
+2024-04-08  Attila Torok
+
+	* Store IDs instead of module and gate pointers in animation data
+	structures to work around potential crash when animating during
+	module deletion or network teardown.
+
+2024-03-20  Levente Meszaros
+
+	* Fix logging issue when something is logged from scheduler context.
+
+	The log messages were added to the previous event which had nothing to do
+	with the scheduler callbacks. This behavior was very confusing in INET
+	simulations with ExternalProcess that log to their stdout/stderr. See the
+	showcases/emulation/webserver example.
+
+	Changed Qtenv log window to add a separate banner for log messages
+	recorded from the RealTimeScheduler callbacks.
+
+2022-09-15  Attila Torok
+
+	* Fix: Set network on main inspectors even if initialize failed
+
+2022-08-23  Attila Torok
+
+	* Fix: MessageAnimator: Only use the private dup pointer of sent
+	messages, so that earlier sends of the same message do not mysteriously
+	change when message is altered during forwarding.
+
+2022-07-26  Attila Torok
+
+	* Fix: Refactoring around the messageDuplicated() method, to allow multiple
+	sends of the same message to be animated simultaneously without causing
+	crashes.
+
+2022-07-18  Attila Torok
+
+	* Refactor: Store a map from message pointers to animations that
+	animate them
+
+	To speed up the removal of animations when messages are deleted. This
+	way, we know where to look for the affected animations, indexing into
+	this map with only the two messages (original in the module and private
+	duplicate in the LogBuffer) have to be looked up, instead of iterating on
+	the entire `animations` map, recursing thrugh the animation tree.
+
+2022-07-21  Attila Torok
+
+	* Performance: Cache the minimum animation speed, to avoid having to iterate
+	through the map and finding the minimum every time the animation speed is
+	queried.
+
+2022-07-20  Attila Torok
+
+	* Performance: Use unordered maps and sets to improve performance,
+	plus inline a few things
+
+2022-07-18  Attila Torok
+
+	* Performance: Don't update animations in FAST mode that often.
+
+2022-06-27  Attila Torok
+
+	* Fix: Keep showing builtin animations in FAST mode. Previously, when
+	resuming normal RUN mode after running in FAST mode, no animations were
+	visible even when there were messages propagating through the network. With
+	this change, this is no longer the case.
+
+2022-06-27  Attila Torok
+
+	* Fix SubmoduleItem regression: Overflowing tint amount of images
+
+2022-06-17  Attila Torok
+
+	* Allow evaluating expressions in display strings without a context
+	component
+
+2022-05-19  Attila Torok
+
+	* Build: Generate config.h instead of passing macros on the command line
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2023-11-09  Attila Torok
@@ -196,7 +328,7 @@
 
 2022-04-05  Andras Varga
 
-	* LogInspector: Fix use of uninitialized value when setMode() is called
+	* Log: Fix use of uninitialized value when setMode() is called
 	from ctor.
 
 2022-04-05  Andras Varga
@@ -555,7 +687,7 @@
 
 2020-09-08  Attila Torok
 
-	* LogInspector: Add reference time option, format times better.
+	* Log: Add reference time option, format times better.
 	And add "Set ~" and "Clear ~" reference time actions to context menu.
 
 2020-09-17  Attila Torok
@@ -564,7 +696,7 @@
 
 2020-09-15  Attila Torok
 
-	* LogInspector: Reverse the "Relevant Hops" (and arrows in it) if
+	* Log: Reverse the "Relevant Hops" (and arrows in it) if
 	needed, based on module ID.
 
 2020-09-28  Attila Torok
@@ -847,7 +979,7 @@
 
 2019-11-11  Attila Torok
 
-	* LogInspector: Fix assertion failure when the simulation is restarted with
+	* Log: Fix assertion failure when the simulation is restarted with
 	an empty Log buffer.
 
 2019-05-29  Attila Torok
@@ -1306,7 +1438,7 @@
 
 2017-07-27  Attila Torok
 
-	* LogInspector: Actually apply the module exclusion filter after it
+	* Log: Actually apply the module exclusion filter after it
 	is restored.
 
 2017-04-06  Andras Varga

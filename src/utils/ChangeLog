@@ -1,3 +1,97 @@
+2024-03-22  Andras Varga
+
+	* opp_charttool: Use logging instead of print statements where appropriate;
+	added -l,--log-level option.
+
+2023-04-03  Levente Mészáros
+
+	* opp_chartool: Rewording of "exporting..." message and make it conditional
+	on -v (verbose) flag.
+
+2024-03-19  Andras Varga
+
+	* opp_featuretool: Added -r,--with-required command line option.
+	Also: -f, --with-dependencies now enables recommended features too
+
+2024-03-18  Andras Varga
+
+	* opp_featuretool: Clarify message printed when fixing up feature enablements
+
+2024-03-18  Andras Varga
+
+	* opp_featuretool: Some more logging.
+
+2024-03-18  Andras Varga
+
+	* opp_featuretool: Initialize .nedexclusions if doesn't exist.
+
+2024-03-14  Andras Varga
+
+	* opp_featuretool: Fix: suppress interactivity when --with-dependencies is
+	specified
+
+2024-03-13  Andras Varga
+
+	* opp_featuretool: Added support for the "recommended" feature attribute
+
+2024-03-11  Andras Varga
+
+	* opp_featuretool: More helpful message if user doesn't know a feature's
+	exact name ("Did you mean X?")
+
+2024-03-11  Andras Varga
+
+	* opp_featuretool: re-wording of confirmation questions for clarity.
+
+	It needs to be clarified that the "enable" operation will either enable
+	the required features too, or will do nothing at all. Enabling the
+	required ones is NOT optional.
+
+	Same for the "disable" operation.
+
+2023-12-13  Attila Torok
+
+	* opp_charttool: Fix an "invalid escape sequence" warning in index range
+	parsing
+
+2023-09-22  Attila Torok
+
+	* opp_charttool: Factor out parsing of chart selection and debugging
+	command line arguments
+
+2023-09-21  Attila Torok
+
+	* opp_charttool: Add a positional argument to select charts either by index
+	or name
+
+2023-09-20  Andras Varga
+
+	* opp_charttool: Errors not to print Python stack trace unless warranted
+	(e.g. debug mode).
+
+2023-09-11  Andras Varga
+
+	* opp_charttool: Check arg syntax in the -D and -p options, in order to give
+	a better error message instead of random Python error.
+
+2023-09-11  Andras Varga
+
+	* opp_charttool: Refactoring: structure the code using functions
+
+2023-04-06  Attila Torok
+
+	* opp_charttool: Some code cleanup.
+
+2023-02-06  Attila Torok
+
+	* opp_charttool: feature: Add "suppress_print" option to discard output
+	from chart scripts
+
+2022-12-19  Andras Varga
+
+	* opp_makemake: ported from Perl to Python, using machine translation and
+	manual refining.
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2023-10-06  ------ omnetpp-6.0.2 released ------

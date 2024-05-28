@@ -1,3 +1,82 @@
+2024-05-09  Levente Meszaros
+
+	* NED validation: Recognize new @suppressWarnings property, and no not issue
+	"Cannot modify parameter/gate properties in a submodule or connection" error
+	message for it.
+
+2024-05-09  Andras Varga
+
+	* Message compiler: Fix: cplusplus {{..}} block for a destructor was inserted
+	into the C++ code in multiple copies. Fn the following example:
+
+	class MyMessage
+	{
+	   int a;
+	   int b;
+	   int c;
+	}
+
+	cplusplus(MyMessage::~MyMessage) {{
+	   // this line will be replicated a number of times equal to the number
+	of fields??
+	}}
+
+	The C++ block was inserted into MyMessage_m.cc as many times as there are
+	fields in the message.
+
+	Reason: misplaced generateMethodCplusplusBlock() call, it was
+	accidentally placed into the "for each field" loop.
+
+	Reported by Giovanni Nardini [Simu5G]
+
+2024-05-09  Andras Varga
+
+	* NED: Allow inline properties in pattern assignments.
+
+2024-04-03  Andras Varga
+
+	* Message compiler: Add support for "enum class" and enum underlying data
+	type, using the @class, @underlyingType properties.
+
+2024-04-03  Andras Varga
+
+	* Message compiler: Enums defined in the msg file now may have properties added.
+
+2023-01-09  Andras Varga
+
+	* NED: Fix "Network not found" errors when INET was in a symlinked
+	directory. Solution was to resolve symlinks when using dirs as map keys (in
+	canonicalize(), a function now part of the common/). This also appears to
+	fix #747 "Module class not found due to soft links in the NED folder's path"
+
+2022-08-30  Andras Varga
+
+	* NED: Refactor NedResourceCache to allow accessing NED types immediately
+	after they have been loaded (provided all base types are also available),
+	as opposed to only after calling doneLoadingNedFiles().
+
+2022-08-26  Andras Varga
+
+	* NED: Excluded-packages list to use the same separator char as NED
+	path. Practically, it now also accepts ":" on non-Windows systems.
+
+2022-06-22  Attila Torok
+
+	* NED: Fix errors not being reported when a @display string literal had
+	a badly escaped character (like "\,") in it.
+
+2022-05-16  Attila Torok
+
+	* Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>
+
+2022-05-19  Andras Varga
+
+	* Message compiler: lexer/parser modernization, made reentrant.
+
+2022-05-17  Andras Varga
+
+	* NED: lexer/parser modernization, made reentrant.
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2023-10-06  ------ omnetpp-6.0.2 released ------

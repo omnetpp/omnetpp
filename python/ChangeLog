@@ -1,3 +1,301 @@
+2024-05-23  Andras Varga
+
+	* omnetpp.ned: Initial revision of package that allows for loading and
+	browsing NED types from Python.
+
+2024-04-10  Attila Torok
+
+	* omnetpp.scave: Make enum strip edges on "vectors on separate axes" charts
+	opt-in, for faster rendering
+
+2024-04-10  Attila Torok
+
+	* omnetpp.scave: Fix FutureWarning in `utils.fill_missing_titles`, trying to
+	modify a column in place.
+
+	"FutureWarning: A value is trying to be set on a copy of a DataFrame or
+	Series through chained assignment using an inplace method."
+
+2024-04-10  Attila Torok
+
+	* omnetpp.scave: Fix NameError in enum strip legend click handler,
+	used in the "Vectors on separate axes" chart template
+
+2024-04-10  Attila Torok
+
+	* omnetpp.scave: nit: Simplify utils._plot_enum.compute_conversion_factor()
+
+2024-04-10  Attila Torok
+
+	* omnetpp.scave: Raise minimum required Matplotlib version to 3.5.3,
+	to fix the errors in "Plot vectors on separate axes" charts, with enums
+	and edges.
+
+2024-04-22  Andras Varga
+
+	* omnetpp.scave: Hide symbol from legend if there's only one item.
+
+	Motivation: in the "Vectors as separate plots", eacvh vector is plotted
+	in its separate strip. Then the legend often covers a significant part of
+	the plot, and the marker in the legend could be mistaken for a valid data
+	point in the plot.
+
+2024-04-22  Andras Varga
+
+	* omnetpp.scave: Added "Omit empty vectors" to input pages of charts taking
+	vectors as input.
+
+2024-04-05  Andras Varga
+
+	* omnetpp.scave: Fix last value not painted when enum vectors are plotted as
+	colored strips, in plot_vectors_separate()
+
+2024-04-04  Andras Varga
+
+	* omnetpp.scave: utils.py: Parse enum spec correctly in plot_vectors_separate().
+	Enum spec comes from "enum" result attribute of vector result.
+
+	"A, B, C" -> {'A': 0, 'B': 1, 'C': 2}
+	"A=1, B, C=5, D" -> {'A': 1, 'B': 2, 'C': 5, 'D': 6}
+
+2024-03-22  Andras Varga
+
+	* omnetpp.scave: Use logging instead of print [revised by Attila]
+
+2023-04-03  Levente Mészáros
+
+	* omnetpp.scave: Added set_verbose_export() in utils.py, for controlling
+	whether or not export_image_if_needed()/export_data_if_needed() prints the
+	the "exporting..." message. Also, changed "exporting..." to "Exported..."
+
+2024-03-22  Andras Varga
+
+	* omnetpp.scave: Refactor/fix try-except blocks in image/data export
+
+2024-03-22  Andras Varga
+
+	* omnetpp.scave: Fix: Get rid of leading "./" in export file names.
+
+2024-01-18  Attila Torok
+
+	* omnetpp.scave: Fix: Avoid "The truth value of a Series is ambiguous"
+	errors in utils._check_same_unit()
+
+2023-10-13  Attila Torok
+
+	* omnetpp.scave: Fix "AttributeError: Can only use .str accessor with string
+	values!" errors
+
+	This occurred when get_results was called with an empty DataFrame. Fixed
+	by ensuring that DataFrames returned from the results module have the
+	right columns with the right dtypes.
+
+	This is a backport of: 52fcaa2213 ("scave/python: Fix the newly added
+	results_api test cases", 2023-10-13)
+
+2023-12-13  Attila Torok
+
+	* omnetpp.scave: Consider different kinds of "non-units" as the same in
+	chart scripts
+
+2023-12-13  Attila Torok
+
+	* omnetpp.scave: Fix import error reporting in results_nativemodule
+
+2023-10-18  Attila Torok
+
+	* omnetpp.scave: Avoid another FutureWarning in utils.py when calling
+	pivot_table
+
+2023-10-18  Attila Torok
+
+	* omnetpp.scave: Make legend ordering work for bar charts as well
+
+2023-10-18  Attila Torok
+
+	* omnetpp.scave: Add a workaround for zero-dimensional NumPy arrays in
+	result DFs.
+
+	As described in: https://github.com/pandas-dev/pandas/issues/53565
+
+2023-10-18  Attila Torok
+
+	* omnetpp.scave: Delete the results_scavetool backend
+
+	It was only a fallback, and it wasn't actively tested or maintained anymore.
+	And it wasn't a particularly nice solution in the first place.
+
+2023-10-10  Attila Torok
+
+	* omnetpp.scave: Avoid FutureWarning spam from Pandas 2.1 in
+	results_nativemodule, by not concatenating into an empty DataFrame.
+
+2023-10-03  Andras Varga
+
+	* omnetpp.scave: In charts, accept "-->" in legend replacements, too.
+
+	Interpretation of the "legend_replacements" property changed.
+
+2023-10-03  Andras Varga
+
+	* omnetpp.scave: utils.py: added add_legend_labels(), sort_rows_by_legend(),
+	ordering.xswt
+
+2023-09-16  Andras Varga
+
+	* omnetpp.scave: added sort=True argument to plotting functions.
+
+	Original plotting functions sorted dataframe items before plotting, which
+	made it impossible for the user to sort them differently
+	(pre-sorting had no effect). This was BAAAAAAAAD.
+
+	Now, by passing sort=False, user can turn off internal sorting, which
+	allows sorting the dataframe rows before plotting.
+
+	The `sort=True` mode is considered obsolete; it is only the default to
+	retain backward compatibility
+
+2023-09-27  Levente Mészáros
+
+	* omnetpp.scave: utils.py: Added plot_enum. Fix for plot_vectors_separate().
+	Fixed plot_enum guard for nan values.
+
+2023-10-03  Levente Mészáros
+
+	* omnetpp.scave: utils.py: Fixed calling make_legend_label() for both named
+	tuples and series.
+
+2023-09-29  Andras Varga
+
+	* omnetpp.scave: results: allow commenting out lines in filter expressions
+	with '#'
+
+2023-09-25  Attila Torok
+
+	* omnetpp.scave: Fix loading result files from relative input patterns when
+	not invoked from next to the .anf file by changing into the .anf directory
+	for loading result files already, in analysis.py.
+
+2023-09-07  Attila Torok
+
+	* omnetpp.scave: fix: Go through the suffix fallbacks when importing
+	scave_bindings in utils.py too.
+
+	Just us in results_nativemodule already did. This avoids an ImportError
+	in the IDE when only a debug mode runtime is built.
+
+2023-09-07  Attila Torok
+
+	* omnetpp.scave: fix: Make chart scripts work again in the IDE without a
+	built runtime, by importing scave_bindings from utils.py lazily, only when
+	necessary, for converting units.
+
+2023-09-21  Attila Torok
+
+	* omnetpp.scave: fix: Non-existent files in analysis input patterns are not
+	an error.
+
+2023-09-21  Attila Torok
+
+	* omnetpp.scave: Fix result file loading when input pattern is a directory.
+	The glob matching was done relative to the directory given as input
+	pattern, but it was tried to be loaded relative to PWD.
+
+2023-09-07  Attila Torok
+
+	* omnetpp.scave: Fix: Avoid "DataFrame does not contain a 'unit' column" errors
+	when plotting results where none of them has a "unit" attribute.
+
+2023-08-17  Attila Torok
+
+	* omnetpp.scave: Update scave_bindings stub file.
+
+2023-08-17  Attila Torok
+
+	* omnetpp.scave: In result query functions, make it the default to convert
+	quantities to the base unit by default (convert_to_base_unit=True).
+
+2023-08-17  Attila Torok
+
+	* omnetpp.scave: Cleanup parameter passing in results.py to impl,
+	so it is similar to the get_scalars, get_vectors, etc. case.
+
+2023-08-16  Attila Torok
+
+	* omnetpp.scave: Add convert_to_base_unit parameter to
+	results.get_[scalars|vectors|statistics|histograms]()
+
+2023-08-16  Attila Torok
+
+	* omnetpp.scave: Add fallback from results_nativemodule to results_scavetool
+
+2023-08-16  Attila Torok
+
+	* omnetpp.scave: Performance: Use dedication function xyArrayToNumpyArrays()
+	for copyingXYArrays into numpy arrays, instead of for-loop.
+
+2023-08-15  Attila Torok
+
+	* omnetpp.scave: Add utils.convert_to_base_unit(df) and
+	UnitConversion.convertUnitArray()
+
+2023-04-06  Attila Torok
+
+	* omnetpp.scave: Rename results_standalone impl to results_scavetool
+
+2023-04-06  Attila Torok
+
+	* omnetpp.scave: Port tools from results_standalone to results_nativemodule.
+
+2023-04-06  Attila Torok
+
+	* omnetpp.scave: Added impl/results_nativemodule.py that uses scave_bindings
+
+2023-03-30  Attila Torok
+
+	* omnetpp.scave: Add Python bindings to the scave library using nanobind
+
+2023-03-14  Attila Torok
+
+	* omnetpp.scave: Set default X axis label to "Simulation Time [s]" when
+	plotting vectors.
+
+2023-03-13  Attila Torok
+
+	* omnetpp.scave: Always include the "unit" attribute (if present) in the
+	returned data frame when querying results, regardless of include_attrs.
+
+2023-03-10  Attila Torok
+
+	* omnetpp.scave: feature: Require results to be in the same unit before
+	plotting.
+
+2023-03-17  Attila Torok
+
+	* omnetpp.scave: Make loading results much faster in standalone mode
+	by switching to `df.apply(..., raw=True)` instead of `df.transform(...)`,
+	thereby avoiding string indexing into each row.
+
+2023-02-08  Attila Torok
+
+	* omnetpp.scave: Detect and warn specifically about legacy (<6.0) anf files
+	in Analysis.from_anf_file()
+
+2023-02-10  Attila Torok
+
+	* omnetpp.scave: Add filename as context to any exception in
+	Analysis.from_anf_file()
+
+2023-02-06  Attila Torok
+
+	* omnetpp.scave: Feature: Add `suppress_print` option Analysis.run_chart()
+	to discard output from chart scripts.
+
+2022-08-26  Attila Torok
+
+	* omnetpp.scave.analysis: feature: Load the newly added Chart.created_with in
+	analysis.py
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2024-01-22  Attila Torok

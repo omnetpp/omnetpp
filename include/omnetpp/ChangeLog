@@ -1,3 +1,165 @@
+2024-05-28  Andras Varga
+
+	* SimTime: added constructors from integers, for completeness; adjust
+	comments
+
+2024-03-25  Andras Varga
+
+	* SimTime: added new constructors; eliminate pitfall associated with
+	int64_t+unit constructor
+
+	Motivation: The constructor
+
+	     SimTime(int64_t value, SimTimeUnit unit)
+
+	had no double overload, so calls like
+
+	     SimTime(3.5, SIMTIME_MS)
+
+	were silently compiled to calls to the above ctor, resulting in incorrect
+	values (3ms instead of 3.5ms).
+
+	Adding the overload for `double` solves this problem; adding the
+	overloads for other integer types was necessary to prevent ambiguity
+	errors.
+
+2024-05-06  Andras Varga
+
+	* Implement @enum for string parameters in cStringParImpl
+
+2024-05-02  Andras Varga
+
+	* cConfigurationEx: Added isAbstractConfig() pure virtual method.
+
+2024-04-18  Andras Varga
+
+	* cHasher: Fix: Prevent -nan (and all other alternative representations of
+	NaN) from causing fingerprint differences.
+
+2024-04-07  Andras Varga
+
+	* cEnum: Changes to support enum classes and enum base types (C++11 features).
+
+	- All methods now expect/return intval_t aka int64_t instead of int, to prevent data loss
+
+	- bulkInsert() was deprecated, and the constructor with a similar vararg interface
+	  was deleted (they assumed int-sized args, and will crash for other sizes);
+	  they are replaced by std::initializer_list-based internal-use functions.
+
+	* Register_Enum macros:
+
+	- Register_Enum(): implementation changed; the first arg (enum type name)
+	  must now be valid (previously it was not used)
+
+	- Added Register_Enum_WithVar() and Register_Enum_Custom() macros
+
+	- Register_Enum2() declared obsolete
+
+2024-03-20  Levente Meszaros
+
+	* ContextType enum: Added new value CTX_SCHEDULER. The context being set to
+	CTX_SCHEDULER indicates that the code is being run in the context of the
+	simulation's the event scheduler.
+
+2024-03-19  Andras Varga
+
+	* cPar: Added getOwnerComponent() convenience function.
+
+	* cPar: Added a resetEvalContext=true argument to parse().
+
+2024-03-09  Andras Varga
+
+	* cOutVector adapted to changes; API extended and slightly changed;
+	tests updated
+
+	Issue: setUnit() etc caused compilation error, as
+	cEnvir::setVectorAttribute() is gone. Collecting attrs doesn't work, as
+	we cannot add attributes after registration.
+
+	Solution: delay registration until data is written; but allow forcing it
+	with registerVector().
+
+	API changes: added extra ctor, setAttribute(), and registerVector()
+
+2024-03-07  Andras Varga
+
+	* cEnvir: interface change: Remove setVectorAttribute(), add attributes map
+	arg to registerOutputVector() instead. Necessitated by the feature to
+	include empty vectors too in the output vector file.
+
+2024-02-08  Andras Varga
+
+	* cPacket: doxygen comments refined
+
+2024-01-18  Andras Varga
+
+	* cFingerprintCalculator: interface change: addVectorResult() split to
+	registerVectorResult() and a (changed) addVectorResult(). Necessitated by
+	the feature to include empty vectors too in the output vector file.
+
+2024-01-10  Andras Varga
+
+	* cResultFilter: Added removeDelegate(); keep the order of delegates.
+
+2023-01-16  Andras Varga
+
+	* cXMLElement: made it subclass from cOwnedObject instead of cObject.
+	Reason: to allow them to be assigned to module parameters of the type
+	'object'.
+
+2023-01-16  Andras Varga
+
+	* cObjectParImpl: use inherited&refined deleteOld() instead of
+	deleteExpression()
+
+	cParImpl::deleteOld() implies deleting the expression, plus more like
+	clearing the srcLoc info.
+
+	Move deleteObject() call out of doSetObject(), and into deleteOld()
+
+2023-09-28  Andras Varga
+
+	* cBoolParImpl,etc: factored out duplicated deleteOld() functions to base
+	class
+
+2023-01-10  Andras Varga
+
+	* cPar: Remember the file/line location where it was assigned from.
+
+	New cPar methods:
+	- getSourceLocation()
+	- getBaseDirectory()
+
+	Latter is just a new getter for an existing private field.
+
+2022-04-18  Andras Varga
+
+	* Remove apparently unused RELEASE_OPPSIM_MAGIC_NUMBER define
+
+2022-10-05  Andras Varga
+
+	* cEnum: getNameValueMap() to return const ref
+
+2022-06-22  Attila Torok
+
+	* cDisplayString: Improve docstring, mention expressions and escaping
+
+2022-05-16  Attila Torok
+
+	* Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>
+
+2022-05-19  Attila Torok
+
+	* Build: Generate config.h instead of passing macros on the command line
+
+2022-05-09  Andras Varga
+
+	* cKSplit: Added 'const' qualifiers to CritFunc and DivFunc function signatures
+
+2022-05-10  Andras Varga
+
+	* CodeFragments: store src code too, for debug purposes
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2024-01-09  Rudolf Hornig

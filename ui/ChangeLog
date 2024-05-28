@@ -1,3 +1,496 @@
+2024-05-27  Levente Meszaros
+
+	* Sequence Chart: Added guards for checking if the event is nullptr.
+
+	Normally this wouldn't happen but if the user started eventlog recording
+	using the toolbar (instead of enabling it in the INI file) the initialize
+	event is missing from the eventlog file.
+
+2024-05-09  Levente Meszaros
+
+	* NED editor: Allow suppressing warnings by adding @suppressWarning property
+	on an element. This is useful for suppressing an unwarranted 'No such
+	parameter' warning on parameter elements.
+
+2024-05-17  Andras Varga
+
+	* NED documentation generator: Understand backtick quoting and render them as monospace
+
+2024-05-08  Levente Meszaros
+
+	* NED editor: For conditional submodules with empty typename, NED analysis
+	should use the interface type.
+
+2024-05-08  Levente Meszaros
+
+	* NED editor: Fixed extra newline character in ModuleHierarchyView after parameter
+	values.
+
+2024-05-08  Levente Meszaros
+
+	* NED editor: Enhanced resolving the effective type of a submodule.
+
+	INET contains several unwarranted parameter assignment warnings related
+	to incorrectly identified submodule type. For example:
+	       pathLoss.typename = default("BreakpointPathLoss");
+	       pathLoss.breakpointDistance = 8 m;
+	       pathLoss.l01 = 40.2;
+	       pathLoss.alpha1 = 2;
+	       pathLoss.l02 = 58.5;
+	       pathLoss.alpha2 = 3.3; the deep parameter assignment to typename
+	was ignored.
+
+2024-05-07  Andras Varga
+
+	* NED and INI editors: Validate string param assignments to @enum
+	properties. It is an error if the value is not one of the values listed in
+	the parameter's @enum property.
+
+2024-05-06  Andras Varga
+
+	* NED editor: Remove superfluous error messages. If there's already an error
+	message saying "no such module type", no point to spell out the consequences
+	too (such as it having no parameter called X).
+
+2024-05-06  Andras Varga
+
+	* NED editor: Add proposals for @enum
+
+2024-05-06  Andras Varga
+
+	* NED editor: Fix #1156: unwarranted error message for parameter
+	assignment validation: "no such parameter".
+
+	Example:
+
+	moduleinterface IFoo
+	{
+	   parameters:
+	       int x;
+	}
+
+	simple Foo like IFoo {
+	   parameters:
+	       int x;
+	}
+
+	module Test {
+	   submodules:
+	       bar: <default("FooXXX")> like IFoo {
+	           x = default(1);  // bogus error: 'x': no such parameter
+	       }
+	}
+
+	If the default type ("FooXXX" in the above example) does not exist, then
+	the validator should use the interface type ("IFoo") to determine whether
+	such parameter exist.
+
+2024-05-06  Rudolf Hornig
+
+	* Releng: updated build image for eclipse 24-03 (4.31)
+
+2024-05-04  Andras Varga
+
+	* Inifile editor: display abstract sections with "empty folder" image.
+
+2024-05-04  Andras Varga
+
+	* Inifile editor: fix icon transparency issue on "Sections" page.
+	If there was an overlay icon (e.g. warning/error sign), icon bg was white
+	and not transparent as expected.
+
+2024-05-02  Andras Varga
+
+	* Inifile editor, Simulation launcher: Added support for "abstract=true"
+	inifile option.
+
+	- Register config option
+	- Display it in the inifile form editor
+	- Launcher not to offer abstract configs for launching
+
+2024-05-02  Andras Varga
+
+	* Inifile editor: Add support for recently added config options.
+
+2024-04-10  Attila Torok
+
+	* Analysis Tool: Make enum strip edges on "vectors on separate axes" charts
+	opt-in, for faster rendering.
+
+2024-04-23  Andras Varga
+
+	* Analysis Tool: Fix: Properties view was not updated after editing a temporary
+	chart using the Configure dialog.
+
+2024-04-22  Andras Varga
+
+	* Analysis Tool: Added "Omit empty vectors" to input pages of charts taking
+	vectors as input
+
+2024-04-22  Andras Varga
+
+	* Analysis Tool: "Ordering" page in Chart dialog: make labels easier to
+	understand for new users.
+
+2024-04-04  Andras Varga
+
+	* Analysis Tool: In the "Lines on separate axes" chart template, turn on
+	"Display enums as colored strips" option by default. It will only take
+	effect if "enum" attr is present in the vector.
+
+2024-04-04  Andras Varga
+
+	* Analysis Tool: Adjust menu item text: Put template name in quotes in the
+	"Plot using.." menu item, for clarity.
+
+2024-03-29  Andras Varga
+
+	* NED editor: implemented "Snap to Grid".
+
+	Limitations:
+	- Grid size is fixed 10, and there is no UI to change it.
+	- There is no feedback of snapping during move/resize, snapping is only
+	  done when mouse is released.
+
+	Lack of move feedback is due to impedance mismatch with the built-in
+	SnapToGrid class (it has no notion of compound module scaling etc).
+
+2024-04-03  Andras Varga
+
+	* NED editor: CompoundModuleFigure: Fix accumulation of errors when painting
+	map grid.
+
+2024-03-29  Andras Varga
+
+	* NED editor: Rounding of submodule coordinates; this fixes issue #1146
+	"NED graphical editor writes coordinates into the display strings with
+	unnecessary precision"
+
+2024-04-04  Rudolf Hornig
+
+	* NED editor: Fix: property sheet in the graphical NED editor disappeared
+	after a module or connection selection
+
+2024-04-04  Rudolf Hornig
+
+	* NED editor: fix a build error with the latest GEF 3.19 version
+
+2024-03-19  Andras Varga
+
+	* Inifile editor: Flag unknown configuration options as warnings instead of
+	errors. The problem is that the editor cannot tell whether an unknown option
+	is mistyped or is the name of a valid custom option (registered in the model
+	C++ code).
+
+2024-03-08  Andras Varga
+
+	* Project Features: Added support for the "recommended" attribute in
+	.oppfeatures.
+
+2024-03-08  Andras Varga
+
+	* NED editor: Change "imported NED type not found" error to a warning.
+
+	A wrong import does not actually cause any problem unless the model tries
+	to instantiate that (nonexisting) NED type.
+
+	The most common cause of this warning is the use of a type that is part of
+	an excluded NED package due to a disabled project feature, so it is often
+	impossible to get rid of.
+
+2024-03-08  Andras Varga
+
+	* Project Features: update "features.h" quicker. The original code often
+	caused ongoing builds (run by the automated feature test) to fail.
+
+2024-03-07  Andras Varga
+
+	* Project Features: Reduce time between reading the features file and
+	generating the header.
+
+2024-03-07  Andras Varga
+
+	* Project Features: Write features.h atomically (sort of). Write it in a way
+	so that observers of the file never see a truncated or partially written
+	file.
+
+2024-03-06  Andras Varga
+
+	* Project Features: Project Makemake property page: added note about
+	Project Features vs C++ exclusions.
+
+2024-03-06  Andras Varga
+
+	* Project Features: Project Makemake property page: improved wording
+	for clarity.
+
+2024-03-06  Andras Varga
+
+	* Project Features: Project Makemake property page: disallow
+	Include/Exclude folder if there are Project Features. Reason:
+	Let Project Features govern exclusions.
+
+2024-03-06  Andras Varga
+
+	* Project Features: Project Makemake property page: fix "Include" button
+	on nested source folder.
+
+	The "Include" button was disabled for a nested source folder -- it should
+	just remove the folder from the source entries and let its parent source
+	entry cover it.
+
+2024-03-05  Andras Varga
+
+	* Project Features: NED Source Folders property page: Labels refined (get
+	rid of big wall of text at top).
+
+2024-03-05  Andras Varga
+
+	* Project Features: NED Source Folders property page: Make uneditable if
+	there are Project Features.
+
+2024-03-05  Andras Varga
+
+	* Project Features property page: Improve wording for clarity
+
+2024-03-05  Andras Varga
+
+	* Project Features property page: Display note if project has no project
+	features.
+
+2024-03-01  Andras Varga
+
+	* Project Features: Remove nagging: auto-update project on config file
+	changes.
+
+2024-02-29  Andras Varga
+
+	* Project Features: Force exclusions to be fully determined by features
+
+2023-10-13  Attila Torok
+
+	* Analysis Tool: Fix "AttributeError: Can only use .str accessor with string
+	values!" errors.
+
+	This occurred when get_results was called with an empty DataFrame. Fixed
+	by ensuring that DataFrames returned from the results module have the
+	right columns with the right dtypes.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Added top level modules as module axis with @wireJunction
+	property. This changes the network node level preset configuration to also
+	display wire junctions which are not real network nodes.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Added some zoom and reordered other sequence chart toolbar actions.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Changed zoom to fit action image in the toolbar.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Added the Home action to the toolbar.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Added Go to Begin and Go to End actions.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Fixed trying drawing the arrow to the message dependency
+	when the corresponding event is not in the filtered eventlog.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Fixed zoomToFit to make sure that both ends are in the
+	viewport.
+
+2023-11-23  Levente Mészáros
+
+	* Sequence Chart: Added the unfiltered event reference to FilteredEvent for
+	caching.
+
+2023-10-31  Rudolf Hornig
+
+	* Releng: updated tycon 2.7.5 -> 4.0.3, updated pydev URL
+
+2024-02-29  Andras Varga
+
+	* Releng: updated version number 6.0.2 - 6.1.0 (6.1pre1)
+
+2023-10-18  Attila Torok
+
+	* Analysis Tool: Make legend ordering work for bar charts as well.
+
+2023-10-18  Levente Mészáros
+
+	* Sequence Chart: Fix: Added some null checks to avoid crashing the native
+	library.
+
+2023-10-03  Andras Varga
+
+	* Analysis Tool: In charts, accept "-->" in legend replacements, too.
+	Interpretation of the "legend_replacements" property changed
+
+2023-10-08  Andras Varga
+
+	* Inifile editor: Module Hierarchy View: fix "Unhandled event loop"
+	exceptions" previously worked around.
+
+2023-10-06  Levente Mészáros
+
+	* NED Documentation Generator: Added description column to signals and
+	statistics table. The description column is filled with the comment of the
+	relevant NED element.
+
+2023-10-03  Andras Varga
+
+	* Analysis Tool: Support for ordering items added to [most] chart templates
+
+2023-10-03  Andras Varga
+
+	scave/python: utils.py: added add_legend_labels(), sort_rows_by_legend(),
+	ordering.xswt
+
+2023-09-27  Levente Mészáros
+
+	* Analysis Tool: "Line Chart on Separate Axes" chart template: On the
+	"Lines" tab, added option "enums as strips".
+
+2023-09-28  Andras Varga
+
+	* Analysis Tool: "New dialog page": used to ignore fields with unrecognized
+	chars, no more. Fall back to turning them into text fields. User is supposed
+	to review the generated page anyway.
+
+2023-09-28  Andras Varga
+
+	* Analysis Tool: "New dialog page": generate IDs in snake_case.
+	Snake case is the naming convention we use for chart properties.
+
+2023-09-21  Attila Torok
+
+	* Analysis Tool: Try to generate relative paths into the .anf file in the
+	creation wizard
+
+	When opening a .sca or .vec file, make the input patterns as relative to
+	the .anf file under creation, unless they would have to start with "../".
+	This will leave out the project name in most cases, simplifying locating
+	the result files by opp_charttool a lot. This was already done when
+	adding inpuots to the analysis by dragging and dropping .sca or .vec
+	files into the inputs tree.
+
+2023-09-16  Andras Varga
+
+	* Analysis Tool: mark temp charts with asterisk not brackets in tabs
+
+2023-09-17  Andras Varga
+
+	* Analysis Tool: Assign numbered names to new charts.
+
+2023-09-15  Andras Varga
+
+	* Analysis Tool: "Lines", "Bars", "Histograms" dialog pages: added hints on
+	customization
+
+2023-06-16  Levente Mészáros
+
+	* Sequence Chart: Changed ConfigureStyleDialog to store the
+	enabled/disabled state of the individual coloring styles.
+
+2023-06-16  Levente Mészáros
+
+	* Sequence Chart: Changed ConfigureStyleDialog list widget to automatically select the
+	newly added element.
+
+2023-04-26  Levente Mészáros
+
+	* Analysis Tool: fix: The "Sum weights" column displayed an error in the
+	Histograms tab for weighted histograms.
+
+2023-03-09  Andras Varga
+
+	* Analysis Tool: Browse Data page: Data table: add IsWeighted column; small
+	changes in content.
+
+	- "Kind" column: do not use abbreviations like "h", "wh", etc, but expand
+	  them
+	- "Variance" column: use unit short names (e.g. "s" instead of "second")
+	  which looks better with superscipt 2 ("squared")
+
+2023-02-09  Andras Varga
+
+	* Analysis Tool: DataTable: very basic syntax highlighting of parameter values
+	on the Parameters tab
+
+2023-02-03  Andras Varga
+
+	* Analysis Tool: DataTable: Added a new context menu that comes up when
+	right-clicking the header row. It allows for selecting column alignment,
+	fitting width, etc.
+
+2023-03-09  Andras Varga
+
+	* Analysis Tool: DataTable: New options were added, to allow for hiding or
+	dimming less important details: "Show Network Name", "Color Network Name",
+	"Color Result Suffix".
+
+2023-02-01  Andras Varga
+
+	* In the first few months of 2023, refactored internals and refined the UI
+	for quantity formatting, and overall refined the initial concept
+	implementation. The dialog was transformed into a preference page, and the
+	profile management and formatting dialogs were redesigned for better
+	usability.
+
+2022-02-17  Levente Mészáros
+
+	* Analysis Tool: Introduced the initial version of quantity formatting in
+	the data table on the Browse Data page. This feature enhances the display of
+	numeric simulation results recorded with or without measurement units by
+	showing them in the most appropriate format for the given context. Quantity
+	formatting includes selecting the suitable display unit, number format
+	(precision, digit grouping, scientific or regular notation, etc.), and using
+	colors for better comprehension.
+
+	Quantity formatting can be toggled on/off using toolbar icons and configured
+	in detail through a dialog. This dialog allows you to define multiple
+	profiles and specify which profile to use in different contexts.
+
+2022-02-15  Levente Mészáros
+
+	* Eventlog table: Fixed the application of style range being off by one in
+	AbstractLargeTableRowRenderer.
+
+2023-02-06  Andras Varga
+
+	* Analysis Tool: Better icons for tree nodes: parameter, field, attribute.
+
+2023-02-07  Andras Varga
+
+	* Analysis Tool: Improved context menu on the Charts page. "Export" items
+	brought forward, to reflect they are more important for the end user than
+	template-related items.
+
+2023-02-06  Andras Varga
+
+	* Analysis Tool: added "Compare Chart to Template"
+
+2023-01-12  Attila Torok
+
+	* Analysis Tool: Fix bug when copy-pasting a folder with a chart inside that
+	is currently open in an editor, and its script has been altered. Previously,
+	the newly created clone in the pasted folder had an outdated script, now it
+	always has the updated script text even if the analysis file hasn't been
+	saved yet.
+
+2022-06-22  Attila Torok
+
+	* NED editor: Handle ${expressions} in display strings better
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2024-02-01  Rudolf Hornig

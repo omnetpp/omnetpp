@@ -1,3 +1,16 @@
+2024-05-06  Andras Varga
+
+	* Implement @enum for string parameters. Here: read @enum properties and
+	set their contents onto cStringPar objects.
+
+2023-01-10  Andras Varga
+
+	* cPar to remember the NED or INI file/line location it was assigned from.
+
+2022-08-30  Andras Varga
+
+	* Follow NedResourceCache changes, e.g. resolveNedType() -> lookupNedType() renaming.
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2023-10-06  ------ omnetpp-6.0.2 released ------

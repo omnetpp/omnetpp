@@ -1,3 +1,214 @@
+2024-05-28  Andras Varga
+
+	* SimTime: adjust error messages
+
+	- Use "simtime_t:" prefix.
+	- Use "Cannot represent x" instead of "x cannot be represented" or "Cannot convert x"
+
+2024-03-25  Andras Varga
+
+	* SimTime: Follow/implement changes described in include/omnetpp/ChangeLog.
+
+2024-05-06  Andras Varga
+
+	* SimTime: Follow/implement changes described in include/omnetpp/ChangeLog.
+	* implement @enum for string parameters
+
+2024-04-07  Andras Varga
+
+	* cEnvir: Follow/implement changes described in include/omnetpp/ChangeLog.
+
+2024-04-04  Andras Varga
+
+	* cResultRecorder: resolve "enumname" attr in the @statistic to "enum"
+
+	Given the following C++ code:
+	 enum LinkState {UP, DOWN, FAULTY};
+	 Register_Enum(LinkState, (UP, DOWN, FAULTY))
+
+	and NED:
+	 @statistic[linkState](record=vector; enumname=LinkState);
+
+	The recorded vector will have the following attributes in the .vec file:
+
+	  attr enumname LinkState
+	  attr enum "UP=1, DOWN=2, FAULTY=3"
+
+	which can be utilized by the SeqChart, chart templates, etc.
+
+	If enumname is specified, the enum MUST exist and be registered.
+
+	Only one of the enum and enumname attrs may be present in a @statistic.
+
+2024-04-04  Andras Varga
+
+	* cEnum cosmetics
+
+2024-03-20  Levente Meszaros
+
+	* cSimulation: set CTX_SCHEDULER context in the takeNextEvent() method
+	that invokes the scheduler.
+
+2024-03-20  Levente Meszaros
+
+	* Print the qualified name of instantiated NED modules; enable with
+	the -DPRINT_MODULE_TYPES_USED compiler option.
+
+	This is an internally used (non-public) feature, used by the automatic
+	project feature dependency discovery mechanism of INET.
+
+	Recompile OMNeT++ to enable/disable it.
+
+2024-03-19  Andras Varga
+
+	* cPar: implement new resetEvalContext=true argument of parse().
+	If resetEvalContext=true, parse() now sets the evaluation context
+	to the owner component.
+
+	This fixes #1132 "Pattern assignment causes subsequently assigned parameter
+	expression to be evaluated in wrong context".
+
+	It was chosen to add the restoring code into parse(), because it is
+	called at multiple places, and almost always the intention is that the
+	expression should be evaluated in the context of the component that owns
+	the parameter.
+
+2024-03-09  Andras Varga
+
+	* cOutVector: Follow/implement changes described in include/omnetpp/ChangeLog.
+
+2024-03-07  Andras Varga
+
+	* VectorRecorder, StaticEnv: Follow cEnvir changes described in include/omnetpp/ChangeLog.
+
+2024-01-18  Andras Varga
+
+	* cSingleFingerprintCalculator, cMultiFingerprintCalculator:
+	Follow/implement cFingerprintCalculator changes described in
+	include/omnetpp/ChangeLog.
+
+2024-01-12  Andras Varga
+
+	* cComponent: trim disabled or unused result filters and recorders.
+	Implementation in trimResultListeners().
+
+2024-01-10  Andras Varga
+
+	* cResultFilter: Implement removeDelegate(), described in include/omnetpp/ChangeLog.
+
+2024-01-18  Andras Varga
+
+	* cComponent: removeListener(): Keep order of listeners
+
+2023-02-09  Andras Varga
+
+	* cValue: use UnitConversion::formatQuantity()
+
+2023-01-16  Andras Varga
+
+	* cXMLParImpl, etc: made it possible to assign XML data to NED "object" parameters
+
+	Example:
+	**.config = xmldoc("config.xml")
+
+	Motivation: INET contains several NED parameters of type XML which we'd
+	like to port to JSON. However, we don't want to break existing models. If
+	a parameter of type "object" accepts both XML amd JSON, then we cam
+	achieve that by changing the types of those parameters from "xml" to
+	"object", and enhancing the module C++ implementation to be able to
+	process both. Then it would be up to the user when they port existing
+	models (omnetpp.ini etc) from XML to JSON data.
+
+	Details:
+
+	cObjectParImpl only accepts cOwnedObject and wants to own them, so we
+	need to make cXMLElement subclass from cOwnedObject, and duplicate the
+	XML trees from the XMLDocCache when assigning the parameters. Hence the
+	following changes:
+
+	- cXMLElement changed to subclass from cOwnedObject
+	- its tagName is now stored in the object name (cNamedObject)
+	- added dup(), dupTree()
+	- use dupTree() in the xmldoc() and xml() NED functions
+	- cXMLParImpl: make act like cObjectParImpl, i.e. own its cXMLElement
+	- cXMLParImpl: if it would not be able to take() the object (owner is
+	  not a soft owner, see isSoftOwner()), it calls dupTree() to clone
+	  it -- this is needed for assignent of XML params among themselves
+	  in NED to work (like foo=xml(...); bar=foo;) like it did before.
+	  (Needed for backward compatibility in INET.)
+	- XMLDocCache now also owns the XML trees
+
+	cXMLParImpl code is now very similar to cObjectParImpl.
+
+	Further low-hanging fruits:
+	- cXMLElements ctor and setters could be made public
+	- XmlDocCache may be cleared at any time, because all XML trees
+	  it returns are now duplicated.
+
+2023-01-16  Andras Varga
+
+	* cObjectParImpl: use inherited&refined deleteOld() instead of
+	deleteExpression(). cParImpl::deleteOld() implies deleting the expression,
+	plus more like clearing the srcLoc info.
+
+	Move deleteObject() call out of doSetObject(), and into deleteOld()
+
+2023-09-28  Andras Varga
+
+	* cBoolParImpl,etc: factored out duplicated deleteOld() functions to
+	base class
+
+2023-01-10  Andras Varga
+
+	* cPar to remember the file/line location where it was assigned from
+
+	New cPar methods:
+	- getSourceLocation()
+	- getBaseDirectory()
+
+	Latter is just a new getter for an existing private field.
+
+2022-03-25  Andras Varga
+
+	* Added componentId() NED function
+
+2022-11-21  Andras Varga
+
+	* Fix cDisplayString::doParse() bug remaining after d8ce17e5
+
+	This fixes envir/qtenv_displaystringaccess_1.test
+
+2022-08-01  Attila Torok
+
+	* cDisplayString: doParse(): Also swallow the trailing backslash.
+
+	To make it consistent with the disappearing mid-string backslashes. The
+	trailing one remaining there was probably accidental.
+
+2021-07-28  Andras Varga
+
+	* cDisplayString: Don't split values on commas inside ${...}
+	expressions while parsing.
+
+	And don't escape them when assembling back into a string. Also
+	considering the $$ escape sequence.
+
+2022-05-16  Attila Torok
+
+	* Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>
+
+2022-05-21  Andras Varga
+
+	* SimTime: initialize powersOfTen[] statically
+
+2022-05-09  Andras Varga
+
+	* cKSplit: Follow adding const modifiers.
+
+2022-05-10  Andras Varga
+
+	* CodeFragments: Implement storing src code too, for debug purposes
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2024-02-01  Rudolf Hornig

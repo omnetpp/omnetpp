@@ -1,3 +1,67 @@
+2024-03-19  Andras Varga
+
+	* Added a list of known NED properties, with descriptions and
+	references. Also: documented the @dynamic property.
+
+2024-02-05  Andras Varga
+
+	* Added mention of new model change notification types:
+	cPostModuleBuildNotification, cPostComponentInitializeNotification
+
+2024-02-09  Andras Varga
+
+	* Follow through w/ deliverOnReceptionStart rename.
+
+2023-09-09  Andras Varga
+
+	* Use rsvg-convert instead of inkscape to convert svg into png
+	and pdf [Attila Torok]
+
+2024-02-07  Andras Varga
+
+	* Documented transmission updates
+
+2024-02-06  Andras Varga
+
+	* sendDirect(): incorporated SendOptions variants
+
+2024-02-05  Andras Varga
+
+	* Split object parameters and JSON. Added example for JSON-style
+	parameters. Clarifications for volatile. Swap "volatile" and
+	"object parameters" sections, because volatile is a more commonly
+	used, and object parameters may be volatile, too.|
+
+2024-02-02  Andras Varga
+
+	* Documented the "demux" result filter
+
+2020-12-03  Andras Varga
+
+	* Updated "Sending Messages", added "What send() Does"
+
+2022-12-06  Andras Varga
+
+	* Added basic documentation about accessing object parameters in C++
+
+2022-12-06  Andras Varga
+
+	* Documented cPar methods for type=OBJECT
+
+2021-03-17  Andras Varga
+
+	* Clarify volatile parameters in NED
+
+2022-08-02  Andras Varga
+
+	* Refined documentation of escaping and embedded expressions in
+	display strings
+
+2022-08-01  Attila Torok
+
+	* Documented display string escaping and embedded expression
+	syntax
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2024-01-22  Attila Torok

@@ -1,3 +1,14 @@
+2023-11-07  Attila Torok
+
+	* tictoc18.ned: Fix range mistake in NED for loop. (The end of the range
+	is unconventionally included in NED.)
+
+	Source: https://github.com/omnetpp/docs.omnetpp.org/issues/15
+
+2022-05-16  Attila Torok
+
+	* Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2023-10-06  ------ omnetpp-6.0.2 released ------

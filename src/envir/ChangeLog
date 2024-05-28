@@ -1,3 +1,90 @@
+2024-05-27  Andras Varga
+
+	* Inifile parsing: Fix trailing space in section header causing parse
+	error. This fixes #1167.
+
+2024-05-02  Andras Varga
+
+	* Added isAbstractConfig() to cConfigurationEx; implement it
+	in SectionBasedConfig.
+
+2022-02-02  Andras Varga
+
+	* Added the "abstract=<boolean>" config option. Setting it makes the section
+	abstract, i.e. serve as a base for other sections.
+
+2024-05-02  Andras Varga
+
+	* Refined the description of eventlog-snapshot-frequency and
+	eventlog-options ini file options for clarity.
+
+2024-03-26  Levente Meszaros
+
+	* Eventlog Recording: Fix: ComponentMethodBeginEntry was not recorded into
+	the event log if the called was a channel object. The resulting eventlog
+	file could not be read by the sequence chart tool.
+
+2024-03-11  Andras Varga
+
+	* Output Vector Recording: Include empty vectors in the output vector file.
+
+	File Previously, output vectors were only recorded into the .vec file when
+	the first data item was written. As a result, vectors that were registered
+	but never written to did not appear in the .vec file. This behavior caused
+	uncertainty during simulation result analysis, as users could not
+	distinguish between events (e.g., packet drops) that never occurred during
+	the simulation and those that were simply not measured or recorded. Now,
+	empty vectors are also written to the .vec file, eliminating this
+	uncertainty and providing more complete information.
+
+	The old behavior can be requested with the "vector-record-empty=false"
+	configuration option, in case it is ever needed.
+
+	This also fixes the issue that no .vec file was written by a simulation that
+	only created empty vectors but never wrote data into them.
+
+2024-03-07  Andras Varga
+
+	* Output Vector Recording: Follow cEnvir interface change, and remove the
+	setVectorAttribute() method. Attributes need to be specified in the
+	registerOutputVector() call instead.
+
+	Reason: Otherwise, early vector registration (required for being able to
+	record empty vectors into the .vec file) is not possible, because setVectorAttribute()
+	calls would come too late. Also, this is now consistent with the API for recording of
+	scalars, histograms, etc.
+
+2024-01-17  Andras Varga
+
+	* Fingerprint: "statistics" ingredient to ignore disabled (unrecorded)
+	statistics. This, in theory, is a breaking change, but we doubt using the
+	"statistics" fingerprint ingredient is a rarely used feature.
+
+2023-10-18  Levente Mészáros
+
+	* Fixed check_and_cast in ObjectPrinterRecursionControl, the result
+	can be a nullptr.
+
+2023-01-16  Andras Varga
+
+	* XMLDocCache: Make it own the XML documents it loads. This is needed for
+	making it possible to assign XML data to NED "object" parameters, see
+	simulation library changes. Also: XmlDocCache may now be cleared at any
+	time, because module parameters no longer point into the element trees held
+	by XmlDocCache, but have their own copies.
+
+2022-03-19  Andras Varga
+
+	* EnvirBase: Refactoring: Factor out a loadNEDFiles() function from setup().
+
+2022-05-16  Attila Torok
+
+	* Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>
+
+2022-05-19  Attila Torok
+
+	* Build: Generate config.h instead of passing macros on the command line
+
 2024-02-01  ------ omnetpp-6.0.3 released ------
 
 2023-10-06  ------ omnetpp-6.0.2 released ------
