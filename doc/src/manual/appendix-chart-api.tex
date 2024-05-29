@@ -34,37 +34,37 @@ or a stateless way:
 
 \begin{enumerate}
   \item 
-
-\par Inside a chart script in the Analysis Tool in the Simulation IDE. In that
-mode, the set of result files to take as input are defined on the "Inputs"
-page of the editor. The \ttt{get\_results()}, \ttt{get\_scalars()} and similar methods
-are invoked with a filter string as first argument to select the appropriate
-subset of results from the result files. Note that this mode of operation is
-stateful: The state is set up appropriately by the IDE before the chart
-script is run.
-
-\par A similar thing happens when charts in an analysis (.anf) file are run from
-within \ttt{opp\_charttool}: the tool sets up the module state before running the
-chart script, so that the getter methods invoked with a filter string will
-return result from the set of result files saved as "inputs" in the anf file.
+    
+    \par Inside a chart script in the Analysis Tool in the Simulation IDE. In that
+    mode, the set of result files to take as input are defined on the "Inputs"
+    page of the editor. The \ttt{get\_results()}, \ttt{get\_scalars()} and similar methods
+    are invoked with a filter string as first argument to select the appropriate
+    subset of results from the result files. Note that this mode of operation is
+    stateful: The state is set up appropriately by the IDE before the chart
+    script is run.
+    
+    \par A similar thing happens when charts in an analysis (.anf) file are run from
+    within \ttt{opp\_charttool}: the tool sets up the module state before running the
+    chart script, so that the getter methods invoked with a filter string will
+    return result from the set of result files saved as "inputs" in the anf file.
   \item 
-
-\par Standalone stateful mode. In order to use \ttt{get\_results()}, \ttt{get\_scalars()}
-and similar methods with a filter string, the module needs to be configured
-via the \ttt{set\_inputs()}/\ttt{add\_inputs()} functions to tell it the set of result
-files to use as input for the queries. (Doing so is analogous to filling in
-the "Inputs" page in the IDE).
+    
+    \par Standalone stateful mode. In order to use \ttt{get\_results()}, \ttt{get\_scalars()}
+    and similar methods with a filter string, the module needs to be configured
+    via the \ttt{set\_inputs()}/\ttt{add\_inputs()} functions to tell it the set of result
+    files to use as input for the queries. (Doing so is analogous to filling in
+    the "Inputs" page in the IDE).
   \item 
-
-\par Stateless mode. It is possible to load the result files (in whole or a subset
-of results in them) into memory as a "raw" \ttt{DataFrame} using
-\ttt{read\_result\_files()}, and then use \ttt{get\_scalars()}, \ttt{get\_vectors()} and
-other getter functions with the dataframe as their first argument to produce
-\ttt{DataFrame}'s of other formats. Note that when going this route, a filter
-string can be specified to \ttt{read\_result\_files()} but not to the getter
-methods. However, Pandas already provides several ways for filtering the rows
-of a dataframe, for example by indexing with logical operators on columns, or
-using the \ttt{df.query()}, \ttt{df.pipe()} or \ttt{df.apply()} methods.
+    
+    \par Stateless mode. It is possible to load the result files (in whole or a subset
+    of results in them) into memory as a "raw" \ttt{DataFrame} using
+    \ttt{read\_result\_files()}, and then use \ttt{get\_scalars()}, \ttt{get\_vectors()} and
+    other getter functions with the dataframe as their first argument to produce
+    \ttt{DataFrame}'s of other formats. Note that when going this route, a filter
+    string can be specified to \ttt{read\_result\_files()} but not to the getter
+    methods. However, Pandas already provides several ways for filtering the rows
+    of a dataframe, for example by indexing with logical operators on columns, or
+    using the \ttt{df.query()}, \ttt{df.pipe()} or \ttt{df.apply()} methods.
 
 \end{enumerate}
 
@@ -92,18 +92,18 @@ property of the item, and has the form \ttt{<property> ={\textasciitilde} <patte
   \item \ttt{name}: Name of the result or item.
   \item \ttt{module}: Full path of the result's module.
   \item \ttt{type}: Type of the item. Value is one of: \ttt{scalar}, \ttt{vector}, \ttt{parameter},
-\ttt{histogram}, \ttt{statistics}.
+    \ttt{histogram}, \ttt{statistics}.
   \item \ttt{isfield}: \ttt{true} is the item is a synthetic scalar that represents a field of
-statistic or a vector, \ttt{false} if not.
+    statistic or a vector, \ttt{false} if not.
   \item \ttt{file}: File name of the result or item.
   \item \ttt{run}: Unique run ID of the run that contains the result or item.
   \item \ttt{runattr:<name>}: Run attribute of the run that contains the result or item.
-Example: \ttt{runattr:measurement}.
+    Example: \ttt{runattr:measurement}.
   \item \ttt{attr:<name>}: Attribute of the result. Example: \ttt{attr:unit}.
   \item \ttt{itervar:<name>}: Iteration variable of the run that contains the result or
-item. Example: \ttt{itervar:numHosts}.
+    item. Example: \ttt{itervar:numHosts}.
   \item \ttt{config:<key>}: Configuration key of the run that contains the result or item.
-Example: \ttt{config:sim-time-limit}, \ttt{config:**.sendIaTime}.
+    Example: \ttt{config:sim-time-limit}, \ttt{config:**.sendIaTime}.
 
 \end{itemize}
 
@@ -146,23 +146,23 @@ expected in the same format.
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}:  Identifies the simulation run
   \item \ttt{type} \textit{(string)}: Row type, one of the following: scalar, vector, statistics,
-histogram, runattr, itervar, param, attr
+    histogram, runattr, itervar, param, attr
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that
-recorded the result item
+    recorded the result item
   \item \ttt{name} \textit{(string)}: Name of the result item (scalar, statistic, histogram or
-vector)
+    vector)
   \item \ttt{attrname} \textit{(string)}: Name of the run attribute or result item attribute (in
-the latter case, the module and name columns identify the result item the
-attribute belongs to)
+    the latter case, the module and name columns identify the result item the
+    attribute belongs to)
   \item \ttt{attrvalue} \textit{(string)}: Value of run and result item attributes, iteration
-variables, saved ini param settings (runattr, attr, itervar, param)
+    variables, saved ini param settings (runattr, attr, itervar, param)
   \item \ttt{value} \textit{(double or string)}: Output scalar or parameter value
   \item \ttt{count}, \ttt{sumweights}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{stddev} \textit{(double)}: Fields of the
-statistics or histogram
+    statistics or histogram
   \item \ttt{binedges}, \ttt{binvalues} \textit{(np.array)}: Histogram bin edges and bin values.
-\ttt{len(binedges)==len(binvalues)+1}
+    \ttt{len(binedges)==len(binvalues)+1}
   \item \ttt{underflows}, \ttt{overflows} \textit{(double)}: Sum of weights (or counts) of underflown
-and overflown samples of histograms
+    and overflown samples of histograms
   \item \ttt{vectime}, \ttt{vecvalue} \textit{(np.array)}: Output vector time and value arrays
 
 \end{itemize}
@@ -183,12 +183,12 @@ after an underscore (\ttt{\_runattr}, \ttt{\_itervar}, \ttt{\_config}, \ttt{\_pa
   \item \ttt{include\_runattrs}: Adds the run attributes of the (result's) run
   \item \ttt{include\_itervars}: Adds the iteration variables of the (result's) run
   \item \ttt{include\_config\_entries}: Adds all configuration entries of the (result's)
- run, including parameter parameter assignments and per-object configuration
- options. If this option is turned on, \ttt{include\_param\_assignments} has no
- effect.
+    run, including parameter parameter assignments and per-object configuration
+    options. If this option is turned on, \ttt{include\_param\_assignments} has no
+    effect.
   \item \ttt{include\_param\_assignments}: Adds the configuration entries that set module or
- channel parameters. This is a subset of the entries added by
- \ttt{include\_config\_entries}.
+    channel parameters. This is a subset of the entries added by
+    \ttt{include\_config\_entries}.
 
 \end{itemize}
 
@@ -285,15 +285,15 @@ expression, and vector start/end times.
 
 \begin{itemize}
   \item \ttt{filenames} \textit{(string, or list of strings)}: Specifies the result files to
-load.
+    load.
   \item \ttt{filter\_expression} \textit{(string)}: The filter expression to select the desired
-items to load. Example: \ttt{module ={\textasciitilde} "*host*" AND name ={\textasciitilde} "numPacket*"}
+    items to load. Example: \ttt{module ={\textasciitilde} "*host*" AND name ={\textasciitilde} "numPacket*"}
   \item \ttt{include\_fields\_as\_scalars} \textit{(bool)}: Optional. If \ttt{True}, the fields of
-statistics and histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as
-synthetic scalars.
+    statistics and histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as
+    synthetic scalars.
   \item \ttt{vector\_start\_time}, \ttt{vector\_end\_time} \textit{(double)}: Optional time limits to
-trim the data of vector type results. The unit is seconds, the interval is
-left-closed, right-open.
+    trim the data of vector type results. The unit is seconds, the interval is
+    left-closed, right-open.
 
 \end{itemize}
 
@@ -318,21 +318,21 @@ evaluates to \ttt{True}.
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string or dataframe)}: The filter expression to
-select the desired items from the inputs, or a dataframe in the "raw"
-format. Example: \ttt{module ={\textasciitilde} "*host*" AND name ={\textasciitilde} "numPacket*"}
+    select the desired items from the inputs, or a dataframe in the "raw"
+    format. Example: \ttt{module ={\textasciitilde} "*host*" AND name ={\textasciitilde} "numPacket*"}
   \item \ttt{row\_types}: Optional. When given, filters the returned rows by type.
-Should be a unique list, containing any number of these strings:
-\ttt{"runattr"}, \ttt{"itervar"}, \ttt{"config"}, \ttt{"scalar"}, \ttt{"vector"},
-\ttt{"statistic"}, \ttt{"histogram"}, \ttt{"param"}, \ttt{"attr"}
+    Should be a unique list, containing any number of these strings:
+    \ttt{"runattr"}, \ttt{"itervar"}, \ttt{"config"}, \ttt{"scalar"}, \ttt{"vector"},
+    \ttt{"statistic"}, \ttt{"histogram"}, \ttt{"param"}, \ttt{"attr"}
   \item \ttt{omit\_unused\_columns} \textit{(bool)}: Optional. If \ttt{True}, all columns that would
-only contain \ttt{None} are removed from the returned DataFrame
+    only contain \ttt{None} are removed from the returned DataFrame
   \item \ttt{include\_fields\_as\_scalars} \textit{(bool)}: Optional. If \ttt{True}, the fields of
-statistics and histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as
-synthetic scalars.
+    statistics and histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as
+    synthetic scalars.
   \item \ttt{start\_time}, \ttt{end\_time} \textit{(double)}: Optional time limits to trim the data
-of vector type results. The unit is seconds, both the \ttt{vectime} and
-\ttt{vecvalue} arrays will be affected, the interval is left-closed,
-right-open.
+    of vector type results. The unit is seconds, both the \ttt{vectime} and
+    \ttt{vecvalue} arrays will be affected, the interval is left-closed,
+    right-open.
 
 \end{itemize}
 
@@ -353,13 +353,13 @@ the module documentation for details).
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string or dataframe)}: The filter expression to
-select the desired run from the inputs, or a dataframe in the "raw" format
-(e.g. one returned by \ttt{read\_result\_files()}). Example: \ttt{runattr:network ={\textasciitilde} "Aloha" AND config:Aloha.slotTime ={\textasciitilde} 0}
+    select the desired run from the inputs, or a dataframe in the "raw" format
+    (e.g. one returned by \ttt{read\_result\_files()}). Example: \ttt{runattr:network ={\textasciitilde} "Aloha" AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the result, pivoted into
-columns. See the "Metadata columns" section of the module documentation
-for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the result, pivoted into
+    columns. See the "Metadata columns" section of the module documentation
+    for details.
 
 \end{itemize}
 
@@ -369,7 +369,7 @@ for details.
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item Additional metadata items (run attributes, iteration variables, etc.), as
-requested
+    requested
 
 \end{itemize}
 
@@ -391,13 +391,13 @@ requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string or dataframe)}: The filter expression to
-select the desired run attributes from the inputs, or a dataframe in the
-"raw" format. Example: \ttt{name ={\textasciitilde} *date* AND config:Aloha.slotTime ={\textasciitilde} 0}
+    select the desired run attributes from the inputs, or a dataframe in the
+    "raw" format. Example: \ttt{name ={\textasciitilde} *date* AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the result, pivoted into
-columns. See the "Metadata columns" section of the module documentation
-for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the result, pivoted into
+    columns. See the "Metadata columns" section of the module documentation
+    for details.
 
 \end{itemize}
 
@@ -425,13 +425,13 @@ for details.
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string or dataframe)}: The filter expression to
-select the desired iteration variables from the inputs, or a dataframe in
-the "raw" format. Example: \ttt{name ={\textasciitilde} iaMean AND config:Aloha.slotTime ={\textasciitilde} 0}
+    select the desired iteration variables from the inputs, or a dataframe in
+    the "raw" format. Example: \ttt{name ={\textasciitilde} iaMean AND config:Aloha.slotTime ={\textasciitilde} 0}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the result, pivoted into
-columns. See the "Metadata columns" section of the module documentation
-for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the result, pivoted into
+    columns. See the "Metadata columns" section of the module documentation
+    for details.
 
 \end{itemize}
 
@@ -443,7 +443,7 @@ for details.
   \item \ttt{name} \textit{(string)}: The name of the iteration variable
   \item \ttt{value} \textit{(string)}: The value of the iteration variable.
   \item Additional metadata items (run attributes, iteration variables, etc.), as
-requested
+    requested
 
 \end{itemize}
 
@@ -460,19 +460,19 @@ requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired scalars, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "channelUtilization*" AND runattr:replication ={\textasciitilde} "\#0"}
+    desired scalars, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "channelUtilization*" AND runattr:replication ={\textasciitilde} "\#0"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-(like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
-pivoted into columns.
+    (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
+    pivoted into columns.
   \item \ttt{include\_fields} \textit{(bool)}: Optional. If \ttt{True}, the fields of statistics and
-histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as synthetic scalars.
+    histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as synthetic scalars.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the DataFrame, pivoted
-into columns. See the "Metadata columns" section of the module
-documentation for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the DataFrame, pivoted
+    into columns. See the "Metadata columns" section of the module
+    documentation for details.
   \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, the values of the
-scalars are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
+    scalars are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
 
 \end{itemize}
 
@@ -482,11 +482,11 @@ scalars are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to 
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that
-recorded the result item
+    recorded the result item
   \item \ttt{name} \textit{(string)}: The name of the scalar
   \item \ttt{value} \textit{(double)}: The value of the scalar
   \item Additional metadata items (result attributes, run attributes, iteration
-variables, etc.), as requested
+    variables, etc.), as requested
 
 \end{itemize}
 
@@ -511,15 +511,15 @@ concrete value picked for every instance of the parameter.
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired parameters, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "x" AND module ={\textasciitilde} Aloha.server}
+    desired parameters, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "x" AND module ={\textasciitilde} Aloha.server}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-(like \ttt{unit} for example) are appended to the DataFrame, pivoted into
-columns.
+    (like \ttt{unit} for example) are appended to the DataFrame, pivoted into
+    columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the DataFrame, pivoted
-into columns. See the "Metadata columns" section of the module
-documentation for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the DataFrame, pivoted
+    into columns. See the "Metadata columns" section of the module
+    documentation for details.
 
 \end{itemize}
 
@@ -529,11 +529,11 @@ documentation for details.
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that
-recorded the result item
+    recorded the result item
   \item \ttt{name} \textit{(string)}: The name of the parameter
   \item \ttt{value} \textit{(string)}: The value of the parameter.
   \item Additional metadata items (result attributes, run attributes, iteration
-variables, etc.), as requested
+    variables, etc.), as requested
 
 \end{itemize}
 
@@ -541,7 +541,7 @@ variables, etc.), as requested
 \label{cha:chart-api:omnetpp.scave.results:get-vectors}
 
 \begin{flushleft}
-\ttt{get\_vectors(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, start\_time=-inf, end\_time=inf, convert\_to\_base\_unit=True)}
+\ttt{get\_vectors(filter\_or\_dataframe="", include\_attrs=False, include\_runattrs=False, include\_itervars=False, include\_param\_assignments=False, include\_config\_entries=False, start\_time=-inf, end\_time=inf, convert\_to\_base\_unit=True, omit\_empty\_vectors=False)}
 \end{flushleft}
 
 \par Returns a filtered list of vector results.
@@ -550,23 +550,23 @@ variables, etc.), as requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired vectors, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "radioState*" AND runattr:replication ={\textasciitilde} "\#0"}
+    desired vectors, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "radioState*" AND runattr:replication ={\textasciitilde} "\#0"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-(like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
-pivoted into columns.
+    (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
+    pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the DataFrame, pivoted
-into columns. See the "Metadata columns" section of the module
-documentation for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the DataFrame, pivoted
+    into columns. See the "Metadata columns" section of the module
+    documentation for details.
   \item \ttt{start\_time}, \ttt{end\_time} \textit{(double)}: Optional time limits to trim the data
-of vector type results. The unit is seconds, both the \ttt{vectime} and
-\ttt{vecvalue} arrays will be affected, the interval is left-closed,
-right-open.
+    of vector type results. The unit is seconds, both the \ttt{vectime} and
+    \ttt{vecvalue} arrays will be affected, the interval is left-closed,
+    right-open.
   \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, the values in the
-vectors are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
+    vectors are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
   \item \ttt{omit\_empty\_vectors} \textit{(bool)}: Optional. If \ttt{True}, empty vectors are discarded
-from the output.
+    from the output.
 
 \end{itemize}
 
@@ -576,12 +576,12 @@ from the output.
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that
-recorded the result item
+    recorded the result item
   \item \ttt{name} \textit{(string)}: The name of the vector
   \item \ttt{vectime}, \ttt{vecvalue} \textit{(np.array)}: The simulation times and the
-corresponding values in the vector
+    corresponding values in the vector
   \item Additional metadata items (result attributes, run attributes, iteration
-variables, etc.), as requested
+    variables, etc.), as requested
 
 \end{itemize}
 
@@ -598,18 +598,18 @@ variables, etc.), as requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired statistics, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "collisionLength:stat" AND itervar:iaMean ={\textasciitilde} "5"}
+    desired statistics, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "collisionLength:stat" AND itervar:iaMean ={\textasciitilde} "5"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-(like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
-pivoted into columns.
+    (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
+    pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the DataFrame, pivoted
-into columns. See the "Metadata columns" section of the module
-documentation for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the DataFrame, pivoted
+    into columns. See the "Metadata columns" section of the module
+    documentation for details.
   \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, some fields of the
-statistics (in the \ttt{min}, \ttt{max}, \ttt{mean}, and \ttt{stddev} columns) are
-converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
+    statistics (in the \ttt{min}, \ttt{max}, \ttt{mean}, and \ttt{stddev} columns) are
+    converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
 
 \end{itemize}
 
@@ -619,12 +619,12 @@ converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that
-recorded the result item
+    recorded the result item
   \item \ttt{name} \textit{(string)}: The name of the vector
   \item \ttt{count}, \ttt{sumweights}, \ttt{mean}, \ttt{stddev}, \ttt{min}, \ttt{max} \textit{(double)}: The
-characteristic mathematical properties of the statistics result
+    characteristic mathematical properties of the statistics result
   \item Additional metadata items (result attributes, run attributes, iteration
-variables, etc.), as requested
+    variables, etc.), as requested
 
 \end{itemize}
 
@@ -641,18 +641,18 @@ variables, etc.), as requested
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired histograms, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "collisionMultiplicity:histogram" AND itervar:iaMean ={\textasciitilde} "2"}
+    desired histograms, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "collisionMultiplicity:histogram" AND itervar:iaMean ={\textasciitilde} "2"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-(like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
-pivoted into columns.
+    (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
+    pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the DataFrame, pivoted
-into columns. See the "Metadata columns" section of the module
-documentation for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the DataFrame, pivoted
+    into columns. See the "Metadata columns" section of the module
+    documentation for details.
   \item \ttt{convert\_to\_base\_unit} \textit{(bool)}: Optional. If \ttt{True}, some fields of the
-histograms (in the \ttt{min}, \ttt{max}, \ttt{mean}, \ttt{stddev}, and \ttt{binedges} columns)
-are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
+    histograms (in the \ttt{min}, \ttt{max}, \ttt{mean}, \ttt{stddev}, and \ttt{binedges} columns)
+    are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W}, etc.)
 
 \end{itemize}
 
@@ -662,16 +662,16 @@ are converted to their base unit (e.g. \ttt{ms} to \ttt{s}, \ttt{mW} to \ttt{W},
 \begin{itemize}
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that
-recorded the result item
+    recorded the result item
   \item \ttt{name} \textit{(string)}: The name of the vector
   \item \ttt{count}, \ttt{sumweights}, \ttt{mean}, \ttt{stddev}, \ttt{min}, \ttt{max} \textit{(double)}: The
-characteristic mathematical properties of the histogram
+    characteristic mathematical properties of the histogram
   \item \ttt{binedges}, \ttt{binvalues} \textit{(np.array)}: The histogram edge locations and the
-weighted sum of the collected samples in each bin. \ttt{len(binedges) == len(binvalues) + 1}
+    weighted sum of the collected samples in each bin. \ttt{len(binedges) == len(binvalues) + 1}
   \item \ttt{underflows}, \ttt{overflows} \textit{(double)}: The weighted sum of the samples that
-fell outside of the histogram bin range in the two directions
+    fell outside of the histogram bin range in the two directions
   \item Additional metadata items (result attributes, run attributes, iteration
-variables, etc.), as requested
+    variables, etc.), as requested
 
 \end{itemize}
 
@@ -689,12 +689,12 @@ patterns; and global and per-object config options.
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired config entries, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} sim-time-limit AND itervar:numHosts ={\textasciitilde} 10}
+    desired config entries, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} sim-time-limit AND itervar:numHosts ={\textasciitilde} 10}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the result, pivoted into
-columns. See the "Metadata columns" section of the module documentation
-for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the result, pivoted into
+    columns. See the "Metadata columns" section of the module documentation
+    for details.
 
 \end{itemize}
 
@@ -706,7 +706,7 @@ for details.
   \item \ttt{name} \textit{(string)}: The name of the config entry
   \item \ttt{value} \textit{(string)}: The value of the config entry
   \item Additional metadata items (run attributes, iteration variables, etc.), as
-requested
+    requested
 
 \end{itemize}
 
@@ -724,13 +724,13 @@ subset of what \ttt{get\_config\_entries} would return with the same arguments.
 
 \begin{itemize}
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
-desired parameter assignments, or a dataframe in the "raw" format.
-Example: \ttt{name ={\textasciitilde} **.flowID AND itervar:numHosts ={\textasciitilde} 10}
+    desired parameter assignments, or a dataframe in the "raw" format.
+    Example: \ttt{name ={\textasciitilde} **.flowID AND itervar:numHosts ={\textasciitilde} 10}
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
-\ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
-pieces of metadata about the run is appended to the result, pivoted into
-columns. See the "Metadata columns" section of the module documentation
-for details.
+    \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
+    pieces of metadata about the run is appended to the result, pivoted into
+    columns. See the "Metadata columns" section of the module documentation
+    for details.
 
 \end{itemize}
 
@@ -742,7 +742,7 @@ for details.
   \item \ttt{name} \textit{(string)}: The parameter assignment pattern
   \item \ttt{value} \textit{(string)}: The assigned value
   \item Additional metadata items (run attributes, iteration variables, etc.), as
-requested
+    requested
 
 \end{itemize}
 
@@ -957,7 +957,7 @@ for each bar.
   \item x coordinates are automatic (values are ignored)
   \item height must be a sequence (cannot be a scalar)
   \item in multiple calls to bar(), the lengths of the height sequence must be
-equal (i.e. all series must have the same number of values)
+    equal (i.e. all series must have the same number of values)
   \item default color is grey (Matplotlib assigns a different color to each series)
 
 \end{itemize}
@@ -1148,15 +1148,15 @@ the method returns an empty list.
 \begin{itemize}
   \item \ttt{show} \textit{(bool or \ttt{None})}: Whether to show the legend. TODO does pyplot have this?
   \item \ttt{frameon} \textit{(bool or \ttt{None})}: Control whether the legend should be drawn on a patch (frame).
-  Default is \ttt{None}, which will take the value from the resource file.
+    Default is \ttt{None}, which will take the value from the resource file.
   \item \ttt{loc} \textit{(string or \ttt{None})}: The location of the legend. Possible values are
-  'best', 'upper right', 'upper left', 'lower left', 'lower right', 'right',
-  'center left', 'center right', 'lower center', 'upper center', 'center'
-  (these are the values supported by Matplotlib), plus additionally
-  'outside top left', 'outside top center', 'outside top right',
-  'outside bottom left', 'outside bottom center', 'outside bottom right',
-  'outside left top', 'outside left center', 'outside left bottom',
-  'outside right top', 'outside right center', 'outside right bottom'.
+    'best', 'upper right', 'upper left', 'lower left', 'lower right', 'right',
+    'center left', 'center right', 'lower center', 'upper center', 'center'
+    (these are the values supported by Matplotlib), plus additionally
+    'outside top left', 'outside top center', 'outside top right',
+    'outside bottom left', 'outside bottom center', 'outside bottom right',
+    'outside left top', 'outside left center', 'outside left bottom',
+    'outside right top', 'outside right center', 'outside right bottom'.
 
 \end{itemize}
 
@@ -1210,7 +1210,7 @@ The default setting is \ttt{False}.
 \par Converts results with units in the passed DataFrame to their base units in-place.
 The DataFrame needs to have a "unit" column - which is updated to the base unit.
 By default, the following columns are converted:
-  "value", "min", "max", "mean", "stddev", "vecvalue", "binedges"
+"value", "min", "max", "mean", "stddev", "vecvalue", "binedges"
 Every converted column must contain either all numbers or all \ttt{np.ndarray} instances.
 
 \par This works for example on the DataFrames returned by \ttt{get\_scalars}, \ttt{get\_vectors}, \ttt{get\_statistics},
@@ -1231,10 +1231,10 @@ a DataFrame. The legend label is produced as follows.
 \begin{enumerate}
   \item If the DataFrame contains a \ttt{legend} column, its content is used
   \item Otherwise, if there is a \ttt{legend\_format} property, it is used as a format string
-for producing the legend label. The format string may contain references to other
-columns of the DataFrame in the "\$name" or "\$\{name\}" form.
+    for producing the legend label. The format string may contain references to other
+    columns of the DataFrame in the "\$name" or "\$\{name\}" form.
   \item Otherwise, the legend label is concatenated from the columns listed in \ttt{legend\_cols},
-a list whose contents is usually produced using the \ttt{extract\_label\_columns()} function.
+    a list whose contents is usually produced using the \ttt{extract\_label\_columns()} function.
 
 \end{enumerate}
 
@@ -1372,7 +1372,7 @@ to select other combinations if the default one is not suitable.
   \item \ttt{meta\_df}: Dataframe with the metadata about each series.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the values by the column and row indices
- (which are the labels of the bar series and groups).
+    (which are the labels of the bar series and groups).
 
 \end{itemize}
 
@@ -1414,9 +1414,9 @@ differentiate among the vectors.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
- See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+    See \ttt{utils.make\_legend\_label()} for prototype and semantics.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the vectors by the columns used for the legend
- (before applying \ttt{legend\_func}, for backwards bug-compatibility).
+    (before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1447,7 +1447,7 @@ differentiate among the vectors.
 \label{cha:chart-api:omnetpp.scave.utils:plot-vectors-separate}
 
 \begin{flushleft}
-\ttt{plot\_vectors\_separate(df, props, legend\_func=make\_legend\_label)}
+\ttt{plot\_vectors\_separate(df, props, legend\_func=make\_legend\_label, sort=True)}
 \end{flushleft}
 
 \par This is very similar to \ttt{plot\_vectors}, with identical usage.
@@ -1480,9 +1480,9 @@ differentiate among the histograms.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
- See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+    See \ttt{utils.make\_legend\_label()} for prototype and semantics.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the histograms by the columns used for the legend
-(before applying \ttt{legend\_func}, for backwards bug-compatibility).
+    (before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1491,12 +1491,12 @@ differentiate among the histograms.
 
 \begin{itemize}
   \item \ttt{binedges}, \ttt{binvalues} \textit{(array-like, \ttt{len(binedges)==len(binvalues)+1})}:
- The bin edges and the bin values (count or sum of weights) for the histogram.
+    The bin edges and the bin values (count or sum of weights) for the histogram.
   \item \ttt{min}, \ttt{max}, \ttt{underflows}, \ttt{overflows} \textit{(float, optional)}: The minimum/maximum
- values, and the bin values for the underflow/overflow bins. These four columns
- must either be all present or all absent from the dataframe.
+    values, and the bin values for the underflow/overflow bins. These four columns
+    must either be all present or all absent from the dataframe.
   \item \ttt{legend} \textit{(string, optional)}: Legend label for the series. If missing,
- legend labels are derived from other columns.
+    legend labels are derived from other columns.
   \item \ttt{name}, \ttt{title}, \ttt{module}, etc. \textit{(optional)}: Provide input for the legend.
 
 \end{itemize}
@@ -1506,11 +1506,11 @@ differentiate among the histograms.
 
 \begin{itemize}
   \item \ttt{normalize} \textit{(bool)}: If true, normalize the sum of the bin values to 1. If
-\ttt{normalize} is true (and \ttt{cumulative} is false), the probability density
- function (PDF) will be displayed.
+    \ttt{normalize} is true (and \ttt{cumulative} is false), the probability density
+    function (PDF) will be displayed.
   \item \ttt{cumulative} \textit{(bool)}: If true, show each bin as the sum of the previous bin
- values plus itself. If both \ttt{normalize} and \ttt{cumulative} are true, that
- results in the cumulative density function (CDF) being displayed.
+    values plus itself. If both \ttt{normalize} and \ttt{cumulative} are true, that
+    results in the cumulative density function (CDF) being displayed.
   \item \ttt{show\_overflows} \textit{(bool)}: If true, show the underflow/overflow bins.
   \item \ttt{title}: Plot title (autocomputed if missing).
   \item \ttt{drawstyle}: Selects whether to fill the area below the histogram line.
@@ -1545,9 +1545,9 @@ differentiate among the lines.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
- See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+    See \ttt{utils.make\_legend\_label()} for prototype and semantics.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the series by the columns used for the legend
-(before applying \ttt{legend\_func}, for backwards bug-compatibility).
+    (before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1557,9 +1557,9 @@ differentiate among the lines.
 \begin{itemize}
   \item \ttt{x}, \ttt{y} \textit{(array-like, \ttt{len(x)==len(y)})}: The X and Y coordinates of the points.
   \item \ttt{error} \textit{(array-like, \ttt{len(x)==len(y)}, optional)}:
- The half lengths of the error bars for each point.
+    The half lengths of the error bars for each point.
   \item \ttt{legend} \textit{(string, optional)}: Legend label for the series. If missing,
- legend labels are derived from other columns.
+    legend labels are derived from other columns.
   \item \ttt{name}, \ttt{title}, \ttt{module}, etc. \textit{(optional)}: Provide input for the legend.
 
 \end{itemize}
@@ -1573,7 +1573,7 @@ differentiate among the lines.
   \item \ttt{marker}: Marker style.
   \item \ttt{linestyle}, \ttt{linecolor}, \ttt{linewidth}: Styling.
   \item \ttt{error\_style}: If \ttt{error} is present, controls how the error is shown.
- Accepted values: "Error bars", "Error band"
+    Accepted values: "Error bars", "Error band"
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
   \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
 
@@ -1605,9 +1605,9 @@ differentiate among the boxes.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
-See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+    See \ttt{utils.make\_legend\_label()} for prototype and semantics.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the series by the columns used for the legend
-(before applying \ttt{legend\_func}, for backwards bug-compatibility).
+    (before applying \ttt{legend\_func}, for backwards bug-compatibility).
 
 \end{itemize}
 
@@ -1616,9 +1616,9 @@ See \ttt{utils.make\_legend\_label()} for prototype and semantics.
 
 \begin{itemize}
   \item \ttt{min}, \ttt{max}, \ttt{mean}, \ttt{stddev}, \ttt{count} \textit{(float)}: The minimum/maximum
- values, mean, standard deviation, and sample count of the data.
+    values, mean, standard deviation, and sample count of the data.
   \item \ttt{legend} \textit{(string, optional)}: Legend label for the series. If missing,
- legend labels are derived from other columns.
+    legend labels are derived from other columns.
   \item \ttt{name}, \ttt{title}, \ttt{module}, etc. \textit{(optional)}: Provide input for the legend.
 
 \end{itemize}
@@ -1731,8 +1731,8 @@ of chart scripts.
 
 \begin{itemize}
   \item \ttt{yaxis\_title}, \ttt{yaxis\_title}, \ttt{xaxis\_min},  \ttt{xaxis\_max}, \ttt{yaxis\_min},
-\ttt{yaxis\_max}, \ttt{xaxis\_log}, \ttt{yaxis\_log}, \ttt{legend\_show}, \ttt{legend\_border},
-\ttt{legend\_placement}, \ttt{grid\_show}, \ttt{grid\_density}
+    \ttt{yaxis\_max}, \ttt{xaxis\_log}, \ttt{yaxis\_log}, \ttt{legend\_show}, \ttt{legend\_border},
+    \ttt{legend\_placement}, \ttt{grid\_show}, \ttt{grid\_density}
   \item properties listed in the \ttt{plot.properties} property
 
 \end{itemize}
@@ -1762,17 +1762,17 @@ makes the "Export image" functionality of the IDE and \ttt{opp\_charttool} work.
 
 \begin{itemize}
   \item \ttt{export\_image} \textit{(boolean)}: Controls whether to perform the exporting. This is
- normally \ttt{false}, and only set to \ttt{true} by the IDE or opp\_charttool when
- image export is requested.
+    normally \ttt{false}, and only set to \ttt{true} by the IDE or opp\_charttool when
+    image export is requested.
   \item \ttt{image\_export\_format}: The default is SVG. Accepted formats (and their names) are the ones supported by Matplotlib.
   \item \ttt{image\_export\_folder}: The folder in which the image file is to be created.
   \item \ttt{image\_export\_filename}: The output file name. If it has no extension,
- one will be added based on the format. If missing or empty, a sanitized
- version of the chart name is used.
+    one will be added based on the format. If missing or empty, a sanitized
+    version of the chart name is used.
   \item \ttt{image\_export\_width}: Image width in inches (default: 6")
   \item \ttt{image\_export\_height}: Image height in inches (default: 4")
   \item \ttt{image\_export\_dpi}: DPI setting, default 96. For raster image formats, the
- image dimensions are produced as width (or height) times dpi.
+    image dimensions are produced as width (or height) times dpi.
 
 \end{itemize}
 
@@ -1821,11 +1821,11 @@ makes the "Export data" functionality of the IDE and \ttt{opp\_charttool} work.
 
 \begin{itemize}
   \item \ttt{export\_data} \textit{(boolean)}: Controls whether to perform the exporting. This is
- normally \ttt{false}, and only set to \ttt{true} by the IDE or opp\_charttool when
- data export is requested.
+    normally \ttt{false}, and only set to \ttt{true} by the IDE or opp\_charttool when
+    data export is requested.
   \item \ttt{data\_export\_folder}: The folder in which the CSV file is to be created.
   \item \ttt{data\_export\_filename}: The output file name. If missing or empty, a
- sanitized version of the chart name is used.
+    sanitized version of the chart name is used.
 
 \end{itemize}
 
@@ -1904,13 +1904,13 @@ The error dataframe is None if no confidence level is given.
 \begin{itemize}
   \item \ttt{df} \textit{(pandas.DataFrame)}: The dataframe to pivot.
   \item \ttt{groups} \textit{(list)}: A list of column names, the values in which will
- be used as names for the bar groups.
+    be used as names for the bar groups.
   \item \ttt{series} \textit{(list)}: A list of column names, the values in which will
- be used as names for the bar series.
+    be used as names for the bar series.
   \item \ttt{confidence\_level} \textit{(float, optional)}:
- The confidence level to use when computing the sizes of the error bars.
+    The confidence level to use when computing the sizes of the error bars.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the values by the columns in \ttt{groups}
- and \ttt{series} before pivoting.
+    and \ttt{series} before pivoting.
 
 \end{itemize}
 
@@ -1938,11 +1938,11 @@ passed to \ttt{utils.plot\_lines()}.
 \begin{itemize}
   \item \ttt{df} \textit{(pandas.DataFrame)}: The dataframe to pivot.
   \item \ttt{xaxis\_itervar} \textit{(string)}: The name of the iteration variable whose
- values are to be used as X coordinates.
+    values are to be used as X coordinates.
   \item \ttt{group\_by} \textit{(list)}: A list of column names, the values in which will
- be used to group the scalars into lines.
+    be used to group the scalars into lines.
   \item \ttt{confidence\_level} \textit{(float, optional)}:
- The confidence level to use when computing the sizes of the error bars.
+    The confidence level to use when computing the sizes of the error bars.
 
 \end{itemize}
 
@@ -1951,7 +1951,7 @@ passed to \ttt{utils.plot\_lines()}.
 
 \begin{itemize}
   \item A DataFrame containing the pivoted data, with these columns:
-\ttt{name}, \ttt{x}, \ttt{y}, and optionally \ttt{error} - if \ttt{confidence\_level} is given.
+    \ttt{name}, \ttt{x}, \ttt{y}, and optionally \ttt{error} - if \ttt{confidence\_level} is given.
 
 \end{itemize}
 
@@ -2085,8 +2085,8 @@ be used, and (["module"], ["name"]) is used as a fallback.
 and the result can be used directly by \ttt{utils.pivot\_for\_barchart()}.
 
 \par Returns:
-    - (group\_names, series\_names): A pair of lists of strings containing the
-      selected names for the groups and the series, respectively.
+- (group\_names, series\_names): A pair of lists of strings containing the
+selected names for the groups and the series, respectively.
 
 \subsubsection{select\_xaxis\_and\_groupby()}
 \label{cha:chart-api:omnetpp.scave.utils:select-xaxis-and-groupby}
@@ -2109,8 +2109,8 @@ If both of them are empty, a reasonable guess is made for which columns should b
 and the result can be used directly by \ttt{utils.pivot\_for\_scatterchart()}.
 
 \par Returns:
-    - (xaxis\_itervar, group\_by): An iteration variable name, and a list of strings
-      containing the selected column names to be used as groups.
+- (xaxis\_itervar, group\_by): An iteration variable name, and a list of strings
+containing the selected column names to be used as groups.
 
 \subsubsection{assert\_columns\_exist()}
 \label{cha:chart-api:omnetpp.scave.utils:assert-columns-exist}
@@ -2145,7 +2145,7 @@ exist, throws an error.
 \begin{itemize}
   \item \ttt{df} \textit{(DataFrame)}: The DataFrame to operate on
   \item \ttt{columns} \textit{(list of strings)}: The list of column names to convert.
-If not given, all columns will be converted.
+    If not given, all columns will be converted.
   \item \ttt{errors}, \ttt{downcast} \textit{(string)}: Will be passed to \ttt{pandas.to\_numeric()}
 
 \end{itemize}
@@ -2353,9 +2353,9 @@ time order in the output.
 
 \par Compares value against a threshold, and optionally replaces it with a constant.
 yout[k] = if y[k] < threshold and less != None then less;
-     else if y[k] == threshold and equal != None then equal;
-     else if y[k] > threshold and greater != None then greater;
-     else y[k]
+else if y[k] == threshold and equal != None then equal;
+else if y[k] > threshold and greater != None then greater;
+else y[k]
 The last three parameters are all independently optional.
 
 \subsubsection{crop()}
@@ -2889,12 +2889,12 @@ property values in it will overwrite the defaults.
 
 \begin{itemize}
   \item \ttt{id} \textit{(string)}: A numeric string that identifies the chart within the
- Analysis. Auto-assigned if missing.
+    Analysis. Auto-assigned if missing.
   \item \ttt{name} \textit{(string)}: Name for the chart. If missing, the chart template name
- will be used.
+    will be used.
   \item \ttt{props} \textit{(string->string dictionary)}: Chart properties to set. It may not
- introduce new properties, i.e. the keys must be subset of the property
- keys defined in the chart template.
+    introduce new properties, i.e. the keys must be subset of the property
+    keys defined in the chart template.
 
 \end{itemize}
 
@@ -2924,7 +2924,7 @@ extension.
 \begin{itemize}
   \item \ttt{dirs} \textit{(string list)}: A short string that uniquely identifies the chart template.
   \item \ttt{add\_default\_locations} \textit{(bool)}: Whether the directories returned by \ttt{get\_chart\_template\_locations()}
-should also be searched in addition to the specified directory list.
+    should also be searched in addition to the specified directory list.
 
 \end{itemize}
 
