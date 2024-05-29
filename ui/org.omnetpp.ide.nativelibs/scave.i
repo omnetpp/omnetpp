@@ -448,12 +448,6 @@ CHECK_RESULTFILE_FORMAT_EXCEPTION(VectorFileIndexer::generateIndex)
    }
 %}
 
-namespace omnetpp { namespace scave {
-
-%template(EntryVector) ::std::vector<omnetpp::scave::VectorDatum>;
-
-} } // namespaces
-
 %include "scave/ivectordatareader.h"
 
 /* ------------- indexedvectorfilereader.h  ----------------- */
