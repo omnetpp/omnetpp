@@ -27,7 +27,7 @@
 #if defined(_MSC_VER)
 #include <intrin.h>
 #define DEBUG_TRAP  __debugbreak()  // Windows debug interrupt (MSVC/ClangC2)
-#elif defined _WIN32 and defined __GNUC__
+#elif defined(_WIN32) && defined(__GNUC__)
 #define DEBUG_TRAP  asm("int $3\n")  // MinGW or Cygwin: debug interrupt with GNU syntax
 #elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
 #define DEBUG_TRAP  __asm__("int3")
