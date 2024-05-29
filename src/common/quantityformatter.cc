@@ -115,7 +115,7 @@ void QuantityFormatter::determineSign(State& state)
             state.sign = sign < 0 ? options.minusSign.c_str() : nullptr;
             break;
         default:
-            throw opp_runtime_error("Unknown signMode: %d", options.signMode);
+            throw opp_runtime_error("Unknown signMode: %d", (int)options.signMode);
     }
 }
 
@@ -138,7 +138,7 @@ void QuantityFormatter::computeValueInOutputUnit(const Input& input, State& stat
             state.valueInOutputUnit = UnitConversion::convertUnit(input.value, input.unit, state.outputUnit);
             break;
         default:
-            throw opp_runtime_error("Unknown outputUnitMode: %d", options.outputUnitMode);
+            throw opp_runtime_error("Unknown outputUnitMode: %d", (int)options.outputUnitMode);
     }
 }
 
@@ -243,7 +243,7 @@ void QuantityFormatter::computeScientificNotationExponent(State& state)
             state.exponentSign = state.firstFractionalDigit <= state.firstNonZeroDigit ? options.minusSign.c_str() : nullptr;
             break;
         default:
-            throw opp_runtime_error("Unknown signMode: %d", options.signMode);
+            throw opp_runtime_error("Unknown signMode: %d", (int)options.signMode);
     }
     switch (options.scientificExponentMode) {
         case ScientificExponentMode::RANGE_01_1:
@@ -256,7 +256,7 @@ void QuantityFormatter::computeScientificNotationExponent(State& state)
             state.exponent = std::abs(std::floor((state.firstFractionalDigit - state.firstNonZeroDigit - 1) / 3.0) * 3);
             break;
         default:
-            throw opp_runtime_error("Unknown scientificExponentMode: %d", options.scientificExponentMode);
+            throw opp_runtime_error("Unknown scientificExponentMode: %d", (int)options.scientificExponentMode);
     }
 }
 
@@ -283,7 +283,7 @@ void QuantityFormatter::determineNotation(State& state)
             break;
         }
         default:
-            throw opp_runtime_error("Unknown notationMode: %d", options.notationMode);
+            throw opp_runtime_error("Unknown notationMode: %d", (int)options.notationMode);
     }
 }
 
@@ -301,7 +301,7 @@ void QuantityFormatter::applyScientificNotation(State& state)
                 state.firstFractionalDigit += state.firstFractionalDigit <= state.firstNonZeroDigit ? state.exponent : -state.exponent;
                 break;
             default:
-                throw opp_runtime_error("Unknown scientificExponentMode: %d", options.scientificExponentMode);
+                throw opp_runtime_error("Unknown scientificExponentMode: %d", (int)options.scientificExponentMode);
         }
     }
 }
