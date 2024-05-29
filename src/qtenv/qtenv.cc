@@ -2421,7 +2421,9 @@ void Qtenv::log(cLogEntry *entry)
     }
     else {
         cModule *module = getSimulation()->getContextModule();
-        if (module)
+        ContextType type = getSimulation()->getContextType();
+
+        if (module || type == CTX_EVENT)
             logBuffer.addLogLine(entry->logLevel, prefix.c_str(), s, n);
         else
             logBuffer.addInfo(s, n);
