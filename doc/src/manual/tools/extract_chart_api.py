@@ -65,7 +65,8 @@ class LaTeXRenderer(mistune.renderers.html.HTMLRenderer):
             return "\n\n∇begin☾itemize☽\n" + text + "\n∇end☾itemize☽\n"
 
     def list_item(self, text):
-        return "  ∇item " + text + "\n"
+        # we prefer continuation lines within \item to be indented 4 spaces, as done by the replace() call below
+        return "  ∇item " + text.replace("\n", "\n    ") + "\n"
 
     def paragraph(self, text):
         return "\n\n∇par " + text
