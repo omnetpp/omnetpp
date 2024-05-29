@@ -40,9 +40,12 @@ def finalize_latex(s):
 
 sssnum = 0
 class LaTeXRenderer(mistune.renderers.html.HTMLRenderer):
+    def __init__(self):
+        super().__init__(escape=False)
+
     def block_code(self, code, info=None):
-        # "\\begin{sloppypar}\n\\begin{flushleft}\n\\ttt{  ???
-        return "\n∇begin☾filelisting☽\n" + code + "\n∇end☾filelisting☽\n"
+        # bug in mistune 3.0.2: text arrives from parser already html escaped
+        return "\n∇begin☾filelisting☽\n" + mistune.util.unescape(code) + "\n∇end☾filelisting☽\n"
 
     def block_quote(self, text):
         return text # add nice quotes?
@@ -74,7 +77,8 @@ class LaTeXRenderer(mistune.renderers.html.HTMLRenderer):
         return "∇textbf☾" + text + "☽"
 
     def codespan(self, text):
-        return "∇ttt☾" + text + "☽"
+        # bug in mistune 3.0.2: text arrives from parser already html escaped
+        return "∇ttt☾" + mistune.util.unescape(text) + "☽"
 
     def linebreak(self):
         return "\n"
