@@ -21,6 +21,86 @@ Legend:
 (i)     information
 
 
+OMNeT++ 6.1
+~~~~~~~~~~~
+
+(+)     SimTime: Added constructors from primitive integer types:
+        SimTime(short), SimTime(unsigned short), SimTime(int), etc.
+
+(!)     SimTime: Removed SimTime(int64_t value, SimTimeUnit unit) constructor,
+        and added similar constructors for double and all primitive integer
+        types instead. Caveat: Expressions like SimTime(3.5, SIMTIME_MS)
+        previously invoked the SimTime(int64_t value, SimTimeUnit unit)
+        constructor, leading to precision loss and silently constructing a value
+        of 3ms instead of the expected 3.5ms. This library change rectifies the
+        problem, but, by fixing what was probably an error in the model code in
+        the first place, it may cause simulation programs to behave differently.
+
+(!)     cConfigurationEx: Added the isAbstractConfig() pure virtual method.
+        Most models are not affected; but if the model includes a custom
+        configuration class that directly inherits from cConfigurationEx, it may
+        need to be adjusted by adding an implementation of this method,
+        otherwise the class becomes an abstract class.
+
+(!)     cEnum: All methods that take or return the numeric value of an enum name
+        now expect or return intval_t a.k.a. int64_t instead of int.
+
+(-)     cEnum: The bulkInsert() method was deprecated, and the constructor with
+        a similar vararg interface was deleted. Instead, add values one-by-one
+        using the insert() method, or use one of the several Register_Enum()
+        macro variants.
+
+(!)     Register_Enum(): Implementation has changed, with the side effect that
+        the first argument (the enum type name) must now be valid. Previously
+        it was not used, so any identifier was accepted.
+
+(+)     Added the Register_Enum_WithVar() and Register_Enum_Custom() enum
+        registration macros.
+
+(-)     Register_Enum2() became deprecated.
+
+(+)     ContextType enum: Added new value CTX_SCHEDULER. The context being set to
+        CTX_SCHEDULER indicates that the code is being run in the context of the
+        simulation's the event scheduler.
+
+(+)     cPar: Added getOwnerComponent() convenience function.
+
+(+)     cPar: Added a resetEvalContext=true argument to parse().
+
+(+)     cOutVector: Added constructor that accepts vector attributes, too:
+        cOutVector(const char *name, const opp_string_map& attributes).
+
+(+)     cOutVector: Added methods setAttributes(), setAttribute(),
+        registerVector().
+
+(!)     cOutVector: In order to make empty vectors show up in the output
+        vector file, either a call to registerVector() must be added, or the
+        code code must be changed to use new methods that include vector
+        registration, such as the 2-arg constructor or setAttributes().
+
+(!)     cEnvir: interface change: Removed setVectorAttribute(), added attributes map
+        arg to registerOutputVector() instead. Most models are not affected; but
+        if the model contains a custom environment class that directly inherits
+        from cEnvir, it may need to be adjusted.
+
+(!)     cFingerprintCalculator: interface change: addVectorResult() was split to
+        registerVectorResult() and a (changed) addVectorResult(). Most models
+        are not affected; but if the model includes a custom fingerprint
+        computing class that directly inherits from cFingerprintCalculator, it
+        may need to be adjusted.
+
+(+)     cResultFilter: Added removeDelegate(); keep the order of delegates.
+
+(!)     cXMLElement: Now it subclasses from cOwnedObject instead of cObject.
+
+(+)     cPar: New cPar methods: getSourceLocation(), getBaseDirectory().
+
+(!)     cEnum: getNameValueMap() now returns const reference to an internal
+        data structure instead of returning a copy.
+
+(!)     cKSplit: Added 'const' qualifiers to CritFunc and DivFunc function signatures
+
+
 OMNeT++ 6.0
 ~~~~~~~~~~~
 
@@ -35,7 +115,7 @@ OMNeT++ 6.0
 (!)     cIEventlogManager: stopRecording() renamed to resume(), stopRecording()
         to suspend(); added endRun().
 
-(!!!)	cPar: Setting the parameter will now result in a call to the component's
+(!!!)   cPar: Setting the parameter will now result in a call to the component's
         handleParameterChange() method during initialize() as well. At the
         same time, the handleParameter(nullptr) call at the end of the
         initialization was removed.
@@ -115,7 +195,7 @@ OMNeT++ 6.0
 (!)     cMessage: Changed isMessage() from private to protected.
 
 (+)     Added DemuxFilter, a result filter that demultiplexes its input to
-	several outputs.
+        several outputs.
 
 (+)     cResultRecorder: added setDemuxLabel().
 
@@ -588,7 +668,8 @@ OMNeT++ 5.3
         on some platforms (namely on Windows). cExpression, cDynamicExpression,
         and the cParImpl classes are affected too.
 
-        * cPar: added conversion operators to/from the "long long" and
+
+        cPar: added conversion operators to/from the "long long" and
         "long long int" types so that 64-bit value can be accessed on Windows
         as well. (Note: intpar_t could not be added because it would conflict
         with "long" on most platforms.)
