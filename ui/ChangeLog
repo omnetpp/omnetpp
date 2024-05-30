@@ -315,7 +315,8 @@
 
 2023-10-31  Rudolf Hornig
 
-	* Releng: updated tycon 2.7.5 -> 4.0.3, updated pydev URL
+	* Releng: updated Tycho 2.7.5 -> 4.0.3, updated PyDev URL, Python
+	version to 11.0.3
 
 2024-02-29  Andras Varga
 

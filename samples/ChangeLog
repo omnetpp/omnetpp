@@ -1,3 +1,7 @@
+2024-05-30  Andras Varga
+
+	* ChangeLog: merged per-folder ChangeLog files into a common ChangeLog
+
 2022-05-16  Attila Torok
 
 	* all: Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>

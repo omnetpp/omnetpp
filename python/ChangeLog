@@ -1,3 +1,7 @@
+2024-06-05  Andras Varga
+
+	* omnetpp.scave: Proofreading of docstrings.
+
 2024-05-23  Andras Varga
 
 	* omnetpp.ned: Initial revision of package that allows for loading and
