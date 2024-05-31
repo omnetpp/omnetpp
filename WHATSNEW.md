@@ -6,6 +6,400 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 6.1 (July 2024)
+-----------------------
+
+This update marks a significant refinement of OMNeT++ since version 6.0,
+impacting virtually every aspect of the simulation framework, including the IDE
+and simulation library. Among the various enhancements, the Analysis Tool stands
+out with major improvements to both its user interface and its underlying chart
+templates and Python library. For example, the new, highly customizable number
+and quantity formatting options facilitate the interpretation of raw simulation
+results displayed in the user interface; chart legends became much more
+customizable; and the enhanced plotting of enum-valued vectors allows much more
+appropriate visualization.
+
+Additional notable updates include the ability to denote ini file sections as
+"abstract" (meaning they merely serve as base for further configurations); the
+validation of parameter values according to the `@enum` property; a new
+bookmarking feature and other enhancements in the Qtenv log window; a more
+streamlined operation of Project Features in the IDE; the possibility to have
+simulation programs dump the stack trace in the case of crashes; a new Python
+library for reading and querying NED files; and much more. Below is a detailed
+summary of these key enhancements and other important changes in this release.
+
+Important: Please read the installation instructions even if you are familiar
+with OMNeT++, as there are new dependencies and the recommended way of
+installing Python packages has also changed.
+
+Simulation kernel:
+
+  - SimTime: Added multiple new constructors that accept a value and a unit,
+    with one constructor implemented for each numeric type. Previously, there
+    was only such constructor, for `int64_t`, which was a potential source of
+    usage errors since C++ implicitly converts fractional types such as `double`
+    into `int64_t` without issuing a warning about potential data loss.
+
+  - Module parameters: Implemented `@enum` checking for `string` parameters. If
+    the parameter is annotated with `@enum` in the NED file, assigning an
+    unlisted value to it now triggers a runtime error.
+
+  - Module parameters: It is now possible to assign XML data, produced using the
+    `xml()` and `xmldoc()` functions, to NED `object` parameters. Implementing
+    this feature necessitated some further changes, such as `cXMLElement` being
+    made a subclass from `cOwnedObject` instead of `cObject`.
+
+  - Module parameters: `cPar` has been updated to remember the exact file and
+    line location in ini or NED files from which it was assigned. This
+    facilitates troubleshooting issues associated with parameter assignments.
+
+  - Introduced the `componentId()` NED function, which returns the ID of the
+    current module or channel in context.
+
+  - The `cEnum` class was enhanced to support C++11 features, including enum
+    classes and enum base types. These changes may require minor adjustments in
+    simulation models.
+
+  - Added `Register_Enum_WithVar()` and `Register_Enum_Custom()` macros.
+    `Register_Enum2()` was declared obsolete.
+
+  - Result recorders: Enhanced to expand the `enumname` result attribute (which
+    indicates that values are from a specified registered C++ enum) to the `enum`
+    attribute that lists enum names alongside their corresponding numeric
+    values. This update allows more appropriate visualization in the Analysis
+    and Sequence Chart Tools in the IDE.
+
+    For example, with the C++ code `enum LinkState {UP, DOWN, FAULTY};`
+    registered as `Register_Enum(LinkState, (UP, DOWN, FAULTY))` and used in NED
+    with `@statistic[linkState](record=vector; enumname=LinkState);`, the output
+    vector file now also contains the `attr enum "UP=0, DOWN=1, FAULTY=2"` line
+    in addition to `attr enumname LinkState`.
+
+  - Ini files: Sections that only serve as a base for other configurations can
+    now be marked as "abstract" by adding `abstract=true` to them. Abstract sections
+    are not offered for running by Qtenv and the Simulation IDE.
+
+  - Statistics recording: Disabled result recorders, as well as result filters
+    whose outputs are unused or not recorded, are now removed before the
+    simulation is run. This may result in significant performance and memory
+    usage improvement.
+
+  - Output Vector Recording: Empty vectors are now included in the output vector
+    file. Previously, output vectors were only recorded into the `.vec` file
+    when the first data item was written. As a result, vectors that were
+    registered but never written to did not appear in the `.vec` file. This
+    behavior caused uncertainty during simulation result analysis, as users
+    could not distinguish between events (e.g., packet drops) that never
+    occurred during the simulation and those that were simply not measured or
+    recorded. Now, empty vectors are also written to the .vec file, eliminating
+    this uncertainty and providing more complete information. This also fixes
+    the issue that no `.vec` file was written by a simulation that only created
+    empty vectors but never wrote data into them. The old behavior can be
+    requested with the `vector-record-empty=false` configuration option, in case
+    it is ever needed. Implementing this change necessitated some adjustments to
+    the `cOutVector`, `cEnvir` and `cFingerprintCalculator` classes. Details can
+    be found in the `API-changes.txt` and `ChangeLog` files.
+
+  - Fingerprint: Resolved discrepancies in fingerprints caused by the IEEE
+    not-a-number (NaN) having multiple representations, which led to
+    inconsistencies across various CPU architectures and math library
+    implementations.
+
+  - Fingerprint: Resolved the issue that simulation results computed but not
+    eventually recorded into the result files were inaccurately included in the
+    "statistics" ingredient of the fingerprint.
+
+  - Deprecated the `getAncestorPar()` method of `cComponent` because it violates
+    the encapsulation principle, making its usage generally inadvisable.
+
+  - Display strings: Improved the parsing of embedded expressions (`${...}`).
+
+  - Added support for pretty-printed stack traces on crashes, which can be
+    enabled by setting `WITH_BACKTRACE=yes` in `configure.user`. This feature is
+    enabled by default to aid in more effective troubleshooting. By default,
+    only function names and addresses are printed; to get enhanced stack frames
+    with line numbers and source snippets on Linux, you must install
+    `libdw-dev`, `libdw-devel`, or `elfutils`, depending on your package
+    manager; see the Install Guide for specific instructions.
+
+  - Several smaller changes and improvements.
+
+NED:
+
+  - Allow inline properties in pattern assignments.
+  - The excluded-packages list to use the same separator char as NED.
+    path. Practically, it now also accepts `:` on non-Windows systems.
+  - Fix "Network not found" errors when INET was in a symlinked directory.
+  - Fix errors not being reported when a `@display` string literal had a badly
+    escaped character (like "\,") in it.
+
+MSG files, `opp_msgtool`:
+
+  - Extended the parser so that enums defined in the msg file now may have properties.
+  - Add support for generating C++11 enum classes and specifying the enum's
+    underlying data type, using the `@class`, `@underlyingType` properties.
+  - Fixed code generation error with targeted cplusplus blocks.
+
+Qtenv:
+
+  - Added "Set Bookmark" / "Go to Bookmark", "Go to simulation time" and "Go to
+    event" functionalities to the log viewer, accessible via the context menu
+    and keyboard shortcuts. Also improved the context menu by ensuring that it
+    conveniently lists all available operations.
+
+  - Log window search improvements: Improved the speed of text searches in the
+    log window. Also, the "Find" dialog now displays an error message if the
+    entered regular expression is invalid.
+
+  - The Run Selection dialog now hides configurations not meant for running, as
+    indicated by `abstract=true` in the ini file.
+
+  - Improved animation in Fast mode: Keep showing builtin animations in Fast
+    mode. Previously, when resuming normal Run mode after running in Fast mode,
+    no animations were visible even when there were messages propagating through
+    the network. With this change, this is no longer the case.
+
+  - Several bug fixes.
+
+Sequence Chart:
+
+  - Refined toolbar contents.
+  - Fixed several minor issues.
+
+NED Editor:
+
+  - Implemented "Snap to Grid". Grid size is fixed at 10 pixels.
+  - Fix: Do not store coordinates with unnecessary precision into the display
+    string after placing/moving a submodule with the mouse.
+  - Fixed accumulation of rounding errors when painting the map grid.
+  - Allow suppressing warnings by adding `@suppressWarning` property on an
+    element.
+  - Enhanced resolving the effective type of a submodule during NED analysis.
+  - Remove superfluous error messages. If there is already an error message
+    saying "No such module type", there is no point in spelling out the
+    consequences as well.
+  - Validate string param assignments to `@enum` properties. It is an error if the
+    value is not one of the values listed in the parameter's `@enum` property.
+  - Add autocomplete proposals for `@enum` in the text editor.
+  - Converted the "Imported NED type not found" error into a warning. This
+    change addresses scenarios where a compound module, defined in the NED file,
+    conditionally uses a NED type from a currently disabled project feature.
+    Although the unavailability of the NED type does not impact runtime when the
+    simulation is configured correctly, the persistent "Imported NED type not
+    found" error could not previously be eliminated. This change ensures smoother
+    management of such issues.
+  - Fixed an issue where rows were displayed at double height in the Module
+    Hierarchy view due to extra newline characters in the displayed text.
+  - Fixed an issue where the property sheet in the graphical NED editor
+    disappeared after selecting an item.
+  - Handle `${expressions}` in display strings better.
+
+NED Documentation Generator:
+
+  - In the documentation comment syntax, backtick quoting is now accepted to
+    denote monospace. This is useful as we transition the documentation markup
+    syntax to Markdown.
+
+  - Added description column to the "Signals and Statistics" table. The
+    description column is filled with the comment of the relevant NED element.
+
+Ini File Editor:
+
+  - Unknown configuration options are now flagged as warnings instead of errors.
+    This change is made because the editor cannot determine whether an unknown
+    option is a typo or a legitimate custom option registered in the model's C++
+    code that the IDE does not recognize. To eliminate even these warnings, add
+    the custom option to the list of known custom options in Preferences ->
+    OMNeT++ -> Ini File Editor.
+
+  - Added support for "abstract" inifile sections, as denoted by `abstract=true`.
+    Abstract sections are displayed with an empty (outline-only) folder icon.
+
+  - Update for recently added configuration options, and general bug fixing.
+
+Analysis Tool:
+
+  - Introduced quantity formatting to improve the display of numeric simulation
+    results, whether recorded with or without measurement units. Options include
+    controlling the number of significant digits, rounding, regular/scientific
+    notation, choice of decimal separator, choice of preferred unit (e.g., bits
+    vs bytes, mW vs dBm), and more. This feature allows results to be shown in
+    the most appropriate format. Multiple display formats can be defined and
+    applied in specific contexts using filter expressions.
+
+  - Browse Data page: Enhanced various aspects of data tables including adding
+    syntax highlighting of parameter values on the Parameters tab, a new context
+    menu in the header row for adjusting column alignment and width, new options
+    to hide or dim less important details such as network name and result
+    suffix, and adding the IsWeighted column to pages listing statistics and
+    histograms.
+
+  - In result queries, enhanced the syntax of filter expressions in the chart
+    Input pages to allow comment lines starting with `#`. This addition enables
+    users to comment out lines from multi-line expressions, improving clarity
+    and manageability.
+
+  - Improve the way the "Plot vectors on separate axes" chart template handles
+    enum-valued vectors. Such vectors are drawn with colored rectangles, with
+    the value name in each. It requires the `enum` attr to be present on the
+    vector.
+
+  - Since output vectors can now be empty, a new option was added to relevant
+    charts to leave out empty vectors from the plot.
+
+  - Added support for ordering the series in charts, affecting both the chart
+    presentation and the legend.
+
+  - When creating a new analysis from a `.sca` or `.vec` file, use relative
+    paths in the `.anf` file if practical.
+
+  - Introduced the "Compare Chart to Template" functionality, which is
+    particularly useful for porting charts created with earlier versions of
+    OMNeT++ to the current version, ensuring compatibility and ease of update.
+
+  - Miscellaneous smaller enhancements, such as assigning numbered names to new
+    charts, adding customization hints to "Lines," "Bars," "Histograms" dialog
+    pages, updating icons for tree nodes like parameter, field, and attribute,
+    marking temporary charts with asterisks in chart tab labels for clearer
+    identification, and also accepting `-->` in legend label replacements for
+    improved readability.
+
+  - Various bug fixes, such as the Properties view not updating under some
+    circumstances, the "Sum weights" column displaying an error in the
+    Histograms tab for weighted histograms, etc.
+
+  - A large number of improvements and bug fixes in the Python library
+    underlying the chart scripts, see the list of changes to the `omnetpp.scave`
+    package below.
+
+Project Features:
+
+  - Introduced classifications for dependencies within project features,
+    differentiating between "required" and "recommended" dependencies to clarify
+    essential and suggested configurations. Previously, all dependencies were
+    treated as "required".
+
+  - Force C++ and NED exclusions of a project to be fully determined by which
+    project features are enabled/disabled. This means, among others, that
+    settings on the NED Source Folders property page are now uneditable in the
+    presence of Project Features.
+
+  - Improved the wording and behavior of the Project Features, Makemake
+    and NED Source Folders project property pages.
+
+  - Reduce the chance of race conditions associated with the IDE updating
+    the `features.h` file.
+
+IDE General:
+
+  - When creating new launch configurations, the IDE now uses the `opp_dbgmi`
+    command to launch the debugger. `opp_dbgmi` is a new (internally used)
+    command that launches the `lldbmi2` debugger if present (currently only on
+    macOS) or falls back to use `gdb` (on Linux and Windows). The bundled
+    `lldbmi2` debugger is built from https://github.com/omnetpp/lldbmi2, a
+    fork of Didier Bertrand's lldbmi2 project with numerous enhancements from
+    the OMNeT++ team.
+
+  - Added support for executing a BeanShell script on startup
+    (`.metadata/startup.bsh` ), which can be used for auto-importing projects
+    and similar tasks.
+
+  - Upgrade to Eclipse 2024-06 (4.32), PyDev 11.1.0, CDT 11.6.
+
+Python library:
+
+  - Added a `requirements.txt` file that holds the list of dependencies.
+    They can be installed with the following command:
+    `python3 -m pip install -r python/requirements.txt`
+
+  - Added `omnetpp.ned`, an experimental package that allows loading and
+    browsing NED types from Python. The rest of the changes affect the
+    `omnetpp.scave` package, see below.
+
+Scave Python library (`omnetpp.scave` package):
+
+  - Refined result query and plotting functions to ensure accuracy based on the
+    measurement units of simulation results. The `unit` attribute is now
+    consistently included in the returned dataframe, with options to convert
+    quantities to the base unit using the `convert_to_base_unit` parameter in
+    `results.get_[scalars|vectors|statistics|histograms]()` (default is `True`).
+    Additionally, plotting functions now mandate uniform units across results,
+    reporting errors for discrepancies. A utility function, `convert_to_base_unit(df)`,
+    has also been added to `utils.py` for easier conversions.
+
+  - When `results.get_[scalars|vectors|statistics|histograms]()` is used outside
+    the IDE, e.g. as part of `opp_charttool`, results are now loaded directly
+    through the C++ scave library instead of via converting to CSV with
+    `opp_scavetool`. This results in improved reliability and performance gains.
+
+  - In result queries, enhanced the syntax of filter expressions to allow
+    comment lines starting with `#`. This addition enables users to comment out
+    lines from multi-line expressions, improving clarity and manageability.
+
+  - Since empty output vectors are now also included in the output vector files
+    by default, the `omit_empty_vectors` option was added to `result.get_vectors()`
+    so that the user can filter them out when that's desirable.
+
+  - Enhanced `plot_vectors_separate()` in `utils.py` to plot enums as colored
+    strips.
+
+  - Added `add_legend_labels()`, `sort_rows_by_legend()` to `utils.py`.
+
+  - Added a `createdWith` attribute to charts in ANF files. This attribute
+    records the OMNeT++ version used to create the chart, aiming to simplify the
+    process of porting user modifications in chart scripts to newer versions of
+    the chart template.
+
+  - Raise minimum required Matplotlib version to 3.5.3.
+
+  - Many more fixes and improvements. For the full list, see `python/ChangeLog`.
+
+`opp_featuretool`:
+
+  - Added support for the "recommended" project features in addition to
+    mandatory dependencies. The `-f`, `--with-dependencies` command-line option
+    now includes both mandatory and recommended features; the new `-r`,
+    `--with-required` option only refers to required features.
+  - More helpful message if user specifies a nonexistent feature on the command
+    line ("Did you mean X?")
+
+`opp_charttool`:
+
+  - Result loading now takes place via calling into the native scave library,
+    instead of invoking `opp_scavetool`. This significantly improves performance.
+  - Added a positional argument to select charts either by index or name.
+  - Only print the "exporting..." message in verbose mode (`-v`).
+  - Use logging instead of print statements where appropriate. The log level can
+    be controlled with the new `-l`,`--log-level` option.
+  - Several further refinements.
+
+`opp_makemake`:
+
+  - Ported from Perl to Python. Surprisingly, this also brought significant
+    performance improvement.
+
+Build:
+
+  - If a Python virtual environment named `.venv` is present in the OMNeT++ root
+    directory (created by executing `python3 -m venv .venv`), sourcing the `setenv`
+    script automatically activates that environment. This allows OMNeT++ to use its
+    own private Python virtual environment, avoiding possible version conflicts with
+    system packages. Python dependencies are defined now formally in the
+    `python/requirements.txt` file so you can easily install all the dependencies with
+    `python3 -m pip install -r python/requirements.txt`.
+
+Documentation:
+
+  - Install Guide updated.
+  - Users Guide: Result Analysis chapter significantly revised and expanded.
+    Added many more details on how charts operate and how to work with them
+    effectively.
+  - Reduced backlog for the Simulation Manual: object parameters, transmission
+    updates, clarified volatile, list of supported NED properties, etc.
+  - Fresh style for the OMNeT++ API documentation.
+  - More proofreading and refinements.
+
+
 OMNeT++ 6.0.3 (January 2024)
 ----------------------------
 
