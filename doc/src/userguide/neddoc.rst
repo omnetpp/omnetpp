@@ -31,7 +31,7 @@ dialog where you can set various settings for the current generation before star
    Opening the NED documentation generator
 
 The IDE can generate documentation for multiple projects at the same time. Other options control the content of the
-documentation including what kind of diagrams will be generated and whether NED sources should be included. You can
+documentation, including what kind of diagrams will be generated and whether NED sources should be included. You can
 enable doxygen to generate C++ documentation that will be cross-linked from the NED documentation. The tool can generate
 the output into each project as configured in the project-specific settings, or into a separate directory. The latter is
 useful for exporting standalone documentation for several complex projects at once.
@@ -41,9 +41,9 @@ useful for exporting standalone documentation for several complex projects at on
 
    Configuring the NED documentation generator
 
-The NED generation process might take a while for big projects, so please be patient. For example, the INET project's
-complete documentation including the C++ doxygen documentation takes a few minutes to build. You can follow the process
-in the IDE's progress monitor.
+The NED generation process might take a while for big projects, so please be patient. For example, building the 
+complete documentation for the INET project, including the C++ doxygen documentation, takes a few minutes. 
+You can track the progress in the IDE's progress monitor.
 
 .. figure:: pictures/NEDDOC-Progress.png
    :width: 60%
@@ -51,8 +51,8 @@ in the IDE's progress monitor.
    Generating NED documentation in progress
 
 The result is a number of cross-linked HTML pages that can be opened by double-clicking the generated :file:`index.html`.
-On the left side, you will see a navigation tree, while on the right side there will be an overview of the project. If
-you have not yet added a ``@titlepage`` directive into your NED comments, then the overview page will display a default
+On the left side, you will see a navigation tree, while on the right side, there will be an overview of the project. If
+you have not yet added a ``@titlepage`` directive to your NED comments, then the overview page will display default
 content.
 
 .. figure:: pictures/NEDDOC-Documentation.png
@@ -61,7 +61,7 @@ content.
    The resulting NED documentation
 
 The documentation contains various inheritance and usage diagrams that make it easier to understand complex models. The
-diagrams are also cross-linked, so that when you click on a box, the corresponding model element's documentation will be
+diagrams are also cross-linked, so when you click on a box, the corresponding model element's documentation will be
 opened. The NED model elements are also exported graphically from the NED Editor. These static images provide
 cross-referencing navigation for submodules.
 
@@ -72,7 +72,7 @@ cross-referencing navigation for submodules.
 
 There are also a number of tables that summarize various aspects of modules, networks, messages, packets, etc. The most
 interesting is the list of assignable parameters. It shows all parameters from all submodules down the hierarchy that do
-not have fixed values. These can be set either through inheritance, encapsulation or from the INI file as experiments.
+not have fixed values. These can be set either through inheritance, encapsulation, or from the INI file as experiments.
 
 .. figure:: pictures/NEDDOC-AssignableParameters.png
    :width: 80%

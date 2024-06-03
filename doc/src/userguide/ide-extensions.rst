@@ -2,7 +2,7 @@ Extending the IDE
 =================
 
 There are several ways to extend the functionality of the |omnet++| IDE. The Simulation IDE is based on the Eclipse
-platform, but extends it with new editors, views, wizards, and other functionality.
+platform but extends it with new editors, views, wizards, and other functionality.
 
 Installing New Features
 -----------------------
@@ -13,7 +13,7 @@ Eclipse. The installation procedure is exactly the same as with a standard Eclip
 (using the site URL) to the Available Software Sites. After the selection, you can browse and install the packages the
 site offers.
 
-To read about installing new software into your IDE, please visit the :guilabel:`Updating and installing software` topic
+To learn about installing new software into your IDE, please visit the :guilabel:`Updating and installing software` topic
 in the :guilabel:`Workbench User Guide`. You can find the online help system in the :menuselection:`Help --> Help Contents`
 menu.
 
@@ -26,9 +26,9 @@ menu.
 Adding New Wizards
 ------------------
 
-The Simulation IDE makes it possible to contribute new wizards into the wizard dialogs under the :menuselection:`File --> New`
+The Simulation IDE makes it possible to contribute new wizards to the wizard dialogs under the :menuselection:`File --> New`
 menu without writing Java code or requiring any knowledge of Eclipse internals. Wizards can create new simulation
-projects, new simulations, new NED files, or other files by using templates, or perform export/import functions. Wizard
+projects, new simulations, new NED files, or other files by using templates or perform export/import functions. Wizard
 code is placed under the :file:`templates` folder of an |omnet++| project, which makes it easy to distribute wizards
 with the model. When the user imports and opens a project that contains wizards, the wizards will automatically become
 available.
@@ -47,10 +47,11 @@ model-specific IDE extensions together with a simulation project without requiri
 steps to install the plug-in. Plugins and wizards that are distributed with a project are automatically activated when
 the host project is opened.
 
-Eclipse plug-in JAR files can be created using the `Plug-in Development Environment <https://eclipse.org/pde>`_. The |omnet++| IDE does not
-contain the PDE by default; however, it can be easily installed, if necessary.
+Eclipse plug-in JAR files can be created using the `Plug-in Development Environment <https://eclipse.org/pde>`_. The
+|omnet++| IDE does not contain the PDE by default; however, it can be easily installed if necessary.
 
 .. tip::
 
    Read the :ref:`ide-developers-guide` for more information on how to install the PDE and how to
    develop plug-in extensions for the IDE.
+

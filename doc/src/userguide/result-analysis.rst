@@ -1,18 +1,18 @@
 Analyzing the Results
-=============
+=====================
 
 Overview
 --------
 
-Analyzing the simulation result is a time-consuming process. The result
-of the simulation is recorded as scalar values, vector values,
+Analyzing the simulation results is a time-consuming process. The results
+of the simulation are recorded as scalar values, vector values,
 histograms, and evaluated parameters. Information about each run, such
-as iteration variables, configuration entries, and run attributes, are
+as iteration variables, configuration entries, and run attributes, is
 also stored. You can then apply statistical methods to extract the
 relevant information and draw a conclusion. This process may include
 several steps. Usually, you need to filter and transform the data, and
 chart the result. Automation is very important here - you do not want to
-repeat the steps of recreating charts every time you re-run simulations.
+repeat the steps of recreating charts every time you rerun simulations.
 
 In |omnet++| 6.x, the statistical analysis tool is integrated into the
 Eclipse environment. Querying, processing, and plotting the simulation
@@ -26,7 +26,7 @@ not be recreated all over again. Simply replacing the old result files
 with the new ones will result in the charts being automatically
 displayed with the new data.
 
-When creating an analysis, the user first selects the input of the
+When creating an analysis, the user first selects the input for the
 analysis by specifying file names or file name patterns (e.g.
 ``adhoc-*.vec``). Data in result files are tagged with meta-information.
 Experiment, measurement, and replication labels are added to the result
@@ -57,9 +57,10 @@ analysis file for it instead.
 
 If the result file name looks like the file was created as part of an experiment
 or parameter study, the IDE creates an analysis file that includes all result
-files from that experiment as input. In the resulting inputs, the variable part of the file name will be replaced by
-an asterisk (``*``), and an input will be added with both the ``.sca`` and ``.vec`` file extensions.
-For example, double-clicking a file called ``PureAloha-numHosts=10,iaMean=1-#3.sca``
+files from that experiment as input. In the resulting inputs, the variable part of
+the file name will be replaced by an asterisk (``*``), and an input will be
+added with both the ``.sca`` and ``.vec`` file extensions. For example,
+double-clicking a file called ``PureAloha-numHosts=10,iaMean=1-#3.sca``
 will add ``PureAloha-*.sca`` and ``PureAloha-*.vec`` to the analysis.
 
 Upon double-clicking, the :guilabel:`New Analysis File` dialog will open. The
@@ -89,8 +90,8 @@ The format of the analysis files (``*.anf``) has changed in |omnet++| 6.0 in a
 non-backward compatible way, meaning that older |omnet++| versions will not be
 able to open new analysis files. |omnet++| 6.0, however, attempts to open and
 convert analysis files created by older versions. Keep in mind that the
-conversion is "best-effort": the result may be incomplete or incorrect. Always
-check that the converted charts indeed correspond to the original ones, and
+conversion is a "best-effort" attempt: the result may be incomplete or incorrect.
+Always check that the converted charts indeed correspond to the original ones, and
 refine the result if needed.
 
 
@@ -135,9 +136,9 @@ Input file patterns are resolved with the following rules:
 
 1. An asterisk (``*``) matches files/folders within a single folder;
 2. A double asterisk (``**``) may match multiple levels in the folder hierarchy;
-3. If the pattern starts with slash (``/``), it is understood as a workspace full path,
+3. If the pattern starts with a slash (``/``), it is understood as a workspace full path,
    with its first component being a project name;
-4. If the pattern does not start with slash (``/``),  it is interpreted as
+4. If the pattern does not start with a slash (``/``), it is interpreted as
    relative to the folder of the analysis file;
 5. If the pattern identifies a folder, it will match all result files in it
    (i.e. ``/foo/results`` is equivalent to ``/foo/results/**.sca`` plus
@@ -227,8 +228,8 @@ clicking on the column name.
 
    Browsing a subset of result items selected using a filter expression
 
-Individual fields of composite results (eg. the `:mean` and `:count` fields
-of statistics, histograms or vectors) can also be included as scalars by
+Individual fields of composite results (e.g. the `:mean` and `:count` fields
+of statistics, histograms, or vectors) can also be included as scalars by
 enabling the :guilabel:`Show Statistics/Vector Fields as Scalars` option.
 
 Filtering
@@ -290,7 +291,7 @@ JSON, and so on. Vectors can be also cropped to a time interval in the export.
 
 .. tip::
 
-   You can switch between the :guilabel:`Inputs`, :guilabel:`Browse Data` and
+   You can switch between the :guilabel:`Inputs`, :guilabel:`Browse Data`, and
    :guilabel:`Charts` pages using the :kbd:`Alt+PgUp` and :kbd:`Alt+PgDown`
    keys.
 
@@ -318,7 +319,7 @@ on an element will select the corresponding element in the editor.
 
 .. tip::
 
-   If you select a chart which is currently open, the editor will switch to its
+   If you select a chart that is currently open, the editor will switch to its
    page in the editor instead of selecting it in the :guilabel:`Charts` page. If
    there are many charts open, this can actually be a more convenient way of
    switching between them than using the tabs at the bottom of the editor window.
@@ -340,8 +341,8 @@ topics involving Python scripting.
 Charts can be created in two ways: first, based on the set of selected results
 on the :guilabel:`Browse Data` page, and second, choosing from the list of
 available chart types on the :guilabel:`Charts` page. In the latter case, the
-results which serve as input for the chart need to be configured manually, while
-in the former case it happens implicitly.
+results that serve as input for the chart need to be configured manually, while
+in the former case, it happens implicitly.
 
 Various types of charts are available. There are a number of
 built-in ones, and you can also add your own to your projects.
@@ -384,17 +385,17 @@ Enter, will also open a suitable chart.
 
 .. note::
 
-   Charts opened this way are not saved into the analysis, i.e. they
-   will be discarded when you close them. In order to preserve a chart
+   Charts opened this way are not saved into the analysis, i.e., they
+   will be discarded when you close them. To preserve a chart
    as part of the analysis, you need to choose :guilabel:`Save
    Chart` from the toolbar or the context menu of the chart's page.
    When you do that, the chart will appear on the :guilabel:`Charts` page.
-   See :ref:`ana-temporary-charts` for more info.
+   See :ref:`ana-temporary-charts` for more information.
 
 From the Charts Page
 ^^^^^^^^^^^^^^^^^^^^
 
-Right clicking in an empty area on the :guilabel:`Charts` page and opening
+Right-clicking in an empty area on the :guilabel:`Charts` page and opening
 the :guilabel:`New` submenu lists all the available chart templates.
 Clicking on one creates a new chart from that template.
 
@@ -416,7 +417,7 @@ Using Charts
 ------------
 
 This section introduces you to the basics of working with charts in the
-|omnet++| IDE. It shows how to navigate on plots, how to configure their
+|omnet++| IDE. It shows how to navigate plots, configure their
 appearance, and export data and images.
 
 Opening a Chart
@@ -439,7 +440,7 @@ when closed (unless saved into the analysis).
 
    The easiest way to see whether an open chart is a temporary chart is to check
    the leftmost icon on the local toolbar. If you see :guilabel:`Save Chart`,
-   then it is temporary chart; if you see :guilabel:`Go To Chart Definition`,
+   then it is a temporary chart; if you see :guilabel:`Go To Chart Definition`,
    then the chart is part of the analysis (and the button will take you to the
    :guilabel:`Charts` page to show it).
 
@@ -467,14 +468,14 @@ Zooming and moving actions are remembered in the navigation history.
 The navigation of Matplotlib charts is slightly different from this,
 as that follows how Matplotlib charts usually handle navigation.
 One addition compared to that is that scrolling, :kbd:`Shift` plus scrolling and
-:kbd:`Ctrl` plus scrolling pans vertically/horizontally, or zooms. There is also
+:kbd:`Ctrl` plus scrolling pans vertically / horizontally or zooms. There is also
 a third mode, called interactive mode, which is used to manipulate
 interactive elements on the plot, such as widgets, if present.
 
 The Chart Properties Dialog
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Charts have a set of properties that define their behavior and looks.
+Charts have a set of properties that define their behavior and appearance.
 These properties can be edited in a configuration dialog, accessible
 from the :guilabel:`Configure Chart` toolbar button and context menu item.
 
@@ -482,10 +483,10 @@ The dialog has a tabbed layout, where the list of tabs and the form on each page
 differ for each chart type. Pages that are common to nearly all chart types
 (albeit with slightly differing contents) are:
 
-- :guilabel:`Input`: Defines what results simulation results should be used
-  as input for the chart, and their roles (e.g. which ones to use for the
-  horizontal axis, iso lines, etc).
-- :guilabel:`Plot`, :guilabel:`Lines`, :guilabel:`Bars`, etc: For configuring the labels, markers, ticks, grid, etc.
+- :guilabel:`Input`: Defines which simulation results should be used
+  as input for the chart and their roles (e.g., which ones to use for the
+  horizontal axis, iso lines, etc.).
+- :guilabel:`Plot`, :guilabel:`Lines`, :guilabel:`Bars`, etc.: For configuring the labels, markers, ticks, grid, etc.
 - :guilabel:`Styling`: Visual properties for the plot.
 - :guilabel:`Advanced`: Lets you manually add custom plot properties that don't occur on the other pages.
 - :guilabel:`Export`: Properties to be used during image/data export.
@@ -504,21 +505,21 @@ by pressing :kbd:`Ctrl+SPACE`.
 Filter Expressions
 ^^^^^^^^^^^^^^^^^^
 
-Filter expressions are used at multiple places in the Analysis Tool, e.g. for
-filtering the table/tree contents on the :guilabel:`Browse Data page`, and on
+Filter expressions are used at multiple places in the Analysis Tool, e.g., for
+filtering the table/tree contents on the :guilabel:`Browse Data` page and on
 :guilabel:`Input` pages of chart properties dialogs for selecting simulation
 results as input for the chart.
 
 A filter expression is composed of terms that can be combined with the `AND`,
 `OR`, `NOT` operators, and parentheses. A term filters for the value of some property of
-the item, and has the form `<property> =~ <pattern>`, or simply `<pattern>`. The latter
+the item and has the form `<property> =~ <pattern>`, or simply `<pattern>`. The latter
 is equivalent to `name =~ <pattern>`.
 
 The following properties are available:
  - `name`: Name of the result or item.
  - `module`: Full path of the result's module.
- - `type`: Type of the item. Value is one of: `scalar`, `vector`, `parameter`, `histogram`, `statistics`.
- - `isfield`: `true` is the item is a synthetic scalar that represents a field of statistic or a vector, `false` if not.
+ - `type`: Type of the item. The value is one of: `scalar`, `vector`, `parameter`, `histogram`, `statistics`.
+ - `isfield`: `true` if the item is a synthetic scalar that represents a field of statistic or a vector, `false` if not.
  - `file`: File name of the result or item.
  - `run`: Unique run ID of the run that contains the result or item.
  - `runattr:<name>`: Run attribute of the run that contains the result or item. Example: `runattr:measurement`.
@@ -531,13 +532,13 @@ Patterns may contain the following wildcards:
  - `*` matches zero or more characters except '.'
  - `**` matches zero or more characters (any character)
  - `{a-z}` matches a character in range a-z
- - `{^a-z}` matches a character not in range a-z
- - `{32..255}` any number (i.e. sequence of digits) in range 32..255 (e.g. `99`)
- - `[32..255]` any number in square brackets in range 32..255 (e.g. `[99]`)
+ - `{^a-z}` matches a character not in the range a-z
+ - `{32..255}` any number (i.e., sequence of digits) in the range 32..255 (e.g., `99`)
+ - `[32..255]` any number in square brackets in the range 32..255 (e.g., `[99]`)
  - `\\` takes away the special meaning of the subsequent character
 
 Patterns only need to be surrounded with quotes if they contain whitespace or
-other characters that would cause ambiguity in parsing the expression.
+other characters that would cause a parsing ambiguity.
 
 Example: `module =~ "**.host*" AND (name =~ "pkSent*" OR name =~ "pkRecvd*")`
 
@@ -602,7 +603,7 @@ of the given chart to select which results to export. This is available under th
 :guilabel:`Export Chart Input As` context menu item of charts.
 
 The second one includes any transformations the chart might perform on the data
-before plotting it, and is available under the common :guilabel:`Export Chart`
+before plotting it and is available under the common :guilabel:`Export Chart`
 option, as discussed in section :ref:`ana-batch-export`.
 
 ..
@@ -785,13 +786,13 @@ you.
 Reset to Template
 ^^^^^^^^^^^^^^^^^
 
-If changes to a chart script or a dialog page prove to be a dead-end, it might
-be a good idea to start afresh.
+If changes to a chart script or a dialog page prove to be a dead-end, one option is
+to start fresh.
 
-The :guilabel:`Reset to Template` option in the charts context menu
-does lets you select some aspects of the chart to be restored to
-its original state, as it is in its template: the code of the charts script,
-the values of its properties, and/or the layout of its property editor dialog.
+The :guilabel:`Reset to Template` option in the charts context menu allows you
+to select some aspects of the chart to be restored to its original state, as
+it is in its template: the code of the chart script, the values of its properties,
+and/or the layout of its property editor dialog.
 
 .. figure:: pictures/ANF-ResetChartToTemplate.png
    :width: 80%
@@ -802,33 +803,32 @@ the values of its properties, and/or the layout of its property editor dialog.
 Chart Programming
 -----------------
 
-Data processing in chart scripts is based on the NumPy and Pandas packages,
-with some modules provided by |omnet++|.
+Data processing in chart scripts is based on the NumPy and Pandas packages, with
+some modules provided by |omnet++|.
 
 Python Modules
 ^^^^^^^^^^^^^^
 
 The chart scripts can access some functionality of the IDE through a couple of
-modules under the ``omnetpp.scave`` package.
-These include: ``chart``, ``results``, ``ideplot``, ``vectorops``, and ``utils``.
-The complete API of these modules is described in the Simulation Manual.
+modules under the ``omnetpp.scave`` package. These include: ``chart``,
+``results``, ``ideplot``, ``vectorops``, and ``utils``. The complete API of
+these modules is described in the Simulation Manual.
 
-The ``chart`` module exposes information about the chart object (as
-part of the analysis, and visible on the :guilabel:`Charts` page), most
-importantly its set of properties, but also its name, and what type
-of chart it is.
+The ``chart`` module exposes information about the chart object (as part of the
+analysis, and visible on the :guilabel:`Charts` page), most importantly its set
+of properties, but also its name, and what type of chart it is.
 
 The ``results`` module provides access to the set of result items (and
-corresponding metadata) currently loaded in the analysis in the IDE.
-This data is accessible through a set of query functions, each taking
-a filter expression, and returning a Pandas DataFrame.
+corresponding metadata) currently loaded in the analysis in the IDE. This data
+is accessible through a set of query functions, each taking a filter expression,
+and returning a Pandas DataFrame.
 
 The ``ideplot`` module is the interface for displaying plots using the IDE's
 native (non-Matplotlib) plotting widgets from chart scripts. The API is
 intentionally very close to ``matplotlib.pyplot``. When ``ideplot`` is used
 outside the context of a native plotting widget (such as during the run of
-``opp_charttool``, or in IDE during image export), the functions are emulated
-with Matplotlib.
+``opp_charttool``, or in the IDE during image export), the functions are
+emulated with Matplotlib.
 
 The ``vectorops`` module contains the implementations of the built-in vector
 operations.
@@ -836,51 +836,49 @@ operations.
 The ``utils`` module is a collection of utility functions for processing and
 plotting data. Most chart scripts heavily rely on ``utils``.
 
-Additionally, the well known ``numpy``, ``pandas``, ``matplotlib``, and
-sometimes the ``scipy`` and ``seaborn`` packages are often utilized.
-All other packages installed on the system are also fully available.
+Additionally, the well-known ``numpy``, ``pandas``, ``matplotlib``, and
+sometimes the ``scipy`` and ``seaborn`` packages are often utilized. All other
+packages installed on the system are also fully available.
 
 .. tip::
 
-   See Simulation Manual for details on the |omnet++| result analysis
-   Python modules. It contains a section on chart programming, and
-   an API reference in the Appendix.
+   See the Simulation Manual for details on the |omnet++| result analysis Python
+   modules. It contains a section on chart programming, and an API reference in
+   the Appendix.
 
 
 Tips and Tricks
 ^^^^^^^^^^^^^^^
 
-This section is a collection of tips for use cases that might
-come up often when working with charts, especially when editing
-their scripts.
+This section is a collection of tips for use cases that might come up often when
+working with charts, especially when editing their scripts.
 
 Sharing Code Among Charts
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For future releases, we are planning to support "snippets" as part of the
 analysis file, as a means of sharing code among charts. Until that feature is
-implemented, a workaround is to put shared code in ``.py`` files.
-These scripts can be imported as modules. They will be looked for in the
-folder containing the ``.anf`` file, and in the ``python`` folders of the
-containing project and all of its referenced projects.
-Chart scripts can import these files as modules, and thereby use the
-functionality they provide. This also makes it possible to use external
-code editors for parts of your code.
+implemented, a workaround is to put shared code in ``.py`` files. These scripts
+can be imported as modules. They will be looked for in the folder containing the
+``.anf`` file, and in the ``python`` folders of the containing project and all
+of its referenced projects. Chart scripts can import these files as modules, and
+thereby use the functionality they provide. This also makes it possible to use
+external code editors for parts of your code.
 
 Customizing the Legend
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The order of items appearing in the legend, and in which they are drawn,
-is determined by their order in the data used for plotting. They can
-therefore be reordered by sorting the rows of the dataframe before plotting it.
-For example: ``df = df.sort_values(by=['iaMean'])``
+The order of items appearing in the legend, and in which they are drawn, is
+determined by their order in the data used for plotting. They can therefore be
+reordered by sorting the rows of the dataframe before plotting it. For example:
+``df = df.sort_values(by=['iaMean'])``
 
 Normally, labels for the legend are concatenated, using some heuristics, from
 columns that best differentiate the data items. If you are not satisfied with
 the result, there are two ways to affect it:
 
-- If you add ``comment`` column to the dataframe, its contents will be appended
-  to the auto-generated legend labels in parentheses.
+- If you add a ``comment`` column to the dataframe, its contents will be
+  appended to the auto-generated legend labels in parentheses.
 
 - If you add a ``legend`` column, its contents will be used instead of
   auto-generated legend labels, so you can create your own legend labels.
@@ -892,8 +890,8 @@ Adding Extra Data Items to the Plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It's possible to add new data items to the queried results before plotting.
-These can be either computed from existing items, or synthesized from a
-formula. Example uses:
+These can be computed from existing items, or synthesized from a formula.
+Example uses:
 
 - Computing derived results:
 
@@ -912,7 +910,7 @@ Simplifying Complex Queries
 
 Instead of coming up with an elaborate filter expression, it is sometimes more
 straightforward to query results multiple times within a script, and combine
-them with ``pd.concat``, ``pd.join`` or ``pd.merge``. Other functions like
+them with ``pd.concat``, ``pd.join``, or ``pd.merge``. Other functions like
 ``pf.pivot`` and ``pd.pivot_table`` are also often useful in these cases.
 
 Defining New Vector Operations
@@ -920,7 +918,7 @@ Defining New Vector Operations
 
 You can define your own vector operations by injecting them into the
 ``vectorops`` module, even if this injection is done in an external module
-(``.py`` file imported from the directory of the ``.anf`` file)
+(``.py`` file imported from the directory of the ``.anf`` file).
 
 .. code-block:: python3
 
@@ -937,11 +935,10 @@ myoperation(sigma=4)``
 Customized Export
 ~~~~~~~~~~~~~~~~~
 
-If the built-in image/data exporting facilities are not sufficient for your
-use case, you can always add your own export code, either by manually
-``open()``-ing a file, or by utilizing a data exporter library/function of
-your liking. Functions such as ``plt.savefig()`` and ``df.to_*()`` can be
-useful for this.
+If the built-in image/data exporting facilities are not sufficient for your use
+case, you can always add your own export code, either by manually ``open()``-ing
+a file, or by utilizing a data exporter library/function of your liking.
+Functions such as ``plt.savefig()`` and ``df.to_*()`` can be useful for this.
 
 Caching the Result of Expensive Operations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -952,17 +949,17 @@ expensive data querying or processing procedure in the script. And because every
 execution is in a fresh Python process, caching can only really be done on the
 disk.
 
-There are existing packages that can help you in this, such as ``diskcache``,
-``cache.py`` or ``memozo``. (Note that caching the result of a function call is
+There are existing packages that can help you with this, such as ``diskcache``,
+``cache.py``, or ``memozo``. (Note that caching the result of a function call is
 often called *memoization*; using that term in online searches may give you
 additional insight.)
 
 If the sequence of operations whose result is cached includes simulation result
 querying (``results.get_scalars()``, etc.), it is important to invalidate
 (clear) the cache whenever there is a change in the loaded result files. The
-change can be detected calling the ``results.get_serial()`` function, which
-returns an integer which is incremented every time a result file is loaded,
-unloaded or reloaded.
+change can be detected by calling the ``results.get_serial()`` function, which
+returns an integer that is incremented every time a result file is loaded,
+unloaded, or reloaded.
 
 
 Arbitrary Plot Types
@@ -971,7 +968,7 @@ Arbitrary Plot Types
 In charts using Matplotlib, the whole range of its functionality is available:
 
 - Arbitrary plots can be drawn (heatmaps, violin plots, geographical maps, 3D curves, etc.)
-- Advanced functionality like mouse event handlers, graphical effects, animations, and widgets, all works
+- Advanced functionality like mouse event handlers, graphical effects, animations, and widgets all work
 - It's also possible to just add small customizations, like annotations
 - Any extension library on top of Matplotlib can be used, such as: *seaborn*, *ggplot*, *holoviews*, *plotnine*, *cartopy*, *geoplot*
 - The built-in plotting capability of Pandas DataFrames (under ``df.plot``) works too
@@ -983,8 +980,8 @@ For native plots, properties affecting individual data items can be specified
 with the following additional syntax: ``<propertyname>/<itemkey>``. Unless
 overridden manually, the data item keys are sequentially increasing integers,
 starting with ``1``. For example, adding the following line on the Advanced tab
-in the property editor dialog of a line chart will set the color of second line
-(or of the line identified with the key ``2``) to red.
+in the property editor dialog of a line chart will set the color of the second
+line (or of the line identified with the key ``2``) to red.
 
 ``Line.Color/2 : #FF0000``
 
@@ -1000,9 +997,9 @@ The dialog shows some properties (chart type, accepted result types), a
 description, and often also sample images for each one.
 
 The IDE contains a number of built-in chart templates, but the user can add
-their own, too. Custom chart templates live in the ``charttemplates`` folder of
-every project, and are available in analyses in the same project and all
-projects that depend on it.
+their own too. Custom chart templates live in the ``charttemplates`` folder of
+every project and are available in analyses in the same project and all projects
+that depend on it.
 
 Exporting a Chart as Template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1026,14 +1023,14 @@ Parts of a Chart Template
 
 A chart template consists of several parts, describing the initial contents of
 charts created from it: what kind of drawing widget it needs (Matplotlib or one
-of the native widgets), what script it executes, how its configuration
-dialog looks like, what types of result items it can process/show, and which
-icon should be used for it.
+of the native widgets), what script it executes, how its configuration dialog
+looks like, what types of result items it can process/show, and which icon
+should be used for it.
 
 Namely, there are several files:
 
-- ``<name>.properties``: This is the main file file. It defines the name and other
-  attributes of the chart template, and references all other files by name. The
+- ``<name>.properties``: This is the main file. It defines the name and other
+  attributes of the chart template and references all other files by name. The
   syntax is Java property file.
 - ``<name>.py``: The Python file that contains the chart script.
 - ``*.xswt``: The dialog pages.
@@ -1046,61 +1043,58 @@ Notable keys in the properties file:
 
 - ``id``: Internal identifier
 - ``name``: Descriptive name
-- ``type``: ``MATPLOTLIB``, or one of ``LINE``, ``BAR`` and ``HISTOGRAM`` for native charts
+- ``type``: ``MATPLOTLIB``, or one of ``LINE``, ``BAR``, and ``HISTOGRAM`` for native charts
 - ``scriptFile``: The chart script Python file
 - ``icon``: Icon file, e.g. in PNG format
-- ``resultTypes``: One or more of ``scalar``, ``vector``, ``parameter``, ``histogram`` and ``statistics``, separated by comma
+- ``resultTypes``: One or more of ``scalar``, ``vector``, ``parameter``, ``histogram``, and ``statistics``, separated by commas
 - ``description``: Long description of the chart in HTML format
 - ``dialogPage.<n>.id``: Internal identifier of the nth dialog page
 - ``dialogPage.<n>.label``: Label of the tab of the nth dialog page
 - ``dialogPage.<n>.xswtFile``: XSWT file of the nth dialog page
-
-
-
 
 Under the Hood
 --------------
 
 This section details the internal workings of the Python integration in the
 Analysis Tool. Its contents are not directly useful for most users, only for
-those who are curious about the technicalities, or want to troubleshoot an issue.
+those who are curious about the technicalities or want to troubleshoot an issue.
 
 Chart scripts are executed by separate Python processes, launched from the
-``python3[.exe]`` found in ``$PATH``. This decision was made so a rogue chart script
-can't make the entire IDE unresponsive, or crash it. Also, it's possible to
-put resource or permission constraints on these processes without hindering the
-IDE itself, and can be killed at any time with no major consequences to the rest
-of the Analysis Tool - for example, in the event of a deadlock or thrashing.
+``python3[.exe]`` found in ``$PATH``. This decision was made so that a rogue
+chart script can't make the entire IDE unresponsive or crash it. Also, it's
+possible to put resource or permission constraints on these processes without
+hindering the IDE itself, and they can be killed at any time with no major
+consequences to the rest of the Analysis Tool - for example, in the event of a
+deadlock or thrashing.
 
-These processes are ephemeral, a fresh one is used for each refresh,
-so no interpreter state preserved across executions. A small number of
-processes are kept pre-spawned in a pool, so they can be put to use quickly
-when needed.
+These processes are ephemeral, and a fresh one is used for each refresh, so no
+interpreter state is preserved across executions. A small number of processes
+are kept pre-spawned in a pool, so they can be put to use quickly when needed.
 
 If you wish to utilize virtual environments, start the entire IDE from a shell
-in which the environment to use has been activated. This way the spawned Python
+in which the environment to use has been activated. This way, the spawned Python
 interpreter processes will also run in that environment.
 
-The level of flexibility offered by this arbitrary scripting unfortunately
-comes with its own dangers too. Note that the scripts running in charts have
-full access to everything on your computer without any sandboxing, so they can
+The level of flexibility offered by this arbitrary scripting unfortunately comes
+with its own dangers too. Note that the scripts running in charts have full
+access to everything on your computer without any sandboxing, so they can
 read/write/delete files, open graphical windows, make network connections,
 utilize any hardware resources, etc.! Because of this, make sure to only ever
-open analysis files from sources you trust! (Or files from untrusted sources
-only on systems that are not critical.)
+open analysis files from sources you trust! (Or open files from untrusted
+sources only on systems that are not critical.)
 
-Communication between the Eclipse IDE and the spawned Python processes
-is done via the Py4J project, through an ordinary network (TCP) socket.
+Communication between the Eclipse IDE and the spawned Python processes is done
+via the Py4J project, through an ordinary network (TCP) socket.
 
-To avoid the CPU and RAM inefficiencies caused by the string-based nature of
-the Py4J protocol, bulk data is transferred in shared memory (POSIX SHM,
-or unnamed file mappings on Windows) instead of the socket. Without this,
-binary data would have to be base64 encoded, then represented as UTF-16,
-which would be about 3x the size on top of the original content, which is
-already present in both processes. Data passed this way includes any queried
-results (in pickle format), and in the other direction, the data to plot on
-native widgets, or the raw pixel data rendered by Matplotlib.
+To avoid the CPU and RAM inefficiencies caused by the string-based nature of the
+Py4J protocol, bulk data is transferred in shared memory (POSIX SHM or unnamed
+file mappings on Windows) instead of the socket. Without this, binary data would
+have to be base64 encoded, then represented as UTF-16, which would be about 3x
+the size on top of the original content, which is already present in both
+processes. Data passed this way includes any queried results (in pickle format),
+and in the other direction, the data to plot on native widgets, or the raw pixel
+data rendered by Matplotlib.
 
-Many other kinds of information, like GUI events or smaller pieces of data
-(like chart properties) are passed through the Py4J socket, as regular function
-call parameters.
+Many other kinds of information, like GUI events or smaller pieces of data (like
+chart properties) are passed through the Py4J socket as regular function call
+parameters.

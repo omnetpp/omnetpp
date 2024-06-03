@@ -17,17 +17,17 @@ Overview
 
 In |omnet++|, simulation models are parameterized and configured for execution using configuration files with the :file:`.ini`
 extension, called INI files. INI files are text files, which can be edited using any text editor. However, |omnet++| 4.x
-introduces a tool expressly designed for editing INI files. The INI File Editor is part of the |omnet++| IDE and is very
+introduces a tool specifically designed for editing INI files. The INI File Editor is part of the |omnet++| IDE and is highly
 effective in assisting the user to author INI files. It is a very useful feature because it has detailed knowledge of
 the simulation model, the INI file syntax, and the available configuration options.
 
 .. note::
 
    The syntax and features of INI files have changed since |omnet++| 3.x. These changes are summarized in the "Configuring
-   Simulations" chapter of the "|omnet++| 4.x. User Manual".
+   Simulations" chapter of the "|omnet++| 4.x User Manual."
 
 The INI File Editor is a dual-mode editor. The configuration can be edited using forms and dialogs, or as plain text.
-Forms are organized around topics like general setup, Cmdenv, Qtenv, output files, extensions and so on. The text editor
+Forms are organized around topics such as general setup, Cmdenv, Qtenv, output files, extensions, and so on. The text editor
 provides syntax highlighting and auto completion. Several views can display information, which is useful when editing
 INI files. For example, you can see the errors in the current INI file or all the available module parameters in one
 view. You can easily navigate from the module parameters to their declaration in the NED file.
@@ -120,7 +120,7 @@ has a default value and it is not set, the default value is displayed in gray. I
 default value by pressing the :guilabel:`Reset` button. These fields are usually set in the General section. If you want
 to specify them in a Config section, press the |expand_image| button and add a section-specific value to
 the opening table. If the table contains the Generic section only, then it can be collapsed again by pressing the 
-|collapse_image| button. Some fields can be specified in the General section only, so they do not have a
+|collapse_image| button. Some fields can be specified in the General section only, so they do not have an
 |expand_image| button next to them.
 
 .. figure:: pictures/INI-FormEditor2.png

@@ -3,7 +3,7 @@ Introduction
 
 The |omnet++| simulation IDE is based on the Eclipse platform and extends it with new editors, views, wizards, and other
 functionality. |omnet++| adds functionality for creating and configuring models (NED and INI files), performing batch
-executions and analyzing the simulation results, while Eclipse provides C++ editing, SVN/GIT integration, and other
+executions, and analyzing the simulation results, while Eclipse provides C++ editing, SVN/GIT integration, and other
 optional features (UML modeling, bug-tracker integration, database access, etc.) via various open-source and commercial
 plug-ins. The environment will be instantly recognizable to those familiar with the Eclipse platform.
 
@@ -25,7 +25,7 @@ the simulation perspective, select :menuselection:`Window --> Open Perspective -
 
    Selecting the "Simulation Perspective" in Eclipse
 
-Most interface elements within Eclipse can be moved or docked freely so you can construct your own workbench to fit
+Most interface elements within Eclipse can be moved or docked freely, so you can construct your own workbench to fit
 your needs.
 
 .. figure:: pictures/Intro-DefaultLayout.png
@@ -34,7 +34,7 @@ your needs.
    Default layout of the |omnet++| IDE
 
 The :guilabel:`Project Explorer` on the top left part of the screen shows the projects and their content in your
-workspace. In the example above, the ``queueinglib`` demo project is open. You can see the various :file:`.ned`,
+workspace. In the example above, the "queueinglib" demo project is open. You can see the various :file:`.ned`,
 :file:`.ini`, and other files inside. A number of views are docked at the bottom of the window.
 
 The screenshot shows the open README.txt file in the editor area. When a user double-clicks on a file, Eclipse
@@ -56,7 +56,7 @@ workspace, so you will be able to experiment with the available examples immedia
 projects, we recommend that you create your own workspace by selecting :menuselection:`File --> Switch Workspace --> Other`.
 You can switch between workspaces as necessary. Please be aware that the |omnet++| IDE restarts with each switch in
 workspaces. This is normal. You can browse workspace content in the :guilabel:`Project Explorer`, :guilabel:`Navigator`,
-:guilabel:`C/C++ Projects`, and similar views. We recommend using :guilabel:`Project Explorer`.
+:guilabel:`C/C++ Projects`, and similar views. We recommend using the :guilabel:`Project Explorer`.
 
 The Simulation Perspective
 --------------------------
@@ -73,7 +73,7 @@ The |omnet++| IDE preferences dialog is available through the standard preferenc
 menu item. These settings are global and shared between all projects. The |omnet++| install locations are automatically
 filled in for you after installation. The default settings for the NED documentation generation assume that the PATH
 environment variable is already set so that third-party tools can be found. The license configuration settings specify
-the preferred license type or a custom license text. The IDE will copy the license into new files and projects. The
+the preferred license type or custom license text. The IDE will copy the license into new files and projects. The
 license will also be shown in the generated NED documentation. 
 
 .. figure:: pictures/Intro-Preferences.png
@@ -102,7 +102,7 @@ Project References
 ------------------
 
 Most aspects of a project can be configured in the :guilabel:`Project Properties` dialog. The dialog is accessible via
-the :menuselection:`Project --> Properties` menu item or by right-clicking the project in :guilabel:`Project Explorer` and
+the :menuselection:`Project --> Properties` menu item or by right-clicking the project in the :guilabel:`Project Explorer` and
 choosing :guilabel:`Properties` from the context menu.
 
 An important Eclipse concept is that a project may reference other projects in the workspace; project references can be
@@ -120,15 +120,15 @@ other projects that reference the given project.
 
 .. note::
 
-   To see an example of project references, check the ``queuenet`` and ``queueinglib`` example projects. In this
-   example, ``queuenet`` references ``queueinglib``. ``Queueinglib`` provides simple modules (NED files, and a prebuilt
-   shared library that contains the code of the simple modules) and makes those modules available to ``queuenet`` that
+   To see an example of project references, check the "queuenet" and "queueinglib" example projects. In this
+   example, "queuenet" references "queueinglib". "Queueinglib" provides simple modules (NED files, and a prebuilt
+   shared library that contains the code of the simple modules) and makes those modules available to "queuenet" that
    contains simulations (networks and ini files) built from them.
 
 Getting Help
 ------------
 
-You may access the online help system from the :menuselection:`Help --> Help Contents` menu item. The |omnet++| IDE is built on
-top of Eclipse, so if you are not familiar with Eclipse, we recommend reading the :guilabel:`Workbench User Guide` and
-the :guilabel:`C/C++ Development User Guide` before starting to use |omnet++|-specific features.
+You may access the online help system from the :menuselection:`Help --> Help Contents` menu item. The |omnet++| IDE is built on top of
+Eclipse, so if you are not familiar with Eclipse, we recommend reading the :guilabel:`Workbench User Guide` and the
+:guilabel:`C/C++ Development User Guide` before starting to use |omnet++|-specific features.
 
