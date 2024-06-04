@@ -81,7 +81,7 @@ $(SCAVE_PYTHON_DIR)/%: $O/% $(CONFIGFILE)
 
 clean:
 	$(qecho) Cleaning scave/python
-	$(Q)rm -rf $O $(NBO) $(SCAVE_PYTHON_DIR)/*$(PYTHON_EXT_SUFFIX) $(SCAVE_PYTHON_DIR)/*.pyi
+	$(Q)rm -rf $O $(NBO) $(SCAVE_PYTHON_DIR)/$(LIBNAME)*$(SHARED_LIB_SUFFIX) $(SCAVE_PYTHON_DIR)/*.pyi
 
 -include $(OBJS:%=%.d)
 -include $(NANOBIND_OBJS:%=%.d)

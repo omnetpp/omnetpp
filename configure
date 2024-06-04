@@ -618,6 +618,7 @@ LIBOBJS
 ARCH
 PLATFORM
 PREFER_SQLITE_RESULT_FILES
+WITH_SCAVE_PYTHON_BINDINGS
 WITH_BACKTRACE
 WITH_SYSTEMC
 WITH_AKAROA
@@ -7546,6 +7547,7 @@ ac_config_headers="$ac_config_headers include/omnetpp/platdep/config.h"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 

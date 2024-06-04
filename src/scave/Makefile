@@ -79,13 +79,21 @@ $O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 #
 
 ifeq ($(SHARED_LIBS),yes)
-all: $(TARGET_LIB_FILES) $(TARGET_EXE_FILES) pythonbindings
+all: $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 else
 all: $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
 endif
 
+ifeq ($(WITH_SCAVE_PYTHON_BINDINGS ),yes)
+all: pythonbindings
+clean: clean-pythonbindings
+endif
+
 pythonbindings: $(TARGET_LIB_FILES)
 	$(Q)$(MAKE) -C python
+
+clean-pythonbindings:
+	$(Q)$(MAKE) -C python clean
 
 $(TARGET_EXE_FILES): $(TARGET_LIB_FILES)
 
@@ -127,6 +135,5 @@ $O/$(LIBNAME).pdb: $O/$(LIBNAME)$(DLL_LIB_SUFFIX)
 clean:
 	$(qecho) Cleaning scave
 	$(Q)rm -rf $O $(GENERATED_SOURCES) $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
-	$(Q)$(MAKE) -C python clean
 
 -include $(OBJS:%=%.d)

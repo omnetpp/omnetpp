@@ -3,8 +3,8 @@
 # Your changes will be lost the next time ./configure is run.
 #
 OMNETPP_PRODUCT = OMNeT++
-OMNETPP_RELEASE = omnetpp-6.0
-OMNETPP_VERSION = 6.0
+OMNETPP_RELEASE = omnetpp-6.1
+OMNETPP_VERSION = 6.1
 OMNETPP_BUILDID = internal
 OMNETPP_EDITION = Academic Public License -- NOT FOR COMMERCIAL USE
 
@@ -16,8 +16,11 @@ WITH_OSG = no
 WITH_OSGEARTH = no
 WITH_NETBUILDER = yes
 WITH_LIBXML = no
-WITH_PARSIM = yes
+WITH_PARSIM = no
 WITH_SYSTEMC = no
+WITH_AKAROA = no
+WITH_BACKTRACE = no
+WITH_SCAVE_PYTHON_BINDINGS = no
 PREFER_SQLITE_RESULT_FILES = no
 
 #
@@ -67,6 +70,7 @@ OMNETPP_INCL_DIR = $(OMNETPP_ROOT)/include
 OMNETPP_LIB_DIR = $(OMNETPP_ROOT)/lib$(OUTPUT_PREFIX)
 OMNETPP_OUT_DIR = $(OMNETPP_ROOT)/out$(OUTPUT_PREFIX)
 OMNETPP_SRC_DIR = $(OMNETPP_ROOT)/src
+OMNETPP_PYTHON_DIR = $(OMNETPP_ROOT)/python
 OMNETPP_UTILS_DIR = $(OMNETPP_SRC_DIR)/utils
 OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
 OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
@@ -78,7 +82,6 @@ OMNETPP_TOOLS_DIR = $(OMNETPP_ROOT)/tools/$(PLATFORM).$(ARCH)
 ifeq ($(PLATFORM),win32)
   OMNETPP_IMAGE_PATH := $(shell cygpath -p -m '$(OMNETPP_IMAGE_PATH)')
 endif
-
 
 # use statically built omnetpp if we are building the IDE native helper library
 ifeq ($(BUILDING_UILIBS),yes)
@@ -139,7 +142,6 @@ AS_NEEDED_ON = -Wl,--as-needed
 AS_NEEDED_OFF = -Wl,--no-as-needed
 PIC_FLAGS = -fPIC
 MSGC = opp_msgc
-SMC = opp_smc
 NEDTOOL = opp_nedtool
 AS = aarch64-linux-gnu-as
 AR_CR = aarch64-linux-gnu-ar cr
@@ -176,8 +178,8 @@ PTHREAD_CFLAGS =
 PTHREAD_LIBS = -lpthread
 LIBXML_CFLAGS = 
 LIBXML_LIBS = 
-AKAROA_CFLAGS = -I/usr/local/akaroa/include
-AKAROA_LIBS = -L/usr/local/akaroa/lib -lakaroa -lfl
+AKAROA_CFLAGS = 
+AKAROA_LIBS = 
 
 #
 # platform specific library and executable prefixes and extensions
@@ -187,10 +189,11 @@ SO_LIB_SUFFIX = .so
 DLL_LIB_SUFFIX = .dll
 IMPLIB_SUFFIX = .dll.a
 IMPDEF_SUFFIX = .def
-JNI_LIB_SUFFIX = $(SO_LIB_SUFFIX)
+SHARED_LIB_SUFFIX = $(SO_LIB_SUFFIX)
+JNI_LIB_SUFFIX = $(SHARED_LIB_SUFFIX)
+PYTHON_EXT_SUFFIX =
 EXE_SUFFIX = 
 LIB_PREFIX = lib
-SHARED_LIB_SUFFIX = $(SO_LIB_SUFFIX)
 
 #
 # omnetpp and system libraries linked with the simulations
@@ -232,6 +235,7 @@ ifeq ($(WITH_PARSIM),yes)
     KERNEL_LIBS += $(MPI_LIBS)
   endif
 endif
+
 
 # this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
 ifeq ($(SHARED_LIBS),yes)
