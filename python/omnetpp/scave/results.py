@@ -216,8 +216,8 @@ def _guarded_result_query_func(func):
     return inner
 
 
-def _fix_ndarray_shapes(df : pd.DataFrame, columns : List[str]):
-    """ A workaround for: https://github.com/pandas-dev/pandas/issues/53565 """
+def _fix_ndarray_shapes(df: pd.DataFrame, columns: List[str]):
+    """A workaround for: https://github.com/pandas-dev/pandas/issues/53565"""
     for col in columns:
         df[col] = df[col].apply(lambda a: a.reshape(1)
                                             if isinstance(a, np.ndarray) and a.shape == ()
@@ -239,7 +239,7 @@ def _dropna_except(df : pd.DataFrame, keep_columns : List[str]):
 def get_serial():
     """
     Returns an integer that is incremented every time the set of loaded results
-    change, typically as a result of the IDE loading, reloading or unloading
+    changes, typically as a result of the IDE loading, reloading or unloading
     a scalar or vector result file. The serial can be used for invalidating
     cached intermediate results when their input changes.
     """
@@ -248,10 +248,10 @@ def get_serial():
 def set_inputs(filenames):
     """
     Specifies the set of simulation result files (.vec, .sca) to use as input
-    for the query functions. The argument may be a single string, or a list of
-    strings. Each string is interpreted as a file or directory path, and may
+    for the query functions. The argument may be a single string or a list of
+    strings. Each string is interpreted as a file or directory path and may
     also contain wildcards. In addition to `?` and `*`, `**` (which is able to
-    match several directory levels) is also accepted as wildcard. If a path
+    match several directory levels) is also accepted as a wildcard. If a path
     corresponds to a directory, it is interpreted as `[ "<dir>/**/*.sca",
     "<dir>/**/*.vec" ]`, that is, all result files will be loaded from that
     directory and recursively all its subdirectories.
@@ -264,8 +264,8 @@ def set_inputs(filenames):
 def add_inputs(filenames):
     """
     Appends to the set of simulation result files (.vec, .sca) to use as input
-    for the query functions.  The argument may be a single string, or a list of
-    strings. Each string is interpreted as a file or directory path, and may
+    for the query functions. The argument may be a single string or a list of
+    strings. Each string is interpreted as a file or directory path and may
     also contain wildcards (`?`, `*`, `**`). See `set_inputs()` for more details.
     """
     impl.add_inputs(filenames)
@@ -273,20 +273,20 @@ def add_inputs(filenames):
 def read_result_files(filenames, filter_expression=None, include_fields_as_scalars=False, vector_start_time=-inf, vector_end_time=inf):
     """
     Loads the simulation result files specified in the first argument
-    `filenames`, and returns the filtered set of results and metadata as a
+    `filenames` and returns the filtered set of results and metadata as a
     Pandas `DataFrame`.
 
     The `filenames` argument specifies the set of simulation result files (.vec,
-    .sca) to load.  The argument may be a single string, or a list of strings.
-    Each string is interpreted as a file or directory path, and may also contain
+    .sca) to load. The argument may be a single string or a list of strings.
+    Each string is interpreted as a file or directory path and may also contain
     wildcards (`?`, `*`, `**`). See `set_inputs()` for more details on this
     format.
 
     It is possible to limit the set of results to return by specifying a filter
-    expression, and vector start/end times.
+    expression and vector start/end times.
 
     Parameters:
-    - `filenames` (string, or list of strings): Specifies the result files to
+    - `filenames` (string or list of strings): Specifies the result files to
       load.
     - `filter_expression` (string): The filter expression to select the desired
       items to load. Example: `module =~ "*host*" AND name =~ "numPacket*"`
@@ -326,8 +326,7 @@ def get_results(filter_or_dataframe="", row_types=None, omit_unused_columns=True
       statistics and histograms (`:min`, `:mean`, etc.) are also returned as
       synthetic scalars.
     - `start_time`, `end_time` (double): Optional time limits to trim the data
-      of vector type results. The unit is seconds, both the `vectime` and
-      `vecvalue` arrays will be affected, the interval is left-closed,
+      of vector type results. The unit is seconds, the interval is left-closed,
       right-open.
 
     Returns: a `DataFrame` in the "raw" format (see the corresponding section of
@@ -505,8 +504,8 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
       desired scalars, or a dataframe in the "raw" format. Example: `name =~
       "channelUtilization*" AND runattr:replication =~ "#0"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes
-      (like `unit` or `source` for example) are appended to the DataFrame,
-      pivoted into columns.
+      (like `unit` for example) are appended to the DataFrame, pivoted into
+      columns.
     - `include_fields` (bool): Optional. If `True`, the fields of statistics and
       histograms (`:min`, `:mean`, etc.) are also returned as synthetic scalars.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`,
@@ -573,8 +572,7 @@ def get_parameters(filter_or_dataframe="", include_attrs=False, include_runattrs
       desired parameters, or a dataframe in the "raw" format. Example: `name =~
       "x" AND module =~ Aloha.server`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes
-      (like `unit` for example) are appended to the DataFrame, pivoted into
-      columns.
+      (like `unit`) are appended to the DataFrame, pivoted into columns.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`,
       `include_config_entries` (bool): Optional. When set to `True`, additional
       pieces of metadata about the run is appended to the DataFrame, pivoted
@@ -619,8 +617,8 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
       desired vectors, or a dataframe in the "raw" format. Example: `name =~
       "radioState*" AND runattr:replication =~ "#0"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes
-      (like `unit` or `source` for example) are appended to the DataFrame,
-      pivoted into columns.
+      (like `unit` or `source`) are appended to the DataFrame, pivoted into
+      columns.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`,
       `include_config_entries` (bool): Optional. When set to `True`, additional
       pieces of metadata about the run is appended to the DataFrame, pivoted
@@ -698,8 +696,8 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
       desired statistics, or a dataframe in the "raw" format. Example: `name =~
       "collisionLength:stat" AND itervar:iaMean =~ "5"`
     - `include_attrs` (bool): Optional. When set to `True`, result attributes
-      (like `unit` or `source` for example) are appended to the DataFrame,
-      pivoted into columns.
+      (like `unit` or `source`) are appended to the DataFrame, pivoted into
+      columns.
     - `include_runattrs`, `include_itervars`, `include_param_assignments`,
       `include_config_entries` (bool): Optional. When set to `True`, additional
       pieces of metadata about the run is appended to the DataFrame, pivoted
@@ -714,7 +712,7 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
     - `runID` (string): Identifies the simulation run
     - `module` (string): Hierarchical name (a.k.a. full path) of the module that
       recorded the result item
-    - `name` (string): The name of the vector
+    - `name` (string): The name of the statistic
     - `count`, `sumweights`, `mean`, `stddev`, `min`, `max` (double): The
       characteristic mathematical properties of the statistics result
     - Additional metadata items (result attributes, run attributes, iteration

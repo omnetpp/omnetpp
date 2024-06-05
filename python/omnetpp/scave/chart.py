@@ -31,7 +31,7 @@ else:
 def get_properties():
     """
     Returns the currently set properties of the chart as a `dict`
-    whose keys and values are both all strings.
+    whose keys and values are both strings.
     """
     return impl.get_properties(**locals())
 
@@ -51,7 +51,7 @@ def get_name():
 
 def get_chart_type():
     """
-    Returns the chart type, one of the strings "bar"/"histogram"/"line"/"matplotlib"
+    Returns the chart type, which is one of the strings "BAR", "LINE", "HISTOGRAM", and "MATPLOTLIB".
     """
     return impl.get_chart_type(**locals())
 
@@ -71,6 +71,6 @@ def set_suggested_chart_name(name):
 def set_observed_column_names(column_names):
     """
     Sets the DataFrame column names observed during the chart script.
-    The IDE may use it for content assist when the user edits the legend format string.
+    The IDE may use them for content assist when the user edits the legend format string.
     """
     return impl.set_observed_column_names(**locals())

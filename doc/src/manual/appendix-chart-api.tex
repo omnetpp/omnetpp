@@ -227,7 +227,7 @@ and \ttt{get\_histograms} in \ttt{omnetpp.scave}, but NOT on those returned by \
 \end{flushleft}
 
 \par Returns an integer that is incremented every time the set of loaded results
-change, typically as a result of the IDE loading, reloading or unloading
+changes, typically as a result of the IDE loading, reloading or unloading
 a scalar or vector result file. The serial can be used for invalidating
 cached intermediate results when their input changes.
 
@@ -239,10 +239,10 @@ cached intermediate results when their input changes.
 \end{flushleft}
 
 \par Specifies the set of simulation result files (.vec, .sca) to use as input
-for the query functions. The argument may be a single string, or a list of
-strings. Each string is interpreted as a file or directory path, and may
+for the query functions. The argument may be a single string or a list of
+strings. Each string is interpreted as a file or directory path and may
 also contain wildcards. In addition to \ttt{?} and \ttt{*}, \ttt{**} (which is able to
-match several directory levels) is also accepted as wildcard. If a path
+match several directory levels) is also accepted as a wildcard. If a path
 corresponds to a directory, it is interpreted as \ttt{[ "<dir>/**/*.sca", "<dir>/**/*.vec" ]}, that is, all result files will be loaded from that
 directory and recursively all its subdirectories.
 
@@ -257,8 +257,8 @@ directory and recursively all its subdirectories.
 \end{flushleft}
 
 \par Appends to the set of simulation result files (.vec, .sca) to use as input
-for the query functions.  The argument may be a single string, or a list of
-strings. Each string is interpreted as a file or directory path, and may
+for the query functions. The argument may be a single string or a list of
+strings. Each string is interpreted as a file or directory path and may
 also contain wildcards (\ttt{?}, \ttt{*}, \ttt{**}). See \ttt{set\_inputs()} for more details.
 
 \subsubsection{read\_result\_files()}
@@ -269,22 +269,22 @@ also contain wildcards (\ttt{?}, \ttt{*}, \ttt{**}). See \ttt{set\_inputs()} for
 \end{flushleft}
 
 \par Loads the simulation result files specified in the first argument
-\ttt{filenames}, and returns the filtered set of results and metadata as a
+\ttt{filenames} and returns the filtered set of results and metadata as a
 Pandas \ttt{DataFrame}.
 
 \par The \ttt{filenames} argument specifies the set of simulation result files (.vec,
-.sca) to load.  The argument may be a single string, or a list of strings.
-Each string is interpreted as a file or directory path, and may also contain
+.sca) to load. The argument may be a single string or a list of strings.
+Each string is interpreted as a file or directory path and may also contain
 wildcards (\ttt{?}, \ttt{*}, \ttt{**}). See \ttt{set\_inputs()} for more details on this
 format.
 
 \par It is possible to limit the set of results to return by specifying a filter
-expression, and vector start/end times.
+expression and vector start/end times.
 
 \par Parameters:
 
 \begin{itemize}
-  \item \ttt{filenames} \textit{(string, or list of strings)}: Specifies the result files to
+  \item \ttt{filenames} \textit{(string or list of strings)}: Specifies the result files to
     load.
   \item \ttt{filter\_expression} \textit{(string)}: The filter expression to select the desired
     items to load. Example: \ttt{module ={\textasciitilde} "*host*" AND name ={\textasciitilde} "numPacket*"}
@@ -330,8 +330,7 @@ evaluates to \ttt{True}.
     statistics and histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as
     synthetic scalars.
   \item \ttt{start\_time}, \ttt{end\_time} \textit{(double)}: Optional time limits to trim the data
-    of vector type results. The unit is seconds, both the \ttt{vectime} and
-    \ttt{vecvalue} arrays will be affected, the interval is left-closed,
+    of vector type results. The unit is seconds, the interval is left-closed,
     right-open.
 
 \end{itemize}
@@ -462,8 +461,8 @@ the module documentation for details).
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
     desired scalars, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "channelUtilization*" AND runattr:replication ={\textasciitilde} "\#0"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-    (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
-    pivoted into columns.
+    (like \ttt{unit} for example) are appended to the DataFrame, pivoted into
+    columns.
   \item \ttt{include\_fields} \textit{(bool)}: Optional. If \ttt{True}, the fields of statistics and
     histograms (\ttt{:min}, \ttt{:mean}, etc.) are also returned as synthetic scalars.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
@@ -513,8 +512,7 @@ concrete value picked for every instance of the parameter.
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
     desired parameters, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "x" AND module ={\textasciitilde} Aloha.server}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-    (like \ttt{unit} for example) are appended to the DataFrame, pivoted into
-    columns.
+    (like \ttt{unit}) are appended to the DataFrame, pivoted into columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
     \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
     pieces of metadata about the run is appended to the DataFrame, pivoted
@@ -552,8 +550,8 @@ concrete value picked for every instance of the parameter.
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
     desired vectors, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "radioState*" AND runattr:replication ={\textasciitilde} "\#0"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-    (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
-    pivoted into columns.
+    (like \ttt{unit} or \ttt{source}) are appended to the DataFrame, pivoted into
+    columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
     \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
     pieces of metadata about the run is appended to the DataFrame, pivoted
@@ -600,8 +598,8 @@ concrete value picked for every instance of the parameter.
   \item \ttt{filter\_or\_dataframe} \textit{(string)}: The filter expression to select the
     desired statistics, or a dataframe in the "raw" format. Example: \ttt{name ={\textasciitilde} "collisionLength:stat" AND itervar:iaMean ={\textasciitilde} "5"}
   \item \ttt{include\_attrs} \textit{(bool)}: Optional. When set to \ttt{True}, result attributes
-    (like \ttt{unit} or \ttt{source} for example) are appended to the DataFrame,
-    pivoted into columns.
+    (like \ttt{unit} or \ttt{source}) are appended to the DataFrame, pivoted into
+    columns.
   \item \ttt{include\_runattrs}, \ttt{include\_itervars}, \ttt{include\_param\_assignments},
     \ttt{include\_config\_entries} \textit{(bool)}: Optional. When set to \ttt{True}, additional
     pieces of metadata about the run is appended to the DataFrame, pivoted
@@ -620,7 +618,7 @@ concrete value picked for every instance of the parameter.
   \item \ttt{runID} \textit{(string)}: Identifies the simulation run
   \item \ttt{module} \textit{(string)}: Hierarchical name (a.k.a. full path) of the module that
     recorded the result item
-  \item \ttt{name} \textit{(string)}: The name of the vector
+  \item \ttt{name} \textit{(string)}: The name of the statistic
   \item \ttt{count}, \ttt{sumweights}, \ttt{mean}, \ttt{stddev}, \ttt{min}, \ttt{max} \textit{(double)}: The
     characteristic mathematical properties of the statistics result
   \item Additional metadata items (result attributes, run attributes, iteration
@@ -769,7 +767,7 @@ which will be displayed on the plot area in the IDE.
 \end{flushleft}
 
 \par Returns the currently set properties of the chart as a \ttt{dict}
-whose keys and values are both all strings.
+whose keys and values are both strings.
 
 \subsubsection{get\_property()}
 \label{cha:chart-api:omnetpp.scave.chart:get-property}
@@ -797,7 +795,7 @@ no property with the given name (key) set on the chart.
 \ttt{get\_chart\_type()}
 \end{flushleft}
 
-\par Returns the chart type, one of the strings "bar"/"histogram"/"line"/"matplotlib"
+\par Returns the chart type, which is one of the strings "BAR", "LINE", "HISTOGRAM", and "MATPLOTLIB".
 
 \subsubsection{is\_native\_chart()}
 \label{cha:chart-api:omnetpp.scave.chart:is-native-chart}
@@ -826,7 +824,7 @@ when saving the chart.
 \end{flushleft}
 
 \par Sets the DataFrame column names observed during the chart script.
-The IDE may use it for content assist when the user edits the legend format string.
+The IDE may use them for content assist when the user edits the legend format string.
 
 \subsection{Module omnetpp.scave.ideplot}
 \label{cha:chart-api:omnetpp.scave.ideplot}
@@ -860,7 +858,7 @@ widget, and False otherwise.
 \label{cha:chart-api:omnetpp.scave.ideplot:plot}
 
 \begin{flushleft}
-\ttt{plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None)}
+\ttt{plot(x, y, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None)}
 \end{flushleft}
 
 \par Plot y versus x as lines and/or markers. Call \ttt{plot} multiple times
@@ -873,7 +871,7 @@ to plot multiple sets of data.
   \item \ttt{key} \textit{(string)}: Identifies the series in the native plot widget.
   \item \ttt{label} \textit{(string)}: Series label for the legend
   \item \ttt{drawstyle} \textit{(string)}: Matplotlib draw style ('default', 'steps', 'steps-pre', 'steps-mid', 'steps-post')
-  \item \ttt{linestyle} \textit{(string)}: Matplotlib line style ('-', '--', '-.', ':', etc\}
+  \item \ttt{linestyle} \textit{(string)}: Matplotlib line style ('-', '--', '-.', ':', etc)
   \item \ttt{linewidth} \textit{(float)}: Line width in pixels
   \item \ttt{color} \textit{(string)}: Matplotlib color name or abbreviation ('b' for blue, 'g' for green, etc.)
   \item \ttt{marker} \textit{(string)}: Matplotlib marker name ('.', ',', 'o', 'x', '+', etc.)
@@ -888,14 +886,14 @@ to plot multiple sets of data.
 \ttt{hist(x, bins, key=None, density=False, weights=None, cumulative=False, bottom=None, histtype="stepfilled", color=None, label=None, linewidth=None, underflows=0.0, overflows=0.0, minvalue=nan, maxvalue=nan)}
 \end{flushleft}
 
-\par Make a histogram plot. This function adds one histogram the bar plot; make
+\par Make a histogram plot. This function adds one histogram to the bar plot; make
 multiple calls to add multiple histograms.
 
 \par Parameters:
 
 \begin{itemize}
   \item \ttt{x} \textit{(array-like)}: Input values.
-  \item \ttt{bins} \textit{(array-like)}: Bin edges, including left edge of first bin and right edge of last bin.
+  \item \ttt{bins} \textit{(array-like)}: Bin edges, including the left edge of the first bin and the right edge of the last bin.
   \item \ttt{key} \textit{(string)}: Identifies the series in the native plot widget.
   \item \ttt{density} \textit{(bool)}: See \ttt{mpl.hist()}.
   \item \ttt{weights} \textit{(array-like)}: Weights.
@@ -914,7 +912,7 @@ multiple calls to add multiple histograms.
 \par Restrictions:
 
 \begin{enumerate}
-  \item Overflow bin data (minvalue, maxvalue, underflows and overflows) is not accepted by \ttt{pyplot.hist()}.
+  \item Overflow bin data (minvalue, maxvalue, underflows, and overflows) is not accepted by \ttt{pyplot.hist()}.
   \item The native plot widget only accepts a precomputed histogram (using the trick documented for \ttt{pyplot.hist()})
 
 \end{enumerate}
@@ -943,7 +941,7 @@ for each bar.
   \item \ttt{height} \textit{(scalar or sequence of scalars)}: The height(s) of the bars.
   \item \ttt{width} \textit{(scalar or array-like)}: The width(s) of the bars.
   \item \ttt{key} \textit{(string)}: Identifies the series in the native plot widget.
-  \item \ttt{label} \textit{(string)}: The label of the series the bars represent .
+  \item \ttt{label} \textit{(string)}: The label of the series the bars represent.
   \item \ttt{color} \textit{(string)}: The fill color of the bars.
   \item \ttt{edgecolor} \textit{(string)}: The edge color of the bars.
 
@@ -953,12 +951,12 @@ for each bar.
 \par The native plot implementation has the following restrictions:
 
 \begin{itemize}
-  \item widths are automatic (parameter is ignored)
+  \item widths are automatic (the parameter is ignored)
   \item x coordinates are automatic (values are ignored)
   \item height must be a sequence (cannot be a scalar)
   \item in multiple calls to bar(), the lengths of the height sequence must be
     equal (i.e. all series must have the same number of values)
-  \item default color is grey (Matplotlib assigns a different color to each series)
+  \item the default color is grey (Matplotlib assigns a different color to each series)
 
 \end{itemize}
 
@@ -970,13 +968,13 @@ for each bar.
 \end{flushleft}
 
 \par Sets one property of the native plot widget to the given value. When invoked
-outside the contex of a native plot widget, the function does nothing.
+outside the context of a native plot widget, the function does nothing.
 
 \par Parameters:
 
 \begin{itemize}
   \item \ttt{key} \textit{(string)}: Name of the property.
-  \item \ttt{value} \textit{(string)}: The value to set. If any other type than string is passed in, it will be converted to string.
+  \item \ttt{value} \textit{(string)}: The value to set. If any other type other than a string is passed in, it will be converted to a string.
 
 \end{itemize}
 
@@ -989,7 +987,7 @@ outside the contex of a native plot widget, the function does nothing.
 
 \par Sets several properties of the native plot widget. It is functionally equivalent to
 repeatedly calling \ttt{set\_property} with the entries of the \ttt{props} dictionary.
-When invoked outside the contex of a native plot widget (TODO?), the function does nothing.
+When invoked outside the context of a native plot widget (TODO?), the function does nothing.
 
 \par Parameters:
 
@@ -1006,9 +1004,9 @@ When invoked outside the contex of a native plot widget (TODO?), the function do
 \end{flushleft}
 
 \par Returns the list of property names that the native plot widget supports, such as
-'Plot.Title', 'X.Axis.Max' and 'Legend.Display', among many others.
+'Plot.Title', 'X.Axis.Max', and 'Legend.Display', among many others.
 
-\par Note: This method has no equivalent in \ttt{pyplot}. When the script runs outside the IDE  (TODO?),
+\par Note: This method has no equivalent in \ttt{pyplot}. When the script runs outside the IDE (TODO?),
 the method returns an empty list.
 
 \subsubsection{set\_warning()}
@@ -1036,7 +1034,7 @@ the method returns an empty list.
 \ttt{xlabel(xlabel: str)}
 \end{flushleft}
 
-\par Sets the label of the X axis to the given string.
+\par Sets the label of the X-axis to the given string.
 
 \subsubsection{ylabel()}
 \label{cha:chart-api:omnetpp.scave.ideplot:ylabel}
@@ -1045,7 +1043,7 @@ the method returns an empty list.
 \ttt{ylabel(ylabel: str)}
 \end{flushleft}
 
-\par Sets the label of the Y axis to the given string..
+\par Sets the label of the Y-axis to the given string.
 
 \subsubsection{xlim()}
 \label{cha:chart-api:omnetpp.scave.ideplot:xlim}
@@ -1054,7 +1052,7 @@ the method returns an empty list.
 \ttt{xlim(left=None, right=None)}
 \end{flushleft}
 
-\par Sets the limits of the X axis.
+\par Sets the limits of the X-axis.
 
 \par Parameters:
 
@@ -1071,7 +1069,7 @@ the method returns an empty list.
 \ttt{ylim(bottom=None, top=None)}
 \end{flushleft}
 
-\par Sets the limits of the Y axis.
+\par Sets the limits of the Y-axis.
 
 \par Parameters:
 
@@ -1088,7 +1086,7 @@ the method returns an empty list.
 \ttt{xscale(value: str)}
 \end{flushleft}
 
-\par Sets the scale of the X axis. Possible values are 'linear' and 'log'.
+\par Sets the scale of the X-axis. Possible values are 'linear' and 'log'.
 
 \subsubsection{yscale()}
 \label{cha:chart-api:omnetpp.scave.ideplot:yscale}
@@ -1097,7 +1095,7 @@ the method returns an empty list.
 \ttt{yscale(value: str)}
 \end{flushleft}
 
-\par Sets the scale of the Y axis.
+\par Sets the scale of the Y-axis.
 
 \subsubsection{xticks()}
 \label{cha:chart-api:omnetpp.scave.ideplot:xticks}
@@ -1130,7 +1128,7 @@ the method returns an empty list.
 
 \begin{itemize}
   \item \ttt{b} \textit{(bool or \ttt{None})}: Whether to show the grid lines.
-  \item \ttt{which} \textit{('major', 'minor' or 'both')}: The grid lines to apply the changes on.
+  \item \ttt{which} \textit{('major', 'minor', or 'both')}: The grid lines to apply the changes to.
 
 \end{itemize}
 
@@ -1229,12 +1227,12 @@ a DataFrame. The legend label is produced as follows.
 \par First, a base version of the legend label is produced:
 
 \begin{enumerate}
-  \item If the DataFrame contains a \ttt{legend} column, its content is used
+  \item If the DataFrame contains a \ttt{legend} column, its content is used.
   \item Otherwise, if there is a \ttt{legend\_format} property, it is used as a format string
     for producing the legend label. The format string may contain references to other
     columns of the DataFrame in the "\$name" or "\$\{name\}" form.
   \item Otherwise, the legend label is concatenated from the columns listed in \ttt{legend\_cols},
-    a list whose contents is usually produced using the \ttt{extract\_label\_columns()} function.
+    a list whose contents are usually produced using the \ttt{extract\_label\_columns()} function.
 
 \end{enumerate}
 
@@ -1251,14 +1249,14 @@ separator, other characters may also be used; common choices are "|" and
 "!". Similar to the \ttt{legend\_format} property, "findstring", "findregex" and
 "replacement" may contain column references in the "\$name" or "\$\{name\}"
 form. Use "\$\$" to mean a single "\$" sign. Also note that "findregex" may
-still end in "\$" to match the end of the string, it won't collide with
+still end in "\$" to match the end of the string; it won't collide with
 column references.
 
 \par Parameters:
 
 \begin{itemize}
   \item \ttt{row} \textit{(named tuple)}: The row from the dataframe.
-  \item \ttt{props} \textit{(dict)}: The properties that control how the legend is produced
+  \item \ttt{props} \textit{(dict)}: The properties that control how the legend is produced.
   \item \ttt{legend\_cols} \textit{(list of strings)}: The names of columns chosen for the legend.
 
 \end{itemize}
@@ -1465,13 +1463,13 @@ arranged vertically, with a shared X axis during navigation.
 \par Creates a histogram plot from the dataframe, with styling and additional input
 coming from the properties. Each row in the dataframe defines a histogram.
 
-\par Colors are assigned automatically.  The \ttt{cycle\_seed} property allows you to
+\par Colors are assigned automatically. The \ttt{cycle\_seed} property allows you to
 select other combinations if the default one is not suitable.
 
 \par A function to produce the legend labels can be passed in. By default,
 \ttt{make\_legend\_label()} is used, which offers many ways to influence the
 legend via dataframe columns and chart properties. In the absence of
-more specified settings, the legend is normally computed from columns which best
+more specified settings, the legend is normally computed from columns that best
 differentiate among the histograms.
 
 \par Parameters:
@@ -1480,9 +1478,9 @@ differentiate among the histograms.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
-    See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+    See \ttt{utils.make\_legend\_label()} for the prototype and semantics.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the histograms by the columns used for the legend
-    (before applying \ttt{legend\_func}, for backwards bug-compatibility).
+    (before applying \ttt{legend\_func}, for backward bug-compatibility).
 
 \end{itemize}
 
@@ -1516,7 +1514,7 @@ differentiate among the histograms.
   \item \ttt{drawstyle}: Selects whether to fill the area below the histogram line.
   \item \ttt{linestyle}, \ttt{linecolor}, \ttt{linewidth}: Styling.
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
-  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic x axis label.
+  \item \ttt{unit}: If present, it is required to be the same for all series and will be used in the automatic x-axis label.
 
 \end{itemize}
 
@@ -1530,13 +1528,13 @@ differentiate among the histograms.
 \par Creates a line plot from the dataframe, with styling and additional input
 coming from the properties. Each row in the dataframe defines a line.
 
-\par Colors are assigned automatically.  The \ttt{cycle\_seed} property allows you to
+\par Colors are assigned automatically. The \ttt{cycle\_seed} property allows you to
 select other combinations if the default one is not suitable.
 
 \par A function to produce the legend labels can be passed in. By default,
 \ttt{make\_legend\_label()} is used, which offers many ways to influence the
 legend via dataframe columns and chart properties. In the absence of
-more specified settings, the legend is normally computed from columns which best
+more specified settings, the legend is normally computed from columns that best
 differentiate among the lines.
 
 \par Parameters:
@@ -1545,9 +1543,9 @@ differentiate among the lines.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
-    See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+    See \ttt{utils.make\_legend\_label()} for the prototype and semantics.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the series by the columns used for the legend
-    (before applying \ttt{legend\_func}, for backwards bug-compatibility).
+    (before applying \ttt{legend\_func}, for backward bug-compatibility).
 
 \end{itemize}
 
@@ -1575,7 +1573,7 @@ differentiate among the lines.
   \item \ttt{error\_style}: If \ttt{error} is present, controls how the error is shown.
     Accepted values: "Error bars", "Error band"
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
-  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
+  \item \ttt{unit}: If present, it is required to be the same for all series and will be used in the automatic y-axis label.
 
 \end{itemize}
 
@@ -1590,13 +1588,13 @@ differentiate among the lines.
 input coming from the properties. Each row in the dataframe defines one set
 of a box and two whiskers.
 
-\par Colors are assigned automatically.  The \ttt{cycle\_seed} property allows you to
+\par Colors are assigned automatically. The \ttt{cycle\_seed} property allows you to
 select other combinations if the default one is not suitable.
 
 \par A function to produce the legend labels can be passed in. By default,
 \ttt{make\_legend\_label()} is used, which offers many ways to influence the
 legend via dataframe columns and chart properties. In the absence of
-more specified settings, the legend is normally computed from columns which best
+more specified settings, the legend is normally computed from columns that best
 differentiate among the boxes.
 
 \par Parameters:
@@ -1605,9 +1603,9 @@ differentiate among the boxes.
   \item \ttt{df}: The dataframe.
   \item \ttt{props} \textit{(dict)}: The properties.
   \item \ttt{legend\_func} \textit{(function)}: The function to produce custom legend labels.
-    See \ttt{utils.make\_legend\_label()} for prototype and semantics.
+    See \ttt{utils.make\_legend\_label()} for the prototype and semantics.
   \item \ttt{sort} \textit{(bool)}: Whether to sort the series by the columns used for the legend
-    (before applying \ttt{legend\_func}, for backwards bug-compatibility).
+    (before applying \ttt{legend\_func}, for backward bug-compatibility).
 
 \end{itemize}
 
@@ -1629,7 +1627,7 @@ differentiate among the boxes.
 \begin{itemize}
   \item \ttt{title}: Plot title (autocomputed if missing).
   \item \ttt{cycle\_seed}: Alters the sequence in which colors and markers are assigned to series.
-  \item \ttt{unit}: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
+  \item \ttt{unit}: If present, it is required to be the same for all series and will be used in the automatic y-axis label.
 
 \end{itemize}
 
@@ -1644,13 +1642,13 @@ differentiate among the boxes.
 percentile values. This method is necessary because \ttt{pyplot.boxplot()} insists
 on computing the stats from the raw data (which we often don't have) itself.
 
-\par The data are in the \ttt{percentiles} argument, which should be list of tuples.
+\par The data is in the \ttt{percentiles} argument, which should be a list of tuples.
 One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
 because the last one is optional):
 
 \par (\textit{q1\_start}, \textit{q2\_start}, \textit{q3\_start}, \textit{q4\_start}, \textit{q4\_end}, \textit{fliers})
 
-\par The first five elements have following meaning:
+\par The first five elements have the following meaning:
 
 \begin{itemize}
   \item \textit{q1\_start}: y coord of bottom whisker cap
@@ -1662,7 +1660,7 @@ because the last one is optional):
 \end{itemize}
 
 
-\par The last element, \textit{fliers}, is a list, containing the values of the
+\par The last element, \textit{fliers}, is a list containing the values of the
 outlier points.
 
 \par x coords of the box-and-whiskers plots are automatic.
@@ -1686,8 +1684,8 @@ outlier points.
 \end{flushleft}
 
 \par Configures the plot according to the given properties, which normally
-get their values from setting in the "Configure Chart" dialog.
-Calling this function before plotting was performed should be a standard
+get their values from settings in the "Configure Chart" dialog.
+Calling this function before plotting is performed should be a standard
 part of chart scripts.
 
 \par A partial list of properties taken into account for native plots:
@@ -1723,8 +1721,8 @@ part of chart scripts.
 \end{flushleft}
 
 \par Configures the plot according to the given properties, which normally
-get their values from setting in the "Configure Chart" dialog.
-Calling this function after plotting was performed should be a standard part
+get their values from settings in the "Configure Chart" dialog.
+Calling this function after plotting is performed should be a standard part
 of chart scripts.
 
 \par A partial list of properties taken into account:
@@ -2125,7 +2123,8 @@ the function raises an error with the given message.
 \par Parameters:
 
 \begin{itemize}
-  \item \ttt{cols} \textit{(list of strings)}: Column names to check.
+  \item \ttt{df} \textit{(DataFrame)}: The DataFrame to operate on
+  \item \ttt{cols} \textit{(list of strings)}: The list of column names to check.
 
 \end{itemize}
 

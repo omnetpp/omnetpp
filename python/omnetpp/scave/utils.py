@@ -234,12 +234,12 @@ def make_legend_label(legend_cols, row, props={}):
 
     First, a base version of the legend label is produced:
 
-    1. If the DataFrame contains a `legend` column, its content is used
+    1. If the DataFrame contains a `legend` column, its content is used.
     2. Otherwise, if there is a `legend_format` property, it is used as a format string
        for producing the legend label. The format string may contain references to other
        columns of the DataFrame in the "$name" or "${name}" form.
     3. Otherwise, the legend label is concatenated from the columns listed in `legend_cols`,
-       a list whose contents is usually produced using the `extract_label_columns()` function.
+       a list whose contents are usually produced using the `extract_label_columns()` function.
 
     Second, if there is a `legend_replacements` property, it defines a series of
     replacements to be done on the legend labels. `legend_replacements` is
@@ -253,13 +253,13 @@ def make_legend_label(legend_cols, row, props={}):
     "!". Similar to the `legend_format` property, "findstring", "findregex" and
     "replacement" may contain column references in the "$name" or "${name}"
     form. Use "$$" to mean a single "$" sign. Also note that "findregex" may
-    still end in "$" to match the end of the string, it won't collide with
+    still end in "$" to match the end of the string; it won't collide with
     column references.
 
     Parameters:
 
     - `row` (named tuple): The row from the dataframe.
-    - `props` (dict): The properties that control how the legend is produced
+    - `props` (dict): The properties that control how the legend is produced.
     - `legend_cols` (list of strings): The names of columns chosen for the legend.
 
     Properties that affect the generated legend label:
@@ -775,13 +775,13 @@ def plot_histograms(df, props, legend_func=make_legend_label, sort=True):
     Creates a histogram plot from the dataframe, with styling and additional input
     coming from the properties. Each row in the dataframe defines a histogram.
 
-    Colors are assigned automatically.  The `cycle_seed` property allows you to
+    Colors are assigned automatically. The `cycle_seed` property allows you to
     select other combinations if the default one is not suitable.
 
     A function to produce the legend labels can be passed in. By default,
     `make_legend_label()` is used, which offers many ways to influence the
     legend via dataframe columns and chart properties. In the absence of
-    more specified settings, the legend is normally computed from columns which best
+    more specified settings, the legend is normally computed from columns that best
     differentiate among the histograms.
 
     Parameters:
@@ -789,9 +789,9 @@ def plot_histograms(df, props, legend_func=make_legend_label, sort=True):
     - `df`: The dataframe.
     - `props` (dict): The properties.
     - `legend_func` (function): The function to produce custom legend labels.
-       See `utils.make_legend_label()` for prototype and semantics.
+       See `utils.make_legend_label()` for the prototype and semantics.
     - `sort` (bool): Whether to sort the histograms by the columns used for the legend
-       (before applying `legend_func`, for backwards bug-compatibility).
+       (before applying `legend_func`, for backward bug-compatibility).
 
     Columns of the dataframe:
 
@@ -817,7 +817,7 @@ def plot_histograms(df, props, legend_func=make_legend_label, sort=True):
     - `drawstyle`: Selects whether to fill the area below the histogram line.
     - `linestyle`, `linecolor`, `linewidth`: Styling.
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
-    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic x axis label.
+    - `unit`: If present, it is required to be the same for all series and will be used in the automatic x-axis label.
     """
     unit = _check_same_unit(df)
     p = ideplot if chart.is_native_chart() else plt
@@ -826,7 +826,7 @@ def plot_histograms(df, props, legend_func=make_legend_label, sort=True):
 
     if not has_overflow_columns:
         if "min" in df or "max" in df or "underflows" in df or "overflows" in df:
-           raise ValueError("Either all, or none, of the following columns must be present: min, max, underflows, overflows")
+            raise ValueError("Either all or none of the following columns must be present: min, max, underflows, overflows")
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -880,13 +880,13 @@ def plot_lines(df, props, legend_func=make_legend_label, sort=True):
     Creates a line plot from the dataframe, with styling and additional input
     coming from the properties. Each row in the dataframe defines a line.
 
-    Colors are assigned automatically.  The `cycle_seed` property allows you to
+    Colors are assigned automatically. The `cycle_seed` property allows you to
     select other combinations if the default one is not suitable.
 
     A function to produce the legend labels can be passed in. By default,
     `make_legend_label()` is used, which offers many ways to influence the
     legend via dataframe columns and chart properties. In the absence of
-    more specified settings, the legend is normally computed from columns which best
+    more specified settings, the legend is normally computed from columns that best
     differentiate among the lines.
 
     Parameters:
@@ -894,9 +894,9 @@ def plot_lines(df, props, legend_func=make_legend_label, sort=True):
     - `df`: The dataframe.
     - `props` (dict): The properties.
     - `legend_func` (function): The function to produce custom legend labels.
-       See `utils.make_legend_label()` for prototype and semantics.
+       See `utils.make_legend_label()` for the prototype and semantics.
     - `sort` (bool): Whether to sort the series by the columns used for the legend
-       (before applying `legend_func`, for backwards bug-compatibility).
+       (before applying `legend_func`, for backward bug-compatibility).
 
     Columns of the dataframe:
 
@@ -916,7 +916,7 @@ def plot_lines(df, props, legend_func=make_legend_label, sort=True):
     - `error_style`: If `error` is present, controls how the error is shown.
        Accepted values: "Error bars", "Error band"
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
-    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
+    - `unit`: If present, it is required to be the same for all series and will be used in the automatic y-axis label.
     """
     unit = _check_same_unit(df)
     p = ideplot if chart.is_native_chart() else plt
@@ -959,13 +959,13 @@ def plot_boxwhiskers(df, props, legend_func=make_legend_label, sort=True):
     input coming from the properties. Each row in the dataframe defines one set
     of a box and two whiskers.
 
-    Colors are assigned automatically.  The `cycle_seed` property allows you to
+    Colors are assigned automatically. The `cycle_seed` property allows you to
     select other combinations if the default one is not suitable.
 
     A function to produce the legend labels can be passed in. By default,
     `make_legend_label()` is used, which offers many ways to influence the
     legend via dataframe columns and chart properties. In the absence of
-    more specified settings, the legend is normally computed from columns which best
+    more specified settings, the legend is normally computed from columns that best
     differentiate among the boxes.
 
     Parameters:
@@ -973,9 +973,9 @@ def plot_boxwhiskers(df, props, legend_func=make_legend_label, sort=True):
     - `df`: The dataframe.
     - `props` (dict): The properties.
     - `legend_func` (function): The function to produce custom legend labels.
-       See `utils.make_legend_label()` for prototype and semantics.
+       See `utils.make_legend_label()` for the prototype and semantics.
     - `sort` (bool): Whether to sort the series by the columns used for the legend
-       (before applying `legend_func`, for backwards bug-compatibility).
+       (before applying `legend_func`, for backward bug-compatibility).
 
     Columns of the dataframe:
 
@@ -989,7 +989,7 @@ def plot_boxwhiskers(df, props, legend_func=make_legend_label, sort=True):
 
     - `title`: Plot title (autocomputed if missing).
     - `cycle_seed`: Alters the sequence in which colors and markers are assigned to series.
-    - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
+    - `unit`: If present, it is required to be the same for all series and will be used in the automatic y-axis label.
     """
     unit = _check_same_unit(df)
     title_cols, legend_cols = extract_label_columns(df, props)
@@ -1023,20 +1023,20 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
     percentile values. This method is necessary because `pyplot.boxplot()` insists
     on computing the stats from the raw data (which we often don't have) itself.
 
-    The data are in the `percentiles` argument, which should be list of tuples.
+    The data is in the `percentiles` argument, which should be a list of tuples.
     One box will be drawn for each tuple. Each tuple contains 6 elements (or 5,
     because the last one is optional):
 
     (*q1_start*, *q2_start*, *q3_start*, *q4_start*, *q4_end*, *fliers*)
 
-    The first five elements have following meaning:
+    The first five elements have the following meaning:
     - *q1_start*: y coord of bottom whisker cap
     - *q2_start*: y coord of bottom of the box
     - *q3_start*: y coord of median mark
     - *q4_start*: y coord of top of the box
     - *q4_end*: y coord of top whisker cap
 
-    The last element, *fliers*, is a list, containing the values of the
+    The last element, *fliers*, is a list containing the values of the
     outlier points.
 
     x coords of the box-and-whiskers plots are automatic.
@@ -1139,8 +1139,8 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
 def preconfigure_plot(props):
     """
     Configures the plot according to the given properties, which normally
-    get their values from setting in the "Configure Chart" dialog.
-    Calling this function before plotting was performed should be a standard
+    get their values from settings in the "Configure Chart" dialog.
+    Calling this function before plotting is performed should be a standard
     part of chart scripts.
 
     A partial list of properties taken into account for native plots:
@@ -1159,11 +1159,11 @@ def preconfigure_plot(props):
 
     if chart.is_native_chart():
         supported_keys = ideplot.get_supported_property_keys()
-        ideplot.set_properties({ k: v for k, v in props.items() if k in supported_keys})
+        ideplot.set_properties({k: v for k, v in props.items() if k in supported_keys})
     else:
         if get_prop("plt.style"):
             plt.style.use(get_prop("plt.style"))
-        mpl.rcParams.update(_filter_by_key_prefix(props,"matplotlibrc."))
+        mpl.rcParams.update(_filter_by_key_prefix(props, "matplotlibrc."))
         mpl.rcParams.update(parse_rcparams(get_prop("matplotlibrc") or ""))
         _make_scroll_navigable(plt.gcf())
 
@@ -1172,30 +1172,30 @@ def preconfigure_plot(props):
 
 def _legend_loc_outside_args(loc):
     mapping = {
-        "outside top left": ("lower left", (0,1.05)),
-        "outside top center": ("lower center", (0.5,1.05)),
-        "outside top right": ("lower right", (1,1.05)),
-        "outside bottom left": ("upper left", (0,-0.05)),
-        "outside bottom center": ("upper center", (0.5,-0.05)),
-        "outside bottom right": ("upper right", (1,-0.05)),
+        "outside top left": ("lower left", (0, 1.05)),
+        "outside top center": ("lower center", (0.5, 1.05)),
+        "outside top right": ("lower right", (1, 1.05)),
+        "outside bottom left": ("upper left", (0, -0.05)),
+        "outside bottom center": ("upper center", (0.5, -0.05)),
+        "outside bottom right": ("upper right", (1, -0.05)),
         "outside left top": ("upper right", (-0.03, 1)),
-        "outside left center": ("center right", (-0.03,0.5)),
-        "outside left bottom": ("lower right", (-0.03,0)),
-        "outside right top": ("upper left", (1.03,1)),
-        "outside right center": ("center left", (1.03,0.5)),
-        "outside right bottom": ("lower left", (1.03,0)),
+        "outside left center": ("center right", (-0.03, 0.5)),
+        "outside left bottom": ("lower right", (-0.03, 0)),
+        "outside right top": ("upper left", (1.03, 1)),
+        "outside right center": ("center left", (1.03, 0.5)),
+        "outside right bottom": ("lower left", (1.03, 0)),
     }
     if loc not in mapping:
         raise ValueError("loc='{}' is not recognized/supported".format(loc))
     (anchorloc, relpos) = mapping[loc]
-    return {"loc" : anchorloc, "bbox_to_anchor" : relpos}
+    return {"loc": anchorloc, "bbox_to_anchor": relpos}
 
 
 def postconfigure_plot(props):
     """
     Configures the plot according to the given properties, which normally
-    get their values from setting in the "Configure Chart" dialog.
-    Calling this function after plotting was performed should be a standard part
+    get their values from settings in the "Configure Chart" dialog.
+    Calling this function after plotting is performed should be a standard part
     of chart scripts.
 
     A partial list of properties taken into account:
@@ -2236,7 +2236,8 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
 
     Parameters:
 
-    - `cols` (list of strings): Column names to check.
+    - `df` (DataFrame): The DataFrame to operate on
+    - `cols` (list of strings): The list of column names to check.
     """
     for c in cols:
         if c not in df:
