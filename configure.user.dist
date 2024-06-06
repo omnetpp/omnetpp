@@ -75,11 +75,12 @@ WITH_OSGEARTH=no
 WITH_NETBUILDER=yes
 
 #
-# Whether to support using Python in simulations. This feature includes the
-# availability of the pyeval()/pycode() NED functions, the @pythonClass NED module
-# property, etc.
+# Python bindings for the scave native library allow direct loading of .sca and .vec files
+# from Python code outside of the IDE. Setting this parameter to "no" will prevent the
+# `opp_charttool` functioning properly. Setting to "yes" requires the python-dev package
+# to be installed.
 #
-WITH_PYTHON=yes
+WITH_SCAVE_PYTHON_BINDINGS=yes
 
 #
 # Set to "yes" to allow the use of LibXML2. OMNeT++ will only use LibXML for loading
