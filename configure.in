@@ -852,7 +852,7 @@ SYS_LIBS=""
 # Check for python cflags and libs
 #---------------------------------
 
-if test "$WITH_PYTHON" = "yes"; then
+if test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes"; then
   AC_PATH_PROGS(PYTHON_CONFIG, python3-config python-config, nope)
 
   # the full --cflags output is full of compiler flags we don't want nor need
