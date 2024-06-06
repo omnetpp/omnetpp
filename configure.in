@@ -887,7 +887,7 @@ SYS_LIBS=""
 # Check for python cflags and libs
 #---------------------------------
 
-if test "$WITH_PYTHON" = "yes"; then
+if [test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes"] || [test "$WITH_PYTHON" = "yes"]; then
   AC_PATH_PROGS(PYTHON_CONFIG, python3-config python-config, nope)
 
   # the full --cflags output is full of compiler flags we don't want nor need
@@ -900,7 +900,10 @@ if test "$WITH_PYTHON" = "yes"; then
   OPP_CHECK_LIB(python3-dev, Python.h, Py_Initialize(), $PYTHON_CFLAGS, $PYTHON_LDFLAGS, python3_found)
 
   if test $python3_found != yes; then
-    AC_MSG_ERROR([Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes), but the Python 3 development package was not found.])
+    AC_MSG_ERROR([Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes or WITH_PYTHON=yes), but the Python 3 development package was not found.])
+  else
+    CFLAGS="$CFLAGS $PYTHON_CFLAGS"
+    LDFLAGS="$LDFLAGS $PYTHON_LDFLAGS"
   fi
 
   PYTHON_EXT_SUFFIX=$($PYTHON_CONFIG --extension-suffix)
@@ -1402,6 +1405,7 @@ AC_SUBST(WITH_OSGEARTH)
 AC_SUBST(WITH_AKAROA)
 AC_SUBST(WITH_SYSTEMC)
 AC_SUBST(WITH_BACKTRACE)
+AC_SUBST(WITH_SCAVE_PYTHON_BINDINGS)
 AC_SUBST(PREFER_SQLITE_RESULT_FILES)
 
 AC_SUBST(SWIG)

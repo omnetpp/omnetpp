@@ -611,6 +611,7 @@ LIBOBJS
 ARCH
 PLATFORM
 PREFER_SQLITE_RESULT_FILES
+WITH_SCAVE_PYTHON_BINDINGS
 WITH_BACKTRACE
 WITH_SYSTEMC
 WITH_AKAROA
@@ -5695,7 +5696,7 @@ SYS_LIBS=""
 # Check for python cflags and libs
 #---------------------------------
 
-if test "$WITH_PYTHON" = "yes"; then
+if test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes" || test "$WITH_PYTHON" = "yes"; then
   for ac_prog in python3-config python-config
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -5794,7 +5795,10 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 
 
   if test $python3_found != yes; then
-    as_fn_error $? "Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes), but the Python 3 development package was not found." "$LINENO" 5
+    as_fn_error $? "Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes or WITH_PYTHON=yes), but the Python 3 development package was not found." "$LINENO" 5
+  else
+    CFLAGS="$CFLAGS $PYTHON_CFLAGS"
+    LDFLAGS="$LDFLAGS $PYTHON_LDFLAGS"
   fi
 
   PYTHON_EXT_SUFFIX=$($PYTHON_CONFIG --extension-suffix)
@@ -7684,6 +7688,7 @@ ac_config_headers="$ac_config_headers include/omnetpp/platdep/config.h"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
