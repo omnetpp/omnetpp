@@ -95,6 +95,10 @@ class Component(NedType):
         extends_element = tree.find('extends')
         self.extends_name = extends_element.get('name') if extends_element is not None else None
         self.interface_names = [interface_element.get('name') for interface_element in tree.findall('interface-name')]
+        parameters_element = tree.find('parameters')
+        self.local_parameter_definitions = \
+            {param.get('name') : param for param in parameters_element.findall('param') if param.get('type')} \
+            if parameters_element is not None else {}
 
     def get_base_type(self):
         return self.resolve(self.extends_name) if self.extends_name else None
@@ -123,6 +127,16 @@ class Component(NedType):
         all = list(self.get_subtypes())
         for subtype in self.get_subtypes():
             all += subtype.get_all_subtypes()
+        return all
+
+    def get_parameter_definitions(self):
+        return dict(self.local_parameter_definitions)
+
+    def get_all_parameter_definitions(self):
+        all = self.get_parameter_definitions()
+        base = self.get_base_type()
+        if base is not None:
+            all.update(base.get_all_parameter_definitions())
         return all
 
 class Module(Component):
@@ -331,6 +345,8 @@ class NedResources:
                 print("  all interface types =", type.get_all_interface_types())
                 print("  subtypes =", type.get_subtypes())
                 print("  all subtypes =", type.get_all_subtypes())
+                print("  parameter definitions =", type.get_parameter_definitions().keys())
+                print("  all parameter definitions =", type.get_all_parameter_definitions().keys())
                 if type.is_module:
                     print("  inner types =", type.get_inner_types())
                     if type.keyword == "module":
