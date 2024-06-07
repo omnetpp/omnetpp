@@ -18,7 +18,8 @@ Dependencies
 
 The following packages are required for |omnet++| to work:
 
-build-essential, GNU make, gcc, g++, bison (3.0+), flex, perl, python3, xdg-utils
+   build-essential, GNU make, gcc, g++, bison (3.0+), flex, perl, python3-devel, xdg-utils
+
    These packages are needed for compiling |omnet++| and simulation models, and also for certain |omnet++| tools to
    work.
 

@@ -6,7 +6,7 @@ Supported Linux Distributions
 
 This chapter provides instructions for installing |omnet++| on selected Linux distributions:
 
--  Ubuntu 20.04 and 22.4 LTS
+-  Ubuntu 22.04 and 24.4 LTS
 -  Fedora Workstation 31
 -  Red Hat Enterprise Linux Desktop Workstation 8.x
 -  OpenSUSE Leap 15.3

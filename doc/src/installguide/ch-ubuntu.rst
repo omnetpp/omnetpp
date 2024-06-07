@@ -9,11 +9,7 @@ installation procedure is described in the *Linux* chapter.
 
 The following Ubuntu releases are covered:
 
--  Ubuntu 20.04 LTS or 22.04 LTS
-
-They were tested on the following architectures:
-
--  Intel/AMD 64-bit
+-  Ubuntu 22.04 LTS or 24.04 LTS
 
 The instructions below assume that you use the default desktop and the bash shell. If you use another desktop
 environment or shell, you may need to adjust the instructions accordingly.
@@ -37,15 +33,17 @@ Before starting the installation, refresh the database of available packages. Ty
 
    $ sudo apt-get update
 
-To install the required packages, type in the terminal:
+To install the required packages, change into the root of the |omnet++| installation 
+and type in the terminal:
 
 .. code::
 
    $ sudo apt-get install build-essential clang lld gdb bison flex perl \
-       python3 python3-pip qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
+       python3 python3-pip libpython3-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
        libqt5opengl5-dev libxml2-dev zlib1g-dev doxygen graphviz \
-       libwebkit2gtk-4.0-37 xdg-utils
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn
+       libwebkit2gtk-4.1-0 xdg-utils libdw-dev
+   $ python3 -m venv .venv && source .venv/bin/activate
+   $ python3 -m pip install -r python/requirements.txt
 
 To use Qtenv with 3D visualization support, install the development packages for OpenSceneGraph (3.4 or later) and the
 osgEarth (2.9 or later) packages. (You may need to enable the *Universe* software repository in Software Sources.
@@ -60,10 +58,6 @@ and also enable `WITH_OSGEARTH` in `configure.user`.)
    Ubuntu 22.04 no longer provides the `libosgearth` package so osgEarth must be installed
    from sources. OpenSceneGraph can still be installed using
    `sudo apt-get install libopenscenegraph-dev`.
-
-.. warning::
-
-   The IDE requires GLIBC 2.28 version or later, so you Ubuntu 18.04 is NOT supported because it comes with GLIBC 2.27.
 
 .. note::
 
@@ -84,38 +78,6 @@ At the confirmation questions (*Do you want to continue? [Y/N]*), answer *Y*.
    :width: 75.0%
 
    Command-Line Package Installation
-
-Graphical Installation
-~~~~~~~~~~~~~~~~~~~~~~
-
-Open the dash and type *Synaptic*.
-
-Since software installation requires root permissions, Synaptic will ask you to type your password.
-
-Search for the following packages in the list, click the squares before the names, then choose *Mark for installation*
-or *Mark for upgrade*.
-
-If the *Mark additional required changes?* dialog comes up, choose the *Mark* button.
-
-The packages:
-
--  required: build-essential, gcc, g++, bison, flex, perl, qtbase5-dev, qtchooser, qt5-qmake, qtbase5-dev-tools,
-   python3, doxygen, graphviz, libwebkit2gtk-4.0-37, xdg-utils
--  recommended: libopenscenegraph-dev, openscenegraph-plugin-osgearth, libosgearth-dev, mpi-default-dev, libxml2-dev, zlib1g-dev
-
-.. figure:: pictures/ubuntu-synaptic.png
-   :width: 75.0%
-
-   Synaptic Package Manager
-
-Click *Apply*, then in the *Apply the following changes?* window, click *Apply* again. In the *Changes applied* window,
-click *Close*.
-
-After this, you still have to install some required Python packages from command line:
-
-.. code::
-
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn
 
 Post-Installation Steps
 ~~~~~~~~~~~~~~~~~~~~~~~
