@@ -5570,8 +5570,9 @@ if failed:
   print(" ".join(failed))
   exit(1)
 
-# The utils module checks the versions of some Python packages when imported
-from omnetpp.scave import utils
+# The _version module checks the versions of some Python dependencies when imported
+from omnetpp.scave._version import check_dependencies
+exit(check_dependencies())
 
 EOT
 )
@@ -5582,6 +5583,8 @@ printf "%s\n" "yes" >&6; }
 else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Required python modules can be installed by typing 'python3 -m pip install -r python/requirements.txt'" >&5
+printf "%s\n" "$as_me: Required python modules can be installed by typing 'python3 -m pip install -r python/requirements.txt'" >&6;}
     if test -d ide; then
       as_fn_error $? "The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output" "$LINENO" 5
     else
