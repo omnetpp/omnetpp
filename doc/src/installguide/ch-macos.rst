@@ -8,7 +8,7 @@ This chapter provides additional information for installing |omnet++| on macOS.
 
 The following releases are covered:
 
--  macOS 11.x
+-  macOS 14.x
 
 Installing the Prerequisite Packages
 ------------------------------------
@@ -60,7 +60,8 @@ provided by macOS (`/usr/lib/python3`) and then install the Python dependencies:
 
 .. code::
 
-   pip3 install numpy scipy pandas matplotlib posix_ipc
+   $ python3 -m venv .venv && source .venv/bin/activate
+   $ python3 -m pip install -r python/requirements.txt
 
 Enabling Development Mode in Terminal
 -------------------------------------
@@ -88,12 +89,6 @@ Debugging Unsigned Code
 Even if you have enabled development mode in the terminal, missing code signatures will still
 cause problems during debugging, because the debugged process is started by the IDE, not the terminal.
 To be able to debug, you must disable code signature checking globally by typing:
-
-.. code::
-
-   $ sudo spctl --master-disable
-   
-or since Mac OS 10.15.7 (Catalina) 
 
 .. code::
 

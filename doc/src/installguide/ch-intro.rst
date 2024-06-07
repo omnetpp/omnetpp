@@ -13,7 +13,7 @@ Supported Platforms
 |omnet++| has been tested and is supported on the following operating systems:
 
 -  Windows on x86_64 architecture
--  MacOS 10.15 and 11.x on x86_64 architecture
+-  macOS 13 and 14 on x86_64/aarch64 architecture
 -  Linux distributions covered in this Installation Guide
 
 .. ifconfig:: what=='omnest'
@@ -29,7 +29,7 @@ The Simulation IDE is supported on the following platforms:
 
 -  Linux x86_64/aarch64
 -  Windows x86_64
--  MacOS 10.15 and 11.x (x86_64)
+-  macOS 13 and 14 (x86_64/aarch64)
 
 .. note::
 

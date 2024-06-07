@@ -33,22 +33,20 @@ You can perform the installation using the graphical user interface or from the 
 Command-Line Installation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To install the required packages, type in the terminal:
+To install the required packages, change into the root of the |omnet++| installation 
+and type in the terminal:
 
 .. code::
 
    $ su -c 'yum install make gcc gcc-c++ clang lld bison flex perl \
-       python3 python3-pip qt-devel libxml2-devel zlib-devel doxygen \
-       graphviz xdg-utils'
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn
+       python3-devel python3-pip qt5-qtbase-devel libxml2-devel \
+       zlib-devel doxygen graphviz xdg-utils libdwarf-devel'
+   $ python3 -m venv .venv && source .venv/bin/activate
+   $ python3 -m pip install -r python/requirements.txt
 
 To use 3D visualization support in Qtenv (recommended), you should install the OpenSceneGraph-devel (3.2 or later) and
 osgEarth-devel (2.7 or later) packages. These packages are not available from the official RedHat repository so you may
 need to get them from different sources (e.g. rpmfind.net).
-
-.. warning::
-   
-   The IDE requires GLIBC 2.28 version or later, so RedHat 6 and 7 is NOT supported.
 
 .. note::
 
@@ -72,21 +70,6 @@ Note that *openmpi* will not be available by default, it needs to be activated i
 command, where ``<arch>`` is your architecture (usually ``i386`` or ``x86_64``). When in doubt, use ``module avail`` to
 display the list of available modules. If you need MPI in every session, you may add the ``module load`` command to your
 startup script (``.bashrc``).\`
-
-Graphical Installation
-~~~~~~~~~~~~~~~~~~~~~~
-
-The graphical installer can be launched by choosing *Applications > Add/Remove Software* from the menu.
-
-Search for the following packages in the list. Select the checkboxes in front of the names, and pick the latest version
-of each package.
-
-The packages:
-
--  make, gcc, gcc-c++, clang, lld, bison, flex, perl, python3, qt-devel, libxml2-devel, zlib-devel, doxygen, graphviz,
-   openmpi-devel, xdg-utils
-
-Click *Apply*, then follow the instructions.
 
 SELinux
 -------

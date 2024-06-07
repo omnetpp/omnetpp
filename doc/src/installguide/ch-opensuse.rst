@@ -9,7 +9,7 @@ installation procedure is described in the *Linux* chapter.
 
 The following openSUSE release is covered:
 
--  openSUSE Leap 15.3
+-  openSUSE Leap 15.6
 
 It was tested on the following architectures:
 
@@ -33,9 +33,10 @@ To install the required packages, type in the terminal:
 .. code::
 
    $ sudo zypper install make gcc gcc-c++ clang lld bison flex perl \
-       python3 python3-pip libqt5-qtbase-devel libxml2-devel zlib-devel \
-       doxygen graphviz xdg-utils
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn
+       python3-devel python3-pip qt5-qtbase-devel libxml2-devel \
+       zlib-devel doxygen graphviz xdg-utils libdw-devel libwebkit2gtk-4_1-0
+   $ python3 -m venv .venv && source .venv/bin/activate
+   $ python3 -m pip install -r python/requirements.txt
 
 .. note::
 
@@ -60,23 +61,3 @@ Note that *openmpi* will not be available by default, first you need to log out 
 .. code::
 
    $ . ~/.profile
-
-Graphical Installation
-~~~~~~~~~~~~~~~~~~~~~~
-
-The graphical installer can be launched by opening the Search bar and typing *Software Management*.
-
-.. figure:: pictures/opensuse-yast.png
-   :width: 75.0%
-
-   Yast Software Management
-
-Search for the following packages in the list. Select the checkboxes in front of the names, and pick the latest version
-of each package.
-
-The packages:
-
--  make, gcc, gcc-c++, clang, lld, bison, flex, perl, libqt5-qtbase-devel, libxml2-devel, zlib-devel,
-   xdg-utils, doxygen, graphviz, openmpi-devel
-
-Click *Accept*, then follow the instructions.

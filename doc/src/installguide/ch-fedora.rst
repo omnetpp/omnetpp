@@ -9,7 +9,7 @@ procedure is described in the *Linux* chapter.
 
 The following Fedora release is covered:
 
--  Fedora 33
+-  Fedora 40
 
 It was tested on the following architectures:
 
@@ -33,10 +33,10 @@ To install the required packages, type in the terminal:
 .. code::
 
    $ sudo dnf install make gcc gcc-c++ clang lld bison flex perl \
-       python3 python3-pip qt5-devel libxml2-devel \
-       zlib-devel doxygen graphviz webkitgtk
-   $ python3 -m pip install --user --upgrade numpy pandas \
-       matplotlib scipy seaborn
+       python3-devel python3-pip qt5-qtbase-devel libxml2-devel \
+       zlib-devel doxygen graphviz xdg-utils libdwarf-devel webkit2gtk4.1
+   $ python3 -m venv .venv && source .venv/bin/activate
+   $ python3 -m pip install -r python/requirements.txt
 
 To use 3D visualization support in Qtenv, you should install OpenSceneGraph 3.2 or later and osgEarth 2.7 or later
 (recommended):
@@ -66,24 +66,3 @@ Note that *openmpi* will not be available by default, it needs to be activated i
 
 command. When in doubt, use ``module avail`` to display the list of available modules. If you need MPI in every session,
 you may add the ``module load`` command to your startup script (``.bashrc``).
-
-Graphical Installation
-~~~~~~~~~~~~~~~~~~~~~~
-
-The graphical package manager can be launched by opening the Search bar and typing *dnf*.
-
-Search for the following packages in the list. Select the checkboxes in front of the names, and pick the latest version
-of each package.
-
-The packages:
-
--  make, bison, gcc, gcc-c++, clang, lld, flex, perl, python3, python3-pip, qt5-devel, libxml2-devel, zlib-devel,
-   webkitgtk, doxygen, graphviz, openmpi-devel, OpenSceneGraph-devel, osgearth-devel
-
-Click *Apply*, then follow the instructions.
-
-Open a terminal and enter the following command to install the required Python packages:
-
-.. code::
-
-   $ python3 -m pip install --user --upgrade numpy pandas matplotlib scipy seaborn
