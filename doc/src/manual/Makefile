@@ -1,4 +1,4 @@
-LATEX=pdflatex -halt-on-error
+LATEX=pdflatex -halt-on-error -file-line-error -interaction=nonstopmode
 PERL=perl
 RSVGCONVERT=rsvg-convert
 DOT=dot
