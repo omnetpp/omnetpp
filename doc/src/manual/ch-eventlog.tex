@@ -6,22 +6,22 @@
 
 The eventlog feature and related tools have been added to {\opp} with the aim of
 helping the user understand complex simulation models and correctly implement the
-desired component behaviors. Using these tools, one can examine details of recorded
-history of a simulation, focusing on the behavior instead of the statistical results.
+desired component behaviors. By using these tools, one can examine the details of the recorded
+history of a simulation, focusing on the behavior rather than the statistical results.
 
-The eventlog file is created automatically during a simulation run upon explicit request
-configurable in the ini file. The resulting file can be viewed in the {\opp} IDE using
-the Sequence Chart and the Eventlog Table or can be processed by the command line Eventlog
+The eventlog file is created automatically during a simulation run upon explicit request,
+which can be configured in the ini file. The resulting file can be viewed in the {\opp} IDE using
+the Sequence Chart and the Eventlog Table, or it can be processed by the command line Eventlog
 Tool. These tools support filtering the collected data to allow you to focus on events
-relevant to what you are looking for. They allow examining causality relationships and
-provide filtering based on simulation times, event numbers, modules and messages.
+that are relevant to what you are looking for. They allow examining causality relationships and
+provide filtering based on simulation times, event numbers, modules, and messages.
 
-The simulation kernel records into the eventlog among others: user level messages,
-creation and deletion of modules, gates and connections, scheduling of self messages,
+The simulation kernel records, among other things, user-level messages,
+creation and deletion of modules, gates, and connections, scheduling of self-messages,
 sending of messages to other modules either through gates or directly, and processing of
-messages (that is events). Optionally, detailed message data can also be automatically
-recorded based on a message filter. The result is an eventlog file which contains detailed
-information of the simulation run and later can be used for various purposes.
+messages (that is, events). Optionally, detailed message data can also be automatically
+recorded based on a message filter. The result is an eventlog file that contains detailed
+information of the simulation run and can later be used for various purposes.
 
 \begin{note}
     The eventlog file may become quite large for long-running simulations
@@ -32,24 +32,23 @@ information of the simulation run and later can be used for various purposes.
 \section{Configuration}
 \label{sec:eventlog:configuration}
 
-To record an eventlog file during the simulation, insert the following line into
-the ini file:
+To record an eventlog file during the simulation, insert the following line into the ini file:
 
 \begin{inifile}
 record-eventlog = true
 \end{inifile}
 
 \begin{note}
-    Eventlog recording is turned off by default, because creating the eventlog file
-    might significantly decrease the overall simulation performance.
+    Eventlog recording is turned off by default because creating the eventlog
+    file might significantly decrease the overall simulation performance.
 \end{note}
 
 \subsection{File Name}
 \label{sec:eventlog:file-name}
 
-The simulation kernel will write the eventlog file during the simulation into the file
-specified by the following ini file configuration entry (showing the default file name
-pattern here):
+The simulation kernel will write the eventlog file during the simulation into
+the file specified by the following ini file configuration entry (showing the
+default file name pattern here):
 
 \begin{inifile}
 eventlog-file = ${resultdir}/${configname}-${runnumber}.elog
@@ -61,9 +60,9 @@ eventlog-file = ${resultdir}/${configname}-${runnumber}.elog
 The size of an eventlog file is approximately proportional to the number of
 events it contains. To reduce the file size and speed up the simulation, it
 might be useful to record only certain events. The
-\ttt{eventlog-recording-intervals} configuration option instructs the
-kernel to record events only in the specified intervals. The syntax is
-similar to that of \ttt{vector-recording-intervals}.
+\ttt{eventlog-recording-intervals} configuration option instructs the kernel to
+record events only in the specified intervals. The syntax is similar to that of
+\ttt{vector-recording-intervals}.
 
 An example:
 
@@ -75,14 +74,14 @@ eventlog-recording-intervals = ..10.2, 22.2..100, 233.3..
 \label{sec:eventlog:recording-modules}
 
 Another factor that affects the size of an eventlog file is the number of
-modules for which the simulation kernel records events during the
-simulation. The \ttt{module-eventlog-recording} per-module configuration
-option instructs the kernel to record only the events that occurred in the
-matching modules. The default is to record events from all modules. This
-configuration option only applies to simple modules.
+modules for which the simulation kernel records events during the simulation.
+The \ttt{module-eventlog-recording} per-module configuration option instructs
+the kernel to record only the events that occurred in the matching modules. The
+default is to record events from all modules. This configuration option only
+applies to simple modules.
 
 The following example records events from any of the routers whose index is
-between 10 and 20, and turns off recording for all other modules.
+between 10 and 20 and turns off recording for all other modules.
 
 \begin{inifile}
 **.router[10..20].**.module-eventlog-recording = true
@@ -92,19 +91,19 @@ between 10 and 20, and turns off recording for all other modules.
 \subsection{Recording Message Data}
 \label{sec:eventlog:recording-messages}
 
-Since recording message data dramatically increases the size of the
-eventlog file and also slows down the simulation, it is turned off by
-default, even if writing the eventlog is enabled. To turn on message data
-recording, supply a value for the \ttt{eventlog-message-detail-pattern}
-option in the ini file.
+Since recording message data dramatically increases the size of the eventlog
+file and also slows down the simulation, it is turned off by default, even if
+writing the eventlog is enabled. To turn on message data recording, supply a
+value for the \ttt{eventlog-message-detail-pattern} option in the ini file.
 
 %TODO explain the syntax a little bit... it is not trivial
 
 %TODO: how to record all details?  =* ? test!
 
-An example configuration for an IEEE 80211 model that records the \ttt{encapsulationMsg} field
-and all other fields whose name ends in \ttt{Address}, from messages whose class name ends in
-\ttt{Frame} looks like this:
+An example configuration for an IEEE 80211 model that records the
+\ttt{encapsulationMsg} field and all other fields whose name ends in
+\ttt{Address}, from messages whose class name ends with \ttt{Frame}, looks like
+this:
 
 \begin{inifile}
 eventlog-message-detail-pattern = *Frame:encapsulatedMsg,*Address
@@ -129,28 +128,28 @@ eventlog-message-detail-pattern =
 \section{Eventlog Tool}
 \label{sec:eventlog:eventlog-tool}
 
-The Eventlog Tool is a command line tool to process eventlog files. Invoking it without
+The Eventlog Tool is a command-line tool for processing eventlog files. Invoking it without
 parameters will display usage information. The following are the most useful commands for users.
 
 \subsection{Filter}
 \label{sec:eventlog:filter}
 
-The eventlog tool provides off line filtering that is usually applied to the eventlog file
-after the simulation has been finished and before actually opening it in the {\opp} IDE
+The eventlog tool provides offline filtering that is usually applied to the eventlog file
+after the simulation has finished and before actually opening it in the {\opp} IDE
 or processing it by any other means. Use the filter command and its various options to
 specify what should be present in the result file.
 
 \subsection{Echo}
 \label{sec:eventlog:echo}
 
-Since the eventlog file format is text based and users are encouraged to implement their
+Since the eventlog file format is text-based and users are encouraged to implement their
 own filters, a way is needed to check whether an eventlog file is
-correct. The echo command provides a way to check this and help users creating custom
+correct. The echo command provides a way to check this and helps users create custom
 filters. Anything not echoed back by the eventlog tool will not be taken into
 consideration by the other tools found in the {\opp} IDE.
 
 \begin{note}
-    Custom filter tools should filter out whole events only, otherwise the
+    Custom filter tools should only filter out whole events; otherwise, the
     consequences are undefined.
 \end{note}
 

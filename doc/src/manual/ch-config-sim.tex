@@ -35,12 +35,11 @@ description = "high job arrival rate"
 \end{inifile}
 
 The file is grouped into \textit{sections} named \ttt{[General]}, \ttt{[Config Fifo1]}
-and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
+and \ttt{[Config Fifo2]}, each containing several \textit{entries}.
 
 
 \subsection{File Syntax}
 \label{sec:config-sim:inifile-syntax}
-
 
 An {\opp} configuration file is a line-oriented text file. The encoding is
 primarily ASCII, but non-ASCII characters are permitted in comments
@@ -49,10 +48,10 @@ ASCII, for example ISO 8859-1 and UTF-8. There is no limit on the file size or
 on the line length.
 
 Comments may be placed at the end of any line after a hash mark, ``\#''.
-Comments extend to the end of the line, and are ignored during processing.
-Blank lines are also allowed and ignored.
+Comments extend to the end of the line and are ignored during processing.
+Blank lines are also allowed and are ignored.
 
-Long lines can be broken to multiple lines in two ways: using the traditional
+Long lines can be broken into multiple lines in two ways: using the traditional
 \textit{trailing backslash} notation also found in C/C++, or alternatively, by
 \textit{indenting} the continuation lines.
 
@@ -62,7 +61,7 @@ backslash and the newline. (Potential leading whitespace on the second line is
 preserved.) Note that this allows breaking the line even in the middle of a
 name, number or string constant.
 
-When using latter method, a line can be broken between any two tokens by inserting
+When using the latter method, a line can be broken between any two tokens by inserting
 a newline and indenting the next line. An indented line is interpreted as a
 continuation of the previous line. The first line and indented lines that follow
 it are then parsed as a single multi-line unit. Consequently, this method does
@@ -76,12 +75,12 @@ There are three types of lines: \textit{section heading lines},
 \begin{enumerate}
 \item \textit{Section heading lines} contain a section name enclosed in square brackets.
 \item \textit{Key-value lines} have the \textit{<key>=<value>} syntax; spaces
-      are allowed (but not required) on both sides of the equal sign.
-      If a line contains more than one equal sign, the leftmost one is taken
-      as the key-value separator.
+ are allowed (but not required) on both sides of the equal sign.
+ If a line contains more than one equal sign, the leftmost one is taken
+ as the key-value separator.
 \item Currently there is only one kind of directive line, \textit{include}. An
-      include line starts with the \ttt{include} word, followed by the name of
-      the file to be included.
+ include line starts with the \ttt{include} word, followed by the name of
+ the file to be included.
 \end{enumerate}
 
 Key-value lines may not occur above the first section heading line (except
@@ -92,10 +91,10 @@ Keys may be further classified based on syntax alone:
 \begin{enumerate}
 \item Keys that do not contain dots represent global or per-run \textit{configuration options}.
 \item If a key contains a dot, its last component (substring after the last dot)
-      is considered. If the last component contains a hyphen or is equal to
-      \ttt{typename}, the key represents a \textit{per-object configuration option}.
+    is considered. If the last component contains a hyphen or is equal to
+    \ttt{typename}, the key represents a \textit{per-object configuration option}.
 \item Otherwise, the key represents a \textit{parameter assignment}. Thus, parameter
-      assignment keys contain a dot, and no hyphen after the last dot.
+    assignment keys contain a dot and no hyphen after the last dot.
 \end{enumerate}
 
 An example:
@@ -119,7 +118,7 @@ debug-on-errors = false         # another configuration option
 
 {\opp} supports including an ini file in another\index{ini file!file inclusion},
 via the \ttt{include} keyword. This feature allows one to partition a large ini
-file into logical units, fixed and varying part, etc.
+file into logical units, fixed and varying parts, etc.
 
 An example:
 
@@ -133,7 +132,7 @@ include ../common/config.ini
 \end{inifile}
 
 One can also include files from other directories. If the included ini file
-further includes others, their path names will be understood as relative to
+further includes other files, their path names will be understood as relative to
 the location of the file which contains the reference, rather than relative
 to the current working directory of the simulation.
 
@@ -145,7 +144,7 @@ parameter values.)
 In included files, it is allowed to have key-value lines without first having a
 section heading line. File inclusion is conceptually handled as text
 substitution, except that a section heading in an included file will not
-change the current section the main file. The following example illustrates
+change the current section of the main file. The following example illustrates
 the rules:
 
 \begin{inifile}
@@ -153,7 +152,7 @@ the rules:
 foo1 = 1          # no preceding section heading: these lines will go into
 foo2 = 2          # whichever section the file is included into
 [Config Bar]
-bar = 3           # this will always go to into [Config Bar]
+bar = 3           # this will always go into [Config Bar]
 \end{inifile}
 
 \begin{inifile}
@@ -249,7 +248,7 @@ The \ttt{[General]} section itself is optional; when it is absent, it is
 treated like an empty \ttt{[General]} section.
 
 All named configurations fall back to \ttt{[General]} by default. However, for
-each configuration it is possible to specify the fall-back section or a list of
+each configuration it is possible to specify the fallback section or a list of
 fallback sections explicitly, using the \fconfig{extends} key. Consider the
 following ini file skeleton:
 
@@ -276,7 +275,6 @@ extends = SlottedAloha2
 extends = SlottedAloha2
 ...
 \end{inifile}
-
 
 When \ttt{SlottedAloha2b} is activated, lookups will consider sections in the
 following order (this is also called the \textit{section fallback chain}):
@@ -319,10 +317,10 @@ General
 \end{commandline}
 
 The \textit{section fallback} concept is similar to multiple inheritance in
-object-oriented languages, and benefits are similar too; one can factor out
+object-oriented languages, and the benefits are similar too; one can factor out
 the common parts of several configurations into a ``base'' configuration,
 and additionally, one can reuse existing configurations without copying, by
-using them as a base. In practice one will often have ``abstract''
+using them as a base. In practice, one will often have ``abstract''
 configurations too (in the C++/Java sense), which assign only a subset of
 parameters and leave the others open, to be assigned in derived
 configurations.
@@ -335,10 +333,10 @@ easier to manage ini files.
 \section{Assigning Module Parameters}
 \label{sec:config-sim:parameter-settings}
 
-Simulations get input via module parameters, which can be assigned a
+Simulations receive input via module parameters, which can be assigned a
 value in NED files or in \ffilename{omnetpp.ini} -- in this order. Since parameters
 assigned in NED files cannot be overridden in \ffilename{omnetpp.ini}, one can
-think about them as being ``hardcoded''. In contrast, it is easier
+think of them as being ``hardcoded''. In contrast, it is easier
 and more flexible to maintain module parameter settings in \ffilename{omnetpp.ini}.
 
 In \ffilename{omnetpp.ini}, module parameters are referred to by their full paths
@@ -347,7 +345,7 @@ the module names (from the top-level module down to the module containing
 the parameter), plus the parameter name (see section \ref{sec:sim-lib:object-fullpath}).
 
 An example \ffilename{omnetpp.ini} which sets the \ttt{numHosts} parameter of
-the toplevel module and the \ttt{transactionsPerSecond} parameter of the
+the top-level module and the \ttt{transactionsPerSecond} parameter of the
 \ttt{server} module:
 
 \begin{inifile}
@@ -369,14 +367,14 @@ Network.host[*].app.typename = "PingApp"
 
 Models can have a large number of parameters to be configured, and it would
 be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
-\textit{wildcard patterns} which allow for setting several model parameters
+\textit{wildcard patterns} which allow setting several model parameters
 at once. The same pattern syntax is used for per-object configuration options;
 for example \ttt{<object-path-pattern>.record-scalar}, or \ttt{<module-path-pattern>.rng-<N>}.
 
 The pattern syntax is a variation on Unix \textit{glob}-style
-patterns. The most apparent differences to globbing rules are the
+patterns. The most apparent differences from globbing rules are the
 distinction between \ttt{*} and \ttt{**}, and that character ranges should
-be written with curly braces instead of square brackets; that is,
+be written with curly braces instead of square brackets, i.e.,
 \textit{any-letter} is expressed as \ttt{\{a-zA-Z\}} and not as
 \ttt{[a-zA-Z]}, because square brackets are reserved for the notation of
 module vector indices.
@@ -390,7 +388,7 @@ Pattern syntax:
   \item \ttt{\{a-f\}} : \textit{set}: matches a character in the range a-f
   \item \ttt{\{{\textasciicircum}a-f\}}: \textit{negated set}: matches a character
     NOT in the range a-f
-  \item \ttt{\{38..150\}} : \textit{numeric range}: any number (i.e. sequence of digits)
+  \item \ttt{\{38..150\}} : \textit{numeric range}: any number (i.e., sequence of digits)
     in the range 38..150, inclusive; both limits are optional
   \item \ttt{[38..150]} : \textit{index range}: any number in square brackets in the
     range 38..150, inclusive; both limits are optional
@@ -423,7 +421,7 @@ The \ttt{*} wildcard is for matching a single module or parameter name in the
 path name, while \ttt{**} can be used to match several components in the path.
 For example, \ttt{**.queue*.bufSize} matches the \ttt{bufSize} parameter of any module
 whose name begins with \ttt{queue} in the model, while \ttt{*.queue*.bufSize}
-or \ttt{net.queue*.bufSize} selects only queues immediately on network level.
+or \ttt{net.queue*.bufSize} selects only queues immediately on the network level.
 Also note that \ttt{**.queue**.bufSize} would match \ttt{net.queue1.foo.bar.bufSize}
 as well!
 
@@ -431,11 +429,11 @@ as well!
 \label{sec:config-sim:sets-negated-sets}
 
 Sets and negated sets can contain several character ranges and also
-enumeration of characters. For example, \ttt{\{\_a-zA-Z0-9\}} matches any letter
+enumerations of characters. For example, \ttt{\{\_a-zA-Z0-9\}} matches any letter
 or digit, plus the underscore; \ttt{\{xyzc-f\}} matches any of the characters
 x, y, z, c, d, e, f.
-To include '-' in the set, put it at a position where it cannot be
-interpreted as character range, for example: \ttt{\{a-z-\}} or \ttt{\{-a-z\}}.
+To include '-' in the set, put it in a position where it cannot be
+interpreted as a character range, for example: \ttt{\{a-z-\}} or \ttt{\{-a-z\}}.
 To include '\}' in the set, it must be the first character: \ttt{\{\}a-z\}},
 or as a negated set: \ttt{\{{\textasciicircum}\}a-z\}}.
 A backslash is always taken as a literal backslash (and not as an escape
@@ -452,7 +450,7 @@ The specification must use exactly two dots.
 Caveat: \ttt{*\{17..19\}} will match \ttt{a17}, \ttt{117} and \ttt{963217} as well,
 because the \ttt{*} can also match digits!
 
-An example for numeric ranges:
+An example of numeric ranges:
 
 \begin{inifile}
 [General]
@@ -500,7 +498,7 @@ More precisely, parameter resolution takes place as follows:
     the parameter will be asked from the user interactively (UI dependent).
 \item If there was no match and the parameter has a default value, it is applied
     and the process finishes.
-\item Otherwise the parameter is declared unassigned, and handled accordingly
+\item Otherwise, the parameter is declared unassigned, and handled accordingly
     by the user interface. It may be reported as an error, or may be
     asked from the user interactively.
 \end{enumerate}
@@ -517,7 +515,7 @@ direct support for batch runs, and users had to resort to writing shell
 parameter space, to generate a (partial) ini file and run the
 simulation program in each iteration.
 
-{\opp} 4.x largely automates this process, and eliminates the need for
+{\opp} 4.x largely automates this process and eliminates the need for
 writing batch execution scripts. It is the ini file where the user can
 specify iterations over various parameter settings.
 Here is an example:
@@ -530,7 +528,7 @@ Here is an example:
 
 This parameter study expands to 8*3 = 24 simulation runs, where the number of
 hosts iterates over the numbers 1, 2, 5, 10, 20, 30, 40, 50, and for
-each host count three simulation runs will be done, with the generation
+each host count three simulation runs will be conducted, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
@@ -655,10 +653,10 @@ not every comma is taken as a value separator because the parser
 tries to be smart about what is meant. Commas inside (nested) parentheses,
 brackets or curly braces are ignored so that \ttt{\$\{uniform(0,3)\}} is
 parsed as one value and not as \ttt{uniform(0} plus \ttt{3)}. Commas, curly
-braces and other charachers inside double-quoted string literals are
+braces and other characters inside double-quoted string literals are
 also ignored, so \ttt{\$\{"Hello, world"\}} yields a single \ttt{"Hello, world"}
 string and not \ttt{"Hello} plus \ttt{world"}. It is assumed that string literals
-use backslash as an escape characher, like in C/C++ and NED.
+use backslash as an escape character, like in C/C++ and NED.
 
 To include a literal comma or close-brace inside a value, one needs
 to escape it with a backslash: \ttt{\$\{foo{\textbackslash},bar{\textbackslash}\}baz\}}
@@ -727,7 +725,7 @@ ordering:
 \end{inifile}
 
 Variables are substituted \textit{textually}, and the result is normally
-\textit{not} evaluated as an arithmetic expression.  The result of the
+\textit{not} evaluated as an arithmetic expression. The result of the
 substitution is only evaluated where needed, namely in the three arguments
 of iteration ranges (\textit{from}, \textit{to}, \textit{step}), and in the
 value of the \fconfig{constraint} configuration option.
@@ -738,7 +736,7 @@ To illustrate textual substitution, consider the following contorted example:
 **.foo = ${i=1..3, 1s+, -}001s
 \end{inifile}
 
-Here, the \ttt{foo} NED parameter will receiving the following values in subsequent runs:
+Here, the \ttt{foo} NED parameter will receive the following values in subsequent runs:
 \ttt{1001s}, \ttt{2001s}, \ttt{3001s}, \ttt{1s+001s}, \ttt{-001s}.
 
 \begin{caution}
@@ -789,9 +787,9 @@ The body of an iteration may end in an exclamation mark followed by the
 name of another iteration variable. This syntax denotes a \textit{parallel
 iteration}. A parallel iteration does not define a loop of its own, but
 rather, the sequence is advanced in lockstep with the variable after the
-``!''. In other words, the ``!'' syntax chooses the \textit{kth} value from
+“!”. In other words, the “!” syntax chooses the \textit{kth} value from
 the iteration, where \textit{k} is the position (iteration count) of the
-iteration variable after the ``!''.
+iteration variable after the “!”.
 
 An example:
 
@@ -803,9 +801,8 @@ An example:
 
 In the above example, the only loop is defined by the first line, the \ttt{plan}
 variable. The other two iterations, \ttt{hosts} and \ttt{load} just follow it;
-for the first value of \ttt{plan} the first values of \ttt{host} and \ttt{load}
+for the first value of \ttt{plan} the first values of \ttt{hosts} and \ttt{load}
 are selected, and so on.
-
 
 
 \subsection{Predefined Variables, Run ID}
@@ -823,7 +820,7 @@ run ID is assigned that uniquely identifies that instance of running the
 simulation: every subsequent run of the same simulation will produce a different
 run ID. The run ID is generated as the concatenation of several variables like
 \ttt{\$\{configname\},} \ttt{\$\{runnumber\},} \ttt{\$\{datetime\}} and
-\ttt{\$\{processid\}.} This yields an identifier that is unique ``enough''
+\ttt{\$\{processid\}.} This yields an identifier that is unique “enough”
 for all practical purposes, yet it is meaningful for humans. The run ID is
 recorded into result files written during the simulation, and can be used
 to match vectors and scalars written by the same simulation run.
@@ -835,7 +832,7 @@ to match vectors and scalars written by the same simulation run.
 In cases when not all combinations of the iteration variables make sense
 or need to be simulated, it is possible to specify an additional
 constraint expression. This expression is interpreted as a conditional
-(an "if" statement) within the innermost
+(an “if” statement) within the innermost
 loop, and it must evaluate to \ttt{true} for
 the variable combination to generate a run. The expression should be
 given with the \fconfig{constraint} configuration option. An example:
@@ -852,7 +849,7 @@ data types are boolean, double and string. The expression must evaluate to
 a boolean.
 
 \begin{note}
-Remember that variables are substituted textually into the expresssion, so
+Remember that variables are substituted textually into the expression, so
 they must be protected with parentheses to preserve evaluation order.
 \end{note}
 
@@ -1086,9 +1083,9 @@ we'll cover the configuration of RNGs in \ffilename{omnetpp.ini}.
 \label{sec:config-sim:number-of-rngs}
 
 The \fconfig{num-rngs} configuration option sets the number of
-random number generator instances (i.e. random number streams)
+random number generator instances (i.e., random number streams)
 available for the simulation model (see \ref{sec:sim-lib:random-number-generators}).
-Referencing an RNG number greater or equal to this number
+Referencing an RNG number greater than or equal to this number
 (from a simple module or NED file) will cause a runtime error.
 
 
@@ -1108,7 +1105,7 @@ see section \ref{sec:run-sim:akaroa}).
 The RNG numbers used in simple modules may be arbitrarily mapped to the
 actual random number streams (actual RNG instances) from \ffilename{omnetpp.ini}.
 The mapping allows for great flexibility in RNG usage and random number
-streams configuration -- even for simulation models which were not
+stream configuration -- even for simulation models that were not
 written with RNG awareness.
 
 RNG mapping may be specified in \ffilename{omnetpp.ini}. The syntax of
@@ -1116,7 +1113,7 @@ configuration entries is the following.
 
 \begin{inifile}
 [General]
-<modulepath>.rng-N = M  # where N,M are numeric, M < num-rngs
+<modulepath>.rng-N = M  # where N and M are numeric, M < num-rngs
 \end{inifile}
 
 This maps module-local RNG N to physical RNG M. The following
@@ -1147,13 +1144,13 @@ co-exist; for a particular simulation, some RNGs can be configured
 manually, and some automatically.
 
 The automatic seed selection mechanism uses two inputs: the \textit{run number}
- and the \textit{RNG number}. For the same run number and RNG number,
+and the \textit{RNG number}. For the same run number and RNG number,
 {\opp} always selects the same seed value for any simulation model.
 If the run number or the RNG number is different, {\opp} does its best
 to choose different seeds which are also sufficiently separated in the RNG's sequence
 so that the generated sequences don't overlap.
 
-The run number can be specified either in in \ffilename{omnetpp.ini} (e.g. via the
+The run number can be specified either in \ffilename{omnetpp.ini} (e.g. via the
 \fconfig{cmdenv-runs-to-execute} option) or on the command line:
 
 \begin{commandline}
@@ -1203,7 +1200,7 @@ seed-2-mt = 7
 
 \label{sec:config-sim:seedtool}
 
-For the now obsolete cLCG32 RNG, the name of the corresponding option is
+For the now-obsolete \cclass{cLCG32} RNG, the name of the corresponding option is
 \ttt{seed-}\textit{k}\ttt{-lcg32}.
 
 \section{Logging}
@@ -1213,15 +1210,15 @@ The {\opp} logging infrastructure provides a few configuration options that
 affect what is written to the log output. It supports configuring multiple
 filters: global compile-time, global runtime, and per-component runtime log
 level filters. For a log statement to actually produce output, it must pass
-each filter simulatenously. In addition, one can also specify a log prefix
+each filter simultaneously. In addition, one can also specify a log prefix
 format string which determines the context information that is written before
-each log line. In the following sections, we look how to configure logging.
+each log line. In the following sections, we look at how to configure logging.
 
 \subsection{Compile-Time Filtering}
 \label{sec:config-sim:compile-time-log-filtering}
 
 The \fmac{COMPILETIME\_LOGLEVEL} macro determines which log statements
-are compiled into the executable. Any log statment which uses a log level below
+are compiled into the executable. Any log statement which uses a log level below
 the specified compile-time log level is omitted. In other words, no matter how
 the runtime log levels are configured, such log statements are not even executed.
 This is mainly useful to avoid the performance penalty paid for log statements
@@ -1248,7 +1245,7 @@ the compilation of all source files.
 #define COMPILETIME_LOGLEVEL LOGLEVEL_OFF
 \end{cpp}
 
-On the other hand, if there's some hard to track down issue, it might be useful
+On the other hand, if there's some hard-to-track-down issue, it might be useful
 to just do the opposite. Compiling with the lowest log level ensures that the
 log output contains as much information as possible.
 
@@ -1285,19 +1282,19 @@ global filtering, but it may also be useful for various debugging purposes.
 
 In addition to the global variable, there's also a per-component runtime log
 level which only restricts the output of a particular component of the
-simulation. By default, the runtime log level of all components are set to
+simulation. By default, the runtime log level of all components is set to
 \fmac{LOGLEVEL\_TRACE}. Programmatically, these log levels can be retrieved
 with \ffunc{cComponent::getLogLevel()} and changed with
 \ffunc{cComponent::setLogLevel()}.
 
-In general, any log statment which uses a log level below the specified global
+In general, any log statement which uses a log level below the specified global
 runtime log level, or below the specified per-component runtime log level, is
 omitted. If the log statement appears in a module source, then the module's
 per-component runtime log level is checked. In any other C++ code, the context
 module's per-component runtime log level is checked.
 
 In fact, the \fvar{cLog::noncomponentLogPredicate} and the \fvar{cLog::componentLogPredicate}
-are the most generic runtime predicates that determines which log statements are
+are the most generic runtime predicates that determine which log statements are
 executed. Mostly, there's no need to redefine these predicates, but it can be
 useful sometimes. For example, one can do runtime filtering for log categories
 by redefining them. To cite a real example, the \fvar{cLog::componentLogPredicate} function
@@ -1459,7 +1456,7 @@ writing a log prefix altogether. Finally, here is a more detailed format string:
 In express mode, for performance reasons, log output is disabled during the whole
 simulation. However, during the simulation finish stage, logging is automatically
 re-enabled to allow writing statistical and other results to the log. One can
-completely disable all logging by adding following configuration option at the
+completely disable all logging by adding the following configuration option at the
 beginning of \ffilename{omnetpp.ini}:
 
 \begin{inifile}

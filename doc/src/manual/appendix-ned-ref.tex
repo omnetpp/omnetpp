@@ -7,7 +7,7 @@
 \subsection{NED File Name Extension}
 \label{sec:ned-ref:ned-file-name-extension}
 
-NED files have the \texttt{.ned} file name suffix. This is mandatory, and
+NED files have the \ttt{.ned} file name suffix. This is mandatory, and
 cannot be overridden.
 
 \subsection{NED File Encoding}
@@ -33,7 +33,7 @@ Line ending may be either CR or CRLF, regardless of the platform.
 \subsection{Reserved Words}
 \label{sec:ned-ref:reserved-words}
 
-The following words are reserved, and cannot be used for identifiers:
+The following words are reserved and cannot be used for identifiers:
 
 \ttt{allowunconnected bool channel channelinterface connections const
 default double extends false for gates if import index inf inout input int like
@@ -46,7 +46,7 @@ undefined volatile xml xmldoc}
 \label{sec:ned-ref:identifiers}
 
 Identifiers must be composed of letters of the English alphabet (a-z, A-Z),
-numbers (0-9) and underscore ``\_''. Identifiers may only begin with a
+numbers (0-9), and underscore ``\_''. Identifiers may only begin with a
 letter or underscore.
 
 The recommended way to compose identifiers from multiple words is to
@@ -75,22 +75,22 @@ are recognized: \ttt{{\textbackslash}b}, \ttt{{\textbackslash}f},
 \subsubsection{Numeric Constants}
 \label{sec:ned-ref:numeric-constants}
 
-Numeric constants are accepted in the usual decimal, hexadecimal (\ttt{0x} prefix)
+Numeric constants are accepted in the usual decimal, hexadecimal (\ttt{0x} prefix),
 and scientific notations. Octal numbers are not accepted (numbers that start
-with the \ttt{0} digit are interpreted as decimal.)
+with the \ttt{0} digit are interpreted as decimal).
 
-\fkeyword{nan}, \fkeyword{inf} and \ttt{-}\fkeyword{inf} mean the floating-point
-not-a-number, positive infinity and negative infinity values, respectively.
+\fkeyword{nan}, \fkeyword{inf}, and \ttt{-}\fkeyword{inf} mean the floating-point
+not-a-number, positive infinity, and negative infinity values, respectively.
 
 \subsubsection{Quantity Constants}
 \label{sec:ned-ref:quantity-constants}
 
 A quantity constant has the form \textit{(<numeric-constant> <unit>)+}, for
 example \ttt{12.5mW} or \ttt{3h 15min 37.2s}. Whitespace is optional in front
-of a unit, but must be present after a unit if it is followed by a number.
+of a unit but must be present after a unit if it is followed by a number.
 
 When multiple measurement units are present, they have to be convertible
-into each other (i.e. refer to the same physical quantity).
+into each other (i.e., refer to the same physical quantity).
 
 Section \ref{sec:ned-ref:units} lists the units recognized by {\opp}.
 Other units can be used as well; the only downside being that {\opp} will
@@ -99,14 +99,14 @@ not be able to perform conversions on them.
 \subsubsection{Null Object References}
 \label{sec:ned-ref:nullptr}
 
-The keywords \fkeyword{null} and \fkeyword{nullptr} are synonymous, and
+The keywords \fkeyword{null} and \fkeyword{nullptr} are synonymous and
 denote an object reference that doesn't refer to any valid object.
 
 \subsubsection{Undefined}
 \label{sec:ned-ref:undefined}
 
 The keyword \fkeyword{undefined} denotes the ``missing value'' value, similar
-to \ttt{(void)0} in C/C++. \fkeyword{undefined} has its own type, and
+to \ttt{(void)0} in C/C++. \fkeyword{undefined} has its own type and
 cannot be cast to any other type.
 
 
@@ -114,7 +114,7 @@ cannot be cast to any other type.
 \label{sec:ned-ref:comments}
 
 Comments can be placed at the end of lines. Comments begin with a double
-slash \ttt{//}, and continue until the end of the line.
+slash \ttt{//} and continue until the end of the line.
 
 
 \subsection{Grammar}
@@ -128,7 +128,7 @@ The grammar of the NED language can be found in Appendix
 
 The NED language has the following built-in definitions, all in the \ttt{ned}
 package: channels \ttt{IdealChannel}, \ttt{DelayChannel}, and \ttt{DatarateChannel};
-module interfaces \ttt{IBidirectionalChannel}, and \ttt{IUnidirectionalChannel}.
+module interfaces \ttt{IBidirectionalChannel} and \ttt{IUnidirectionalChannel}.
 The latter two are reserved for future use.
 
 The bodies of \ttt{@statistic} properties have been omitted for brevity from
@@ -206,7 +206,7 @@ is similar to Java packages, with minor changes.
 \label{sec:ned-ref:package-declaration}
 
 A NED file may contain a package declaration. The package declaration
-uses the \fkeyword{package} keyword, and specifies the package for the
+uses the \fkeyword{package} keyword and specifies the package for the
 definitions in the NED file. If there is no package declaration, the file's
 contents are in the \textit{default package}.
 
@@ -226,7 +226,7 @@ folder}.
 
 \begin{note}
 The {\opp} runtime recognizes a \ttt{NEDPATH} environment variable, which
-contains a list of NED source folders, and is similar to the Java \ttt{CLASSPATH}
+contains a list of NED source folders and is similar to the Java \ttt{CLASSPATH}
 variable. \ttt{NEDPATH} also has a command-line option equivalent.
 \end{note}
 
@@ -259,13 +259,12 @@ and channel interfaces are called \textit{components}.
 \subsection{Simple Modules}
 \label{sec:ned-ref:simple-modules}
 
-Simple module types are declared with the \fkeyword{simple} keyword;
+Simple module types are declared using the \fkeyword{simple} keyword;
 see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 syntax.
 
 Simple modules may have properties (\ref{sec:ned-ref:properties}),
-parameters (\ref{sec:ned-ref:parameters})
-and gates (\ref{sec:ned-ref:gates}).
+parameters (\ref{sec:ned-ref:parameters}), and gates (\ref{sec:ned-ref:gates}).
 
 A simple module type may not have inner types (\ref{sec:ned-ref:inner-types}).
 
@@ -275,7 +274,7 @@ Inheritance rules are described in section \ref{sec:ned-ref:inheritance},
 and interface implementation rules in section \ref{sec:ned-ref:implementing-an-interface}.
 
 Every simple module type has an associated C++ class, which must be
-subclassed from \cclass{cSimpleModule}. The way of associating the
+a subclass of \cclass{cSimpleModule}. The way of associating the
 NED type with the C++ class is described in section
 \ref{sec:ned-ref:resolving-cpp-class}.
 
@@ -284,7 +283,7 @@ NED type with the C++ class is described in section
 \subsection{Compound Modules}
 \label{sec:ned-ref:compound-modules}
 
-Compound module types are declared with the \fkeyword{module} keyword;
+Compound module types are declared using the \fkeyword{module} keyword;
 see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 syntax.
 
@@ -313,8 +312,8 @@ A network declared with the \fkeyword{network} keyword is equivalent to a compou
 module (\fkeyword{module} keyword) with the \fprop{@isNetwork(true)} property.
 
 \begin{note}
-    A simple module can only be designated to be a network by spelling out the
-    \fprop{@isNetwork} property; the \fkeyword{network} keyword cannot
+    A simple module can only be designated as a network by specifying the
+    \fprop{@isNetwork} property; the \fkeyword{network} keyword may not
     be used for that purpose.
 \end{note}
 
@@ -322,7 +321,7 @@ module (\fkeyword{module} keyword) with the \fprop{@isNetwork(true)} property.
 \label{sec:ned-ref:isnetwork-property}
 
 The \fprop{@isNetwork} property is only recognized for simple modules and
-compound modules. The value may be empty, true or false:
+compound modules. The value may be empty, true, or false:
 
 \begin{ned}
 @isNetwork;
@@ -348,7 +347,7 @@ to make it a network.
 \subsection{Channels}
 \label{sec:ned-ref:channels}
 
-Channel types are declared with the \fkeyword{channel} keyword;
+Channel types are declared using the \fkeyword{channel} keyword;
 see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 syntax.
 
@@ -363,7 +362,7 @@ Inheritance rules are described in section \ref{sec:ned-ref:inheritance},
 and interface implementation rules in section \ref{sec:ned-ref:implementing-an-interface}.
 
 Every channel type has an associated C++ class, which must be
-subclassed from \cclass{cChannel}. The way of associating the
+a subclass of \cclass{cChannel}. The way of associating the
 NED type with the C++ class is described in section
 \ref{sec:ned-ref:resolving-cpp-class}.
 
@@ -374,7 +373,7 @@ of the channel object when used in a connection.
 \subsection{Module Interfaces}
 \label{sec:ned-ref:module-interfaces}
 
-Module interface types are declared with the \fkeyword{moduleinterface} keyword;
+Module interface types are declared using the \fkeyword{moduleinterface} keyword;
 see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 syntax.
 
@@ -393,7 +392,7 @@ Inheritance rules are described in section \ref{sec:ned-ref:inheritance}.
 \subsection{Channel Interfaces}
 \label{sec:ned-ref:channel-interfaces}
 
-Channel interface types are declared with the \fkeyword{channelinterface} keyword;
+Channel interface types are declared using the \fkeyword{channelinterface} keyword;
 see the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
 syntax.
 
@@ -412,8 +411,8 @@ Inheritance rules are described in section \ref{sec:ned-ref:inheritance}.
 \label{sec:ned-ref:resolving-cpp-class}
 
 The procedure for determining the C++ implementation class for simple modules
-and for channels are identical. It goes as follows (we are going to say
-\textit{component} instead of \textit{``simple module or channel''}):
+and channels, collectively referred to as \textit{components}), is identical.
+It is as follows:
 
 If the component extends another component and has no \fprop{@class}
 property, the C++ implementation class is inherited from the base type.
@@ -424,12 +423,12 @@ value of the \fprop{@class} property. The \fprop{@class} property should
 contain a single value.
 
 \begin{note}
-    The \fprop{@class} property may itself contain a namespace declaration (ie.
+    The \fprop{@class} property itself may contain a namespace declaration (i.e.
     may contain ``\ttt{::}'').
 \end{note}
 
-If the component contains no \fprop{@class} property and has no base
-class, the C++ class name will be composed of the \textit{current namespace} and the
+If the component contains no \fprop{@class} property and has no base class,
+the C++ class name will be composed of the \textit{current namespace} and the
 unqualified name of the component.
 
 \begin{important}
@@ -448,7 +447,7 @@ the resolution rules are the same as with simple modules.
 \label{ch:ned-ref:current-namespace}
 
 The \textit{current namespace} is the value of the first \fprop{@namespace}
-property found while searching the following order:
+property found while searching in the following order:
 
 \begin{enumerate}
   \item the current NED file
@@ -458,7 +457,7 @@ property found while searching the following order:
 
 \begin{note}
     Note that namespaces coming from multiple \fprop{@namespace} properties
-    in different scopes do not nest, but rather, the nearest one wins.
+    in different scopes do not nest; rather, the nearest one wins.
 \end{note}
 
 The \fprop{@namespace} property should contain a single value.
@@ -478,7 +477,7 @@ Properties are identified by name. It is possible to have several properties
 on the same object with the same name, as long as they have unique indices.
 An index is an identifier in square brackets after the property name.
 
-The following example shows a property without index, one with the index \ttt{index1},
+The following example shows a property without an index, one with the index \ttt{index1},
 and a third with the index \ttt{index2}.
 
 \begin{ned}
@@ -501,7 +500,7 @@ are separated with commas. Example:
 
 Keys must be unique.
 
-If the key+equal sign part (\ttt{key=}) is missing, the valuelist belongs
+If the key+equal sign part (\ttt{key=}) is missing, the \textit{valuelist} belongs
 to the \textit{default key}. Examples:
 
 \begin{ned}
@@ -509,7 +508,7 @@ to the \textit{default key}. Examples:
 @prop2(value1,value2;key1=value11,value12,value13)
 \end{ned}
 
-Most of the properties use the default key with one value. Examples:
+Most properties use the default key with one value. Examples:
 
 \begin{ned}
 @namespace(inet);
@@ -537,7 +536,7 @@ Example:
 \label{sec:ned-ref:property-placement}
 
 Properties may be added to NED files, component types, parameters,
-gates, submodules and connections. For the exact syntax, see
+gates, submodules, and connections. For the exact syntax, see
 Appendix \ref{cha:ned-language-grammar}.
 
 When a component type extends another component type(s), properties
@@ -561,15 +560,15 @@ of component types. In addition, parameters can also be assigned in the
 \fkeyword{parameters} sections of submodule bodies and connection bodies,
 but those places do not allow adding new parameters.
 
-The \fkeyword{parameters} keyword is optional, and can be omitted
-without change in the meaning.
+The \fkeyword{parameters} keyword is optional and can be omitted
+without changing the meaning.
 
 The \fkeyword{parameters} section may also hold pattern assignments
 (\ref{sec:ned-ref:pattern-assignments}) and properties
 (\ref{sec:ned-ref:properties}).
 
-A parameter is identified by a name, and has a data type. A parameter
-may have value or default value, and may also have properties
+A parameter is identified by a name and has a data type. A parameter
+may have a value or default value and may also have properties
 (see \ref{sec:ned-ref:properties}).
 
 Accepted parameter data types are \fkeyword{double}, \fkeyword{int},
@@ -605,10 +604,10 @@ time the parameter value is accessed. Non-\fkeyword{volatile} parameters
 are evaluated only once.
 
 \begin{note}
-    The \fkeyword{const} keyword is reserved for future use within expressions
-    to define constant subexpressions, i.e. to denote a part within
-    an expression that should only be evaluated once. Constant subexpressions
-    are not supported yet.
+The \fkeyword{const} keyword is reserved for future use within expressions
+to define constant subexpressions, i.e. to denote a part within
+an expression that should only be evaluated once. Constant subexpressions
+are not currently supported.
 \end{note}
 
 The following properties are recognized for parameters: \fprop{@unit},
@@ -1668,27 +1667,27 @@ runtime.
 \section{Expressions}
 \label{sec:ned-ref:expressions}
 
-NED language expressions\index{ned!expressions} have a C-like syntax, with
-some variations on operator names (see \ttt{\textasciicircum}, \ttt{\#}, \ttt{\#\#}).
+NED language expressions\index{ned!expressions} have a C-like syntax, with some
+variations on operator names (see \ttt{\textasciicircum}, \ttt{\#}, \ttt{\#\#}).
 Expressions may refer to module parameters, loop variables (inside connection
 \fkeyword{for} loops), gate vector and module vector sizes, and other attributes
-of the model. Expressions can use built-in and user-defined functions as well.
-There is a JSON-like notation for defining arrays and (dictionary-like) objects.
+of the model. Expressions can also use built-in and user-defined functions.
+There is a JSON-like notation for defining arrays and objects (dictionary-like).
 
 \begin{note}
-New NED functions can be defined in C++; see section \ref{sec:sim-lib:defining-ned-functions}.
+New NED functions can be defined in C++; refer to section \ref{sec:sim-lib:defining-ned-functions}.
 \end{note}
 
 \subsection{Constants}
 \label{sec:ned-ref:constants}
 
-See section \ref{sec:ned-ref:literals}.
+Refer to section \ref{sec:ned-ref:literals}.
 
 \subsection{Array and Object Values}
 \label{sec:ned-ref:arrays-and-objects}
 
-A bracketed list of zero or more comma-separated expressions denotes an \textit{array} value.
-Example: \ttt{[9.81,false,"Hello"]}.
+A bracketed list of zero or more comma-separated expressions denotes an
+\textit{array} value. For example: \ttt{[9.81, false, "Hello"]}.
 
 A list of zero or more comma-separated key-value pairs enclosed in a pair of curly braces
 denotes an \textit{object} value. A key and a value are separated by a colon. A key may be
@@ -1696,7 +1695,7 @@ a name or a string literal. A value may be an arbitrary expression, including a
 list or an object. The open brace may be preceded by an (optionally namespace-qualified)
 \textit{class name}.
 Example 1: \ttt{\{name:"John", age: 31\}}.
-Example 2: \ttt{Filter \{dest:"10.0.0.1", port:1200\}}.
+Example 2 (includes class name): \ttt{Filter \{dest:"10.0.0.1", port:1200\}}.
 
 \textit{Array} and \textit{object} values may be assigned to parameters of type \fkeyword{object}.
 Note that \fkeyword{null} / \fkeyword{nullptr} are also of type \textit{object}.
@@ -1759,16 +1758,20 @@ The spaceship operator is defined as follows. The result of \ttt{a <=> b} is neg
 if \ttt{a<b}, zero if \ttt{a==b}, and positive if \ttt{a>b}. If either \ttt{a} or \ttt{b} is
 \ttt{nan} (not-a-number), the result is \ttt{nan} as well.
 
-The string match operator works the following way. \ttt{x =\ensuremath{\sim}
-pattern} returns \ttt{true} if the string \ttt{x} matches the string
-\ttt{pattern}, and \ttt{false} otherwise. Pattern syntax and rules: case
-sensitive, full-string match, where an asterisk \ttt{*} matches zero or more of
-any character except dot; a double asterisk \ttt{**} matches zero or more
-characters (including dot); a pair of curly braces containing a numeric range
-matches an embedded whole number in that range; a pair of square brackets
-containing a numeric range matches a number in that range enclosed in square
-brackets. A numeric range has the syntax of \textit{<start>..<end>}, where both
-\textit{<start>} and \textit{<end>} are integers, and are optional.
+The string match operator works as follows. \ttt{x =\ensuremath{\sim} pattern}
+returns \ttt{true} if the string \ttt{x} matches the string \ttt{pattern}, and
+\ttt{false} otherwise. The operator performs case-sensitive full-string match.
+The pattern has the following syntax:
+
+\begin{itemize}
+  \item Asterisk \ttt{*} matches zero or more of any character except dot
+  \item Double asterisk \ttt{**} matches zero or more characters (including dot)
+  \item Curly braces containing a numeric range match an embedded whole number in that range
+  \item Square brackets containing a numeric range match a number in that range
+    enclosed in square brackets
+  \item A numeric range has the syntax of \textit{<start>..<end>}, where both
+    \textit{<start>} and \textit{<end>} are integers (optional)
+\end{itemize}
 
 The interpretation of other operators is similar to that in C/C++.
 
@@ -1776,23 +1779,25 @@ The interpretation of other operators is similar to that in C/C++.
 \subsubsection{Conversions}
 \label{sec:ned-ref:conversions}
 
-Values may have the same types as NED parameters: boolean, integer, double, string, XML element, and object.
-An integer or double value may have an associated measurement unit (\ttt{s}, \ttt{mW}, etc.)
+Values may have the same types as NED parameters: boolean, integer, double,
+string, XML element, and object. An integer or double value may have an
+associated measurement unit (e.g., \ttt{s}, \ttt{mW}).
 
-Double-to-integer conversions require explicit cast using the \ttt{int()} function,
-there is no implicit conversion.
+Double-to-integer conversions require explicit casting using the \ttt{int()}
+function. There is no implicit conversion.
 
-Integer-to-double conversion is implicit. However, a runtime error will be raised
-if there is precision loss during the conversion, i.e. the integer is so large
-that it cannot be precisely represented in a double. That error can be suppressed
-by using an explicit cast (\ttt{double()}).
+Integer-to-double conversion is implicit. However, a runtime error will be
+raised if there is precision loss during the conversion, i.e., the integer is
+too large to be precisely represented in a double. To suppress this error, an
+explicit cast (\ttt{double()}) can be used.
 
-There is no implicit conversion between boolean and numeric types, so \ttt{0}
-is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym
-for \fkeyword{true}.
+There is no implicit conversion between boolean and numeric types. Thus, \ttt{0}
+is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym for
+\fkeyword{true}.
 
-There is also no conversion between string and numeric types, so e.g. \ttt{"foo"+5}
-is illegal. There are functions for converting a number to string and vice versa.
+There is also no conversion between string and numeric types. For example,
+\ttt{"foo"+5} is illegal. However, there are functions for converting a number
+to a string and vice versa.
 
 Bitwise operators expect integer arguments.
 
@@ -1804,101 +1809,95 @@ Integers are represented with 64-bit signed integers (\ttt{int64\_t} in C++).
 \subsubsection{Unit Handling}
 \label{sec:ned-ref:unit-handling}
 
-Operations involving numbers with units work in the following way:
+Operations involving numbers with units work as follows:
 
-Addition, subtraction, and numeric comparisons require their arguments to
-have the same unit or compatible units; in the latter case a unit conversion
-is performed before the operation. Incompatible units cause an error.
+Addition, subtraction, and numeric comparisons require their arguments to have
+the same unit or compatible units. If the units are compatible, a unit
+conversion is performed before the operation. Incompatible units cause an error.
 
-%%TODO example
-
-Modulo, power-of and the bitwise operations require their arguments to be
-dimensionless, otherwise the result would depend on the choice of the unit.
+Modulo, power-of, and the bitwise operations require their arguments to be
+dimensionless. Otherwise, the result would depend on the choice of the unit.
 
 \begin{note}
-If one needs a floating-point modulo operator that handles units as well,
-the \ttt{fmod()} function can be used.
+If a floating-point modulo operator that handles units is needed, the
+\ttt{fmod()} function can be used.
 \end{note}
 
 Multiplying two numbers with units is not supported.
 
-For division, dividing two numbers with units is only supported if the two
-units are convertible (i.e. the result will be dimensionless). Dividing
-a dimensionless number with a number with unit is not supported.
+For division, dividing two numbers with units is only supported if the two units
+are convertible (i.e., the result will be dimensionless). Dividing a
+dimensionless number with a number with a unit is not supported.
 
-Operations involving quantities with logarithmic units (dB, dBW, etc.)
-are not supported, except for comparisons. (The reason is that such
-operations would be easy to misinterpret. For example, it is not obvious
-whether \ttt{10dB+10dB} (3.16+3.16) should evaluate to 20dB (=10.0)
-or to 16.02dB (=2*3.16=6.32), considering that such quantities would
-often be hidden behind parameter names where the unit is not obvious.)
+Operations involving quantities with logarithmic units (e.g., dB, dBW) are not
+supported, except for comparisons. The reason is that such operations would be
+easy to misinterpret. For example, it is not obvious whether \ttt{10dB+10dB}
+(3.16+3.16) should evaluate to 20dB (=10.0) or to 16.02dB (=2*3.16=6.32),
+considering that such quantities would often be hidden behind parameter names
+where the unit is not obvious.
 
 \subsection{Referencing Parameters and Loop Variables}
 \label{sec:ned-ref:referencing-parameters-and-loop-variables}
 
 Identifiers in expressions occurring \textit{anywhere} in component definitions
 are interpreted as referring to parameters of the given component. For example,
-identifiers inside submodule bodies refer to the parameters of the \textit{compound}
-module.
+identifiers inside submodule bodies refer to the parameters of the
+\textit{compound} module.
 
-Expressions may also refer to parameters of submodules defined earlier
-in the NED file, using the \ttt{submoduleName.paramName} or the
-\ttt{submoduleName[index].paramName} syntax. To refer to parameters
-of the local module/channel inside a submodule or channel body, use the
-\fkeyword{this} qualifier: \ttt{this.destAddress}. To make a reference
-to a parameter of the compound module from within a submodule or channel
-body explicit, use the \fkeyword{parent} qualifier: \ttt{parent.destAddress}.
-\footnote{The \fkeyword{parent} qualifier is available from {\opp} 5.7.}
+Expressions may also refer to parameters of submodules defined earlier in the
+NED file using the \ttt{submoduleName.paramName} or the
+\ttt{submoduleName[index].paramName} syntax. To refer to parameters of the local
+module/channel inside a submodule or channel body, use the \fkeyword{this}
+qualifier: \ttt{this.destAddress}. To make a reference to a parameter of the
+compound module from within a submodule or channel body explicit, use the
+\fkeyword{parent} qualifier: \ttt{parent.destAddress}.\footnote{The
+\fkeyword{parent} qualifier is available from {\opp} 5.7.}
 
 Exception: if an identifier occurs in a connection \fkeyword{for} loop and names
-a previously defined loop variable, then it is understood as referring to
-the loop variable.
-
+a previously defined loop variable, it is understood as referring to the loop
+variable.
 
 \subsection{The \fkeyword{typename} Operator}
 \label{sec:ned-ref:typename-operator}
 
-The \fkeyword{typename} operator returns the NED type name as a string.
-If it occurs inside a component definition but outside a submodule or channel
-block, it returns the type name of the component being defined. If it occurs
-inside a submodule or channel block, it returns the type name of that submodule
-or channel.
+The \fkeyword{typename} operator returns the NED type name as a string. If it
+occurs inside a component definition but outside a submodule or channel block,
+it returns the type name of the component being defined. If it occurs inside a
+submodule or channel block, it returns the type name of that submodule or
+channel.
 
-The \fkeyword{typename} may also occur in the \fkeyword{if} condition of a
-(scalar) submodule or connection. In such cases, it evaluates to the \textit{would-be}
-type name of the submodule or condition. This allows for conditional
-instantiation of parametric-type submodules, controlled from a
-\fkeyword{typename} assignment. (For example, by using the \ttt{if typename!=""}
-condition, one allows the submodule to be omitted by configuring \ttt{typename=""}
-for it.
+The \fkeyword{typename} operator can also occur in the \fkeyword{if} condition
+of a scalar submodule or connection. In such cases, it evaluates to the
+\textit{would-be} type name of the submodule or condition. This allows for
+conditional instantiation of parametric-type submodules, controlled from a
+\fkeyword{typename} assignment. (For example, by using the \ttt{if typename!=
+""} condition, one allows the submodule to be omitted by configuring
+\ttt{typename=""} for it.)
 
-\fkeyword{typename} is not allowed in a submodule vector's \fkeyword{if} condition.
-The reason is that the condition applies to the vector as a whole, while type
-is per-element.
-
+The \fkeyword{typename} operator is not allowed in a submodule vector's
+\fkeyword{if} condition. The reason is that the condition applies to the vector
+as a whole while the type is per-element.
 
 \subsection{The \fkeyword{index} Operator}
 \label{sec:ned-ref:index-operator}
 
-The \fkeyword{index} operator is only allowed in a vector submodule's body,
-and yields the index of the submodule instance.
-
+The \fkeyword{index} operator is only allowed in a vector submodule's body and
+yields the index of the submodule instance.
 
 \subsection{The \fkeyword{exists()} Operator}
 \label{sec:ned-ref:exists-operator}
 
-The \fkeyword{exists()} operator takes one identifier as argument, and it
-is only accepted in compound module definitions. The identifier must name
-a previously defined submodule, which will typically be a conditional submodule.
-The operator returns \fkeyword{true} if given submodule exists (has been created),
-and \fkeyword{false} otherwise.
-
+The \fkeyword{exists()} operator takes one identifier as an argument and is only
+accepted in compound module definitions. The identifier must name a previously
+defined submodule, which will typically be a conditional submodule. The operator
+returns \fkeyword{true} if the given submodule exists (has been created), and
+\fkeyword{false} otherwise.
 
 \subsection{The \fkeyword{sizeof()} Operator}
 \label{sec:ned-ref:sizeof-operator}
 
-The \fkeyword{sizeof()} operator expects one argument, and it is only accepted
-in compound module definitions.
+The \fkeyword{sizeof()} operator expects one argument and is only accepted in
+compound module definitions.
 
 The \ttt{sizeof(identifier)} syntax occurring \textit{anywhere} in a compound
 module yields the size of the named submodule or gate vector of the
@@ -1917,13 +1916,12 @@ NED file, use the \ttt{sizeof(submoduleName.gateVectorName)} or
 
 The \fkeyword{expr()} operator allows a mathematical formula or other expression
 to be passed to a component as an object. \fkeyword{expr()} expects an
-expression as argument, and returns an object which encapsulates the expression
+expression as an argument and returns an object that encapsulates the expression
 in a parsed form. In the intended use case, the returned \textit{expression
-object} is assigned to a module parameter, and is later utilized by user code (a
+object} is assigned to a module parameter and is later utilized by user code (a
 component implementation) by binding its free variables and evaluating it.
-Identifiers in the expression are \textit{not} interpreted as parameter references
-as in NED, but as free variables.
-
+Identifiers in the expression are not interpreted as parameter references as in
+NED but as free variables.
 
 \subsection{Functions}
 \label{sec:ned-ref:functions}
@@ -1945,26 +1943,25 @@ that contains an XPath-like expression.
 
 %% TODO fname mihez kepest relative
 
-The XPath expression is used to select an element within the document.
-If the expression matches several elements, the first element
-(in preorder depth-first traversal) will be selected. (This is
-unlike XPath, which selects all matching nodes.)
+The XPath expression is used to select an element within the document. If the
+expression matches several elements, the first element (in preorder depth-first
+traversal) will be selected (unlike XPath, which selects all matching nodes).
 
-The expression syntax is the following:
+The expression syntax is as follows:
 \begin{itemize}
   \item An expression consists of \textit{path components} (or "steps")
-        separated by "\ttt{/}" or "\ttt{//}".
-  \item A path component can be an element tag name, "\ttt{*}", "\ttt{.}"
-        or "\ttt{..}".
-  \item "\ttt{/}" means child element (just as in \ttt{/usr/bin/gcc});
-        "\ttt{//}" means an element any number of levels under the current element.
-  \item "\ttt{.}", "\ttt{..}" and "\ttt{*}" mean the current element,
-        the parent element, and an element with any tag name, respectively.
-  \item Element tag names and "\ttt{*}" can have an optional predicate
-        in the form "\ttt{[position]}" or "\ttt{[@attribute='value']}".
-        Positions start from zero.
+    separated by "\ttt{/}" or "\ttt{//}".
+  \item A path component can be an element tag name, "\ttt{*}", "\ttt{.}", or
+    "\ttt{..}".
+  \item "\ttt{/}" means child element (just like in \ttt{/usr/bin/gcc}), while
+    "\ttt{//}" means an element at any level under the current element.
+  \item "\ttt{.}", "\ttt{..}", and "\ttt{*}" mean the current element, the
+    parent element, and an element with any tag name, respectively.
+  \item Element tag names and "\ttt{*}" can have an optional predicate in the
+    form "\ttt{[position]}" or "\ttt{[@attribute='value']}". Positions start
+    from zero.
   \item Predicates of the form "\ttt{[@attribute=\textit{\$param}]}" are also
-        accepted, where \ttt{\textit{\$param}} can be one of:
+    accepted, where \ttt{\textit{\$param}} can be one of the following items:
         \ttt{\$MODULE\_\-FULLPATH},
         \ttt{\$MODULE\_\-FULLNAME},
         \ttt{\$MODULE\_\-NAME},
@@ -1986,7 +1983,7 @@ The expression syntax is the following:
 \label{sec:ned-ref:xml-function}
 
 The \fkeyword{xml()} NED function can be used to parse a string as an
-XML document, and assign the result to an \fkeyword{xml} parameter.
+XML document and assign the result to an \fkeyword{xml} parameter.
 
 \fkeyword{xml()} accepts the string to be parsed as well as an optional
 second string argument that contains an XPath-like expression.
@@ -1998,10 +1995,10 @@ The XPath expression is used in the same manner as with the
 \subsection{Units of Measurement}
 \label{sec:ned-ref:units}
 
-The following measurements units are recognized in constants. Other units can
-be used as well, but there are no conversions available for them (i.e.
+The following measurement units are recognized in constants. Other units can be
+used as well, but there are no conversions available for them (i.e.,
 \ttt{parsec} and \ttt{kiloparsec} will be treated as two completely unrelated
-units.)
+units).
 
 \begin{longtable}{|c|c|r|}
   \hline

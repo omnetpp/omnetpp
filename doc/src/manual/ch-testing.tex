@@ -15,73 +15,69 @@ accurate and credible model.
 
 \begin{itemize}
 \item \textbf{Verification} of a model is the process of confirming that it is
-    correctly implemented with respect to the conceptual model, that is, it
-    matches specifications and assumptions deemed acceptable for the given
-    purpose of application. During verification, the model is tested to find
-    and fix errors in the implementation of the model.
-\item \textbf{Validation} checks the accuracy of the model's representation of
-    the real system. Model validation is defined to mean ``substantiation that
-    a computerized model within its domain of applicability possesses a
-    satisfactory range of accuracy consistent with the intended application of
-    the model''. A model should be built for a specific purpose or set of
-    objectives and its validity determined for that purpose.
+    implemented correctly according to the conceptual model. This means that it
+    matches the specifications and assumptions deemed acceptable for the intended
+    purpose of application. During verification, the model is tested to identify and
+    fix errors in its implementation.
+\item \textbf{Validation} checks the accuracy of the model in representing the
+    real system. Model validation is defined as the ``substantiation that a
+    computerized model within its domain of applicability possesses a satisfactory
+    range of accuracy consistent with the intended application of the model''. A
+    model should be constructed for a specific purpose or set of objectives, and its
+    validity determined for that purpose.
 \end{itemize}
 
 Of the two, verification is essentially a software engineering issue, so it
 can be assisted with tools used for software quality assurance, for example
-testing tools. Validation is not a software engineering issue.
+testing tools. Validation, on the other hand, is not a software engineering issue.
 
 \subsection{Unit Testing, Regression Testing}
 \label{sec:testing:unit-testing-regression-testing}
 
-As mentioned above, software testing techniques can be of significant help
-during model verification. Testing can also help to ensure that
-a simulation model that once passed validation and verification will also
-remain correct for an extended period.
+As mentioned earlier, software testing techniques can significantly aid in model
+verification. Testing can also help ensure that a simulation model, once
+validated and verified, remains correct for an extended period.
 
-Software testing is an art on its own, with several techniques and
-methodologies. Here we'll only mention two types that are important for us,
+Software testing is an independent discipline with various techniques and
+methodologies. Here, we will only mention two types that are relevant to us:
 regression testing and unit testing.
 
 \begin{itemize}
-\item \textbf{Regression testing} is a technique that seeks to uncover new
-    software bugs, or regressions, in existing areas of a system after changes
-    such as enhancements, patches or configuration changes, have been made to
-    them.
-\item \textbf{Unit testing} is a method by which individual units of
-    source code are tested to determine if they are fit for use. In an
-    object-oriented environment, this is usually done at the class level.
+  \item \textbf{Regression testing} is a technique that aims to uncover new
+    software bugs, or regressions, in existing areas of a system after changes such
+    as enhancements, patches, or configuration changes have been made to them.
+  \item \textbf{Unit testing} is a method in which individual units of source code
+    are tested to determine if they are suitable for use. In an object-oriented
+    environment, this is usually done at the class level.
 \end{itemize}
 
-The two may overlap; for example, unit tests are also useful for discovering
+The two may overlap; for example, unit tests are also useful for detecting
 regressions.
 
-One way of performing regression testing on an {\opp} simulation model is
-to record the log produced during simulation, and compare it to a
-pre-recorded log. The drawback is that code refactoring may nontrivially
-change the log as well, making it impossible to compare to the pre-recorded
-one. Alternatively, one may just compare the result files or only certain
-simulation results and be free of the refactoring effects, but then certain
-regressions may escape the testing. This type of tradeoff seems to be
-typical for regression testing.
+One way to perform regression testing on an {\opp} simulation model is to record
+the log produced during simulation and compare it to a pre-recorded log.
+However, code refactoring may change the log in nontrivial ways, making it
+impossible to compare it to the pre-recorded one. Alternatively, one can compare
+only the result files or certain simulation results, avoiding the effects of
+refactoring, but some regressions may go undetected. Such tradeoffs are typical
+in regression testing.
 
-Unit testing of simulation models may be done on class level or module
-level. There are many open-source unit testing frameworks for C++, for
-example CppUnit, Boost Test, Google Test, UnitTest++, just to name a few.
-They are well suited for class-level testing. However, they are usually
-cumbersome to apply to testing modules due to the peculiarities of the
-domain (network simulation) and {\opp}.
+Unit testing of simulation models can be done at the class or module level.
+There are many open-source unit testing frameworks for C++, such as CppUnit,
+Boost Test, Google Test, and UnitTest++, to name a few. They are well-suited for
+class-level testing. However, applying them to module testing can be cumbersome
+due to the peculiarities of the domain (network simulation) and {\opp}.
 
 A test in an \textit{xUnit}-type testing framework (a collective name for
-CppUnit-style frameworks) operates with various assertions to test
-function return values and object states. This approach is difficult to
-apply to the testing of {\opp} modules that often operate in a complex
-environment (cannot be easily instantiated and operated in isolation),
-react to various events (messages, packets, signals, etc.), and have
-complex dynamic behavior and substantial internal state.
+CppUnit-style frameworks) operates with various assertions to test function
+return values and object states. This approach is challenging to apply in the
+testing of {\opp} modules, which often operate in a complex environment (cannot
+be easily instantiated and operated in isolation), respond to various events
+(messages, packets, signals, etc.), and have complex dynamic behavior and
+substantial internal state.
 
-Later sections will introduce \fprog{opp\_test}, a tool {\opp} provides
-for assisting various testing task; and summarize various testing methods
+Subsequent sections will introduce \fprog{opp\_test}, a tool provided by {\opp}
+to assist with various testing tasks, and summarize various testing methods
 useful for testing simulation models.
 
 
@@ -91,26 +87,26 @@ useful for testing simulation models.
 \subsection{Introduction}
 \label{sec:testing:opptest:introduction}
 
-This section documents the \fprog{opp\_test}, a versatile tool that is
+This section documents \fprog{opp\_test}, a versatile tool that is
 helpful for various testing scenarios. \fprog{opp\_test} can be used for
 various types of tests, including unit tests and regression tests. It was
 originally written for testing the {\opp} simulation kernel, but it is
 equally suited for testing functions, classes, modules, and whole
 simulations.
 
-\fprog{opp\_test} is built around a simple concept: it lets one define
-simulations in a concise way, runs them, and checks that the output (result
+\fprog{opp\_test} is built around a simple concept: it allows the user to define
+simulations in a concise way, run them, and check that the output (result
 files, log, etc.) matches a predefined pattern or patterns. In many cases,
 this approach works better than inserting various assertions into the code
 (which is still also an option).
 
-Each test is a single file, with the \ttt{.test} file extension. All NED
-code, C++ code, ini files and other data necessary to run the test case as
-well as the PASS criteria are packed together in the test file. Such
-self-contained tests are easier to handle, and also encourage authors to
+Each test is a single file with the \ttt{.test} file extension. All NED
+code, C++ code, ini files, and other data necessary to run the test case, as
+well as the PASS criteria, are packed together in the test file. Such
+self-contained tests are easier to handle and also encourage authors to
 write tests that are compact and to the point.
 
-Let us see a small test file, \ttt{cMessage\_properties\_1.test}:
+Let's see a small test file, \ttt{cMessage\_properties\_1.test}:
 
 \begin{filelisting}
 %description:
@@ -140,7 +136,7 @@ itself relies on the \fprog{opp\_test} tool.
 \begin{note}
 The control script is not part of {\opp} because it is somewhat specific to
 the simulation model or framework being tested, but it is usually trivial
-to write. A later section will explain how write the control script.
+to write. A later section will explain how to write the control script.
 \end{note}
 
 The output will be similar to this one:
@@ -159,7 +155,7 @@ PASS: 1   FAIL: 0   UNRESOLVED: 0
 Results can be found in work/
 \end{filelisting}
 
-This was a passing test. What would constitute a fail?
+This was a passing test. What would constitute a failure?
 
 \begin{itemize}
 \item crash
@@ -167,7 +163,7 @@ This was a passing test. What would constitute a fail?
 \item nonzero exit code (a simulation runtime error is also detected by nonzero exit code)
 \item the output doesn't match the expectation (there are several possibilities
    for expressing what is expected: multiple match criteria, literal string vs regex,
-   positive vs negative match, matching against the standard output, standard error
+   positive vs negative match, matching against the standard output, standard error,
    or any file, etc.)
 \end{itemize}
 
@@ -175,7 +171,7 @@ One normally wants to run several tests together. The \ttt{runtest} script accep
 several \ttt{.test} files on the command line, and when started without
 arguments, it defaults to \ttt{*.test}, all test files in the current
 directory. At the end of the run, the tool prints summary statistics
-(number of tests passed, failed, and being unresolved).
+(number of tests passed, failed, and unresolved).
 
 An example run from \ttt{omnetpp/test/core} (some lines were removed from
 the output, and one test was changed to show a failure):
@@ -222,7 +218,7 @@ FAILED tests: cSimpleModule_recordScalar_2.test
 Results can be found in work/
 \end{filelisting}
 
-Note that code from all tests were linked to form a single executable, which saves
+Note that code from all tests was linked to form a single executable, which saves
 time and disk space compared to per-test executables or libraries.
 
 A test file like the one above is useful for unit testing of classes or functions.
@@ -240,7 +236,7 @@ cases with the \fprog{opp\_test} tool.
 \subsection{Terminology}
 \label{sec:testing:opptest:terminology}
 
-The next sections will use the following language:
+The next sections will use the following terminology:
 
 \begin{itemize}
 \item \textit{test file}: A file with the \ttt{.test} extension that \fprog{opp\_test} understands.
@@ -251,9 +247,9 @@ The next sections will use the following language:
 \item \textit{test program}: The simulation program whose output is checked by the test.
   It is usually \ttt{work/work} (\ttt{work/work.exe} on Windows). However, it is
   also possible to let the control script build a dynamic library from the test code, and
-  then use e.g. \fprog{opp\_run} as test program.
+  then use e.g. \fprog{opp\_run} as the test program.
 \item \textit{test directory}: The directory where a \ttt{.test} file
-  is extracted; usually \ttt{work/<testname>/}. It is also set as working
+  is extracted; usually \ttt{work/<testname>/}. It is also set as the working
   directory for running the test program.
 \end{itemize}
 
@@ -261,7 +257,7 @@ The next sections will use the following language:
 \subsection{Test File Syntax}
 \label{sec:testing:opptest:test-file-syntax}
 
-Test files are composed of \%-directives of the syntax:
+Test files are composed of \%-directives of the following syntax:
 
 \begin{filelisting}
 %<directive>: <value>
@@ -283,10 +279,9 @@ Syntax:
 \end{filelisting}
 
 \ftest{\%description} is customarily written at the top of the \ttt{.test}
-file, and lets one provide a multi-line comment about the purpose of the
-test. It is recommended to invest time into well-written descriptions,
-because they make determining the original purpose of a test that has
-become broken significantly easier.
+file and allows one to provide a multi-line comment about the purpose of the
+test. It is recommended to invest time in well-written descriptions because they make
+determining the original purpose of a test that has become broken significantly easier.
 
 \subsection{Test Code Generation}
 \label{sec:testing:opptest:test-code-generation}
@@ -306,9 +301,9 @@ Syntax:
 
 \ftest{\%activity} lets one write test code without much boilerplate. The
 directive generates a simple module that contains a single \ttt{activity()}
-method with the given code as method body.
+method with the given code as the method body.
 
-A NED file containing the simple module's (barebones) declaration, and an
+A NED file containing the simple module's (bare-bones) declaration, and an
 ini file to set up the module as a network are also generated.
 
 
@@ -325,7 +320,7 @@ Syntax:
 \ftest{\%module} lets one define a module class and run it as the only module
 in the simulation.
 
-A NED file containing the simple module's (barebones) declaration, and an
+A NED file containing the simple module's (bare-bones) declaration, and an
 ini file to set up the module as a network are also generated.
 
 
@@ -350,7 +345,7 @@ generated C++ code.
 
 Both directives insert the code block above the module C++ declaration. The only
 difference is in their relation to the C++ namespace: the body of \ftest{\%includes}
-is inserted above (i.e. outside) the namespace, and the body of \ftest{\%globals}
+is inserted above (i.e., outside) the namespace, and the body of \ftest{\%globals}
 is inserted inside the namespace.
 
 
@@ -413,8 +408,8 @@ The default ini file is always generated.
 \label{sec:testing:opptest:testname-macro}
 
 In test files, the string \ttt{@TESTNAME@} will be replaced with the test
-case name. Since it is substituted everywhere (C++, NED, msg and ini
-files), one can also write things like \ttt{@TESTNAME@\_function()}, or
+case name. Since it is substituted everywhere (C++, NED, msg, and ini
+files), one can also write things like \ttt{@TESTNAME@\_function()} or
 \ttt{printf("this is @TESTNAME@{\textbackslash}n")}.
 
 \subsubsection{Avoiding C++ Name Clashes}
@@ -422,7 +417,7 @@ files), one can also write things like \ttt{@TESTNAME@\_function()}, or
 
 Since all sources are compiled into a single test executable, actions have
 to be taken to prevent accidental name clashes between C++ symbols in
-different test cases. A good way to ensure this is place all code into
+different test cases. A good way to ensure this is to place all code into
 namespaces named after the test cases.
 
 \begin{filelisting}
@@ -432,8 +427,8 @@ namespace @TESTNAME@ {
 \end{filelisting}
 
 This is done automatically for the \ftest{\%activity}, \ftest{\%module},
-\ftest{\%global} blocks, but for other files (e.g. source files generated
-via \ftest{\%file}, that needs to be done manually.
+and \ftest{\%global} blocks, but for other files (e.g., source files generated
+via \ftest{\%file}), that needs to be done manually.
 
 
 \subsection{PASS Criteria}
@@ -466,12 +461,12 @@ Syntax:
 
 These directives let one check for the presence (or absence) of certain text in
 the output. One can check a file, or the standard output or standard error of
-the test program; for the latter two, \ttt{stdout} and \ttt{stderr} needs to be
-specified as file name, respectively. If the file is not found, the test will be marked
-as \textit{error}. There can be several \ftest{\%contains}-style directives
+the test program; for the latter two, \ttt{stdout} and \ttt{stderr} need to be
+specified as file names, respectively. If the file is not found, the test will be marked
+as an \textit{error}. There can be several \ftest{\%contains}-style directives
 in the test file.
 
-The text or regular expression can be multi-line. Before match is attempted,
+The text or regular expression can be multi-line. Before matching is attempted,
 trailing spaces are removed from all lines in both the pattern and the
 file contents; leading and trailing blank lines in the patterns are removed;
 and any substitutions are performed (see \ftest{\%subst}). Perl-style regular
@@ -491,18 +486,18 @@ Syntax:
 \end{filelisting}
 
 It is possible to apply text substitutions to the output before it is
-matched against expected output. This is done with \ftest{\%subst}
+matched against expected output. This is done with the \ftest{\%subst}
 directive; there can be more than one \ftest{\%subst} in a test file. It
 takes a Perl-style regular expression to search for, a replacement text,
 and flags, in the \textit{/search/replace/flags} syntax. Flags can be empty
 or a combination of the letters \ttt{i}, \ttt{m}, and \ttt{s}, for
-case-insensitive, multi-line or single-string match (see the Perl regex
+case-insensitive, multi-line, or single-string match (see the Perl regex
 documentation.)
 
 \ftest{\%subst} was primarily invented to deal with differences in printf
 output across platforms and compilers: different compilers print infinite
 and not-a-number in different ways: \ttt{1.\#INF}, \ttt{inf}, \ttt{Inf},
-\ttt{-1.\#IND}, \ttt{nan}, \ttt{NaN} etc. With \ftest{\%subst}, they can be
+\ttt{-1.\#IND}, \ttt{nan}, \ttt{NaN}, etc. With \ftest{\%subst}, they can be
 brought to a common form:
 
 \begin{filelisting}
@@ -527,13 +522,13 @@ Syntax:
 
 \ftest{\%exitcode} and \ftest{\%ignore-exitcode} let one test the exit code of the
 test program. The former checks that the exit code is one of the numbers specified in
-the directive; the other makes the test framework ignore the exit code.
+the directive; the latter makes the test framework ignore the exit code.
 
 {\opp} simulations exit with zero if the simulation terminated
 without an error, and some >0 code if a runtime error occurred. Normally,
 a nonzero exit code makes the test fail. However, if the expected outcome
-is a runtime error (e.g. for some negative test cases), one can use either
-\ftest{\%exitcode} to express that, or specify \ftest{\%ignore-exitcode}
+is a runtime error (e.g., for some negative test cases), one can use either
+\ftest{\%exitcode} to express that or specify \ftest{\%ignore-exitcode}
 and test for the presence of the correct error message in the output.
 
 % FIXME a %postprocess-command nem igy muxik!
@@ -599,16 +594,16 @@ $ <custom-testprog> <test-extraargs> <global-extraargs>
 \end{filelisting}
 
 That is, \fopt{-u Cmdenv} and \ttt{<inifilenames>} are removed; this allows one
-to invoke programs that do not require or understand them, and puts the test author
+to invoke programs that do not require or understand them and puts the test author
 in complete command of the arguments list.
 
 Note that \ftest{\%extraargs} and \ftest{\%testprog} have an equivalent
 command-line option in \fprog{opp\_test}. (In the text above,
 \ttt{<global-extraargs>} stands for extra args specified to
 \fprog{opp\_test}.)  \ftest{\%env} doesn't need an option in
-\fprog{opp\_test}, because the test program inherits the environment
+\fprog{opp\_test} because the test program inherits the environment
 variables from \fprog{opp\_test}, so one can just set them in the control
-script, or in the shell one runs the tests from.
+script or in the shell one runs the tests from.
 
 
 \subsubsection{\%prerun-command, \%postrun-command}
@@ -625,14 +620,14 @@ Syntax:
 \end{filelisting}
 
 These directives let one run extra commands before/after running the test
-program (i.e. the simulation). There can be multiple pre- and post-run
+program (i.e., the simulation). There can be multiple pre- and post-run
 commands. The post-run command is useful when the test outcome cannot be determined
-by simple text matching, but requires statistical evaluation or other processing.
+by simple text matching but requires statistical evaluation or other processing.
 
 If the command returns a nonzero exit code, the test framework will assume that
-it is due to a technical problem (as opposed to test failure), and count the
-test as \textit{error}. To make the test fail, let the command write a
-file, and match the file's contents using \ftest{\%contains} \& co.
+it is due to a technical problem (as opposed to test failure) and count the
+test as an \textit{error}. To make the test fail, let the command write a
+file and match the file's contents using \ftest{\%contains} \& co.
 
 If the post-processing command is a short script, it is practical
 to add it into the \ttt{.test} file via the \ftest{\%file} directive,
@@ -653,8 +648,8 @@ Or:
 \end{filelisting}
 
 If the script is very large or shared among several tests, it is more practical
-to place it into a separate file. The test command can find the script e.g.
-by relative path, or by referring to an environment variable that contains
+to place it into a separate file. The test command can find the script e.g.,
+by a relative path or by referring to an environment variable that contains
 its location or full path.
 
 
@@ -681,18 +676,18 @@ Syntax:
 \subsection{Skipped}
 \label{sec:testing:opptest:skipped}
 
-A test case can be skipped if the current system configuration does not allow 
-its execution (e.g. certain optional features are not present). Skipping is done
+A test case can be skipped if the current system configuration does not allow
+its execution (e.g., certain optional features are not present). Skipping is done
 by printing \ttt{\#SKIPPED} or \ttt{\#SKIPPED:some-explanation} on the
 standard output, at the beginning of the line.
 
-\subsection{opp\_test Synopsys}
+\subsection{opp\_test Synopsis}
 \label{sec:testing:opptest:synopsys}
 
-Little has been said so far what \fprog{opp\_test} actually does, or how it
+Little has been said so far about what \fprog{opp\_test} actually does or how it
 is meant to be run. \fprog{opp\_test} has two modes: file generation and
 test running. When running a test suite, \fprog{opp\_test} is actually run
-twice, once in file generation mode, then in test running mode.
+twice, once in file generation mode and then in test running mode.
 
 File generation mode has the syntax \ttt{opp\_test gen \textit{<options>
 <testfiles>}}. For example:
@@ -724,7 +719,7 @@ command-line options.
 \end{note}
 
 The simulation needs to have been built from source before \ttt{opp\_test
-run} can be issued. Usually one would employ a command similar to
+run} can be issued. Usually, one would employ a command similar to
 
 \begin{filelisting}
 $ cd work; opp_makemake --deep; make
@@ -735,7 +730,7 @@ to achieve that.
 \subsection{Writing the Control Script}
 \label{sec:testing:opptest:writing-control-script}
 
-Usually one writes a control script to automate the two invocations of \fprog{opp\_test}
+Usually, one writes a control script to automate the two invocations of \fprog{opp\_test}
 and the build of the simulation model between them.
 
 A basic variant would look like this:
@@ -751,11 +746,11 @@ For any practical use, the test suite needs to refer to the codebase being
 tested. This means that the codebase must be added to the include path,
 must be linked with, and the NED files must be added to the NED path. The
 first two can be achieved by the appropriate parameterization of
-\fprog{opp\_makemake}; the last one can be done by setting and exporting
+\fprog{opp\_makemake}, and the last one can be done by setting and exporting
 the \ttt{NEDPATH} environment variable in the control script.
 
 For inspiration, check out \ttt{runtest} in the \ttt{omnetpp/test/core}
-directory, and a similar script used in the INET Framework.
+directory and a similar script used in the INET Framework.
 
 \bigskip
 \begin{center}
@@ -769,35 +764,35 @@ Further sections describe how one can implement various types of tests in
 \section{Smoke Tests}
 \label{sec:testing:smoke-tests}
 
-Smoke tests are a tool for very basic verification and regression testing.
-Basically, the simulation is run for a while, and it must not crash or stop
-with a runtime error. Naturally, smoke test provide very low confidence in
-the model, but in turn they are very easy to implement.
+Smoke tests are a tool for basic verification and regression testing.
+Essentially, the simulation is run for a period of time without crashing or
+experiencing any runtime errors. Naturally, smoke test provide very low confidence in
+the model, but in turn they are simple to implement.
 
-Automation is important. The INET Framework contains a script that runs all
-or selected simulations defined in a CSV file (with columns like the working
-directory and the command to run), and reports the results. The script can
-be easily adapted to other models or model frameworks.
+Automation is crucial. The INET Framework includes a script that can run all or
+selected simulations defined in a CSV file, which includes columns such as the
+working directory and the command to run. The script also generates a report of
+the results. It can easily be customized for other models or model frameworks.
 
 
 \section{Fingerprint Tests}
 \label{sec:testing:fingerprint-tests}
 
 Fingerprint tests are a low-cost but effective tool for regression testing
-of simulation models. A fingerprint is a hash computed from various properties
-of simulation events, messages and statistics. The hash value is continuously
+simulation models. A fingerprint is a hash computed from various properties
+of simulation events, messages, and statistics. The hash value is continuously
 updated as the simulation executes, and thus, the final fingerprint value is
 a characteristic of the simulation's trajectory. For regression testing, one
-needs to compare the computed fingerprints to that from a reference run --
+needs to compare the computed fingerprints to those from a reference run --
 if they differ, the simulation trajectory has changed. In general, fingerprint
-tests are very useful for ensuring that a change (some refactoring, a bugfix,
-or a new feature) didn't break the simulation.
+tests are very useful for ensuring that a change (such as refactoring, bugfix,
+or a new feature) hasn't broken the simulation.
 
 \subsection{Fingerprint Computation}
 \label{sec:testing:fingerprint-computation}
 
 Technically, providing a \fconfig{fingerprint} option in the config file or
-on the command line (\ttt{-\-fingerprint=...}) will turn on fingerprint
+on the command line (\ttt{-\-fingerprint=...}) will enable fingerprint
 computation in the {\opp} simulation kernel. When the simulation terminates,
 {\opp} compares the computed fingerprints with the provided ones, and
 if they differ, an error is generated.
@@ -807,7 +802,7 @@ if they differ, an error is generated.
 
 The fingerprint computation algorithm allows controlling what is included
 in the hash value. Changing the \textit{ingredients} allows one to make the
-fingerprint sensitive for certain changes while keeping it immune to
+fingerprint sensitive to certain changes while keeping it immune to
 others.
 
 The ingredients of a fingerprint are usually indicated after a \ttt{/} sign
@@ -820,7 +815,7 @@ fingerprint = 53de-64a7/tplx
 \end{inifile}
 
 means that a fingerprint needs to be computed with the simulation time, the
-module full path, received packet's bit length and the extra data included
+module's full path, received packet's bit length, the extra data included
 for each event, and the result should be \ttt{53de-64a7}.
 
 The full list of fingerprint ingredients:
@@ -853,8 +848,8 @@ The full list of fingerprint ingredients:
 
 Ingredients may also be specified with the
 \fconfig{fingerprint-ingredients} configuration option. However, that is
-rarely necessary, because the ingredients list included in the fingerprints
-take precedence, and are also more convenient to use.
+rarely necessary because the ingredients list included in the fingerprints
+takes precedence and is also more convenient to use.
 
 \subsubsection{Multiple Fingerprints, Alternative Values}
 \label{sec:testing:multiple-fingerprints-alternative-values}
@@ -862,7 +857,7 @@ take precedence, and are also more convenient to use.
 It is possible to specify more than one fingerprint, separated by
 \textit{commas}, each with different ingredients. This will cause {\opp} to
 compute multiple fingerprints, and all of them must match for the test to
-pass. An example:
+pass. For example:
 
 \begin{inifile}
 fingerprint = 53de-64a7/tplx, 9a3f-7ed2/szv
@@ -870,7 +865,7 @@ fingerprint = 53de-64a7/tplx, 9a3f-7ed2/szv
 
 Occasionally, the same simulation gives a different fingerprint when run on
 a different processor architecture or platform. This is due to subtle
-differences in floating point arithmetic across platforms.\footnote{There
+differences in floating-point arithmetic across platforms.\footnote{There
 are differences between the floating point operations of AMD and Intel
 CPUs. Running under a processor emulator like \fprog{valgrind} may also
 produce a different fingerprint. This is normal. Hint: see gcc options
@@ -898,7 +893,7 @@ in the simulation kernel.}
 It is also possible to filter which modules, statistics, etc. are included
 in the fingerprints. The \fconfig{fingerprint-events},
 \fconfig{fingerprint-modules}, and \fconfig{fingerprint-results} options
-filter by events, modules, and statistical results, respectively. These
+filter events, modules, and statistical results, respectively. These
 options take wildcard expressions that are matched against the
 corresponding object before including its property in the fingerprint.
 These filters are mainly useful to limit fingerprint computation to certain
@@ -909,7 +904,7 @@ parts of the simulation.
 
 \cclass{cFingerprintCalculator} is the class responsible for fingerprint computation.
 The current fingerprint computation object can be retrieved from
-\cclass{cSimulation}, using the \ffunc{getFingerprintCalculator()} member function.
+\cclass{cSimulation} using the \ffunc{getFingerprintCalculator()} member function.
 This method will return \ttt{nullptr} if fingerprint computation is turned
 off for the current simulation run.
 
@@ -935,15 +930,15 @@ fingerprint if the list of fingerprint ingredients contains \tbf{x}
 \subsection{Fingerprint Tests}
 \label{sec:testing:creating-fingerprint-tests}
 
-The INET Framework contains a script for automated fingerprint tests as
-well. The script runs all or selected simulations defined in a CSV file
+The INET Framework also contains a script for automated fingerprint tests.
+The script runs all or selected simulations defined in a CSV file
 (with columns like the working directory, the command to run, the
 simulation time limit, and the expected fingerprints), and reports the
 results. The script is extensively used during INET Framework development
-to detect regressions, and can be easily adapted to other models or model
+to detect regressions and can be easily adapted to other models or model
 frameworks.
 
-Exerpt from a CSV file that prescribes fingerprint tests to run:
+Excerpt from a CSV file that prescribes fingerprint tests to run:
 
 \begin{filelisting}
 examples/aodv/, ./run -f omnetpp.ini -c Static,   50s,  4c29-95ef/tplx
@@ -956,91 +951,88 @@ examples/dhcp/, ./run -f omnetpp.ini -c Wireless, 500s, faa5-4111/tplx
 \section{Unit Tests}
 \label{sec:testing:unit-tests}
 
-If a simulation models contains units of code (classes, functions) smaller
-than a module, they are candidates for unit testing. For a network simulation
-model, examples of such classes are network addresses, fragmentation reassembly
+If a simulation model contains units of code (classes, functions) smaller than a
+module, they are candidates for unit testing. For a network simulation model,
+examples of such classes are network addresses, fragmentation reassembly
 buffers, queues, various caches and tables, serializers and deserializers,
 checksum computation, etc.
 
 Unit tests can be implemented as \ttt{.test} files using the \fprog{opp\_test}
-tool (the \ftest{\%activity} directive is especially useful here), or
-with potentially any other C++ unit testing framework.
+tool (the \ftest{\%activity} directive is especially useful here), or with
+potentially any other C++ unit testing framework.
 
 When using \ttt{.test} files, the \textit{build} part of the control script
-needs to be set up so that it adds the tested library's source folder(s)
-to the include path, and also links the library to the test code.
+needs to be set up so that it adds the tested library's source folder(s) to the
+include path, and also links the library to the test code.
 
-% TODO explain more, with concrete example for the control script?
+% TODO explain more, with a concrete example for the control script?
 
 
 \section{Module Tests}
 \label{sec:testing:module-tests}
 
-{\opp} modules are not as easy to unit test as standalone classes, because
+{\opp} modules are not as easy to unit test as standalone classes because
 they typically assume a more complex environment, and, especially modules
 that implement network protocols, participate in more complex interactions
 than the latter.
 
-To test a module in isolation, one needs to place it into a simulation
-where the module's normal operation environment (i.e. other modules it
-normally communicates with) are replaced by mock objects. Mock objects are
-responsible for providing stimuli for the module under test, and (partly)
-for checking the response.
+To test a module in isolation, one needs to place it into a simulation where
+the module's normal operation environment (i.e., other modules it normally
+communicates with) is replaced by mock objects. Mock objects are responsible
+for providing stimuli for the module under test and (partly) for checking
+the response.
 
 Module tests may be implemented in \ttt{.test} files using the \fprog{opp\_test}
-tool. A \ttt{.test} file allows one to place the test description, the test setup
-and the expected output into a single, compact file, while large files or files shared
+tool. A \ttt{.test} file allows one to place the test description, test setup,
+and expected output into a single, compact file, while large files or files shared
 among several tests may be factored out and only referenced by \ttt{.test} files.
 
 
 \section{Statistical Tests}
 \label{sec:testing:statistical-tests}
 
-Statistical tests are those where the test outcome is decided on
-some statistical property or properties of the simulation results.
+Statistical tests are tests where the outcome is determined based on statistical
+properties of the simulation results.
 
-Statistical tests may be useful as validation as well as regression testing.
+Statistical tests can be used for validation as well as regression testing.
 
 \subsection{Validation Tests}
 \label{sec:testing:validation-tests}
 
 Validation tests aim to verify that simulation results correspond to some
-reference values, ideally to those obtained from the real system. In
-practice, reference values may come from physical measurements, theoretical
-values, or another simulator's results.
+reference values, ideally those obtained from the real system. In practice,
+reference values can come from physical measurements, theoretical values, or
+results from another simulator.
 
 \subsection{Statistical Regression Tests}
 \label{sec:testing:statistical-regression-tests}
 
-After a refactoring that changes the simulation trajectory (e.g. after
-eliminating or introducing extra events, or changes in RNG usage), there
-may be no other way to do regression testing than checking that the model
-produces \textit{statistically} the same results as before.
+After refactoring that changes the simulation trajectory (e.g. eliminating or
+introducing extra events, or changes in RNG usage), there may be no other way to
+perform regression testing than to check that the model produces
+\textit{statistically} the same results as before.
 
-For statististical regression tests, one needs to perform several
-simulation runs with the same configuration but different RNG seeds, and
-verify that the results are from the same distributions as before. One can
-use \textit{Student's t-test} (for mean) and the \textit{F-test} (for
-variance) to check that the ``before'' and the ``after'' sets of results
-are from the same distribution.
+For statistical regression tests, one needs to run multiple simulations with the
+same configuration but different RNG seeds, and verify that the results follow
+the same distributions as before. \textit{Student's t-test} (for mean) and the
+\textit{F-test} (for variance) can be used to check if the ``before'' and the ``after''
+result sets are from the same distribution.
 
 \subsection{Implementation}
 \label{sec:testing:statistical-tests-implementation}
 
-Statistical software like \textit{GNU R} is extremely useful for these
-tests.
+Statistical software like \textit{GNU R} is extremely useful for performing
+these tests.
 
-Statistical tests may also be implemented in \ttt{.test} files. To let the
-tool run several simulations within one test, one may use
-\ftest{\%extraargs} to pass the \fopt{-r <runs>} option to Cmdenv;
-alternatively, one may use \ftest{\%testprog} to have the test tool run
-\fprog{opp\_runall} instead of the normal simulation program. For doing the
-statistical computations, one may use \ftest{\%postrun-command} to run an R
-script. The R script may rely on the \ttt{omnetpp} R package for reading
-the result files.
+Statistical tests can also be implemented in \ttt{.test} files. To run several
+simulations within one test, use \ftest{\%extraargs} to pass the \fopt{-r
+<runs>} option to Cmdenv; alternatively, \ftest{\%testprog} can be used to have
+the test tool run \fprog{opp\_runall} instead of the normal simulation program.
+For performing statistical computations, use \ftest{\%postrun-command} to run a
+Python or R script. The Python script may rely on the Pandas, SciPy, and \ttt{omnetpp.scave}
+packages for reading and evaluating {\opp} result files.
 
-The INET Framework contains statistical tests where one can look for
-inspiration.
+The INET Framework contains statistical tests that can provide inspiration.
 
 
 %%% Local Variables:

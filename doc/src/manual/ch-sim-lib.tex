@@ -58,7 +58,7 @@ or its subclasses \cclass{cNamedObject} and \cclass{cOwnedObject}.
 \cclass{cObject} defines several virtual member functions that are either
 inherited or redefined by subclasses. Otherwise, \cclass{cObject} is a
 zero-overhead class as far as memory consumption goes: it purely defines an
-interface but has no data members. Thus, having \cclass{cObject} a base
+interface but has no data members. Thus, having \cclass{cObject} as a base
 class does not add anything to the size of a class if it already has at
 least one virtual member function.
 
@@ -71,7 +71,7 @@ least one virtual member function.
 
 The subclasses \cclass{cNamedObject} and \cclass{cOwnedObject} add data
 members to implement more functionality. The following sections discuss
-some of the practically important functonality defined by \cclass{cObject}.
+some of the practically important functionality defined by \cclass{cObject}.
 
 
 \subsubsection{Name and Full Name}
@@ -101,7 +101,7 @@ EV << gate->getFullName();  // prints "out[3]"
 
 \begin{note}
 When printing out the name of an object, prefer \ffunc{getFullName()} to
-\ffunc{getName()}, especially if the runtime type is not know. This will
+\ffunc{getName()}, especially if the runtime type is not known. This will
 ensure that the vector index will also be printed if the object has one.
 \end{note}
 
@@ -109,7 +109,7 @@ ensure that the vector index will also be printed if the object has one.
 empty string. Actual storage for a name string and a \ffunc{setName()}
 method is provided by the class \cclass{cNamedObject}, which is also an
 (indirect) base class for most library classes. Thus, one can assign names
-to nearly all user-created objects. It it also recommended to do so, because
+to nearly all user-created objects. It is also recommended to do so, because
 a name makes an object easier to identify in graphical runtimes like Qtenv.
 
 By convention, the object name is the first argument to the constructor
@@ -121,7 +121,7 @@ argument of the constructor. For example:
 cMessage *timeoutMsg = new cMessage("timeout");
 \end{cpp}
 
-To change the name of an object, use \cclass{setName()}:
+To change the name of an object, use \ffunc{setName()}:
 
 \begin{cpp}
 timeoutMsg->setName("timeout");
@@ -210,15 +210,15 @@ cMessage *copy = msg->dup();
 \end{cpp}
 
 \ffunc{dup()} delegates to the copy constructor. Classes also declare
-an assignment operator (\ffunc{operator=()}) which can be used to copy contents
+an assignment operator (\ffunc{operator=()}) which can be used to copy the contents
 of an object into another object of the same type. \ffunc{dup()}, the copy
-constructor and the assignment operator all perform deep coping: objects
+constructor and the assignment operator all perform deep copying: objects
 contained in the copied object will also be duplicated if necessary.
 
 \ffunc{operator=()} differs from the other two in that it does \textit{not}
 copy the object's name string, i.e. does not invoke \ffunc{setName()}.
 The rationale is that the name string is often used for identifying the particular
-object instance, as opposed to being considered as part of its contents.
+object instance, as opposed to being considered part of its contents.
 
 %% \subsubsection{Foreach}
 %% \label{sec:sim-lib:foreach}
@@ -229,7 +229,7 @@ object instance, as opposed to being considered as part of its contents.
 \label{sec:sim-lib:iterators}
 
 There are several container classes in the library (\cclass{cQueue},
-\cclass{cArray} etc.) For many of them, there is a corresponding
+\cclass{cArray}, etc.) For many of them, there is a corresponding
 iterator class that one can use to loop through the objects stored in
 the container.
 
@@ -249,10 +249,10 @@ for (cQueue::Iterator it(queue); !it.end(); ++it) {
 \label{sec:sim-lib:runtime-errors}
 
 When library objects detect an error condition, they throw a C++ exception.
-This exception is then caught by the simulation environment which pops up
+This exception is then caught by the simulation environment, which pops up
 an error dialog or displays the error message.
 
-At times it can be useful to be able stop the simulation at the place of
+At times it can be useful to be able to stop the simulation at the place of
 the error (just before the exception is thrown) and use a C++ debugger to
 look at the stack trace and examine variables. Enabling the
 \fconfig{debug-on-errors} or the \fconfig{debugger-attach-on-error}
@@ -263,7 +263,7 @@ configuration option lets you do that -- check it in section
 \section{Logging from Modules}
 \label{sec:sim-lib:logging-from-modules}
 
-In a simulation there are often thousands of modules which simultaneously carry
+In a simulation, there are often thousands of modules which simultaneously carry
 out non-trivial tasks. In order to understand a complex simulation, it is
 essential to know the inputs and outputs of algorithms, the information on
 which decisions are based, and the performed actions along with their parameters.
@@ -272,7 +272,7 @@ In general, logging facilitates understanding which module is doing what and why
 {\opp} makes logging easy and consistent among simulation models by providing
 its own C++ API and configuration options. The API provides efficient logging
 with several predefined log levels, global compile-time and runtime filters,
-per-component runtime filters, automatic context information, log prefixes and
+per-component runtime filters, automatic context information, log prefixes, and
 other useful features. In the following sections, we look at how to write log
 statements using the {\opp} logging API.
 
@@ -297,15 +297,13 @@ filtering. Log levels are mainly useful because log output can be filtered
 based on them.
 
 \begin{itemize}
-  \item \fmac{LOGLEVEL\_OFF} is not a real log level, it can't be used for actual
-    logging. It is only useful for configuration purposes, it completely disables
-    logging.
+  \item \fmac{LOGLEVEL\_OFF} completely disables logging.
   \item \fmac{LOGLEVEL\_FATAL} is the highest log level. It should be used for
     fatal (unrecoverable) errors that prevent the component from further
     operation. It doesn't mean that the simulation must stop immediately
     (because in such cases the code should throw a cRuntimeError), but rather
-    that the a component is unable to continue normal operation. For example, a
-    special purpose recording component may be unable to continue recording due
+    that a component is unable to continue normal operation. For example, a
+    special-purpose recording component may be unable to continue recording due
     to the disk being full.
   \item \fmac{LOGLEVEL\_ERROR} should be used for recoverable (non-fatal)
     errors that allow the component to continue normal operation. For example,
@@ -315,15 +313,15 @@ based on them.
     situations that may be important for users and rarely occur in the
     component. For example, a MAC layer protocol component could log detected
     bit errors using this level.
-  \item \fmac{LOGLEVEL\_INFO} should be used for high-level protocol specific
+  \item \fmac{LOGLEVEL\_INFO} should be used for high-level protocol-specific
     details that are most likely important for the users of the component. For
     example, a MAC layer protocol component could log successful packet
     receptions and successful packet transmissions using this level.
   \item \fmac{LOGLEVEL\_DETAIL} should be used for low-level protocol-specific
-    details that may be useful and understandable by the users of the component.
+    details that may be useful and understandable to the users of the component.
     These messages may help to track down various protocol-specific issues
-    without actually looking too deep into the code. For example, a MAC layer
-    protocol component could log state machine updates, acknowledge timeouts
+    without actually looking too deeply into the code. For example, a MAC layer
+    protocol component could log state machine updates, acknowledge timeouts,
     and selected back-off periods using this level.
   \item \fmac{LOGLEVEL\_DEBUG} should be used for high-level
     implementation-specific technical details that are most likely important
@@ -334,7 +332,7 @@ based on them.
   \item \fmac{LOGLEVEL\_TRACE} is the lowest log level. It should be used for
     low-level implementation-specific technical details that are mostly useful
     for the developers of the component. For example, a MAC layer protocol
-    component could log control flow in loops and if statements,
+    component could log control flow in loops and if statements, and
     entering/leaving methods and code blocks using this level.
 \end{itemize}
 
@@ -342,7 +340,7 @@ based on them.
 \label{sec:sim-lib:log-statements}
 
 {\opp} provides several C++ macros for the actual logging. Each one of these
-macros act like a C++ stream, so they can be used similarly to \fvar{std::cout}
+macros acts like a C++ stream, so they can be used similarly to \fvar{std::cout}
 with \ffunc{operator<<} (shift operator).
 
 \begin{itemize}
@@ -362,7 +360,7 @@ log streams as follows:
 \begin{cpp}
 EV_ERROR << "Connection to server is lost.\n";
 EV_WARN << "Queue is full, discarding packet.\n";
-EV_INFO << "Packet received , sequence number = " << seqNum << "." << endl;
+EV_INFO << "Packet received, sequence number = " << seqNum << "." << endl;
 EV_TRACE << "routeUnicastPacket(" << packet << ");" << endl;
 \end{cpp}
 
@@ -374,16 +372,16 @@ using Qtenv.
 \end{note}
 
 The above C++ macros work well from any C++ class, including {\opp} modules. In
-fact, they automatically capture a number of context specific information such
+fact, they automatically capture several context-specific information such
 as the current event, current simulation time, context module, \fvar{this}
-pointer, source file and line number. The final log lines will be automatically
+pointer, source file, and line number. The final log lines will be automatically
 extended with a prefix that is created from the captured information (see
 section \ref{sec:config-sim:logging}).
 
-In static class member functions or in non-class member functions an extra
+In static class member functions or in non-class member functions, an extra
 \fmac{EV\_STATICCONTEXT} macro must be present to make sure that normal log
-macros compile. \footnote{This is due to that in C++ it is impossible
-determine at compile-time whether a \fvar{this} pointer is accessible.}
+macros compile. \footnote{This is due to the fact that in C++ it is impossible
+to determine at compile-time whether a \fvar{this} pointer is accessible.}
 
 \begin{cpp}
 void findModule(const char *name, cModule *from)
@@ -395,8 +393,8 @@ void findModule(const char *name, cModule *from)
 \subsection{Log Categories}
 \label{sec:sim-lib:log-categories}
 
-Sometimes it might be useful to further classify log statements into user
-defined log categories. In the {\opp} logging API, a log category is an
+Sometimes it might be useful to further classify log statements into user-defined
+log categories. In the {\opp} logging API, a log category is an
 arbitrary string provided by the user.
 
 For example, a module test may check for a specific log message in the test's
@@ -404,7 +402,7 @@ output. Putting the log statement into the \ttt{test} category ensures that
 extra care is taken when someone changes the wording in the statement to match
 the one in the test.
 
-Similarily to the normal C++ log macros, there are separate log macros for each
+Similarly to the normal C++ log macros, there are separate log macros for each
 log level which also allow specifying the log category. Their name is the same
 as the normal variants' but simply extended with the \fmac{\_C} suffix. They
 take the log category as the first parameter before any shift operator calls:
@@ -413,14 +411,14 @@ take the log category as the first parameter before any shift operator calls:
 EV_INFO_C("test") << "Received " << numPacket << " packets in total.\n";
 \end{cpp}
 
-\subsection{Composition and New lines}
+\subsection{Composition and New Lines}
 \label{sec:sim-lib:logging-composition-and-new-lines}
 
 Occasionally it's easier to produce a log line using multiple statements.
 Mostly because some computation has to be done between the parts. This can be
 achieved by omitting the new line from the log statements which are to be
 continued. And then subsequent log statements must use the same log level,
-otherwise an implicit new line would be inserted.
+otherwise, an implicit new line would be inserted.
 
 \begin{cpp}
 EV_INFO << "Line starts here, ";
@@ -428,7 +426,7 @@ EV_INFO << "Line starts here, ";
 EV_INFO << "and it continues here" << endl;
 \end{cpp}
 
-Assuming a simple log prefix that prints the log level in brakets, the above
+Assuming a simple log prefix that prints the log level in brackets, the above
 code fragment produces the following output in Cmdenv:
 
 \begin{filelisting}
@@ -451,7 +449,7 @@ In the produced output, each line will have the same log prefix, as shown below:
 \end{filelisting}
 
 The {\opp} logging API also supports direct printing to a log stream. This is
-mainly useful when printing is really complicated algorithmically (e.g. printing
+mainly useful when printing is really complicated algorithmically (e.g., printing
 a multi-dimensional value). The following code could produce multiple log lines
 each having the same log prefix.
 
@@ -462,12 +460,11 @@ void Matrix::someFunction()
    print(EV_INFO);
 \end{cpp}
 
-
 \subsection{Implementation}
 \label{sec:sim-lib:logging-implementation}
 
 {\opp} does its best to optimize the performance of logging. The implementation
-fully supports conditinal compilation of log statements based on their log
+fully supports conditional compilation of log statements based on their log
 level. It automatically checks whether the log is recorded anywhere. It also
 checks global and per-component runtime log levels. The latter is efficiently
 cached in the components for subsequent checks. See section
@@ -477,24 +474,23 @@ levels.
 The implementation of the C++ log macros makes use of the fact that the
 \ffunc{operator<<} is bound more loosely than the conditional operator
 (\ttt{?:}). This solves conditional compilation, and also helps runtime
-checks by redirecting the output to a \ttt{null} stream. Unfortunately the
+checks by redirecting the output to a \ttt{null} stream. Unfortunately, the
 \ffunc{operator<<} calls are still evaluated on the \ttt{null} stream, even if
 the log level is disabled.
 
-Rarely just the computation of log statement parameters may be very expensive,
+Rarely, just the computation of log statement parameters may be very expensive,
 and thus it must be avoided if possible. In this case, it is a good idea to
 make the log statement conditional on whether the output is actually being
 displayed or recorded anywhere. The \ttt{cEnvir::isLoggingEnabled()} call
 returns false when the output is disabled, such as in ``express'' mode. Thus,
 one can write code like this:
 
-%FIXME a fenti valszeg nem igaz!
+%FIXME the above is probably not true!
 
 \begin{cpp}
 if (!getEnvir()->isLoggingEnabled())
     EV_DEBUG << "CRC: " << computeExpensiveCRC(packet) << endl;
 \end{cpp}
-
 
 %FIXME add tale about debug channels etc.
 
@@ -502,20 +498,20 @@ if (!getEnvir()->isLoggingEnabled())
 \section{Random Number Generators}
 \label{sec:sim-lib:random-number-generators}
 
-Random numbers in simulation are usually not really random. Rather, they
+Random numbers in simulations are usually not truly random. Rather, they
 are produced using deterministic algorithms. Based on some internal state,
 the algorithm performs some deterministic computation to produce a
 ``random'' number and the next state. Such algorithms and their
 implementations are called \textit{random number generators} or RNGs, or
-sometimes pseudo random number generators or PRNGs to highlight their
+sometimes pseudo-random number generators (PRNGs) to highlight their
 deterministic nature. The algorithm's internal state is usually initialized
 from a smaller \textit{seed} value.
 
 Starting from the same seed, RNGs always produce the same sequence of
-random numbers. This is a useful property and of great importance, because
-it makes simulation runs repeatable.
+random numbers. This is a useful and significantly important property,
+because it makes simulation runs repeatable.
 
-RNGs are rarely used directly, because they produce uniformly distributed
+RNGs are rarely used directly because they produce uniformly distributed
 random numbers. When non-uniform random numbers are needed, mathematical
 transformations are used to produce random numbers from RNG input that
 correspond to specific distributions. This is called random variate
@@ -524,9 +520,9 @@ generation, and it will be covered in the next section,
 
 It is often advantageous for simulations to use random numbers from
 multiple RNG instances. For example, a wireless network simulation may use
-one RNG for generating traffic, and another RNG for simulating transmission
+one RNG for generating traffic and another RNG for simulating transmission
 errors in the noisy wireless channel. Since seeds for individual RNGs can
-be configured independently, this arrangement allows one e.g. to perform
+be configured independently, this arrangement allows one to perform
 several simulation runs with the same traffic but with bit errors occurring
 in different places. A simulation technique called \textit{variance
 reduction} is also related to the use of different random number streams.
@@ -547,7 +543,7 @@ correlation in the simulation results.
 
 By default, {\opp} uses the Mersenne Twister RNG (MT) by M. Matsumoto and
 T. Nishimura \cite{Matsumoto98}. MT has a period of $2^{19937}-1$,
-and 623-dimensional equidistribution property is assured. MT is
+and a 623-dimensional equidistribution property is assured. MT is
 also very fast: as fast or faster than ANSI C's \ttt{rand()}.
 
 \subsubsection{The "Minimal Standard" RNG}
@@ -559,7 +555,7 @@ also very fast: as fast or faster than ANSI C's \ttt{rand()}.
 and can be selected from \ffilename{omnetpp.ini} (Chapter \ref{cha:run-sim}).
 This RNG is only suitable for small-scale simulation studies.
 As shown by Karl Entacher et al. in \cite{Entacher02},
-the cycle length of about $2^{31}$ is too small (on todays
+the cycle length of about $2^{31}$ is too small (on today's
 fast computers it is easy to exhaust all random numbers), and
 the structure of the generated ``random'' points is too regular.
 The \cite{Hellekalek98} paper provides a broader overview of issues
@@ -577,13 +573,12 @@ RNG. This needs to be configured in \ffilename{omnetpp.ini} (section
 \subsubsection{Other RNGs}
 \label{sec:sim-lib:other-rngs}
 
-{\opp} allows plugging in your own RNGs as well. This mechanism,
+{\opp} allows the plugging in of your own RNGs as well. This mechanism,
 based on the \cclass{cRNG} interface, is described in section
 \ref{sec:plugin-exts:rng}.
 For example, one candidate to include could be L'Ecuyer's CMRG \cite{LEcuyer02}
 which has a period of about $2^{191}$ and can provide a large
 number of \textit{guaranteed} independent streams.
-
 
 \subsection{Global and Component-Local RNGs}
 \label{sec:sim-lib:global-and-component-local-rngs}
@@ -597,7 +592,7 @@ there is an indirection step introduced for additional flexibility. When
 random numbers are drawn in a model, the code usually refers to
 \textit{component-local} or \textit{logical} RNG numbers. These
 local RNG numbers are mapped to global RNG indices to arrive at
-actual RNG instances. This mapping occurs on per-component basis. That is,
+actual RNG instances. This mapping occurs on a per-component basis. That is,
 each module and channel object contains a mapping table similar to the
 following:
 
@@ -622,38 +617,37 @@ use that RNG, unless explicitly told otherwise by specifying an \textit{rng=k}
 argument.
 \end{note}
 
-The local-to-global mapping, as well as the number of number of global
+The local-to-global mapping, as well as the number of global
 RNGs and their seeding can be configured in \ffilename{omnetpp.ini} (see
 section \ref{sec:config-sim:rng-config}).
 
-The mapping can be set up arbitrarily, with the default being identity
+The mapping can be set up arbitrarily, with the default being an identity
 mapping (that is, local RNG $k$ refers to global RNG $k$.) The mapping
 allows for flexibility in RNG and random number streams configuration
--- even for simulation models which were not written with RNG awareness.
+-- even for simulation models that were not written with RNG awareness.
 For example, even if modules in a simulation only use the default, local
-RNG number 0, one can set up mapping so that different groups of modules
+RNG number 0, one can set up a mapping so that different groups of modules
 use different physical RNGs.
 
 In theory, RNGs could also be instantiated and used directly from C++ model
-code. However, doing so is not recommended, because the model would lose
+code. However, doing so is not recommended because the model would lose
 configurability via \ffilename{omnetpp.ini}.
 
 \subsection{Accessing the RNGs}
 \label{sec:sim-lib:accessing-rngs}
 
-RNGs are represented with subclasses of the abstract class \cclass{cRNG}.
+RNGs are represented via subclasses of the abstract class \cclass{cRNG}.
 In addition to random number generation methods like \ffunc{intRand()} and
 \ffunc{doubleRand()}, the \cclass{cRNG} interface also includes methods like
 \ffunc{selfTest()} for basic integrity checking and \ffunc{getNumbersDrawn()}
 to query the number of random numbers generated.
 
 RNGs can be accessed by local RNG number via \cclass{cComponent}'s
-\ffunc{getRNG(k)} method. To access global global RNGs directly by their
+\ffunc{getRNG(k)} method. To access global RNGs directly by their
 indices, one can use \cclass{cEnvir}'s \ffunc{getRNG(k)} method.
 However, RNGs rarely need to be accessed directly. Most simulations will
 only use them via random variate generation functions, described in the
 next section.
-
 
 \section{Generating Random Variates}
 \label{sec:sim-lib:random-variate-generation}
@@ -723,7 +717,7 @@ These methods work with the component's local RNGs, and accept the RNG
 index (default 0) in their extra \ttt{int} parameter.
 
 Since most simulation code is located in methods of simple modules, these
-methods can be usually called in a concise way, without an explicit module
+methods can usually be called in a concise way, without an explicit module
 or channel pointer. An example:
 
 \begin{cpp}
@@ -803,7 +797,7 @@ double normal(cRNG *rng, double mean, double stddev);
 \subsection{Random Numbers from Histograms}
 \label{sec:sim-lib:random-numbers-from-histograms}
 
-One can also specify a distribution as a histogram\index{distribution!as histogram}.
+One can also specify a distribution as a histogram.
 The \cclass{cHistogram}, \cclass{cKSplit} and \cclass{cPSquare} classes
 can be used to generate random numbers from histograms. This feature is
 documented later, with the statistical classes.
@@ -833,10 +827,10 @@ subclass from \cclass{cRandom}.
 \label{sec:sim-lib:cqueue-basic-usage}
 
 \cclass{cQueue} is a container class that acts as a queue.
-\cclass{cQueue} can hold objects of type derived from \cclass{cObject}
+\cclass{cQueue} can hold objects of types derived from \cclass{cObject}
 (almost all classes from the {\opp} library), such as
 \cclass{cMessage}, \cclass{cPar}, etc. Normally, new elements
-are inserted at the back, and removed from the front.
+are inserted at the back and removed from the front.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -869,7 +863,7 @@ while(!queue.isEmpty()) {
 The \ffunc{length()} member function returns the number of items in the
 queue, and \ffunc{empty()} tells whether there is anything in the queue.
 
-There are other functions dealing with insertion and removal.  The
+There are other functions dealing with insertion and removal. The
 \ffunc{insertBefore()} and \ffunc{insertAfter()} functions insert a
 new item exactly before or after a specified one, regardless of the
 ordering function.
@@ -890,10 +884,10 @@ queue.remove(msg);
 \label{sec:sim-lib:cqueue-as-priority-queue}
 
 By default, \cclass{cQueue} implements a FIFO, but it can also act as a
-priority queue, that is, it can keep the inserted objects
-ordered\index{queue!order}.  To use this feature, one needs to provide a
-comparison function that takes two \cclass{cObject} pointers, and returns
--1, 0 or 1 (see the reference for details).  An example of setting up an
+priority queue; that is, it can keep the inserted objects
+ordered\index{queue!order}. To use this feature, one needs to provide a
+comparison function that takes two \cclass{cObject} pointers and returns
+-1, 0, or 1 (see the reference for details). An example of setting up an
 ordered \cclass{cQueue}:
 
 \begin{cpp}
@@ -903,7 +897,7 @@ cQueue queue("queue", someCompareFunc);
 If the queue object is set up as an ordered queue, the \ffunc{insert()}
 function uses the ordering function: it searches the queue contents
 from the head until it reaches the position where the new item
-needs to be inserted, and inserts it there.
+needs to be inserted and inserts it there.
 
 
 \subsubsection{Iterators}
@@ -918,13 +912,13 @@ is initialized to point at the front of the queue. For reverse iteration,
 specify \ttt{reverse=true} as the optional second argument. After that, the
 class acts as any other {\opp} iterator: one can use the \ttt{++} and
 \ttt{--} operators to advance it, the \ttt{*} operator to get a pointer
-to the current item, and the \ffunc{end()} member function to examine
+to the current item, and the \ffunc{end()} member function to check
 whether the iterator has reached the end (or the beginning) of the queue.
 
 Forward iteration:
 
 \begin{cpp}
-for (cQueue::Iterator iter(queue); !iter.end(), iter++) {
+for (cQueue::Iterator iter(queue); !iter.end(); iter++) {
     cMessage *msg = (cMessage *) *iter;
     //...
 }
@@ -933,7 +927,7 @@ for (cQueue::Iterator iter(queue); !iter.end(), iter++) {
 Reverse iteration:
 
 \begin{cpp}
-for (cQueue::Iterator iter(queue, true); !iter.end(), iter--) {
+for (cQueue::Iterator iter(queue, true); !iter.end(); iter--) {
     cMessage *msg = (cMessage *) *iter;
     //...
 }
@@ -950,7 +944,7 @@ for (cQueue::Iterator iter(queue, true); !iter.end(), iter--) {
 \cclass{cArray} is a container class that holds objects derived from
 \cclass{cObject}. \cclass{cArray} implements a dynamic-size array: its
 capacity grows automatically when it becomes full. \cclass{cArray} stores
-pointers of objects inserted instead of making copies.
+pointers to objects inserted instead of making copies.
 
 Creating an array:
 
@@ -994,7 +988,7 @@ Par *p = (cPar *) array["par"];
 \end{cpp}
 
 You can remove an object from the array by calling \ffunc{remove()}
-with the object name, the index position or the object pointer:
+with the object name, the index position, or the object pointer:
 
 \begin{cpp}
 array.remove("par");
@@ -1002,8 +996,7 @@ array.remove(index);
 array.remove(p);
 \end{cpp}
 
-
-The \ffunc{remove()} function doesn't deallocate the object, but it
+The \ffunc{remove()} function doesn't deallocate the object; it
 returns the object pointer. If you also want to deallocate it, you can
 write:
 
@@ -1053,20 +1046,19 @@ network in a graph form:
 One can specify which modules to include in the graph. Compound modules
 may also be selected. The graph will include all connections among the
 selected modules. In the graph, all nodes are at the same level;
-there is no submodule nesting.  Connections which span across compound
+there is no submodule nesting. Connections that span across compound
 module boundaries are also represented as one graph edge. Graph edges
 are directed, just as module gates are.
 
 If you are writing a router or switch model, the \cclass{cTopology}
 graph can help you determine what nodes are available through which
-gate and also to find optimal routes\index{optimal routes}. The
+gate and also find optimal routes\index{optimal routes}. The
 \cclass{cTopology} object can calculate shortest paths\index{shortest
   path} between nodes for you.
 
-The mapping between the graph (nodes, edges) and network model (modules,
+The mapping between the graph (nodes, edges) and the network model (modules,
 gates, connections) is preserved: one can find the corresponding module for
 a \cclass{cTopology} node and vice versa.
-
 
 \subsection{Basic Usage}
 \label{sec:sim-lib:ctopology-basic-usage}
@@ -1078,7 +1070,7 @@ which modules should be included in the topology:
 \begin{itemize}
   \item by module type
   \item by a parameter's presence and value
-  \item with a user-supplied boolean function
+  \item with a user-supplied Boolean function
 \end{itemize}
 
 First, you can specify which node types you want to include. The
@@ -1095,7 +1087,7 @@ Any number of module types can be supplied; the list must be terminated by \ttt{
 A dynamically assembled list of module types can be passed as a
 \ttt{nullptr}-terminated array of \ttt{const char*} pointers, or
 in an STL string vector \ttt{std::vector<std::string>}.
-An example for the former:
+An example of the former:
 
 \begin{cpp}
 cTopology topo;
@@ -1106,7 +1098,7 @@ typeNames[2] = nullptr;
 topo.extractByModuleType(typeNames);
 \end{cpp}
 
-Second, you can extract all modules which have a certain parameter:
+Second, you can extract all modules that have a certain parameter:
 
 \begin{cpp}
 topo.extractByParameter("ipAddress");
@@ -1120,10 +1112,10 @@ cMsgPar yes = "yes";
 topo.extractByParameter("includeInTopo", &yes);
 \end{cpp}
 
-The third form allows you to pass a function which can determine for
-each module whether it should or should not be included.  You can have
+The third form allows you to pass a function that can determine for
+each module whether it should or should not be included. You can have
 \cclass{cTopology} pass supplemental data to the function through a
-\ttt{void*} pointer. An example which selects all top-level modules (and
+\ttt{void*} pointer. An example that selects all top-level modules (and
 does not use the \ttt{void*} pointer):
 
 \begin{cpp}
@@ -1169,7 +1161,7 @@ nodes in the graph, and \ffunc{getNode(i)} returns a pointer to the \textit{i}th
 node, a \cclass{cTopology::Node} structure.
 
 The correspondence between a graph node and a module can be obtained
-by \ffunc{getNodeFor()} method:
+by the \ffunc{getNodeFor()} method:
 
 \begin{cpp}
 cTopology::Node *node = topo.getNodeFor(module);
@@ -1190,20 +1182,19 @@ By calling member functions of the graph edge object, you can
 determine the modules and gates involved. The \ffunc{getRemoteNode()}
 function returns the other end of the connection, and
 \ffunc{getLocalGate()}, \ffunc{getRemoteGate()}, \ffunc{getLocalGateId()} and
-\ffunc{getRemoteGateId()} return the gate pointers and ids of the gates
+\ffunc{getRemoteGateId()} return the gate pointers and IDs of the gates
 involved. (Actually, the implementation is a bit tricky here: the same
 graph edge object \cclass{cTopology::Link} is returned either as
 \cclass{cTopology::LinkIn} or as \cclass{cTopology::LinkOut} so that ``remote''
 and ``local'' can be correctly interpreted for edges of both
 directions.)
 
-
 \subsection{Shortest Paths}
 \label{sec:sim-lib:ctopology-shortest-paths}
 
 The real power of \cclass{cTopology} is in finding shortest
 paths\index{topology!shortest path} in the network to support optimal
-routing\index{optimal routing}. \cclass{cTopology} finds shortest paths
+routing\index{optimal routing}. \cclass{cTopology} finds the shortest paths
 from \textit{all} nodes \textit{to} a target node. The algorithm is
 computationally inexpensive. In the simplest case, all edges are
 assumed to have the same weight.
@@ -1217,11 +1208,10 @@ cTopology::Node *targetnode = topo.getNodeFor(targetmodulep);
 topo.calculateUnweightedSingleShortestPathsTo(targetnode);
 \end{cpp}
 
-
 This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
 stores the result in the \cclass{cTopology} object. The result can
 then be extracted using \cclass{cTopology} and
-\ttt{cTopology::Node}\index{cTopology::Node} methods.  Naturally, each call to
+\ttt{cTopology::Node}\index{cTopology::Node} methods. Naturally, each call to
 \ffunc{calculateUnweightedSingleShortestPathsTo()} overwrites the results of
 the previous call.
 
@@ -1254,15 +1244,15 @@ else {
 The purpose of the \ffunc{getDistanceToTarget()} member function of a
 node is self-explanatory. In the unweighted case, it returns the
 number of hops. The \ffunc{getNumPaths()} member function returns the number
-of edges which are part of a shortest path, and
+of edges that are part of a shortest path, and
 \ffunc[path()]{path(i)} returns the \textit{i}th edge of them as
 \cclass{cTopology::LinkOut}. If the shortest paths were created by the
 \ffunc[SingleShortestPaths()]{...SingleShortestPaths()} function,
 \ffunc{getNumPaths()} will always return 1 (or 0 if the target is not
 reachable), that is, only one of the several possible shortest paths
-are found.  The
+is found. The
 \ffunc[MultiShortestPathsTo()]{...MultiShortestPathsTo()} functions
-find all paths, at increased run-time cost. The \cclass{cTopology}'s
+find all paths at increased run-time cost. The \cclass{cTopology}'s
 \ffunc{getTargetNode()} function returns the target node of the last
 shortest path search.
 
@@ -1272,7 +1262,7 @@ Disabled nodes or edges are ignored by the shortest paths calculation
 algorithm. The \ffunc{isEnabled()} member function returns the state of
 a node or edge in the topology graph.
 
-One usage of \ffunc{disable()} is when you want to determine in how many
+One usage of \ffunc{disable()} is when you want to determine how many
 hops the target node can be reached from our node \textit{through
 a particular output gate}. To compute this, you compute the
 shortest paths to the target \textit{from the neighbor node} while
@@ -1320,11 +1310,11 @@ able to store additional information in those objects.
 Since version 4.3, {\opp} contains two utility classes for pattern
 matching, \cclass{cPatternMatcher} and \cclass{cMatchExpression}.
 
-\cclass{cPatternMatcher} is a glob-style pattern matching class, adopted to
-special {\opp} requirements. It recognizes wildcards, character ranges and
-numeric ranges, and supports options such as case sensitive and whole
+\cclass{cPatternMatcher} is a glob-style pattern matching class, adapted to
+special {\opp} requirements. It recognizes wildcards, character ranges, and
+numeric ranges, and supports options such as case sensitivity and whole
 string matching. \cclass{cMatchExpression} builds on top of
-\cclass{cPatternMatcher} and extends it in two ways: first, it lets you
+\cclass{cPatternMatcher} and extends it in two ways: first, it allows you to
 combine patterns with AND, OR, NOT into boolean expressions, and second, it
 applies the pattern expressions to \textit{objects} instead of text. These
 classes are especially useful for making model-specific configuration files
@@ -1338,12 +1328,12 @@ more concise or more powerful by introducing patterns.
 
 \cclass{cPatternMatcher} holds a pattern string and several option flags,
 and has a \ffunc{matches()} boolean function that determines whether the
-string passed as argument matches the pattern with the given flags. The
+string passed as an argument matches the pattern with the given flags. The
 pattern and the flags can be set via the constructor or by calling the
 \ffunc{setPattern()} member function.
 
 The pattern syntax is a variation on Unix \textit{glob}-style patterns. The
-most apparent differences to globbing rules are the distinction between
+most apparent differences from globbing rules are the distinction between
 \ttt{*} and \ttt{**}, and that character ranges should be written with
 curly braces instead of square brackets; that is, \textit{any-letter} is
 expressed as \ttt{\{a-zA-Z\}} and not as \ttt{[a-zA-Z]}, because square
@@ -1353,7 +1343,7 @@ The following option flags are supported:
 
 \begin{itemize}
   \item \textit{dottedpath}: controls whether some wildcards (\ttt{?}, \ttt{*}) will match dots
-  \item \textit{fullstring}: controls whether to do full string or substring match.
+  \item \textit{fullstring}: controls whether to do a full string or substring match
   \item \textit{casesensitive}: whether matching is case sensitive or case insensitive
 \end{itemize}
 
@@ -1373,7 +1363,7 @@ Patterns may contain the following elements:
 \begin{note}
 The \textit{dottedpath} option was introduced to make matching {\opp}
 module paths more powerful. When it is off (\textit{dottedpath}=false),
-there is no difference between \ttt{*} and \ttt{**}, they both match any
+there is no difference between \ttt{*} and \ttt{**}; they both match any
 character sequence. However, when matching {\opp} module paths or other
 strings where dot is a separator character, it is useful to turn on the
 dottedpath mode (\textit{dottedpath}=true). In that mode, \ttt{*}, not
@@ -1382,21 +1372,21 @@ of it), and \ttt{**} can match multiple path components.
 \end{note}
 
 Sets and negated sets can contain several character ranges and also
-enumeration of characters, for example \ttt{\{\_a-zA-Z0-9\}} or
+enumerations of characters, for example \ttt{\{\_a-zA-Z0-9\}} or
 \ttt{\{xyzc-f\}}. To include a hyphen in the set, place it at a position
-where it cannot be interpreted as character range, for example
+where it cannot be interpreted as a character range, for example
 \ttt{\{a-z-\}} or \ttt{\{-a-z\}}. To include a close brace in
 the set, it must be the first character: \ttt{\{\}a-z\}}, or for a negated
-set: \ttt{\{\textasciicircum\}a-z\}}. A backslash is always taken as
-literal backslash (and NOT as escape character) within set definitions.
-When doing case-insensitive match, avoid ranges that include both alpha and
+set: \ttt{\{\textasciicircum\}a-z\}}. A backslash is always taken as a
+literal backslash (and NOT as an escape character) within set definitions.
+When doing case-insensitive matches, avoid ranges that include both alpha and
 non-alpha characters, because they might cause funny results.
 
 For numeric ranges and numeric index ranges, ranges are inclusive, and both
 the start and the end of the range are optional; that is, \ttt{\{10..\}},
-\ttt{\{..99\}} and \ttt{\{..\}} are all valid numeric ranges (the last one
+\ttt{\{..99\}}, and \ttt{\{..\}} are all valid numeric ranges (the last one
 matches any number). Only nonnegative integers can be matched. Caveat:
-\ttt{\{17..19\}} will match \ttt{"a17"}, \ttt{"117"} and also \ttt{"963217"}!
+\ttt{\{17..19\}} will match \ttt{"a17"}, \ttt{"117"}, and also \ttt{"963217"}!
 
 The \cclass{cPatternMatcher} constructor and the \ffunc{setPattern()} member
 function have similar signatures:
@@ -1554,8 +1544,8 @@ EV << expr.matches(&cMatchableString("something else")) << endl; // -> false
 The NED \fkeyword{expr()} operator encapsulates a formula in an object form.
 On the C++ side, the object is an instance of \cclass{cOwnedDynamicExpression}.
 
-The expression can be evaluated using the \ffunc{evalute()} method that returns
-a \cclass{cValue}, or one of typed methods: \ffunc{boolValue()},
+The expression can be evaluated using the \ffunc{evaluate()} method that returns
+a \cclass{cValue}, or one of the typed methods: \ffunc{boolValue()},
 \ffunc{intValue()}, \ffunc{doubleValue()}, \ffunc{stringValue()},
 \ffunc{xmlValue()}. But before that, a custom resolver needs to be implemented, and
 installed using the \ffunc{setResolver()}. The resolver subclasses from
@@ -1567,14 +1557,14 @@ how to evaluate various constructs in the expression.
 \section{Collecting Summary Statistics and Histograms}
 \label{sec:sim-lib:statistics}
 
-There are several statistic and result collection classes:
-\cclass{cStdDev}, \cclass{cHistogram}, \cclass{cPSquare} and
+There are several statistics and result collection classes:
+\cclass{cStdDev}, \cclass{cHistogram}, \cclass{cPSquare}, and
 \cclass{cKSplit}. They are all derived from the abstract base class
 \cclass{cStatistic}; histogram-like classes derive from
 \cclass{cAbstractHistogram}.\footnote{Earlier versions of {\opp} had more
 statistical classes: \cclass{cWeightedStdDev}, \cclass{cLong\-Histogram},
 \cclass{cDouble\-Histogram}, \cclass{cVarHistogram}. The functionality
-of these classes have been consolidated into \cclass{cStdDev} and
+of these classes has been consolidated into \cclass{cStdDev} and
 \cclass{cHistogram}.}
 
 \begin{itemize}
@@ -1588,8 +1578,8 @@ of these classes have been consolidated into \cclass{cStdDev} and
     described in \cite{JCh85}. The algorithm calculates quantiles without
     storing the observations; one can also think of it as a histogram
     with equiprobable cells\index{histogram!equiprobable-cells}.
-  \item \cclass{cKSplit} is adaptive histogram-like algorithm
-    which performs dynamic subdivision of the bins to refine resolution
+  \item \cclass{cKSplit} is an adaptive histogram-like algorithm
+    that performs dynamic subdivision of the bins to refine resolution
     at the bulk of the distribution.
 \end{itemize}
 
@@ -1604,9 +1594,9 @@ All classes use the \ttt{double} type for representing observations,
 and compute all metrics in the same data type (except the observation
 count, which is \ttt{int64\_t}.)
 
-For weighted statistics, weights are also \ttt{double}s. Being able to
+For weighted statistics, weights are also \ttt{double}. Being able to
 handle non-integer weights is important because weighted statistics
-are often used for computing time averages, e.g. average queue length
+are often used for computing time averages, e.g., average queue length
 or average channel utilization.
 
 \subsection{cStdDev}
@@ -1618,7 +1608,7 @@ observations. If you also need to compute a histogram, use \cclass{cHistogram}
 already include the functionality of \cclass{cStdDev}.
 
 \cclass{cStdDev} can collect unweighted or weighted statistics. This needs
-to be decided in the constructor call, and cannot be changed later.
+to be decided in the constructor call and cannot be changed later.
 Specify \ttt{true} as the second argument for weighted statistics.
 
 \begin{cpp}
@@ -1627,7 +1617,7 @@ cStdDev weighted("queueLength", true); // weighted
 \end{cpp}
 
 Observations are added to the statistics by using the \ffunc{collect()}
-or the \ffunc{collectweighted()} methods. The latter takes two parameters,
+or the \ffunc{collectWeighted()} methods. The latter takes two parameters,
 the value and the weight.
 
 \begin{cpp}
@@ -1670,12 +1660,12 @@ EV << "max = " << unweighted.getMax() << end;
 \label{sec:sim-lib:histograms}
 
 \cclass{cHistogram} is able to represent both uniform and non-uniform
-bin histograms, and supports both weighted and unweighted observations.
+bin histograms and supports both weighted and unweighted observations.
 The histogram can be modified dynamically: it can be extended with new bins,
 and adjacent bins can be merged. In addition to the bin values (which mean
 count in the unweighted case, and sum of weights in the weighted case),
 the histogram object also keeps the number (or sum of weights) of the
-lower and upper outliers (``underflows'' and ``overflows''.)
+lower and upper outliers (``underflows'' and ``overflows'').
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1686,7 +1676,7 @@ lower and upper outliers (``underflows'' and ``overflows''.)
 
 Setting up and managing the bins based on the collected observations
 is usually delegated to a strategy object. However, for most
-use cases, histogram strategies is not something the user needs
+use cases, histogram strategies are not something the user needs
 to be concerned with. The default constructor of \cclass{cHistogram}
 sets up the histogram with a default strategy that usually produces
 a good quality histogram without requiring manual configuration or a-priori
@@ -1696,7 +1686,7 @@ other histogram strategies, and it is also possible to write new ones.
 \subsubsection{Creating a Histogram}
 \label{sec:sim-lib:creating-a-histogram}
 
-\cclass{cHistogram} has several constructors variants. Like with
+\cclass{cHistogram} has several constructor variants. Like with
 \cclass{cStdDev}, it needs to be decided in the constructor call
 by a boolean argument whether the histogram should collect
 unweighted (\ttt{false}) or weighted (\ttt{true}) statistics;
@@ -1784,7 +1774,7 @@ EV << "[" << hist.getBinEdge(numBins) << "," << hist.getMax() << "]: "
 \end{cpp}
 
 The \ffunc[getPDF()]{getPDF(x)} and \ffunc[getCDF()]{getCDF(x)} member functions
-return the value of the Probability Density Function and the Cumulated
+return the value of the Probability Density Function and the Cumulative
 Density Function at a given \textit{x}, respectively.
 
 Note that bins may not be immediately available during observation
@@ -1801,7 +1791,7 @@ set up already. Setting up the bins can be forced with the
 The \cclass{cHistogram} class has several methods for creating and
 manipulating bins. These methods are primarily intended to be called
 from strategy classes, but are also useful if you want to manage
-the bins manually, i.e. without a strategy class.
+the bins manually, i.e., without a strategy class.
 
 For setting up the bins, you can either use \ffunc{createUniformBins()}
 with the range (lo, hi) and the step size as parameters, or specify
@@ -1814,7 +1804,7 @@ methods that take a list of new bin edges to add. There is also an
 bins at either end to make sure that a supplied value falls into the
 histogram range. Of course, extending the histogram is only possible
 if there are no outliers in that direction. (The positions of the
-outliers is not preserved, so it is not known how many would fall in
+outliers are not preserved, so it is not known how many would fall in
 each of the newly created bins.)
 
 If the histogram has too many bins, adjacent ones (pairs, triplets,
@@ -1849,9 +1839,9 @@ constructors allow passing in an arbitrary histogram strategy.
 
 The \ffunc{collect()} and \ffunc{collectWeighted()} methods of a
 \ffunc{cHistogram} delegate to similar methods of the strategy
-object, which in turn decides when and how to set up the bins,
+object, which in turn decide when and how to set up the bins,
 and how to manage the bins later. (Setting up the bins may be
-postponed until a few observations have been collected, in order to
+postponed until a few observations have been collected, to
 gather more information for it.) The histogram strategy
 uses public histogram methods like \ffunc{createUniformBins()}
 to create and manage the bins.
@@ -1859,7 +1849,7 @@ to create and manage the bins.
 \subsubsection{Available Histogram Strategies}
 \label{sec:sim-lib:available-histogram-strategies}
 
-The following histogram strategy classes exist.
+The following histogram strategy classes exist:
 
 \cclass{cFixedRangeHistogramStrategy} sets up uniform bins over
 a predetermined interval. The number of bins and the histogram mode
@@ -1878,7 +1868,7 @@ can auto-extend the histogram range by adding new bins as needed. It also
 performs bin merging when necessary, to keep the number of bins reasonably low.
 
 \cclass{cAutoRangeHistogramStrategy} is a generic, very configurable,
-precollection-based histogram strategy which creates uniform bins, and
+precollection-based histogram strategy that creates uniform bins and
 creates quality histograms for practical distributions.
 
 Several constraints and hints can be specified for setting up the bins:
@@ -1886,7 +1876,7 @@ range lower and/or upper endpoint, bin size, number of bins,
 mode (integers vs. reals), and whether bin size rounding is to be used.
 
 This histogram strategy can auto-extend the histogram range by adding new
-bins at either end. One can also set up an upper limit to the number of
+bins at either end. One can also set up an upper limit on the number of
 histogram bins to prevent it from growing indefinitely. Bin merging can
 also be enabled: it will cause every two (or N) adjacent bins to be
 merged to reduce the number of bins if their number grows too high.
@@ -1934,21 +1924,21 @@ fclose(f2);
 
 The \cclass{cPSquare} class implements the $P^{2}$ algorithm
 described in \cite{JCh85}. $P^{2}$ is a heuristic algorithm
-for dynamic calculation of the median and other quantiles.
+for the dynamic calculation of the median and other quantiles.
 The estimates are produced dynamically as the observations arrive.
 The observations are not stored; therefore, the algorithm has
 a very small and fixed storage requirement regardless of
 the number of observations. The $P^{2}$ algorithm operates
 by adaptively shifting bin edges as observations arrive.
 
-\cclass{cPSquare} only needs the number of cells, for example
+\cclass{cPSquare} only needs the number of cells, for example,
 in the constructor:
 
 \begin{cpp}
 cPSquare psquare("endToEndDelay", 20);
 \end{cpp}
 
-Afterwards, observations can be added and the resulting histogram
+Afterward, observations can be added and the resulting histogram
 can be queried with the same \cclass{cAbstractHistogram} methods
 as with \cclass{cHistogram}.
 
@@ -2116,7 +2106,7 @@ directly, via methods like \ffunc{getTreeDepth()}, \ffunc{getRootGrid()},
 Objects of type \cclass{cOutVector} are responsible for writing time series
 data (referred to as \textit{output vectors}) to a file. The \ffunc{record()}
 method is used to output a value (or a value pair) with a timestamp.
-The object name will serve as the name of the output vector.
+The object's name will serve as the name of the output vector.
 
 The vector name can be passed in the constructor,
 
@@ -2124,13 +2114,13 @@ The vector name can be passed in the constructor,
 cOutVector responseTimeVec("response time");
 \end{cpp}
 
-but in the usual arrangement you'd make the \cclass{cOutVector} a member
+but in the usual arrangement, you'd make the \cclass{cOutVector} a member
 of the module class and set the name in \ffunc{initialize()}. You'd
 record values from \ffunc{handleMessage()} or from a function called from
 \ffunc{handleMessage()}.
 
-The following example is a \ttt{Sink} module which records the lifetime
-of every message that arrives to it.
+The following example is a \ttt{Sink} module that records the lifetime
+of every message that arrives at it.
 
 \begin{cpp}
 class Sink : public cSimpleModule
@@ -2157,7 +2147,7 @@ void Sink::handleMessage(cMessage *msg)
 }
 \end{cpp}
 
-There is also a \ffunc{recordWithTimestamp()} method, to make it
+There is also a \ffunc{recordWithTimestamp()} method to make it
 possible to record values into output vectors with a timestamp other than
 \ffunc{simTime()}. Increasing timestamp order is still enforced though.
 
@@ -2166,11 +2156,11 @@ that has a file extension \ttt{.vec}.
   \footnote{A \ttt{.vci} file is also created, but it is just an index for
   the \ttt{.vec} file and does not contain any new information. The IDE
   re-creates the \ttt{.vci} file if it gets lost.}
-The format and processing of output vector files is described in section
+The format and processing of output vector files are described in section
 \ref{cha:ana-sim}.
 
 You can configure output vectors from \ffilename{omnetpp.ini}:
-you can disable individual vectors, or limit recording to certain
+you can disable individual vectors or limit recording to certain
 simulation time intervals (see sections
 \ref{sec:ana-sim:disabling-result-items},
 \ref{sec:ana-sim:vector-recording-intervals}).
@@ -2187,14 +2177,14 @@ output vector object.
 \subsection{Output Scalars}
 \label{sec:sim-lib:output-scalars}
 
-While output vectors are to record time series data and thus they
+While output vectors are used to record time series data and thus they
 typically record a large volume of data during a simulation run,
 output scalars\index{output!scalars} are supposed to record a single
 value per simulation run. You can use output scalars
 
 \begin{itemize}
 \item to record summary data at the end of the simulation run
-\item to do several runs with different parameter settings/random seed
+\item to perform several runs with different parameter settings/random seeds
     and determine the dependence of some measures on the parameter
     settings. For example, multiple runs and output scalars are the
     way to produce \textit{Throughput vs. Offered Load} plots.
@@ -2213,9 +2203,9 @@ void Transmitter::finish()
 \end{cpp}
 
 You can record whole statistic objects by calling their \ffunc{record()}
-methods, declared as part of \cclass{cStatistic}. In the following example
-we create a \ttt{Sink} module which calculates the mean, standard
-deviation, minimum and maximum values of a variable, and records them at the
+methods, declared as part of \cclass{cStatistic}. In the following example,
+we create a \ttt{Sink} module that calculates the mean, standard
+deviation, minimum, and maximum values of a variable, and records them at the
 end of the simulation.
 
 \begin{cpp}
@@ -2252,7 +2242,7 @@ void Sink::finish()
 
 The above calls record the data into an \textit{output scalar file},
 a line-oriented text file that has the file extension \ttt{.sca}.
-The format and processing of output vector files is described in chapter
+The format and processing of output vector files are described in chapter
 \ref{cha:ana-sim}.
 
 
@@ -2272,7 +2262,7 @@ nothing about types and variables in your source code.
 {\opp} provides \fmac{WATCH()} and a set of other macros to
 allow variables to be inspectable in Qtenv and to be output into the snapshot
 file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
-\ffunc{initialize()} (to watch instance variables) or to the top of the
+\ffunc{initialize()} (to watch instance variables) or at the top of the
 \ffunc{activity()} function (to watch its local variables); the point being
 that they should only be executed once.
 
@@ -2298,7 +2288,7 @@ stream output operator (\ttt{operator<<}) defined. By default,
 this includes all primitive types and \ttt{std::string}, but since
 you can write \ttt{operator<<} for your classes/structs and basically
 any type, \fmac{WATCH()} can be used with anything. The only limitation
-is that since the output should more or less fit on single line, the
+is that since the output should more or less fit on a single line, the
 amount of information that can be conveniently displayed is limited.
 
 An example stream output operator:
@@ -2322,7 +2312,7 @@ WATCH(currentClientInfo);
 \label{sec:sim-lib:read-write-watches}
 
 Watches for primitive types and \ttt{std::string} allow for changing
-the value from the GUI as well, but for other types you need to explicitly
+the value from the GUI as well, but for other types, you need to explicitly
 add support for that. What you need to do is define a stream input
 operator (\ttt{operator>>}) and use the \fmac{WATCH\_RW()} macro instead of
 \fmac{WATCH()}.
@@ -2352,11 +2342,11 @@ line of (unstructured) text to be displayed. However, if you have a
 data structure generated from message definitions (see Chapter \ref{cha:messages}),
 then there is a better approach. The message compiler automatically generates
 meta-information describing individual fields of the class or struct,
-which makes it possible to display the contents on field level.
+which makes it possible to display the contents on the field level.
 
 The \texttt{WATCH} macros to be used for this purpose are \fmac{WATCH\_OBJ()}
 and \fmac{WATCH\_PTR()}. Both expect the object to be subclassed from
-\cclass{cObject}; \fmac{WATCH\_OBJ()} expects a reference to such class,
+\cclass{cObject}; \fmac{WATCH\_OBJ()} expects a reference to such a class,
 and \fmac{WATCH\_PTR()} expects a pointer variable.
 
 \begin{cpp}
@@ -2382,7 +2372,7 @@ watchedPtr = nullptr;  // set to nullptr when object gets deleted
 \subsection{STL Watches}
 \label{sec:sim-lib:stl-watches}
 
-The standard C++ container classes (\ttt{vector}, \ttt{map}, \ttt{set}, etc)
+The standard C++ container classes (\ttt{vector}, \ttt{map}, \ttt{set}, etc.)
 also have structured watches, available via the following macros:
 
 \fmac{WATCH\_VECTOR()}, \fmac{WATCH\_PTRVECTOR()},
@@ -2393,10 +2383,10 @@ also have structured watches, available via the following macros:
 The \ttt{PTR}-less versions expect the data items ("T") to have
 stream output operators (\ttt{operator <<}), because that is how
 they will display them. The \ttt{PTR} versions assume that
-data items are pointers to some type which has \ttt{operator <<}.
+data items are pointers to some type that has \ttt{operator <<}.
 \fmac{WATCH\_PTRMAP()} assumes that only the value type (``second'')
 is a pointer, the key type (``first'') is not. (If you happen to use
-pointers as key, then define \ttt{operator <<} for the pointer type
+pointers as keys, then define \ttt{operator <<} for the pointer type
 itself.)
 
 Examples:
@@ -2435,10 +2425,10 @@ file name has an extension of \ttt{.sna}.
 
 The snapshot file output is detailed enough to be used for debugging
 the simulation: by regularly calling \ffunc{snapshot()}, one can trace
-how the values of variables, objects changed over the simulation.
+how the values of variables and objects changed over the simulation.
 The arguments: label is a string that will appear in the output
 file; obj is the object whose inside is of interest. By default,
-the whole simulation (all modules etc) will be written out.
+the whole simulation (all modules, etc.) will be written out.
 
 If you run the simulation with Qtenv, you can also create a
 snapshot from the menu.
@@ -2513,7 +2503,7 @@ network="FifoNet">
 %
 % Some container classes and functions suspend the simulation and issue
 % warning messages in potentially bogus/dangerous situations, for
-% example when an object is not found and \ttt{nullptr} pointer/reference is
+% example when an object is not found and a \ttt{nullptr} pointer/reference is
 % about to be returned. Very often this is useful, but sometimes it is
 % more trouble. You can turn warnings on/off from the ini file
 % (warnings=yes/no)\index{ini file!warnings}.
@@ -2542,14 +2532,14 @@ network="FifoNet">
 
 It is important to choose the correct stack size for
 modules\index{module!stack size}\index{stack!size}.  If the stack is
-too large, it unnecessarily consumes memory; if it is too small, stack
+too large, it unnecessarily consumes memory; if it is too small, a stack
 violation occurs.
 
 %From the Feb99 release,
 {\opp} contains a mechanism that detects stack
 overflows\index{stack!overflow}. It checks the intactness of a
 predefined byte pattern (\texttt{0xdeadbeef}) at the stack boundary,
-and reports ``stack violation''\index{stack!violation} if it was
+and reports a ``stack violation''\index{stack!violation} if it was
 overwritten. The mechanism usually works fine, but occasionally it can
 be fooled by large -- and not fully used -- local variables (e.g. char
 buffer[256]): if the byte pattern happens to fall in the middle of
@@ -2557,7 +2547,7 @@ such a local variable, it may be preserved intact and {\opp} does not
 detect the stack violation.
 
 To be able to make a good guess about stack size, you can use
-the \ffunc{getStackUsage()} call which tells you how much stack the module
+the \ffunc{getStackUsage()} call, which tells you how much stack the module
 actually uses. It is most conveniently called from \ffunc{finish()}:
 
 \begin{cpp}
@@ -2585,7 +2575,7 @@ effect with local variables.
 It is possible to extend the NED language with new functions beyond the
 built-in ones. New functions are implemented in C++, and then compiled into
 the simulation model. When a simulation program starts up, the new
-functions are registered in the NED runtime, and become available for use
+functions are registered in the NED runtime and become available for use
 in NED and ini files.
 
 There are two methods to define NED functions. The
@@ -2600,7 +2590,7 @@ supports only certain cases. Both macros have several variants.
 
 The \fmac{Define\_NED\_Function()} macro lets you define new functions that
 can accept arguments of various data types (\ttt{bool}, \ttt{double},
-\ttt{string}, etc.), supports optional arguments and also variable
+\ttt{string}, etc.), support optional arguments and also variable
 argument lists (variadic functions).
 
 The macro has two variants:
@@ -2634,7 +2624,7 @@ Functions that can be used in NED expressions and in omnetpp.ini:
  Category "conversion":
   double : double double(any x)
     Converts x to double, and returns the result. A boolean argument becomes
-    0 or 1; a string is interpreted as number; an XML argument causes an error.
+    0 or 1; a string is interpreted as a number; an XML argument causes an error.
  ...
 \end{commandline}
 
@@ -2690,7 +2680,7 @@ Some examples:
 
 The first three examples define NED functions with the names \ttt{factorial},
 \ttt{isprime} and \ttt{sin}, with the obvious meanings. The fourth example
-can be the signature for a function that repeats a string $n$ times, and
+can be the signature for a function that repeats a string $n$ times and
 returns the concatenated result. The fifth example is the signature of the
 existing \ttt{uniform()} NED function; it accepts numbers both with and without
 measurement units (of course, when invoked with measurement units, both \ttt{a}
@@ -2698,7 +2688,7 @@ and \ttt{b} must have one, and the two must be compatible -- this should be chec
 by the C++ implementation). \ttt{uniform()} also accepts an optional third argument,
 an RNG index. The sixth example can be the signature of a \ttt{choose()}
 NED function that accepts an integer plus any number of additional arguments
-of any type, and returns the \textit{index}th one among them.
+of any type and returns the \textit{index}th one among them.
 
 \subsubsection{Implementing the NED Function}
 \label{sec:sim-lib:implementing-ned-function}
@@ -2712,10 +2702,10 @@ cValue function(cExpression::Context *context, cValue argv[], int argc);
 \end{cpp}
 
 As you can see, the function accepts an array of \cclass{cValue}
-objects, and returns a \cclass{cValue}; the \textit{argc-argv} style
+objects and returns a \cclass{cValue}; the \textit{argc-argv} style
 argument list should be familiar to you from the declaration of the C/C++
 \ttt{main()} function. \cclass{cValue} is a class that is used during
-the evaluation of NED expressions, and represents a value together with its
+the evaluation of NED expressions and represents a value together with its
 type.  The \ttt{context} argument contains the module or channel in the
 context of which the NED expression is being evaluated; it is useful for
 implementing NED functions like \ttt{getParentModuleIndex()}.
@@ -2762,7 +2752,7 @@ Define_NED_Function(ned_strlen, "int length(string s)");
 Note that since \fmac{Define\_NED\_Function()} expects the C++ function to
 be already declared, we place the function implementation in front of the
 \fmac{Define\_NED\_Function()} line. We also declare the function to be
-\ttt{static}, because its name doesn't need to be visible for the linker.
+\ttt{static}, because its name doesn't need to be visible to the linker.
 In the function body, we use \ttt{std::string}'s \ttt{size()} method to
 obtain the length of the string, and cast the result to \ttt{long}; the C++
 compiler will convert that into a \ttt{cValue} using \ttt{cValue}'s
@@ -2812,10 +2802,10 @@ deals with unit conversion. This is necessary because the \ttt{a} and
 \ttt{b} arguments are both quantities and may come in with different
 measurement units. We use the \ffunc{doubleValueInUnit()} function to
 obtain the numeric value of \ttt{b} in \ttt{a}'s measurement unit. If the
-two units are incompatible or only one of the parameters have a unit, an
-error will be raised. If neither parameters have a unit,
+two units are incompatible or only one of the parameters has a unit, an
+error will be raised. If neither parameter has a unit,
 \ffunc{doubleValueInUnit()} simply returns the stored \ttt{double}. Then we
-call the \ttt{uniform()} C++ function to actually generate a random number,
+call the \ttt{uniform()} C++ function to generate a random number,
 and return it in a temporary object with \ttt{a}'s measurement unit.
 Alternatively, we could have overwritten the numeric part of \ttt{a} with
 the result using \ffunc{setPreservingUnit()}, and returned just that. If
@@ -2833,7 +2823,7 @@ evaluator anyway when your function returns.
 \subsubsection{cValue In More Detail}
 \label{sec:sim-lib:cvalue-in-more-detail}
 
-In the previous section we have given an overview and demonstrated the basic
+In the previous section, we have given an overview and demonstrated the basic
 use of the \cclass{cValue} class; here we go into further details.
 
 The stored data type can be obtained with the \ffunc{getType()} function.
@@ -2878,7 +2868,7 @@ measurement unit part of the object. The \ffunc{convertUnit()} static
 \cclass{cValue} member function accepts three arguments: a quantity as a
 \ttt{double} and a unit, and a target unit; and returns the number in the
 target unit. A \ffunc{parseQuantity()} static member function parses
-a string that contains a quantity (e.g. \ttt{"5min 48s"}), and return
+a string that contains a quantity (e.g. \ttt{"5min 48s"}), and returns
 both the numeric value and the measurement unit. Another version of
 \ffunc{parseQuantity()} tries to return the value in a unit you specify.
 All functions raise an error if the unit conversion is not possible, e.g.
@@ -2892,7 +2882,7 @@ least the lifetime of the \cclass{cValue} object, or even longer if the
 same pointer propagates to other \cclass{cValue} objects. It is
 recommended that you only pass pointers that stay valid during the entire
 simulation. It is safe to use: (1) string constants from the code; (2) unit
-strings from other \cclass{cValue}s; and (3) pooled strings e.g. from a
+strings from other \cclass{cValue}s; and (3) pooled strings, e.g., from a
 \cclass{cStringPool} or from \cclass{cValue}'s static \ffunc{getPooled()}
 function.
 
@@ -3001,7 +2991,7 @@ redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
 However, if you need to store your objects in {\opp} objects like \cclass{cQueue}
 or you want to store {\opp} classes in your object,
-then you \textit{must} subclass from \cclass{cObject}.
+then you \textit{must} subclass \cclass{cObject}.
   \footnote{For simplicity, in these sections ``{\opp} object''
   should be understood as ``object of a class subclassed from
   \cclass{cObject}''}
@@ -3026,7 +3016,7 @@ virtual functions.
 Most classes in the simulation class library are descendants of
 \cclass{cObject}. When deriving a new class from \cclass{cObject}
 or a \cclass{cObject} descendant, one must redefine certain member
-functions so that objects of the new class can fully co-operate
+functions so that objects of the new class can fully cooperate
 with the simulation library classes. A list of those methods is
 presented below.
 
@@ -3043,7 +3033,7 @@ The following methods \textbf{must} be implemented:
         one that takes the object name string as \ttt{const char *}
         (recommended by convention), and another one with no arguments
         (must be present). The two are usually implemented as a single
-        method, with \ttt{nullptr} as default name string.
+        method, with \ttt{nullptr} as the default name string.
   \item \textit{Copy constructor}, which must have the following signature
         for a class \ttt{X}: \ttt{X(const X\&)}.
   \item \textit{Destructor}.
@@ -3075,7 +3065,7 @@ Implementation of the following methods is \textbf{recommended}:
 \begin{itemize}
   \item \textit{Object info,} \ffunc{str()}. The \ttt{str()} function
         should return a one-line string describing the object's contents or state.
-        The text returned by \ttt{str()} is displayed at several places in Qtenv.
+        The text returned by \ttt{str()} is displayed in several places in Qtenv.
         \footnote{Until {\opp} version 5.1, \ffunc{str()} was called \ffunc{info()}.
         There was also a \ffunc{detailedInfo()} method that was removed in the
         same version for lack of real usefulness.}
@@ -3104,8 +3094,8 @@ For example, an \ffilename{omnetpp.ini} entry such as
 rng-class = "cMersenneTwister"
 \end{inifile}
 
-would result in something like the following code to be executed
-for creating the RNG objects:
+would result in something like the following code being executed
+to create the RNG objects:
 
 \begin{cpp}
 cRNG *rng = check_and_cast<cRNG*>(createOne("cMersenneTwister"));
@@ -3125,17 +3115,17 @@ on the receiving side.
 \subsection{Details}
 \label{sec:sim-lib:subclassing-cobject-details}
 
-We'll go through the details using an example. We create a new
-class \ttt{NewClass}, redefine all above mentioned \cclass{cObject}
+We'll go through the details using an example. We will create a new
+class \ttt{NewClass}, redefine all the above-mentioned \cclass{cObject}
 member functions, and explain the conventions, rules and tips
 associated with them.
 To demonstrate as much as possible, the class will contain
 an \ttt{int} data member, dynamically allocated non-\cclass{cObject} data
 (an array of \cclass{double}s),
-an {\opp} object as data member (a \ttt{cQueue}), and
+an {\opp} object as a data member (a \ttt{cQueue}), and
 a dynamically allocated {\opp} object (a \ttt{cMessage}).
 
-The class declaration is the following. It contains the declarations
+The class declaration is as follows. It contains the declarations
 of all methods discussed in the previous section.
 
 \begin{cpp}
@@ -3231,7 +3221,7 @@ NewClass *NewClass::dup() const
 }
 \end{cpp}
 
-The \ttt{dup()} function  is usually just one line, like the one above.
+The \ttt{dup()} function is usually just one line, like the one above.
 
 \begin{cpp}
 NewClass& NewClass::operator=(const NewClass& other)
@@ -3245,7 +3235,7 @@ NewClass& NewClass::operator=(const NewClass& other)
 }
 \end{cpp}
 
-The assignment operator (above) first makes sure that will not try to copy
+The assignment operator (above) first makes sure it will not try to copy
 the object to itself, because that can be disastrous. If so (that is,
 \ttt{\&other==this}), the function returns immediately without doing anything.
 
@@ -3286,7 +3276,7 @@ the data where they point, and not just copy the pointer values.
 
 If the class contains pointers to {\opp} objects, you need
 to take ownership into account. If the contained object is \textit{not owned}
-then we assume it is a pointer to an ``external'' object, consequently
+then we assume it is a pointer to an ``external'' object, consequently,
 we only copy the pointer. If it is \textit{owned}, we duplicate
 it and become the owner of the new object. Details of ownership
 management will be covered in section \ref{sec:sim-lib:ownership-management}.
@@ -3341,7 +3331,7 @@ into them, but this is not limited to objects inserted into a container:
 From the user's point of view, ownership is managed transparently.
 For example, when you create a new \cclass{cMessage},
 it will be owned by the simple module. When you send it, it will
-first be handed over to (i.e. change ownership to) the FES\index{FES}, and,
+first be handed over to (i.e., change ownership to) the FES\index{FES}, and,
 upon arrival, to the destination simple module. When you encapsulate
 the message in another one, the encapsulating message will become
 the owner. When you decapsulate it again, the currently active
@@ -3356,8 +3346,8 @@ EV << "Owner of " << msg->getName() << " is: " <<
    << "(" << o->getClassName() << ") " << o->getFullPath() << endl;
 \end{cpp}
 
-The other direction, enumerating the objects owned can be implemented with
-the \ffunc{forEachChild()} method by it looping through all
+The other direction, enumerating the objects owned, can be implemented with
+the \ffunc{forEachChild()} method by looping through all
 contained objects and checking the owner of each object.
 
 \subsubsection{Why Do We Need This?}
@@ -3371,8 +3361,8 @@ serves other purposes in {\opp}:
 \begin{itemize}
     \item enables methods like \ttt{getFullPath()} to be implemented.
 
-    \item prevents certain types of programming errors, namely,
-    those associated with wrong ownership handling.
+    \item prevents certain types of programming errors related to incorrect
+    ownership handling.
 
     \item enables Qtenv to display the list of simulation objects
     present within a simple module. This is extremely useful for finding
@@ -3388,10 +3378,10 @@ by the ownership facility:
     encapsulated in another message, etc.
 
     \item attempts to send/schedule a message while it is still owned
-    by the simulation kernel (i.e. scheduled as a future event)
+    by the simulation kernel (i.e., scheduled as a future event)
 
-    \item attempts to send the very same message object to multiple
-    destinations at the same time (ie. to all connected modules)
+    \item attempts to send the same message object to multiple
+    destinations at the same time (i.e., to all connected modules)
 \end{itemize}
 
 For example, the \ffunc{send()} and \ffunc{scheduleAt()} functions check
@@ -3401,7 +3391,7 @@ owned by another module (already sent earlier?), or currently scheduled, or
 inside a queue, a message or some other object -- in either case, the
 module does not have any authority over it. When you get the error message
 (\ttt{"not owner of object"}), you need to carefully examine the error
-message to determine which object has ownership of the message, and correct
+message to determine which object has ownership of the message and correct
 the logic that caused the error.
 
 The above errors are easy to make in the code, and if not detected
@@ -3418,7 +3408,7 @@ module.
 Ownership is managed transparently for the user, but this mechanism
 has to be supported by the participating classes themselves.
 It will be useful to look inside \cclass{cQueue} and \cclass{cArray},
-because they might give you a hint what behavior you need
+because they might give you a hint of what behavior you need
 to implement when you want to use non-{\opp} container classes
 to store messages or other \cclass{cOwnedObject}-based objects.
 
@@ -3429,19 +3419,19 @@ to store messages or other \cclass{cOwnedObject}-based objects.
 \cclass{cArray} and \cclass{cQueue} have internal data structures
 (array and linked list) to store the objects which are inserted
 into them. However, they do \textit{not} necessarily own all of these
-objects.  (Whether they own an object or not can be determined
+objects. (Whether they own an object or not can be determined
 from that object's \ffunc{getOwner()} pointer.)
 
-The default behaviour of \cclass{cQueue} and \cclass{cArray} is
+The default behavior of \cclass{cQueue} and \cclass{cArray} is
 to take ownership of the objects inserted.
 This behavior can be changed via the \textit{takeOwnership} flag.
 
 Here is what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}) does:
 \begin{itemize}
-    \item insert the object into the internal array/list data structure
+    \item inserts the object into the internal array/list data structure
 
-    \item if the \textit{takeOwnership} flag is true, take ownership
-    of the object, otherwise just leave it with its original owner
+    \item if the \textit{takeOwnership} flag is true, it takes ownership
+    of the object, otherwise just leaves it with its original owner
 \end{itemize}
 
 The corresponding source code:
@@ -3467,15 +3457,15 @@ Here is what the \textit{remove} family of operations in \cclass{cQueue}
 (or \cclass{cArray}) does:
 
 \begin{itemize}
-    \item remove the object from the internal array/list data structure
+    \item removes the object from the internal array/list data structure
 
     \item if the object is actually owned by this \cclass{cQueue}/\cclass{cArray},
-    release ownership of the object, otherwise just leave it with
+    releases ownership of the object, otherwise just leaves it with
     its current owner
 \end{itemize}
 
-After the object was removed from a \cclass{cQueue}/\cclass{cArray},
-you may further use it, or if it is not needed any more, you can delete it.
+After the object is removed from a \cclass{cQueue}/\cclass{cArray},
+you may further use it, or if it is no longer needed, you can delete it.
 
 The \textit{release ownership} phrase requires further explanation.
 When you remove an object from a queue or array, the ownership
@@ -3546,7 +3536,7 @@ left unchanged.
 % This template should be followed in other places too. Like cMessage's
 % encapsulation...
 %
-% \ begin{verbatim}
+%\ begin{verbatim}
 % void cMessage::encapsulate(cMessage *msg)
 % {
 %     if (encapmsg)

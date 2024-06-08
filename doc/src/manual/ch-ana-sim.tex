@@ -1,87 +1,86 @@
 \chapter{Result Recording and Analysis}
-\label{cha:ana-sim}
+\label{cha:result-recording}
 
 \section{Result Recording}
 \label{sec:ana-sim:result-recording}
 
-{\opp} provides built-in support for recording simulation results, via
+{\opp} offers built-in support for recording simulation results through
 \textit{output vectors} and \textit{output scalars}. Output vectors are
-time series data, recorded from simple modules or channels. You can use
-output vectors to record end-to-end delays or round trip times of packets,
-queue lengths, queueing times, module state, link utilization, packet
-drops, etc. -- anything that is useful to get a full picture of what
-happened in the model during the simulation run.
+time series data recorded from simple modules or channels. They can be used
+to record end-to-end delays, round-trip times of packets, queue lengths,
+queueing times, module state, link utilization, packet drops, etc. - anything
+that provides a comprehensive understanding of the model's behavior during
+the simulation.
 
-Output scalars are summary results, computed during the simulation and
-written out when the simulation completes. A scalar result may be an
-(integer or real) number, or may be a statistical summary comprised of
-several fields such as count, mean, standard deviation, sum, minimum,
-maximum, etc., and optionally histogram data.
+Output scalars are summary results computed during the simulation and
+written out upon completion. A scalar result may be a (integer or real)
+number or a statistical summary comprised of several fields, such as count,
+mean, standard deviation, sum, minimum, maximum, etc., and optionally,
+histogram data.
 
-Results may be collected and recorded in two ways:
+Results can be collected and recorded in two ways:
 
 \begin{enumerate}
   \item Based on the signal mechanism, using declared statistics;
   \item Directly from C++ code, using the simulation library
 \end{enumerate}
 
-The second method has been the traditional way of recording results. The
+The second method has traditionally been used for result recording. The
 first method, based on signals and declared statistics, was introduced in
-{\opp} 4.1, and it is preferable because it allows you to always record the
-results in the form you need, without requiring heavy instrumentation or
-continuous tweaking of the simulation model.
+{\opp} 4.1 and is preferable because it allows you to always record the
+results in the desired form without requiring extensive instrumentation or
+constant adjustments to the simulation model.
 
 \subsection{Using Signals and Declared Statistics}
 \label{sec:ana-sim:signals-and-statistics}
 
 This approach combines the signal mechanism (see
 \ref{sec:simple-modules:signals}) and NED properties (see
-\ref{sec:ned-lang:properties}) in order to de-couple the generation of
-results from their recording, thereby providing more flexibility in what to
-record and in which form. The details of the solution have been described
-in section \ref{sec:simple-modules:signal-based-statistics} in detail; here we
-just give a short overview.
+\ref{sec:ned-lang:properties}) to decouple the generation and recording of
+results, providing greater flexibility in deciding what to record and in
+which form. The details of the solution are described in section
+\ref{sec:simple-modules:signal-based-statistics} in detail; here we provide
+a brief overview.
 
-Statistics are declared in the NED files with the \ttt{@statistic} property,
+Statistics are declared in the NED files using the \ttt{@statistic} property,
 and modules emit values using the signal mechanism. The simulation framework
 records data by adding special result file writer listeners to the signals.
-By being able to choose what listeners to add, the user can control what to
-record in the result files and what computations to apply before recording.
-The aforementioned section \ref{sec:simple-modules:signal-based-statistics}
-also explains how to instrument simple modules and channels for signals-based
-result recording.
+By choosing which listeners to add, the user can control what gets recorded
+in the result files and what computations to apply before recording. The aforementioned
+section \ref{sec:simple-modules:signal-based-statistics} also explains how to instrument
+simple modules and channels for signals-based result recording.
 
-The signals approach allows for calculation of aggregate statistics (such as the
+The signals approach allows for the calculation of aggregate statistics (such as the
 total number of packet drops in the network) and for implementing a warm-up
-period without support from module code. It also allows you to write
-dedicated statistics collection modules for the simulation, also without
-touching existing modules.
+period without requiring support from module code. It also allows you to write
+dedicated statistics collection modules for the simulation without modifying
+existing modules.
 
-The same configuration options that were used to control result recording
-with \cclass{cOutVector} and \ffunc{recordScalar()} also work when utilizing
-the signals approach, and there are extra configuration options to make
-the additional possibilities accessible.
+The same configuration options used to control result recording
+with \cclass{cOutVector} and \ffunc{recordScalar()} also apply when using
+the signals approach, and extra configuration options are available to
+provide additional functionality.
 
 \subsection{Direct Result Recording}
 \label{sec:ana-sim:direct-result-recording}
 
-With this approach, scalar and statistics results are collected in class
-variables inside modules, then recorded in the finalization phase via
-\ffunc{recordScalar()} calls. Vectors are recorded using
+With this approach, scalar and statistical results are collected as class
+variables within modules and then recorded during the finalization phase
+using \ffunc{recordScalar()} calls. Vectors are recorded using
 \cclass{cOutVector} objects. Use \cclass{cStdDev} to record summary statistics
-like mean, standard deviation, minimum/maximum, and histogram-like classes
-(\cclass{cHistogram}, \cclass{cPSquare}, \cclass{cKSplit}) to record the
-distribution. These classes are described in sections
+such as mean, standard deviation, minimum/maximum, and histogram-like classes
+(\cclass{cHistogram}, \cclass{cPSquare}, \cclass{cKSplit}) to
+record the distribution. These classes are described in sections
 \ref{sec:sim-lib:statistics} and \ref{sec:sim-lib:result-recording}.
-Recording of individual vectors, scalars and statistics can be enabled or
-disabled via the configuration (ini file), and it is also the place to set
-up recording intervals for vectors.
+Recording of individual vectors, scalars, and statistics can be enabled or
+disabled via the configuration (ini) file, where recording intervals for
+vectors can also be set.
 
 The drawback of recording results directly from modules is that result
-recording is hardcoded in modules, and even simple requirement changes
-(e.g. record the average delay instead of each delay value, or vice versa)
-requires either code change or an excessive amount of result collection
-code in the modules.
+recording is hardcoded in the modules, and even simple requirement changes
+(e.g., recording the average delay instead of each delay value, or vice versa)
+require either code modification or an excessive amount of result collection
+code within the modules.
 
 
 
@@ -91,16 +90,14 @@ code in the modules.
 \subsection{Result File Names}
 \label{sec:ana-sim:result-file-names}
 
-Simulation results are recorded into \textit{output scalar files} that
-actually hold statistics results as well, and \textit{output vector
-files}. The usual file extension for scalar files is \ttt{.sca}, and
-for vector files \ttt{.vec}.
+Simulation results are recorded into \textit{output scalar files} that also hold
+statistics results, and \textit{output vector files}. The usual file extension
+for scalar files is \ttt{.sca}, and for vector files \ttt{.vec}.
 
-Every simulation run generates a single scalar file and a vector file.
-The file names can be controlled with the \fconfig{output-vector-file}
-and \fconfig{output-scalar-file} options. These options rarely need
-to be used, because the default values are usually fine. The defaults
-are:
+Every simulation run generates a single scalar file and a vector file. The file
+names can be controlled with the \fconfig{output-vector-file} and
+\fconfig{output-scalar-file} options. These options rarely need to be used
+because the default values are usually sufficient. The defaults are:
 
 \begin{inifile}
 output-vector-file = "${resultdir}/${configname}-${runnumber}.vec"
@@ -109,11 +106,10 @@ output-scalar-file = "${resultdir}/${configname}-${runnumber}.sca"
 
 Here, \ttt{\$\{resultdir\}} is the value of the \fconfig{result-dir}
 configuration option which defaults to \ttt{results/}, and
-\ttt{\$\{configname\}} and \ttt{\$\{runnumber\}} are the name of
-the configuration name in the ini file (e.g. \ttt{[Config PureAloha]}),
-and the run number. Thus, the above defaults generate file names
-like \ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec},
-and so on.
+\ttt{\$\{configname\}} and \ttt{\$\{runnumber\}} are the names of the
+configuration name in the ini file (e.g., \ttt{[Config PureAloha]}), and the run
+number, respectively. Thus, the above defaults generate file names such as
+\ttt{results/PureAloha-0.vec}, \ttt{results/PureAloha-1.vec}, and so on.
 
 \begin{note}
   In {\opp} 3.x, the default result file names were \ttt{omnetpp.vec} and
@@ -127,47 +123,47 @@ and so on.
 \subsection{Enabling/Disabling Result Items}
 \label{sec:ana-sim:disabling-result-items}
 
-The recording of simulation results can be enabled/disabled at multiple levels
-with various configuration options:
+The recording of simulation results can be enabled or disabled at multiple
+levels with various configuration options:
 
 \begin{itemize}
-  \item All recording from a \fprop{@statistic} can be enabled/disabled together
-        using the \fconfig{statistic-recording} option;
+  \item All recording from a \fprop{@statistic} can be enabled or disabled
+    together using the \fconfig{statistic-recording} option.
   \item Recording of a scalar or a statistic object can be controlled with the
-        \fconfig{scalar-recording} option;
-  \item Recording of an output vector can be controlled with the \fconfig{vector-recording}
-        option;
+    \fconfig{scalar-recording} option.
+  \item Recording of an output vector can be controlled with the
+    \fconfig{vector-recording} option.
   \item Recording of the bins of a histogram object can be controlled with the
-        \fconfig{bin-recording} option.
+    \fconfig{bin-recording} option.
 \end{itemize}
 
-All the above options are boolean per-object options, thus, they have similar syntaxes:
+All the above options are boolean per-object options; thus, they have similar syntaxes:
 
 \begin{itemize}
-\item \textit{<module-path>.<statistic-name>.}\fconfig{statistic-recording}\ttt{ = true/false}
-\item \textit{<module-path>.<scalar-name>.}\fconfig{scalar-recording}\ttt{ = true/false}
-\item \textit{<module-path>.<vector-name>.}\fconfig{vector-recording}\ttt{ = true/false}
-\item \textit{<module-path>.<histogram-name>.}\fconfig{bin-recording}\ttt{ = true/false}
+  \item \textit{<module-path>.<statistic-name>.}\fconfig{statistic-recording}\ttt{ = true/false}
+  \item \textit{<module-path>.<scalar-name>.}\fconfig{scalar-recording}\ttt{ = true/false}
+  \item \textit{<module-path>.<vector-name>.}\fconfig{vector-recording}\ttt{ = true/false}
+  \item \textit{<module-path>.<histogram-name>.}\fconfig{bin-recording}\ttt{ = true/false}
 \end{itemize}
 
-For example, all recording from the following statistic
+For example, recording from the following statistic:
 
 \begin{ned}
 @statistic[queueLength](record=max,timeavg,vector);
 \end{ned}
 
-can disabled with this ini file line:
+can be disabled with this ini file line:
 
 \begin{inifile}
 **.queueLength.statistic-recording = false
 \end{inifile}
 
-When a scalar, vector, or histogram is recorded using a \fprop{@statistic},
-its name is derived from the statistic name, by appending the recording
-mode after a semicolon. For example, the above statistic will generate 	the
-scalars named \ttt{queueLength:max} and \ttt{queueLength:timeavg}, and the
-vector named \ttt{queueLength:vector}. Their recording can be individually
-disabled with the following lines:
+When a scalar, vector, or histogram is recorded using a \fprop{@statistic}, its
+name is derived from the statistic name by appending the recording mode after a
+semicolon. For example, the above statistic will generate the scalars named
+\ttt{queueLength:max} and \ttt{queueLength:timeavg}, and the vector named
+\ttt{queueLength:vector}. Their recording can be individually disabled with the
+following lines:
 
 \begin{inifile}
 **.queueLength:max.scalar-recording = false
@@ -175,12 +171,12 @@ disabled with the following lines:
 **.queueLength:vector.vector-recording = false
 \end{inifile}
 
-The statistic, scalar or vector name part in the key may also contain
-wildcards. This can be used, for example, to handle result items with
-similar names together, or, by using \ttt{*} as name, for filtering by
-module or to disable all recording. The following example turns off
-recording of all scalar results except those called \ttt{latency}, and those
-produced by modules named \ttt{tcp}:
+The statistic, scalar, or vector name part in the key may also contain
+wildcards. This can be used, for example, to handle result items with similar
+names together or, by using \ttt{*} as the name, for filtering by module or to
+disable all recording. The following example turns off recording of all scalar
+results except those called \ttt{latency} and those produced by modules named
+\ttt{tcp}:
 
 \begin{inifile}
 **.tcp.*.scalar-recording = true
@@ -197,61 +193,60 @@ To disable all result recording, use the following three lines:
 \end{inifile}
 
 The first line is not strictly necessary. However, it may improve runtime
-performance because it causes result recorders not to be added, instead of
-adding and then disabling them.
-
+performance because it causes result recorders not to be added instead of adding
+and then disabling them.
 
 \subsection{Selecting Recording Modes for Signal-Based Statistics}
 \label{sec:ana-sim:configuring-recording-modes}
 
-Signal-based statistics recording has been designed so that it can be
-easily configured to record a ``default minimal'' set of results, a
-``detailed'' set of results, and a custom set of results (by modifying
-the previous ones, or defined from scratch).
+Signal-based statistics recording has been designed so that it can be easily
+configured to record a ``default minimal'' set of results, a ``detailed'' set of
+results, and a custom set of results (by modifying the previous ones or defining
+from scratch).
 
-Recording can be tuned with the \fconfig{result-recording-modes}
-per-object configuration option. The ``object'' here is the statistic,
-which is identified by the full path (hierarchical name) of the module or
-connection channel object in question, plus the name of the statistic
-(which is the ``index'' of \fprop{@statistic} property, i.e. the name in
-the square brackets). Thus, configuration keys have the syntax
+Recording can be tuned with the \fconfig{result-recording-modes} per-object
+configuration option. The ``object'' here is the statistic, which is identified by
+the full path (hierarchical name) of the module or connection channel object in
+question, plus the name of the statistic (which is the ``index'' of
+\fprop{@statistic} property, i.e., the name in the square brackets). Thus,
+configuration keys have the syntax
 \textit{<module-path>.<statistic-name>.}\ttt{result-recording-modes=}.
 
-The \fconfig{result-recording-modes} option accepts one or more items as value,
-separated by comma. An item may be a result recording mode (surprise!), and
-two words with a special meaning, \ttt{default} and \ttt{all}:
+The \fconfig{result-recording-modes} option accepts one or more items as a
+value, separated by a comma. An item may be a result recording mode and two
+words with a special meaning: \ttt{default} and \ttt{all}.
 
 \begin{itemize}
-\item A \textit{result recording mode} means any item that may occur in the
-      \ttt{record} key of the \fprop{@statistic} property; for example,
-      \ttt{count}, \ttt{sum}, \ttt{mean}, \ttt{vector((count-1)/2)}.
-\item \tbf{\ttt{default}} stands for the set of non-optional items from
-      the \fprop{@statistic} property's \ttt{record} list, that is, those
-      without question marks.
-\item \tbf{\ttt{all}} means all items from the \fprop{@statistic} property's
-      \ttt{record} list, including the ones with question marks.
+  \item A \textit{result recording mode} refers to any item that may occur in the
+    \ttt{record} key of the \fprop{@statistic} property; for example, \ttt{count},
+    \ttt{sum}, \ttt{mean}, \ttt{vector((count-1)/2)}.
+  \item \ttt{default} stands for the set of non-optional items from the
+    \fprop{@statistic} property's \ttt{record} list, i.e., those without question
+    marks.
+  \item \ttt{all} means all items from the \fprop{@statistic} property's
+    \ttt{record} list, including the ones with question marks.
 \end{itemize}
 
 The default value is \ttt{default}.
 
-A lone ``-'' as option value disables all recording modes.
+A lone ``-'' as the option value disables all recording modes.
 
 \textit{Recording mode} items in the list may be prefixed with ``+'' or
 ``-'' to add/remove them from the set of result recording modes. The
 initial set of result recording modes is \ttt{default}; if the first item
 is prefixed with ``+'' or ``-'', then that and all subsequent items are
-understood as modifying the set; if the first item does not start with with
+understood as modifying the set; if the first item does not start with
 ``+'' or ``-'', then it replaces the set, and further items are understood
 as modifying the set.
 
-This sounds more complicated than it is; an example will make it clear.
+This may sound more complicated than it is, and an example will make it clear.
 Suppose we are configuring the following statistic:
 
 \begin{ned}
 @statistic[foo](record=count,mean,max?,vector?);
 \end{ned}
 
-With the following the ini file lines (see results in comments):
+With the following ini file lines (see results in comments):
 
 \begin{inifile}
 **.result-recording-modes = default  # --> count, mean
@@ -263,27 +258,26 @@ With the following the ini file lines (see results in comments):
 **.result-recording-modes = all,-vector,+histogram  # --> count,mean,max,histogram
 \end{inifile}
 
-Here is another example which shows how to write a more specific option
-key. The following line applies to \ttt{queueLength} statistics of
-\ttt{fifo[]} submodule vectors anywhere in the network:
+Here is another example that shows how to write a more specific option key. The
+following line applies to \ttt{queueLength} statistics of \ttt{fifo[]} submodule
+vectors anywhere in the network:
 
 \begin{inifile}
 **.fifo[*].queueLength.result-recording-modes = +vector  # default plus vector
 \end{inifile}
 
-In the result file, the recorded scalars will be suffixed with the recording mode,
-i.e. the mean of \ttt{queueingTime} will be recorded as \ttt{queueingTime:mean}.
-
+In the result file, the recorded scalars will be suffixed with the recording
+mode; for example, the mean of \ttt{queueingTime} will be recorded as
+\ttt{queueingTime:mean}.
 
 \subsection{Warm-up Period}
 \label{sec:ana-sim:warmup-period}
 
-The \fconfig{warmup-period} option specifies the length of the initial
-warm-up period. When set, results belonging to the first $x$ seconds
-of the simulation will not be recorded into output vectors, and will
-not be counted into the calculation of output scalars.
-This option is useful for steady-state simulations. The default is 0s
-(no warmup period).
+The \fconfig{warmup-period} option specifies the length of the initial warm-up
+period. When set, results belonging to the first $x$ seconds of the simulation
+will not be recorded into output vectors and will not be counted in the
+calculation of output scalars. This option is useful for steady-state
+simulations. The default is 0s (no warm-up period).
 
 Example:
 
@@ -296,19 +290,19 @@ warmup-period = 20s
 \label{sec:ana-sim:refining-warmup-period-handling}
 
 Warm-up period handling works by inserting a special filter, a \textit{warm-up
-period filter} into the filter/recorder chain if a warm-up period is requested.
-This filter acts like a timed switch: it discards values during the specified warm-up
-period, and allows them to pass through afterwards.
+period filter}, into the filter/recorder chain if a warm-up period is requested.
+This filter acts like a timed switch: it discards values during the specified
+warm-up period and allows them to pass through afterwards.
 
 {\opp} allows you to disable the automatic adding of warm-up filters by
-specifying \ttt{autoWarmupFilter=false} in the \ttt{@statistic} as an attribute,
+specifying \ttt{autoWarmupFilter=false} in the \ttt{@statistic} as an attribute
 and manually placing such filters (\ttt{warmup}) instead.
 
 Why is this necessary? By default, the filter is inserted at the front of the
 filter/recorder chain of every statistic. However, the front is not always the
-correct place for the warm-up period filter. Consider for example, computing the
-number of packets in a (compound) queue as the difference between the number of
-arrivals and departures from the queue. This can be achieved using
+correct place for the warm-up period filter. Consider, for example, computing
+the number of packets in a (compound) queue as the difference between the number
+of arrivals and departures from the queue. This can be achieved using
 \ttt{@statistic} as follows:
 
 \begin{ned}
@@ -325,13 +319,13 @@ following expression for the statistic's \ttt{source} attribute:
 count(warmup(pkIn)) - count(warmup(pkOut))
 \end{ned}
 
-which is apparently incorrect, because the \textit{count} filters only start
+which is apparently incorrect because the \textit{count} filters only start
 counting when the warm-up period is over. Thus, the measured queue length will
 start from zero when the warm-up period is over, even though the queue might not
 be empty! In fact, if the first event after the warm-up period is a departure,
 the measured queue length will even go negative.
 
-The right solution would be put the \ttt{warmup} filter at the end, like so:
+The correct solution would be to put the \ttt{warmup} filter at the end like so:
 
 \begin{ned}
 warmup(count(pkIn)-count(pkOut))
@@ -350,9 +344,9 @@ Thus, the correct form of the queue length statistic is the following:
 \label{sec:ana-sim:warmup-period-manual-result-recording}
 
 Results recorded via signal-based statistics automatically obey the warm-up
-period setting, but modules that compute and record scalar results
-manually (via \ffunc{recordScalar()}) need to be modified so that they take
-the warm-up period into account.
+period setting, but modules that compute and record scalar results manually (via
+\ffunc{recordScalar()}) need to be modified so that they take the warm-up period
+into account.
 
 \begin{note}
 When configuring a warm-up period, make sure that modules that compute and
@@ -360,9 +354,9 @@ record scalar results manually via \ffunc{recordScalar()} actually obey the
 warm-up period in the C++ code.
 \end{note}
 
-The warm-up period is available via the \ffunc{getWarmupPeriod()} method of
-the simulation manager object, so the C++ code that updates the corresponding
-state variables needs to be surrounded with an \textit{if} statement:
+The warm-up period is available via the \ffunc{getWarmupPeriod()} method of the
+simulation manager object, so the C++ code that updates the corresponding state
+variables needs to be surrounded with an \textit{if} statement.
 
 Old:
 
@@ -381,28 +375,26 @@ if (simTime() >= getSimulation()->getWarmupPeriod())
 \subsection{Output Vectors Recording Intervals}
 \label{sec:ana-sim:vector-recording-intervals}
 
-The size of output vector files can easily reach several gigabytes,
-but very often, only some of the recorded statistics are
-interesting to the analyst. In addition to selecting which vectors to
-record, {\opp} also allows one to specify one or more collection intervals.
+The size of output vector files can easily reach several gigabytes, but very
+often, only some of the recorded statistics are interesting to the analyst. In
+addition to selecting which vectors to record, {\opp} also allows one to specify
+one or more collection intervals.
 
 The latter can be configured with the \fconfig{vector-recording-intervals}
 per-object option. The syntax of the configuration option is
 \textit{<module-path>.<vector-name>.}\ttt{vector-recording-intervals=}\textit{<intervals>},
-where both \textit{<module-path>} and \textit{<vector-name>} may
-contain wildcards (see \ref{sec:config-sim:wildcards}).
-\textit{<vector-name>} is the vector name, or the name string of the
-\ffunc{cOutVector} object. By default, all output vectors are turned
-on for the whole duration the simulation.
+where both \textit{<module-path>} and \textit{<vector-name>} may contain
+wildcards (see \ref{sec:config-sim:wildcards}). \textit{<vector-name>} is the
+vector name or the name string of the \ffunc{cOutVector} object. By default, all
+output vectors are enabled for the whole duration of the simulation.
 
 One can specify one or more intervals in the \textit{<startTime>..<stopTime>}
-syntax, separated by comma. \textit{<startTime>} or \textit{<stopTime>} need
-to be given with measurement units, and both can be omitted to denote
-the beginning and the end of the simulation, respectively.
+syntax, separated by a comma. \textit{<startTime>} or \textit{<stopTime>} need
+to be given with measurement units, and both can be omitted to denote the
+beginning and the end of the simulation, respectively.
 
 The following example limits all vectors to three intervals, except
-\ttt{dropCount} vectors which will be recorded during the whole
-simulation run:
+\ttt{dropCount} vectors which will be recorded during the whole simulation run:
 
 \begin{inifile}
 **.dropCount.vector-recording-intervals = 0..
@@ -413,10 +405,10 @@ simulation run:
 \label{sec:ana-sim:vector-eventnum-recording}
 
 A third per-vector configuration option is \fconfig{vector-record-eventnumbers},
-which specifies whether to record event numbers for an output vector.
-(Simulation time and value are always recorded. Event numbers are needed
-by the Sequence Chart Tool, for example.) Event number recording is enabled
-by default; it may be turned off to save disk space.
+which specifies whether to record event numbers for an output vector (simulation
+time and value are always recorded).\footnote{Event numbers are needed
+by the Sequence Chart Tool, for example.} Event number recording is enabled by
+default and may be turned off to save disk space.
 
 \begin{inifile}
 **.vector-record-eventnumbers = false
@@ -424,117 +416,110 @@ by default; it may be turned off to save disk space.
 
 If the (default) \cclass{cIndexedFileOutputVectorManager} class is used to
 record output vectors, there are two more options to fine-tune its resource
-usage. \ttt{output-vectors-memory-limit} specifies the total memory that
-can be used for buffering output vectors. Larger values produce less
-fragmented vector files (i.e. cause vector data to be grouped into larger
-chunks), and therefore allow more efficient processing later.
-\ttt{vector-max-buffered-values} specifies the maximum number of values to
-buffer per vector, before writing out a block into the output vector file.
-The default is no per-vector limit (i.e. only the total memory limit is in
-effect.)
-
+usage. \ttt{output-vectors-memory-limit} specifies the total memory that can be
+used for buffering output vectors. Larger values produce less-fragmented vector
+files (i.e., cause vector data to be grouped into larger chunks) and therefore
+allow more efficient processing later. \ttt{vector-max-buffered-values}
+specifies the maximum number of values to buffer per vector before writing out a
+block into the output vector file. The default is no per-vector limit (i.e.,
+only the total memory limit is in effect).
 
 \subsection{Saving Parameters as Scalars}
 \label{sec:ana-sim:saving-parameters-as-scalars}
 
-When you are running several simulations with different parameter
-settings, you will usually want to refer to selected
-input parameters in the result analysis as well -- for example when
-drawing a throughput (or response time) versus load (or network
-background traffic) plot. Average throughput or response time numbers
-are saved into the output scalar files, and it is useful for the input
-parameters to get saved into the same file as well.
+When running several simulations with different parameter settings, it is often
+useful to refer to selected input parameters in the result analysis as well. For
+example, when drawing a throughput (or response time) versus load (or network
+background traffic) plot, average throughput or response time numbers are saved
+into the output scalar files. Therefore, it is also useful for the input
+parameters to be saved into the same file.
 
-For convenience, {\opp} automatically saves the iteration variables
-into the output scalar file if they have numeric value, so they can
-be referred to during result analysis.
+For convenience, {\opp} automatically saves the iteration variables into the
+output scalar file if they have a numeric value so that they can be referred to
+during result analysis.
 
 \begin{warning}
-    If an iteration variable has non-numeric value, it will not be recorded
-    automatically and cannot be used during analysis. This can happen
-    unintentionally if you specify units inside an iteration variable list:
+    If an iteration variable has a non-numeric value, it will not be recorded
+    automatically and cannot be used during analysis. This can unintentionally
+    happen if you specify units inside an iteration variable list:
+
 \begin{inifile}
 **.param = exponential( ${mean=0.2s, 0.4s, 0.6s} )  #WRONG!
 **.param = exponential( ${mean=0.2, 0.4, 0.6}s )    #OK
 \end{inifile}
 \end{warning}
 
-Module parameters can also be saved, but this has to be
-requested by the user, by configuring \ttt{param-record-as-scalar=true} for the
-parameters in question. The configuration key is a pattern that
-identifies the parameter, plus \ttt{.param-record-as-scalar}. An example:
+Module parameters can also be saved, but this has to be requested by the user by
+configuring \ttt{param-record-as-scalar=true} for the parameters in question.
+The configuration key is a pattern that identifies the parameter plus
+\ttt{.param-record-as-scalar}. An example:
 
 \begin{inifile}
 **.host[*].networkLoad.param-record-as-scalar = true
 \end{inifile}
 
-This looks simple enough, however there are three pitfalls:
-non-numeric parameters, too many matching parameters, and
-random-valued volatile parameters.
+This looks simple enough, but there are three pitfalls: non-numeric parameters,
+too many matching parameters, and randomly valued volatile parameters.
 
-First, the scalar file only holds numeric results, so non-numeric
-parameters cannot be recorded -- that will result in a runtime
-error.
+First, the scalar file only holds numeric results, so non-numeric parameters
+cannot be recorded; otherwise, a runtime error will occur.
 
-Second, if wildcards in the pattern match too many parameters, that
-might unnecessarily increase the size of the scalar file. For example,
-if the \ttt{host[]} module vector size is 1000 in the example below, then the
-same value (3) will be saved 1000 times into the scalar file, once for
-each host.
+Second, if wildcards in the pattern match too many parameters, the size of the
+scalar file might unnecessarily increase. For example, if the \ttt{host[]}
+module vector size is 1000 in the example below, then the same value (3) will be
+saved 1000 times into the scalar file, once for each host.
 
 \begin{inifile}
 **.host[*].startTime = 3
 **.host[*].startTime.param-record-as-scalar = true  # saves "3" once for each host
 \end{inifile}
 
-Third, recording a random-valued volatile parameter will just save a
-random number from that distribution. This is rarely what you need, and
-the simulation kernel will also issue a warning if this happens.
+Third, recording a random-valued volatile parameter will save a random number
+from that distribution. This is rarely what you need, and the simulation kernel
+will also issue a warning if this happens.
 
 \begin{inifile}
 **.interarrivalTime = exponential(1s)
 **.interarrivalTime.param-record-as-scalar = true  # wrong: saves random values!
 \end{inifile}
 
-These pitfalls are quite common in practice, so it is usually better
-to rely on the iteration variables in the result analysis.
-That is, one can rewrite the above example as
+These pitfalls are quite common in practice, so it is usually better to rely on
+the iteration variables in the result analysis. That is, one can rewrite the
+above example as:
 
 \begin{inifile}
 **.interarrivalTime = exponential( ${mean=1}s )
 \end{inifile}
 
-and refer to the \ttt{\$mean} iteration variable instead of the
-interarrivalTime module parameter(s) during result analysis.
-\ttt{param-record-as-scalar=true} is not needed, because iteration variables are
-automatically saved into the result files.
-
+and refer to the \ttt{\$mean} iteration variable instead of the interarrivalTime
+module parameter(s) during result analysis. \ttt{param-record-as-scalar=true} is
+not needed because iteration variables are automatically saved into the result
+files.
 
 \subsection{Recording Precision}
 \label{sec:ana-sim:outputfile-precision}
 
-Output scalar and output vector files are text files, and floating point
-values (\ttt{double}s) are recorded into it using \ttt{fprintf()}'s
-\ttt{"\%g"} format. The number of significant digits can be configured
-using the \fconfig{output-scalar-precision} and \fconfig{output-vector-precision}
+Output scalar and output vector files are text files, and floating-point values
+(\ttt{double}s) are recorded into them using the \ttt{fprintf()} function with
+the \ttt{"\%g"} format. The number of significant digits can be configured using
+the \fconfig{output-scalar-precision} and \fconfig{output-vector-precision}
 configuration options.
 
-The default precision is 12 digits. The following has to be considered when
-setting a different value:
+The default precision is 12 digits. When setting a different value, the
+following considerations apply:
 
-IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which is
-roughly equivalent to 16 decimal places (52*log(2)/log(10)). However, due
-to rounding errors, usually only 12..14 digits are correct, and the rest is
-pretty much random garbage which should be ignored. However, when you
-convert the decimal representation back into a \ttt{double} for result
-processing, an additional small error will occur, because 0.1, 0.01, etc.
-cannot be accurately represented in binary. This conversion error is
-usually smaller than what that the \ttt{double} variable already had
-before recording into the file. However, if it is important, you can
-eliminate this error by setting the recording precision to 16 digits or
-more (but again, be aware that the last digits are garbage). The practical
-upper limit is 17 digits, setting it higher doesn't make any difference in
-\ttt{fprintf()}'s output.
+IEEE-754 doubles are 64-bit numbers. The mantissa is 52 bits, which is roughly
+equivalent to 16 decimal places (52*log(2)/log(10)). However, due to rounding
+errors, usually only 12 to 14 digits are correct, and the rest are essentially
+random garbage that should be ignored. Furthermore, when converting the decimal
+representation back into a \ttt{double} for result processing, an additional
+small error will occur because 0.1, 0.01, etc., cannot be accurately represented
+in binary. This conversion error is usually smaller than what the \ttt{double}
+variable already had before recording it into the file. However, if it is
+important, the recording precision can be set to 16 digits or more to eliminate
+this error (but again, be aware that the last digits are garbage). The practical
+upper limit is 17 digits; setting it higher does not make any difference in the
+output of \ttt{fprintf()}.
 
 % To see finite machine precision and rounding errors, try this code:
 %
@@ -564,27 +549,26 @@ upper limit is 17 digits, setting it higher doesn't make any difference in
 % For the complexity of the issue, see "What Every Computer Scientist
 % Should Know About Floating-Point Arithmetic" by David Goldberg.
 
-Errors resulting from converting to/from decimal representation can be
-eliminated by choosing an output vector/output scalar manager class
-which stores \ttt{double}s in their native binary form.
-The appropriate configuration options are \fconfig{outputvectormanager-class}
-and \fconfig{outputvectormanager-class}. For example,
-\cclass{cMySQLOutputScalarManager} and \cclass{cMySQLOutputScalarManager}
-provided in \ttt{samples/database} fulfill this requirement.
+Errors resulting from rounding and conversion can be eliminated by choosing an
+output vector/output scalar manager class that stores \ttt{double}s in their
+native binary form. The appropriate configuration options are
+\fconfig{outputvectormanager-class} and \fconfig{outputvectormanager-class}. For
+example, \cclass{cMySQLOutputScalarManager} and
+\cclass{cMySQLOutputScalarManager} provided in \ttt{samples/database} fulfill
+this requirement.
 
-However, before worrying too much about rounding and conversion errors,
-consider the \textit{real} accuracy of your results:
+However, before worrying too much about rounding and conversion errors, consider
+the real accuracy of your results:
 
 \begin{itemize}
-  \item In real life, it is very difficult to measure quantities (weight, distance,
-     even time) with more than a few digits of precision. What precision
-     are your input data? For example, if you approximate inter-arrival
-     time as \textit{exponential(0.153)} when the mean is really
-     \textit{0.152601...} and the distribution is not even exactly exponential,
-     you are already starting out with a bigger error than rounding can cause.
-
-  \item The simulation model is itself an approximation of real life. How much
-     error do the (known and unknown) simplifications cause in the results?
+  \item In real life, it is very difficult to measure quantities (weight,
+    distance, even time) with more than a few digits of precision. What is the
+    precision of your input data? For example, if you approximate inter-arrival
+    time as \textit{exponential(0.153)} when the mean is really
+    \textit{0.152601...} and the distribution is not even exactly exponential, you
+    are already starting out with a bigger error than rounding can cause.
+  \item The simulation model itself is an approximation of real life. How much
+    error do the (known and unknown) simplifications cause in the results?
 \end{itemize}
 
 %% TODO also hint that results can be directed to database etc! by changing the implementation that cEnvir methods delegate to. (list cEnvir methods!)
@@ -597,26 +581,26 @@ consider the \textit{real} accuracy of your results:
 \label{sec:ana-sim:omnetpp-result-file-format}
 
 By default, {\opp} saves simulation results into textual, line-oriented files.
-The advantage of a text-based, line-oriented format is that it is very
-accessible and easy to parse with a wide range of tools and languages, and
-still provides enough flexibility to be able to represent the data it
-needs to (in contrast to e.g. CSV). This section provides an overview of
-these file formats (output vector and output scalar files); the precise
-specification is available in the Appendix (\ref{cha:result-file-formats}).
+The advantage of a text-based, line-oriented format is that it is highly
+accessible and easy to parse with a wide range of tools and languages, while
+still providing enough flexibility to represent the necessary data (in contrast
+to formats like CSV). This section provides an overview of these file formats
+(output vector and output scalar files); the precise specification is available
+in the Appendix (\ref{cha:result-file-formats}).
 
 %XXX move away:
 %  \footnote{Recording is actually configurable, and one can record
 %  results into a database as well, by writing appropriate result
 %  manager classes and activating them in the configuration.}
 
-By default, each file contains data from one run only.
+By default, each file contains data from only one run.
 
 Result files start with a header that contains several attributes of the
 simulation run: a reasonably globally unique run ID, the network NED type
 name, the experiment-measurement-replication labels, the values of
 iteration variables and the repetition counter, the date and time, the host
 name, the process id of the simulation, random number seeds, configuration
-options, and so on. These data can be useful during result processing, and
+options, and so on. This data can be useful during result processing and
 increase the reproducibility of the results.
 
 %%FIXME example header!
@@ -629,7 +613,7 @@ data usually consume several magnitudes more disk space than scalars.
 \label{sec:ana-sim:output-vector-files}
 
 All output vectors from a simulation run are recorded into the same file.
-The following sections describe the format of the file, and
+The following sections describe the format of the file and
 how to process it.
 
 An example file fragment (without header):
@@ -646,8 +630,8 @@ vector 2   net.router[9].ppp[0] queueLength  TV
 ...
 \end{filelisting}
 
-There two types of lines: vector declaration lines (beginning with the word
-\ttt{vector}), and data lines. A \textit{vector declaration line}
+There are two types of lines: vector declaration lines (beginning with the word
+\ttt{vector}) and data lines. A \textit{vector declaration line}
 introduces a new output vector, and its columns are: vector Id, module of
 creation, name of \cclass{cOutVector} object, and multiplicity (usually 1).
 Actual data recorded in this vector are on \textit{data lines} which begin
@@ -656,11 +640,11 @@ and the recorded value.
 
 % FIXME plus attribute lines!!! also event numbers
 
-Since {\opp} 4.0, vector data are recorded into the file clustered by
+Since {\opp} 4.0, vector data has been recorded into the file clustered by
 output vectors, which, combined with index files, allows much more
 efficient processing. Using the index file, tools can extract particular
 vectors by reading only those parts of the file where the desired data are
-located, and do not need to scan through the whole file linearly.
+located, and they do not need to scan through the whole file linearly.
 
 
 \subsubsection{Scalar Result Files}
@@ -682,7 +666,7 @@ Every scalar generates one \ttt{scalar} line in the file.
 Statistics objects (\cclass{cStatistic} subclasses such as \cclass{cStdDev})
 generate several lines: mean, standard deviation, etc.
 
-%% FIXME TODO attributes, statistics example, etc
+%% FIXME TODO attributes, statistics example, etc.
 
 
 \subsection{SQLite Result Files}
@@ -690,12 +674,12 @@ generate several lines: mean, standard deviation, etc.
 
 Starting from version 5.1, {\opp} contains experimental support for
 saving simulation results into SQLite database files. The perceived advantage
-of SQLite is existing support in many existing tools and languages (no need to
+of SQLite is its existing support in many existing tools and languages (no need to
 write custom parsers), and being able to use the power of the SQL language
 for queries. The latter is very useful for processing scalar results, and less
 so for vectors and histograms.
 
-To let a simulation record its results in SQLite format, add the following
+To enable a simulation to record its results in SQLite format, add the following
 configuration options to its \ffilename{omnetpp.ini}:
 
 \begin{inifile}
@@ -711,7 +695,7 @@ Alternatively, to make SQLite the default format, recompile {\opp} with
 
 The SQLite result files will be created with the same names as textual
 result files. The two formats also store exactly the same data, only in
-a different way (there is one-to-one correspondence between them.) The
+a different way (there is a one-to-one correspondence between them). The
 Simulation IDE and \fprog{scavetool} also understand both formats.
 
 \begin{hint}
@@ -722,7 +706,7 @@ Studio should be a good start.
 
 The database schema can be found in Appendix \ref{cha:result-file-formats}.
 
-%TODO file size, performance
+% TODO file size, performance
 
 
 \subsection{Scavetool}
@@ -730,13 +714,13 @@ The database schema can be found in Appendix \ref{cha:result-file-formats}.
 \index{scavetool}
 
 {\opp}'s \fprog{opp\_scavetool} program is a command-line tool for exploring,
-filtering and processing of result files, and exporting the result in formats
-digestible by other tools.
+filtering, and processing result files, and exporting the result in formats
+that are compatible with other tools.
 
 \subsubsection{Commands}
 \label{sec:ana-sim:scavetool:commands}
 
-\fprog{opp\_scavetool}'s functionality is grouped under four commands:
+\fprog{opp\_scavetool} functionality is grouped under four commands:
 \ttt{query}, \ttt{export}, \ttt{index}, and \ttt{help}.
 
 \begin{itemize}
@@ -744,42 +728,42 @@ digestible by other tools.
 \item \tbf{query}: Query the contents of result files. One can list
     runs, run attributes, result items, unique result names, unique module
     names, unique configuration names, etc. One can filter for result types
-    (scalar/vector/histogram), and by run, module name, result name and value,
+    (scalar/vector/histogram) and by run, module name, result name, and value,
     using match expressions. There are various options controlling the format
     of the output (group-by-runs; grep-friendly; suppress labels; several
     modes for identifying the run in the output, etc.)
 
 \item \tbf{export}: Export results in various formats. Results can be filtered
-    by run, module name, result name and more, using match expressions. Output
+    by run, module name, result name, and more, using match expressions. Output
     vectors can be cropped to a time interval. Several output formats are
-    available: CSV in two flavours (one for machine consumption, and a more
+    available: CSV in two flavors (one for machine consumption, and a more
     informal one for human consumption via loading into spreadsheet programs),
     {\opp} output scalar/vector file (default), {\opp} SQLite result file, and
-    JSON (again two flavours: one strictly adhering to the JSON rules, and
-    another one with slightly more relaxed rules but being also more
-    expressive). All exporters have multiple options for fine-tuning the output.
+    JSON (again two flavors: one strictly adhering to the JSON rules, and
+    another with slightly more relaxed rules but also more expressive). All
+    exporters have multiple options for fine-tuning the output.
 
 \item \tbf{index}: Generate index files (.vci) for vector files. Note that this
     command is usually not needed, as other scavetool commands automatically create
     vector file indices if they are missing or out of date (unless indexing is
-    explicitly disabled.) This command can also be used to rebuild a vector file
+    explicitly disabled). This command can also be used to rebuild a vector file
     so that data are clustered by vectors for more efficient access.
 
 \item \tbf{help}: Prints help. The synopsys is \ttt{opp\_scavetool help <topic>},
-    where any command name can be used as topic, plus there are
+    where any command name can be used as a topic, plus there are
     additional ones like \ttt{patterns} or \ttt{filters}. \ttt{scavetool
     <command> -h} also works.
 
 \end{itemize}
 
-The default command is \ttt{query}, so its name may be omitted on the
+The default command is \ttt{query}, so its name can be omitted on the
 command line.
 
 
 \subsubsection{Examples}
 \label{sec:ana-sim:scavetool:examples}
 
-The following example prints a one-line summary about the contents of
+The following example prints a one-line summary of the contents of
 result files in the current directory:
 
 \begin{commandline}
@@ -787,7 +771,7 @@ $ opp_scavetool *.sca *.vec
 runs: 42   scalars: 294  parameters: 7266  vectors: 22  statistics: 0  ...
 \end{commandline}
 
-Listing all results is possible with \fopt{-l}:
+Listing all results is possible using \fopt{-l}:
 
 \begin{commandline}
 $ opp_scavetool -l *.sca *.vec
@@ -822,128 +806,129 @@ Exported 15 vectors
 \section{Result Analysis}
 \label{sec:ana-sim:python}
 
-The recommended way of analyzing simulation results is using the
+The recommended method for analyzing simulation results is using the
 \textit{Analysis Tool} in the \textit{Simulation IDE}. The Analysis Tool
-provides a comfortable user interface for selecting result files to work with,
-browsing their contents, selecting results of interest from them, and creating
-plots. The resulting plots and their underlying data can be exported
-in several formats, both for individual charts and in batches. You can choose
-from several chart types, and new ones can also be created.
+provides a user-friendly interface for selecting result files, browsing their
+contents, selecting desired results, and creating plots. The resulting plots and
+data can be exported in several formats, both individually and in batches. There
+are various chart types to choose from, and it is also possible to create custom
+charts.
 
-Charts in the Analysis Tool are powered by Python. The Python scripts underlying
-the various charts are open for the user to view and edit, so arbitrary logic
-and computations can be implemented. Visualization may use the IDE's native
-plotting widgets, but it can also be done with Matplotlib. The use of Matplotlib
-allows virtually limitless possibilities for visualization.\footnote{Note that
-Matplotlib also has extensions like Seaborn, Canopy, HoloViews, etc., which can
-also be used in chart scripts, further expanding the set of possibilities.} The IDE's
-own plotting widgets are more limited in functionality, but they are much more
-scalable than Matplotlib.
+Charts in the Analysis Tool utilize Python scripts. The Python scripts behind
+the charts are open for the user to view and edit, enabling the implementation
+of arbitrary logic and computations. Visualization can be done using the IDE's
+native plotting widgets or with Matplotlib. Using Matplotlib offers virtually
+limitless possibilities for visualization.\footnote{It is worth noting that
+Matplotlib has extensions like Seaborn, Canopy, HoloViews, etc., which can also
+be used in chart scripts, further expanding the set of possibilities.} The IDE's
+own plotting widgets have more limited functionality, but they are much more
+scalable compared to Matplotlib.
 
 \begin{note}
-Note the terminology. Although the nouns \textit{chart} and \textit{plot} are
-almost interchangeable in everyday speech, we assign related but clearly
-distinct meanings to them when discussing {\opp} result analysis. By
-\textit{chart} we essentially mean a Python script with its associated metadata
-and parameterization that serves as a "recipe" for producing a plot; and the
-word \textit{plot} is used to refer to the graphics which appears as the result
-of running said script.
+It is important to note the distinction in terminology. While the terms
+\textit{chart} and \textit{plot} are often used interchangeably in everyday
+speech, they carry related but distinct meanings in the context of {\opp} result
+analysis. When we refer to a \textit{chart}, we essentially mean a Python script
+with associated metadata and parameterization that serves as a ``recipe'' for
+producing a \textit{plot}. The term \textit{plot} is used to refer to the
+graphics that appear as the result of running the chart script.
 \end{note}
 
-Chart scripts can also be used outside the IDE. Those saved as part of the IDE's
-analysis files (\ttt{.anf}) can be viewed or run using the \fprog{opp\_chartool}
-command-line program. You can also take advantage of result processing
-capabilities in standalone Python scripts. When chart scripts run outside the IDE,
-native plotting widgets are "emulated" using Matplotlib.
+Chart scripts can also be used outside the IDE. The scripts saved as part of the
+IDE's analysis files (\ttt{.anf}) can be viewed or run using the
+\fprog{opp\_chartool} command-line program. Additionally, the result processing
+capabilities can be utilized in standalone Python scripts. When chart scripts
+are run outside the IDE, the native plotting widgets are ``emulated'' using
+Matplotlib.
 
-The Analysis Tool is covered in detail in the User Guide. The following sections
-deal with the programming API.
-
+The Analysis Tool is thoroughly covered in the User Guide. The following
+sections focus on the programming API.
 
 \subsection{Python Packages}
 \label{sec:ana-sim:python_packages}
 
-Chart scripts heavily build on the following, fairly standard Python packages:
+Chart scripts heavily rely on the following widely-used Python packages:
 
 \begin{itemize}
-  \item \textit{NumPy}: We use NumPy for its efficient representation of numeric
-    arrays and the operations on them.
-  \item \textit{Pandas}: Pandas \ttt{DataFrame}s are used for representing and
-    manipulating simulation results.
-  \item \textit{Matplotlib}: For creating the actual plots.
+  \item \textit{NumPy}: Utilized for efficient representation of numeric arrays
+    and related operations.
+  \item \textit{Pandas}: Used for representing and manipulating simulation
+    results through \ttt{DataFrame}s.
+  \item \textit{Matplotlib}: Used for generating the actual plots.
 \end{itemize}
 
-{\opp} adds the following packages:
+The following packages are added by {\opp}:
 
 \begin{itemize}
   \item \textit{omnetpp.scave.results}: Provides access to the simulation
     results for the chart script. The results are returned as Pandas
-    \ttt{DataFrame}s of various formats.
+    \ttt{DataFrame}s in various formats.
   \item \textit{omnetpp.scave.chart}: Provides access to the properties of the
     current chart for the chart script.
-  \item \textit{omnetpp.scave.ideplot}: This module is the interface for displaying
-    plots with the IDE's native plotting widgets. The API is intentionally very
-    close to \ttt{matplotlib.pyplot}, which facilitates porting scripts across
-    the two APIs. When a chart script runs outside the context of a native
-    plotting widget, such as when run from \fprog{opp\_charttool}, the functions
-    are emulated with Matplotlib.
-  \item \textit{omnetpp.scave.utils}: A collection of utility function for data
-    manipulation and plotting, built on top of \ttt{DataFrame}s and the \ttt{chart}
-    and \ttt{plot} packages from \ttt{omnetpp.scave}.
+  \item \textit{omnetpp.scave.ideplot}: This module is the interface for
+    displaying plots with the IDE's native plotting widgets. The API closely
+    resembles \ttt{matplotlib.pyplot}, facilitating the porting of scripts between
+    the two APIs. When a chart script runs without the native plotting widget
+    environment, such as when executed from \fprog{opp\_chartool}, the functions
+    are emulated using Matplotlib.
+  \item \textit{omnetpp.scave.utils}: A collection of utility functions for data
+    manipulation and plotting, built on top of \ttt{DataFrame}s and the
+    \ttt{chart} and \ttt{plot} packages from \ttt{omnetpp.scave}.
   \item \textit{omnetpp.scave.vectorops}: Contains operations that can be
     applied to output vectors.
 \end{itemize}
 
-An additional module:
+In addition, there is an extra module:
 
 \begin{itemize}
-  \item \textit{omnetpp.scave.analysis}: Provides support for reading and writing
-   analysis (anf) files from Python, and running chart scripts in them for display,
-   image export or data export.
+  \item \textit{omnetpp.scave.analysis}: Provides support for reading and
+    writing analysis (anf) files from Python, and running chart scripts in them
+    for display, image export, or data export.
 \end{itemize}
 
-These packages are documented in detail in Appendix \ref{cha:chart-api}.
-
+These packages are thoroughly documented in Appendix \ref{cha:chart-api}.
 
 \subsection{An Example Chart Script}
 \label{sec:ana-sim:example_chart_script}
 
-Since information on NumPy, Pandas and Matplotlib can be found in abundance
-online, and a reference of the \ttt{omnetpp.scave.*} Python packages is in the
-Appendix, it makes little sense here to go through the functionality they
-provide. Instead, in this section we walk through an actual chart script in
-order to see how it looks in practice.
+Since information on NumPy, Pandas, and Matplotlib can be found extensively
+online, and a reference for the \ttt{omnetpp.scave.*} Python packages is
+provided in Appendix \ref{cha:chart-api}, it is unnecessary to explain their functionality in
+depth here. Instead, this section will walk through an actual chart script to
+demonstrate its practical implementation.
 
-The chosen chart script is that of the bar chart. It is quite representative, so
-it will prepare you to understand other chart scripts, modify them for custom
-needs, or write your own; yet it is short and simple, so it is easy to follow.
-We are going to list the source, and pause for explanations after every few lines.
+The selected chart script is for the bar chart, which serves as a representative
+example. It will help readers understand other chart scripts, modify them to
+meet specific requirements, or even create their own. The script is relatively
+short and straightforward, making it easy to follow. The source code is provided
+below, along with explanations after certain lines.
 
 \begin{python}
 from omnetpp.scave import results, chart, utils
 \end{python}
 
-The first lines is for importing the packages we are going to use. This is
-necessary because nothing is imported by default when the chart script starts.
+The first lines import the required packages that will be used in the chart
+script. This step is necessary as no modules are automatically imported when the
+chart script starts.
 
-Notice how all imported modules are under the \ttt{omnetpp.scave} module, and not
-directly from \ttt{numpy} or \ttt{pandas} or \ttt{matplotlib} packages. This is
-because almost all necessary functionality is already encompassed in convenience
-methods in (mostly) the \ttt{utils} and \ttt{plot} modules.
+It is worth noting that all imported modules are under the \ttt{omnetpp.scave}
+module, rather than being imported directly from the \ttt{numpy}, \ttt{pandas},
+or \ttt{matplotlib} packages. This distinction exists because almost all
+necessary functionality is already contained within convenience methods in the
+\ttt{utils} and \ttt{plot} modules.
 
 \begin{python}
 # get chart properties
 props = chart.get_properties()
 \end{python}
 
-Then, we obtain the properties of the bar chart from the \ttt{chart} module.
-The \ttt{props} object we get is a Python \ttt{dict} whose entries can be
-influnced by the chart properties dialog, and they serve as parameters for
-the chart script and the resulting plot.
+In this part, the properties of the bar chart are obtained using the \ttt{chart}
+module. The \ttt{props} object is a Python \ttt{dict} that contains entries
+influenced by the chart properties dialog, acting as parameters for the chart
+script and the resulting plot.
 
-Try adding \ttt{print(props)} to the code, or \ttt{for k,v in props.items():
-print(repr(k), "=", repr(v))} for fancier output. After the chart script ran,
-you should see an output similar to the following:
+Adding \ttt{print(props)} or \ttt{for k,v in props.items(): print(repr(k), "=",
+repr(v))} to the code will output the following after the chart script runs:
 
 \begin{commandline}
 'confidence_level' = '95\%'
@@ -956,18 +941,19 @@ you should see an output similar to the following:
 ...
 \end{commandline}
 
-Many entries should look familiar. Indeed, most of the entries have direct
-correspondence to widgets in the \textit{Chart Properties} dialog in the IDE.
-Note that all values are strings.
+Many of the entries should look familiar, as most of them correspond directly to
+widgets in the \textit{Chart Properties} dialog in the IDE. It is important to
+note that all values are strings.
 
 \begin{python}
 utils.preconfigure_plot(props)
 \end{python}
 
-The \ttt{preconfigure\_plot()} call is a mandatory part of a chart script, and
-its job is to ensure that visual properties take effect in the plot. Note that
-we will also have a \texttt{postconfigure\_plot()} call, because some properties
-must be set before, and others after the plotting.
+The \ttt{preconfigure\_plot()} call is a mandatory part of a chart script. Its
+purpose is to ensure that visual properties take effect in the plot. It is worth
+mentioning that there will also be a \texttt{postconfigure\_plot()} call since
+some properties need to be set before plotting, while others require
+configuration after the plotting stage.
 
 \begin{python}
 # collect parameters for query
@@ -975,15 +961,15 @@ filter_expression = props["filter"]
 include_fields = props["include_fields"] == "true"
 \end{python}
 
-Here we obtain the result query string from the properties. The query string
-selects the subset of the results that serve as input to the chart from the set of
-all results loaded from the result files. The \ttt{"filter"} property is
-common to almost all chart types.
+In this part, the result query string is obtained from the properties. This
+query string selects the subset of results that will be used as input for the
+chart from the complete set of results loaded from the result files. The
+\ttt{"filter"} property is applicable to almost all chart types.
 
-Since bar charts work with scalars, we provide the user an opportunity to select
-whether the fields (such as \ttt{:mean}, \ttt{:count}, \ttt{:sum}, etc.) of vector,
-statistics, and histogram results should also be included in the source dataset,
-as scalars.
+Since bar charts work with scalars, users are given the option to choose whether
+fields (such as \ttt{:mean}, \ttt{:count}, \ttt{:sum}, etc.) of vector,
+statistics, and histogram results should be included in the source dataset as
+scalars.
 
 \begin{python}
 # query scalar data into dataframe
@@ -994,17 +980,20 @@ except ValueError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 \end{python}
 
-Here, \ttt{results.get\_scalars()} is the most important part. It uses the
-\ttt{results} module to get the data for the plot. The resulting Pandas
-\ttt{DataFrame} will have one row for each scalar result. Columns include
-\ttt{runID} which uniquely identifies the simulation run, \ttt{module},
-\ttt{name} and \ttt{value} which refer to the scalar, and many other columns
-that represent metadata such as result attributes, iteration variables and run
-attributes: \ttt{iaMean}, \ttt{numHosts}, \ttt{configname}, \ttt{datetime}, etc.
+In this section, the \ttt{results.get\_scalars()} function is used to acquire
+the data for the plot. It is the most significant part of the script. The
+function utilizes the \ttt{results} module to obtain the data. The resulting
+Pandas \ttt{DataFrame} contains one row for each scalar result. Columns include
+\ttt{runID}, which uniquely identifies the simulation run, \ttt{module},
+\ttt{name}, and \ttt{value} referring to the scalar. It also includes various
+other columns representing metadata such as result attributes, iteration
+variables, and run attributes (\ttt{iaMean}, \ttt{numHosts}, \ttt{configname},
+\ttt{datetime}, etc.).
 
-Try \ttt{print(df)} to print the dataframe contents. You will get something like
-this (for brevity, we dropped the less important columns from the output, and
-abbreviated the name of the last colum from \ttt{repetition}):
+By adding \ttt{print(df)} to the code, the contents of the dataframe can be
+printed. The output will resemble the following (for brevity, some less
+important columns are omitted and the name of the last column, \ttt{repetition},
+is abbreviated):
 
 \begin{commandline}
           module                     name     value iaMean numHosts rep.
@@ -1020,44 +1009,42 @@ abbreviated the name of the last colum from \ttt{repetition}):
 ...
 \end{commandline}
 
-Also note in the snippet above that \ttt{try...except} was used to catch
-exceptions (usually syntax errors in the query), and gracefully report them back
-to the user instead of letting a stack trace appear in the console.
-Raising a \ttt{chart.ChartScriptError} displays the passed message in the plot area.
+It's worth noting that \ttt{try...except} is used here to catch any exceptions
+(typically syntax errors in the query) and report them to the user in a more
+user-friendly manner instead of displaying a stack trace. Raising a
+\ttt{chart.ChartScriptError} displays the provided message in the plot area.
 
 \begin{python}
 if df.empty:
     raise chart.ChartScriptError("The result filter returned no data.")
 \end{python}
 
-If the query matched nothing, let the user know instead of letting them figure out
-from the empty plot they get, again, by raising an exception of the appropriate type.
+If the query doesn't match any results, this line will raise an exception
+to inform the user instead of letting them discover it from the empty plot.
 
 \begin{python}
 groups, series = utils.select_groups_series(df, props)
 \end{python}
 
+The \textit{Groups} and \textit{Series} fields in the \textit{Chart Properties}
+dialog define how the bar chart will be organized. If these fields are populated
+with multiple variables (comma-separated), this step will split the values and
+convert them into lists.
 
-The user may fill in the \textit{Groups} and \textit{Series} fields of the
-\textit{Chart Properties} dialog to control how to organize the bar chart.
-As each field may contain multiple variables (separated by comma), we split
-the values to convert them to lists.
-
-If these fields (properties) are left empty, the script tries to find
-reasonable values for them. It also detects various misconfiguration cases
-(such as nonexisting column names given in, or overlap between, the "groups"
-and "series" columns), and report them back to the user. Leaving out these
-checks would, in most cases, cause those errors to manifest themselves in
-later steps as spurious Pandas exceptions, whose wording often provides
-little guidance to the user about what actually went wrong.
+If these fields are left empty, the script will attempt to find reasonable
+values for them. It will also detect various misconfigurations (such as
+non-existent column names or overlap between "groups" and "series" columns) and
+inform the user of any issues. Omitting these checks would likely lead to
+spurious Pandas exceptions later on, which often provide insufficient guidance
+to the user about the actual problem.
 
 \begin{python}
 confidence_level = utils.get_confidence_level(props)
 \end{python}
 
-Extract the confidence level requested by the user from the properties.
-(\ttt{"none"} is the string that the user can select from the combo box in the
-dialog to turn off confidence interval computation.)
+In this section, the requested confidence level is extracted from the
+properties. The user can select \ttt{"none"} from the combo box in the dialog to
+disable confidence interval computation.
 
 \begin{python}
 valuedf, errorsdf, metadf =
@@ -1065,11 +1052,11 @@ valuedf, errorsdf, metadf =
 utils.plot_bars(valuedf, errorsdf, metadf, props)
 \end{python}
 
-At last, we arrive at the important part of the script, which is pivoting and
-plotting the data. The \ttt{utils.pivot\_for\_barchart()} function is used for
-pivoting, and \ttt{utils.plot\_bars()} for plotting.
+Finally, the important part of the script is reached, which involves pivoting
+the data and plotting it. The function \ttt{utils.pivot\_for\_barchart()} is
+used for pivoting, and \ttt{utils.plot\_bars()} is used for plotting.
 
-If you add a \ttt{print(valuedf)} statement, you can see the result of pivoting:
+If a \ttt{print(valuedf)} statement is added, the result of pivoting will be displayed:
 
 \begin{commandline}
 numHosts        10        15        20
@@ -1083,9 +1070,11 @@ iaMean
 9         0.089658  0.120800  0.142568
 \end{commandline}
 
-If the user requested no confidence interval (error bars), \ttt{errorsdf} will be \ttt{None}.
+If the user didn't request a confidence interval (error bars), the value of
+\ttt{errorsdf} will be \ttt{None}.
 
-In this case, the default 95\% is used, so \ttt{print(errorsdf)} shows this:
+In this case, the default 95\% confidence level is used, resulting in the
+following output when printing \ttt{errorsdf}:
 
 \begin{commandline}
 numHosts        10        15        20
@@ -1099,13 +1088,14 @@ iaMean
 9         0.001621  0.002385  0.000259
 \end{commandline}
 
-This dataframe has the exact same structure (column and row headers) as \ttt{valuedf},
-only the values are different - they are the half-length of the confidence interval
-corresponding to the selected confidence level, so it can be interpreted as a "+/-" range.
+This dataframe has the same structure (column and row headers) as \ttt{valuedf},
+with different values. The values represent the half-length of the confidence
+interval corresponding to the selected confidence level, so it can be
+interpreted as a "+/-" range.
 
-The third dataframe, \ttt{metadf} contains various pieces of metadata about the results,
+The third dataframe, \ttt{metadf}, contains various pieces of metadata about the results.
 
-Here are just a few columns from it:
+Here are a few columns from \ttt{metadf}:
 
 \begin{commandline}
                         measurement        module                      title
@@ -1119,22 +1109,24 @@ iaMean
 9      $numHosts=10, $iaMean=9, etc.  Aloha.server  channel utilization, last
 \end{commandline}
 
-This dataframe is used to assemble the legend labels for the series of bars on the plot.
-It has the same row headers as \ttt{valuedf}, but the column headers are the names of run
-and result attributes, and iteration variables. Where multiple different values would have
-had to be put into the same cell, only the first one is present, and an "etc." is appended.
+This dataframe is used to create the legend labels for the series of bars on the
+plot. The row headers match those of \ttt{valuedf}, while the column headers
+represent the names of run and result attributes, as well as iteration
+variables. In cases where multiple different values are to be put into the same
+cell, only the first value is included, and "etc." is appended.
 
-Note that in some other types of charts (line charts, histogram charts, etc.), separating
-the results into separate dataframes like this is not necessary, as those charts do not do
-pivot operations on their results, and the corresponding plots accept data in formats
-that can hold the metadata in the same dataframe as the main values to be plotted.
+It should be noted that separating the results into separate dataframes like
+this is unnecessary for some other chart types (line charts, histogram charts,
+etc.), as those charts do not perform pivot operations on their results. The
+corresponding plots accept data formats that can store the metadata in the same
+dataframe as the main values to be plotted.
 
-The drawn plot is shown in Figure \ref{fig:ana-barplot}:
+The resulting plot is shown in Figure \ref{fig:ana-barplot}:
 
 \begin{figure}[htbp]
   \begin{center}
     \includesvg[scale=0.7]{figures/ana-barplot}
-    \caption{The resulting bar plot, showing confidence interval as error bars}
+    \caption{The resulting bar plot, featuring error bars as the confidence interval}
     \label{fig:ana-barplot}
   \end{center}
 \end{figure}
@@ -1143,49 +1135,50 @@ The drawn plot is shown in Figure \ref{fig:ana-barplot}:
 utils.postconfigure_plot(props)
 \end{python}
 
-This line applies the rest of the visual properties to the plot.
+This line applies the remaining visual properties to the plot.
 
 \begin{python}
 utils.export_image_if_needed(props)
 utils.export_data_if_needed(df, props)
 \end{python}
 
-These lines perform image and data export. Exporting is done by running chart scripts with
-certain properties set in order to indicate to the chart script that exporting is requested.
-
-The \ttt{utils.export\_image\_if\_needed()} and \ttt{utils.export\_data\_if\_needed()} functions
-take those flag properties and a lot of other properties related to exporting.
-The latter saves the dataframe given to it as argument.
+These lines perform image and data export. Exporting is accomplished by executing
+chart scripts with certain properties set to indicate the desire to export.
+\ttt{utils.export\_image\_if\_needed()} and
+\ttt{utils.export\_data\_if\_needed()} take those flag properties, as well as
+numerous other properties related to exporting. The latter saves the provided
+dataframe as a file.
 
 
 \section{Alternatives}
 \label{sec:ana-sim:result-analysis-alternatives}
 
-Based on your personal preferences, you may opt to use to a different
-environment, language or tool than the IDE's Analysis tool for analysing
+Based on your personal preferences, you may choose to use a different
+environment, language, or tool than the IDE's Analysis tool for analyzing
 simulation results. Here are some of the possibilities:
 
 \begin{itemize}
-  \item Use your favourite Python editor to write the analysis scripts, using
+  \item Use your favorite Python editor to write the analysis scripts, using
     the packages mentioned in the previous section.
   \item A \textit{Jupyter Notebook} can also be used to write up the analysis
     steps, still using Python and the above packages.
-  \item If your simulations produce a huge amount of data, you might prefer using
-    the SQLite result file format which allows you to run queries without
+  \item If your simulations produce a large amount of data, you might prefer using
+    the SQLite result file format, which allows you to run queries without
     loading all data into memory. Python also has packages to access SQLite files,
     e.g. \ttt{sqlite3}.
-  \item If you prefer \textit{GNU R} to Python/Pandas, you might use that.
-  \item Or you may go for \textit{MATLAB} or \textit{GNU Octave} if you feel at home with them.
+  \item If you prefer \textit{GNU R} over Python/Pandas, it is also a good option.
+  \item You may also choose to use \textit{MATLAB} or \textit{GNU Octave} if you
+    are more comfortable with them.
   \item \textit{Spreadsheet} programs such as Microsoft Excel might be suitable
     if the amount of data allows it. One drawback of using spreadsheets is the
     manual work associated with preparing and reloading data every time
-    simulations are re-run.
+    simulations are rerun.
   \item A dedicated visual analytics environment such as \textit{Tableau} might
     be a better choice than spreadsheets.
 \end{itemize}
 
-For environments where reading OMNeT++ result files or SQLite result files is
-not a real possibility, probably the easiest way to go is to export simulation
+For environments where reading {\opp} result files or SQLite result files is
+not feasible, the easiest way to proceed is to export simulation
 results into CSV with \fprog{opp\_scavetool}. CSV is a universal format that
 nearly all tools understand.
 

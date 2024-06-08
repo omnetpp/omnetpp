@@ -8,51 +8,44 @@
 \label{sec:parallel-exec:introduction-to-pdes}
 
 {\opp} supports parallel execution\index{parallel simulation} of large
-simulations. This section provides a brief picture
-of the problems and methods of parallel
-discrete event simulation (PDES\index{PDES}). Interested readers are
-strongly encouraged to look into the literature.
+simulations. This section provides a brief overview of the problems and methods
+of parallel discrete event simulation (PDES\index{PDES}). Interested readers are
+strongly encouraged to refer to the literature.
 
-For parallel execution, the model is to be partitioned into several
-LPs (logical processes) that will be simulated independently on
-different hosts or processors. Each LP will have its own local
-Future Event Set, and thus will maintain its own local simulation
-time. The main issue with parallel simulations is keeping LPs
-synchronized in order to avoid violating the causality of events.
-Without synchronization, a message sent by one LP could arrive in
-another LP when the simulation time in the receiving LP has already
-passed the timestamp (arrival time) of the message. This would break
-causality\index{event!causality} of events in the receiving LP.
+For parallel execution, the model is divided into several LPs (logical
+processes) that are simulated independently on different hosts or processors.
+Each LP maintains its own local Future Event Set and simulation time. The main
+issue with parallel simulations is synchronizing the LPs to avoid violating
+event causality. Without synchronization, a message sent by one LP could arrive
+in another LP when the simulation time in the receiving LP has already passed
+the timestamp (arrival time) of the message. This would disrupt event
+causality\index{event!causality} in the receiving LP.
 
-There are two broad categories of parallel simulation algorithms
-that differ in the way they handle causality problems outlined
-above:
+There are two broad categories of parallel simulation algorithms that differ in
+how they handle the aforementioned causality problems:
 
 \begin{enumerate}
-  \item{\textbf{Conservative algorithms}\index{parallel simulation!conservative}
-    prevents incausalities from happening. The Null Message Algorithm
-    exploits knowledge of the time when LPs send messages to other LPs,
-    and uses special \textit{null messages} to propagate this information
-    to other LPs. If an LP knows it won't receive any messages from other
-    LPs until $t+\Delta t$ simulation time, it may advance until
-    $t+\Delta t$ without the need for external synchronization.
-    Conservative simulation tends to converge to sequential simulation
-    (slowed down by communication between LPs) if there is not
-    enough parallelism in the model, or parallelism is not exploited
-    by sending a sufficient number of null messages.}
+  \item{\textbf{Conservative algorithms}\index{parallel
+    simulation!conservative}: These algorithms prevent incausalities from
+    occurring. The Null Message Algorithm utilizes knowledge of when LPs send
+    messages to other LPs and uses special \textit{null messages} to propagate
+    this information. If an LP knows it won't receive any messages from other LPs
+    until $t+\Delta t$, it can advance until $t+\Delta t$ without external
+    synchronization. Conservative simulation tends to converge to sequential
+    simulation, albeit slowed down by communication between LPs, if there is
+    insufficient parallelism in the model or if parallelism is not exploited by
+    sending a sufficient number of null messages.}
 
-  \item{\textbf{Optimistic synchronization}\index{parallel simulation!optimistic}
-    allows incausalities to occur, but detects and
-    repairs them. Repairing involves rollbacks to a previous state,
-    sending out anti-messages to cancel messages sent out during the
-    period that is being rolled back, etc.  Optimistic synchronization
-    is extremely difficult to implement, because it requires periodic
-    state saving and the ability to restore previous states. In any
-    case, implementing optimistic synchronization in {\opp} would
-    require -- in addition to a more complicated simulation kernel --
-    writing significantly more complex simple\index{module!simple}
-    module code from the user.  Optimistic synchronization may be slow
-    in cases of excessive rollbacks.}
+  \item{\textbf{Optimistic synchronization}\index{parallel
+    simulation!optimistic}: These algorithms allow incausalities to occur but
+    detect and repair them. Repairing may involve rollbacks to a previous state,
+    sending out anti-messages to cancel messages sent during the rolled-back
+    period, and so on. Implementing optimistic synchronization is extremely
+    difficult as it requires periodic state saving and the ability to restore
+    previous states. Furthermore, enabling optimistic synchronization in {\opp}
+    would require a more complex simulation kernel and significantly more complex
+    simple\index{module!simple} module code from the user. Optimistic
+    synchronization may be slow in cases of excessive rollbacks.}
 \end{enumerate}
 
 
@@ -70,14 +63,14 @@ with this algorithm, we'll need the following variables:
     second (ev/sec).
        \footnote{Notations: \textit{ev:} events, \textit{sec:} real seconds,
        \textit{simsec:} simulated seconds}
-    $P$ depends on the performance of the hardware and the computation-intensiveness
+    $P$ depends on the performance of the hardware and the computational intensity
     of processing an event. $P$ is independent of the size of the model.
     Depending on the nature of the simulation model and the performance of the
-    computer, $P$ is usually in the range of 20,000..500,000 ev/sec.}
+    computer, $P$ is usually in the range of 20,000 to 500,000 ev/sec.}
   \item{$E$ \textit{event density} is the number of events that occur per
     simulated second (ev/simsec). $E$ depends on the model only, and not
-    where the model is executed. $E$ is determined by the size, the detail level
-    and also the nature of the simulated system (e.g. cell-level ATM models
+    where the model is executed. $E$ is determined by the size, the detail level,
+    and also the nature of the simulated system (e.g., cell-level ATM models
     produce higher $E$ values than call center simulations.)}
   \item{$R$ \textit{relative speed} measures the simulation time advancement
     per second (simsec/sec). $R$ strongly depends on both the model and
@@ -85,18 +78,18 @@ with this algorithm, we'll need the following variables:
     Note that $R = P/E$.}
   \item{$L$ \textit{lookahead} is measured in simulated seconds (simsec).
     When simulating telecommunication networks and using link delays as
-    lookahead, $L$ is typically in the msimsec-$\mu$simsec range.}
+    lookahead, $L$ is typically in the range of milliseconds to microseconds.}
   \item{$\tau$ \textit{latency} (sec) characterizes the parallel simulation hardware.
     $\tau$ is the latency of sending a message from one LP to another. $\tau$
     can be determined using simple benchmark programs. The authors' measurements
     on a Linux cluster interconnected via a 100Mb Ethernet switch using MPI
-    yielded $\tau$=22$\mu$s which is consistent with measurements reported
+    yielded $\tau = 22\mu$s which is consistent with measurements reported
     in \cite{ongfarrell2000}. Specialized hardware such as
-    Quadrics Interconnect \cite{quadrics} can provide $\tau$=5$\mu$s or better.}
+    Quadrics Interconnect \cite{quadrics} can provide $\tau = 5\mu$s or better.}
 \end{itemize}
 
-In large simulation models, $P$, $E$ and $R$ usually stay relatively constant
-(that is, display little fluctuations in time). They are also intuitive and
+In large simulation models, $P$, $E$, and $R$ usually stay relatively constant
+(that is, display little fluctuations over time). They are also intuitive and
 easy to measure. The {\opp} displays these values on the GUI while the simulation
 is running, see Figure \ref{fig:perfbar-screenshot}. Cmdenv can also be configured
 to display these values.
@@ -104,18 +97,18 @@ to display these values.
 \begin{figure}[htbp]
   \begin{center}
     \includepng{figures/parsim-perfbar-screenshot}
-    \caption{Performance bar in {\opp} showing $P$, $R$ and $E$}
+    \caption{Performance bar in {\opp} showing $P$, $R$, and $E$}
     \label{fig:perfbar-screenshot}
   \end{center}
 \end{figure}
 
-After having approximate values of $P$, $E$, $L$ and $\tau$,
+After obtaining approximate values of $P$, $E$, $L$, and $\tau$,
 calculate the $\lambda$ \textit{coupling factor} as the ratio of $LE$ and $\tau P$:
 
 $\lambda = (LE) / (\tau P)$
 
 Without going into the details: if the resulting $\lambda$ value is at
-minimum larger than one, but rather in the range 10..100, there is
+least larger than one, but rather in the range of 10 to 100, there is
 a good chance that the simulation will perform well when run in
 parallel. With $\lambda < 1$, poor performance is guaranteed.
 For details see the paper \cite{ParsimCrit03}.
@@ -128,7 +121,7 @@ For details see the paper \cite{ParsimCrit03}.
 \label{sec:parallel-exec:overview}
 
 This chapter presents the parallel simulation architecture
-of {\opp}. The design allows simulation models to be run
+of {\opp}. The design allows simulation models to be executed
 in parallel without code modification -- it only requires configuration.
 The implementation relies on the approach of placeholder modules
 and proxy gates to instantiate the model on different LPs --
@@ -137,77 +130,77 @@ topology discovery and direct message sending to work unmodified with
 PDES. The architecture is modular and extensible, so it can
 serve as a framework for research on parallel simulation.
 
-The {\opp} design places a big emphasis on
+The {\opp} design places a strong emphasis on the
 \textit{separation of models from experiments}. The main rationale
-is that usually a large number of simulation experiments need to be done
-on a single model before a conclusion can be drawn about the real system.
-Experiments tend to be ad-hoc and change much faster than simulation
-models; thus it is a natural requirement to be able to
-carry out experiments without disturbing the simulation model itself.
+is that a large number of simulation experiments usually need to be performed
+on a single model before any conclusion can be drawn about the real system.
+Experiments tend to be ad-hoc and change much more frequently than simulation
+models; thus, it is a natural requirement to be able to
+carry out experiments without disrupting the simulation model itself.
 
-Following the above principle, {\opp} allows simulation models
+Following this principle, {\opp} allows simulation models
 to be executed in parallel without modification. No special instrumentation
-of the source code or the topology description is needed,
-as partitioning and other PDES configuration is entirely described
+of the source code or the topology description is required,
+as partitioning and other PDES configurations are fully described
 in the configuration files.
 
 {\opp} supports the Null Message Algorithm with static
 topologies, using link delays as lookahead. The laziness of null message
-sending can be tuned. Also supported is the Ideal Simulation Protocol
-(ISP) introduced by Bagrodia in 2000 \cite{bagrodia00}. ISP is
-a powerful research vehicle to measure the efficiency of
-PDES algorithms, both optimistic and conservative;
-more precisely, it helps determine the maximum speedup achievable
+sending can be adjusted. The Ideal Simulation Protocol (ISP)
+introduced by Bagrodia in 2000 \cite{bagrodia00} is also supported.
+ISP is a powerful research vehicle for measuring the efficiency of
+PDES algorithms, both optimistic and conservative.
+Specifically, it helps determine the maximum achievable speedup
 by any PDES algorithm for a particular model and simulation environment.
-In {\opp}, ISP can be used for benchmarking the performance of the
+In {\opp}, ISP can be used to benchmark the performance of the
 Null Message Algorithm.
 Additionally, models can be executed without any synchronization, which
 can be useful for educational purposes (to demonstrate the need for
 synchronization) or for simple testing.
 
-For the communication between LPs (logical processes), {\opp}
+For communication between LPs (logical processes), {\opp}
 primarily uses MPI, the Message Passing Interface standard
-\cite{mpiforum94}.  An alternative communication mechanism is based on
-named pipes, for use on shared memory multiprocessors without the need
-to install MPI.  Additionally, a file system based communication mechanism
+\cite{mpiforum94}. An alternative communication mechanism is based on
+named pipes, which can be used on shared memory multiprocessors without the need
+to install MPI. Additionally, a file system-based communication mechanism
 is also available. It communicates via text files created in a shared
-directory, and can be useful for educational purposes (to analyse or
+directory, and can be useful for educational purposes (to analyze or
 demonstrate messaging in PDES algorithms) or to debug PDES algorithms.
-Implementation of a shared memory-based communication mechanism is also planned
-for the future, to fully exploit the power of multiprocessors without
-the overhead of and the need to install MPI.
+The implementation of a shared memory-based communication mechanism is also planned
+for the future to fully exploit the power of multiprocessors without
+the overhead and the need to install MPI.
 
-Nearly every model can be run in parallel. The constraints are the following:
+For the model to be able to make use of parallel simulation, it must meet the following requirements:
+
 \begin{itemize}
-  \item{modules may communicate via sending messages only (no direct method call
-        or member access) unless mapped to the same processor}
-  \item no global variables
-  \item{there are some limitations on direct sending (no sending to a \textit{sub}module
-        of another module, unless mapped to the same processor)}
-  \item lookahead must be present in the form of link delays
-  \item{currently static topologies are supported (we are working on a
-      research project that aims to eliminate this limitation)}
+  \item{Modules may communicate only via sending messages (no direct method calls
+        or member access) unless mapped to the same processor.}
+  \item No global variables are allowed.
+  \item{There are some limitations on direct sending (no sending to a \textit{sub}module
+        of another module, unless mapped to the same processor).}
+  \item Lookahead must be present in the form of link delays.
+  \item{Currently, only static topologies are supported (we are working on a
+      research project aimed at eliminating this limitation).}
 \end{itemize}
 
 PDES support in {\opp} follows a modular and extensible architecture.
 New communication mechanisms can be added by implementing a compact
-API (expressed as a C++ class) and registering the implementation --
-after that, the new communications mechanism can be selected for use
+API (expressed as a C++ class) and registering the implementation.
+After that, the new communication mechanism can be selected for use
 in the configuration.
 
 New PDES synchronization algorithms can be added in a similar way.
 PDES algorithms are also represented by C++ classes that have
-to implement a very small API
-to integrate with the simulation kernel.
+to implement a very small API to integrate with the simulation kernel.
 Setting up the model on various LPs as well as relaying
 model messages across LPs is already taken care of and
 not something the implementation of the synchronization algorithm
-needs to worry about (although it can intervene if needed,
+needs to worry about (although it can intervene if needed
 because the necessary hooks are provided).
 
 The implementation of the Null Message Algorithm is also
-modular in itself in that the lookahead discovery can be plugged
-in via a defined API. Currently implemented lookahead
+modular in itself, as the lookahead discovery can be plugged
+in via a defined API. Currently, implemented lookahead
 discovery uses link delays, but it is possible to
 implement more sophisticated approaches and select them in the
 configuration.
@@ -217,14 +210,14 @@ configuration.
 \subsection{Parallel Simulation Example}
 \label{sec:parallel-exec:parallel-simulation-example}
 
-We will use the Parallel CQN example simulation for demonstrating the
+We will use the Parallel CQN example simulation to demonstrate the
 PDES capabilities of {\opp}.
 The model consists of $N$ tandem queues where each tandem consists
 of a switch and $k$ single-server queues with exponential service times
 (Figure \ref{fig:cqn-model}).
 The last queues are looped back to their switches. Each switch
-randomly chooses the first queue of one of the tandems as destination,
-using uniform distribution. The queues and switches are connected
+randomly chooses the first queue of one of the tandems as the destination,
+using a uniform distribution. The queues and switches are connected
 with links that have nonzero propagation delays.
 Our {\opp} model for CQN wraps tandems into compound modules.
 
@@ -280,7 +273,7 @@ When using LAM-MPI \cite{lammpi}, the mpirun program (part of LAM-MPI)
 is used to launch the program on the desired processors.
 When named pipes or file communications is selected, the opp\_prun
 {\opp} utility can be used to start the processes.
-Alternatively, one can run the processes by hand (the -p flag
+Alternatively, one can run the processes manually (the \fopt{-p} flag
 tells {\opp} the index of the given LP and the total number of LPs):
 
 \begin{commandline}
@@ -318,26 +311,26 @@ EITs and EOTs can be inspected, etc.
 \subsection{Placeholder Modules, Proxy Gates}
 \label{sec:parallel-exec:placeholder-modules-proxy-gates}
 
-When setting up a model partitioned to several LPs,
+When setting up a model partitioned into several LPs,
 {\opp} uses placeholder modules and proxy gates.
 In the local LP, placeholders represent sibling submodules
 that are instantiated on other LPs.
 With placeholder modules, every module has all of its siblings
-present in the local LP -- either as placeholder or as the ``real thing''.
+present in the local LP -- either as a placeholder or as the ``real thing''.
 Proxy gates take care of forwarding messages to the LP where
 the module is instantiated (see Figure \ref{fig:plach}).
 
 The main advantage of using placeholders is that algorithms such as
 topology discovery embedded in the model can be used with PDES unmodified.
 Also, modules can use direct message sending to any sibling module,
-including placeholders. This is so because the destination of direct message
+including placeholders. This is because the destination of direct message
 sending is an input gate of the destination module -- if the destination
-module is a placeholder, the input gate will be a proxy gate which
+module is a placeholder, the input gate will be a proxy gate that
 transparently forwards the messages to the LP where the ``real'' module
 was instantiated. A limitation is that the destination of direct message
 sending cannot be a \textit{submodule} of a sibling (which is
 probably a bad practice anyway, as it violates encapsulation),
-simply because placeholders are empty and so its submodules are
+simply because placeholders are empty and thus, their submodules are
 not present in the local LP.
 
 Instantiation of compound modules is slightly more complicated.
@@ -345,8 +338,8 @@ Since submodules can be on different LPs, the compound module may
 not be ``fully present'' on any given LP, and it may have to be
 present on several LPs (wherever it has submodules instantiated).
 Thus, compound modules are instantiated wherever they have
-at least one submodule instantiated, and are represented by placeholders
-everywhere else (Figure \ref{fig:inst}).
+at least one submodule instantiated and are represented by placeholders
+anywhere else (Figure \ref{fig:inst}).
 
 
 \begin{figure}[htbp]
@@ -370,25 +363,25 @@ everywhere else (Figure \ref{fig:inst}).
 \subsection{Configuration}
 \label{sec:parallel-exec:configuration}
 
-Parallel simulation configuration is the \ttt{[General]} section of \ttt{omnetpp.ini}.
+Parallel simulation configuration is set in the \ttt{[General]} section of \ttt{omnetpp.ini}.
 
-The parallel distributed simulation feature can be turned on with the
+The parallel distributed simulation feature can be enabled with the
 \fconfig{parallel-simulation} boolean option.
 
-The \fconfig{parsim-communications-class} selects the class that implements
+The \fconfig{parsim-communications-class} option selects the class that implements
 communication between partitions. The class must implement the
 \cclass{cParsimCommunications} interface.
 
 %% XXX what choices there are
 
-The \fconfig{parsim-synchronization-class} selects the parallel simulation algorithm.
-The class must implement the \cclass{cParsimSynchronizer} interface.
+The \fconfig{parsim-synchronization-class} option selects the parallel
+simulation algorithm. The class must implement the \cclass{cParsimSynchronizer} interface.
 
 %% XXX what choices there are
 
 The following two options configure the Null Message Algorithm, so
 they are only effective if \cclass{cNullMessageProtocol} has been selected
-as synchronization class:
+as the synchronization class:
 
 \begin{itemize}
   \item \fconfig{parsim-nullmessageprotocol-lookahead-class}
@@ -396,29 +389,29 @@ as synchronization class:
     from \cclass{cNMPLookahead}. The default class is \cclass{cLinkDelayLookahead}.
 
   \item \fconfig{parsim-nullmessageprotocol-laziness} expects a number
-    in the $(0,1)$ interval (the default is 0.5), and it ontrols how often
+    in the $(0,1)$ interval (the default is 0.5), and it controls how often
     NMA should send out null messages; the value is understood in proportion
-    to the lookahead, e.g. 0.5 means every $lookahead/2$ simsec.
+    to the lookahead, e.g., 0.5 means every $lookahead/2$ simsec.
 \end{itemize}
 
 The \fconfig{parsim-debug} boolean option enables/disables printing
 log messages about the parallel simulation algorithm. It is turned on
-by default, but for production runs we recommend turning it off.
+by default, but for production runs, we recommend turning it off.
 
 Other configuration options configure MPI buffer sizes and other details;
 see options that begin with \ttt{parsim-} in Appendix \ref{cha:config-options}.
 
 
-When you are using cross-mounted home directories (the simulation's
+When using cross-mounted home directories (where the simulation's
 directory is on a disk mounted on all nodes of the cluster),
-a useful configuration setting is
+a useful configuration setting is:
 
 \begin{inifile}
 [General]
 fname-append-host = true
 \end{inifile}
 
-It will cause the host names to be appended to the names of
+This setting will cause the host names to be appended to the names of
 all output vector files, so that partitions don't overwrite each other's
 output files. (See section \ref{sec:run-sim:akaroa-using-shared-filesystems})
 
@@ -441,26 +434,26 @@ architecture is depicted in Figure \ref{fig:parsim-arch}.
   \end{center}
 \end{figure}
 
-The parallel simulation subsytem is an optional component
-itself, which can be removed from the simulation kernel
-if not needed. It consists of three layers, from the bottom up:
-Communications Layer, Partitioning Layer and Synchronization Layer.
+The parallel simulation subsystem is an optional component
+that can be removed from the simulation kernel
+if not needed. It consists of three layers, from bottom up:
+the Communications Layer, Partitioning Layer, and Synchronization Layer.
 
 \subsubsection{The Communications Layer}
 \label{sec:parallel-exec:communications-layer}
 
 The purpose of the Communications Layer is to
-provide elementary messaging services between partitions for the
-upper layer. The services include send, blocking receive,
-nonblocking receive and broadcast. The send/receive operations
+provide elementary messaging services between partitions for
+the upper layer. The services include send, blocking receive,
+nonblocking receive, and broadcast. The send/receive operations
 work with \textit{buffers}, which encapsulate packing and unpacking
 operations for primitive C++ types. The message class and
 other classes in the simulation library can pack and unpack
-themselves into such buffers. The Communications layer API
+themselves into such buffers. The Communications Layer API
 is defined in the \texttt{cParsimCommunications} interface
 (abstract class); specific implementations like the MPI
-one (\texttt{cMPICommunications}) subclass from this,
-and encapsulate MPI send/receive calls. The matching buffer
+one (\texttt{cMPICommunications}) subclass this interface,
+encapsulating MPI send/receive calls. The matching buffer
 class \texttt{cMPICommBuffer} encapsulates MPI pack/unpack
 operations.
 
@@ -469,15 +462,15 @@ operations.
 
 The Partitioning Layer is responsible for instantiating
 modules on different LPs according to the partitioning specified
-in the configuration, for configuring proxy gates.
+in the configuration and for configuring proxy gates.
 During the simulation, this layer also ensures that cross-partition
 simulation messages reach their destinations. It intercepts messages
 that arrive at proxy gates and transmits them to the destination LP
 using the services of the Communications Layer. The receiving LP
 unpacks the message and injects it at the gate the proxy gate points at.
-The implementation basically encapsulates the
-\texttt{cParsimSegment}, \texttt{cPlaceholderModule},
-\texttt{cProxyGate} classes.
+The implementation basically encapsulates
+the \texttt{cParsimSegment}, \texttt{cPlaceholderModule},
+and \texttt{cProxyGate} classes.
 
 \subsubsection{The Synchronization Layer}
 \label{sec:parallel-exec:synchronization-layer}
@@ -493,10 +486,10 @@ invoked by the simulation kernel to determine the next simulation
 event; it also has full access to the future event set (FES\index{FES}) and
 can add/remove events for its own use.
 Conservative parallel simulation algorithms will use this hook
-to block the simulation if the next event is unsafe, e.g. the
+to block the simulation if the next event is unsafe, e.g., the
 null message algorithm implementation (\texttt{cNullMessageProtocol})
 blocks the simulation if an EIT has been reached until a null message
-arrives (see \cite{bagrodia00} for terminology); also it uses
+arrives (see \cite{bagrodia00} for terminology); it also uses
 this hook to periodically send null messages. The second hook
 is invoked when a model message is sent to another LP;
 the null message algorithm uses this hook to piggyback null
@@ -508,7 +501,7 @@ incoming null messages here.
 
 The Null Message Protocol implementation itself is modular;
 it employs a separate, configurable lookahead discovery object.
-Currently only link delay based lookahead discovery has been
+Currently, only link delay-based lookahead discovery has been
 implemented, but it is possible to implement more sophisticated
 types.
 
@@ -518,21 +511,21 @@ protocol implementations:
 the first one is based on the null message algorithm and
 additionally records the external events (events received
 from other LPs) to a trace file; the second one executes
-the simulation using the trace file to find out which
+the simulation using the trace file to determine which
 events are safe and which are not.
 
 Note that although we implemented a conservative protocol,
 the provided API itself would allow implementing optimistic
-protocols, too. The parallel simulation algorithm has
+protocols as well. The parallel simulation algorithm has
 access to the executing simulation model, so it could perform
 saving/restoring model state if model objects support this
   \footnote{Unfortunately, support for state saving/restoration
   needs to be individually and manually added to each class
   in the simulation, including user-programmed simple modules.}.
 
-We also expect that because of the modularity, extensibility and
+We also expect that due to the modularity, extensibility, and
 clean internal architecture of the parallel simulation subsystem,
-the {\opp} framework has the potential to become a preferred platform
+the {\opp} framework has the potential to become the preferred platform
 for PDES research.
 
 

@@ -10,35 +10,35 @@ framework. It has a generic architecture, so it can be (and has been)
 used in various problem domains:
 
 \begin{itemize}
-  \item modeling of wired and wireless communication networks
-  \item protocol modeling
-  \item modeling of queueing networks
-  \item modeling of multiprocessors and other distributed hardware systems
-  \item validating of hardware architectures
-  \item evaluating performance aspects of complex software systems
-  \item in general, modeling and simulation of any system where the
-        discrete event approach is suitable, and can be conveniently
-        mapped into entities communicating by exchanging messages.
+  \item Modeling of wired and wireless communication networks.
+  \item Protocol modeling.
+  \item Modeling of queueing networks.
+  \item Modeling of multiprocessors and other distributed hardware systems.
+  \item Validation of hardware architectures.
+  \item Evaluating performance aspects of complex software systems.
+  \item In general, modeling and simulation of any system where the
+    discrete event approach is suitable, and can be conveniently
+    mapped into entities communicating by exchanging messages.
 \end{itemize}
 
 {\opp} itself is not a simulator of anything concrete, but rather
 provides infrastructure and tools for \textit{writing} simulations. One of
 the fundamental ingredients of this infrastructure is a component
 architecture for simulation models. Models are assembled from reusable
-components termed \textit{modules}. Well-written modules are truly reusable,
-and can be combined in various ways like LEGO blocks.
+components termed \textit{modules}. Well-written modules are truly reusable
+and can be combined in various ways, like LEGO blocks.
 
 Modules can be connected with each other via gates (other systems would
-call them ports), and combined to form compound modules. The depth of
+call them ports) and combined to form compound modules. The depth of
 module nesting is not limited. Modules communicate through message passing,
 where messages may carry arbitrary data structures. Modules can pass
-messages along predefined paths via gates and connections, or directly to
-their destination; the latter is useful for wireless simulations, for
+messages along predefined paths via gates and connections or directly to
+their destination. The latter is useful for wireless simulations, for
 example. Modules may have parameters that can be used to customize module
 behavior and/or to parameterize the model's topology.
 Modules at the lowest level of the module hierarchy are called
-simple modules, and they encapsulate model behavior. Simple modules
-are programmed in C++, and make use of the simulation library.
+simple modules and encapsulate model behavior. Simple modules
+are programmed in C++ and make use of the simulation library.
 
 {\opp} simulations can be run under various user interfaces.
 Graphical, animating user interfaces are highly useful for
@@ -46,18 +46,18 @@ demonstration and debugging purposes, and command-line user
 interfaces are best for batch execution.
 
 The simulator as well as user interfaces and tools are highly portable.
-They are tested on the most common operating systems (Linux, Mac OS/X,
-Windows), and they can be compiled out of the box or after trivial
+They are tested on the most common operating systems (Linux, macOS,
+Windows) and they can be compiled out of the box or after trivial
 modifications on most Unix-like operating systems.
 
 {\opp} also supports parallel distributed simulation. {\opp} can
 use several mechanisms for communication between partitions of
-a parallel distributed simulation, for example MPI or named pipes.
+a parallel distributed simulation, for example, MPI or named pipes.
 The parallel simulation algorithm can easily be extended, or new
 ones can be plugged in. Models do not need any special instrumentation
 to be run in parallel -- it is just a matter of configuration.
 {\opp} can even be used for classroom presentation of parallel
-simulation algorithms, because simulations can be run in parallel
+simulation algorithms because simulations can be run in parallel
 even under the GUI that provides detailed feedback on what is going on.
 
 {\omnest} is the commercially supported version of {\omnetpp}.
@@ -69,135 +69,133 @@ from Simulcraft Inc.
 % \section{Where Does {\opp} Stand in the World of Simulation Tools?}
 % \label{sec:introduction:where-does-opp-stand-in-world-of-simulation-tools}
 %
-% There are numerous network simulation tools on the market today,
-% both commercial and non-commercial. In this section I will try
-% to give an overview by picking some of the most important or
-% most representative ones in both categories and comparing them
+% There are numerous network simulation tools available on the market today,
+% both commercial and non-commercial. In this section, I will provide
+% an overview by selecting some of the most important or
+% representative tools from both categories and comparing them
 % to {\opp}: PARSEC, SMURPH, NS, Ptolemy, NetSim++, C++SIM, CLASS
-% as non-commercial, and OPNET, COMNET III as commercial tools.
-% (The {\opp} Home Page contains a list of Web sites with collections
-% of references to network simulation tools where the reader can
-% get a more complete list.) In the commercial category, OPNET
-% is widely held to be the state of the art in network simulation.
-% {\opp} is targeted at roughly the same segment of network simulation
+% as non-commercial options, and OPNET, COMNET III as commercial tools.
+% (The {\opp} Home Page contains a list of websites with collections
+% of references to network simulation tools where readers can
+% find a more comprehensive list.) In the commercial category, OPNET
+% is widely considered to be the state of the art in network simulation.
+% {\opp} targets a similar segment of network simulation
 % as OPNET.
 %
-% Seven issues are examined to get an overview about the network
+% Seven aspects will be examined to provide an overview of network
 % simulation tools:
 %
 %
 % \textbf{Detail Level}. \textit{Does the simulation tool have the necessary
-% power to express details in the model?} In other words, can the
-% user implement arbitrary new building blocks like in {\opp}
-% or he is confined to the predefined blocks implemented by the
-% supplier? Some tools like COMNET III are not programmable by
-% the user to this extent therefore they cannot be compared to
-% {\opp}. Specialized network simulation tools like NS (for IP)
-% and CLASS (for ATM) also rather fall into this category.
+% capabilities to express details in the model?} In other words, can users
+% implement arbitrary new building blocks like in {\opp},
+% or are they confined to the predefined blocks provided by the
+% supplier? Some tools, like COMNET III, do not allow full programmability
+% by the user, therefore, they cannot be directly compared to
+% {\opp}. Specialized network simulation tools, such as NS (for IP)
+% and CLASS (for ATM), also fall into this category.
 %
 %
 % \textbf{Available Models.} \textit{What protocol models are readily available
-% for the simulation tool?} As of end 2004, there are three large
-% protocol modelling frameworks available for {\opp}:
-% the Mobility Framework for modelling mobile, wireless and ad-hoc networks;
-% the INET Framework with TCP, IP, MPLS and other Internet-related protocols;
-% and IPv6Suite which provides detailed models for IPv6, Mobile IPv6, 802.11
-% and other protocols. Several other simulation models (such as AntNet routing)
-% have also been published -- the list is ever growing, and model frameworks
-% are constantly maturing and converging.
+% for the simulation tool?} As of the end of 2004, there were three major
+% protocol modeling frameworks available for {\opp}:
+% the Mobility Framework for modeling mobile, wireless, and ad-hoc networks;
+% the INET Framework with TCP, IP, MPLS, and other Internet-related protocols;
+% and IPv6Suite, which provides detailed models for IPv6, Mobile IPv6, 802.11,
+% and other protocols. Additionally, several other simulation models (such as AntNet routing)
+% have been published — the list continues to grow, and model frameworks
+% are constantly improving and converging.
 %
 %
 % \textbf{Defining Network Topology}. \textit{How does the simulation
-% tool support defining the network topology?} Is it possible to
-% create some form of hierarchy (nesting) or only ``flat'' topologies
-% are supported? Network simulation tools naturally share the property
-% that a model (network) consists of ``nodes'' (blocks, entities,
-% modules, etc.) connected by ``links'' (channels, connections, etc.).
+% tool support the definition of network topology?} Is it possible to
+% create some form of hierarchy (nesting), or does it only support "flat" topologies?
+% Network simulation tools typically share the property
+% that a model (network) consists of "nodes" (blocks, entities,
+% modules, etc.) connected by "links" (channels, connections, etc.).
 % Many commercial simulators have graphical editors to define the
 % network; however, this is only a good solution if there is an
-% alternative form of topology description (e.g. text file) which allows
-% one to generate the topology by program. OPNET follows a unique way:
+% alternative form of topology description (e.g., a text file) that allows
+% generating the topology programmatically. OPNET follows a unique approach:
 % the network topology is stored in a proprietary binary file format
-% which can be generated (and read) by the graphical editor and C
+% that can be generated (and read) by the graphical editor and C
 % programs linked against a special library. On the other hand, most
 % non-commercial simulation tools do not provide explicit support for
-% topology description: one must program a ``driver entity'' which will
-% boot the model by creating the necessary nodes and interconnecting
-% them (PARSEC, SMURPH, NS). Finally, a large part of the tools that do
-% support explicit topology description supports only flat topologies
-% (CLASS). {\opp} probably uses the most flexible method: it has a
+% topology description; instead, users must program a "driver entity" that will
+% initialize the model by creating the necessary nodes and interconnecting
+% them (PARSEC, SMURPH, NS). Finally, many tools that do
+% support explicit topology description only support flat topologies
+% (CLASS). {\opp} likely uses the most flexible method: it has a
 % human-readable textual topology description format (the NED language)
-% which is easy to create with any text-processing tool (\fprog{perl},
+% that is easy to create using any text-processing tool (\fprog{perl},
 % \fprog{awk}, etc.), and the same format is used by the graphical
-% editor. It is also possible to create a ``driver entity'' to build a
-% network at run-time by program. {\opp} also supports submodule
-% nesting.
+% editor. It is also possible to create a "driver entity" to build a
+% network at runtime programmatically. {\opp} also supports submodule nesting.
 %
 %
-% \textbf{Programming Model.} \textit{What is the programming model supported
-% by the simulation environment?} Network simulators typically use
-% either thread/coroutine-based programming (such as \ffunc{activity()}
-% in {\opp}), or FSMs built upon a \ffunc{handleMessage()}-like function.
-% For example, OPNET, SMURPH and NetSim++ use FSMs (with underlying
-% handleMessage()), PARSEC and C++SIM use threads. {\opp} supports
-% both programming models; the author does not know of another
+% \textbf{Programming Model.} \textit{What programming model does the simulation
+% environment support?} Network simulators typically use
+% either thread/coroutine-based programming (like the \ffunc{activity()}
+% function in {\opp}), or FSMs built upon a \ffunc{handleMessage()}-like function.
+% For example, OPNET, SMURPH, and NetSim++ use FSMs (with an underlying
+% handleMessage() function), while PARSEC and C++SIM use threads. {\opp} supports
+% both programming models; the author is not aware of any other
 % simulation tool that does so.
 %
 %
 % \textbf{Debugging and Tracing Support.} \textit{What debugging or tracing
 % facilities does the simulation tool offer?} Simulation programs
-% are infamous for long debugging periods. C++-based simulation
+% are notorious for long debugging periods. C++-based simulation
 % tools rarely offer much more than \ffunc{printf()}-style debugging; often
 % the simulation kernel is also capable of dumping selected debug
-% information on the standard output. Animation is also often supported,
-% either off-line (record\&playback) or in some client-server architecture,
-% where the simulation program is the ``server'' and
-% it can be viewed using the ``client''. Off-line animation
-% naturally lacks interactivity and is therefore little use in
-% debugging. The client-server solution typically has limited power
+% information to the standard output. Animation is also often supported,
+% either offline (record and playback) or in some client-server architecture,
+% where the simulation program is the "server"
+% and can be viewed using the "client". Offline animation
+% lacks interactivity and is therefore of little use for
+% debugging. The client-server solution typically has limited capabilities
 % because the simulation and the viewer run as independent operating
 % system processes, and the viewer has limited access to the simulation
-% program's internals and/or it does not have enough control over
-% the course of simulation execution. OPNET has a very good support
-% for command-line debugging and provides both off-line and client-server
+% program's internals and/or lacks sufficient control over
+% the course of simulation execution. OPNET has very good support
+% for command-line debugging and provides both offline and client-server
 % style animation. NetSim++ and Ptolemy use the client-server method
-% of animation. {\opp} goes a different way by linking the GUI
+% of animation. {\opp} takes a different approach by linking the GUI
 % library with the debugging/tracing capability into the simulation
 % executable. This architecture enables the GUI to be very powerful:
 % every user-created object is visible (and modifiable) in the
-% GUI via inspector windows and the user has tight control over
-% the execution. To the author's best knowledge, the tracing feature
-% {\opp} provides is unique among the C++-based simulation tools.
+% GUI via inspector windows, and the user has tight control over
+% the execution. To the best of the author's knowledge, the tracing feature
+% {\opp} provides is unique among C++-based simulation tools.
 %
 %
 % \textbf{Performance.} \textit{What performance can be expected from the
 % simulation?} Simulation programs typically run for several hours.
-% Probably the most important factor is the programming language;
+% The programming language is likely the most significant factor;
 % almost all network simulation tools are C/C++-based. Performance
 % is a particularly interesting issue with {\opp} since the GUI
-% debugging/tracing support involves some extra overhead in the
+% debugging/tracing support incurs some additional overhead in the
 % simulation library. However, in a reported case, an {\opp} simulation
-% was only 1.3 slower than its counterpart implemented in plain
-% C (i.e. one containing very little administration overhead),
-% which is a very good showing. A similar result was reported in
+% was only 1.3 times slower than its counterpart implemented in plain
+% C (i.e., one containing minimal administrative overhead),
+% which is an impressive result. A similar outcome was reported in
 % a performance comparison with a PARSEC simulation.
 %
 %
 % \textbf{Source Availability.} \textit{Is the simulation library available
-% in source?} This is a trivial question but it immediately becomes
+% in source code?} This may seem like a trivial question, but it becomes
 % important if one wants to examine or teach the internal workings
-% of a simulation kernel, or one runs into trouble because some
-% function in the simulation library has a bug and/or it is not
-% documented well enough. In general it can be said that non-commercial
-% tools (like {\opp}) are open-source and commercial ones are
-% not. This is also true for OPNET: the source for simulation kernel
-% is not available (although the ready-made protocol models come
-% with sources).
+% of a simulation kernel, or if one encounters trouble due to a bug or insufficient documentation
+% in a simulation library function. In general, non-commercial
+% tools (like {\opp}) are open-source, while commercial ones are not.
+% This holds true for OPNET as well: the simulation kernel source
+% code is not available (although the pre-built protocol models do
+% come with source code).
 %
 %
-% In conclusion, it can be said that {\opp} has enough features
+% In conclusion, it can be said that {\opp} offers enough features
 % to make it a good alternative to most network simulation tools,
-% and it has a strong potential to become one of the most widely
+% and it has the potential to become one of the most widely
 % used network simulation packages in academic and research environments.
 %
 
@@ -207,18 +205,18 @@ from Simulcraft Inc.
 The manual is organized as follows:
 
 \begin{itemize}
-  \item The Chapters \ref{cha:introduction} and \ref{cha:overview}
+  \item Chapters \ref{cha:introduction} and \ref{cha:overview}
     contain introductory material.
-  \item The second group of chapters, \ref{cha:ned-lang}, \ref{cha:simple-modules} and
-    \ref{cha:sim-lib} are the programming guide. They present the
+  \item The second group of chapters, \ref{cha:ned-lang}, \ref{cha:simple-modules}, and
+    \ref{cha:sim-lib}, are the programming guide. They present the
     NED language\index{ned!language}, describe the simulation concepts
     and their implementation in {\opp}, explain how to write
     simple\index{module!simple} modules, and describe the class library.
-  \item The chapters \ref{cha:graphics} and \ref{cha:neddoc}explain how to customize
+  \item Chapters \ref{cha:graphics} and \ref{cha:neddoc} explain how to customize
     the network graphics and how to write NED source code comments
     from which documentation can be generated.
   \item Chapters \ref{cha:build-sim-progs},
-    \ref{cha:config-sim}, \ref{cha:run-sim} and \ref{cha:ana-sim} deal with
+    \ref{cha:config-sim}, \ref{cha:run-sim}, and \ref{cha:ana-sim} deal with
     practical issues like building and running simulations and analyzing results, and
     describe the tools {\opp} provides to support these tasks.
   \item Chapter \ref{cha:parallel-exec} is devoted to the support
@@ -237,13 +235,13 @@ The manual is organized as follows:
 
 
 % \section{History}
-\label{sec:introduction:history}
+% \label{sec:introduction:history}
 %
-% \tbf{The early days: 1992-1997}
+% \textbf{The early days: 1992-1997}
 %
-% {\omnetpp} has its distant roots in OMNeT, a simulator written
-% in Object Pascal by dr. Gy\"{o}rgy Pongor.
-% The development of {\omnetpp} started as a semester's programming
+% \textit{OMNeT++} has its distant roots in OMNeT, a simulator written
+% in Object Pascal by Dr. Gy\"{o}rgy Pongor.
+% The development of \textit{OMNeT++} started as a semester's programming
 % assignment at the Technical University of Budapest (BME) in 1992.
 % The assignment (``creation of an object-oriented discrete event
 % simulation system in C++'') was handed out by Prof. Dr Gy\"{o}rgy
@@ -257,11 +255,11 @@ The manual is organized as follows:
 % We used Turbo Vision (Borland's then successful character-based
 % GUI) for the first ``graphical'' user interface.
 %
-% In 1992, we submitted a paper about {\omnetpp} to the
+% In 1992, we submitted a paper about \textit{OMNeT++} to the
 % student's annual university conference
 % (named ``TDK'') and won first prize in the ``Software'' section.
 % Later we also won 1st prize in the national ``TDK''. Then the
-% idea came to port {\omnetpp} to Unix (first for AIX on an RS/6000
+% idea came to port \textit{OMNeT++} to Unix (first for AIX on an RS/6000
 % with only 16MB RAM, later Linux), until all development was done
 % in Linux and BC3.1 could no longer be supported.
 %
@@ -272,7 +270,7 @@ The manual is organized as follows:
 % was written as diploma work
 %
 % 1994: used OPNET for several simulation projects. OPNET features
-% (and flaws) gave lots of ideas how to continue with {\omnetpp}.
+% (and flaws) gave lots of ideas how to continue with \textit{OMNeT++}.
 %
 % 1995: initial version of nedc was written by a group of exchange
 % students from Delft
@@ -284,9 +282,9 @@ The manual is organized as follows:
 %
 % 1997 Dec: added GNED
 %
-% \tbf{Regular open-source releases: 1997-2003}
+% \textbf{Regular open-source releases: 1997-2003}
 %
-% Until 1997, some people occasionally contributed to {\omnetpp}.
+% Until 1997, some people occasionally contributed to \textit{OMNeT++}.
 % Since 1997, all development is done entirely by Andras;
 % independent of the University since 1998. (He leaves
 % the University in 1998, and is no longer affiliated with it
@@ -295,7 +293,7 @@ The manual is organized as follows:
 % 1997 Sept: web site set up (www.hit.bme.hu/phd/vargaa/omnetpp), first public release
 %
 % 1997 Feb-1998 Sept: simulation projects for a small company in
-% Hungary. We used a version of {\omnetpp}.
+% Hungary. We used a version of \textit{OMNeT++}.
 %
 % 1998 March: added Plove
 %
@@ -309,16 +307,16 @@ The manual is organized as follows:
 %
 % 2000: IPSuite created in Karlsruhe
 %
-% 2001 May: {\omnetpp} 2.1 release
+% 2001 May: \textit{OMNeT++} 2.1 release
 %
 % 2001 June: the CVS gets hosted in Karlsruhe
 %
-% 2002 May: {\omnetpp} 2.2 release
+% 2002 May: \textit{OMNeT++} 2.2 release
 %
 % 2003 Jan: Omnest Global Inc. was founded
 %
 % 2003 Feb-Oct: Andras's stay at CTIE, Monash University, Melbourne, Australia
-% with Ahmet Sekercioglu's group; development of {\omnetpp}'s parallel simulation
+% with Ahmet Sekercioglu's group; development of \textit{OMNeT++}'s parallel simulation
 % framework, doing parallel simulation experiments
 %
 % 2003 June: first public release of IPv6Suite (CTIE, Monash University)
@@ -331,7 +329,7 @@ The manual is organized as follows:
 %
 % 2003 Sept: Ethernet model made available
 %
-% 2003 Nov: {\omnetpp} 2.3p1 release
+% 2003 Nov: \textit{OMNeT++} 2.3p1 release
 %
 % 2004 July: Mobility Framework first official release (TKN, TU Berlin)
 %
@@ -342,44 +340,44 @@ The manual is organized as follows:
 
 %
 % \section{Credits}
-\label{sec:introduction:credits}
+% \label{sec:introduction:credits}
 %
 % {\omnetpp} was developed by Andr\'{a}s Varga (andras@omnetpp.org,
 % andras.varga@omnest.com).
 %
-% In the early stage of the project, several people contributed
-% to {\omnetpp}. Most contributed code is no longer part of
-% {\omnetpp}; nevertheless, I'd like to acknowledge the work of the
-% following people. First of all, I want thank Dr Gy\"{o}rgy Pongor
+% In the early stages of the project, several people contributed
+% to {\omnetpp}. Most of the contributed code is no longer part of
+% {\omnetpp}; nevertheless, I would like to acknowledge the work of the
+% following people. First of all, I want to thank Dr. Gy\"{o}rgy Pongor
 % (pongor@hit.bme.hu), my advisor at the Technical University of Budapest
 % who initiated {\omnetpp} as a student project.
 %
-% My fellow student \'{A}kos Kun started to program the first NED parser
+% My fellow student \'{A}kos Kun started programming the first NED parser
 % in 1992-93, but it was abandoned after a few months.
-% The first version of nedc was finally developed in summer 1995,
-% by three exchange students from TU Delft: Jan Heijmans, Alex Paalvast
-% and Robert van der Leij. nedc was first called JAR after their initials
+% The first version of nedc was finally developed in the summer of 1995,
+% by three exchange students from TU Delft: Jan Heijmans, Alex Paalvast,
+% and Robert van der Leij. nedc was initially called JAR after their initials
 % until being renamed nedc. nedc was further developed and refactored
 % several times until finally being retired and replaced by nedtool in {\omnetpp} 3.0.
 % The second group of Delft exchange students (Maurits Andr\'{e},
-% George van Montfort, Gerard van de Weerd) arrived in fall 1995.
-% They performed some testing of the simulation library, and
-% wrote some example simulations, for example the original version of Token Ring,
-% and simulation of the NIM game which survived until {\omnetpp} 3.0.
+% George van Montfort, Gerard van de Weerd) arrived in the fall of 1995.
+% They performed some testing of the simulation library and
+% wrote some example simulations, such as the original version of Token Ring,
+% and a simulation of the NIM game which survived until {\omnetpp} 3.0.
 % These student exchanges were organized by Dr. Leon Rothkranz
-% at TU Delft, and Gy\"{o}rgy Pongor at TU Budapest.
+% at TU Delft and Gy\"{o}rgy Pongor at TU Budapest.
 %
 % The diploma thesis of Zolt\'{a}n Vass (spring 1996) was to prepare
 % {\omnetpp} for parallel execution over PVM. This code has been
 % replaced with the new Parallel Simulation Architecture in {\omnetpp} 3.0.
 % G\'{a}bor Lencse (lencse@hit.bme.hu) was also interested in parallel
 % simulation, namely a method called Statistical Synchronization (SSM).
-% He implemented the FDDI model (which retired in the 4.0 version), and added
+% He implemented the FDDI model (which was retired in the 4.0 version) and added
 % some extensions into NED for SSM. These extensions have since been removed
-% ({\omnetpp} 3.0 does parallel execution on different principles).
+% ({\omnetpp} 3.0 does parallel execution using different principles).
 %
 % The $P^{2}$ algorithm and the original implementation of the k-split algorithm
-% was programmed in fall 1996 by Babak Fakhamzadeh from TU Delft.
+% were programmed in the fall of 1996 by Babak Fakhamzadeh from TU Delft.
 % k-split was later reimplemented by Andr\'{a}s.
 %
 % Several bugfixes and valuable suggestions for improvements came
@@ -387,9 +385,9 @@ The manual is organized as follows:
 % mention everyone here, and the list is constantly growing --
 % instead, the README and ChangeLog files contain acknowledgements.
 %
-% Between summer 2001 and fall 2004, {\omnetpp} CVS was hosted
-% at the University of Karlsruhe. Credit for setting
-% up and maintaining the CVS server goes to Ulrich Kaage.
+% From the summer of 2001 to the fall of 2004, the {\omnetpp} CVS was hosted
+% at the University of Karlsruhe. Credit for setting up and maintaining
+% the CVS server goes to Ulrich Kaage.
 % Ulrich can also be credited with converting the user manual from
 % Microsoft Word format to LaTeX.
 %

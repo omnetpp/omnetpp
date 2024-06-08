@@ -10,16 +10,16 @@ have already been covered in other chapters:
 
 \begin{itemize}
    \item \textit{Defining new NED functions} was described in
-     \ref{sec:sim-lib:defining-ned-functions}
+     Section~\ref{sec:sim-lib:defining-ned-functions}.
    \item \textit{Defining new result filters and recorders} was described
-     in \ref{sec:simple-modules:writing-result-filters}
+     in Section~\ref{sec:simple-modules:writing-result-filters}.
 \end{itemize}
 
 This chapter will begin by introducing some infrastructure features that
 are useful for extensions:
 
 \begin{itemize}
-   \item \textit{Config options}. This facility lets other extensions classes
+   \item \textit{Config options}. This facility lets other extension classes
      define their own configuration options.
    \item \textit{Simulation lifecycle listeners} allow extensions to get
      notified when a network is set up, simulation is started, paused or resumed,
@@ -72,7 +72,7 @@ Reference.
 \begin{note}
 A common error is that {\opp} cannot find the class at runtime. When that
 happens, make sure the executable actually contains the code of the class.
-When linking with a library, over-optimizing linkers (esp. on Unix) tend to
+When linking with a library, over-optimizing linkers (especially on Unix) tend to
 leave out code which seems to be unreferenced by other parts of the
 program.
 \end{note}
@@ -86,7 +86,7 @@ The following sections elaborate on the various extension interfaces.
 \subsection{Registration}
 \label{sec:plugin-exts:configoption:registration}
 
-New configuration options need to be declared with one of the appropriate
+New configuration options need to be declared using one of the appropriate
 registration macros. These macros are:
 
 \begin{cpp}
@@ -98,17 +98,17 @@ Register_PerObjectConfigOption(ID, NAME, KIND, TYPE, DEFAULTVALUE, DESCRIPTION)
 Register_PerObjectConfigOptionU(ID, NAME, KIND, UNIT, DEFAULTVALUE, DESCRIPTION)
 \end{cpp}
 
-Config options come in three flavors, as indicated by the macro names:
+Configuration options come in three flavors, as indicated by the macro names:
 
 \begin{itemize}
-  \item \textit{Global} options affect all configurations (i.e. they are
+  \item \textit{Global} options affect all configurations (i.e., they are
       only accepted in the \ttt{[General]} section but not in
-      \ttt{[Config <name>]} sections)
+      \ttt{[Config <name>]} sections).
   \item \textit{Per-Run} options can be specified in any section
-      (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
+      (i.e., both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
       They affect the configuration they occur in.
   \item \textit{Per-Object} options can be specified in any section
-      (i.e. both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
+      (i.e., both in \ttt{[General]} and in \ttt{[Config <name>]} sections).
       They are specific to an object or group of objects. Their names
       must always contain a hyphen (-) character so that they can be
       distinguished from module/channel parameter assignments when they
@@ -119,11 +119,10 @@ The macro arguments are as follows:
 \begin{itemize}
   \item \textit{ID} is a C++ identifier that becomes the name of a global
         variable, a pointer to a \cclass{cConfigOption} object that the
-        macro creates. It lets you refer to the configuration option,
-        e.g. when querying its value using \cclass{cConfiguration}'s member
-        functions.
+        macro creates. It allows you to refer to the configuration option,
+        e.g., when querying its value using the member functions of \cclass{cConfiguration}.
   \item \textit{NAME} is the name of the option (a string).
-  \item \textit{KIND} applies to per-object configuration options, and
+  \item \textit{KIND} applies to per-object configuration options and
         clarifies what kind of objects the option applies to. Its value
         must be one of: \ttt{KIND\_COMPONENT} (module or channel),
         \ttt{KIND\_CHANNEL}, \ttt{KIND\_MODULE} (simple or compound module),
@@ -140,14 +139,14 @@ The macro arguments are as follows:
         (filename, filenames, path) and plain strings is that relative
         filenames and paths are automatically converted to absolute
         when the configuration is read, with the base directory being the
-        location of the ini file where the configuration entry was read from.
+        location of the ini file from which the configuration entry was read.
   \item \textit{UNIT} is a string that names the measurement unit in which
         the option's value is to be interpreted; it implies type \ttt{CFG\_DOUBLE}.
   \item \textit{DEFAULTVALUE} is the default value in textual form (string);
         this should be \ttt{nullptr} if the option has no default value.
   \item \textit{DESCRIPTION} is an arbitrarily long string that describes
-        the purpose and and operation of the option. It will be used in
-        help texts etc.
+        the purpose and operation of the option. It will be used in
+        help texts, etc.
 \end{itemize}
 
 For example, the \ttt{debug-on-errors} option is declared in the following way:
@@ -157,10 +156,10 @@ Register_GlobalConfigOption(CFGID_DEBUG_ON_ERRORS, "debug-on-errors",
     CFG_BOOL, "false", "When enabled, runtime errors will cause...");
 \end{cpp}
 
-The macro will register the option, and also declare the
-\ttt{CFGID\_DEBUG\_ON\_ERRORS} variable as pointer to a
+The macro will register the option and also declare the
+\ttt{CFGID\_DEBUG\_ON\_ERRORS} variable as a pointer to a
 \cclass{cConfigOption}. The variable can be used later as a ``handle'' when
-reading the option value from the configuration database.
+reading the option's value from the configuration database.
 
 \subsection{Reading the Value}
 \label{sec:plugin-exts:configoption:reading-values}
@@ -176,7 +175,7 @@ cConfiguration *config = getEnvir()->getConfig();
 
 \begin{note}
 The configuration object provides a flattened view of the ini file. Sections
-inheriting from each other are merged. Configuration options provided
+that inherit from each other are merged. Configuration options provided
 on the command line in the form \ttt{--option=value} are added first to the object.
 This ensures that the command line options take precedence over the values specified
 in the INI file.
@@ -193,7 +192,7 @@ std::vector<std::string> getAsFilenames(cConfigOption *entry);
 std::string getAsPath(cConfigOption *entry);
 \end{cpp}
 
-\textit{fallbackValue} is returned if the value is not specified in the configuration,
+The \textit{fallbackValue} is returned if the value is not specified in the configuration
 and there is no default value.
 
 \begin{cpp}
@@ -201,18 +200,17 @@ bool debug = getEnvir()->getConfig()->getAsBool(CFGID_PARSIM_DEBUG);
 \end{cpp}
 
 
-\section{Simulation Lifetime Listeners}
+\section{Simulation Lifecycle Listeners}
 \label{sec:plugin-exts:simulation-lifetime-listeners}
 
-\cclass{cISimulationLifecycleListener} is a callback interface for
-receiving notifications at various stages of simulations: setting up,
-running, tearing down, etc. Extension classes such as custom event
-schedulers often need this functionality for performing initalization
-and various other tasks.
+\cclass{cISimulationLifecycleListener} is a callback interface for receiving
+notifications at various stages of simulations: setting up, running, tearing
+down, etc. Extension classes, such as custom event schedulers, often need this
+functionality for performing initialization and various other tasks.
 
-Listeners of the type \cclass{cISimulationLifecycleListener} need to be
-added to \cclass{cEnvir} with its \ffunc{addLifecycleListener()} method,
-and removed with \ffunc{removeLifecycleListener()}.
+Listeners of the type \cclass{cISimulationLifecycleListener} need to be added to
+\cclass{cEnvir} with its \ffunc{addLifecycleListener()} method and removed with
+\ffunc{removeLifecycleListener()}.
 
 \begin{cpp}
 cISimulationLifecycleListener *listener = ...;
@@ -222,8 +220,8 @@ getEnvir()->removeLifecycleListener(listener);
 \end{cpp}
 
 To implement a simulation lifecycle listener, subclass from
-\cclass{cISimulationLifecycleListener}, and override its
-\ffunc{lifecycleEvent()} method. It has the following signature:
+\cclass{cISimulationLifecycleListener} and override its \ffunc{lifecycleEvent()}
+method. It has the following signature:
 
 \begin{cpp}
 virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) = 0;
@@ -231,8 +229,7 @@ virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *det
 
 %% TODO names too long? cISimulationLifecycleListener, SimulationLifecycleEventType... remove "Simulation"?
 
-Event type is one of the following. Their names are fairly self-describing,
-but the API documentation contains more precise information.
+Event types include:
 
 \begin{itemize}[noitemsep]
   \item \ttt{LF\_ON\_STARTUP}
@@ -247,18 +244,18 @@ but the API documentation contains more precise information.
   \item \ttt{LF\_ON\_SHUTDOWN}
 \end{itemize}
 
-The \textit{details} argument is currently \ttt{nullptr}; further {\opp}
-versions may pass extra information in it. Notifications always refer to
-the active simulation in case there're more (see \cclass{cSimulation}'s
+The \textit{details} argument is currently \ttt{nullptr}; future {\opp} versions
+may pass extra information in it. Notifications always refer to the active
+simulation in case there are more (see \cclass{cSimulation}'s
 \ffunc{getActiveSimulation()}).
 
 Simulation lifecycle listeners are mainly intended for use by classes that
-extend the simulator's functionality, for example custom event schedulers
-and output vector/scalar managers. The lifecycle of such an extension
-object is managed by {\opp}, so one can use their constructor to create and
-add the listener object to \cclass{cEnvir}, and the destructor to remove
-and delete it. The code is further simplified if the extension object
-itself implements \cclass{cISimulationLifecycleListener}:
+extend the simulator's functionality, such as custom event schedulers and output
+vector/scalar managers. The lifecycle of such an extension object is managed by
+{\opp}, so one can use their constructor to create and add the listener object
+to \cclass{cEnvir}, and the destructor to remove and delete it. The code is
+further simplified if the extension object itself implements
+\cclass{cISimulationLifecycleListener}:
 
 %% * For standalone listeners that have no other way to be invoked, one can
 % * use the <tt>EXECUTE\_ON\_STARTUP(code)</tt> macro to automatically add a%
@@ -285,14 +282,14 @@ class CustomScheduler : public cScheduler, public cISimulationLifecycleListener
 \cclass{cEvent} represents an event in the discrete event simulator. When
 events are scheduled, they are inserted into the future events set (FES).
 During the simulation, events are removed from the FES and executed one by
-one in timestamp order. A \cclass{cEvent} is executed by invoking its
+one in timestamp order. The \cclass{cEvent} is executed by invoking its
 \ffunc{execute()} member function. \ffunc{execute()} should be overridden
 in subclasses to carry out the actions associated with the event.
 
 \begin{note}
 \cclass{cMessage} is also a subclass of \cclass{cEvent}. Its
 \ffunc{execute()} method calls the \ffunc{handleMessage()} method of the
-message's destination module, or switches to the coroutine of its
+message's destination module or switches to the coroutine of its
 \ffunc{activity()} method.
 \end{note}
 
@@ -303,103 +300,100 @@ virtual void execute() = 0;
 \end{cpp}
 
 Raw (non-message) event objects are an internal mechanism of the {\opp}
-simulation kernel, and should not used in programming simulation models.
+simulation kernel and should not be used in programming simulation models.
 However, they can be very useful when implementing custom event schedulers.
 For example, in co-simulation, events that occur in the other simulator may
-be represented with a \cclass{cEvent} in {\opp}. Simulation time limit
+be represented with a \cclass{cEvent} in {\opp}. The simulation time limit
 is also implemented with a custom \cclass{cEvent}.
 
 
 \section{Defining a New Random Number Generator}
 \label{sec:plugin-exts:rng}
 
-This interface lets one add new RNG implementations (see section
-\ref{sec:sim-lib:random-number-generators}) to {\opp}.
-The motivation might be achieving integration with external software (for
-example something like Akaroa), or exactly replicating the trajectory of a
-simulation ported from another simulation framework that uses a different
-RNG.
+This interface allows adding new RNG implementations (see section
+\ref{sec:sim-lib:random-number-generators}) to {\opp}. The motivation might be
+to achieve integration with external software (for example, something like
+Akaroa) or to replicate exactly the trajectory of a simulation ported from
+another simulation framework that uses a different RNG.
 
-The new RNG C++ class must implement the \cclass{cRNG} interface,
-and can be activated with the \fconfig{rng-class} configuration option.
+The new RNG C++ class must implement the \cclass{cRNG} interface and can be
+activated with the \fconfig{rng-class} configuration option.
 
 
 \section{Defining a New Event Scheduler}
 \label{sec:plugin-exts:scheduler}
 
-This extension interface lets one replace the event scheduler class with a
-custom one, which is the key for implementing many features including
-cosimulation, real-time simulation, network or device emulation, and
-distributed simulation.
+This extension interface allows you to replace the event scheduler class with a
+custom one, which is essential for implementing many features, including
+cosimulation, real-time simulation, network or device emulation, and distributed
+simulation.
 
-The job of the event scheduler is to always return the next event to be
-processed by the simulator. The default implementation returns the first
-event in the future events list. Other variants:
+The role of the event scheduler is to always return the next event to be
+processed by the simulator. The default implementation returns the first event
+in the future events list. Other variants include:
 
 \begin{itemize}
-\item For real-time simulation, this scheduler is replaced with one augmented
+  \item For real-time simulation, this scheduler is replaced with one augmented
     with \textit{wait} calls (e.g. \texttt{usleep()}) that synchronize the
-    simulation time to the system clock. There are several options on what
-    should happen if the simulation time has already fallen behind: one may
-    re-adjust the reference time, leave it unchanged in the hope of catching up
-    later, or stop with an error message.
+    simulation time to the system clock. There are several options for what should
+    happen if the simulation time has already fallen behind: one may re-adjust the
+    reference time, leave it unchanged in the hope of catching up later, or stop
+    with an error message.
 
-\item For emulation, the real-time scheduler is augmented with code that captures
-    packets from real network devices, and inserts them into the simulation.
-    INET Framework, the main protocol simulation package for {\opp}, contains
-    an emulation scheduler. It uses the \textit{pcap} library to capture
-    packets, and raw sockets to send packets to a real network device.
-    Emulation in INET also involves \textit{header serializer} classes that
-    convert between protocol headers and their C++ object representations used
-    within the simulation.
+  \item For emulation, the real-time scheduler is augmented with code that
+    captures packets from real network devices and inserts them into the simulation.
+    INET Framework, the main protocol simulation package for {\opp}, contains an
+    emulation scheduler. It uses the \textit{pcap} library to capture packets and
+    raw sockets to send packets to a real network device. Emulation in INET also
+    involves \textit{header serializer} classes that convert between protocol
+    headers and their C++ object representations used within the simulation.
 
-\item For parallel simulation (see chapter \ref{cha:parallel-exec}), the
+  \item For parallel simulation (see chapter \ref{cha:parallel-exec}), the
     scheduler is modified to listen for messages arriving from other logical
-    processes (LPs), and inserts them into the simulation. The scheduler also
-    blocks the simulation when it is not safe to execute the next event due to
-    potential causality violation, until clearance arrives from other LPs to
-    continue in the form of a null message.
+    processes (LPs) and inserts them into the simulation. The scheduler also blocks
+    the simulation when it is not safe to execute the next event due to a potential
+    causality violation, until clearance arrives from other LPs to continue in the
+    form of a null message.
 
-\item {\opp} supports distributed simulation using HLA (IEEE 1516) \footnote{The
-    source code for the HLA and SystemC integration features are not open
-    source, but they are available to researchers on request free of charge.}
-    as well. The scheduler plays the role of the HLA Federate Ambassador, is
-    responsible for exchanging messages (interactions, change notifications,
-    etc.) with other federates, and performs time regulation.
+  \item {\opp} supports distributed simulation using HLA (IEEE 1516) \footnote{The
+    source code for the HLA and SystemC integration features is not open source, but
+    they are available to researchers on request free of charge.} as well. The
+    scheduler plays the role of the HLA Federate Ambassador, is responsible for
+    exchanging messages (interactions, change notifications, etc.) with other
+    federates, and performs time regulation.
 
-\item {\opp} also supports mixing SystemC (IEEE 1666-2005) modules with {\opp}
-    modules in the simulation. When this feature is enabled, there are two
-    future event lists in the simulation, {\opp}'s and SystemC's, and a
-    special scheduler takes care that events are consumed from both lists in
-    increasing timestamp order. This method of performing mixed simulations is
-    orders of magnitude faster and also more flexible than letting the two
-    simulators execute in separate processes and communicate over a pipe or
-    socket connection.
+  \item {\opp} also supports mixing SystemC (IEEE 1666-2005) modules with {\opp}
+    modules in the simulation. When this feature is enabled, there are two future
+    event lists in the simulation: {\opp}'s and SystemC's. A special scheduler takes
+    care to consume events from both lists in increasing timestamp order. This
+    method of performing mixed simulations is orders of magnitude faster and also
+    more flexible than letting the two simulators execute in separate processes and
+    communicate over a pipe or socket connection.
 \end{itemize}
 
-The scheduler C++ class must implement the \cclass{cScheduler} interface,
-and can be activated with the \fconfig{scheduler-class} configuration option.
+The scheduler C++ class must implement the \cclass{cScheduler} interface and can
+be activated with the \fconfig{scheduler-class} configuration option.
 
 Simulation lifetime listeners and the \cclass{cEvent} class can be extremely
 useful when implementing certain types of event schedulers.
 
-To see examples of scheduler classes, check the
-\cclass{cSequentialScheduler} and \cclass{cRealTimeScheduler} classes in
-the simulation kernel, \ttt{cSocketRTScheduler} which is part of the
-\textit{Sockets} sample simulation, or \cclass{cParsimSynchronizer} and its
-subclasses that are part of the parallel simulation support of {\opp}.
+To see examples of scheduler classes, check the \cclass{cSequentialScheduler}
+and \cclass{cRealTimeScheduler} classes in the simulation kernel,
+\ttt{cSocketRTScheduler} which is part of the \textit{Sockets} sample
+simulation, or \cclass{cParsimSynchronizer} and its subclasses that are part of
+the parallel simulation support of {\opp}.
 
 
 \section{Defining a New FES Data Structure}
 \label{sec:plugin-exts:fes}
 
 This extension interface allows one to replace the data structure used for
-storing future events during simulation, i.e. the FES. Replacing the FES
-may make sense for specialized workloads, or for the purpose of performance
-comparison of various FES algorithms. (The default, binary heap based FES
+storing future events during simulation, i.e., the FES. Replacing the FES
+may be suitable for specialized workloads or for the purpose of performance
+comparison of various FES algorithms. (The default, binary heap-based FES
 implementation is a good choice for general workloads.)
 
-The FES C++ class must implement the \cclass{cFutureEventSet} interface,
+The FES C++ class must implement the \cclass{cFutureEventSet} interface
 and can be activated with the \fconfig{futureeventset-class} configuration option.
 
 
@@ -407,24 +401,25 @@ and can be activated with the \fconfig{futureeventset-class} configuration optio
 \label{sec:plugin-exts:fingerprint}
 
 This extension interface allows one to replace or extend the fingerprint
-computation algorithm (see section \ref{sec:testing:fingerprint-tests}).
+computational algorithm (see section \ref{sec:testing:fingerprint-tests}).
 
 % TODO \cclass{cFingerprintCalculator}
 
-The fingerprint computation class must implement the \cclass{cFingerprintCalculator} interface,
-and can be activated with the \fconfig{fingerprintcalculator-class} configuration option.
+The computational class for fingerprint must implement the
+\cclass{cFingerprintCalculator} interface, and can be activated with the
+\fconfig{fingerprintcalculator-class} configuration option.
 
 
 \section{Defining a New Output Scalar Manager}
 \label{sec:plugin-exts:outputscalarmanager}
 
-An output scalar manager handles the recording the scalar and histogram
+An output scalar manager handles the recording of scalar and histogram
 output data. The default output scalar manager is
-\cclass{cFileOutputScalarManager} that saves data into \ttt{.sca} files.
+\cclass{cFileOutputScalarManager}, which saves data into \ttt{.sca} files.
 This extension interface allows one to create additional means of saving
-scalar and histogram results, for example database or CSV output.
+scalar and histogram results, such as database or CSV output.
 
-The new class must implement \cclass{cIOutputScalarManager}, and can be
+The new class must implement \cclass{cIOutputScalarManager} and can be
 activated with the \fconfig{outputscalarmanager-class} configuration
 option.
 
@@ -432,14 +427,14 @@ option.
 \section{Defining a New Output Vector Manager}
 \label{sec:plugin-exts:outputvectormanager}
 
-An output vector manager handles the recording output vectors, produced
-for example by \cclass{cOutVector} objects. The default output vector
-manager is \cclass{cIndexedFileOutputVectorManager} that saves data into
-\ttt{.vec} files, indexed in separate \ttt{.vci} files. This extension
+An output vector manager handles the recording of output vectors produced
+by objects such as \cclass{cOutVector}. The default output vector
+manager is \cclass{cIndexedFileOutputVectorManager}, which saves data into
+\ttt{.vec} files indexed in separate \ttt{.vci} files. This extension
 interface allows one to create additional means of saving vector results,
-for example database or CSV output.
+such as database or CSV output.
 
-The new class must implement the \cclass{cIOutputVectorManager} interface,
+The new class must implement the \cclass{cIOutputVectorManager} interface
 and can be activated with the \fconfig{outputvectormanager-class}
 configuration option.
 
@@ -449,12 +444,12 @@ configuration option.
 
 An eventlog manager handles the recording of simulation history into an
 event log (see \ref{cha:eventlog}). The default eventlog manager is
-\cclass{EventlogFileManager}, which records into file, and also allows for
-some filtering. By replacing the default eventlog manager class, one can
-introduce additional filtering, record into a different file format or
-to different storage (e.g. to a database or a remote vizualizer).
+\cclass{EventlogFileManager}, which records into a file and also allows
+for some filtering. By replacing the default eventlog manager class, one can
+introduce additional filtering, record into a different file format, or
+store it in different storage (e.g., a database or a remote visualizer).
 
-The new class must implement the \cclass{cIEventlogManager} interface,
+The new class must implement the \cclass{cIEventlogManager} interface
 and can be activated with the \fconfig{eventlogmanager-class} configuration
 option.
 
@@ -463,10 +458,10 @@ option.
 \label{sec:plugin-exts:snapshotmanager}
 
 A snapshot manager provides an output stream to which snapshots are written
-(see section \ref{sec:sim-lib:snapshots}). The default snapshot manager
+(see Section \ref{sec:sim-lib:snapshots}). The default snapshot manager
 is \cclass{cFileSnapshotManager}.
 
-The new class must implement the \cclass{cISnapshotManager} interface, and
+The new class must implement the \cclass{cISnapshotManager} interface and
 can be activated with the \fconfig{snapshotmanager-class} configuration
 option.
 
@@ -477,54 +472,54 @@ option.
 \subsection{Overview}
 \label{sec:plugin-exts:configprovider-overview}
 
-The configuration provider extension lets one replace ini files
-with some other storage implementation, for example a database.
+The configuration provider extension allows one to replace ini files
+with some other storage implementation, such as a database.
 The configuration provider C++ class must implement the
-\cclass{cConfigurationEx} interface, and can be activated with
+\cclass{cConfigurationEx} interface and can be activated using
 the \fconfig{configuration-class} configuration option.
 
 The \cclass{cConfigurationEx} interface abstracts the inifile-based
-data model to some degree. It assumes that the configuration data
+data model to some extent. It assumes that the configuration data
 consists of several \textit{named configurations}. Before every
 simulation run, one of the \textit{named configurations} is
 activated, and from then on, all queries into the configuration
 operate on the \textit{active named configuration} only.
 
-It practice, you will probably use the \cclass{SectionBasedConfiguration}
-class (in \ttt{src/envir}) or subclass from it, because it already
-implements a lot of functionality that you would otherwise have to.
+In practice, you will probably use the \cclass{SectionBasedConfiguration}
+class (in \ttt{src/envir}) or subclass it because it already
+implements a lot of functionality that you would otherwise have to implement.
 
 \cclass{SectionBasedConfiguration} does not assume ini files or
-any other particular storage format; instead, it accepts
-an object that implements the \cclass{cConfigurationReader}
-interface to provide the data in raw form to it.
+any other specific storage format. Instead, it accepts an object
+that implements the \cclass{cConfigurationReader}
+interface to provide the data in its raw form.
 The default implementation of \cclass{cConfigurationReader} is
 \cclass{InifileReader}.
 
 \subsection{The Startup Sequence}
 \label{sec:plugin-exts:configprovider-startup-sequence}
 
-From the configuration extension's point of view, the startup sequence
-looks like the following (see \ttt{src/envir/startup.cc} in the source code):
+From the perspective of the configuration extension, the startup sequence
+looks as follows (see \ttt{src/envir/startup.cc} in the source code):
 
 \begin{enumerate}
-  \item First, ini files specified on the command-line are read into a
+  \item First, ini files specified on the command line are read into a
      \textit{boot-time configuration object}. The boot-time configuration
      is always a \cclass{SectionBasedConfiguration} with
      \cclass{InifileReader}.
-  \item Shared libraries are loaded (see the \fopt{-l} command-line option,
+  \item Shared libraries are loaded (see the \fopt{-l} command-line option
      and the \fconfig{load-libs} configuration option). This allows
      configuration classes to come from shared libraries.
   \item The \fconfig{configuration-class} configuration option is examined.
      If it is present, a configuration object of the given class
-     is instantiated, and replaces the boot-time configuration.
+     is instantiated and replaces the boot-time configuration.
      The new configuration object is initialized from the boot-time
-     configuration, so that it can read parameters (e.g. database
-     connection parameters, XML file name, etc) from it.
+     configuration, allowing it to read parameters (e.g., database
+     connection parameters, XML file name, etc.) from it.
      Then the boot-time configuration object is deallocated.
   \item The \fconfig{load-libs} option from the new configuration object is
      processed.
-  \item Then everything goes on as normally, using the new configuration
+  \item Then everything proceeds as normal, using the new configuration
      object.
 \end{enumerate}
 
@@ -532,7 +527,7 @@ looks like the following (see \ttt{src/envir/startup.cc} in the source code):
 \label{sec:plugin-exts:configprovider:custom-class}
 
 To replace the configuration object with a custom implementation,
-one needs to subclass \cclass{cConfigurationEx}, register the new class,
+one needs to subclass \cclass{cConfigurationEx}, register the new class:
 
 \begin{cpp}
 #include "cconfiguration.h"
@@ -556,11 +551,11 @@ configuration-class = CustomConfiguration
 \subsection{Providing a Custom Reader for SectionBasedConfiguration}
 \label{sec:plugin-exts:custom-reader-for-sectionbasedconfiguration}
 
-As said already, writing a configuration class from scratch can
+As mentioned earlier, writing a configuration class from scratch can
 be a lot of work, and it may be more practical to reuse
 \cclass{SectionBasedConfiguration} with a different configuration
-reader class. This can be done with \fconfig{sectionbasedconfig-configreader-class}
-config option, which is interpreted by \cclass{SectionBasedConfiguration}.
+reader class. This can be done using the \fconfig{sectionbasedconfig-configreader-class}
+configuration option, which is interpreted by \cclass{SectionBasedConfiguration}.
 Specify the following in the boot-time ini file:
 
 \begin{inifile}
@@ -586,25 +581,23 @@ Register_Class(DatabaseConfigurationReader);
 \section{Implementing a New User Interface}
 \label{sec:plugin-exts:user-interface}
 
-It is possible to extend {\opp} with a new user interface. The new
-user interface will have fully equal rights to Cmdenv and Qtenv;
-that is, it can be activated by starting the simulation executable with the
-\fopt{-u} \textit{<name>} command-line or the \fconfig{user-interface}
-configuration option, it can be made the default user interface,
-it can define new command-line options and configuration options,
-and so on.
+It is possible to extend {\opp} with a new user interface. The new user
+interface will have the same privileges as Cmdenv and Qtenv. This means that it
+can be activated by starting the simulation executable with the \fopt{-u}
+\textit{<name>} command-line or the \fconfig{user-interface} configuration
+option. It can also be set as the default user interface and define new
+command-line options and configuration options.
 
-User interfaces must implement (i.e. subclass from) \cclass{cRunnableEnvir},
-and must be registered to {\opp} with the \fmac{Register\_OmnetApp()} macro.
-In practice, you will almost always want to subclass \cclass{EnvirBase}
-instead of \cclass{cRunnableEnvir}, because \cclass{EnvirBase} already
-implements lots of functionality that otherwise you'd have to.
+User interfaces must implement (i.e. subclass from) \cclass{cRunnableEnvir} and
+must be registered to {\opp} with the \fmac{Register\_OmnetApp()} macro. In most
+cases, you will want to subclass \cclass{EnvirBase} instead of
+\cclass{cRunnableEnvir} because \cclass{EnvirBase} already implements many
+functionalities that you would otherwise have to implement.
 
 \begin{note}
 If you want something completely different from what \cclass{EnvirBase}
-provides, such as embedding the simulation kernel into another
-application, then you should be reading section \ref{sec:embedding:embedding},
-not this one.
+provides, such as embedding the simulation kernel into another application, then
+you should refer to section \ref{sec:embedding:embedding}, not this one.
 \end{note}
 
 An example user interface:
@@ -620,24 +613,24 @@ class FooEnv : public EnvirBase
 Register_OmnetApp("FooEnv", FooEnv, 30, "an experimental user interface");
 \end{cpp}
 
-The \ffilename{envirbase.h} header comes from the \ttt{src/envir} directory,
-so it is necessary to add it to the include path (\fopt{-I}).
+The \ffilename{envirbase.h} header comes from the \ttt{src/envir} directory, so
+it is necessary to add it to the include path (\fopt{-I}).
 
-The arguments to \fmac{Register\_OmnetApp()} include the user interface name
-(for use with the \fopt{-u} and \fconfig{user-interface} options),
-the C++ class that implements it, a weight for default user interface selection
-(if \fopt{-u} is missing, the user interface with the largest weight will be
-activated), and a description string (for help and other purposes).
+The arguments to \fmac{Register\_OmnetApp()} include the user interface name (to
+be used with the \fopt{-u} and \fconfig{user-interface} options), the C++ class
+that implements it, a weight for default user interface selection (if \fopt{-u}
+is missing, the user interface with the highest weight will be activated), and a
+description string (for help and other purposes).
 
-The C++ class should implement all methods left pure virtual in
-\cclass{EnvirBase}, and possibly others if you want to customize
-their behavior. One method that you will surely want to reimplement is
-\ffunc{run()} -- this is where your user interface runs. When this method
-exits, the simulation program exits.
+The C++ class should implement all methods left as pure virtual in
+\cclass{EnvirBase}, and possibly other methods if you want to customize their
+behavior. One method that you will certainly want to re-implement is
+\ffunc{run()}, as this is where your user interface will be executed. Once this
+method exits, the simulation program will also exit.
 
 \begin{note}
-A good starting point for implementing your own user interface is
-Cmdenv -- just copy and modify its source code to quickly get going.
+A good starting point for implementing your own user interface is Cmdenv. You
+can simply copy and modify its source code to quickly get started.
 \end{note}
 
 

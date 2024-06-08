@@ -5,7 +5,7 @@
 \label{sec:msgs:overview}
 
 Messages are a central concept in {\opp}. In the model, message objects
-represent events, packets, commands, jobs, customers or other kinds of
+represent events, packets, commands, jobs, customers, or other kinds of
 entities, depending on the model domain.
 
 Messages are represented with the \cclass{cMessage} class and its subclass
@@ -21,16 +21,16 @@ of the simulation programmer:
 
 \begin{itemize}
   \item The \textit{name} field is a string (\ttt{const char *}),
-    which can be freely used by the simulation programmer. The message
-    name is displayed at many places in the graphical runtime interface,
-    so it is generally useful to choose a descriptive name. Message name
-    is inherited from \cclass{cObject} (see section
+    which can be freely used by the simulation programmer. The message's
+    name is displayed in many places in the graphical runtime interface,
+    so it is generally useful to choose a descriptive name. The message's
+    name is inherited from \cclass{cObject} (see section
     \ref{sec:sim-lib:cobject}).
   \item \textit{Message kind} is an integer field.
     Some negative values are reserved by the simulation library, but zero
     and positive values can be freely used in the model for any purpose.
-    Message kind is typically used to carry a value that conveys the
-    role, type, category or identity of the message.
+    The message kind is typically used to carry a value that conveys the
+    role, type, category, or identity of the message.
   \item The \textit{scheduling priority} field is used by the simulation
     kernel to determine the delivery order of messages that have the same
     arrival time values. This field is rarely used in practice.
@@ -42,9 +42,9 @@ of the simulation programmer:
     future events set (FES)\index{FES}, but the information is still in
     the message object when the message is delivered to a module.
   \item \textit{Time stamp} (not to be confused with \textit{arrival time})
-    is a utility field, which the programmer can freely use for any purpose.
+    is a utility field that the programmer can freely use for any purpose.
     The time stamp is not examined or changed by the simulation kernel at all.
-  \item The \textit{parameter list}, \textit{control info} and
+  \item The \textit{parameter list}, \textit{control info}, and
     \textit{context pointer} fields make some simulation tasks easier
     to program, and they will be discussed later.
 \end{itemize}
@@ -58,16 +58,16 @@ useful for representing network packets:
     duration when a packet travels through a connection that has an assigned
     data rate, and also for error modeling on channels with a nonzero
     bit error rate.
-  \item The \textit{encapsulated packet} field helps modeling protocol layers
+  \item The \textit{encapsulated packet} field helps in modeling protocol layers
     by supporting the concept of encapsulation and decapsulation.
   \item The \textit{bit error flag} field carries the result of error
-    modelling after the packet is sent through a channel that has a nonzero
+    modeling after the packet is sent through a channel that has a nonzero
     packet error rate (PER) or bit error rate (BER). It is up to the receiver
-    to examine this flag after having received the packet, and to act upon it.
+    to examine this flag after receiving the packet and to act upon it.
   \item The \textit{duration} field carries the transmission duration after
     the packet was sent through a channel with a data rate.
   \item The \textit{is-reception-start} flag tells whether this packet
-    represents the start or the end of the reception after the packet travelled
+    represents the start or the end of the reception after the packet has travelled
     through a channel with a data rate. This flag is controlled by the
     \textit{deliver-on-reception-start} flag of the receiving gate.
 \end{itemize}
@@ -79,8 +79,8 @@ useful for representing network packets:
 \subsection{Basic Usage}
 \label{sec:messages:cmessage-basic-usage}
 
-The \cclass{cMessage} constructor accepts an \textit{object name}
-and a \textit{message kind}, both optional:
+The \cclass{cMessage} constructor accepts an \textit{object name} and a
+\textit{message kind}, both optional:
 
 \begin{cpp}
 cMessage(const char *name=nullptr, short kind=0);
@@ -318,17 +318,17 @@ more information on message display string syntax and possibilities.
 \label{sec:messages:using-message-as-self-message}
 
 Messages are often used to represent events internal to a module,
-such as a periodically firing timer to represent expiry of a timeout.
-A message is termed \textit{self-message} when it is used
-in such a scenario -- otherwise self-messages are normal messages
-of class \cclass{cMessage} or a class derived from it.
+such as a periodically firing timer to represent the expiry of a timeout.
+A message is termed a \textit{self-message} when it is used
+in such a scenario -- otherwise, self-messages are normal messages
+of the \cclass{cMessage} class or a class derived from it.
 
 When a message is delivered to a module by the simulation kernel, the
 \ffunc{isSelfMessage()} method can be used to determine if it is
 a self-message; that is, whether it was scheduled with \ffunc{scheduleAt()},
 or sent with one of the \ffunc{send...()} methods. The \ffunc{isScheduled()}
 method returns true if the message is currently scheduled. A scheduled
-message can also be cancelled (\ffunc{cancelEvent()}).
+message can also be cancelled using \ffunc{cancelEvent()}.
 
 \begin{cpp}
 bool isSelfMessage() const;
@@ -344,7 +344,7 @@ is the time it will be delivered to the module).
 \subsection{Context Pointer}
 \label{sec:messages:context-pointer}
 
-\cclass{cMessage} contains a \textit{context pointer} of type \ttt{void*},
+The \cclass{cMessage} class contains a \textit{context pointer} of type \ttt{void*},
 which can be accessed by the following functions:
 
 \begin{cpp}
@@ -352,16 +352,11 @@ void setContextPointer(void *p);
 void *getContextPointer() const;
 \end{cpp}
 
-The context pointer can be used for any purpose by the simulation programmer.
-It is not used by the simulation kernel, and it is treated as
-a mere pointer (no memory management is done on it).
-
-Intended purpose: a module which schedules several self-messages (timers)
-will need to identify a self-message when it arrives back to the module,
-ie. the module will have to determine which timer went off and what to do
-then. The context pointer can be made to point at a data structure kept by
-the module which can carry enough ``context'' information about the event.
-
+The context pointer is not used or memory-managed by the simulation kernel. It
+is typically used in modules that manage multiple self-messages or timers to
+distinguish which specific timer has triggered upon message arrival. By pointing
+to a module's internal data structure, this pointer can convey essential
+information about the event's context.
 
 
 \section{The cPacket Class}
@@ -377,7 +372,7 @@ constructor, but it accepts an additional \textit{bit length} argument:
 cPacket(const char *name=nullptr, short kind=0, int64 bitLength=0);
 \end{cpp}
 
-The most important field \cclass{cPacket} has over \cclass{cMessage} is
+The most important field that \cclass{cPacket} has over \cclass{cMessage} is
 the message length. This field is kept in bits, but it can also be
 set/get in bytes. If the bit length is not a multiple of eight, the
 \ffunc{getByteLength()} method will round it up.
@@ -403,9 +398,9 @@ bool hasBitError() const;
 \subsection{Identifying the Protocol}
 \label{sec:messages:identifying-protocol-of-packet}
 
-In {\opp} protocol models, the protocol type is usually represented in the
-message subclass. For example, instances of class \ttt{IPv6Datagram}
-represent IPv6 datagrams and \ttt{EthernetFrame} represents Ethernet
+In the {\opp} protocol models, the protocol type is usually represented in the
+message subclass. For example, instances of the \ttt{IPv6Datagram}
+class represent IPv6 datagrams and \ttt{EthernetFrame} represents Ethernet
 frames. The C++ \ttt{dynamic\_cast} operator can be used to determine if a
 message object is of a specific protocol.
 
@@ -558,17 +553,17 @@ associated with deriving new classes in more detail.
 \label{sec:msgs:attaching-objects}
 
 When parameters or objects need to be added to a message, the preferred
-way to do that is via message definitions, described in chapter
+way to do so is via message definitions, as described in chapter
 \ref{cha:msg-def}.
 
 
 \subsection{Attaching Objects}
 \label{sec:messages:attaching-objects}
 
-The \cclass{cMessage} class has an internal \cclass{cArray} object which
-can carry objects. Only objects that are derived from \cclass{cObject} can
-be attached. The \ffunc{addObject()}, \ffunc{getObject()},
-\ffunc{hasObject()}, \ffunc{removeObject()} methods use the object's name
+The \cclass{cMessage} class has an internal \cclass{cArray} object that
+can carry objects. Only objects derived from \cclass{cObject} can be attached.
+The \ffunc{addObject()}, \ffunc{getObject()},
+\ffunc{hasObject()}, and \ffunc{removeObject()} methods use the object's name
 (as returned by the \ffunc{getName()} method) as the key to the array.
 
 An example where the sender attaches an object, and the receiver
@@ -587,9 +582,9 @@ if (msg->hasObject("histogram")) {
 }
 \end{cpp}
 
-One needs to take care that names of the attached objects don't
+One needs to ensure that the names of the attached objects don't
 conflict with each other. Note that message parameters (\cclass{cMsgPar},
-see next section) are also attached the same way, so their names
+see the next section) are also attached in the same way, so their names
 also count.
 
 When no objects are attached to a message (and \ffunc{getParList()} is not
@@ -597,21 +592,21 @@ invoked), the internal \cclass{cArray} object is not created.
 This saves both storage and execution time.
 
 Non-\cclass{cObject} data can be attached to messages by wrapping them into
-\cclass{cObject}, for example into \cclass{cMsgPar} which has been designed
-expressly for this purpose. \cclass{cMsgPar} will be covered in the next
+\cclass{cObject}, for example into \cclass{cMsgPar}, which has been designed
+specifically for this purpose. \cclass{cMsgPar} will be covered in the next
 section.
 
 \subsection{Attaching Parameters}
 \label{sec:messages:attaching-parameters}
 
-The preferred way of extending messages with new data fields is to use
+The preferred way to extend messages with new data fields is to use
 message definitions (see chapter \ref{cha:msg-def}).
 
-The old, deprecated way of adding new fields to messages is via
+The old and deprecated way of adding new fields to messages is by
 attaching \cclass{cMsgPar} objects.
-There are several downsides of this approach, the worst being
-large memory and execution time overhead. \cclass{cMsgPar}'s are
-heavy-weight and fairly complex objects themselves.
+There are several downsides to this approach, with the worst being
+large memory and execution time overhead. \cclass{cMsgPar}s are
+heavyweight and fairly complex objects themselves.
 It has been reported that using \cclass{cMsgPar} message parameters
 might account for a large part of execution time, sometimes as much as 80\%.
 Using \cclass{cMsgPar} is also error-prone because \cclass{cMsgPar} objects
@@ -622,7 +617,7 @@ can detect the mistake.
 
 If one still needs \cclass{cMsgPar}s for some reason, here is a short summary.
 At the sender side, one can add a new named parameter to the message
-with the \ffunc{addPar()} member function, then set its value with
+with the \ffunc{addPar()} member function, and then set its value with
 one of the methods \ffunc{setBoolValue()}, \ffunc{setLongValue()},
 \ffunc{setStringValue()}, \ffunc{setDoubleValue()}, \ffunc{setPointerValue()},
 \ffunc{setObjectValue()}, and \ffunc{setXMLValue()}. There are also overloaded
@@ -630,7 +625,7 @@ assignment operators for the corresponding C/C++ types.
 
 At the receiver side, one can look up the parameter object on the message
 by name and obtain a reference to it with the \ffunc{par()} member function.
-\ffunc{hasPar()} can be used to check first whether the message object has a parameter
+\ffunc{hasPar()} can be used to first check whether the message object has a parameter
 object with the given name. Then the value can be read with the methods
 \ffunc{boolValue()}, \ffunc{longValue()}, \ffunc{stringValue()},
 \ffunc{doubleValue()}, \ffunc{pointerValue()}, \ffunc{objectValue()},

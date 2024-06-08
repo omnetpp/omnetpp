@@ -89,7 +89,7 @@ each other:
 This section discusses the issues of embedding the simulation kernel
 or a simulation model into a larger application. We assume that you
 do not just want to change one or two aspects of the simulator
-(such as , event scheduling or result recording) or create a new user interface
+(such as event scheduling or result recording) or create a new user interface
 similar to Cmdenv or Qtenv -- if so, see chapter \ref{cha:plugin-exts}.
 
 For the following section, we assume that you will write the embedding
@@ -99,7 +99,7 @@ program from scratch, that is, starting from a \ffunc{main()} function.
 \label{sec:embedding:main-function}
 
 The minimalistic program described below initializes the simulation library
-and runs two simulations. In later sections we will review the details
+and runs two simulations. In later sections, we will review the details
 of the code and discuss how to improve it.
 
 \begin{cpp}
@@ -132,17 +132,17 @@ int main(int argc, char *argv[])
 
 The first few lines of the code initialize the simulation library. The
 purpose of \cclass{cStaticFlag} is to set a global variable to \ttt{true}
-for the duration of the \ttt{main()} function, to help the simulation
+for the duration of the \ttt{main()} function to help the simulation
 library handle exceptions correctly in extreme cases.
 \ttt{CodeFragment::executeAll(CodeFragment::STARTUP)} performs various startup
 tasks, such as building registration tables out of the \fmac{Define\_Module()},
-\fmac{Register\_Class()} and similar entries throughout the code.
+\fmac{Register\_Class()}, and similar entries throughout the code.
 \ttt{SimTime::setScaleExp(-12)} sets the simulation time resolution to
 picoseconds; other values can be used as well, but it is mandatory to
 choose one.
 
 \begin{note}
-The simulation time exponent cannot be changed at a later stage, since it is
+The simulation time exponent cannot be changed at a later stage since it is
 a global variable, and the values of the existing \ttt{simtime\_t} instances
 would change.
 \end{note}
@@ -156,7 +156,7 @@ was \ttt{./foodir;./bardir}), and runs two simulations.
 \label{sec:embedding:simulate-function}
 
 A minimalistic version of the \ttt{simulate()} function is shown below.
-In order to shorten the code, the exception handling code has been ommited (\ttt{try}/\ttt{catch} blocks)
+To shorten the code, the exception handling code has been omitted (\ttt{try}/\ttt{catch} blocks)
 apart from the event loop. However, every line is marked with ``\ttt{E!}'' where various
 problems with the simulation model can occur and can be thrown as exceptions.
 
@@ -201,9 +201,9 @@ void simulate(const char *networkName, simtime_t limit)
     }
 
     if (ok)
-        sim->callFinish();  //E!
+        sim->callFinish(); //E!
 
-    sim->deleteNetwork();  //E!
+    sim->deleteNetwork(); //E!
 
     cSimulation::setActiveSimulation(nullptr);
     delete sim; // deletes env as well
@@ -214,7 +214,7 @@ The function accepts a network type name (which must be fully qualified
 with a package name) and a simulation time limit.
 
 In the first few lines, the code looks up the network among the available
-module types, and prints an error message if it is not found.
+module types and prints an error message if it is not found.
 
 Then it proceeds to create and activate a simulation manager object
 (\cclass{cSimulation}). The simulation manager requires another object,
@@ -243,24 +243,24 @@ exception object is some kind of \cclass{std::exception}, usually a
 \cclass{cRuntimeError}.
 
 If the network setup is successful, \ttt{sim->}\ffunc{callInitialize()} is
-invoked next, to run the initialization code of modules and channels in the
+invoked next to run the initialization code of modules and channels in the
 network. An exception is thrown if something goes wrong in any of the
 \ffunc{initialize()} methods.
 
 The next lines run the simulation by calling
 \ttt{sim->}\ffunc{takeNextEvent()} and \ttt{sim->}\ffunc{executeEvent()}
 in a loop. The loop is exited when an exception occurs. The exception
-may indicate a runtime error, or a normal termination condition such as
-when there are no more events, or the simulation time limit has been
+may indicate a runtime error or a normal termination condition such as
+when there are no more events or the simulation time limit has been
 reached. (The latter are represented by \cclass{cTerminationException}.)
 
-If the simulation has completed successfully (\ttt{ok==true}), the code
+If the simulation has completed successfully (\ttt{ok == true}), the code
 goes on to call the \ffunc{finish()} methods of modules and channels. Then,
-regardless whether there was an error, cleanup takes place by calling
+regardless of whether there was an error, cleanup takes place by calling
 \ttt{sim->}\ffunc{deleteNetwork()}.
 
 Finally, the simulation manager object is deallocated, but the active
-simulation manager is not allowed to be deleted; therefore it is deactivated
+simulation manager is not allowed to be deleted; therefore, it is deactivated
 using \ffunc{setActiveSimulation(nullptr)}.
 
 
@@ -272,7 +272,7 @@ but since it has many pure virtual methods, it is easier
 to begin by subclassing \cclass{cNullEnvir}. \cclass{cNullEnvir} defines all
 pure virtual methods with either an empty body or with a body that throws
 an \ttt{"unsupported method called"} exception. You can redefine methods
-to be more sophisticated later on, as you progress with the development.
+to be more sophisticated later on as you progress with the development.
 
 You must redefine the \ffunc{readParameter()} method. This enables
 module parameters to obtain their values. For debugging purposes, you can also
@@ -280,7 +280,7 @@ redefine \ffunc{sputn()} where module log messages are written to.
 \cclass{cNullEnvir} only provides one random number generator, so if your
 simulation model uses more than one, you also need to redefine the
 \ffunc{getNumRNGs()} and \ffunc{getRNG(k)} methods. To print or store
-simulation records, redefine \ffunc{recordScalar()}, \ffunc{recordStatistic()}
+simulation records, redefine \ffunc{recordScalar()}, \ffunc{recordStatistic()},
 and/or the output vector related methods. Other \cclass{cEnvir} methods
 are invoked from the simulation kernel to inform the environment about
 messages being sent, events scheduled and cancelled, modules created, and so on.
@@ -363,7 +363,7 @@ string containing NED code and parses it.
 \begin{note}
 One use of \ffunc{loadNedText()} is to parse NED sources previously converted
 to C++ string constants and linked into the executable. This enables
-creating executables that are self-contained, and do not require NED files
+creating executables that are self-contained and do not require NED files
 to be distributed with them.
 \end{note}
 
@@ -371,7 +371,7 @@ The above functions can also be mixed, but after the last call,
 \ffunc{doneLoadingNedFiles()} must be invoked (it checks for unresolved
 NED types).
 
-Loading NED files has a global effect; therefore they cannot be unloaded.
+Loading NED files has a global effect; therefore, they cannot be unloaded.
 
 
 \subsection{How to Eliminate NED Files}
@@ -382,13 +382,13 @@ remove the dependency on the \ttt{oppnedxml} library and the code in
 \ttt{sim/netbuilder}, although at the cost of additional coding.
 
 \begin{note}
-When the only purpose is to get rid of NED files as external dependency
+When the only purpose is to get rid of NED files as an external dependency
 of the program, it is simpler to use \ffunc{loadNedText()} on NED files
 converted to C++ string constants instead.
 \end{note}
 
 The trick is to write \cclass{cModuleType} and \cclass{cChannelType} objects
-for simple module, compound module and channel types, and register them
+for simple module, compound module, and channel types and register them
 manually. For example, \cclass{cModuleType} has pure virtual methods called
 \ffunc{createModuleObject()}, \ffunc{addParametersAndGatesTo(module)},
 \ffunc{setupGateVectors(module)}, \ffunc{buildInside(module)}, which you
@@ -399,13 +399,13 @@ be similar to C++ files generated by \fprog{nedtool} of {\opp} 3.x.
 \subsection{Assigning Module Parameters}
 \label{sec:embedding:assigning-module-parameters}
 
-As already mentioned, modules obtain values for their input parameters
+As mentioned earlier, modules obtain values for their input parameters
 by calling the \ffunc{readParameter()} method of the environment object
 (\cclass{cEnvir}).
 
 \begin{note}
 \ffunc{readParameter()} is only called for parameters that have not
-been set to a fixed (i.e. non-\ttt{default}) value in the NED files.
+been set to a fixed (i.e., non-\ttt{default}) value in the NED files.
 \end{note}
 
 The \ffunc{readParameter()} method should be written in a manner that enables it to assign
@@ -430,7 +430,7 @@ class CustomSimulationEnv : public cNullEnvir
   public:
     ...
     virtual void readParameter(cPar *par) {
-        if (paramValues.find(par->getFullPath())!=paramValues.end())
+        if (paramValues.find(par->getFullPath()) != paramValues.end())
             par->parse(paramValues[par->getFullPath()]);
         else if (par->containsValue())
             par->acceptDefault();
@@ -475,7 +475,7 @@ if modules come from external projects.
 A more general way is to catch \ffunc{recordScalar()} method calls in the
 simulation model. The \cclass{cModule}'s \ffunc{recordScalar()} method
 delegates to the similar function in \cclass{cEnvir}. You may define the
-latter function so that it stores all recorded scalars (for example in an
+latter function so that it stores all recorded scalars (for example, in an
 \ttt{std::map}), where the main program can find them later.
 Values from output vectors can be captured in a similar manner.
 
@@ -490,7 +490,7 @@ class CustomSimulationEnv : public cNullEnvir
     virtual void recordScalar(cComponent *component, const char *name,
                               double value, opp_string_map *attributes=nullptr)
     {
-       results[component->getFullPath()+"."+name] = value;
+       results[component->getFullPath() + "." + name] = value;
     }
 
     const std::map<std::string, double>& getResults() {return results;}
@@ -528,7 +528,7 @@ may return \ttt{nullptr} in certain cases. The default
 \cclass{cSequentialScheduler} never returns \ttt{nullptr}.
 
 The execution may terminate in various ways. Runtime errors cause a
-\cclass{cRuntimeError} (or other kind of \cclass{std::exception}) to be
+\cclass{cRuntimeError} (or another kind of \cclass{std::exception}) to be
 thrown. \cclass{cTerminationException} is thrown on normal termination
 conditions, such as when the simulation runs out of events to process.
 
@@ -547,7 +547,7 @@ and others.
 
 It is possible for several instances of \cclass{cSimulation} to coexist,
 and also to set up and simulate a network in each instance. However, this
-requires frequent use of \ffunc{cSimulation::set\-Active\-Simulation()}.
+requires frequent use of \ffunc{cSimulation::setActiveSimulation()}.
 Before invoking any \cclass{cSimulation} method or module method,
 the corresponding \cclass{cSimulation} instance needs to be designated
 as the active simulation manager.
@@ -563,7 +563,7 @@ but it is also possible to create a new instance for each simulation run.
 
 \begin{note}
 It is not possible to run different simulations concurrently from
-different theads, due to the use of global variables which are not easy
+different threads due to the use of global variables which are not easy
 to eliminate, such as the active simulation manager pointer and the active
 environment object pointer. Static buffers and objects (like string pools)
 are also used for efficiency reasons in some places inside the simulation
@@ -575,7 +575,7 @@ kernel.
 \label{sec:embedding:installing-a-custom-scheduler}
 
 The default event scheduler is \cclass{cSequentialScheduler}. To replace
-it with a different scheduler (e.g. \cclass{cRealTimeScheduler} or your
+it with a different scheduler (e.g., \cclass{cRealTimeScheduler} or your
 own scheduler class), add a \ffunc{setScheduler()} call into \ttt{main()}:
 
 \begin{cpp}
@@ -584,14 +584,14 @@ getSimulation()->setScheduler(scheduler);
 \end{cpp}
 
 It is usually not a good idea to change schedulers in the middle of
-a simulation, therefore \ffunc{setScheduler()} may only be called when
+a simulation; therefore, \ffunc{setScheduler()} may only be called when
 no network is set up.
 
 
 \subsection{Multi-Threaded Programs}
 \label{sec:embedding:multi-threaded-programs}
 
-The {\opp} simulation kernel is not reentrant; therefore it must be protected
+The {\opp} simulation kernel is not reentrant; therefore, it must be protected
 against concurrent access.
 
 

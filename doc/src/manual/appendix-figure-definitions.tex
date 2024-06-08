@@ -1,7 +1,7 @@
 \appendixchapter{Figure Definitions}
 \label{cha:figure-definitions}
 
-This appendix provides a reference to defining figures in NED files.
+This appendix provides a reference for defining figures in NED files.
 
 \section{Built-in Figure Types}
 \label{sec:figure-definitions:figure-types}
@@ -30,12 +30,12 @@ The following table lists the figure types supported by {\opp}.
 \end{longtable}
 
 Additional figure types can be defined with the
-\ttt{custom:\textit{<type>}} syntax; see \textit{FigureType} below.
+\ttt{custom:\textit{<type>}} syntax; see the \textit{FigureType} below.
 
 \section{Attribute Types}
 \label{sec:figure-definitions:attribute-types}
 
-This section lists what attribute types exist and their value syntaxes.
+This section lists the available attribute types and their value syntaxes.
 
 \begin{description}
 
@@ -49,15 +49,15 @@ An integer.
 A real number.
 
 \item[double01]: \\
-A real number in the [0,1] interval.
+A real number in the interval [0,1].
 
 \item[degrees]: \\
 A real number that will be interpreted as degrees.
 
 \item[string]: \\
-A string. It only needs to be enclosed in quotes if it contains comma,
-semicolon, unmatched close parenthesis or other character that prevents
-it from being parsed properly as a property value.
+A string. It only needs to be enclosed in quotes if it contains a comma,
+a semicolon, an unmatched close parenthesis, or any other character that prevents
+it from being properly parsed as a property value.
 
 \item[Anchor]: \\
 \ttt{c}, \ttt{center}, \ttt{n}, \ttt{e}, \ttt{s}, \ttt{w}, \ttt{nw},
@@ -87,7 +87,7 @@ with \fmac{Register\_Figure()}.
 
 \item[Font]: \textit{typeface, size, style} \\
 All three items are optional. \textit{size} is the font size in points.
-\textit{style} is space-sparated list of zero or more of the following
+\textit{style} is a space-separated list of zero or more of the following
 words: \ttt{normal}, \ttt{bold}, \ttt{italic}, \ttt{underline}.
 
 \item[ImageName]: \\
@@ -103,25 +103,25 @@ The name of an image.
 \ttt{solid}, \ttt{dotted}, or \ttt{dashed}.
 
 \item[Point]: \textit{x, y} \\
-A point with $(x,y)$ coordinates.
+A point with coordinates $(x,y)$.
 
 \item[Point2]: \textit{x1, y1, x2, y2} \\
 Two points: $(x1,y1)$ and $(x2,y2)$.
 
 \item[PointList]: \textit{x1, y1, x2, y2, x3, y3...} \\
-A list of the $(x1,y1)$, $(x2,y2)$, $(x3,y3)$, etc. points.
+A list of points such as $(x1,y1)$, $(x2,y2)$, $(x3,y3)$, etc.
 
 \item[Rectangle]: \textit{x, y, width, height} \\
-A rectangle given with its top-left corner and dimensions.
+A rectangle given by its top-left corner and dimensions.
 
 \item[TagList]: \textit{tag1, tag2, tag3...} \\
 A list of string tags.
 
 \item[Tint]: \textit{Color, double01} \\
-Specifies tint color and the amount of tinting for images.
+Specifies the tint color and the amount of tinting for images.
 
 \item[Transform]: \\
-One or more transform steps. A step is one of: \\
+One or more transform steps. A step can be one of the following: \\
 \ttt{translate($x$, $y$)}, \\
 \ttt{rotate($deg$)}, \\
 \ttt{rotate($deg$, $centerx$, $centery$)}, \\
@@ -141,10 +141,9 @@ One or more transform steps. A step is one of: \\
 \section{Figure Attributes}
 \label{sec:figure-definitions:figure-attributes}
 
-This section lists what attributes are accepted by individual figure types.
-Types enclosed in parentheses are abstract types which cannot be used
-directly; their sole purpose is to provide a base for more specialized
-types.
+This section lists the attributes accepted by individual figure types.
+Types enclosed in parentheses are abstract types that cannot be used
+directly; their sole purpose is to provide a base for more specialized types.
 
 \begin{flushleft}
 \begin{description}

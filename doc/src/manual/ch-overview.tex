@@ -5,18 +5,17 @@
 \section{Modeling Concepts}
 \label{sec:overview:modeling-concepts}
 
-An {\opp} model consists of modules that communicate with message passing.
-The active modules are termed \textit{simple modules}; they are written in C++,
+An {\opp} model consists of modules that communicate through message passing.
+The active modules are called \textit{simple modules}; they are written in C++,
 using the simulation class library. Simple modules can be grouped into
-\textit{compound modules} and so forth; the number of hierarchy levels is
-unlimited. The whole model, called network in {\opp}, is itself a compound module.
+\textit{compound modules} and so on; there is no limit to the number of hierarchy levels.
+The entire model, referred to as a network in {\opp}, is itself a compound module.
 Messages can be sent either via connections that span
-modules or directly to other modules. The concept of simple and
-compound modules is similar to DEVS atomic and coupled models.
+modules or directly to other modules.
 
 In Fig. \ref{fig:ch-overview:modules}, boxes represent simple modules
-(gray background) and compound modules.
-Arrows connecting small boxes represent connections and gates.
+(with gray background) and compound modules.
+Arrows connecting the small boxes represent connections and gates.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -27,14 +26,14 @@ Arrows connecting small boxes represent connections and gates.
 \end{figure}
 
 
-Modules communicate with messages that may contain arbitrary
-data, in addition to usual attributes such as a timestamp.
-Simple modules typically send messages via gates, but it is also
+Modules communicate with messages that can contain arbitrary
+data, in addition to the usual attributes such as a timestamp.
+Simple modules typically send messages through gates, but it is also
 possible to send them directly to their destination modules. Gates are the
 input and output interfaces of modules: messages are sent through
 output gates and arrive through input gates. An input gate and output gate
 can be linked by a connection. Connections are created within a single
-level of module hierarchy; within a compound module, corresponding gates of
+level of module hierarchy; within a compound module, the gates of
 two submodules, or a gate of one submodule and a gate of the compound
 module can be connected. Connections spanning hierarchy levels are
 not permitted, as they would hinder model reuse. Because of the hierarchical
@@ -42,22 +41,23 @@ structure of the model, messages typically travel through a chain of
 connections, starting and arriving in simple modules. Compound modules act like
 "cardboard boxes" in the model, transparently relaying messages between
 their inner realm and the outside world. Parameters such as propagation delay,
-data rate and bit error rate, can be assigned to connections. One can also
-define connection types with specific properties (termed channels) and
+data rate, and bit error rate can be assigned to connections. One can also
+define connection types with specific properties (referred to as channels) and
 reuse them in several places. Modules can have parameters. Parameters are
 used mainly to pass configuration data to simple modules, and to help
-define model topology. Parameters can take string, numeric, or boolean
+define the model's topology. Parameters can hold string, numeric, or boolean
 values. Because parameters are represented as objects in the program,
-parameters -- in addition to holding constants -- may transparently act as
-sources of random numbers, with the actual distributions provided with the
-model configuration. They may interactively prompt the user for the value,
-and they might also hold expressions referencing other parameters. Compound
+parameters -- in addition to holding constants -- may also act as
+sources of random numbers, with the actual distributions provided by the
+model configuration. They may interactively prompt the user for a value,
+and they may also hold expressions referencing other parameters. Compound
 modules may pass parameters or expressions of parameters to their
 submodules.
 
 
 {\opp} provides efficient tools for the user to describe the
-structure of the actual system. Some of the main features are the following:
+structure of the actual system. Some of the main features are as follows:
+
 \begin{itemize}
 \item hierarchically nested modules
 \item modules are instances of module types
@@ -80,9 +80,9 @@ themselves (Fig. \ref{fig:ch-overview:modules}). The depth of module
 nesting is unlimited, allowing the user to reflect the logical
 structure of the actual system in the model structure.
 
-Model structure is described in {\opp}'s NED language.
+The model structure is described in {\opp}'s NED language.
 
-Modules that contain submodules are termed \textit{compound
+Modules that contain submodules are called \textit{compound
   modules}\index{module!compound}, as opposed to \textit{simple
   modules}\index{module!simple} at the lowest level of the
 module hierarchy. Simple modules contain the algorithms of the model.
@@ -98,22 +98,22 @@ Both simple and compound modules are instances of \textit{module
   types}. In describing the model, the user defines module types;
 instances of these module types serve as components for more complex
 module types. Finally, the user creates the system module as an
-instance of a previously defined module type; all modules of the
+instance of a previously defined module type; all modules in the
 network are instantiated as submodules and sub-submodules of the
 system module.
 
 When a module type is used as a building block, it makes no difference
 whether it is a simple or compound module. This allows
 the user to split a simple module into several
-simple modules embedded into a compound\index{module!compound} module,
+simple modules embedded in a compound\index{module!compound} module,
 or vice versa, to aggregate the functionality of a compound module into a
 single simple module, without affecting existing users of the module
 type.
 
-Module types can be stored in files separately from the place
+Module types can be stored in files separate from the location
 of their actual usage. This means that the user can group existing
-module types and create \textit{component libraries}\index{module!libraries}. This feature
-will be discussed later, in chapter \ref{cha:run-sim}.
+module types and create \textit{component libraries}\index{module!libraries}.
+This feature will be discussed later, in chapter \ref{cha:run-sim}.
 
 
 
@@ -123,7 +123,7 @@ will be discussed later, in chapter \ref{cha:run-sim}.
 Modules communicate by exchanging
 \textit{messages}\index{message!exchanging}. In an actual simulation,
 messages can represent frames or packets in a computer network, jobs
-or customers in a queuing network or other types of mobile entities.
+or customers in a queuing network, or other types of mobile entities.
 Messages can contain arbitrarily complex data structures. Simple
 modules can send messages either directly to their destination or
 along a predefined path, through gates and connections.
@@ -141,7 +141,7 @@ input gates.
 
 Each \textit{connection}\index{connection} (also called
 \textit{link}\index{link}) is created within a single level of the
-module hierarchy: within a compound module, one can connect the
+module hierarchy: within a compound module, you can connect the
 corresponding gates of two submodules, or a gate of one submodule and
 a gate of the compound module (Fig.
 \ref{fig:ch-overview:modules}).
@@ -159,17 +159,17 @@ outside world.
 To facilitate the modeling of communication networks, connections
 can be used to model physical links. Connections support
 the following parameters: \textit{data rate}, \textit{propagation delay},
-\textit{bit error rate} and \textit{packet error rate}, and may be
+\textit{bit error rate}, and \textit{packet error rate}, and may be
 disabled. These parameters and the underlying algorithms are encapsulated
 into \textit{channel} objects. The user can parameterize the channel
 types provided by {\opp}, and also create new ones.
 
-When data rates are in use, a packet object is by default delivered to the
+When data rates are used, a packet object is by default delivered to the
 target module at the simulation time that corresponds to the end of the
 packet reception. Since this behavior is not suitable for the modeling of
-some protocols (e.g. half-duplex Ethernet), {\opp} provides the possibility
-for the target module to specify that it wants the packet object to be
-delivered to it when the packet reception starts.
+some protocols (e.g. half-duplex Ethernet), {\opp} provides the
+possibility for the target module to specify that it wants the packet object
+to be delivered to it when the packet reception starts.
 
 
 \subsection{Parameters}
@@ -177,13 +177,14 @@ delivered to it when the packet reception starts.
 \index{module!parameters}
 \index{parameters|see{module parameters}}
 
-Modules can have parameters. Parameters can be assigned  in either
+Modules can have parameters. Parameters can be assigned in either
 the NED files or the configuration file \ttt{omnetpp.ini}.
 
-Parameters can be used to customize simple module behavior,
-and to parameterize the model topology.
+Parameters can be used to customize simple module behavior
+and to parameterize the model's topology.
 
-Parameters can take string, numeric or boolean values, or can
+Parameters can hold string, numeric, or boolean
+values or can
 contain XML data trees. Numeric values include expressions using
 other parameters and calling C functions, random variables from
 different distributions, and values input interactively by the user.
@@ -207,15 +208,15 @@ in chapter \ref{cha:ned-lang}.
 \label{sec:overview:programmable-using-cplusplus}
 
 The simple\index{module!simple} modules of a model contain algorithms
-as C++ functions.
+implemented as C++ functions.
 The full flexibility and power of the programming language can
-be used, supported by the {\opp} simulation class library.
+be utilized, supported by the {\opp} simulation class library.
 The simulation programmer can choose between event-driven and process-style
-description, and freely use object-oriented concepts
-(inheritance, polymorphism etc) and design patterns to extend the
+descriptions and freely use object-oriented concepts
+(inheritance, polymorphism, etc.) and design patterns to extend the
 functionality of the simulator.
 
-Simulation objects (messages, modules, queues etc.) are represented
+Simulation objects (messages, modules, queues, etc.) are represented
 by C++ classes. They have been designed to work together efficiently,
 creating a powerful simulation programming framework.
 The following classes are part of the simulation class library:
@@ -225,13 +226,13 @@ The following classes are part of the simulation class library:
   \item message, packet
   \item container classes (e.g. queue, array)
   \item data collection classes
-  \item{statistic and distribution estimation classes (histograms, $P^2$
-        algorithm for calculating quantiles etc.)}
+  \item statistic and distribution estimation classes (histograms, $P^2$
+        algorithm for calculating quantiles, etc.)
 \end{itemize}
 
 The classes are also specially instrumented, allowing one
 to traverse objects of a running simulation and display information
-about them such as name, class name, state variables or contents.
+about them such as name, class name, state variables, or contents.
 This feature makes it possible to create a simulation GUI where
 all internals of the simulation are visible.
 
@@ -250,7 +251,7 @@ all internals of the simulation are visible.
 % existing ones. For example, if one wants to experiment with retransmission
 % timeout schemes in a transport protocol, he can implement the
 % protocol in one class, create a virtual function for the retransmission
-% algorithm and then derive a family of classes that implement
+% algorithm, and then derive a family of classes that implement
 % concrete schemes. This concept is further supported by the fact
 % that in the network description, actual module types can be parameters.
 %
@@ -274,24 +275,24 @@ all internals of the simulation are visible.
 %
 % The \textit{foreach}\index{forEachChild mechanism} mechanism allows one to
 % enumerate the objects inside a container object in a uniform way and
-% do some operation on them. This feature which makes it possible to
+% perform operations on them. This feature makes it possible to
 % handle many objects together. (The \textit{foreach} feature is extensively used
 % by the user interfaces with debugging capability and the snapshot
 % mechanism; see later.)
 %
 %
-% \subsection{Derive New Classes}
+% \subsection{Deriving New Classes}
 % \label{sec:overview:derive-new-classes}
 %
-% It most cases, the functionality offered by the {\opp} classes
-% is enough for the user. But if it is needed, one can derive new
+% In most cases, the functionality offered by the {\opp} classes
+% is sufficient for the user. But if needed, one can derive new
 % classes from the existing ones or create entirely new classes.
 % For flexibility, several member functions are declared virtual.
-% When the user creates new classes, certain rules need to be kept
-% so that the object can fully work together with other objects.
+% When the user creates new classes, certain rules need to be followed
+% so that the object can work with other objects seamlessly.
 %
 %
-% \subsection{Self-describing Objects to Ease Debugging}
+% \subsection{Self-describing Objects to Facilitate Debugging}
 % \label{sec:overview:self-describing-objects-to-ease-debugging}
 % \index{debugging}
 %
@@ -300,7 +301,7 @@ all internals of the simulation are visible.
 % A unique feature called \textit{snapshot}\index{snapshot} allows the
 % user to dump the contents of the simulation model or a part of it into
 % a text file. The file will contain textual reports about every object;
-% this can be of invaluable help at times of debugging. Ordinary
+% this can be of invaluable help during debugging. Ordinary
 % variables can also be made to appear in the snapshot file. Snapshot
 % creations can be scheduled from within the simulation program or done
 % from the user interface.
@@ -370,7 +371,7 @@ The output of the simulation is written into result files: output vector
 files\index{output!vector file}, output scalar files\index{output!scalar file},
 and possibly the user's own output files.
 {\opp} contains an Integrated Development Environment (IDE) that provides
-rich environment for analyzing these files. Output files are line-oriented
+a rich environment for analyzing these files. Output files are line-oriented
 text files which makes it possible to process them with a variety of tools
 and programming languages as well, including Matlab, GNU R, Perl, Python,
 and spreadsheet programs.
@@ -381,7 +382,7 @@ and spreadsheet programs.
 \index{simulation!user interface}
 
 The primary purpose of user interfaces is to make the internals
-of the model visible to the user, to control simulation execution,
+of the model visible to the user, to control the simulation execution,
 and possibly allow the user to intervene by changing variables/objects
 inside the model. This is very important in the development/debugging
 phase of the simulation project. Equally important, a hands-on
@@ -439,7 +440,7 @@ The simulation system itself:
       \tbf{ide-developersguide/} writing extensions for the IDE
       \tbf{manual/}      manual in HTML
       \tbf{ned2/}        DTD definition of the XML syntax for NED files
-      \tbf{tictoc-tutorial/}  introduction into using {\opp}
+      \tbf{tictoc-tutorial/}  introduction to using {\opp}
       \tbf{api/}         API reference in HTML
       \tbf{nedxml-api/}  API reference for the NEDXML library
       \tbf{parsim-api/}  API reference for the parallel simulation library
@@ -484,7 +485,7 @@ commonly used in Makefiles. The MSYS directory also contains various
 3rd party open-source libraries needed to compile and run {\opp}.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-    \tbf{tools/}       Platform specific tools and compilers (e.g. MinGW/MSYS on Windows)
+    \tbf{tools/}       Platform-specific tools and compilers (e.g. MinGW/MSYS on Windows)
 \end{Verbatim}
 
 Sample simulations are in the \texttt{samples} directory.
