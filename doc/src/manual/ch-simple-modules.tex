@@ -432,11 +432,11 @@ with the module, with 16K of coroutine stack:
 HelloModule::HelloModule() : cSimpleModule(16384) {...}
 \end{cpp}
 
-\begin{note}
-    The \fmac{Module\_Class\_Members()} macro, already deprecated in {\opp} 3.2,
-    has been removed in the 4.0 version. When porting older simulation models,
-    occurrences of this macro can simply be removed from the source code.
-\end{note}
+% \begin{note}
+%    The \fmac{Module\_Class\_Members()} macro, which was deprecated starting from {\opp} 3.2,
+%    has been removed in version 4.0. When porting older simulation models,
+%    occurrences of this macro can simply be removed from the source code.
+% \end{note}
 
 
 \subsection{Initialization and Finalization}
@@ -613,22 +613,22 @@ default behavior is single-stage initialization: the default
 simply calls \ffunc{initialize()}.
 
 
-\subsubsection{``End-of-Simulation'' Event}
-\label{sec:simple-modules:end-of-simulation-event}
-
-The task of \ffunc{finish()} is implemented differently in some other simulators
-by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
-This practice is not recommended because the simulation programmer has to
-code the models (often represented as FSMs) in a way that they can properly
-respond to end-of-simulation events in any state. This often makes the code unnecessarily complex.
-Therefore, {\opp} does not use an end-of-simulation event.
-
-This can also be seen in the design of the PARSEC\index{PARSEC}
-simulation language (UCLA). Its predecessor Maisie used
-end-of-simulation events, but -- as documented in the PARSEC manual --
-this led to awkward programming in many cases, so for PARSEC
-end-of-simulation events were dropped in favor of \ffunc{finish()}
-(which is called \ffunc{finalize()} in PARSEC).
+% \subsubsection{``End-of-Simulation'' Event}
+% \label{sec:simple-modules:end-of-simulation-event}
+%
+% The task of \ffunc{finish()} is implemented differently in some other simulators
+% by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
+% This practice is not recommended because the simulation programmer has to
+% code the models (often represented as FSMs) in a way that they can properly
+% respond to end-of-simulation events in any state. This often makes the code unnecessarily complex.
+% Therefore, {\opp} does not use an end-of-simulation event.
+%
+% This can also be seen in the design of the PARSEC\index{PARSEC}
+% simulation language (UCLA). Its predecessor Maisie used
+% end-of-simulation events, but -- as documented in the PARSEC manual --
+% this led to awkward programming in many cases, so for PARSEC
+% end-of-simulation events were dropped in favor of \ffunc{finish()}
+% (which is called \ffunc{finalize()} in PARSEC).
 
 
 \section{Adding Functionality to cSimpleModule}
@@ -940,23 +940,22 @@ Cons:
 Usually, \ffunc{handleMessage()} should be preferred over \ffunc{activity()}.
 
 
-\subsubsection{Other Simulators}
-\label{sec:simple-modules:handlemessage:other-simulators}
-
-Many simulation packages use a similar approach, often topped with
-something like a state machine\index{finite state machine}
-(FSM\index{FSM}) which hides the underlying function calls. Such
-systems are:
-\begin{itemize}
-  \item OPNET$^{TM}$ which uses FSM's designed using a graphical editor;
-  \item NetSim++ clones OPNET's approach;
-  \item SMURPH (University of Alberta) defines a (somewhat eclectic)
-      language to describe FSMs, and uses a precompiler to turn it
-      into C++ code;
-  \item Ptolemy (UC Berkeley) uses a similar method.
-\end{itemize}
-
-{\opp}'s FSM\index{FSM} support is described in the next section.
+% \subsubsection{Other Simulators}
+% \label{sec:simple-modules:handlemessage:other-simulators}
+%
+% Many simulation packages use a similar approach, often with
+% something like a state machine\index{finite state machine}
+% (FSM\index{FSM}) on top of it. These systems include:
+% \begin{itemize}
+%   \item OPNET$^{TM}$, which uses FSMs designed using a graphical editor
+%   \item NetSim++, which clones OPNET's approach
+%   \item SMURPH (University of Alberta), which defines a (somewhat eclectic)
+%       language to describe FSMs and uses a precompiler to turn it
+%       into C++ code
+%   \item Ptolemy (UC Berkeley), which uses a similar method
+% \end{itemize}
+%
+% {\opp}'s FSM\index{FSM} support is described in the next section.
 
 
 
@@ -1277,23 +1276,23 @@ In most cases, cons outweigh pros, and it is a better idea to use
 \ttt{handleMessage()} instead.
 
 
-\subsubsection{Other Simulators}
-\label{sec:simple-modules:activity:other-simulators}
-
-Coroutines are used by a number of other simulation packages:
-\begin{itemize}
-\item All simulation software which inherits from SIMULA (e.g. C++SIM)
-    is based on coroutines, although all in all the programming
-    model is quite different.
-\item The simulation/parallel programming language Maisie and its successor
-    PARSEC (from UCLA) also use coroutines (although implemented
-    with ``normal'' preemptive threads). The philosophy
-    is quite similar to {\opp}. PARSEC, being ``just''
-    a programming language, it has a more elegant syntax but far fewer
-    features than {\opp}.
-\item Many Java-based simulation libraries are based on Java
-    threads.
-\end{itemize}
+% \subsubsection{Other Simulators}
+% \label{sec:simple-modules:activity:other-simulators}
+%
+% Coroutines are used by several other simulation packages:
+% \begin{itemize}
+% \item All simulation software that inherits from SIMULA (e.g. C++SIM)
+%     is based on coroutines, although the programming
+%     model is quite different overall.
+% \item The simulation/parallel programming language Maisie and its successor
+%     PARSEC (from UCLA) also use coroutines (though they are implemented
+%     with ``normal'' preemptive threads). The philosophy
+%     is quite similar to {\opp}. PARSEC, being ``just''
+%     a programming language, has a more elegant syntax but far fewer
+%     features than {\opp}.
+% \item Many Java-based simulation libraries are based on Java
+%     threads.
+% \end{itemize}
 
 \subsection{Use Modules Instead of Global Variables}
 \label{sec:simple-modules:global-vars}
