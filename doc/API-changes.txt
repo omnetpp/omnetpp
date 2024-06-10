@@ -36,6 +36,11 @@ OMNeT++ 6.1
         problem, but, by fixing what was probably an error in the model code in
         the first place, it may cause simulation programs to behave differently.
 
+(!)     SimTime: SimTime(cPar&) constructor was changed to SimTime(const cPar&).
+
+(-)	cComponent: getAncestorPar() deprecated. Its use, and in general,
+	accessing the containing modules' parameters, constitutes bad practice.
+
 (!)     cConfigurationEx: Added the isAbstractConfig() pure virtual method.
         Most models are not affected; but if the model includes a custom
         configuration class that directly inherits from cConfigurationEx, it may
