@@ -58,27 +58,27 @@ void nedfunctions_dummy() {} //see util.cc
 // NED math.h functions
 //
 
-Define_NED_Math_Function3(acos, 1,  "math", "Trigonometric function; see standard C function of the same name")
-Define_NED_Math_Function3(asin, 1,  "math", "Trigonometric function; see standard C function of the same name")
-Define_NED_Math_Function3(atan, 1,  "math", "Trigonometric function; see standard C function of the same name")
-Define_NED_Math_Function3(atan2, 2, "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(acos, 1,  "math", "Trigonometric function; see the standard C function of the same name.")
+Define_NED_Math_Function3(asin, 1,  "math", "Trigonometric function; see the standard C function of the same name.")
+Define_NED_Math_Function3(atan, 1,  "math", "Trigonometric function; see the standard C function of the same name.")
+Define_NED_Math_Function3(atan2, 2, "math", "Trigonometric function; see the standard C function of the same name.")
 
-Define_NED_Math_Function3(sin, 1,   "math", "Trigonometric function; see standard C function of the same name")
-Define_NED_Math_Function3(cos, 1,   "math", "Trigonometric function; see standard C function of the same name")
-Define_NED_Math_Function3(tan, 1,   "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(sin, 1,   "math", "Trigonometric function; see the standard C function of the same name.")
+Define_NED_Math_Function3(cos, 1,   "math", "Trigonometric function; see the standard C function of the same name.")
+Define_NED_Math_Function3(tan, 1,   "math", "Trigonometric function; see the standard C function of the same name.")
 
-Define_NED_Math_Function3(ceil, 1,  "math", "Rounds up; see standard C function of the same name")
-Define_NED_Math_Function3(floor, 1, "math", "Rounds down; see standard C function of the same name")
+Define_NED_Math_Function3(ceil, 1,  "math", "Rounds up; see the standard C function of the same name.")
+Define_NED_Math_Function3(floor, 1, "math", "Rounds down; see the standard C function of the same name.")
 
-Define_NED_Math_Function3(exp, 1,   "math", "Exponential; see standard C function of the same name")
-Define_NED_Math_Function3(pow, 2,   "math", "Power; see standard C function of the same name")
-Define_NED_Math_Function3(sqrt, 1,  "math", "Square root; see standard C function of the same name")
+Define_NED_Math_Function3(exp, 1,   "math", "Exponential; see the standard C function of the same name.")
+Define_NED_Math_Function3(pow, 2,   "math", "Power; see the standard C function of the same name.")
+Define_NED_Math_Function3(sqrt, 1,  "math", "Square root; see the standard C function of the same name.")
 
 static double _wrap_hypot(double x, double y) {return hypot(x,y);} // disambiguate between two- and three-arg overloads
-Define_NED_Math_Function4(hypot, _wrap_hypot, 2, "math", "Length of the hypotenuse; see standard C function of the same name");
+Define_NED_Math_Function4(hypot, _wrap_hypot, 2, "math", "Length of the hypotenuse; see the standard C function of the same name.");
 
-Define_NED_Math_Function3(log, 1,   "math", "Natural logarithm; see standard C function of the same name")
-Define_NED_Math_Function3(log10, 1, "math", "Base-10 logarithm; see standard C function of the same name")
+Define_NED_Math_Function3(log, 1,   "math", "Natural logarithm; see the standard C function of the same name.")
+Define_NED_Math_Function3(log10, 1, "math", "Base-10 logarithm; see the standard C function of the same name.")
 
 
 DEF(nedf_fabs,
@@ -360,7 +360,7 @@ cValue nedf_trim(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_indexOf,
     "int indexOf(string s, string substr)",
     "strings",
-    "Returns the position of the first occurrence of substring substr in s, or -1 if s does not contain substr.")
+    "Returns the position of the first occurrence of the substring substr in s, or -1 if s does not contain substr.")
 
 cValue nedf_indexOf(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -606,7 +606,7 @@ cValue nedf_componentId(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_uniform,
     "quantity uniform(quantity a, quantity b, int rng?)",
     "random/continuous",
-    "Returns a random number from the Uniform distribution")
+    "Returns a random number from the Uniform distribution.")
 
 cValue nedf_uniform(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -620,7 +620,7 @@ cValue nedf_uniform(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_exponential,
     "quantity exponential(quantity mean, int rng?)",
     "random/continuous",
-    "Returns a random number from the Exponential distribution")
+    "Returns a random number from the Exponential distribution.")
 
 cValue nedf_exponential(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -633,7 +633,7 @@ cValue nedf_exponential(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_normal,
     "quantity normal(quantity mean, quantity stddev, int rng?)",
     "random/continuous",
-    "Returns a random number from the Normal distribution")
+    "Returns a random number from the Normal distribution.")
 
 cValue nedf_normal(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -647,7 +647,7 @@ cValue nedf_normal(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_truncnormal,
     "quantity truncnormal(quantity mean, quantity stddev, int rng?)",
     "random/continuous",
-    "Returns a random number from the truncated Normal distribution")
+    "Returns a random number from the truncated Normal distribution.")
 
 cValue nedf_truncnormal(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -661,7 +661,7 @@ cValue nedf_truncnormal(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_gamma_d,
     "quantity gamma_d(double alpha, quantity theta, int rng?)",
     "random/continuous",
-    "Returns a random number from the Gamma distribution")
+    "Returns a random number from the Gamma distribution.")
 
 cValue nedf_gamma_d(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -674,7 +674,7 @@ cValue nedf_gamma_d(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_beta,
     "double beta(double alpha1, double alpha2, int rng?)",
     "random/continuous",
-    "Returns a random number from the Beta distribution")
+    "Returns a random number from the Beta distribution.")
 
 cValue nedf_beta(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -688,7 +688,7 @@ cValue nedf_beta(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_erlang_k,
     "quantity erlang_k(int k, quantity mean, int rng?)",
     "random/continuous",
-    "Returns a random number from the Erlang distribution")
+    "Returns a random number from the Erlang distribution.")
 
 cValue nedf_erlang_k(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -704,7 +704,7 @@ cValue nedf_erlang_k(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_chi_square,
     "double chi_square(int k, int rng?)",
     "random/continuous",
-    "Returns a random number from the Chi-square distribution")
+    "Returns a random number from the Chi-square distribution.")
 
 cValue nedf_chi_square(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -720,7 +720,7 @@ cValue nedf_chi_square(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_student_t,
     "double student_t(int i, int rng?)",
     "random/continuous",
-    "Returns a random number from the Student-t distribution")
+    "Returns a random number from the Student-t distribution.")
 
 cValue nedf_student_t(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -736,7 +736,7 @@ cValue nedf_student_t(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_cauchy,
     "quantity cauchy(quantity a, quantity b, int rng?)",
     "random/continuous",
-    "Returns a random number from the Cauchy distribution")
+    "Returns a random number from the Cauchy distribution.")
 
 cValue nedf_cauchy(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -750,7 +750,7 @@ cValue nedf_cauchy(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_triang,
     "quantity triang(quantity a, quantity b, quantity c, int rng?)",
     "random/continuous",
-    "Returns a random number from the Triangular distribution")
+    "Returns a random number from the Triangular distribution.")
 
 cValue nedf_triang(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -765,7 +765,7 @@ cValue nedf_triang(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_lognormal,
     "double lognormal(double m, double w, int rng?)",
     "random/continuous",
-    "Returns a random number from the Lognormal distribution")
+    "Returns a random number from the Lognormal distribution.")
 
 cValue nedf_lognormal(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -778,7 +778,7 @@ cValue nedf_lognormal(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_weibull,
     "quantity weibull(quantity a, quantity b, int rng?)",
     "random/continuous",
-    "Returns a random number from the Weibull distribution")
+    "Returns a random number from the Weibull distribution.")
 
 cValue nedf_weibull(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -792,7 +792,7 @@ cValue nedf_weibull(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_pareto_shifted,
     "quantity pareto_shifted(double a, quantity b, quantity c, int rng?)",
     "random/continuous",
-    "Returns a random number from the Pareto-shifted distribution")
+    "Returns a random number from the Pareto-shifted distribution.")
 
 cValue nedf_pareto_shifted(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -808,7 +808,7 @@ cValue nedf_pareto_shifted(cComponent *contextComponent, cValue argv[], int argc
 DEF(nedf_intuniform,
     "int intuniform(intquantity a, intquantity b, int rng?)",
     "random/discrete",
-    "Returns a random integer uniformly distributed over [a,b]")
+    "Returns a random integer uniformly distributed over [a,b].")
 
 cValue nedf_intuniform(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -823,7 +823,7 @@ cValue nedf_intuniform(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_intuniformexcl,
     "int intuniformexcl(intquantity a, intquantity b, int rng?)",
     "random/discrete",
-    "Returns a random integer uniformly distributed over [a,b), that is, [a,b-1]")
+    "Returns a random integer uniformly distributed over [a,b), that is, [a,b-1].")
 
 cValue nedf_intuniformexcl(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -838,7 +838,7 @@ cValue nedf_intuniformexcl(cComponent *contextComponent, cValue argv[], int argc
 DEF(nedf_bernoulli,
     "int bernoulli(double p, int rng?)",
     "random/discrete",
-    "Returns a random number from the Bernoulli distribution")
+    "Returns a random number from the Bernoulli distribution.")
 
 cValue nedf_bernoulli(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -851,7 +851,7 @@ cValue nedf_bernoulli(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_binomial,
     "int binomial(int n, double p, int rng?)",
     "random/discrete",
-    "Returns a random number from the Binomial distribution")
+    "Returns a random number from the Binomial distribution.")
 
 cValue nedf_binomial(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -864,7 +864,7 @@ cValue nedf_binomial(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_geometric,
     "int geometric(double p, int rng?)",
     "random/discrete",
-    "Returns a random number from the Geometric distribution")
+    "Returns a random number from the Geometric distribution.")
 
 cValue nedf_geometric(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -877,7 +877,7 @@ cValue nedf_geometric(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_negbinomial,
     "int negbinomial(int n, double p, int rng?)",
     "random/discrete",
-    "Returns a random number from the Negbinomial distribution")
+    "Returns a random number from the Negative Binomial distribution.")
 
 cValue nedf_negbinomial(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -890,7 +890,7 @@ cValue nedf_negbinomial(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_poisson,
     "int poisson(double lambda, int rng?)",
     "random/discrete",
-    "Returns a random number from the Poisson distribution")
+    "Returns a random number from the Poisson distribution.")
 
 cValue nedf_poisson(cComponent *contextComponent, cValue argv[], int argc)
 {
@@ -919,7 +919,7 @@ static cValue opp_eval(const char *txt, cExpression::Context *context) //TOOD si
 DEF2(nedf_eval,
     "any eval(string expr)",
     "misc",
-    "Evaluates the NED expression in the call site's context.")
+    "Evaluates the NED expression within the calling context.")
 
 cValue nedf_eval(cExpression::Context *context, cValue argv[], int argc)
 {
@@ -979,7 +979,7 @@ DEF2(nedf_xmldoc,
     "Parses the given XML file into a cXMLElement tree, and returns the root element. "
     "When called with two arguments, it returns the first element from the tree that "
     "matches the expression given in simplified XPath syntax. "
-    "Note: This is an alias to the readXML() function.")
+    "Note: This is an alias for the readXML() function.")
 
 cValue nedf_xmldoc(cExpression::Context *context, cValue argv[], int argc)
 {
@@ -992,7 +992,7 @@ DEF2(nedf_xml,
     "Parses the given XML string into a cXMLElement tree, and returns the root element. "
     "When called with two arguments, it returns the first element from the tree that "
     "matches the expression given in simplified XPath syntax. "
-    "Note: This is an alias to the parseXML() function.")
+    "Note: This is an alias for the parseXML() function.")
 
 cValue nedf_xml(cExpression::Context *context, cValue argv[], int argc)
 {
@@ -1043,7 +1043,7 @@ cValue nedf_baseDir(cExpression::Context *context, cValue argv[], int argc)
 DEF2(nedf_resolveFile,
     "string resolveFile(string directory, string filename)",
     "i/o",
-    "Joins its arguments as file paths, except that when the second argument is an "
+    "Joins that arguments as file paths, except that when the second argument is an "
     "absolute filesystem path, it is returned unchanged. This is purely a string "
     "operation; neither directory nor filename needs to exist in the file system.")
 
@@ -1339,7 +1339,7 @@ cValue nedf_firstAvailable(cComponent *contextComponent, cValue argv[], int argc
 DEF(nedf_get,
     "any get(object arrayOrMap, any keyOrIndex)",
     "misc",
-    "Obtain a value from a NED map or array. "
+    "Retrieves a value from a NED map or array. "
     "Examples: get([10,20,30], 1) returns 20; get({foo:10,bar:20}, 'foo') returns 10. "
     "Note that get(x,i) may also be written as x.get(i), with the two being completely equivalent.")
 
@@ -1378,7 +1378,7 @@ cValue nedf_size(cComponent *contextComponent, cValue argv[], int argc)
 DEF(nedf_dup,
     "object dup(object obj)",
     "misc",
-    "Clones the given object by calling its dup() C++ method.")
+    "Clones the given object by invoking its dup() C++ method.")
 
 cValue nedf_dup(cComponent *contextComponent, cValue argv[], int argc)
 {

@@ -52,8 +52,8 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
     array of arrays. Elements can be boolean (true/false), numeric (integer or
     double, with or without measurement unit), quoted string, or unquoted
     string. Items that cannot be parsed as any of the more specific types are
-    interpreted as unquoted strings. See readCSV() for details of the
-    accepted CSV flavor.
+    interpreted as unquoted strings. See readCSV() for details of the accepted
+    CSV flavor.
 
 \item[parseExtendedCSV]: \ttt{any parseExtendedCSV(string str)} \\
     Parses the given string as a comma-separated CSV, and returns it as an
@@ -99,7 +99,7 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
     Parses the content of the given text file as comma-separated CSV, and
     returns it as an array of arrays. Elements are parsed as NED expressions,
     and are evaluated in the caller's context. See readCSV() for details of the
-    the accepted CSV flavor.
+    accepted CSV flavor.
 
 \item[readExtendedJSON]: \ttt{any readExtendedJSON(string filename)} \\
     Parses the given text file as Extended JSON, and returns its contents.
@@ -127,7 +127,7 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
     the tree that matches the expression given in simplified XPath syntax.
 
 \item[resolveFile]: \ttt{string resolveFile(string directory, string filename)} \\
-    Joins its arguments as file paths, except that when the second argument is
+    Joins that arguments as file paths, except that when the second argument is
     an absolute filesystem path, it is returned unchanged. This is purely a
     string operation; neither directory nor filename needs to exist in the file
     system.
@@ -143,44 +143,44 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
 
 \begin{description}
 \item[acos]: \ttt{double acos(double)} \\
-    Trigonometric function; see standard C function of the same name
+    Trigonometric function; see the standard C function of the same name.
 
 \item[asin]: \ttt{double asin(double)} \\
-    Trigonometric function; see standard C function of the same name
+    Trigonometric function; see the standard C function of the same name.
 
 \item[atan]: \ttt{double atan(double)} \\
-    Trigonometric function; see standard C function of the same name
+    Trigonometric function; see the standard C function of the same name.
 
 \item[atan2]: \ttt{double atan2(double, double)} \\
-    Trigonometric function; see standard C function of the same name
+    Trigonometric function; see the standard C function of the same name.
 
 \item[ceil]: \ttt{double ceil(double)} \\
-    Rounds up; see standard C function of the same name
+    Rounds up; see the standard C function of the same name.
 
 \item[cos]: \ttt{double cos(double)} \\
-    Trigonometric function; see standard C function of the same name
+    Trigonometric function; see the standard C function of the same name.
 
 \item[exp]: \ttt{double exp(double)} \\
-    Exponential; see standard C function of the same name
+    Exponential; see the standard C function of the same name.
 
 \item[fabs]: \ttt{quantity fabs(quantity x)} \\
     Returns the absolute value of the quantity.
 
 \item[floor]: \ttt{double floor(double)} \\
-    Rounds down; see standard C function of the same name
+    Rounds down; see the standard C function of the same name.
 
 \item[fmod]: \ttt{quantity fmod(quantity x, quantity y)} \\
     Returns the floating-point remainder of x/y; unit conversion takes place if
     needed.
 
 \item[hypot]: \ttt{double hypot(double, double)} \\
-    Length of the hypotenuse; see standard C function of the same name
+    Length of the hypotenuse; see the standard C function of the same name.
 
 \item[log]: \ttt{double log(double)} \\
-    Natural logarithm; see standard C function of the same name
+    Natural logarithm; see the standard C function of the same name.
 
 \item[log10]: \ttt{double log10(double)} \\
-    Base-10 logarithm; see standard C function of the same name
+    Base-10 logarithm; see the standard C function of the same name.
 
 \item[max]: \ttt{quantity max(quantity a, quantity b)} \\
     Returns the greater one of the two quantities; unit conversion takes place
@@ -191,16 +191,16 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
     if needed.
 
 \item[pow]: \ttt{double pow(double, double)} \\
-    Power; see standard C function of the same name
+    Power; see the standard C function of the same name.
 
 \item[sin]: \ttt{double sin(double)} \\
-    Trigonometric function; see standard C function of the same name
+    Trigonometric function; see the standard C function of the same name.
 
 \item[sqrt]: \ttt{double sqrt(double)} \\
-    Square root; see standard C function of the same name
+    Square root; see the standard C function of the same name.
 
 \item[tan]: \ttt{double tan(double)} \\
-    Trigonometric function; see standard C function of the same name
+    Trigonometric function; see the standard C function of the same name.
 
 
 \end{description}
@@ -210,10 +210,10 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
 
 \begin{description}
 \item[dup]: \ttt{object dup(object obj)} \\
-    Clones the given object by calling its dup() C++ method.
+    Clones the given object by invoking its dup() C++ method.
 
 \item[eval]: \ttt{any eval(string expr)} \\
-    Evaluates the NED expression in the call site's context.
+    Evaluates the NED expression within the calling context.
 
 \item[firstAvailable]: \ttt{string firstAvailable(...)} \\
     Accepts any number of strings, interprets them as NED type names (qualified
@@ -222,7 +222,7 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
     types are available.
 
 \item[get]: \ttt{any get(object arrayOrMap, any keyOrIndex)} \\
-    Obtain a value from a NED map or array. Examples: get([10,20,30], 1)
+    Retrieves a value from a NED map or array. Examples: get([10,20,30], 1)
     returns 20; get({foo:10,bar:20}, 'foo') returns 10. Note that get(x,i) may
     also be written as x.get(i), with the two being completely equivalent.
 
@@ -268,46 +268,46 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
 
 \begin{description}
 \item[beta]: \ttt{double beta(double alpha1, double alpha2, int rng?)} \\
-    Returns a random number from the Beta distribution
+    Returns a random number from the Beta distribution.
 
 \item[cauchy]: \ttt{quantity cauchy(quantity a, quantity b, int rng?)} \\
-    Returns a random number from the Cauchy distribution
+    Returns a random number from the Cauchy distribution.
 
 \item[chi\_square]: \ttt{double chi\_square(int k, int rng?)} \\
-    Returns a random number from the Chi-square distribution
+    Returns a random number from the Chi-square distribution.
 
 \item[erlang\_k]: \ttt{quantity erlang\_k(int k, quantity mean, int rng?)} \\
-    Returns a random number from the Erlang distribution
+    Returns a random number from the Erlang distribution.
 
 \item[exponential]: \ttt{quantity exponential(quantity mean, int rng?)} \\
-    Returns a random number from the Exponential distribution
+    Returns a random number from the Exponential distribution.
 
 \item[gamma\_d]: \ttt{quantity gamma\_d(double alpha, quantity theta, int rng?)} \\
-    Returns a random number from the Gamma distribution
+    Returns a random number from the Gamma distribution.
 
 \item[lognormal]: \ttt{double lognormal(double m, double w, int rng?)} \\
-    Returns a random number from the Lognormal distribution
+    Returns a random number from the Lognormal distribution.
 
 \item[normal]: \ttt{quantity normal(quantity mean, quantity stddev, int rng?)} \\
-    Returns a random number from the Normal distribution
+    Returns a random number from the Normal distribution.
 
 \item[pareto\_shifted]: \ttt{quantity pareto\_shifted(double a, quantity b, quantity c, int rng?)} \\
-    Returns a random number from the Pareto-shifted distribution
+    Returns a random number from the Pareto-shifted distribution.
 
 \item[student\_t]: \ttt{double student\_t(int i, int rng?)} \\
-    Returns a random number from the Student-t distribution
+    Returns a random number from the Student-t distribution.
 
 \item[triang]: \ttt{quantity triang(quantity a, quantity b, quantity c, int rng?)} \\
-    Returns a random number from the Triangular distribution
+    Returns a random number from the Triangular distribution.
 
 \item[truncnormal]: \ttt{quantity truncnormal(quantity mean, quantity stddev, int rng?)} \\
-    Returns a random number from the truncated Normal distribution
+    Returns a random number from the truncated Normal distribution.
 
 \item[uniform]: \ttt{quantity uniform(quantity a, quantity b, int rng?)} \\
-    Returns a random number from the Uniform distribution
+    Returns a random number from the Uniform distribution.
 
 \item[weibull]: \ttt{quantity weibull(quantity a, quantity b, int rng?)} \\
-    Returns a random number from the Weibull distribution
+    Returns a random number from the Weibull distribution.
 
 
 \end{description}
@@ -317,25 +317,26 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
 
 \begin{description}
 \item[bernoulli]: \ttt{int bernoulli(double p, int rng?)} \\
-    Returns a random number from the Bernoulli distribution
+    Returns a random number from the Bernoulli distribution.
 
 \item[binomial]: \ttt{int binomial(int n, double p, int rng?)} \\
-    Returns a random number from the Binomial distribution
+    Returns a random number from the Binomial distribution.
 
 \item[geometric]: \ttt{int geometric(double p, int rng?)} \\
-    Returns a random number from the Geometric distribution
+    Returns a random number from the Geometric distribution.
 
 \item[intuniform]: \ttt{int intuniform(intquantity a, intquantity b, int rng?)} \\
-    Returns a random integer uniformly distributed over [a,b]
+    Returns a random integer uniformly distributed over [a,b].
 
 \item[intuniformexcl]: \ttt{int intuniformexcl(intquantity a, intquantity b, int rng?)} \\
-    Returns a random integer uniformly distributed over [a,b), that is, [a,b-1]
+    Returns a random integer uniformly distributed over [a,b), that is,
+    [a,b-1].
 
 \item[negbinomial]: \ttt{int negbinomial(int n, double p, int rng?)} \\
-    Returns a random number from the Negbinomial distribution
+    Returns a random number from the Negative Binomial distribution.
 
 \item[poisson]: \ttt{int poisson(double lambda, int rng?)} \\
-    Returns a random number from the Poisson distribution
+    Returns a random number from the Poisson distribution.
 
 
 \end{description}
@@ -359,8 +360,8 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
     string, and returns the result.
 
 \item[indexOf]: \ttt{int indexOf(string s, string substr)} \\
-    Returns the position of the first occurrence of substring substr in s, or
-    -1 if s does not contain substr.
+    Returns the position of the first occurrence of the substring substr in s,
+    or -1 if s does not contain substr.
 
 \item[length]: \ttt{int length(string s)} \\
     Returns the length of the string
@@ -439,13 +440,13 @@ The question mark (as in ``\ttt{rng?}'') denotes optional arguments.
     Parses the given XML string into a cXMLElement tree, and returns the root
     element. When called with two arguments, it returns the first element from
     the tree that matches the expression given in simplified XPath syntax.
-    Note: This is an alias to the parseXML() function.
+    Note: This is an alias for the parseXML() function.
 
 \item[xmldoc]: \ttt{xml xmldoc(string filename, string xpath?)} \\
     Parses the given XML file into a cXMLElement tree, and returns the root
     element. When called with two arguments, it returns the first element from
     the tree that matches the expression given in simplified XPath syntax.
-    Note: This is an alias to the readXML() function.
+    Note: This is an alias for the readXML() function.
 
 
 \end{description}
