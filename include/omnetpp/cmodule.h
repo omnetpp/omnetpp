@@ -894,10 +894,12 @@ class SIM_API cModule : public cComponent //implies noncopyable
     /** @name Utilities. */
     //@{
     /**
-     * Searches for the parameter in the parent modules, up to the system
-     * module. If the parameter is not found, throws cRuntimeError.
+     * Searches for the parameter in the module and parent modules, up to the
+     * system module. If the parameter is not found, throws cRuntimeError.
+     *
+     * This method is deprecated because it represents wrong practice.
      */
-    virtual cPar& getAncestorPar(const char *parname);
+    [[deprecated]] virtual cPar& getAncestorPar(const char *parname);
 
     /**
      * Returns the default canvas for this module, creating it if it hasn't
