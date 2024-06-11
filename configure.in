@@ -833,11 +833,12 @@ def try_import(name):
 try_import("difflib") # for opp_test and scave python tester
 
 # for the Analysis Tool:
-try_import("omnetpp")
+try_import("setuptools")
 try_import("numpy")
 try_import("scipy")
 try_import("pandas")
 try_import("matplotlib")
+try_import("omnetpp")
 
 if os.name == 'posix':
   try_import("fcntl")
@@ -862,12 +863,16 @@ if output=$(WITH_PYTHON=$WITH_PYTHON python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; 
     AC_MSG_RESULT(yes)
 else
     AC_MSG_RESULT(no)
-    AC_MSG_NOTICE([Required python modules can be installed by typing 'python3 -m pip install -r python/requirements.txt'])
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
+    AC_MSG_WARN([Some Python modules required by the IDE were not found: $output])
+    if test ! -d .venv; then
+      AC_MSG_NOTICE([TIP: Install a Python virtual environment (if you do not have one already):])
+      AC_MSG_NOTICE([TIP: python3 -m venv .venv && source .venv/bin/activate])
+    fi
+    AC_MSG_NOTICE([TIP: Install the missing Python modules by typing:])
+    AC_MSG_NOTICE([TIP: python3 -m pip install -r python/requirements.txt])
     if test -d ide; then
-      AC_MSG_ERROR([The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output])
-    else
-      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  $output (python3 module/modules)"
-      AC_MSG_WARN([The following Python modules required by the IDE and/or WITH_PYTHON were not found: $output])
+      AC_MSG_ERROR([Install the missing Python modules and restart the configure script.])
     fi
 fi
 

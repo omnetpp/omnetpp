@@ -25,6 +25,7 @@
 *.aux
 .ccls-cache
 .clangd
+.venv
 .vscode
 */__pycache__/*
 *.gdb_history
