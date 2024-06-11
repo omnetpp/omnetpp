@@ -5548,11 +5548,12 @@ def try_import(name):
 try_import("difflib") # for opp_test and scave python tester
 
 # for the Analysis Tool:
-try_import("omnetpp")
+try_import("setuptools")
 try_import("numpy")
 try_import("scipy")
 try_import("pandas")
 try_import("matplotlib")
+try_import("omnetpp")
 
 if os.name == 'posix':
   try_import("fcntl")
@@ -5576,14 +5577,21 @@ printf "%s\n" "yes" >&6; }
 else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Required python modules can be installed by typing 'python3 -m pip install -r python/requirements.txt'" >&5
-printf "%s\n" "$as_me: Required python modules can be installed by typing 'python3 -m pip install -r python/requirements.txt'" >&6;}
-    if test -d ide; then
-      as_fn_error $? "Some Python modules required by the IDE were not found: $output" "$LINENO" 5
-    else
-      OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Some Python modules required by the IDE were not found: $output" >&5
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Some Python modules required by the IDE were not found: $output" >&5
 printf "%s\n" "$as_me: WARNING: Some Python modules required by the IDE were not found: $output" >&2;}
+    if test ! -d .venv; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: Install a Python virtual environment (if you do not have one already):" >&5
+printf "%s\n" "$as_me: TIP: Install a Python virtual environment (if you do not have one already):" >&6;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: python3 -m venv .venv && source .venv/bin/activate" >&5
+printf "%s\n" "$as_me: TIP: python3 -m venv .venv && source .venv/bin/activate" >&6;}
+    fi
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: Install the missing Python modules by typing:" >&5
+printf "%s\n" "$as_me: TIP: Install the missing Python modules by typing:" >&6;}
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: python3 -m pip install -r python/requirements.txt" >&5
+printf "%s\n" "$as_me: TIP: python3 -m pip install -r python/requirements.txt" >&6;}
+    if test -d ide; then
+      as_fn_error $? "Install the missing Python modules and restart the configure script." "$LINENO" 5
     fi
 fi
 

@@ -37,6 +37,7 @@
 .metadata
 .project
 .pydevproject
+.venv
 .qtenvrc
 .settings
 .vscode

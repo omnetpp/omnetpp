@@ -21,6 +21,16 @@ if [ ! -f "$dir/configure.user" -o ! -f "$dir/include/omnetpp.h" -o ! -f "$dir/V
     return 1
 fi
 
+# Activate local python virtual environment if present in the root directory.
+# You can create a virtual environment with 'python3 -m venv .venv'
+# and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
+if [ -f "$__omnetpp_root_dir/.venv/bin/activate" ] ; then
+  if [ "$1" != "-q" ]; then
+    echo "Activating python virtual environment in '$__omnetpp_root_dir/.venv'"
+  fi
+  source $__omnetpp_root_dir/.venv/bin/activate
+fi
+
 function _numargs() { echo $#; }
 if [ $(_numargs $dir) -gt 1 ]; then
     echo "Error: Directory name ($dir) must not contain spaces or special characters."
