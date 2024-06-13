@@ -259,8 +259,8 @@ copy-ui-doc:
 
 create-shortcuts:
 ifeq ($(PLATFORM),linux)
-	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/opp_ide\nIcon=$(OMNETPP_ROOT)/images/logo/logo128.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development\n" >$(OMNETPP_RELEASE)-ide.desktop && chmod +x $(OMNETPP_RELEASE)-ide.desktop
-	@echo "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=/bin/bash --rcfile $(OMNETPP_ROOT)/setenv\nTerminal=true\nIcon=$(OMNETPP_ROOT)/images/logo/logo128s.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell\nCategories=Development\n" >$(OMNETPP_RELEASE)-shell.desktop && chmod +x $(OMNETPP_RELEASE)-shell.desktop
+	@printf "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=$(OMNETPP_BIN_DIR)/opp_ide\nIcon=$(OMNETPP_ROOT)/images/logo/logo128.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE\nCategories=Development\n" >$(OMNETPP_RELEASE)-ide.desktop && chmod +x $(OMNETPP_RELEASE)-ide.desktop
+	@printf "[Desktop Entry]\nEncoding=UTF-8\nType=Application\nExec=/bin/bash --rcfile $(OMNETPP_ROOT)/setenv\nTerminal=true\nIcon=$(OMNETPP_ROOT)/images/logo/logo128s.png\nName=$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell\nCategories=Development\n" >$(OMNETPP_RELEASE)-shell.desktop && chmod +x $(OMNETPP_RELEASE)-shell.desktop
 else ifeq ($(PLATFORM),win32)
 	@-shortcut.cmd -linkfile "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) IDE.lnk" -target "$(OMNETPP_ROOT)/mingwenv.cmd" -linkarguments ide -iconlocation "$(OMNETPP_ROOT)/images/logo/logo128.ico" -workingdirectory "$(OMNETPP_ROOT)" -windowstyle 7
 	@-shortcut.cmd -linkfile "$(OMNETPP_ROOT)/$(OMNETPP_PRODUCT) $(OMNETPP_VERSION) Shell.lnk" -target "$(OMNETPP_ROOT)/mingwenv.cmd" -iconlocation "$(OMNETPP_ROOT)/images/logo/logo128s.ico" -workingdirectory "$(OMNETPP_ROOT)" -windowstyle 7
