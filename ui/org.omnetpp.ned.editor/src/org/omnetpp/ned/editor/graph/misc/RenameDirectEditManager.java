@@ -10,6 +10,7 @@ package org.omnetpp.ned.editor.graph.misc;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.VerifyEvent;
@@ -45,7 +46,7 @@ public class RenameDirectEditManager extends DirectEditManager {
      * @param locator
      *            the CellEditorLocator
      */
-    public RenameDirectEditManager(GraphicalEditPart source, Class<?> editorType,
+    public RenameDirectEditManager(GraphicalEditPart source, Class<? extends CellEditor> editorType,
             ICellEditorValidator validator,
             IDirectEditSupport directEditable) {
         super(source, editorType, directEditable.getDirectEditCellEditorLocator());
