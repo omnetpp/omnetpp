@@ -25,7 +25,7 @@ NANOBIND_OBJS=$(NBO)/common.o $(NBO)/implicit.o $(NBO)/nb_func.o $(NBO)/nb_ndarr
 INCL_FLAGS=-I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" \
     -I"$(NANOBIND_DIR)/ext/robin_map/include" -I"$(NANOBIND_DIR)/include"
 
-COPTS=$(CFLAGS) $(INCL_FLAGS)
+COPTS=$(CFLAGS) $(PYTHON_CFLAGS) $(INCL_FLAGS)
 
 IMPLIBS=-loppscave$D -loppcommon$D
 
