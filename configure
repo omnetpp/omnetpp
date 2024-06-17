@@ -5702,11 +5702,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
    LIBS=$save_LIBS
 
 
-  if test $python3_found = yes; then
-    CFLAGS="$CFLAGS $PYTHON_CFLAGS"
-    LDFLAGS="$LDFLAGS $PYTHON_LDFLAGS"
-  else
-    as_fn_error $? "Runtime Python support was configured (WITH_PYTHON=yes), but the Python 3 development package was not found." "$LINENO" 5
+  if test $python3_found != yes; then
+    as_fn_error $? "Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes), but the Python 3 development package was not found." "$LINENO" 5
   fi
 
   PYTHON_EXT_SUFFIX=$($PYTHON_CONFIG --extension-suffix)
