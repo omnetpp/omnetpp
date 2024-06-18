@@ -186,7 +186,7 @@ class SIM_API SimTime
      * currently does not check the measurement unit of the parameter (@unit NED
      * property), although this may change in future releases.
      */
-    SimTime(cPar& d) {operator=(d);}
+    SimTime(const cPar& d) {operator=(d);}
 
     /**
      * Initialize simulation time from a value specified in the given unit.
