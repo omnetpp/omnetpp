@@ -1,0 +1,42 @@
+%description:
+Test assigning simtime_t from cPar
+
+%file: test.ned
+
+simple Test
+{
+    @isNetwork;
+    double time @unit(s) = 12.4ms;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule {
+    virtual void initialize() override;
+    simtime_t readPar() const { return par("time"); }
+};
+
+Define_Module(Test);
+
+void Test::initialize() {
+    simtime_t t1 = par("time");  // conversion from cPar&
+    EV << t1 << std::endl;
+    t1 = par("time");  // assignment from cPar&
+    EV << t1 << std::endl;
+    simtime_t t2 = readPar();  // conversion from const cPar&
+    EV << t2 << std::endl;
+}
+
+}; //namespace
+
+%contains: stdout
+0.0124
+0.0124
+0.0124
+
