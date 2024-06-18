@@ -249,7 +249,7 @@ SimTime& SimTime::operator=(const cPar& p)
     switch (p.getType()) {
         case cPar::INT: return operator=(p.intValue());
         case cPar::DOUBLE: return operator=(p.doubleValue());
-        default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
+        default: throw cRuntimeError(&p, "Cannot use non-numeric parameter in arithmetic operations with simtime_t");
     }
 }
 
@@ -258,7 +258,7 @@ const SimTime& SimTime::operator*=(const cPar& p)
     switch (p.getType()) {
         case cPar::INT: return operator*=(p.intValue());
         case cPar::DOUBLE: return operator*=(p.doubleValue());
-        default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
+        default: throw cRuntimeError(&p, "Cannot use non-numeric parameter in arithmetic operations with simtime_t");
     }
 }
 
@@ -267,7 +267,7 @@ const SimTime& SimTime::operator/=(const cPar& p)
     switch (p.getType()) {
         case cPar::INT: return operator/=(p.intValue());
         case cPar::DOUBLE: return operator/=(p.doubleValue());
-        default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
+        default: throw cRuntimeError(&p, "Cannot use non-numeric parameter in arithmetic operations with simtime_t");
     }
 }
 
@@ -328,7 +328,7 @@ double operator/(const cPar& p, const SimTime& x)
     switch (p.getType()) {
         case cPar::INT: return p.intValue() / x;
         case cPar::DOUBLE: return p.doubleValue() / x;
-        default: throw cRuntimeError(&p, "Cannot convert non-numeric parameter to simtime_t");
+        default: throw cRuntimeError(&p, "Cannot use non-numeric parameter in arithmetic operations with simtime_t");
     }
 }
 
