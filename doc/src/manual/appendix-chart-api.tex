@@ -858,16 +858,16 @@ widget, and False otherwise.
 \label{cha:chart-api:omnetpp.scave.ideplot:plot}
 
 \begin{flushleft}
-\ttt{plot(x, y, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None)}
+\ttt{plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None)}
 \end{flushleft}
 
-\par Plot y versus x as lines and/or markers. Call \ttt{plot} multiple times
+\par Plot ys versus xs as lines and/or markers. Call \ttt{plot} multiple times
 to plot multiple sets of data.
 
 \par Parameters:
 
 \begin{itemize}
-  \item \ttt{x}, \ttt{y} \textit{(array-like or scalar)}: The horizontal / vertical coordinates of the data points.
+  \item \ttt{xs}, \ttt{ys} \textit{(array-like or scalar)}: The horizontal / vertical coordinates of the data points.
   \item \ttt{key} \textit{(string)}: Identifies the series in the native plot widget.
   \item \ttt{label} \textit{(string)}: Series label for the legend
   \item \ttt{drawstyle} \textit{(string)}: Matplotlib draw style ('default', 'steps', 'steps-pre', 'steps-mid', 'steps-post')

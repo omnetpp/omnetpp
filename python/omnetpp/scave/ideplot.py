@@ -41,14 +41,14 @@ else:
 
 
 
-def plot(x, y, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
+def plot(xs, ys, key=None, label=None, drawstyle=None, linestyle=None, linewidth=None, color=None, marker=None, markersize=None):
     """
-    Plot y versus x as lines and/or markers. Call `plot` multiple times
+    Plot ys versus xs as lines and/or markers. Call `plot` multiple times
     to plot multiple sets of data.
 
     Parameters:
 
-    - `x`, `y` (array-like or scalar): The horizontal / vertical coordinates of the data points.
+    - `xs`, `ys` (array-like or scalar): The horizontal / vertical coordinates of the data points.
     - `key` (string): Identifies the series in the native plot widget.
     - `label` (string): Series label for the legend
     - `drawstyle` (string): Matplotlib draw style ('default', 'steps', 'steps-pre', 'steps-mid', 'steps-post')
