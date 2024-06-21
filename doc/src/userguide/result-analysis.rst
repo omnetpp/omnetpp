@@ -4,56 +4,58 @@ Analyzing the Results
 Overview
 --------
 
-Analyzing the simulation results is a time-consuming process. The results
-of the simulation are recorded as scalar values, vector values,
-histograms, and evaluated parameters. Information about each run, such
-as iteration variables, configuration entries, and run attributes, is
-also stored. You can then apply statistical methods to extract the
-relevant information and draw a conclusion. This process may include
-several steps. Usually, you need to filter and transform the data, and
-chart the result. Automation is very important here - you do not want to
-repeat the steps of recreating charts every time you rerun simulations.
+Analyzing simulation results is crucial for validating models and understanding
+their behavior. The Analysis Tool in the IDE is an editor that edits an
+analysis (.anf) file. The analysis file captures the set of inputs and the
+processing steps necessary for creating the desired plots and tables.
 
-In |omnet++| 6.x, the statistical analysis tool is integrated into the
-Eclipse environment. Querying, processing, and plotting the simulation
-results is done with Python 3 scripts, using APIs provided by the IDE.
-These scripts and APIs rely heavily on the NumPy, Pandas, and Matplotlib
-Python packages. Your scripts and settings (i.e., your recipe for finding
-results from the raw data) will be recorded in analysis files (.anf) and
-will become instantly reproducible. This means that if simulations need
-to be rerun due to a model bug or misconfiguration, existing charts need
-not be recreated all over again. Simply replacing the old result files
-with the new ones will result in the charts being automatically
-displayed with the new data.
+In |omnet++|, the results of simulations are captured as scalar values, vector
+values, statistic summaries (hereafter just "statistics"), and histograms, and
+are recorded into result files. Result files are tagged with metadata like the network name,
+iteration variables, and configuration settings. The analysis typically begins
+with the user specifying a set of result files either directly by name or
+through patterns that match multiple files. Once loaded, these results can be
+explored through an intuitive interface where users can browse, filter,
+transform, and visualize data using various chart types.
 
-When creating an analysis, the user first selects the input for the
-analysis by specifying file names or file name patterns (e.g.
-``adhoc-*.vec``). Data in result files are tagged with meta-information.
-Experiment, measurement, and replication labels are added to the result
-files to make the filtering process easy. It is possible to create very
-sophisticated filtering rules (e.g. all 802.11 retry counts of
-host[5..10] in experiment X, where the iteration variable numHost had a
-value of 7).
+Charts can be opened from the selected data with a few clicks. Charts use
+queries in the form of filter expressions to select the desired subset of
+results. Users can refine these expressions or write new ones to tailor the data
+being visualized. The plotting capabilities range from using Matplotlib for
+complex visualizations to employing the IDE's own Native Plots for more
+straightforward, interactive displays. Each chart allows adjustments such as
+labels, colors, line styles, and other visual properties through a configuration
+dialog.
 
-You can open charts from the selected data with one click. The Analysis
-Editor supports bar charts, line charts, histogram charts, and scatter
-charts. Charts are interactive; users can zoom, scroll, and access
-tooltips that give information about the data items.
+The charts and their associated settings are remembered as part of the analysis
+(.anf) file. When the user re-runs the simulations due to modifications in
+simulation configurations or model adjustments and a new set of result files is
+created, the analysis tool can automatically fill or refresh the charts with new
+data.
 
-Charts can be customized. Some of the customizable options include
-titles, fonts, legends, grid lines, colors, line styles, and symbols.
+Each chart in the analysis tool is backed by a customizable Python script and a
+set of properties that can be edited through a chart configuration dialog. The
+IDE allows users to edit the chart script to fit their precise needs, to add or
+modify properties, and even update the configuration dialog to accommodate
+additional inputs.
 
-The charts made in the IDE can also be viewed and exported later
-from the command line, using a tool called ``opp_charttool``. Its
-usage and operation are detailed in the Simulation Manual.
+Finally, the analysis results can be reproduced and utilized outside the IDE
+through ``opp_charttool``, a command-line tool that recreates chart
+views from the analysis files. This capability facilitates the integration of
+results into batch processes, such as compiling LaTeX articles, or sharing them
+for independent review. Detailed information on this tool and its
+functionalities is provided in the Simulation Manual, offering a comprehensive
+framework for managing simulation outputs.
+
+.. _ana-creating-anf-files:
 
 Creating Analysis Files
 -----------------------
 
 The usual way of creating an analysis file is to "imitate" opening an |omnet++|
-result file by double-clicking it in the Project Explorer view.
-Result files cannot be opened directly, so the IDE will offer creating an
-analysis file for it instead.
+result file (``.sca`` or ``.vec``) by double-clicking it in the
+:guilabel:`Project Explorer` view. Result files cannot be opened directly, so
+the IDE will offer creating an analysis file for it instead.
 
 If the result file name looks like the file was created as part of an experiment
 or parameter study, the IDE creates an analysis file that includes all result
@@ -82,6 +84,7 @@ reference to result files, so file name patterns will need to be added later.
    If the analysis file already exists, double-clicking on the result
    file will open it.
 
+.. _ana-opening-older-anf-files:
 
 Opening Older Analysis Files
 ----------------------------
@@ -94,12 +97,13 @@ conversion is a "best-effort" attempt: the result may be incomplete or incorrect
 Always check that the converted charts indeed correspond to the original ones, and
 refine the result if needed.
 
+.. _ana-using-analysis-editor:
 
 Using the Analysis Editor
 -------------------------
 
 The usual workflow of result analysis consists of a few distinct steps.
-These are: adding input files to the analysis, browsing simulation results
+These are: adding input files to the analysis, browsing simulation results,
 and selecting those of interest, creating a chart of an appropriate type from
 the results, then viewing them as plots, and finally exporting data and/or
 images if needed.
@@ -109,8 +113,10 @@ edits is the "recipe": what result files to take as inputs, and what kind of
 charts to create from them. The pages (tabs on the bottom) of the editor
 roughly correspond to some of the steps described above.
 
-In the next sections, we will go through the individual pages of the editor,
+In the next sections, we will go through the individual pages of the editor
 and which analysis steps can be performed using them.
+
+.. _ana-inputs-page:
 
 The Inputs Page
 ---------------
@@ -123,7 +129,7 @@ in a tree structure.
 
 .. figure:: pictures/ANF-InputsPage.png
 
-   The Inputs page
+   The :guilabel:`Inputs` page
 
 New input files can be added to the analysis by dragging vector and scalar files
 from the :guilabel:`Project Explorer` view, or by opening a dialog with the
@@ -134,12 +140,12 @@ Resolution Rules
 
 Input file patterns are resolved with the following rules:
 
-1. An asterisk (``*``) matches files/folders within a single folder;
-2. A double asterisk (``**``) may match multiple levels in the folder hierarchy;
+1. An asterisk (``*``) matches files/folders within a single folder.
+2. A double asterisk (``**``) may match multiple levels in the folder hierarchy.
 3. If the pattern starts with a slash (``/``), it is understood as a workspace full path,
-   with its first component being a project name;
+   with its first component being a project name.
 4. If the pattern does not start with a slash (``/``), it is interpreted as
-   relative to the folder of the analysis file;
+   relative to the folder of the analysis file.
 5. If the pattern identifies a folder, it will match all result files in it
    (i.e. ``/foo/results`` is equivalent to ``/foo/results/**.sca`` plus
    ``/foo/results/**.vec``).
@@ -189,6 +195,8 @@ the background.
 
    The :guilabel:`Progress` view displays the progress of the
    indexing process if it takes a long time.
+
+.. _ana-browse-data-page:
 
 The Browse Data Page
 --------------------
@@ -252,7 +260,7 @@ Plotting
 You can display the selected data items on a chart. To open the chart, choose
 one of the :guilabel:`Plot` items from the context menu, or press Enter
 (double-click also works for single data lines). See section
-:ref:`ana-creating-charts` for more information.
+:ref:`ana-basic-chart-usage` for more information.
 
 
 Viewing the Details of Result Items
@@ -296,6 +304,8 @@ JSON, and so on. Vectors can be also cropped to a time interval in the export.
    keys.
 
 
+.. _ana-charts-page:
+
 The Charts Page
 ---------------
 
@@ -304,12 +314,19 @@ The third page displays the charts created during the analysis.
 This page works much like a usual graphical file manager. Each icon
 represents a chart, and the charts can be selected, reordered by dragging,
 copied, pasted, renamed, deleted, opened, or their context menu accessed.
+Different view modes like "icon" and "list" module can be selected.
+
+The :guilabel:`Charts` page also enables you to organize your charts into
+"folders," providing a more structured and accessible view. This is especially
+useful when managing a large number of charts.
 
 .. figure:: pictures/ANF-ChartsPage.png
    :width: 80%
 
    Charts Page
 
+
+.. _ana-outline-view:
 
 The Outline View
 ----------------
@@ -329,148 +346,122 @@ on an element will select the corresponding element in the editor.
 
    Outline View of the analysis
 
-.. _ana-creating-charts:
 
-Creating Charts
----------------
+.. _ana-basic-chart-usage:
 
-The following sections walk you through working with charts,
-starting from the very basics, all the way to more advanced
-topics involving Python scripting.
+Basic Chart Usage
+-----------------
+
+This section introduces you to the basics of working with charts in the
+|omnet++| IDE. It shows how to navigate plots, configure their
+appearance, and export data and images.
 
 Charts can be created in two ways: first, based on the set of selected results
 on the :guilabel:`Browse Data` page, and second, choosing from the list of
-available chart types on the :guilabel:`Charts` page. In the latter case, the
-results that serve as input for the chart need to be configured manually, while
-in the former case, it happens implicitly.
-
-Various types of charts are available. There are a number of
-built-in ones, and you can also add your own to your projects.
-
-The Analysis Tools can display plots in two ways: with Matplotlib, and with the
-built-in ("native") plot widgets. The former one makes the full functionality of
-Matplotlib available in the IDE (which basically means that you can draw
-anything). In contrast, native plot widgets are more limited in functionality,
-can only display three types of plots (bar, line, and histogram plot), but they
-are also more responsive and much more scalable.
-
-.. note::
-
-   It is usually indicated in the name of a chart type whether it is
-   Matplotlib-based or uses a native plot widget.
+available chart types on the :guilabel:`Charts` page.
 
 .. _ana-plotting-results:
 
-From the Browse Data Page
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Plotting Data
+^^^^^^^^^^^^^
 
-Most often, a new chart is created from a set of simulation results,
-selected on the :guilabel:`Browse Data` page.
+Most often, a new chart is created from a set of simulation results displayed on
+the :guilabel:`Browse Data` page.
 
-First, select the results you wish to plot. Then, right-clicking on the selected
-set of results presents you with a choice of chart templates, showing only those
-that accept the given set of results as input.
+To visualize data, first identify the set of simulation results you wish to
+plot. By double-clicking on a result item or selecting multiple results and
+pressing :kbd:`Enter`, the editor will automatically open an appropriate chart.
+Alternatively, you can right-click on the selected results to access a context
+menu that offers a selection of chart templates compatible with the chosen data.
+
+For a more detailed view, select the :guilabel:`Choose from Template Gallery`
+context menu option. This displays a curated list of templates -- filtered to
+only show those suitable for your data -- in the gallery dialog. Here, each
+template is accompanied by a description and screenshots, providing a
+comprehensive preview.
 
 .. figure:: pictures/ANF-PlotResults.png
    :width: 80%
 
    Plotting the selected results
 
-The :guilabel:`Choose from Template Gallery` menu item shows
-the same filtered list of templates in the gallery dialog (see next section),
-where you can see a description with screenshots for each.
+Charts opened this way are `temporary charts`, designed to allow users the
+flexibility to explore simulation results and their various visualizations
+without permanent commitment. If you find a chart that provides valuable
+insights and wish to keep it for ongoing analysis, you can preserve it by
+selecting :guilabel:`Save Chart` from the toolbar or the context menu of the
+chart's page. Once saved, the chart will then be listed on the
+:guilabel:`Charts` page, making it a permanent part of your analysis.
 
-Simply double-clicking on a result, or selecting some and pressing
-Enter, will also open a suitable chart.
+If you have many charts open, it is easy to lose track of which ones have already
+been saved into the analysis. To identify if an open chart is temporary, look
+for the :guilabel:`Save Chart` icon on the leftmost part of the local toolbar.
+This icon indicates that the chart is temporary. Conversely, if you see the
+:guilabel:`Go To Chart Definition` icon, the chart has been saved as part of your
+analysis. Clicking this button will direct you to the :guilabel:`Charts` page,
+where the saved chart is displayed.
 
-.. note::
+.. tip::
 
-   Charts opened this way are not saved into the analysis, i.e., they
-   will be discarded when you close them. To preserve a chart
-   as part of the analysis, you need to choose :guilabel:`Save
-   Chart` from the toolbar or the context menu of the chart's page.
-   When you do that, the chart will appear on the :guilabel:`Charts` page.
-   See :ref:`ana-temporary-charts` for more information.
+   After saving a temporary chart, it is recommended that you check the filter
+   expression on the :guilabel:`Inputs` page of the chart configuration dialog, and
+   refine or simplify it as needed. When the temporary chart is created, the IDE
+   generates a filter expression based on the selection, but the generated
+   expression is not always optimal, and it may not accurately express your
+   intended selection criteria.
 
-From the Charts Page
-^^^^^^^^^^^^^^^^^^^^
 
-Right-clicking in an empty area on the :guilabel:`Charts` page and opening
-the :guilabel:`New` submenu lists all the available chart templates.
-Clicking on one creates a new chart from that template.
+Starting From a Blank Chart
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The :guilabel:`New Chart` button on the toolbar opens a gallery-like
-dialog, where more information (with a short description and some screenshots)
-is shown about each of the chart templates. Selecting one and pressing
-:guilabel:`OK` instantiates that template into a new chart.
+On the :guilabel:`Charts` page, you can create a new chart by right-clicking in
+an empty area and selecting a chart template from the :guilabel:`New` submenu.
+Simply clicking on an item from this list will create a new chart based on
+it.
+
+Alternatively, use the :guilabel:`New Chart` button on the toolbar to open a
+gallery-like dialog that provides detailed information, including a short
+description and screenshots, for each chart template. By selecting a template
+and pressing :guilabel:`OK`, you will instantiate that template into a new chart.
+
+Charts created using either method will initially be empty, as they have not yet
+been configured with a result selection filter expression.
 
 .. figure:: pictures/ANF-ChartTemplateGallery.png
    :width: 80%
 
-   The New Chart Dialog
-
-Any chart created in any of these two ways will be initially empty,
-as no result selection filter expression was configured for them yet.
+   The chart template gallery dialog
 
 
-Using Charts
-------------
-
-This section introduces you to the basics of working with charts in the
-|omnet++| IDE. It shows how to navigate plots, configure their
-appearance, and export data and images.
-
-Opening a Chart
-^^^^^^^^^^^^^^^
+Opening an Existing Chart
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To open an existing chart, double-click it in the :guilabel:`Charts` page, or
 select it and hit :kbd:`Enter`.
 
-.. _ana-temporary-charts:
 
-Temporary Charts
-^^^^^^^^^^^^^^^^
+Plot Navigation
+^^^^^^^^^^^^^^^
 
-Temporary charts are created when simulation results are plotted directly from
-the :guilabel:`Browse Data` page. Temporary charts are not part of the analysis,
-which means they don't appear on the :guilabel:`Charts` page, and will disappear
-when closed (unless saved into the analysis).
+This section outlines the mouse and keyboard bindings for navigating two types
+of plots in the Analysis Tool: native plots and Matplotlib-based plots.
 
-.. tip::
+- **Native Plots**: These plots support two main modes: Pan mode and Zoom
+  mode. In Pan mode, you can scroll with the mouse wheel and drag the chart. In
+  Zoom mode, the user can zoom in on the chart by left-clicking and zoom out by
+  doing a :kbd:`Shift` plus left-click or using the mouse wheel. Dragging
+  selects a rectangular area for zooming. The toolbar icons switch between
+  Pan and Zoom modes. You can also find toolbar buttons to zoom in, zoom out, and
+  zoom to fit. Zooming and moving actions are remembered in the navigation
+  history.
 
-   The easiest way to see whether an open chart is a temporary chart is to check
-   the leftmost icon on the local toolbar. If you see :guilabel:`Save Chart`,
-   then it is a temporary chart; if you see :guilabel:`Go To Chart Definition`,
-   then the chart is part of the analysis (and the button will take you to the
-   :guilabel:`Charts` page to show it).
+- **Matplotlib plots**: Navigation in Matplotlib plots generally follows
+  standard Matplotlib interactions but includes a few enhancements for better
+  control. One addition is the following: the mouse wheel, :kbd:`Shift` plus mouse wheel, and
+  :kbd:`Ctrl` plus mouse wheel pans vertically / horizontally or zooms. There is
+  also a third mode, called Interactive mode, which is used to manipulate
+  interactive elements on the plot, such as widgets, if present.
 
-When you try to close a temporary chart, the IDE will ask whether you want to
-save it into the analysis.
-
-On saving a temporary chart, it is recommended that you check the filter
-expression on the :guilabel:`Inputs` page of the chart configuration dialog, and
-refine or simplify it as needed. When the temporary chart is created, the IDE
-generates a filter expression based on the selection, but the generated
-expression is not always optimal, and it may not accurately express your
-intended selection criteria.
-
-Navigation
-^^^^^^^^^^
-
-In an open chart, the mouse pointer has two different operation modes in the plot area. In Pan mode, you
-can scroll with the mouse wheel and drag the chart. In Zoom mode, the user can
-zoom in on the chart by left-clicking and zoom out by doing a
-:kbd:`Shift` plus left-click, or using the mouse wheel. Dragging selects a rectangular
-area for zooming. The toolbar icons and switch between Pan and Zoom modes.
-You can also find toolbar buttons to zoom in, zoom out and zoom to fit.
-Zooming and moving actions are remembered in the navigation history.
-
-The navigation of Matplotlib charts is slightly different from this,
-as that follows how Matplotlib charts usually handle navigation.
-One addition compared to that is that scrolling, :kbd:`Shift` plus scrolling and
-:kbd:`Ctrl` plus scrolling pans vertically / horizontally or zooms. There is also
-a third mode, called interactive mode, which is used to manipulate
-interactive elements on the plot, such as widgets, if present.
 
 The Chart Properties Dialog
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -488,7 +479,7 @@ differ for each chart type. Pages that are common to nearly all chart types
   horizontal axis, iso lines, etc.).
 - :guilabel:`Plot`, :guilabel:`Lines`, :guilabel:`Bars`, etc.: For configuring the labels, markers, ticks, grid, etc.
 - :guilabel:`Styling`: Visual properties for the plot.
-- :guilabel:`Advanced`: Lets you manually add custom plot properties that don't occur on the other pages.
+- :guilabel:`Advanced`: Lets you manually add plot properties that are not configurable on the other pages.
 - :guilabel:`Export`: Properties to be used during image/data export.
 
 
@@ -500,101 +491,11 @@ differ for each chart type. Pages that are common to nearly all chart types
 For many input fields, autocompletion and smart suggestions are available
 by pressing :kbd:`Ctrl+SPACE`.
 
-.. _ana-filter-expression:
-
-Filter Expressions
-^^^^^^^^^^^^^^^^^^
-
-Filter expressions are used at multiple places in the Analysis Tool, e.g., for
-filtering the table/tree contents on the :guilabel:`Browse Data` page and on
-:guilabel:`Input` pages of chart properties dialogs for selecting simulation
-results as input for the chart.
-
-A filter expression is composed of terms that can be combined with the `AND`,
-`OR`, `NOT` operators, and parentheses. A term filters for the value of some property of
-the item and has the form `<property> =~ <pattern>`, or simply `<pattern>`. The latter
-is equivalent to `name =~ <pattern>`.
-
-The following properties are available:
- - `name`: Name of the result or item.
- - `module`: Full path of the result's module.
- - `type`: Type of the item. The value is one of: `scalar`, `vector`, `parameter`, `histogram`, `statistics`.
- - `isfield`: `true` if the item is a synthetic scalar that represents a field of statistic or a vector, `false` if not.
- - `file`: File name of the result or item.
- - `run`: Unique run ID of the run that contains the result or item.
- - `runattr:<name>`: Run attribute of the run that contains the result or item. Example: `runattr:measurement`.
- - `attr:<name>`: Attribute of the result. Example: `attr:unit`.
- - `itervar:<name>`: Iteration variable of the run that contains the result or item. Example: `itervar:numHosts`.
- - `config:<key>`: Configuration key of the run that contains the result or item. Example: `config:sim-time-limit`, `config:**.sendIaTime`.
-
-Patterns may contain the following wildcards:
- - `?` matches any character except '.'
- - `*` matches zero or more characters except '.'
- - `**` matches zero or more characters (any character)
- - `{a-z}` matches a character in range a-z
- - `{^a-z}` matches a character not in the range a-z
- - `{32..255}` any number (i.e., sequence of digits) in the range 32..255 (e.g., `99`)
- - `[32..255]` any number in square brackets in the range 32..255 (e.g., `[99]`)
- - `\\` takes away the special meaning of the subsequent character
-
-Patterns only need to be surrounded with quotes if they contain whitespace or
-other characters that would cause a parsing ambiguity.
-
-Example: `module =~ "**.host*" AND (name =~ "pkSent*" OR name =~ "pkRecvd*")`
-
-.. tip::
-
-   Content Assist is available in text fields where you can enter filter
-   expressions, vector operations, run metadata selectors, advanced styling
-   options, and similar. Press :kbd:`Ctrl+SPACE` to get a list of appropriate
-   suggestions at the cursor position.
-
-Vector Operations
-^^^^^^^^^^^^^^^^^
-
-The charts that show vector results offer a selection of operations
-to transform the data before plotting.
-
-These can be added to the chart under the :guilabel:`Apply` or
-:guilabel:`Compute` context menu items.
-Both ways of adding operations compute new vectors from existing
-ones. The difference between them is that Apply replaces the original
-data with the computation result, while Compute keeps both.
-
-Some operations have parameters that can be edited before adding it,
-in the confirmation dialog that pops up after selecting the operation.
-
-Most operations perform a fairly simple transformation on each individual
-vector independently: summation, windowed average, etc. ``expression``
-facilitates a more complex, freeform computation in one go. And two exceptions
-are ``aggregate`` and ``merge``, as these operate on the entire DataFrame,
-combining multiple vectors into one.
-
-For example, see the screenshots illustrating the effects of the following
-vector operations:
-
-.. code-block::
-
-  apply:sum
-  apply:diffquot
-  apply:movingavg(alpha=0.05)
-
-.. figure:: pictures/ANF-VectorOperations-1.png
-   :width: 90%
-
-   Vector Operations - Before
-
-.. figure:: pictures/ANF-VectorOperations-2.png
-   :width: 90%
-
-   Vector Operations - After
-
-See a description of all built-in vector operations in the Simulation Manual.
 
 Exporting Data
 ^^^^^^^^^^^^^^
 
-Both the input data used by a chart, and the final result after any processing,
+Both the input data used by a chart and the final result after processing
 can be exported.
 
 The first one is essentially the same as the result exporting option on the
@@ -602,8 +503,7 @@ The first one is essentially the same as the result exporting option on the
 of the given chart to select which results to export. This is available under the
 :guilabel:`Export Chart Input As` context menu item of charts.
 
-The second one includes any transformations the chart might perform on the data
-before plotting it and is available under the common :guilabel:`Export Chart`
+The second one is available under the common :guilabel:`Export Chart`
 option, as discussed in section :ref:`ana-batch-export`.
 
 ..
@@ -623,19 +523,17 @@ There are multiple, significantly different ways of exporting a chart to an imag
   to an image file. Popular raster and vector formats are accepted, including
   PNG, JPG, SVG, GIF, TIFF, etc.
 
-- Finally, the :guilabel:`Export Chart` option opens the common
+- Finally, the :guilabel:`Export Chart` option opens the combined
   image/data exporting dialog (see section :ref:`ana-batch-export`) for this
   chart only. This option relies on the chart script for doing the actual
-  exporting. (It runs the chart script  in the background, asking it to perform
-  the export.)
-
+  exporting.
 
 .. _ana-batch-export:
 
 Batch Export
 ^^^^^^^^^^^^
 
-When exporting multiple charts, or when selecting the :guilabel:`Export Chart`
+When exporting multiple charts or when selecting the :guilabel:`Export Chart`
 option for a single chart, a common export dialog is opened.
 
 .. figure:: pictures/ANF-ExportCharts.png
@@ -643,18 +541,473 @@ option for a single chart, a common export dialog is opened.
 
    Export Charts Dialog
 
+Individual file names and image dimensions can be specified for each chart in their
+respective chart configuration dialog.
 
-Some additional parameters of the images/data exported this way can
-be configured on the :guilabel:`Export` tab of the property configuration
-dialog of each chart.
-
-Note that native charts exported this way will look a bit different than in the
-IDE, because they will be drawn by Matplotlib during the export procedure.
+Note that native charts exported this way will be emulated with Matplotlib, so
+the saved images may look a bit different than in the IDE.
 
 This is also the way ``opp_charttool`` exports charts from the command line.
 
-Customizing Charts
+
+
+.. _ana-configuring-charts:
+
+Configuring Charts
 ------------------
+
+This section discusses working with charts in more detail.
+
+Available Chart Types
+^^^^^^^^^^^^^^^^^^^^^
+
+The Analysis Tool offers two distinct methods for displaying plots:
+
+- **Matplotlib:** Utilizes the full functionality of Matplotlib within the IDE,
+  allowing for the creation of virtually any type of plot.
+- **Native Plots:** Although limited to bar, line, and histogram plots,
+  these widgets are more responsive and scalable compared to Matplotlib.
+
+Chart templates can be categorized according to whether they use native plot
+widgets for displaying the plot or Matplotlib. It is usually indicated in the
+name of a chart type whether it is Matplotlib-based or uses a native plot.
+
+There are a number of chart templates in the library of the Analysis Tool. We
+list the most frequently used ones below.
+
+Based on Native Plots:
+
+- **Line Chart:** Plots vector results as line charts, with the native plot widget.
+  The default interpolation mode is determined automatically from the result
+  attributes. Many kinds of vector operations (smoothing, accumulating,
+  mathematical formulas, etc.) can be easily performed on the vector data.
+  Interpolation, markers, and line style can be configured. Hovering over legend
+  entries with the mouse highlights the corresponding series, clicking on the
+  labels hides/shows the series.
+
+- **Scatter Chart (Scalars in the Function of Itervars):** Displays scalar results
+  on scatter plots, using the native plot widget. X-axis values are taken
+  from a numeric iteration variable. Optionally, results can be grouped into
+  series by iteration variables, run attributes, or result attributes. Markers
+  and line style can be configured. Hovering over legend entries with the mouse
+  highlights the corresponding points/iso line, clicking on the labels
+  hides/shows the points/iso line.
+
+- **Bar Chart:** Plots scalar results as a bar chart, with the native plot widget.
+  The bars can optionally be grouped. Individual bars in each group can be
+  stacked, or positioned in different ways. Hovering over legend entries with
+  the mouse highlights the corresponding data series, clicking on the labels
+  hides/shows the series.
+
+- **Histogram Chart:** Plots histogram results with the native plot widget. The
+  drawing style can be filled or outline. Transformations to cumulative and
+  normalized forms are available. Hovering over legend entries with the mouse
+  highlights the corresponding histogram, clicking on the labels hides/shows the
+  histogram.
+
+- **Histogram from Vectors Chart:** Plots histograms from vector results with the
+  native plot widget. The drawing style can be filled or outline. Transformations
+  to cumulative and normalized forms are available. Hovering over legend entries
+  with the mouse highlights the corresponding histogram, clicking on the labels
+  hides/shows the histogram.
+
+Their Matplotlib equivalents:
+
+- **Line Chart with Matplotlib:** Plots vector results as line charts, with
+  Matplotlib. The default interpolation mode is determined automatically from
+  the result attributes. Many kinds of vector operations (smoothing,
+  accumulating, mathematical formulas, etc.) can be easily performed on the
+  vector data. Interpolation, markers, and line style can be configured.
+
+- **Scatter Chart with Matplotlib (Scalar in the Function of Itervars):** Plots scalar
+  results as scatter charts, using Matplotlib, with the X-axis values taken from
+  a numeric iteration variable. Optionally, results can be grouped into series
+  by iteration variables, run attributes, or result attributes. Markers and line
+  style can be configured. Confidence intervals of averaged points are drawn as
+  error bars.
+
+- **Bar Chart with Matplotlib:** Plots scalar results as a bar chart, with
+  Matplotlib. The bars can optionally be grouped. Individual bars in each group
+  can be stacked, or positioned in different ways. Confidence intervals are
+  displayed as error bars.
+
+- **Histogram Chart with Matplotlib:** Plots histogram results with Matplotlib.
+  The drawing style can be filled or outline. Transformations to cumulative and
+  normalized forms are available.
+
+- **Histogram Chart from Vectors with Matplotlib:** Plots histograms from vector
+  results with Matplotlib. The drawing style can be filled or outline.
+  Transformations to cumulative and normalized forms are available.
+
+Since Matplotlib has vastly more possibilities than the native plots,
+there are some additional Matplotlib-based charts:
+
+- **Box and Whiskers Chart (Matplotlib):** A box and whiskers plot from
+  statistics or histograms. Shows the minimum, mean, maximum, and the 25th and
+  75th percentile marks (estimated from the standard deviation) of the results.
+
+- **Line Chart on Separate Axes with Matplotlib:** Plots vector results as line
+  charts, with Matplotlib, each on its own axes. This is very similar to the
+  regular "Line Chart with Matplotlib" template; the only difference is that
+  every vector is drawn into its own separate coordinate system, arranged in a
+  column, all sharing their X axes. The default interpolation mode is determined
+  automatically from the result attributes. Many kinds of vector operations
+  (smoothing, accumulating, mathematical formulas, etc.) can be easily performed
+  on the vector data. Interpolation, markers, and line style can be configured.
+
+- **3D Chart (Scalar in the Function of Itervars):** Plots a scalar result with
+  respect to two iteration variables as a 3D chart. Data points can be rendered
+  as bars, points, or a surface. Various color maps can be chosen.
+
+Generic charts, which can serve as a starting point for custom plots:
+
+- **Generic Matplotlib Plot:** An almost blank template using Matplotlib. It only
+  contains an example script, which you are expected to replace with your own
+  code.
+
+- **Generic Matplotlib X-Y Plot:** An example line plot using Matplotlib. It only
+  contains an example script, which you are expected to replace with your own
+  code.
+
+- **Generic X-Y Plot:** An example line plot using the native plot widget. It
+  only contains an example script, which you are expected to replace with your
+  own code.
+
+The configuration dialog is a little different for each chart type, but they are
+structured similarly and there are a lot of similarities. The next sections detail
+how to configure the charts.
+
+Remember that it is straightforward to create new chart templates by customizing
+existing charts (its chart script and/or the dialog pages) and saving them as a
+chart template. See the :ref:`ana-editing-chart-script`, :ref:`ana-editing-dialog-pages`,
+and :ref:`ana-custom-chart-templates` sections for details.
+
+
+Defining the Chart Input
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Defining the input for the chart is the first step in the process of producing
+the desired plot. It is normally done on the :guilabel:`Inputs` page of the
+chart dialog.
+
+The *filter expression* is the most prominent field on the :guilabel:`Inputs`
+page. It selects from the results loaded into the analysis, that is, from the
+contents of the result files selected on the :guilabel:`Input` page of the
+editor. The filter expression can be as simple as ``module =~ "*.host[*].app[*]"
+AND name =~ "pkLatency:mean"`` for selecting the mean packet latencies from all
+apps in the network, or can be composed of many more selectors combined with
+``AND``, ``OR``, and parentheses. The detailed syntax of the filter expression
+is described in the section :ref:`ana-filter-expression`.
+
+The filter expression is normally used in a ``results.get_vectors()``,
+``results.get_scalars()``, or ``results.get_statistics()`` call in the chart
+script. To see the result of the query in the :guilabel:`Console` view, add the
+``print(df)`` line after the call in the chart script (see "Editing the chart
+script" section).
+
+In charts working from vector input, the :guilabel:`Inputs` dialog page allows
+specifying a crop interval and the possibility to leave out empty vectors from
+the result. These options are implemented as additional arguments to
+``results.get_vectors()``.
+
+Charts that work from scalar input contain the :guilabel:`Include fields`
+checkbox, that allows the filter expression to match various fields (min, max,
+mean, stddev, etc.) of recorded statistics. (Use the :guilabel:`Show fields as
+scalars` button on the :guilabel:`Browse Data` page to see them.) This is also
+implemented as an additional argument to ``results.get_scalars()``.
+
+To include additional input, modify the Python script to add your own data. Use
+cases: To use multiple filter expressions (and combining the results); to add
+external reference data; to compute new scalars from vectors or other scalars as
+input.
+
+After executing a result query, most charts require additional processing before
+the data can be visualized. Charts utilizing scalar data typically involve a
+*pivoting* step, while those working with vector data may incorporate *vector
+operations* such as summation, computing running averages, or window averages.
+Details on pivoting and vector operations will be covered in subsequent
+sections. However, we will first explore the syntax of the filter expression in
+detail.
+
+.. _ana-filter-expression:
+
+Filter Expressions
+^^^^^^^^^^^^^^^^^^
+
+Filter expressions are primarily used on the :guilabel:`Input` page of chart
+dialogs for selecting simulation results as input for the chart. They can also
+be used on the :guilabel:`Browse Data` editor page for filtering the table/tree
+contents, and they also appear, in more generic forms, in other parts of the
+IDE.
+
+A filter expression is composed of terms that can be combined with the ``AND``,
+``OR``, ``NOT`` operators, and parentheses. A term filters for the value of some
+property of the item and has the form ``<property> =~ <pattern>``, or simply
+``<pattern>``. The latter is equivalent to ``name =~ <pattern>``.
+
+A typical example is to select certain simulation results recorded by specific
+modules. For example, the expression ``module =~ "**.app[*]" AND name =~
+"pkRecvd*"`` selects results whose name begins with ``pkRecvd`` from modules
+whose name is ``app[0]``, ``app[1]``, etc.
+
+Patterns only need to be surrounded with quotes if they contain whitespace or
+other characters that would cause a parsing ambiguity.
+
+Here is the full list of available properties:
+ - ``name``: Name of the result or item.
+ - ``module``: Full path of the result's module.
+ - ``type``: Type of the item. The value is one of: ``scalar``, ``vector``, ``parameter``, ``histogram``, ``statistics``.
+ - ``isfield``: ``true`` if the item is a synthetic scalar that represents a field of a statistic or a vector, ``false`` if not.
+ - ``file``: File name of the result or item.
+ - ``run``: Unique run ID of the run that contains the result or item.
+ - ``runattr:<name>``: Run attribute of the run that contains the result or item. Example: ``runattr:measurement``.
+ - ``attr:<name>``: Attribute of the result. Example: ``attr:unit``.
+ - ``itervar:<name>``: Iteration variable of the run that contains the result or item. Example: ``itervar:numHosts``.
+ - ``config:<key>``: Configuration key of the run that contains the result or item. Example: ``config:sim-time-limit``, ``config:**.sendIaTime``.
+
+In the values, the match pattern may contain the following wildcards:
+ - ``?`` matches any character except '.'
+ - ``*`` matches zero or more characters except '.'
+ - ``**`` matches zero or more characters (any character)
+ - ``{a-z}`` matches a character in range a-z
+ - ``{^a-z}`` matches a character not in the range a-z
+ - ``{32..255}`` any number (i.e., sequence of digits) in the range 32..255 (e.g., ``99``)
+ - ``[32..255]`` any number in square brackets in the range 32..255 (e.g., ``[99]``)
+ - ``\\`` takes away the special meaning of the subsequent character
+
+.. tip::
+
+   Content Assist is available in text fields where you can enter filter
+   expressions. Press :kbd:`Ctrl+SPACE` to get a list of appropriate
+   suggestions at the cursor position.
+
+
+Pivoting
+^^^^^^^^
+
+Charts utilizing scalar data, such as bar charts and scatter plots, typically
+involve a *pivoting* step, which converts the data from a linear, list-like
+format into a more structured table format, which is essential for these types
+of visualizations.
+
+The ``results.get_scalars()`` call produces a data frame with the essential
+columns ``module``, ``name`` (result name), and ``value``, along with additional
+columns for potential result attributes and various properties describing the
+simulation run. After pivoting along the ``module`` and ``name`` columns, this
+data is transformed so that each module becomes a row, each result name becomes
+a column, and the values fill the cells at the intersection of these rows and
+columns. If the data includes results from multiple simulations, the values are
+averaged to provide a consolidated overview.
+
+Vector Operations
+^^^^^^^^^^^^^^^^^
+
+The charts that show vector results offer a selection of operations
+to transform the data before plotting.
+
+These can be added to the chart under the :guilabel:`Apply` or
+:guilabel:`Compute` context menu items. Both ways of adding operations compute
+new vectors from existing ones. The difference between them is that
+:guilabel:`Apply` replaces the original data with the computation result, while
+:guilabel:`Compute` keeps both.
+
+Some operations have parameters that can be edited before adding them.
+
+The operations are added to a field on the :guilabel:`Input` page of the chart
+configuration dialog.
+
+Most operations perform a fairly simple transformation on each individual
+vector independently.
+
+For example, see the screenshots illustrating the effects of the following
+vector operations:
+
+.. code-block::
+
+  apply:sum
+  apply:diffquot
+  apply:movingavg(alpha=0.05)
+
+The operations ``apply:sum``, ``apply:diffquot``, and ``apply:movingavg(alpha=0.05)``
+transform vector data by computing cumulative sums, rate of change between
+consecutive values, and applying an exponentially weighted moving average,
+respectively.
+
+.. figure:: pictures/ANF-VectorOperations-1.png
+   :width: 90%
+
+   Vector Operations - Before
+
+.. figure:: pictures/ANF-VectorOperations-2.png
+   :width: 90%
+
+   Vector Operations - After
+
+The list of available operations includes:
+
+- `mean()`: Computes the cumulative average of values up to each point.
+- `sum()`: Calculates the cumulative sum of values up to each point.
+- `add(c)`: Adds a specified constant to all values.
+- `compare(threshold, less=None, equal=None, greater=None)`: Compares each value against a threshold and replaces it based on specified conditions.
+- `crop(t1, t2)`: Discards values outside a specified time interval.
+- `difference()`: Subtracts each value from its predecessor.
+- `diffquot()`: Computes the rate of change between consecutive values.
+- `divide_by(a)`: Divides all values by a constant.
+- `divtime()`: Divides each value by its corresponding time.
+- `expression(expression, as_time=False)`: Evaluates a Python expression for each value, optionally updating time instead of values.
+- `integrate(interpolation="sample-hold")`: Integrates the series using the specified interpolation.
+- `lineartrend(a)`: Adds a linear trend to the series.
+- `modulo(m)`: Applies modulo operation to the series with a constant.
+- `movingavg(alpha)`: Applies an exponentially weighted moving average to the series.
+- `multiply_by(a)`: Multiplies all values by a constant.
+- `removerepeats()`: Removes consecutive repeated values.
+- `slidingwinavg(window_size, min_samples=None)`: Computes the average of values within a sliding window.
+- `subtractfirstval()`: Subtracts the first value from all subsequent values.
+- `timeavg(interpolation)`: Computes the average of values over time using the specified interpolation.
+- `timediff()`: Calculates the time difference between consecutive values.
+- `timeshift(dt)`: Shifts the time series by a constant.
+- `timedilation(c)`: Scales the time series by a constant factor.
+- `timetoserial()`: Converts time values to their sequential index.
+- `timewinavg(window_size=1)`: Computes the average of values within a fixed time window.
+- `timewinthruput(window_size=1)`: Calculates the throughput over a fixed time window.
+- `winavg(window_size=10)`: Computes the average of values within each batch of a specified size.
+
+See a description of all built-in vector operations in the Simulation Manual.
+
+
+Plot Options
+^^^^^^^^^^^^
+
+The configuration dialogs for charts contain specific pages tailored to
+customizing the plot:
+
+- The :guilabel:`Plot` page allows setting the plot title, adjusting axis labels, setting
+  axis limits, configuring axis scales (linear or logarithmic), toggling and
+  configuring grid display, and managing legend display and placement.
+
+- The :guilabel:`Lines` page appears in line plots, and allows you to customize plot line
+  attributes such as style, color, and width, and marker characteristics
+  including type and size.
+
+- The :guilabel:`Bars` page appears with bar charts, and allows changing the baseline, the
+  bar placement (aligned, overlap, in-front, or stacked), and details like label
+  rotation.
+
+- The :guilabel:`Histogram` page appears in histogram plots, and allows the user to
+  configure histograms by setting a baseline, choosing between solid or outline
+  draw styles, normalizing data, displaying cumulative results, and managing
+  under/overflows.
+
+The majority of the settings mentioned are straightforward and intuitive;
+however, there is an important aspect regarding how colors and markers are
+determined in the plots. Unlike static configurations, the number of data items
+represented in the plot is dynamic, varying based on the results retrieved by a
+query. Consequently, colors and markers cannot be assigned directly to each
+individual data point.
+
+Instead, these visual attributes are managed through "cyclers," which
+systematically rotate through a predefined set of colors and markers. This
+approach ensures an appealing visual representation regardless of the
+number of data items displayed. To customize the sequence of colors and markers
+used in Auto mode, you can adjust the cycle seed on the :guilabel:`Styling` page. This
+allows for the modification of the appearance of plot elements dynamically,
+accommodating the varying result sets returned by different queries.
+
+
+Legend Labels
+^^^^^^^^^^^^^
+
+The labels of data items in the legend are normally produced automatically,
+making use of the properties that differ across the data items. (The properties
+that are the same in all items are, on the other hand, used for producing the
+chart title.) With automatic legend labels, the user is given the choice of
+stating the preference between using result names instead of result titles, and
+module display paths instead of module full paths. (The result title is the
+content of the ``title`` attribute of the result. The display path is a variant
+of the full path where, if available, the display names of modules are used
+instead of the normal names; the display name is set using the ``display-name``
+configuration option.)
+
+For those who require more detailed control, the Manual mode allows users to
+define a custom format string for the legend labels. This string can include
+placeholders like ``$name``, ``$title``, ``$module``. These placeholders refer
+to dataframe columns, so the exact list varies depending on the chart type and
+the kind of simulation results. When in doubt, insert a ``print(df)`` statement
+in the chart script and check the log in the Console.
+
+The labels produced like that can be further tweaked using replacements. You can
+input plain substrings or regular expressions to be replaced with the strings
+you specify. Using this feature, you can achieve things like replacing
+abbreviations with full terms, discarding unwanted parts, replacing module names with
+more descriptive names, or adjusting separator/punctuation characters or spacing.
+For example, the ``/host\[(\d+)\]/Host \1/`` regex replacement will turn strings
+like ``host[0]``, ``host[1]``, etc. into ``Host 0``, ``Host 1``, and so on.
+
+
+Ordering
+^^^^^^^^
+
+Charts normally allow controlling the order of the data items (series) in
+the plot. The ordering affects both the chart presentation and the legend,
+enabling users to place important or related items together.
+
+When exporting multiple charts, or when selecting the :guilabel:`Export Chart`
+option for a single chart, a common export dialog is opened.
+
+The order is defined via a list of regular expressions that are matched against
+the legend labels of the items. The plot items will be ranked based on the index
+of the regular expression the item first matches. Case-sensitive substring match
+is done, so ``^`` and ``$`` should be used to match the beginning and end of the
+label, respectively. For example, the regex list (``router``, ``host``) will
+place all items whose label contains the "router" string in front of items that
+contain "host", and items that contain neither will follow. The list (``^B``,
+``^A``) will move items starting with capital "B" to the top, followed by items
+starting with capital "A", and the rest below.
+
+There are two regular expression lists, defining a primary and secondary
+ordering. The primary ordering takes precedence, and the secondary ordering is
+used to further refine the arrangement of items that are equivalently ranked in
+the primary order.
+
+A further checkbox allows users to enable or disable alphabetical sorting as a
+tertiary ordering mechanism. This is useful when two items do not match any of
+the specified regular expressions, ensuring that there is still a consistent
+rule to fall back on for their ordering. When activated, this setting ensures
+that after considering the regex-based rankings, items will be alphabetically
+ordered.
+
+
+Styling
+^^^^^^^
+
+The :guilabel:`Styling` page of the dialog allows setting a number of options that affect
+the presentation of the plot.
+
+For Matplotlib-based charts, you can select the plot style. This is the same that you can
+select in plain Matplotlib using the ``matplotlib.style.use(style)`` command.
+There are a number of built-in styles, and you can add new styles by installing
+packages like ``seaborn`` or ``prettyplotlib``.
+
+You can set the background colors, some legend display options, etc.
+
+You can set the seed used for the color and marker cyclers. Experimenting with
+different seeds allows you to choose a new set of colors/markers for the plot if
+you do not like the default ones. If you want to have even more control over
+the colors and markers, you can define your own cycler and enter it as
+properties on the :guilabel:`Advanced` page of the dialog.
+
+The :guilabel:`Advanced` page enables even more fine-grained customization by allowing users
+to directly set visual plot properties that are not explicitly configurable in
+the dialog. For Matplotlib charts, you can enter settings in the format known as
+"rcParams" in Matplotlib terminology. Native plots have their own visual
+properties; content assistance in the dialog will help discover them. Native
+plots also allow directly setting colors for individual items via properties.
+
+
+.. _ana-editing-chart-script:
+
+Editing the Chart Script
+------------------------
 
 All charts are powered by Python scripts, which take their configuration
 settings from properties that can be edited in the :guilabel:`Chart
@@ -666,8 +1019,8 @@ fields for extra properties, for example. Each chart has its own copy of
 everything (the chart script, properties and config dialog pages), so modifying
 one chart will not affect other similar charts.
 
-Editing the Chart Script
-^^^^^^^^^^^^^^^^^^^^^^^^
+Editing
+^^^^^^^
 
 To see or edit the chart's Python script, click the :guilabel:`Show Code Editor`
 button on the toolbar of an open chart. With the code editor open, you are free
@@ -681,8 +1034,8 @@ docstrings), and content assist (completion suggestions).
 
    Chart Script Editor
 
-Refreshing
-^^^^^^^^^^
+Refreshing the Chart
+^^^^^^^^^^^^^^^^^^^^
 
 Normally, the chart script is automatically re-executed with some delay after
 each edit. This functionality can be enabled/disabled using the
@@ -724,9 +1077,9 @@ Errors
 
 Errors are marked in the source code with a red squiggle and a sidebar icon.
 Hover over them to see a tooltip describing the error. The errors are also
-entered into the :guilabel:`Problems` view. Double clicking these problem
+entered into the :guilabel:`Problems` view. Double-clicking these problem
 entries will reveal the line in the code editor where the error came from.
-Errors marked this way include Python syntax errors, and runtime errors which
+Errors marked this way include Python syntax errors, and runtime errors that
 manifest themselves in the form of Python exceptions. For exceptions, the
 stack trace is printed in the :guilabel:`Console` view.
 
@@ -734,8 +1087,14 @@ stack trace is printed in the :guilabel:`Console` view.
 
    A Python error is marked on the GUI
 
+
+.. _ana-editing-dialog-pages:
+
 Editing Dialog Pages
-^^^^^^^^^^^^^^^^^^^^
+--------------------
+
+The Edit Pages Dialog
+^^^^^^^^^^^^^^^^^^^^^
 
 If you need to add support for new configuration properties to the chart, you
 will need to edit the forms on the :guilabel:`Configure Chart` dialog. Pages
@@ -745,33 +1104,19 @@ the property editor dialog.
 
 The action will bring up the :guilabel:`Edit Chart Dialog Pages` dialog, which
 lets you edit the forms that make up the configuration dialog of the chart.
-You can add, remove, reorder and rename tabs, and you can edit the XSWT form
+You can add, remove, reorder, and rename tabs, and you can edit the XSWT form
 on each tab. A preview of the edited form is also shown.
+
+XSWT Page Descriptions
+^^^^^^^^^^^^^^^^^^^^^^
 
 XSWT is an XML-based UI description language for SWT, the widget toolkit
 of Eclipse on which the |omnet++| IDE is based. The content of XSWT files
-closely mirror SWT widget trees.
+closely mirrors SWT widget trees.
 
 .. figure:: pictures/ANF-EditChartPages.png
 
    Editing Chart Properties Editor Pages
-
-Some XML attributes in the XSWT source have special roles:
-
-- ``x:id`` binds the contents of the widget to a chart property. For example,
-  an edit control defined as ``<text x:id="title">`` edits the ``title`` chart
-  property, which can be accessed as ``props["title"]`` in the chart script.
-- ``x:id.default`` provides a default value for the chart property named in the
-  ``x:id`` attribute.
-- Further ``x:id.*`` attributes are also used, e.g. ``x:id.contentAssist``
-  defines the kind of content assist requested for the edit control, or
-  ``x:id.isEnabler`` denotes a checkbox as the enabler of the widget group
-  that contains it.
-
-.. tip::
-
-   The easiest way to add a new field to a page is to look at other pages (or
-   other charts' pages), and copy/paste from them.
 
 The :guilabel:`New Page` in the dialog brings up a mini wizard, which can create
 a full-fledged XSWT page from a shorthand notation of its content provided by
@@ -782,23 +1127,25 @@ you.
 
    The Creating a New Dialog Page From a Shorthand Notation
 
+Some XML attributes in the XSWT source have special roles:
 
-Reset to Template
-^^^^^^^^^^^^^^^^^
+- ``x:id`` binds the contents of the widget to a chart property. For example,
+  an edit control defined as ``<text x:id="title">`` edits the ``title`` chart
+  property, which can be accessed as ``props["title"]`` in the chart script.
+- ``x:id.default`` provides a default value for the chart property named in the
+  ``x:id`` attribute.
+- Further ``x:id.*`` attributes are also used, e.g., ``x:id.contentAssist``
+  defines the kind of content assist requested for the edit control, or
+  ``x:id.isEnabler`` denotes a checkbox as the enabler of the widget group
+  that contains it.
 
-If changes to a chart script or a dialog page prove to be a dead-end, one option is
-to start fresh.
+.. tip::
 
-The :guilabel:`Reset to Template` option in the charts context menu allows you
-to select some aspects of the chart to be restored to its original state, as
-it is in its template: the code of the chart script, the values of its properties,
-and/or the layout of its property editor dialog.
+   The easiest way to add a new field to a page is to look at other pages (or
+   other charts' pages) and copy/paste from them.
 
-.. figure:: pictures/ANF-ResetChartToTemplate.png
-   :width: 80%
 
-   Resetting Chart to Template
-
+.. _ana-chart-programming:
 
 Chart Programming
 -----------------
@@ -816,7 +1163,7 @@ these modules is described in the Simulation Manual.
 
 The ``chart`` module exposes information about the chart object (as part of the
 analysis, and visible on the :guilabel:`Charts` page), most importantly its set
-of properties, but also its name, and what type of chart it is.
+of properties but also its name and what type of chart it is.
 
 The ``results`` module provides access to the set of result items (and
 corresponding metadata) currently loaded in the analysis in the IDE. This data
@@ -860,37 +1207,16 @@ For future releases, we are planning to support "snippets" as part of the
 analysis file, as a means of sharing code among charts. Until that feature is
 implemented, a workaround is to put shared code in ``.py`` files. These scripts
 can be imported as modules. They will be looked for in the folder containing the
-``.anf`` file, and in the ``python`` folders of the containing project and all
-of its referenced projects. Chart scripts can import these files as modules, and
+``.anf`` file and in the ``python`` folders of the containing project and all
+of its referenced projects. Chart scripts can import these files as modules and
 thereby use the functionality they provide. This also makes it possible to use
 external code editors for parts of your code.
-
-Customizing the Legend
-~~~~~~~~~~~~~~~~~~~~~~
-
-The order of items appearing in the legend, and in which they are drawn, is
-determined by their order in the data used for plotting. They can therefore be
-reordered by sorting the rows of the dataframe before plotting it. For example:
-``df = df.sort_values(by=['iaMean'])``
-
-Normally, labels for the legend are concatenated, using some heuristics, from
-columns that best differentiate the data items. If you are not satisfied with
-the result, there are two ways to affect it:
-
-- If you add a ``comment`` column to the dataframe, its contents will be
-  appended to the auto-generated legend labels in parentheses.
-
-- If you add a ``legend`` column, its contents will be used instead of
-  auto-generated legend labels, so you can create your own legend labels.
-  Example:
-
-  ``df["legend"] = "iaMean=" + df["iaMean"]``
 
 Adding Extra Data Items to the Plot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It's possible to add new data items to the queried results before plotting.
-These can be computed from existing items, or synthesized from a formula.
+These can be computed from existing items or synthesized from a formula.
 Example uses:
 
 - Computing derived results:
@@ -909,7 +1235,7 @@ Simplifying Complex Queries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Instead of coming up with an elaborate filter expression, it is sometimes more
-straightforward to query results multiple times within a script, and combine
+straightforward to query results multiple times within a script and combine
 them with ``pd.concat``, ``pd.join``, or ``pd.merge``. Other functions like
 ``pf.pivot`` and ``pd.pivot_table`` are also often useful in these cases.
 
@@ -936,8 +1262,8 @@ Customized Export
 ~~~~~~~~~~~~~~~~~
 
 If the built-in image/data exporting facilities are not sufficient for your use
-case, you can always add your own export code, either by manually ``open()``-ing
-a file, or by utilizing a data exporter library/function of your liking.
+case, you can always add your export code, either by manually ``open()``-ing
+a file or by utilizing a data exporter library/function of your liking.
 Functions such as ``plt.savefig()`` and ``df.to_*()`` can be useful for this.
 
 Caching the Result of Expensive Operations
@@ -986,12 +1312,14 @@ line (or of the line identified with the key ``2``) to red.
 ``Line.Color/2 : #FF0000``
 
 
+.. _ana-custom-chart-templates:
+
 Custom Chart Templates
 ----------------------
 
 When charts are created, they are instantiated from a template. The list of
 available chart templates can be browsed in the template gallery dialog,
-available from the :guilabel:`Charts` page as :guilabel:`New Chart`, and from
+available from the :guilabel:`Charts` page as :guilabel:`New Chart` and from
 the :guilabel:`Browse Data` page as :guilabel:`Choose from Template Gallery`.
 The dialog shows some properties (chart type, accepted result types), a
 description, and often also sample images for each one.
@@ -1014,7 +1342,7 @@ chart's context menu writes the contents of the given chart into the
 
    An Exported Chart Template
 
-You may want to tweak some properties (e.g. the descriptive name) of the saved
+You may want to tweak some properties (e.g., the descriptive name) of the saved
 chart template before use, but regardless, the new chart template is immediately
 available for use.
 
@@ -1023,7 +1351,7 @@ Parts of a Chart Template
 
 A chart template consists of several parts, describing the initial contents of
 charts created from it: what kind of drawing widget it needs (Matplotlib or one
-of the native widgets), what script it executes, how its configuration dialog
+of the native plot widgets), what script it executes, how its configuration dialog
 looks like, what types of result items it can process/show, and which icon
 should be used for it.
 
@@ -1043,7 +1371,7 @@ Notable keys in the properties file:
 
 - ``id``: Internal identifier
 - ``name``: Descriptive name
-- ``type``: ``MATPLOTLIB``, or one of ``LINE``, ``BAR``, and ``HISTOGRAM`` for native charts
+- ``type``: ``MATPLOTLIB``, or one of ``LINE``, ``BAR``, and ``HISTOGRAM`` for native plots
 - ``scriptFile``: The chart script Python file
 - ``icon``: Icon file, e.g. in PNG format
 - ``resultTypes``: One or more of ``scalar``, ``vector``, ``parameter``, ``histogram``, and ``statistics``, separated by commas
@@ -1051,6 +1379,9 @@ Notable keys in the properties file:
 - ``dialogPage.<n>.id``: Internal identifier of the nth dialog page
 - ``dialogPage.<n>.label``: Label of the tab of the nth dialog page
 - ``dialogPage.<n>.xswtFile``: XSWT file of the nth dialog page
+
+
+.. _ana-under-the-hood:
 
 Under the Hood
 --------------
@@ -1092,7 +1423,7 @@ file mappings on Windows) instead of the socket. Without this, binary data would
 have to be base64 encoded, then represented as UTF-16, which would be about 3x
 the size on top of the original content, which is already present in both
 processes. Data passed this way includes any queried results (in pickle format),
-and in the other direction, the data to plot on native widgets, or the raw pixel
+and in the other direction, the data to plot on native plot widgets, or the raw pixel
 data rendered by Matplotlib.
 
 Many other kinds of information, like GUI events or smaller pieces of data (like
