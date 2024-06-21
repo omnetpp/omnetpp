@@ -41,7 +41,7 @@ import org.omnetpp.scave.engine.ScaveEngine;
 
 /**
  * This is an SWT Control which is "one half" of a matplotlib FigureCanvas,
- * as a part of our matplotlib backend - in backend_SWTAgg.py.
+ * as a part of our matplotlib backend - in backend_swtagg.py.
  *
  * Displays the rendered image coming from the Python process, and forwards
  * the input events (mouse move, click, resize...) back to matplotlib in Python.
