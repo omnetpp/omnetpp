@@ -5,7 +5,7 @@
         <input pattern="/resultfiles/routing2/Net10Experiment-*.sca"/>
     </inputs>
     <charts>
-        <chart icon="icons/full/obj/scatterchart.png" id="1267735282" name="CutThrough vs Store and Forward" template="scatterchart_itervars_native" type="LINE">
+        <chart createdWith="" icon="icons/full/obj/scatterchart.png" id="337586585" name="CutThrough vs Store and Forward" resultTypes="" template="scatterchart_itervars_native" type="LINE">
             <script><![CDATA[from omnetpp.scave import results, chart, utils, ideplot
 
 # get chart properties
@@ -19,7 +19,7 @@ include_fields = props["include_fields"] == "true"
 # query data into a data frame
 try:
     df = results.get_scalars(filter_expression, include_fields=include_fields, include_attrs=True, include_runattrs=True, include_itervars=True)
-except ValueError as e:
+except results.ResultQueryError as e:
     raise chart.ChartScriptError("Error while querying results: " + str(e))
 
 if df.empty:
@@ -107,7 +107,7 @@ utils.export_data_if_needed(df, props)
     <package name="org.omnetpp.ned.editor.wizards.support" />
     <package name="org.omnetpp.cdt.wizard.support" />
   </import>
-  <layout x:class="GridLayout" numColumns="2"/>
+  <layout x:class="GridLayout" numColumns="2" makeColumnsEqualWidth="true"/>
 
   <x:children>
 
@@ -181,7 +181,29 @@ utils.export_data_if_needed(df, props)
 
     <label text="Marker size:"/>
     <spinner x:id="markersize" x:id.default="5" selection="6" minimum="0" maximum="100" x:style="BORDER"/>
+      </x:children>
+    </group>
 
+    <group text="Hints">
+      <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+      <layout x:class="GridLayout" numColumns="1"/>
+      <x:children>
+
+        <label x:style="WRAP" text="* To change the set of colors/markers used in Auto mode, choose a different cycle seed on the Styling page">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="* To have more control over the specific colors/markers chosen, add properties in the Advanced page. Examples:">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `axes.prop_cycle: cycler('color', ['blue', 'green', 'red'])`  # on a Matplotlib chart: selects colors">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
+
+        <label x:style="WRAP" text="       `Line.Color/3: yellow`  # on a native chart: selects the color of the 3rd line">
+          <layoutData x:class="GridData" horizontalSpan="2" horizontalAlignment="FILL" grabExcessHorizontalSpace="true" verticalAlignment="FILL" grabExcessVerticalSpace="false"/>
+        </label>
       </x:children>
     </group>
 
@@ -569,9 +591,9 @@ utils.export_data_if_needed(df, props)
             <property name="Plot.Antialias" value="true"/>
             <property name="xaxis_max" value=""/>
             <property name="image_export_width" value="6"/>
-            <property name="group_by" value=""/>
-            <property name="include_fields" value=""/>
-            <property name="simplify" value=""/>
+            <property name="group_by" value="cutThrough"/>
+            <property name="include_fields" value="false"/>
+            <property name="simplify" value="false"/>
         </chart>
     </charts>
 </analysis>
