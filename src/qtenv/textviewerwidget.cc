@@ -257,11 +257,14 @@ void TextViewerWidget::find(const std::string& text, SearchFlags flags)
     // Where the search should start (or end) within the current line for forward (or backward) searching,
     // respectively. A negative value means that the entire line should be searched in the given direction.
     bool backwards = flags & FIND_BACKWARDS;
-    int offset = backwards ? getSelectionEnd().column - 1 : getSelectionStart().column + 1;
-    int line = backwards ? getSelectionEnd().line : getSelectionStart().line;
 
-    offset = mapColumnToFormatted(content->getLineText(line).c_str(), offset);
+    int line = backwards ? getSelectionEnd().line : getSelectionStart().line;
     int lineNumberIncrement = (backwards ? -1 : 1);
+
+    int offset = backwards ? getSelectionEnd().column : getSelectionStart().column;
+    offset = mapColumnToFormatted(content->getLineText(line).c_str(), offset);
+    offset = backwards ? offset - 1 : offset + 1;
+
 
     std::string lineBuffer;
     bool found = false;

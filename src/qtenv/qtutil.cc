@@ -696,14 +696,13 @@ SearchResult findSubstring(const char *haystack, const char *needle, int startIn
 {
     if (flags & FIND_BACKWARDS) {
         // find last match (that finishes before startIndex)
-        SearchResult lastMatch = {nullptr, 0};
-        const char *p = haystack;
+        SearchResult prevMatch;
         while (true) {
-            SearchResult newMatch = findSubstring(p, needle, 0, flags & ~FIND_BACKWARDS);
-            if (!newMatch.matchStart || (newMatch.matchStart + newMatch.matchLength) >= (haystack + startIndex))
-                return lastMatch;
-            lastMatch = newMatch;
-            p = newMatch.matchStart + 1;
+            int innerStartIndex = prevMatch.matchStart ? (prevMatch.matchStart - haystack) + 1 : 0;
+            SearchResult newMatch = findSubstring(haystack, needle, innerStartIndex, flags & ~FIND_BACKWARDS);
+            if (!newMatch.matchStart || newMatch.matchStart + newMatch.matchLength > haystack + startIndex)
+                return prevMatch;
+            prevMatch = newMatch;
         }
     }
 
