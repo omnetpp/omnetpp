@@ -67,11 +67,26 @@ def _collect_child_types(parent, tree):
             child_types.append(type)
     return child_types
 
-class NedType:
+def _collect_properties(parent, tree):
+    if not tree:
+        return {}
+    nested_dict = {}
+    for property_element in tree.findall('property'):
+        property = Property(parent, property_element)
+        if property.name not in nested_dict:
+            nested_dict[property.name] = {}
+        nested_dict[property.name][property.index] = property
+    return nested_dict
+
+class NedElement:
     def __init__(self, parent, tree):
         self.ned_resources = parent.ned_resources
         self.parent = parent
         self.tree = tree
+
+class NedType(NedElement):
+    def __init__(self, parent, tree):
+        super().__init__(parent, tree)
         self.keyword = ""
         self.package_name = parent.package_name
         self.name = tree.get('name')
@@ -96,9 +111,8 @@ class Component(NedType):
         self.extends_name = extends_element.get('name') if extends_element is not None else None
         self.interface_names = [interface_element.get('name') for interface_element in tree.findall('interface-name')]
         parameters_element = tree.find('parameters')
-        self.local_parameter_definitions = \
-            {param.get('name') : param for param in parameters_element.findall('param') if param.get('type')} \
-            if parameters_element is not None else {}
+        self.parameters_map = {param.get('name') : Parameter(self, param) for param in parameters_element.findall('param')} if parameters_element is not None else {}
+        self.properties_map = _collect_properties(self, parameters_element)
 
     def get_base_type(self):
         return self.resolve(self.extends_name) if self.extends_name else None
@@ -110,34 +124,73 @@ class Component(NedType):
         else:
             return [self]
 
-    def get_interface_types(self):
+    def get_local_interface_types(self):
         return [self.resolve(interface_name) for interface_name in self.interface_names]
 
     def get_all_interface_types(self):
         base = self.get_base_type()
         if base is not None:
-            return self.get_interface_types() + base.get_all_interface_types()
+            return self.get_local_interface_types() + base.get_all_interface_types()
         else:
-            return self.get_interface_types()
+            return self.get_local_interface_types()
 
-    def get_subtypes(self):
+    def get_immediate_subtypes(self):
         return [t for t in self.ned_resources.get_types() if not t.is_interface and t.get_base_type() == self]
 
     def get_all_subtypes(self):
-        all = list(self.get_subtypes())
-        for subtype in self.get_subtypes():
+        all = list(self.get_immediate_subtypes())
+        for subtype in self.get_immediate_subtypes():
             all += subtype.get_all_subtypes()
         return all
 
-    def get_parameter_definitions(self):
-        return dict(self.local_parameter_definitions)
+    def get_local_parameters(self):
+        return dict(self.parameters_map)
+
+    def get_local_parameter_definitions(self):
+        return {name : param for name, param in self.parameters_map.items() if param.type}
 
     def get_all_parameter_definitions(self):
-        all = self.get_parameter_definitions()
+        all = self.get_local_parameter_definitions()
         base = self.get_base_type()
         if base is not None:
             all.update(base.get_all_parameter_definitions())
         return all
+
+    def get_local_parameter_assignments(self):
+        return {name : param for name, param in self.parameters_map.items() if param.value}
+
+    def get_all_parameter_assignments(self):
+        all = self.get_local_parameter_assignments()
+        base = self.get_base_type()
+        if base is not None:
+            all.update(base.get_all_parameter_assignments())
+        return all
+
+    def get_local_properties(self, name=None):
+        if name is None:
+            return [item for index_map in self.properties_map.values() for item in index_map.values()] # flatten nested dict into list of properties
+        else:
+            return self.properties_map.get(name, {}).values()
+
+    def get_local_property(self, name, index=None):
+        return self.properties_map.get(name, {}).get(index)
+
+    def get_implementation_class_name(self):
+        # first, look at local @class property
+        class_property = self.get_local_property("class")
+        if class_property is not None:
+            class_name = class_property.get_single_value()
+            if not class_name:
+                raise ValueError(f"Property @class in {self.name} has no value")
+            return class_name
+
+        # if there is no @class, C++ class name is inherited from base type
+        base = self.get_base_type()
+        if base is not None:
+            return base.get_implementation_class_name()
+
+        # if there is no base type, use the NED type name as C++ class name
+        return self.name if self.keyword == "simple" else "omnetpp::cModule" if self.keyword == "module" else "omnetpp::cChannel"
 
 class Module(Component):
     def __init__(self, parent, tree):
@@ -145,16 +198,31 @@ class Module(Component):
         self.is_module = True
         inner_types_element = tree.find("types")
         self.types = _collect_child_types(self, inner_types_element) if inner_types_element else []
+        gates_element = tree.find('gates')
+        self.gates_map = {gate.get('name') : Gate(self, gate) for gate in gates_element.findall('gate')} if gates_element is not None else {}
 
     def get_inner_types(self):
         return list(self.types)
+
+    def get_local_gates(self):
+        return dict(self.gates_map)
+
+    def get_local_gate_definitions(self):
+        return {name : gate for name, gate in self.gates_map.items() if gate.type}
+
+    def get_all_gate_definitions(self):
+        all = self.get_local_gate_definitions()
+        base = self.get_base_type()
+        if base is not None:
+            all.update(base.get_all_gate_definitions())
+        return all
 
 class SimpleModule(Module):
     def __init__(self, parent, tree):
         super().__init__(parent, tree)
         self.keyword = "simple"
 
-    def get_submodules(self):
+    def get_local_submodules(self):
         return []
 
     def get_all_submodules(self):
@@ -167,14 +235,14 @@ class CompoundModule(Module):
         submodules_element = tree.find('submodules')
         self.submodules = [Submodule(self, submodule_element) for submodule_element in submodules_element.findall('submodule')] if submodules_element else []
 
-    def get_submodules(self):
+    def get_local_submodules(self):
         return list(self.submodules)
 
     def get_all_submodules(self):
         if self.get_base_type():
-            return self.get_submodules() + self.get_base_type().get_all_submodules()
+            return self.get_local_submodules() + self.get_base_type().get_all_submodules()
         else:
-            return self.get_submodules()
+            return self.get_local_submodules()
 
     def get_types_used_in_all_submodules(self):
         types = [s.get_type() for s in self.get_all_submodules() if not s.is_parametric_type]
@@ -205,12 +273,12 @@ class ComponentInterface(NedType):
             all += base_type.get_all_base_types()
         return all
 
-    def get_subtypes(self):
+    def get_immediate_subtypes(self):
         return [t for t in self.ned_resources.get_types() if t.is_interface and self in t.get_base_types()]
 
     def get_all_subtypes(self):
-        all = list(self.get_subtypes())
-        for subtype in self.get_subtypes():
+        all = list(self.get_immediate_subtypes())
+        for subtype in self.get_immediate_subtypes():
             all += subtype.get_all_subtypes()
         return all
 
@@ -227,18 +295,19 @@ class ComponentInterface(NedType):
         else:
             raise ValueError(f"Could not resolve {simple_name} that implements {self.qname} -- more than one candidate: {candidates}")
 
-class Submodule:
+class Submodule(NedElement):
     def __init__(self, parent, tree):
-        self.ned_resources = parent.ned_resources
-        self.parent = parent
-        self.tree = tree
+        super().__init__(parent, tree)
         self.name = tree.get('name')
         self.type_name = tree.get('type')
         self.vector_size = tree.get('vector-size')
         self.interface_type_name = tree.get('like-type')
         self.like_expr = tree.get('like-expr')
         self.is_parametric_type = bool(self.interface_type_name)
-        self.is_default = tree.get('is-default')
+        self.is_default = tree.get('is-default', "false") == "true"
+        parameters_element = tree.find('parameters')
+        self.parameters_map = {param.get('name') : Parameter(self, param) for param in parameters_element.findall('param')} if parameters_element is not None else {}
+        self.properties_map = _collect_properties(self, parameters_element)
         self.comment = "\n".join([comment_element.get('content') for comment_element in tree.findall('comment')])
 
     def get_type(self):
@@ -254,6 +323,18 @@ class Submodule:
     def resolve_like_type(self, simple_name):
         interface_type = self.get_interface_type()
         return interface_type.resolve_like_type(simple_name)
+
+    def get_local_parameter_assignments(self):
+        return {name : param for name, param in self.parameters_map.items() if param.value}
+
+    def get_local_properties(self, name=None):
+        if name is None:
+            return [item for index_map in self.properties_map.values() for item in index_map.values()] # flatten nested dict into list of properties
+        else:
+            return self.properties_map.get(name, {}).values()
+
+    def get_local_property(self, name, index=None):
+        return self.properties_map.get(name, {}).get(index)
 
     def __str__(self):
         return self.name
@@ -272,6 +353,86 @@ class ChannelInterface(ComponentInterface):
         super().__init__(parent, tree)
         self.is_module = False
         self.keyword = "channelinterface"
+
+class Parameter(NedElement):
+    def __init__(self, parent, tree):
+        super().__init__(parent, tree)
+        self.type = tree.get('type')
+        self.name = tree.get('name')
+        self.value = tree.get('value')
+        self.is_volatile = tree.get('is-volatile', "false") == "true"
+        self.is_pattern = tree.get('is-pattern', "false") == "true"
+        self.is_default = tree.get('is-default', "false") == "true"
+        self.properties_map = _collect_properties(self, tree)
+        self.comment = "\n".join([comment_element.get('content') for comment_element in tree.findall('comment')])
+
+    def get_local_properties(self, name=None):
+        if name is None:
+            return [item for index_map in self.properties_map.values() for item in index_map.values()] # flatten nested dict into list of properties
+        else:
+            return self.properties_map.get(name, {}).values()
+
+    def get_local_property(self, name, index=None):
+        return self.properties_map.get(name, {}).get(index)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+class Gate(NedElement):
+    def __init__(self, parent, tree):
+        super().__init__(parent, tree)
+        self.type = tree.get('type')
+        self.name = tree.get('name')
+        self.is_vector = tree.get('is-vector', "false") == "true"
+        self.vector_size = tree.get('vector-size')
+        self.properties_map = _collect_properties(self, tree)
+        self.comment = "\n".join([comment_element.get('content') for comment_element in tree.findall('comment')])
+
+    def get_local_properties(self, name=None):
+        if name is None:
+            return [item for index_map in self.properties_map.values() for item in index_map.values()] # flatten nested dict into list of properties
+        else:
+            return self.properties_map.get(name, {}).values()
+
+    def get_local_property(self, name, index=None):
+        return self.properties_map.get(name, {}).get(index)
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
+class Property(NedElement):
+    def __init__(self, parent, tree):
+        super().__init__(parent, tree)
+        self.name = tree.get('name')
+        self.index = tree.get('index')
+        self.is_implicit = tree.get('is-implicit', "false") == "true"
+        self.comment = "\n".join([comment_element.get('content') for comment_element in tree.findall('comment')])
+        self.keys_map = {
+            prop_key.get('name', ""): [literal.get('value') for literal in prop_key.findall('literal')]
+            for prop_key in tree.findall('property-key')
+        }
+
+    def get_single_value(self, default=None):
+        if not self.keys_map:
+            return default
+        if list(self.keys_map.keys()) != [""]:
+            raise ValueError(f"Property {self.name} has multiple keys")
+        values_list = self.keys_map.get("")
+        if len(values_list) > 1:
+            raise ValueError(f"Property {self.name} has multiple values")
+        return values_list[0] if values_list else default
+
+    def __str__(self):
+        return f"@{self.name}" if self.index is None else f"@{self.name}[{self.index}]"
+
+    def __repr__(self):
+        return f"@{self.name}" if self.index is None else f"@{self.name}[{self.index}]"
 
 class NedResources:
     """
@@ -335,17 +496,18 @@ class NedResources:
             if type.is_interface:
                 print("  base types =", type.get_base_types())
                 print("  all base types =", type.get_all_base_types())
-                print("  subtypes =", type.get_subtypes())
+                print("  subtypes =", type.get_immediate_subtypes())
                 print("  all subtypes =", type.get_all_subtypes())
                 print("  all implementors =", type.get_all_implementors())
             else:
                 print("  base type =", type.get_base_type())
+                print("  c++ class =", type.get_implementation_class_name())
                 print("  inheritance chain =", type.get_inheritance_chain())
-                print("  interface types =", type.get_interface_types())
+                print("  interface types =", type.get_local_interface_types())
                 print("  all interface types =", type.get_all_interface_types())
-                print("  subtypes =", type.get_subtypes())
+                print("  subtypes =", type.get_immediate_subtypes())
                 print("  all subtypes =", type.get_all_subtypes())
-                print("  parameter definitions =", type.get_parameter_definitions().keys())
+                print("  parameter definitions =", type.get_local_parameter_definitions().keys())
                 print("  all parameter definitions =", type.get_all_parameter_definitions().keys())
                 if type.is_module:
                     print("  inner types =", type.get_inner_types())
