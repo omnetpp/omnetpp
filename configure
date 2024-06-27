@@ -5581,7 +5581,7 @@ printf "%s\n" "no" >&6; }
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Some Python modules required by the IDE were not found: $output" >&5
 printf "%s\n" "$as_me: WARNING: Some Python modules required by the IDE were not found: $output" >&2;}
-    if test ! -d .venv; then
+    if test ! -f .venv/bin/activate; then
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: Install a Python virtual environment (if you do not have one already):" >&5
 printf "%s\n" "$as_me: TIP: Install a Python virtual environment (if you do not have one already):" >&6;}
       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: python3 -m venv .venv && source .venv/bin/activate" >&5
