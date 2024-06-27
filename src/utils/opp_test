@@ -858,7 +858,7 @@ Supported .test file entry types:
                         return
 
                     if (key.startswith('contains-regex(') and not match):
-                        self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                        self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
 
                         self.lprint(1, quote("expected pattern", pattern, maxPrintableSize, patternfilename))
                         self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
@@ -868,7 +868,7 @@ Supported .test file entry types:
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
                     elif (key.startswith('not-contains-regex(') and match):
-                        self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                        self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
 
                         self.lprint(1, quote("unexpected pattern", pattern, maxPrintableSize, patternfilename))
                         self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
@@ -882,7 +882,7 @@ Supported .test file entry types:
                     match = txt.find(pattern)
                     self.lprint(2, "%{} match: {}".format(key, match))
                     if (key.startswith('contains(') and match == -1):
-                        self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                        self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
 
                         diff = difflib.ndiff(addMissingNewLine(pattern).splitlines(True), addMissingNewLine(txt).splitlines(True))
                         if shouldCompressDiff:
@@ -902,7 +902,7 @@ Supported .test file entry types:
                         self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
                         return
                     elif (key.startswith('not-contains(') and match != -1):
-                        self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                        self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
 
                         self.lprint(1, quote("unexpected substring", pattern, maxPrintableSize, patternfilename))
                         self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
@@ -915,12 +915,12 @@ Supported .test file entry types:
 
             elif (key.startswith('file-exists(')):
                 if (not os.path.exists(os.path.join(self.args.workdir, self.testname,self.values[key]))):
-                    self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                    self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
                     self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                     return
             elif (key.startswith('file-not-exists(')):
                 if (os.path.exists(os.path.join(self.args.workdir, self.testname, self.values[key]))):
-                    self.testfailed(testfilename, "{} fails \%{} rule".format(self.values[key], key))
+                    self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
                     self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                     return
 
