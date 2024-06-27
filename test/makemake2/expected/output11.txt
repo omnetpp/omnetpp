@@ -1,13 +1,13 @@
 #
-# OMNeT++/OMNEST Makefile for omnetpp-dev
+# OMNeT++/OMNEST Makefile for playground
 #
 # This file was generated with the command:
-#  opp_makemake -I include/dir1 -I include/dir2 -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2
+#  opp_makemake -P . -I include/dir1 -I include/dir2 -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2
 #
 
 # Name of target to be created (-o option)
 TARGET_DIR = .
-TARGET_NAME = omnetpp-dev$(D)
+TARGET_NAME = playground$(D)
 TARGET = $(TARGET_NAME)$(EXE_SUFFIX)
 TARGET_IMPLIB = $(TARGET_NAME)$(IMPLIB_SUFFIX)
 TARGET_IMPDEF = $(TARGET_NAME)$(IMPDEF_SUFFIX)
@@ -28,8 +28,8 @@ EXTRA_OBJS =
 LIBS = $(LDFLAG_LIBPATH)lib/dir1 $(LDFLAG_LIBPATH)lib/dir2  -llibrary1 -llibrary2
 
 # Output directory
-PROJECT_OUTPUT_DIR = ../../../out
-PROJECTRELATIVE_PATH = test/makemake2/playground
+PROJECT_OUTPUT_DIR = out
+PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
@@ -102,6 +102,7 @@ $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 
 # disabling all implicit rules
 .SUFFIXES :
+.PRECIOUS : %_m.h %_m.cc
 
 $O/%.o: %.cc $(COPTS_FILE) | msgheaders smheaders
 	@$(MKPATH) $(dir $@)

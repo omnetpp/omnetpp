@@ -1,16 +1,16 @@
 #
-# OMNeT++/OMNEST Makefile for omnetpp-dev
+# OMNeT++/OMNEST Makefile for playground
 #
 # This file was generated with the command:
-#  opp_makemake -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2
+#  opp_makemake -P . -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2
 #
 
 # C++ include paths (with -I)
 INCLUDE_PATH = -Iinclude/dir1 -Iinclude/dir2
 
 # Output directory
-PROJECT_OUTPUT_DIR = ../../../out
-PROJECTRELATIVE_PATH = test/makemake2/playground
+PROJECT_OUTPUT_DIR = out
+PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
@@ -77,6 +77,7 @@ all: $(OBJS)  Makefile $(CONFIGFILE)
 
 # disabling all implicit rules
 .SUFFIXES :
+.PRECIOUS : %_m.h %_m.cc
 
 $O/%.o: %.cc $(COPTS_FILE) | msgheaders smheaders
 	@$(MKPATH) $(dir $@)
