@@ -24,11 +24,11 @@ fi
 # Activate local python virtual environment if present in the root directory.
 # You can create a virtual environment with 'python3 -m venv .venv'
 # and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
-if [ -f "$__omnetpp_root_dir/.venv/bin/activate" ] ; then
+if [ -f "$dir/.venv/bin/activate" ] ; then
   if [ "$1" != "-q" ]; then
-    echo "Activating python virtual environment in '$__omnetpp_root_dir/.venv'"
+    echo "Activating python virtual environment in '$dir/.venv'"
   fi
-  source $__omnetpp_root_dir/.venv/bin/activate
+  source $dir/.venv/bin/activate
 fi
 
 function _numargs() { echo $#; }
