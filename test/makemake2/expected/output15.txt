@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for playground
 #
 # This file was generated with the command:
-#  opp_makemake -P .
+#  opp_makemake -P . object1.o object2.o lib1.a lib2.a
 #
 
 # Name of target to be created (-o option)
@@ -22,7 +22,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(QTENV_LIBS) $(CMDENV_LIBS)
 INCLUDE_PATH =
 
 # Additional object and library files to link with
-EXTRA_OBJS =
+EXTRA_OBJS = object1.o object2.o lib1.a lib2.a
 
 # Additional libraries (-L, -l options)
 LIBS =

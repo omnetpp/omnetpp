@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for mymodel
 #
 # This file was generated with the command:
-#  opp_makemake -o mymodel -f
+#  opp_makemake -P . -o mymodel -f
 #
 
 # Name of target to be created (-o option)
@@ -28,8 +28,8 @@ EXTRA_OBJS =
 LIBS =
 
 # Output directory
-PROJECT_OUTPUT_DIR = ../../../out
-PROJECTRELATIVE_PATH = test/makemake2/playground
+PROJECT_OUTPUT_DIR = out
+PROJECTRELATIVE_PATH =
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
@@ -99,6 +99,7 @@ $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 
 # disabling all implicit rules
 .SUFFIXES :
+.PRECIOUS : %_m.h %_m.cc
 
 $O/%.o: %.cc $(COPTS_FILE) | msgheaders smheaders
 	@$(MKPATH) $(dir $@)

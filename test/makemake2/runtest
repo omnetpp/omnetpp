@@ -7,22 +7,22 @@ import filecmp
 
 # Command lines to test
 commands = [
-    "makemake",
-    "makemake -o mymodel -f",
-    "makemake --deep",
-    "makemake --deep -I include/dir1 -I include/dir2",
-    "makemake --deep -X subdir1/subsubdir1 -X subdir2",
-    "makemake -a -e cc -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
-    "makemake -O out/dir -M DEBUG -DFOO=foo",
+    "makemake -P .",
+    "makemake -P . -o mymodel -f",
+    "makemake -P . --deep",
+    "makemake -P . --deep -I include/dir1 -I include/dir2",
+    "makemake -P . --deep -X subdir1/subsubdir1 -X subdir2",
+    "makemake -P . -a -e cc -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
+    "makemake -P . -O out/dir -M DEBUG -DFOO=foo",
     "makemake -P .. -r -d subdir1 -d subdir2",
-    "makemake -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2",
-    "makemake -s -u Cmdenv",
-    "makemake -S -p TEST_API",
-    "makemake -I include/dir1 -I include/dir2 -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
-    "makemake -o mymodel -e cpp -K name=value",
-    "makemake -r -X subdir1 -X subdir2",
-    "makemake -r -X subdir1/subsubdir1",
-    "makemake object1.o object2.o lib1.a lib2.a",
+    "makemake -P . -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2",
+    "makemake -P . -s -u Cmdenv",
+    "makemake -P . -S -p TEST_API",
+    "makemake -P . -I include/dir1 -I include/dir2 -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
+    "makemake -P . -o mymodel -e cpp -K name=value",
+    "makemake -P . -r -X subdir1 -X subdir2",
+    "makemake -P . -r -X subdir1/subsubdir1",
+    "makemake -P . object1.o object2.o lib1.a lib2.a",
 ]
 
 makemake = "../../bin/opp_makemake"

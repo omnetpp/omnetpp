@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for playground
 #
 # This file was generated with the command:
-#  opp_makemake -P .
+#  opp_makemake -P . -r -X subdir1 -X subdir2
 #
 
 # Name of target to be created (-o option)
@@ -90,12 +90,18 @@ ifeq ($(TOOLCHAIN_NAME),clang-msabi)
 $O/$(TARGET_NAME).pdb: $O/$(TARGET)
 endif
 
-$O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
+$O/$(TARGET): $(OBJS) submakedirs $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 	@$(MKPATH) $O
 	@echo Creating executable: $@
 	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
 
-.PHONY: all clean cleanall depend msgheaders smheaders
+submakedirs:  subdir3_dir
+
+.PHONY: all clean cleanall depend msgheaders smheaders  subdir3
+subdir3: subdir3_dir
+
+subdir3_dir:
+	cd subdir3 && $(MAKE) all
 
 # disabling all implicit rules
 .SUFFIXES :
@@ -115,14 +121,17 @@ $O/%.o: %.cc $(COPTS_FILE) | msgheaders smheaders
 	$(Q)$(SMC) -c++ -suffix cc $(SMCOPTS) $?
 
 msgheaders: $(MSGFILES:.msg=_m.h)
+	$(Q)cd subdir3 && $(MAKE) msgheaders
 
 smheaders: $(SMFILES:.sm=_sm.h)
+	$(Q)cd subdir3 && $(MAKE) smheaders
 
 clean:
 	$(qecho) Cleaning $(TARGET)
 	$(Q)-rm -rf $O
 	$(Q)-rm -f $(TARGET_FILES)
 	$(Q)-rm -f $(call opp_rwildcard, . , *_m.cc *_m.h *_sm.cc *_sm.h)
+	-$(Q)cd subdir3 && $(MAKE) clean
 
 cleanall:
 	$(Q)$(CLEANALL_COMMAND)
