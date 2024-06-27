@@ -4,7 +4,7 @@
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c RareExtremeValues -r 0,      100s,         ea60-793c/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue1 -r 0,100s,         0332-6963/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue2 -r 0,100s,         c80c-cdf3/rsz,PASS,
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c Empty -r 0,                  100s,         9f10-b921/rsz 3f9a-91a1/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c Empty -r 0,                  100s,         b598-3309/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c OneObservation -r 0,         100s,         f395-ff13/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c TwoObservations -r 0,        100s,         51da-3561/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c Constant -r 0,               100s,         a776-695e/rsz,PASS,
