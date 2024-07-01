@@ -38,7 +38,8 @@ with the following command:
 
 .. code::
 
-   $ brew install bison flex perl python@3 make qt@5 openscenegraph
+   $ brew install bison flex perl python@3 make qt@5 pkg-config \
+       doxygen graphviz openscenegraph
 
 Make sure that the following lines are sourced in your shell (e.g. add them to your `.zprofile`
 file or create a new file for them):
@@ -50,11 +51,14 @@ file or create a new file for them):
    export PATH="$(brew --prefix qt@5)/bin:$PATH"
    export PATH="$(brew --prefix bison)/bin:$PATH"
    export PATH="$(brew --prefix flex)/bin:$PATH"
+   export PATH="$(brew --prefix doxygen)/bin:$PATH"
+   export PATH="$(brew --prefix graphviz)/bin:$PATH"
+   export PATH="$(brew --prefix pkg-config)/bin:$PATH"
    export PATH="$(brew --prefix make)/libexec/gnubin:$PATH"
    export LDFLAGS="-L$(brew --prefix)/lib $LDFLAGS"
    export CFLAGS="-I$(brew --prefix)/include $CFLAGS"
 
-Restart your shell to activate the above changes and make sure that you are using 
+Restart your shell to activate the above changes and make sure that you are using
 `python3` from Homebrew (`which python3`) and not the system's Python interpreter
 provided by macOS (`/usr/lib/python3`) and then install the Python dependencies:
 
