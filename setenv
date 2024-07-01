@@ -21,6 +21,18 @@ if [ ! -f "$dir/configure.user" -o ! -f "$dir/include/omnetpp.h" -o ! -f "$dir/V
     return 1
 fi
 
+# check for HOMEBREW (on macOS) environment and activate dependent packages
+if [ "$(command -v brew)" != "" ]; then
+  echo "HOMEBREW detected, activating dependencies (qt@5, bison, flex, pkg-config, make)."
+  export PATH="$(brew --prefix qt@5)/bin:$PATH"
+  export PATH="$(brew --prefix bison)/bin:$PATH"
+  export PATH="$(brew --prefix flex)/bin:$PATH"
+  export PATH="$(brew --prefix pkg-config)/bin:$PATH"
+  export PATH="$(brew --prefix make)/libexec/gnubin:$PATH"
+  export LDFLAGS="-L$(brew --prefix)/lib $LDFLAGS"
+  export CFLAGS="-I$(brew --prefix)/include $CFLAGS"
+fi
+
 # Activate local python virtual environment if present in the root directory.
 # You can create a virtual environment with 'python3 -m venv .venv'
 # and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
