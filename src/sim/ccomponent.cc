@@ -37,7 +37,6 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/cresultrecorder.h"
 #include "omnetpp/cresultfilter.h"
-#include "omnetpp/resultrecorders.h" // for VectorRecorder
 
 using namespace omnetpp::common;
 
@@ -45,11 +44,6 @@ namespace omnetpp {
 
 Register_PerObjectConfigOption(CFGID_DISPLAY_STRING, "display-string", KIND_COMPONENT, CFG_STRING, nullptr, "Additional display string for the module/channel; it will be merged into the display string given via `@display` properties, and override its content.");
 Register_PerObjectConfigOption(CFGID_PARAM_RECORD_AS_SCALAR, "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false", "Applicable to module parameters: specifies whether the module parameter should be recorded into the output scalar file. Set it for parameters whose value you will need for result analysis.");
-
-namespace envir {
-extern cConfigOption *CFGID_VECTOR_RECORDING;
-extern cConfigOption *CFGID_SCALAR_RECORDING;
-}
 
 cComponent::SignalNameMapping *cComponent::signalNameMapping = nullptr;
 int cComponent::lastSignalID = -1;
@@ -243,7 +237,6 @@ void cComponent::setLogLevel(LogLevel logLevel)
 void cComponent::addResultRecorders()
 {
     cStatisticBuilder(getEnvir()->getConfig()).addResultRecorders(this);
-    trimResultListeners();
 }
 
 void cComponent::emitStatisticInitialValues()
@@ -916,51 +909,6 @@ void cComponent::invalidateCachedResultRecorderLists()
     cachedResultRecorderLists.clear();
 }
 
-void cComponent::trimResultListeners()
-{
-    if (signalTable) {
-        auto signals = getLocalListenedSignals();
-        for (simsignal_t signal : signals) {
-            auto listeners = getLocalSignalListeners(signal);
-            for (cIListener *listener : listeners) {
-                if (cResultRecorder *listenerAsRecorder = dynamic_cast<cResultRecorder *>(listener)) {
-                    if (!isRecorderEnabled(listenerAsRecorder))
-                        unsubscribe(signal, listener); // no delete -- result listeners dispose themselves if subscribeCount goes to zero
-                }
-                else if (cResultFilter *listenerAsFilter = dynamic_cast<cResultFilter *>(listener)) {
-                    trimResultFilterDelegates(listenerAsFilter);
-                    if (listenerAsFilter->getNumDelegates() == 0)
-                        unsubscribe(signal, listener); // no delete -- result listeners dispose themselves if subscribeCount goes to zero
-                }
-            }
-        }
-    }
-}
-
-void cComponent::trimResultFilterDelegates(cResultFilter *filter)
-{
-    auto delegates = filter->getDelegates();
-    for (cResultListener *delegate : delegates) {
-        if (cResultRecorder *delegateAsRecorder = dynamic_cast<cResultRecorder *>(delegate)) {
-            if (!isRecorderEnabled(delegateAsRecorder))
-                filter->removeDelegate(delegate); // no delete -- result listeners dispose themselves if subscribeCount goes to zero
-        }
-        else if (cResultFilter *delegateAsFilter = dynamic_cast<cResultFilter *>(delegate)) {
-            trimResultFilterDelegates(delegateAsFilter);
-            if (delegateAsFilter->getNumDelegates() == 0)
-                filter->removeDelegate(delegate);  // no delete -- result listeners dispose themselves if subscribeCount goes to zero
-        }
-    }
-}
-
-bool cComponent::isRecorderEnabled(cResultRecorder *recorder)
-{
-    // Note: reading the config keys here is leaky abstraction, but recorders unfortunately don't have an isEnabled() method (yet)
-    std::string objectFullPath = recorder->getComponent()->getFullPath() + "." + recorder->getResultName();
-    bool isVector = dynamic_cast<VectorRecorder*>(recorder) != nullptr;
-    bool enabled = getEnvir()->getConfig()->getAsBool(objectFullPath.c_str(), isVector ? envir::CFGID_VECTOR_RECORDING : envir::CFGID_SCALAR_RECORDING);
-    return enabled;
-}
 
 }  // namespace omnetpp
 
