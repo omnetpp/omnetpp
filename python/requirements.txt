@@ -1,5 +1,5 @@
-setuptools >=68.0.0
-matplotlib >=3.5.3, <4.0.0
+setuptools >=63.0.0
+matplotlib >=3.5.2, <4.0.0
 numpy >=1.18.0, <2.0.0
-pandas >=2.0.0, <3.0.0
+pandas >=1.0.0, <3.0.0
 scipy >=1.0.0, <2.0.0
