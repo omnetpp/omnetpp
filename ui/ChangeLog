@@ -1,3 +1,18 @@
+2024-06-19  Andras Varga
+
+	* Analysis Tool: Rename "Scatter Chart MPL" to "Scatter Chart with Matplotlib",
+	for consistency with other chart templates.
+
+2024-06-21  Attila Torok
+
+	* Fix the Matplotlib backend of the IDE with Matplotlib 3.9. Workaround for
+	https://github.com/matplotlib/matplotlib/issues/28432.
+
+2023-12-19  Rudolf Hornig
+
+	* Launcher: Use the `opp_dbgmi` wrapper script (see src/utils) for launching
+	simulations in debug mode
+
 2024-05-27  Levente Meszaros
 
 	* Sequence Chart: Added guards for checking if the event is nullptr.

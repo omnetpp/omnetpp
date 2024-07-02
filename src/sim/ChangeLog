@@ -1,3 +1,7 @@
+2024-06-18  Andras Varga
+
+	* SimTime: better error messages in arithmetic operations involving cPars
+
 2024-06-10  Andras Varga
 
 	* NED functions: Documentation strings proofread
@@ -90,11 +94,6 @@
 	* cSingleFingerprintCalculator, cMultiFingerprintCalculator:
 	Follow/implement cFingerprintCalculator changes described in
 	include/omnetpp/ChangeLog.
-
-2024-01-12  Andras Varga
-
-	* cComponent: trim disabled or unused result filters and recorders.
-	Implementation in trimResultListeners().
 
 2024-01-10  Andras Varga
 

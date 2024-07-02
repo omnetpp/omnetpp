@@ -1,3 +1,8 @@
+2024-06-07  Rudolf Hornig
+
+	* Updated install guide: Removed redundant graphical install instructions;
+	updated packages; updated Python package install instruction.
+
 2023-05-31  Attila Torok
 
 	* Follow change: Remove posix_shm as required Python package.

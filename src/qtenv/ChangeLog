@@ -1,3 +1,12 @@
+2024-06-26  Attila Torok
+
+	* Log: Fix finding next/previous string near formatting sequences
+
+2024-05-29  Attila Torok
+
+	* Log: Process log lines from executed cEvents the same way as from
+	handled cMessages. Fixes https://github.com/omnetpp/omnetpp/issues/1169.
+
 2024-05-08  Attila Torok
 
 	* Log: Set icons for the bookmark and reference time actions

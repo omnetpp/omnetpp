@@ -1,6 +1,13 @@
+2024-06-24  Attila Torok
+
+	* resultfiles: Update/reset all charts to current template; add another
+	analysis file with aloha charts.
+
 2024-05-30  Andras Varga
 
-	* ChangeLog: merged per-folder ChangeLog files into a common ChangeLog
+	* ChangeLog: Merged per-folder ChangeLog files into a common ChangeLog.
+	(Entries below this one were produced by merging the contents of
+	individual ChangeLogs.)
 
 2022-05-16  Attila Torok
 

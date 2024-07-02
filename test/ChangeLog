@@ -6,6 +6,7 @@
 
 	- anim/deletesender/*
 	- anim/inspectorsafety/*
+	- anim/logbuffer/*
 	- common/lib/quantityformattertester.h
 	- common/lib/testutil.h
 	- common/QuantityFormatter_*.test
@@ -24,6 +25,7 @@
 	- core/NED_xml_4.test
 	- core/SimTime_6.test
 	- core/SimTime_7.test
+	- core/SimTime_ctor_2.test
 	- core/statistic_enum_1.test
 	- core/statistic_enum_n1.test
 	- core/statistic_enum_n2.test

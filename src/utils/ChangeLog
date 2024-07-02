@@ -1,3 +1,15 @@
+2023-12-19  Rudolf Hornig
+
+	* Added opp_dbgmi, a wrapper script for invoking the appropriate
+	debugger when the IDE launches a simulation in debug mode.
+
+	This script invokes the lldbmi2 debugger (https://github.com/omnetpp/lldbmi2),
+	a fork of Didier Bertrand's lldbmi2 project with numerous enhancements from the
+	OMNeT++ team, especially Attila Torok. We provide a pre-built executable
+	bundled in the IDE's nativelibs folder. The lldbmi2 debugger uses the
+	Clang project's LLDB library, and offers significantly better performance
+	compared to GDB.
+
 2024-03-22  Andras Varga
 
 	* opp_charttool: Use logging instead of print statements where appropriate;

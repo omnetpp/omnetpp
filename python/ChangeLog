@@ -1,3 +1,28 @@
+2024-06-24  Attila Torok
+
+	* omnetpp.scave: Make native module loading fallback less verbose.
+
+2024-06-26  Andras Varga
+
+	* omnetpp.ned: Added support for accessing parameters, gates, properties;
+	several methods renamed for clarity.
+
+2024-06-11  Rudolf Hornig
+
+	* Added a `requirements.txt` file to hold the list of python package
+	dependencies. Install them with the following command:
+	`python3 -m pip install -r python/requirements.txt`
+
+2024-06-07  Rudolf Hornig
+
+	* omnetpp.scave: Added a dependency checker to the scave._version module.
+	The function uses the `python/requirements.txt` file to verify if supported
+	versions of the various packages are present.
+
+2023-12-22  Rudolf Hornig
+
+	* omnetpp.lldb: lldb variable formatter fixes
+
 2024-06-05  Andras Varga
 
 	* omnetpp.scave: Proofreading of docstrings.
