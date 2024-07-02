@@ -43,7 +43,7 @@ static std::string digits4etc5(int numDigits) {
 }
 
 static void testQuantityFormatter(QuantityFormatter& formatter, std::string text, const char *unit) {
-    double value = atof(text.c_str());
+    double value = strtod(text.c_str(), nullptr);
     auto output = formatter.formatQuantity(value, unit);
     auto simplified = output.text;
     simplified = opp_replacesubstring(simplified, "~", "", true);
@@ -99,8 +99,8 @@ static void testQuantityFormatter(QuantityFormatter& formatter, std::string text
               << std::setw(40) << std::left << valuestream.str()
               << std::setw(18) << std::left << output.text
               << std::setw(18) << std::left << parsed
-              << std::setw(18) << std::left << absoluteError
-              << std::setw(18) << std::left << relativeError
+              << std::setw(18) << std::left << (std::isnan(absoluteError) ? NAN : absoluteError)
+              << std::setw(18) << std::left << (std::isnan(relativeError) ? NAN : relativeError)
               << (errorMessage ? "!!! " : "") << (errorMessage ? errorMessage : "")
               << std::endl;
 }
