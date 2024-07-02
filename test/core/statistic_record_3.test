@@ -31,6 +31,7 @@ debug-statistics-recording = true
 Test.node (Node):
     "foo" (signalID=_):
         omnetpp::LastValueRecorder ==> dorecord:last
+        omnetpp::MinRecorder ==> dorecord:min
         omnetpp::MaxRecorder ==> dorecord:max
         omnetpp::LastValueRecorder ==> dummy:last
 
