@@ -66,7 +66,7 @@ class COMMON_API UnitConversion
      * such as degrees or radians for angle, or m/s or km/h for speed, can be
      * achieved via the allowedCompatibleUnits parameter of getBestUnit().
      */
-    struct Options {
+    struct COMMON_API Options {
         bool convertZeroToBaseUnit = false; // as opposed to keeping it
         bool allowOriginalUnit = true; // i.e. implicitly add to allowedCompatibleUnits
         bool allowNonmetricTimeUnits = false;
