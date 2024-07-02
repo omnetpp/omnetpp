@@ -1051,7 +1051,12 @@ if test $WITH_BACKTRACE = "yes"; then
 
   if test "$PLATFORM" = "win32"; then
     # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
-    OPP_CHECK_LIB(psapi and dbghelp for backward stacktrace, windows.h, , ,-lpsapi -ldbghelp, psapi_dbghelp_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp",)
+    # for now, backward is disabled on windows as it requires codeview compatible symbols while lldb/gdb does not support it, so the stacktrace is not so nice/useful
+    #OPP_CHECK_LIB(psapi and dbghelp for backward stacktrace, windows.h, , ,-lpsapi -ldbghelp -lucrt, psapi_dbghelp_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp -lucrt",)
+
+    # disabled on Windows until: either lldb/gdb can handle codeview compatible symbols, or backwards can handle DWARD debug info
+    AC_MSG_WARN([WITH_BACKTRACE is set to 'yes', but it is not supported on Windows. Turning it off...])
+    WITH_BACKTRACE=no
   elif test "$PLATFORM" = "linux"; then
     # on Linux  we will use libdw or fall back to libdwarf
     LIBDW_LIBS="$(pkg-config --silence-errors --libs libdw)"

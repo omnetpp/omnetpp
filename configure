@@ -6470,41 +6470,13 @@ if test $WITH_BACKTRACE = "yes"; then
 
   if test "$PLATFORM" = "win32"; then
     # On Windows, psapi and dbghelp library allows the retrieving of line info and sources
+    # for now, backward is disabled on windows as it requires codeview compatible symbols while lldb/gdb does not support it, so the stacktrace is not so nice/useful
+    #OPP_CHECK_LIB(psapi and dbghelp for backward stacktrace, windows.h, , ,-lpsapi -ldbghelp -lucrt, psapi_dbghelp_found, BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp -lucrt",)
 
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS=""
-   LIBS="-lpsapi -ldbghelp"
-
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"" >&5
-printf %s "checking for psapi and dbghelp for backward stacktrace with CFLAGS=\"\" LIBS=\"-lpsapi -ldbghelp\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <windows.h>
-int
-main (void)
-{
-;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; psapi_dbghelp_found=yes; BACKWARD_LDFLAGS="$BACKWARD_LDFLAGS -lpsapi -ldbghelp"
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }; psapi_dbghelp_found=no;
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
+    # disabled on Windows until: either lldb/gdb can handle codeview compatible symbols, or backwards can handle DWARD debug info
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: WITH_BACKTRACE is set to 'yes', but it is not supported on Windows. Turning it off..." >&5
+printf "%s\n" "$as_me: WARNING: WITH_BACKTRACE is set to 'yes', but it is not supported on Windows. Turning it off..." >&2;}
+    WITH_BACKTRACE=no
   elif test "$PLATFORM" = "linux"; then
     # on Linux  we will use libdw or fall back to libdwarf
     LIBDW_LIBS="$(pkg-config --silence-errors --libs libdw)"
