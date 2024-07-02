@@ -20,6 +20,8 @@
 #include <string>
 #include "omnetpp/cvalue.h"
 
+#include "qtenvdefs.h"
+
 namespace omnetpp {
 
 class cDisplayString;
@@ -45,7 +47,7 @@ namespace qtenv {
  * cannot possibly change the structure of the original display string, only
  * its values (which, after substitution, may contain , ; and = characters).
  */
-class DisplayStringAccess {
+class QTENV_API DisplayStringAccess {
 
   private:
     const cDisplayString *ds;
