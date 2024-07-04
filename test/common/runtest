@@ -7,7 +7,8 @@
 MODE=${MODE:-"debug"}
 MAKEOPTIONS="MODE=$MODE"
 MAKE=${MAKE:-"make"}
-MAKEFLAGS=${MAKEFLAGS:-"-j$(nproc)"}
+NUMPROC=$(command -v nproc >/dev/null && nproc || echo 8)
+export MAKEFLAGS=${MAKEFLAGS:-"-j"$NUMPROC}
 
 case "$MODE" in
   "release") PROGSUFFIX="" ;;
