@@ -78,11 +78,7 @@ $O/%.o: %.cc $(GENERATED_SOURCES) $(CONFIGFILE) $(COPTS_FILE)
 # Targets
 #
 
-ifeq ($(SHARED_LIBS),yes)
 all: $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
-else
-all: $(TARGET_LIB_FILES) $(TARGET_EXE_FILES)
-endif
 
 ifeq ($(WITH_SCAVE_PYTHON_BINDINGS),yes)
 all: pythonbindings
