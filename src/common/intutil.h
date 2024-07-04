@@ -56,7 +56,18 @@ ToInt checked_int_cast(double d, const char *errmsg=nullptr)
 {
     static_assert(std::is_integral<ToInt>::value, "checked_int_cast expects integer template argument");
     ToInt res = d;
-    if ((double)res != std::trunc(d))
+    // NOTE: To detect an overflow, we test whether the resulting integer is the same as
+    // the truncated value of the double. On overflow, we always get different values
+    // except on ARM processors where a double -> integer conversion is always returning 'maxInt'
+    // for any double value >= maxInt. Unfortunatley, Intel processors return INDEFINITE_INTEGER in these cases
+    // (all bits set to zero except MSB, which is set to 1) which is essentially 'minInt', resulting in
+    // different behavior on the two platforms. We explicitly have to treat the maxInt case as an overflow
+    // so the overflow error will be triggered also on ARM platforms in these case.
+    // Converting 'minInt' is not considered as an over/under flow error as both platforms return 'minInt'
+    //
+    // See more here: https://stackoverflow.com/questions/70258776/different-behavior-of-double-and-int64-t-conversion-on-new-apple-silicon-arm64
+    //
+    if ((double)res != std::trunc(d) || res == std::numeric_limits<ToInt>::max())
         omnetpp::common::intCastError(std::to_string(d), errmsg);
     return res;
 }
