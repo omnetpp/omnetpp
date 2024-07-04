@@ -57,8 +57,8 @@ P(uint32_t, -1)
 EV << std::endl;
 
 double maxInt64AsDouble = static_cast<double>(std::numeric_limits<int64_t>::max());
-double justBelow = maxInt64AsDouble-2000;
-double justAbove = maxInt64AsDouble+2000;
+double justBelow = maxInt64AsDouble-1540;
+double justAbove = maxInt64AsDouble+1025;
 
 P(int64_t, -justBelow)
 P(int64_t, justBelow)
@@ -67,8 +67,8 @@ P(int64_t, justAbove)
 EV << std::endl;
 
 double maxUInt64AsDouble = static_cast<double>(std::numeric_limits<uint64_t>::max());
-double justBelowU = maxUInt64AsDouble-2000;
-double justAboveU = maxUInt64AsDouble+2000;
+double justBelowU = maxUInt64AsDouble-1025;
+double justAboveU = maxUInt64AsDouble+2049;
 
 P(uint64_t, 0U)
 P(uint64_t, justBelowU)
