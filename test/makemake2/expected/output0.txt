@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for playground
 #
 # This file was generated with the command:
-#  opp_makemake -P .
+#  opp_makemake -f -P .
 #
 
 # Name of target to be created (-o option)

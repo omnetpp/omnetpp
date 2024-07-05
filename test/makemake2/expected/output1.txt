@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for mymodel
 #
 # This file was generated with the command:
-#  opp_makemake -P . -o mymodel -f
+#  opp_makemake -f -P . -o mymodel -f
 #
 
 # Name of target to be created (-o option)

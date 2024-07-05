@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for makemake2
 #
 # This file was generated with the command:
-#  opp_makemake -P .. -r -d subdir1 -d subdir2
+#  opp_makemake -f -P .. -r -d subdir1 -d subdir2
 #
 
 # Name of target to be created (-o option)
