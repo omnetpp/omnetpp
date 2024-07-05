@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for mymodel
 #
 # This file was generated with the command:
-#  opp_makemake -P . -o mymodel -e cpp -K name=value
+#  opp_makemake -f -P . -o mymodel -e cpp -K name=value
 #
 
 # Name of target to be created (-o option)

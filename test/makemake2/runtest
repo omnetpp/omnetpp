@@ -7,28 +7,23 @@ import filecmp
 
 # Command lines to test
 commands = [
-    "makemake -P .",
-    "makemake -P . -o mymodel -f",
-    "makemake -P . --deep",
-    "makemake -P . --deep -I include/dir1 -I include/dir2",
-    "makemake -P . --deep -X subdir1/subsubdir1 -X subdir2",
-    "makemake -P . -a -e cc -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
-    "makemake -P . -O out/dir -M DEBUG -DFOO=foo",
-    "makemake -P .. -r -d subdir1 -d subdir2",
-    "makemake -P . -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2",
-    "makemake -P . -s -u Cmdenv",
-    "makemake -P . -S -p TEST_API",
-    "makemake -P . -I include/dir1 -I include/dir2 -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
-    "makemake -P . -o mymodel -e cpp -K name=value",
-    "makemake -P . -r -X subdir1 -X subdir2",
-    "makemake -P . -r -X subdir1/subsubdir1",
-    "makemake -P . object1.o object2.o lib1.a lib2.a",
+    "opp_makemake -f -P .",
+    "opp_makemake -f -P . -o mymodel -f",
+    "opp_makemake -f -P . --deep",
+    "opp_makemake -f -P . --deep -I include/dir1 -I include/dir2",
+    "opp_makemake -f -P . --deep -X subdir1/subsubdir1 -X subdir2",
+    "opp_makemake -f -P . -a -e cc -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
+    "opp_makemake -f -P . -O out/dir -M DEBUG -DFOO=foo",
+    "opp_makemake -f -P .. -r -d subdir1 -d subdir2",
+    "opp_makemake -f -P . -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2",
+    "opp_makemake -f -P . -s -u Cmdenv",
+    "opp_makemake -f -P . -S -p TEST_API",
+    "opp_makemake -f -P . -I include/dir1 -I include/dir2 -L lib/dir1 -L lib/dir2 -llibrary1 -llibrary2",
+    "opp_makemake -f -P . -o mymodel -e cpp -K name=value",
+    "opp_makemake -f -P . -r -X subdir1 -X subdir2",
+    "opp_makemake -f -P . -r -X subdir1/subsubdir1",
+    "opp_makemake -f -P . object1.o object2.o lib1.a lib2.a",
 ]
-
-makemake = "../../bin/opp_makemake"
-
-if "/" in makemake:
-    makemake = os.path.abspath(makemake)
 
 # Source directory to test on
 playground_dir = "playground"
@@ -47,9 +42,8 @@ for i, command in enumerate(commands):
 
     # Execute the command in the playground directory and check for nonzero exit code
     try:
-        actual_command = command.replace("makemake", makemake)
-        print(f"RUNNING TEST CASE {i}: {actual_command}")
-        subprocess.run(actual_command, shell=True, check=True, cwd=playground_dir)
+        print(f"RUNNING TEST CASE {i}: {command}")
+        subprocess.run("env " + command, shell=True, check=True, cwd=playground_dir)
     except subprocess.CalledProcessError:
         print(f"Test case {i} failed (nonzero exit code)")
         continue
@@ -61,7 +55,7 @@ for i, command in enumerate(commands):
     expected_path = f"expected/output{i}.txt"
 
     # Copy the resulting Makefile to the actual/ directory
-    os.rename(f"{playground_dir}/Makefile", actual_path)
+    os.replace(f"{playground_dir}/Makefile", actual_path)
 
     # Compare the actual output to the expected output
     try:

@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for playground
 #
 # This file was generated with the command:
-#  opp_makemake -P . --deep -I include/dir1 -I include/dir2
+#  opp_makemake -f -P . --deep -I include/dir1 -I include/dir2
 #
 
 # Name of target to be created (-o option)

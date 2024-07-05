@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for playground
 #
 # This file was generated with the command:
-#  opp_makemake -P . -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2
+#  opp_makemake -f -P . -n -I include/dir1 -I include/dir2 -i fragment/file1 -i fragment/file2
 #
 
 # C++ include paths (with -I)

@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for $(LIB_PREFIX)playground
 #
 # This file was generated with the command:
-#  opp_makemake -P . -s -u Cmdenv
+#  opp_makemake -f -P . -s -u Cmdenv
 #
 
 # Name of target to be created (-o option)
