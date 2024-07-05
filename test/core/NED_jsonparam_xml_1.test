@@ -19,7 +19,7 @@ network Test {
    <greeting type="g'day">world</greeting>
 </root>
 
-%subst: |at .*/data.xml|at .../data.xml|
+%subst: |at .*[/\\]data.xml|at .../data.xml|
 
 %contains: stdout
 module Test: Test {
