@@ -1,7 +1,7 @@
 /*
-    nanobind/stl/string_view.h: type caster for std::string_view
+    nanobind/stl/string.h: type caster for std::string
 
-    Copyright (c) 2022 Qingnan Zhou and Wenzel Jakob
+    Copyright (c) 2022 Wenzel Jakob
 
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE file.
@@ -10,28 +10,28 @@
 #pragma once
 
 #include <nanobind/nanobind.h>
-#include <string_view>
+#include <string>
 
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 
-template <> struct type_caster<std::string_view> {
-    NB_TYPE_CASTER(std::string_view, const_name("str"))
+template <> struct type_caster<std::wstring> {
+    NB_TYPE_CASTER(std::wstring, const_name("str"))
 
     bool from_python(handle src, uint8_t, cleanup_list *) noexcept {
         Py_ssize_t size;
-        const char *str = PyUnicode_AsUTF8AndSize(src.ptr(), &size);
+        const wchar_t *str = PyUnicode_AsWideCharString(src.ptr(), &size);
         if (!str) {
             PyErr_Clear();
             return false;
         }
-        value = std::string_view(str, (size_t) size);
+        value = std::wstring(str, (size_t) size);
         return true;
     }
 
-    static handle from_cpp(std::string_view value, rv_policy,
+    static handle from_cpp(const std::wstring &value, rv_policy,
                            cleanup_list *) noexcept {
-        return PyUnicode_FromStringAndSize(value.data(), value.size());
+        return PyUnicode_FromWideChar(value.c_str(), value.size());
     }
 };
 

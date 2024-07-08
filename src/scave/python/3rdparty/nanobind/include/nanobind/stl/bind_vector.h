@@ -34,19 +34,23 @@ template <> struct iterator_access<typename std::vector<bool>::iterator> {
     result_type operator()(typename std::vector<bool>::iterator &it) const { return *it; }
 };
 
-template <typename Value> struct iterable_type_id {
-    static constexpr auto Name = const_name("Iterable[") +
-                                 make_caster<Value>::Name +
-                                 const_name("]");
-};
-
 NAMESPACE_END(detail)
 
 
-template <typename Vector, typename... Args>
+template <typename Vector,
+          rv_policy Policy = rv_policy::automatic_reference,
+          typename... Args>
 class_<Vector> bind_vector(handle scope, const char *name, Args &&...args) {
     using ValueRef = typename detail::iterator_access<typename Vector::iterator>::result_type;
     using Value = std::decay_t<ValueRef>;
+
+    static_assert(
+        !detail::is_base_caster_v<detail::make_caster<Value>> ||
+        detail::is_copy_constructible_v<Value> ||
+        (Policy != rv_policy::automatic_reference &&
+         Policy != rv_policy::copy),
+        "bind_vector(): the generated __getitem__ would copy elements, so the "
+        "element type must be copy-constructible");
 
     handle cl_cur = type<Vector>();
     if (cl_cur.is_valid()) {
@@ -70,15 +74,14 @@ class_<Vector> bind_vector(handle scope, const char *name, Args &&...args) {
 
         .def("__iter__",
              [](Vector &v) {
-                 return make_iterator(type<Vector>(), "Iterator",
-                                      v.begin(), v.end());
+                 return make_iterator<Policy>(type<Vector>(), "Iterator",
+                                              v.begin(), v.end());
              }, keep_alive<0, 1>())
 
         .def("__getitem__",
              [](Vector &v, Py_ssize_t i) -> ValueRef {
                  return v[detail::wrap(i, v.size())];
-             },
-             rv_policy::reference_internal)
+             }, Policy)
 
         .def("clear", [](Vector &v) { v.clear(); },
              "Remove all items from list.");
@@ -87,10 +90,10 @@ class_<Vector> bind_vector(handle scope, const char *name, Args &&...args) {
         cl.def(init<const Vector &>(),
                "Copy constructor");
 
-        cl.def("__init__", [](Vector *v, typed<iterable, detail::iterable_type_id<Value>> &seq) {
+        cl.def("__init__", [](Vector *v, typed<iterable, Value> seq) {
             new (v) Vector();
-            v->reserve(len_hint(seq.value));
-            for (handle h : seq.value)
+            v->reserve(len_hint(seq));
+            for (handle h : seq)
                 v->push_back(cast<Value>(h));
         }, "Construct from an iterable object");
 

@@ -22,9 +22,10 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
     using Value = std::tuple<Ts...>;
     using Indices = std::make_index_sequence<N>;
 
-    static constexpr auto Name = const_name(NB_TYPING_TUPLE "[") +
-                                 concat(make_caster<Ts>::Name...) +
-                                 const_name("]");
+    static constexpr auto Name =
+        const_name(NB_TYPING_TUPLE "[") +
+        const_name<N == 0>(const_name("()"), concat(make_caster<Ts>::Name...)) +
+        const_name("]");
 
     /// This caster constructs instances on the fly (otherwise it would not be
     /// able to handle tuples containing references_). Because of this, only the
@@ -38,9 +39,8 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
     }
 
     template <size_t... Is>
-    bool from_python_impl(handle src, uint8_t flags,
-                                    cleanup_list *cleanup,
-                                    std::index_sequence<Is...>) noexcept {
+    bool from_python_impl(handle src, uint8_t flags, cleanup_list *cleanup,
+                          std::index_sequence<Is...>) noexcept {
         (void) src; (void) flags; (void) cleanup;
 
         PyObject *temp; // always initialized by the following line
@@ -70,15 +70,15 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
 
     template <typename T, size_t... Is>
     static handle from_cpp_impl(T &&value, rv_policy policy,
-                                          cleanup_list *cleanup,
-                                          std::index_sequence<Is...>) noexcept {
+                                cleanup_list *cleanup,
+                                std::index_sequence<Is...>) noexcept {
         (void) value; (void) policy; (void) cleanup;
         object o[N1];
 
         bool success =
             (... &&
              ((o[Is] = steal(make_caster<Ts>::from_cpp(
-                   forward_like<T>(std::get<Is>(value)), policy, cleanup))),
+                   forward_like_<T>(std::get<Is>(value)), policy, cleanup))),
               o[Is].is_valid()));
 
         if (!success)
@@ -89,8 +89,15 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
         return r;
     }
 
+    template <typename T>
+    bool can_cast() const noexcept { return can_cast_impl(Indices{}); }
+
     explicit operator Value() { return cast_impl(Indices{}); }
 
+    template <size_t... Is>
+    bool can_cast_impl(std::index_sequence<Is...>) const noexcept {
+        return (std::get<Is>(casters).template can_cast<Ts>() && ...);
+    }
     template <size_t... Is> Value cast_impl(std::index_sequence<Is...>) {
         return Value(std::get<Is>(casters).operator cast_t<Ts>()...);
     }

@@ -38,20 +38,20 @@ public:
     ref() = default;
 
     /// Construct a reference from a pointer
-    ref(T *ptr) : m_ptr(ptr) { inc_ref(m_ptr); }
+    ref(T *ptr) : m_ptr(ptr) { inc_ref((intrusive_base *) m_ptr); }
 
     /// Copy a reference, increases the reference count
-    ref(const ref &r) : m_ptr(r.m_ptr) { inc_ref(m_ptr); }
+    ref(const ref &r) : m_ptr(r.m_ptr) { inc_ref((intrusive_base *) m_ptr); }
 
     /// Move a reference witout changing the reference count
     ref(ref &&r) noexcept : m_ptr(r.m_ptr) { r.m_ptr = nullptr; }
 
     /// Destroy this reference
-    ~ref() { dec_ref(m_ptr); }
+    ~ref() { dec_ref((intrusive_base *) m_ptr); }
 
     /// Move-assign another reference into this one
     ref &operator=(ref &&r) noexcept {
-        dec_ref(m_ptr);
+        dec_ref((intrusive_base *) m_ptr);
         m_ptr = r.m_ptr;
         r.m_ptr = nullptr;
         return *this;
@@ -59,23 +59,23 @@ public:
 
     /// Copy-assign another reference into this one
     ref &operator=(const ref &r) {
-        inc_ref(r.m_ptr);
-        dec_ref(m_ptr);
+        inc_ref((intrusive_base *) r.m_ptr);
+        dec_ref((intrusive_base *) m_ptr);
         m_ptr = r.m_ptr;
         return *this;
     }
 
     /// Overwrite this reference with a pointer to another object
     ref &operator=(T *ptr) {
-        inc_ref(ptr);
-        dec_ref(m_ptr);
+        inc_ref((intrusive_base *) ptr);
+        dec_ref((intrusive_base *) m_ptr);
         m_ptr = ptr;
         return *this;
     }
 
     /// Clear the currently stored reference
     void reset() {
-        dec_ref(m_ptr);
+        dec_ref((intrusive_base *) m_ptr);
         m_ptr = nullptr;
     }
 
@@ -104,12 +104,15 @@ public:
     const T &operator*() const { return *m_ptr; }
 
     /// Return a pointer to the referenced object
-    explicit operator T *() { return m_ptr; }
+    operator T *() { return m_ptr; }
 
     /// Return a const pointer to the referenced object
-    T *get() { return m_ptr; }
+    operator const T *() const { return m_ptr; }
 
     /// Return a pointer to the referenced object
+    T *get() { return m_ptr; }
+
+    /// Return a const pointer to the referenced object
     const T *get() const { return m_ptr; }
 
 private:
@@ -122,7 +125,7 @@ NAMESPACE_BEGIN(detail)
 template <typename T> struct type_caster<nanobind::ref<T>> {
     using Caster = make_caster<T>;
     static constexpr bool IsClass = true;
-    NB_TYPE_CASTER(ref<T>, Caster::Name);
+    NB_TYPE_CASTER(ref<T>, Caster::Name)
 
     bool from_python(handle src, uint8_t flags,
                      cleanup_list *cleanup) noexcept {
@@ -136,6 +139,11 @@ template <typename T> struct type_caster<nanobind::ref<T>> {
 
     static handle from_cpp(const ref<T> &value, rv_policy policy,
                            cleanup_list *cleanup) noexcept {
+        if constexpr (std::is_base_of_v<intrusive_base, T>)
+            if (policy != rv_policy::copy && policy != rv_policy::move && value.get())
+                if (PyObject* obj = value->self_py())
+                    return handle(obj).inc_ref();
+
         return Caster::from_cpp(value.get(), policy, cleanup);
     }
 };

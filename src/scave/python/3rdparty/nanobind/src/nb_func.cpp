@@ -32,7 +32,8 @@ static PyObject *nb_func_vectorcall_simple(PyObject *, PyObject *const *,
                                            size_t, PyObject *) noexcept;
 static PyObject *nb_func_vectorcall_complex(PyObject *, PyObject *const *,
                                             size_t, PyObject *) noexcept;
-static void nb_func_render_signature(const func_data *f) noexcept;
+static uint32_t nb_func_render_signature(const func_data *f,
+                                         bool nb_signature_mode = false) noexcept;
 
 int nb_func_traverse(PyObject *self, visitproc visit, void *arg) {
     size_t size = (size_t) Py_SIZE(self);
@@ -81,28 +82,32 @@ void nb_func_dealloc(PyObject *self) {
         func_data *f = nb_func_data(self);
 
         // Delete from registered function list
-        auto &funcs = internals->funcs;
-        auto it = funcs.find(self);
-        check(it != funcs.end(),
+        size_t n_deleted = internals->funcs.erase(self);
+        check(n_deleted == 1,
               "nanobind::detail::nb_func_dealloc(\"%s\"): function not found!",
               ((f->flags & (uint32_t) func_flags::has_name) ? f->name
                                                             : "<anonymous>"));
-        funcs.erase(it);
-
         for (size_t i = 0; i < size; ++i) {
             if (f->flags & (uint32_t) func_flags::has_free)
                 f->free_capture(f->capture);
 
             if (f->flags & (uint32_t) func_flags::has_args) {
                 for (size_t j = 0; j < f->nargs; ++j) {
-                    Py_XDECREF(f->args[j].value);
-                    Py_XDECREF(f->args[j].name_py);
+                    const arg_data &arg = f->args[j];
+                    Py_XDECREF(arg.value);
+                    Py_XDECREF(arg.name_py);
+                    free((char *) arg.signature);
                 }
             }
 
+            if (f->flags & (uint32_t) func_flags::has_doc)
+                free((char *) f->doc);
+
+            free((char *) f->name);
             free(f->args);
             free((char *) f->descr);
             free(f->descr_types);
+            free(f->signature);
             ++f;
         }
     }
@@ -133,8 +138,8 @@ void nb_bound_method_dealloc(PyObject *self) {
 }
 
 static arg_data method_args[2] = {
-    { "self", nullptr, nullptr, false, false },
-    { nullptr, nullptr, nullptr, false, false }
+    { "self", nullptr, nullptr, nullptr, false, false },
+    { nullptr, nullptr, nullptr, nullptr, false, false }
 };
 
 static bool set_builtin_exception_status(builtin_exception &e) {
@@ -167,6 +172,18 @@ void *malloc_check(size_t size) {
     return ptr;
 }
 
+char *strdup_check(const char *s) {
+    char *result;
+    #if defined(_WIN32)
+        result = _strdup(s);
+    #else
+        result = strdup(s);
+    #endif
+    if (!result)
+        fail("nanobind: strdup() failed!");
+    return result;
+}
+
 /**
  * \brief Wrap a C++ function into a Python function object
  *
@@ -179,10 +196,9 @@ PyObject *nb_func_new(const void *in_) noexcept {
     bool has_scope      = f->flags & (uint32_t) func_flags::has_scope,
          has_name       = f->flags & (uint32_t) func_flags::has_name,
          has_args       = f->flags & (uint32_t) func_flags::has_args,
-         has_var_args   = f->flags & (uint32_t) func_flags::has_var_args,
-         has_var_kwargs = f->flags & (uint32_t) func_flags::has_var_kwargs,
          has_keep_alive = f->flags & (uint32_t) func_flags::has_keep_alive,
          has_doc        = f->flags & (uint32_t) func_flags::has_doc,
+         has_signature  = f->flags & (uint32_t) func_flags::has_signature,
          is_implicit    = f->flags & (uint32_t) func_flags::is_implicit,
          is_method      = f->flags & (uint32_t) func_flags::is_method,
          return_ref     = f->flags & (uint32_t) func_flags::return_ref,
@@ -191,10 +207,18 @@ PyObject *nb_func_new(const void *in_) noexcept {
     PyObject *name = nullptr;
     PyObject *func_prev = nullptr;
 
+    char *name_cstr;
+    if (has_signature) {
+        name_cstr = extract_name("nanobind::detail::nb_func_new", "def ", f->name);
+        has_name = *name_cstr != '\0';
+    } else {
+        name_cstr = strdup_check(has_name ? f->name : "");
+    }
+
     // Check for previous overloads
     if (has_scope && has_name) {
-        name = PyUnicode_FromString(f->name);
-        check(name, "nb::detail::nb_func_new(\"%s\"): invalid name.", f->name);
+        name = PyUnicode_InternFromString(name_cstr);
+        check(name, "nb::detail::nb_func_new(\"%s\"): invalid name.", name_cstr);
 
         func_prev = PyObject_GetAttr(f->scope, name);
         if (func_prev) {
@@ -206,18 +230,18 @@ PyObject *nb_func_new(const void *in_) noexcept {
                           (f->flags & (uint32_t) func_flags::is_method),
                       "nb::detail::nb_func_new(\"%s\"): mismatched static/"
                       "instance method flags in function overloads!",
-                      f->name);
+                      name_cstr);
 
                 /* Never append a method to an overload chain of a parent class;
                    instead, hide the parent's overloads in this case */
                 if (fp->scope != f->scope)
                     Py_CLEAR(func_prev);
-            } else if (f->name[0] == '_') {
+            } else if (name_cstr[0] == '_') {
                 Py_CLEAR(func_prev);
             } else {
                 check(false,
                       "nb::detail::nb_func_new(\"%s\"): cannot overload "
-                      "existing non-function object of the same name!", f->name);
+                      "existing non-function object of the same name!", name_cstr);
             }
         } else {
             PyErr_Clear();
@@ -225,8 +249,8 @@ PyObject *nb_func_new(const void *in_) noexcept {
 
         // Is this method a constructor that takes a class binding as first parameter?
         is_constructor = is_method &&
-                         (strcmp(f->name, "__init__") == 0 ||
-                          strcmp(f->name, "__setstate__") == 0) &&
+                         (strcmp(name_cstr, "__init__") == 0 ||
+                          strcmp(name_cstr, "__setstate__") == 0) &&
                          strncmp(f->descr, "({%}", 4) == 0;
 
         // Don't use implicit conversions in copy constructors (causes infinite recursion)
@@ -246,15 +270,15 @@ PyObject *nb_func_new(const void *in_) noexcept {
     nb_func *func = (nb_func *) PyType_GenericAlloc(
         is_method ? internals->nb_method : internals->nb_func, to_copy + 1);
     check(func, "nb::detail::nb_func_new(\"%s\"): alloc. failed (1).",
-          has_name ? f->name : "<anonymous>");
+          name_cstr);
 
-    func->max_nargs_pos = f->nargs;
-    func->complex_call = has_args || has_var_args || has_var_kwargs || has_keep_alive;
+    func->max_nargs = f->nargs;
+    func->complex_call = f->nargs_pos < f->nargs || has_args || has_keep_alive;
 
     if (func_prev) {
         func->complex_call |= ((nb_func *) func_prev)->complex_call;
-        func->max_nargs_pos = std::max(func->max_nargs_pos,
-                                       ((nb_func *) func_prev)->max_nargs_pos);
+        func->max_nargs = std::max(func->max_nargs,
+                                   ((nb_func *) func_prev)->max_nargs);
 
         func_data *cur  = nb_func_data(func),
                   *prev = nb_func_data(func_prev);
@@ -264,13 +288,14 @@ PyObject *nb_func_new(const void *in_) noexcept {
 
         ((PyVarObject *) func_prev)->ob_size = 0;
 
-        auto it = internals->funcs.find(func_prev);
-        check(it != internals->funcs.end(),
+        size_t n_deleted = internals->funcs.erase(func_prev);
+        check(n_deleted == 1,
               "nanobind::detail::nb_func_new(): internal update failed (1)!");
-        internals->funcs.erase(it);
+
+        Py_CLEAR(func_prev);
     }
 
-    func->complex_call |= func->max_nargs_pos >= NB_MAXARGS_SIMPLE;
+    func->complex_call |= func->max_nargs >= NB_MAXARGS_SIMPLE;
 
     func->vectorcall = func->complex_call ? nb_func_vectorcall_complex
                                           : nb_func_vectorcall_simple;
@@ -282,26 +307,30 @@ PyObject *nb_func_new(const void *in_) noexcept {
 
     func_data *fc = nb_func_data(func) + to_copy;
     memcpy(fc, f, sizeof(func_data_prelim<0>));
-    if (has_doc && fc->doc[0] == '\n')
-        fc->doc++;
+    if (has_doc) {
+        if (fc->doc[0] == '\n') {
+            fc->doc++;
+        }
+        fc->doc = strdup_check(fc->doc);
+    }
 
     if (is_constructor)
         fc->flags |= (uint32_t) func_flags::is_constructor;
     if (has_args)
         fc->flags |= (uint32_t) func_flags::has_args;
 
-    if (!has_name)
-        fc->name = "";
+    fc->name = name_cstr;
+    fc->signature = has_signature ? strdup_check(f->name) : nullptr;
 
     if (is_implicit) {
         check(fc->flags & (uint32_t) func_flags::is_constructor,
               "nb::detail::nb_func_new(\"%s\"): nanobind::is_implicit() "
               "should only be specified for constructors.",
-              f->name);
+              name_cstr);
         check(f->nargs == 2,
               "nb::detail::nb_func_new(\"%s\"): implicit constructors "
               "should only have one argument.",
-              f->name);
+              name_cstr);
 
         if (f->descr_types[1])
             implicitly_convertible(f->descr_types[1], f->descr_types[0]);
@@ -335,11 +364,14 @@ PyObject *nb_func_new(const void *in_) noexcept {
 
         for (size_t i = 0; i < fc->nargs; ++i) {
             arg_data &a = fc->args[i];
-            if (a.name)
+            if (a.name) {
                 a.name_py = PyUnicode_InternFromString(a.name);
-            else
+                a.name = PyUnicode_AsUTF8AndSize(a.name_py, nullptr);
+            } else {
                 a.name_py = nullptr;
+            }
             a.none |= a.value == Py_None;
+            a.signature = a.signature ? strdup_check(a.signature) : nullptr;
             Py_XINCREF(a.value);
         }
     }
@@ -347,7 +379,7 @@ PyObject *nb_func_new(const void *in_) noexcept {
     if (has_scope && name) {
         int rv = PyObject_SetAttr(f->scope, name, (PyObject *) func);
         check(rv == 0, "nb::detail::nb_func_new(\"%s\"): setattr. failed.",
-              f->name);
+              name_cstr);
     }
 
     Py_XDECREF(name);
@@ -471,7 +503,7 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
     /* The following lines allocate memory on the stack, which is very efficient
        but also potentially dangerous since it can be used to generate stack
        overflows. We refuse unrealistically large number of 'kwargs' (the
-       'max_nargs_pos' value is fine since it is specified by the bindings) */
+       'max_nargs' value is fine since it is specified by the bindings) */
     if (nkwargs_in > 1024) {
         PyErr_SetString(PyExc_TypeError,
                         "nanobind::detail::nb_func_vectorcall(): too many (> "
@@ -487,10 +519,47 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
     cleanup_list cleanup(self_arg);
 
     // Preallocate stack memory for function dispatch
-    size_t max_nargs_pos = ((nb_func *) self)->max_nargs_pos;
-    PyObject **args = (PyObject **) alloca(max_nargs_pos * sizeof(PyObject *));
-    uint8_t *args_flags = (uint8_t *) alloca(max_nargs_pos * sizeof(uint8_t));
+    size_t max_nargs = ((nb_func *) self)->max_nargs;
+    PyObject **args = (PyObject **) alloca(max_nargs * sizeof(PyObject *));
+    uint8_t *args_flags = (uint8_t *) alloca(max_nargs * sizeof(uint8_t));
     bool *kwarg_used = (bool *) alloca(nkwargs_in * sizeof(bool));
+
+    // Ensure that keyword argument names are interned. That makes it faster
+    // to compare them against pre-interned argument names in the overload chain.
+    // Normal function calls will have their keyword arguments already interned,
+    // but we can't rely on that; it fails for things like fn(**json.loads(...)).
+    PyObject **kwnames = nullptr;
+
+#if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+    bool kwnames_interned = true;
+    for (size_t i = 0; i < nkwargs_in; ++i) {
+        PyObject *key = NB_TUPLE_GET_ITEM(kwargs_in, i);
+        kwnames_interned &= ((PyASCIIObject *) key)->state.interned != 0;
+    }
+    if (NB_LIKELY(kwnames_interned)) {
+        kwnames = ((PyTupleObject *) kwargs_in)->ob_item;
+        goto traverse_overloads;
+    }
+#endif
+
+    kwnames = (PyObject **) alloca(nkwargs_in * sizeof(PyObject *));
+    for (size_t i = 0; i < nkwargs_in; ++i) {
+        PyObject *key = NB_TUPLE_GET_ITEM(kwargs_in, i);
+        Py_INCREF(key);
+
+        kwnames[i] = key;
+        PyUnicode_InternInPlace(&kwnames[i]);
+        PyObject *key_interned = kwnames[i];
+
+        if (NB_LIKELY(key == key_interned)) // string was already interned
+            Py_DECREF(key);
+        else
+            cleanup.append(key_interned);
+    }
+
+#if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+  traverse_overloads:
+#endif
 
     /*  The logic below tries to find a suitable overload using two passes
         of the overload chain (or 1, if there are no overloads). The first pass
@@ -499,7 +568,7 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
 
         The following is done per overload during a pass
 
-        1. Copy positional arguments while checking that named positional
+        1. Copy individual arguments while checking that named positional
            arguments weren't *also* specified as kwarg. Substitute missing
            entries using keyword arguments or default argument values provided
            in the bindings, if available.
@@ -527,8 +596,17 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
                        has_var_args   = f->flags & (uint32_t) func_flags::has_var_args,
                        has_var_kwargs = f->flags & (uint32_t) func_flags::has_var_kwargs;
 
-            /// Number of positional arguments
-            size_t nargs_pos = f->nargs - has_var_args - has_var_kwargs;
+            // Number of C++ parameters eligible to be filled from individual
+            // Python positional arguments
+            size_t nargs_pos = f->nargs_pos;
+
+            // Number of C++ parameters in total, except for a possible trailing
+            // nb::kwargs. All of these are eligible to be filled from individual
+            // Python arguments (keyword always, positional until index nargs_pos)
+            // except for a potential nb::args, which exists at index nargs_pos
+            // if has_var_args is true. We'll skip that one in the individual-args
+            // loop, and go back and fill it later with the unused positionals.
+            size_t nargs_step1 = f->nargs - has_var_kwargs;
 
             if (nargs_in > nargs_pos && !has_var_args)
                 continue; // Too many positional arguments given for this overload
@@ -539,14 +617,24 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
 
             memset(kwarg_used, 0, nkwargs_in * sizeof(bool));
 
-            // 1. Copy positional arguments, potentially substitute kwargs/defaults
+            // 1. Copy individual arguments, potentially substitute kwargs/defaults
             size_t i = 0;
-            for (; i < nargs_pos; ++i) {
+            for (; i < nargs_step1; ++i) {
+                if (has_var_args && i == nargs_pos)
+                    continue; // skip nb::args parameter, will be handled below
+
                 PyObject *arg = nullptr;
                 bool arg_convert  = pass == 1,
                      arg_none     = false;
 
-                if (i < nargs_in)
+                // If i >= nargs_pos, then this is a keyword-only parameter.
+                // (We skipped any *args parameter using the test above,
+                // and we set the bounds of nargs_step1 to not include any
+                // **kwargs parameter.) In that case we don't want to take
+                // a positional arg (which might validly exist and be
+                // destined for the *args) but we do still want to look for
+                // a matching keyword arg.
+                if (i < nargs_in && i < nargs_pos)
                     arg = args_in[i];
 
                 if (has_args) {
@@ -555,13 +643,7 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
                     if (kwargs_in && ad.name_py) {
                         PyObject *hit = nullptr;
                         for (size_t j = 0; j < nkwargs_in; ++j) {
-                            PyObject *key = NB_TUPLE_GET_ITEM(kwargs_in, j);
-                            #if defined(PYPY_VERSION)
-                                bool match = PyUnicode_Compare(key, ad.name_py) == 0;
-                            #else
-                                bool match = (key == ad.name_py);
-                            #endif
-                            if (match) {
+                            if (kwnames[j] == ad.name_py) {
                                 hit = args_in[nargs_in + j];
                                 kwarg_used[j] = true;
                                 break;
@@ -589,8 +671,8 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
                 args_flags[i] = arg_convert ? (uint8_t) cast_flags::convert : (uint8_t) 0;
             }
 
-            // Skip this overload if positional arguments were unavailable
-            if (i != nargs_pos)
+            // Skip this overload if any arguments were unavailable
+            if (i != nargs_step1)
                 continue;
 
             // Deal with remaining positional arguments
@@ -613,13 +695,13 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
             if (has_var_kwargs) {
                 PyObject *dict = PyDict_New();
                 for (size_t j = 0; j < nkwargs_in; ++j) {
-                    PyObject *key = NB_TUPLE_GET_ITEM(kwargs_in, j);
+                    PyObject *key = kwnames[j];
                     if (!kwarg_used[j])
                         PyDict_SetItem(dict, key, args_in[nargs_in + j]);
                 }
 
-                args[nargs_pos + has_var_args] = dict;
-                args_flags[nargs_pos + has_var_args] = 0;
+                args[nargs_step1] = dict;
+                args_flags[nargs_step1] = 0;
                 cleanup.append(dict);
             } else if (kwargs_in) {
                 bool success = true;
@@ -662,7 +744,7 @@ static PyObject *nb_func_vectorcall_complex(PyObject *self,
                 if (is_constructor) {
                     nb_inst *self_arg_nb = (nb_inst *) self_arg;
                     self_arg_nb->destruct = true;
-                    self_arg_nb->ready = true;
+                    self_arg_nb->state = nb_inst::state_ready;
                     if (NB_UNLIKELY(self_arg_nb->intrusive))
                         nb_type_data(Py_TYPE(self_arg))
                             ->set_self_py(inst_ptr(self_arg_nb), self_arg);
@@ -763,7 +845,7 @@ static PyObject *nb_func_vectorcall_simple(PyObject *self,
                 if (is_constructor) {
                     nb_inst *self_arg_nb = (nb_inst *) self_arg;
                     self_arg_nb->destruct = true;
-                    self_arg_nb->ready = true;
+                    self_arg_nb->state = nb_inst::state_ready;
                     if (NB_UNLIKELY(self_arg_nb->intrusive))
                         nb_type_data(Py_TYPE(self_arg))
                             ->set_self_py(inst_ptr(self_arg_nb), self_arg);
@@ -839,21 +921,63 @@ PyObject *nb_method_descr_get(PyObject *self, PyObject *inst, PyObject *) {
 
 
 /// Render the function signature of a single function
-static void nb_func_render_signature(const func_data *f) noexcept {
+static uint32_t nb_func_render_signature(const func_data *f,
+                                         bool nb_signature_mode) noexcept {
     const bool is_method      = f->flags & (uint32_t) func_flags::is_method,
                has_args       = f->flags & (uint32_t) func_flags::has_args,
                has_var_args   = f->flags & (uint32_t) func_flags::has_var_args,
-               has_var_kwargs = f->flags & (uint32_t) func_flags::has_var_kwargs;
+               has_var_kwargs = f->flags & (uint32_t) func_flags::has_var_kwargs,
+               has_signature  = f->flags & (uint32_t) func_flags::has_signature;
+
+    if (has_signature) {
+        const char *s = f->signature;
+
+        if (!nb_signature_mode) {
+            // go to last line of manually provided signature, strip away 'def ' prefix
+            const char *p = strrchr(s, '\n');
+            s = p ? (p + 1) : s;
+            if (strncmp(s, "def ", 4) == 0)
+                s += 4;
+        }
+
+        buf.put_dstr(s);
+        return 0;
+    }
+
+    if (nb_signature_mode)
+        buf.put("def ");
 
     const std::type_info **descr_type = f->descr_types;
+    bool rv = false;
 
-    uint32_t arg_index = 0;
+    uint32_t arg_index = 0, n_default_args = 0;
     buf.put_dstr(f->name);
 
     for (const char *pc = f->descr; *pc != '\0'; ++pc) {
         char c = *pc;
 
         switch (c) {
+            case '@':
+                // Handle types that differ depending on whether they appear
+                // in an argument or a return value position
+                pc++;
+                if (!rv) {
+                    while (*pc && *pc != '@')
+                        buf.put(*pc++);
+                    if (*pc == '@')
+                        pc++;
+                    while (*pc && *pc != '@')
+                        pc++;
+                } else {
+                    while (*pc && *pc != '@')
+                        pc++;
+                    if (*pc == '@')
+                        pc++;
+                    while (*pc && *pc != '@')
+                        buf.put(*pc++);
+                }
+                break;
+
             case '{':
                 {
                     const char *arg_name = has_args ? f->args[arg_index].name : nullptr;
@@ -866,11 +990,16 @@ static void nb_func_render_signature(const func_data *f) noexcept {
                         break;
                     }
 
-                    if (has_var_args && arg_index + 1 + has_var_kwargs == f->nargs) {
+                    if (arg_index == f->nargs_pos) {
                         buf.put("*");
-                        buf.put_dstr(arg_name ? arg_name : "args");
-                        pc += 5; // strlen("tuple")
-                        break;
+                        if (has_var_args) {
+                            buf.put_dstr(arg_name ? arg_name : "args");
+                            pc += 5; // strlen("tuple")
+                            break;
+                        } else {
+                            buf.put(", ");
+                            // fall through to render the first keyword-only arg
+                        }
                     }
 
                     if (is_method && arg_index == 0) {
@@ -893,46 +1022,62 @@ static void nb_func_render_signature(const func_data *f) noexcept {
                     }
 
                     buf.put(": ");
-                    if (has_args && f->args[arg_index].none)
-                        buf.put("Optional[");
+                    if (has_args && f->args[arg_index].none) {
+                        #if PY_VERSION_HEX < 0x030A0000
+                            buf.put("typing.Optional[");
+                        #else
+                            // See below
+                        #endif
+                    }
                 }
                 break;
 
             case '}':
                 // Default argument
                 if (has_args) {
-                    if (f->args[arg_index].none)
-                        buf.put(']');
+                    if (f->args[arg_index].none) {
+                        #if PY_VERSION_HEX < 0x030A0000
+                            buf.put(']');
+                        #else
+                            buf.put(" | None");
+                        #endif
+                    }
 
                     if (f->args[arg_index].value) {
-                        PyObject *o = f->args[arg_index].value;
-                        PyObject *str = PyObject_Str(o);
-                        bool is_str = PyUnicode_Check(o);
-
-                        if (str) {
-                            Py_ssize_t size = 0;
-                            const char *cstr =
-                                PyUnicode_AsUTF8AndSize(str, &size);
-                            if (!cstr) {
-                                PyErr_Clear();
-                            } else {
-                                buf.put(" = ");
-                                if (is_str)
-                                    buf.put('\'');
-                                buf.put(cstr, (size_t) size);
-                                if (is_str)
-                                    buf.put('\'');
-                            }
-                            Py_DECREF(str);
+                        const arg_data &arg= f->args[arg_index];
+                        if (nb_signature_mode) {
+                            buf.put(" = \\");
+                            if (arg.signature)
+                                buf.put('=');
+                            buf.put_uint32(n_default_args++);
+                        } else if (arg.signature) {
+                            buf.put(" = ");
+                            buf.put_dstr(arg.signature);
                         } else {
-                            PyErr_Clear();
+                            PyObject *o = arg.value;
+                            PyObject *str = PyObject_Repr(o);
+
+                            if (str) {
+                                Py_ssize_t size = 0;
+                                const char *cstr =
+                                    PyUnicode_AsUTF8AndSize(str, &size);
+                                if (!cstr) {
+                                    PyErr_Clear();
+                                } else {
+                                    buf.put(" = ");
+                                    buf.put(cstr, (size_t) size);
+                                }
+                                Py_DECREF(str);
+                            } else {
+                                PyErr_Clear();
+                            }
                         }
                     }
                 }
 
                 arg_index++;
 
-                if (arg_index == f->nargs - has_var_args - has_var_kwargs && !has_args)
+                if (arg_index == f->nargs_pos && !has_args)
                     buf.put(", /");
 
                 break;
@@ -942,22 +1087,33 @@ static void nb_func_render_signature(const func_data *f) noexcept {
                       "nb::detail::nb_func_render_signature(): missing type!");
 
                 if (!(is_method && arg_index == 0)) {
-                    auto it = internals->type_c2p.find(std::type_index(**descr_type));
+                    auto it = internals->type_c2p_slow.find(*descr_type);
 
-                    if (it != internals->type_c2p.end()) {
+                    if (it != internals->type_c2p_slow.end()) {
                         handle th((PyObject *) it->second->type_py);
                         buf.put_dstr((borrow<str>(th.attr("__module__"))).c_str());
                         buf.put('.');
                         buf.put_dstr((borrow<str>(th.attr("__qualname__"))).c_str());
                     } else {
+                        if (nb_signature_mode)
+                            buf.put('"');
                         char *name = type_name(*descr_type);
                         buf.put_dstr(name);
                         free(name);
+                        if (nb_signature_mode)
+                            buf.put('"');
                     }
                 }
 
                 descr_type++;
                 break;
+
+            case '-':
+                if (pc[1] == '>')
+                    rv = true;
+                buf.put(c);
+                break;
+
 
             default:
                 buf.put(c);
@@ -968,16 +1124,16 @@ static void nb_func_render_signature(const func_data *f) noexcept {
     check(arg_index == f->nargs && !*descr_type,
           "nanobind::detail::nb_func_render_signature(%s): arguments inconsistent.",
           f->name);
+
+    return n_default_args;
 }
 
 static PyObject *nb_func_get_name(PyObject *self) {
     func_data *f = nb_func_data(self);
-    if (f->flags & (uint32_t) func_flags::has_name) {
-        return PyUnicode_FromString(f->name);
-    } else {
-        Py_INCREF(Py_None);
-        return Py_None;
-    }
+    const char *name = "";
+    if (f->flags & (uint32_t) func_flags::has_name)
+        name = f->name;
+    return PyUnicode_FromString(name);
 }
 
 static PyObject *nb_func_get_qualname(PyObject *self) {
@@ -1008,6 +1164,81 @@ static PyObject *nb_func_get_module(PyObject *self) {
     }
 }
 
+PyObject *nb_func_get_nb_signature(PyObject *self, void *) {
+    PyObject *docstr = nullptr, *item = nullptr, *sigstr = nullptr,
+             *defaults = nullptr;
+
+    func_data *f = nb_func_data(self);
+    uint32_t count = (uint32_t) Py_SIZE(self);
+    PyObject *result = PyTuple_New(count);
+    if (!result)
+        return nullptr;
+
+    for (uint32_t i = 0; i < count; ++i) {
+        docstr = item = sigstr = defaults = nullptr;
+
+        const func_data *fi = f + i;
+        if (fi->flags & (uint32_t) func_flags::has_doc && fi->doc[0] != '\0') {
+            docstr = PyUnicode_FromString(fi->doc);
+        } else {
+            docstr = Py_None;
+            Py_INCREF(docstr);
+        }
+
+        buf.clear();
+        uint32_t n_default_args = nb_func_render_signature(fi, true);
+
+        item = PyTuple_New(3);
+        sigstr = PyUnicode_FromString(buf.get());
+        if (n_default_args) {
+            defaults = PyTuple_New(n_default_args);
+        } else {
+            defaults = Py_None;
+            Py_INCREF(defaults);
+        }
+
+        if (!docstr || !sigstr || !item || !defaults)
+            goto fail;
+
+        if (n_default_args) {
+            size_t pos = 0;
+            for (uint32_t j = 0; j < fi->nargs; ++j) {
+                const arg_data &arg = fi->args[j];
+                PyObject *value = arg.value;
+                if (!value)
+                    continue;
+                if (arg.signature) {
+                    value = PyUnicode_FromString(arg.signature);
+                    if (!value)
+                        goto fail;
+                } else {
+                    Py_INCREF(value);
+                }
+                NB_TUPLE_SET_ITEM(defaults, pos, value);
+                pos++;
+            }
+
+            check(pos == n_default_args,
+                  "__nb_signature__: default argument counting inconsistency!");
+        }
+
+        NB_TUPLE_SET_ITEM(item, 0, sigstr);
+        NB_TUPLE_SET_ITEM(item, 1, docstr);
+        NB_TUPLE_SET_ITEM(item, 2, defaults);
+        NB_TUPLE_SET_ITEM(result, (Py_ssize_t) i, item);
+    }
+
+    return result;
+
+fail:
+    Py_XDECREF(docstr);
+    Py_XDECREF(sigstr);
+    Py_XDECREF(defaults);
+    Py_XDECREF(item);
+    Py_DECREF(result);
+    return nullptr;
+}
+
 PyObject *nb_func_get_doc(PyObject *self, void *) {
     func_data *f = nb_func_data(self);
     uint32_t count = (uint32_t) Py_SIZE(self);
@@ -1017,9 +1248,6 @@ PyObject *nb_func_get_doc(PyObject *self, void *) {
     size_t doc_count = 0;
     for (uint32_t i = 0; i < count; ++i) {
         const func_data *fi = f + i;
-        if (fi->flags & (uint32_t) func_flags::raw_doc)
-            return PyUnicode_FromString(fi->doc);
-
         nb_func_render_signature(fi);
         buf.put('\n');
         if ((fi->flags & (uint32_t) func_flags::has_doc) && fi->doc[0] != '\0')
@@ -1108,7 +1336,7 @@ NB_NOINLINE char *type_name(const std::type_info *t) {
     int status = 0;
     char *name = abi::__cxa_demangle(name_in, nullptr, nullptr, &status);
 #else
-    char *name = NB_STRDUP(name_in);
+    char *name = strdup_check(name_in);
     strexc(name, "class ");
     strexc(name, "struct ");
     strexc(name, "enum ");

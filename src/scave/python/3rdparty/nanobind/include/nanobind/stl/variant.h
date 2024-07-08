@@ -22,10 +22,10 @@ struct concat_variant<std::variant<Ts1...>, std::variant<Ts2...>, Ts3...>
     : concat_variant<std::variant<Ts1..., Ts2...>, Ts3...> {};
 
 template <typename... Ts> struct remove_opt_mono<std::variant<Ts...>>
-    : concat_variant<std::conditional_t<std::is_same_v<std::monostate, Ts>, std::variant<>, std::variant<Ts>>...> {};
+    : concat_variant<std::conditional_t<std::is_same_v<std::monostate, Ts>, std::variant<>, std::variant<remove_opt_mono_t<Ts>>>...> {};
 
 template <> struct type_caster<std::monostate> {
-    NB_TYPE_CASTER(std::monostate, const_name("None"));
+    NB_TYPE_CASTER(std::monostate, const_name("None"))
 
     bool from_python(handle src, uint8_t, cleanup_list *) noexcept {
         return src.is_none();
@@ -38,26 +38,16 @@ template <> struct type_caster<std::monostate> {
 };
 
 template <typename... Ts> struct type_caster<std::variant<Ts...>> {
-    NB_TYPE_CASTER(std::variant<Ts...>,
-        const_name("Union[") + concat(make_caster<Ts>::Name...) + const_name("]"));
+    NB_TYPE_CASTER(std::variant<Ts...>, union_name(make_caster<Ts>::Name...))
 
     template <typename T>
     bool try_variant(const handle &src, uint8_t flags, cleanup_list *cleanup) {
         using CasterT = make_caster<T>;
 
-        static_assert(
-            !std::is_pointer_v<T> || is_base_caster_v<CasterT>,
-            "Binding ``variant<T*, ...>`` requires that ``T`` is handled "
-            "by nanobind's regular class binding mechanism. However, a "
-            "type caster was registered to intercept this particular "
-            "type, which is not allowed.");
-
-        if constexpr (is_base_caster_v<CasterT> && !std::is_pointer_v<T>)
-            flags |= (uint8_t) cast_flags::none_disallowed;
-
         CasterT caster;
 
-        if (!caster.from_python(src, flags, cleanup))
+        if (!caster.from_python(src, flags_for_local_caster<T>(flags), cleanup) ||
+            !caster.template can_cast<T>())
             return false;
 
         value = caster.operator cast_t<T>();

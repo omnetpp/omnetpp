@@ -13,8 +13,14 @@
 
 #include <nanobind/nanobind.h>
 #include <tsl/robin_map.h>
-#include <typeindex>
 #include <cstring>
+#include <string_view>
+#include <functional>
+#include "hash.h"
+
+#if TSL_RH_VERSION_MAJOR != 1 || TSL_RH_VERSION_MINOR < 3
+#  error nanobind depends on tsl::robin_map, in particular version >= 1.3.0, <2.0.0
+#endif
 
 #if defined(_MSC_VER)
 #  define NB_THREAD_LOCAL __declspec(thread)
@@ -35,6 +41,7 @@ NAMESPACE_BEGIN(detail)
 /// Nanobind function metadata (overloads, etc.)
 struct func_data : func_data_prelim<0> {
     arg_data *args;
+    char *signature;
 };
 
 /// Python object representing an instance of a bound C++ type
@@ -43,6 +50,16 @@ struct nb_inst { // usually: 24 bytes
 
     /// Offset to the actual instance data
     int32_t offset;
+
+    /// State of the C++ object this instance points to: is it constructed?
+    /// can we use it?
+    uint32_t state : 2;
+
+    // Values for `state`. Note that the numeric values of these are relied upon
+    // for an optimization in `nb_type_get()`.
+    static constexpr uint32_t state_uninitialized = 0; // not constructed
+    static constexpr uint32_t state_relinquished = 1; // owned by C++, don't touch
+    static constexpr uint32_t state_ready = 2; // constructed and usable
 
     /**
      * The variable 'offset' can either encode an offset relative to the
@@ -55,22 +72,20 @@ struct nb_inst { // usually: 24 bytes
     /// Is the instance data co-located with the Python object?
     uint32_t internal : 1;
 
-    /// Is the instance properly initialized?
-    uint32_t ready : 1;
-
     /// Should the destructor be called when this instance is GCed?
     uint32_t destruct : 1;
 
     /// Should nanobind call 'operator delete' when this instance is GCed?
     uint32_t cpp_delete : 1;
 
-    /// Does this instance hold reference to others? (via internals.keep_alive)
+    /// Does this instance hold references to others? (via internals.keep_alive)
     uint32_t clear_keep_alive : 1;
 
     /// Does this instance use intrusive reference counting?
     uint32_t intrusive : 1;
 
-    uint32_t unused: 25;
+    // That's a lot of unused space. I wonder if there is a good use for it..
+    uint32_t unused : 24;
 };
 
 static_assert(sizeof(nb_inst) == sizeof(PyObject) + sizeof(uint32_t) * 2);
@@ -79,7 +94,7 @@ static_assert(sizeof(nb_inst) == sizeof(PyObject) + sizeof(uint32_t) * 2);
 struct nb_func {
     PyObject_VAR_HEAD
     PyObject* (*vectorcall)(PyObject *, PyObject * const*, size_t, PyObject *);
-    uint32_t max_nargs_pos;
+    uint32_t max_nargs; // maximum value of func_data::nargs for any overload
     bool complex_call;
 };
 
@@ -100,22 +115,11 @@ struct nb_bound_method {
 /// Pointers require a good hash function to randomize the mapping to buckets
 struct ptr_hash {
     size_t operator()(const void *p) const {
-        uintptr_t v = (uintptr_t) p;
         // fmix32/64 from MurmurHash by Austin Appleby (public domain)
-        if constexpr (sizeof(void *) == 4) {
-            v ^= v >> 16;
-            v *= 0x85ebca6b;
-            v ^= v >> 13;
-            v *= 0xc2b2ae35;
-            v ^= v >> 16;
-        } else {
-            v ^= v >> 33;
-            v *= (uintptr_t) 0xff51afd7ed558ccdull;
-            v ^= v >> 33;
-            v *= (uintptr_t) 0xc4ceb9fe1a85ec53ull;
-            v ^= v >> 33;
-        }
-        return (size_t) v;
+        if constexpr (sizeof(void *) == 4)
+            return (size_t) fmix32((uint32_t) (uintptr_t) p);
+        else
+            return (size_t) fmix64((uint64_t) (uintptr_t) p);
     }
 };
 
@@ -141,14 +145,16 @@ public:
     void deallocate(T *p, size_type /*n*/) noexcept { PyMem_Free(p); }
 };
 
-template <typename key, typename value, typename hash = std::hash<key>,
-          typename eq = std::equal_to<key>>
-using py_map = tsl::robin_map<key, value, hash, eq>;
-
 // Linked list of instances with the same pointer address. Usually just 1.
 struct nb_inst_seq {
     PyObject *inst;
     nb_inst_seq *next;
+};
+
+// Linked list of type aliases when there are multiple shared libraries with duplicate RTTI data
+struct nb_alias_chain {
+    const std::type_info *value;
+    nb_alias_chain *next;
 };
 
 // Weak reference list. Usually, there is just one entry
@@ -158,11 +164,26 @@ struct nb_weakref_seq {
     nb_weakref_seq *next;
 };
 
-using nb_type_map = py_map<std::type_index, type_data *>;
+struct std_typeinfo_hash {
+    size_t operator()(const std::type_info *a) const {
+        const char *name = a->name();
+        return std::hash<std::string_view>()({name, strlen(name)});
+    }
+};
+
+struct std_typeinfo_eq {
+    bool operator()(const std::type_info *a, const std::type_info *b) const {
+        return a->name() == b->name() || strcmp(a->name(), b->name()) == 0;
+    }
+};
+
+using nb_type_map_fast = tsl::robin_map<const std::type_info *, type_data *, ptr_hash>;
+using nb_type_map_slow = tsl::robin_map<const std::type_info *, type_data *,
+                                        std_typeinfo_hash, std_typeinfo_eq>;
 
 /// A simple pointer-to-pointer map that is reused a few times below (even if
 /// not 100% ideal) to avoid template code generation bloat.
-using nb_ptr_map  = py_map<void *, void*, ptr_hash>;
+using nb_ptr_map  = tsl::robin_map<void *, void*, ptr_hash>;
 
 /// Convenience functions to deal with the pointer encoding in 'internals.inst_c2p'
 
@@ -215,8 +236,11 @@ struct nb_internals {
      */
     nb_ptr_map inst_c2p;
 
-    /// C++ -> Python type map
-    nb_type_map type_c2p;
+    /// C++ -> Python type map -- fast version based on std::type_info pointer equality
+    nb_type_map_fast type_c2p_fast;
+
+    /// C++ -> Python type map -- slow fallback version based on hashed strings
+    nb_type_map_slow type_c2p_slow;
 
     /// Dictionary storing keep_alive references
     nb_ptr_map keep_alive;
@@ -263,6 +287,11 @@ extern char *type_name(const std::type_info *t);
 extern PyObject *inst_new_ext(PyTypeObject *tp, void *value);
 extern PyObject *inst_new_int(PyTypeObject *tp);
 extern PyTypeObject *nb_static_property_tp() noexcept;
+extern type_data *nb_type_c2p(nb_internals *internals,
+                              const std::type_info *type);
+extern void nb_type_unregister(type_data *t) noexcept;
+
+extern PyObject *call_one_arg(PyObject *fn, PyObject *arg) noexcept;
 
 /// Fetch the nanobind function record from a 'nb_func' instance
 NB_INLINE func_data *nb_func_data(void *o) {
@@ -307,6 +336,11 @@ template <typename T> struct scoped_pymalloc {
 private:
     T *ptr{ nullptr };
 };
+
+extern char *strdup_check(const char *);
+extern void *malloc_check(size_t size);
+
+extern char *extract_name(const char *cmd, const char *prefix, const char *s);
 
 NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)

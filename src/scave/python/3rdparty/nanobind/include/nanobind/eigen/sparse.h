@@ -39,15 +39,15 @@ template <typename T> struct type_caster<T, enable_if_t<is_eigen_sparse_matrix_v
 
     static constexpr bool RowMajor = T::IsRowMajor;
 
-    using ScalarNDArray = ndarray<numpy, Scalar, shape<any>>;
-    using StorageIndexNDArray = ndarray<numpy, StorageIndex, shape<any>>;
+    using ScalarNDArray = ndarray<numpy, Scalar, shape<-1>>;
+    using StorageIndexNDArray = ndarray<numpy, StorageIndex, shape<-1>>;
 
     using ScalarCaster = make_caster<ScalarNDArray>;
     using StorageIndexCaster = make_caster<StorageIndexNDArray>;
 
     NB_TYPE_CASTER(T, const_name<RowMajor>("scipy.sparse.csr_matrix[",
                                            "scipy.sparse.csc_matrix[")
-                   + make_caster<Scalar>::Name + const_name("]"));
+                   + make_caster<Scalar>::Name + const_name("]"))
 
     ScalarCaster data_caster;
     StorageIndexCaster indices_caster, indptr_caster;
@@ -131,9 +131,9 @@ template <typename T> struct type_caster<T, enable_if_t<is_eigen_sparse_matrix_v
         StorageIndexNDArray inner_indices(src->innerIndexPtr(), 1, data_shape, owner);
 
         try {
-            return matrix_type(make_tuple(
+            return matrix_type(nanobind::make_tuple(
                                    std::move(data), std::move(inner_indices), std::move(outer_indices)),
-                               make_tuple(rows, cols))
+                               nanobind::make_tuple(rows, cols))
                 .release();
         } catch (python_error &e) {
             e.restore();
@@ -150,6 +150,7 @@ struct type_caster<Eigen::Map<T>, enable_if_t<is_eigen_sparse_matrix_v<T>>> {
     using SparseMatrixCaster = type_caster<T>;
     static constexpr auto Name = SparseMatrixCaster::Name;
     template <typename T_> using Cast = Map;
+    template <typename T_> static constexpr bool can_cast() { return true; }
 
     bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept = delete;
 
@@ -165,6 +166,7 @@ struct type_caster<Eigen::Ref<T, Options>, enable_if_t<is_eigen_sparse_matrix_v<
     using MapCaster = make_caster<Map>;
     static constexpr auto Name = MapCaster::Name;
     template <typename T_> using Cast = Ref;
+    template <typename T_> static constexpr bool can_cast() { return true; }
 
     bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept = delete;
 

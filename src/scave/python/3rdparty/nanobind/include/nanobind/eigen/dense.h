@@ -95,9 +95,9 @@ using array_for_eigen_t = ndarray<
     numpy,
     std::conditional_t<
         ndim_v<T> == 1,
-        shape<(size_t) T::SizeAtCompileTime>,
-        shape<(size_t) T::RowsAtCompileTime,
-              (size_t) T::ColsAtCompileTime>>,
+        shape<T::SizeAtCompileTime>,
+        shape<T::RowsAtCompileTime,
+              T::ColsAtCompileTime>>,
     std::conditional_t<
         is_contiguous_v<T>,
         std::conditional_t<
@@ -127,7 +127,7 @@ struct type_caster<T, enable_if_t<is_eigen_plain_v<T> &&
     using NDArray = array_for_eigen_t<T>;
     using NDArrayCaster = make_caster<NDArray>;
 
-    NB_TYPE_CASTER(T, NDArrayCaster::Name);
+    NB_TYPE_CASTER(T, NDArrayCaster::Name)
 
     bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept {
         // We're in any case making a copy, so non-writable inputs area also okay
@@ -198,7 +198,7 @@ struct type_caster<T, enable_if_t<is_eigen_plain_v<T> &&
             owner = capsule(temp, [](void *p) noexcept { delete (T *) p; });
             ptr = temp->data();
             policy = rv_policy::reference;
-        } else if (policy == rv_policy::reference_internal) {
+        } else if (policy == rv_policy::reference_internal && cleanup->self()) {
             owner = borrow(cleanup->self());
             policy = rv_policy::reference;
         }
@@ -220,6 +220,7 @@ struct type_caster<T, enable_if_t<is_eigen_xpr_v<T> &&
     using Caster = make_caster<Array>;
     static constexpr auto Name = Caster::Name;
     template <typename T_> using Cast = T;
+    template <typename T_> static constexpr bool can_cast() { return true; }
 
     /// Generating an expression template from a Python object is, of course, not possible
     bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept = delete;
@@ -250,6 +251,7 @@ struct type_caster<Eigen::Map<T, Options, StrideType>,
     using NDArrayCaster = type_caster<NDArray>;
     static constexpr auto Name = NDArrayCaster::Name;
     template <typename T_> using Cast = Map;
+    template <typename T_> static constexpr bool can_cast() { return true; }
 
     NDArrayCaster caster;
 
@@ -372,6 +374,12 @@ struct type_caster<Eigen::Ref<T, Options, StrideType>,
         // Restrict to contiguous 'T' (limitation in Eigen, see PR #215)
         can_map_contiguous_memory_v<Ref>;
 
+    using NDArray =
+        array_for_eigen_t<Ref, std::conditional_t<std::is_const_v<T>,
+                                                  const typename Ref::Scalar,
+                                                  typename Ref::Scalar>>;
+    using NDArrayCaster = type_caster<NDArray>;
+
     /// Eigen::Map<T> caster with fixed strides
     using Map = Eigen::Map<T, Options, StrideType>;
     using MapCaster = make_caster<Map>;
@@ -397,6 +405,7 @@ struct type_caster<Eigen::Ref<T, Options, StrideType>,
         const_name<MaybeConvert>(DMapCaster::Name, MapCaster::Name);
 
     template <typename T_> using Cast = Ref;
+    template <typename T_> static constexpr bool can_cast() { return true; }
 
     MapCaster caster;
     struct Empty { };
@@ -411,15 +420,17 @@ struct type_caster<Eigen::Ref<T, Options, StrideType>,
         if constexpr (MaybeConvert) {
             /* Generating an implicit copy requires some object to assume
                ownership. During a function call, ``dcaster`` can serve that
-               role (this case is detected by checking whether ``cleanup`` is
-               defined). When used in other situatons (e.g. ``nb::cast()``),
-               the created ``Eigen::Ref<..>`` must take ownership of the copy.
-               This is only guranteed to work if DMapConstructorOwnsData.
+               role (this case is detected by checking whether ``flags`` has
+               the ``manual`` flag set). When used in other situations (e.g.
+               ``nb::cast()``), the created ``Eigen::Ref<..>`` must take
+               ownership of the copy. This is only guranteed to work if
+               DMapConstructorOwnsData.
 
                If neither of these is possible, we disable implicit
                conversions. */
 
-            if (!cleanup && !DMapConstructorOwnsData)
+            if ((flags & (uint8_t) cast_flags::manual) &&
+                !DMapConstructorOwnsData)
                 flags &= ~(uint8_t) cast_flags::convert;
 
             if (dcaster.from_python_(src, flags, cleanup))
@@ -427,6 +438,27 @@ struct type_caster<Eigen::Ref<T, Options, StrideType>,
         }
 
         return false;
+    }
+
+    static handle from_cpp(const Ref &v, rv_policy, cleanup_list *cleanup) noexcept {
+        // Copied from the Eigen::Map caster
+
+        size_t shape[ndim_v<T>];
+        int64_t strides[ndim_v<T>];
+
+        if constexpr (ndim_v<T> == 1) {
+            shape[0] = v.size();
+            strides[0] = v.innerStride();
+        } else {
+            shape[0] = v.rows();
+            shape[1] = v.cols();
+            strides[0] = v.rowStride();
+            strides[1] = v.colStride();
+        }
+
+        return NDArrayCaster::from_cpp(
+            NDArray((void *) v.data(), ndim_v<T>, shape, handle(), strides),
+            rv_policy::reference, cleanup);
     }
 
     operator Ref() {

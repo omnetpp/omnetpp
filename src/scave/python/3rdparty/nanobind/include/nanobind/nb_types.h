@@ -91,7 +91,9 @@ struct num_item_list; struct num_item_tuple;
 class args_proxy; class kwargs_proxy;
 struct borrow_t { };
 struct steal_t { };
-class api_tag { };
+struct api_tag {
+    constexpr static bool nb_typed = false;
+};
 class dict_iterator;
 struct fast_iterator;
 
@@ -260,6 +262,12 @@ template <typename T> NB_INLINE T borrow(handle h) {
     return { h, detail::borrow_t() };
 }
 
+template <typename T = object, typename T2,
+          std::enable_if_t<std::is_base_of_v<object, T2> && !std::is_lvalue_reference_v<T2>, int> = 0>
+NB_INLINE T borrow(T2 &&o) {
+    return { o.release(), detail::steal_t() };
+}
+
 template <typename T> NB_INLINE T steal(handle h) {
     return { h, detail::steal_t() };
 }
@@ -306,25 +314,27 @@ inline void delattr(handle h, handle key) {
 
 class module_ : public object {
 public:
-    NB_OBJECT(module_, object, "module", PyModule_CheckExact);
+    NB_OBJECT(module_, object, "types.ModuleType", PyModule_CheckExact);
 
     template <typename Func, typename... Extra>
     module_ &def(const char *name_, Func &&f, const Extra &...extra);
 
-    /// Import and return a module or throws `python_error`.
     static NB_INLINE module_ import_(const char *name) {
         return steal<module_>(detail::module_import(name));
     }
 
-    /// Import and return a module or throws `python_error`.
+    static NB_INLINE module_ import_(handle name) {
+        return steal<module_>(detail::module_import(name.ptr()));
+    }
+
     NB_INLINE module_ def_submodule(const char *name,
                                     const char *doc = nullptr) {
-        return borrow<module_>(detail::module_new_submodule(m_ptr, name, doc));
+        return steal<module_>(detail::module_new_submodule(m_ptr, name, doc));
     }
 };
 
 class capsule : public object {
-    NB_OBJECT_DEFAULT(capsule, object, "capsule", PyCapsule_CheckExact)
+    NB_OBJECT_DEFAULT(capsule, object, "types.CapsuleType", PyCapsule_CheckExact)
 
     capsule(const void *ptr, void (*cleanup)(void *) noexcept = nullptr) {
         m_ptr = detail::capsule_new(ptr, nullptr, cleanup);
@@ -338,6 +348,20 @@ class capsule : public object {
     const char *name() const { return PyCapsule_GetName(m_ptr); }
 
     void *data() const { return PyCapsule_GetPointer(m_ptr, name()); }
+};
+
+class bool_ : public object {
+    NB_OBJECT_DEFAULT(bool_, object, "bool", PyBool_Check)
+
+    explicit bool_(handle h)
+        : object(detail::bool_from_obj(h.ptr()), detail::borrow_t{}) { }
+
+    explicit bool_(bool value)
+        : object(value ? Py_True : Py_False, detail::borrow_t{}) { }
+
+    explicit operator bool() const {
+        return m_ptr == Py_True;
+    }
 };
 
 class int_ : public object {
@@ -409,10 +433,12 @@ class bytes : public object {
     explicit bytes(const char *s)
         : object(detail::bytes_from_cstr(s), detail::steal_t{}) { }
 
-    explicit bytes(const char *s, size_t n)
+    explicit bytes(const void *s, size_t n)
         : object(detail::bytes_from_cstr_and_size(s, n), detail::steal_t{}) { }
 
     const char *c_str() const { return PyBytes_AsString(m_ptr); }
+
+    const void *data() const { return (const void *) PyBytes_AsString(m_ptr); }
 
     size_t size() const { return (size_t) PyBytes_Size(m_ptr); }
 };
@@ -444,9 +470,30 @@ class list : public object {
     size_t size() const { return (size_t) NB_LIST_GET_SIZE(m_ptr); }
 
     template <typename T> void append(T &&value);
+    template <typename T> void insert(Py_ssize_t index, T &&value);
 
     template <typename T, detail::enable_if_t<std::is_arithmetic_v<T>> = 1>
     detail::accessor<detail::num_item_list> operator[](T key) const;
+
+    void clear() {
+        if (PyList_SetSlice(m_ptr, 0, PY_SSIZE_T_MAX, nullptr))
+            raise_python_error();
+    }
+
+    void extend(handle h) {
+        if (PyList_SetSlice(m_ptr, PY_SSIZE_T_MAX, PY_SSIZE_T_MAX, h.ptr()))
+            raise_python_error();
+    }
+
+    void sort() {
+        if (PyList_Sort(m_ptr))
+            raise_python_error();
+    }
+
+    void reverse() {
+        if (PyList_Reverse(m_ptr))
+            raise_python_error();
+    }
 
 #if !defined(Py_LIMITED_API) && !defined(PYPY_VERSION)
     detail::fast_iterator begin() const;
@@ -465,12 +512,17 @@ class dict : public object {
     list items() const { return steal<list>(detail::obj_op_1(m_ptr, PyDict_Items)); }
     template <typename T> bool contains(T&& key) const;
     void clear() { PyDict_Clear(m_ptr); }
+    void update(handle h) {
+        if (PyDict_Update(m_ptr, h.ptr()))
+            raise_python_error();
+    }
 };
-
 
 class set : public object {
     NB_OBJECT(set, object, "set", PySet_Check)
     set() : object(PySet_New(nullptr), detail::steal_t()) { }
+    explicit set(handle h)
+        : object(detail::set_from_obj(h.ptr()), detail::steal_t{}) { }
     size_t size() const { return (size_t) NB_SET_GET_SIZE(m_ptr); }
     template <typename T> bool contains(T&& key) const;
     template <typename T> void add(T &&value);
@@ -478,14 +530,15 @@ class set : public object {
         if (PySet_Clear(m_ptr))
             raise_python_error();
     }
+    template <typename T> bool discard(T &&value);
 };
 
 class sequence : public object {
-    NB_OBJECT_DEFAULT(sequence, object, "Sequence", PySequence_Check)
+    NB_OBJECT_DEFAULT(sequence, object, NB_TYPING_SEQUENCE, PySequence_Check)
 };
 
 class mapping : public object {
-    NB_OBJECT_DEFAULT(mapping, object, "Mapping", PyMapping_Check)
+    NB_OBJECT_DEFAULT(mapping, object, NB_TYPING_MAPPING, PyMapping_Check)
     list keys() const { return steal<list>(detail::obj_op_1(m_ptr, PyMapping_Keys)); }
     list values() const { return steal<list>(detail::obj_op_1(m_ptr, PyMapping_Values)); }
     list items() const { return steal<list>(detail::obj_op_1(m_ptr, PyMapping_Items)); }
@@ -507,7 +560,7 @@ public:
     using reference = const handle;
     using pointer = const handle *;
 
-    NB_OBJECT_DEFAULT(iterator, object, "iterator", PyIter_Check)
+    NB_OBJECT_DEFAULT(iterator, object, NB_TYPING_ITERATOR, PyIter_Check)
 
     iterator& operator++() {
         m_value = steal(detail::obj_iter_next(m_ptr));
@@ -539,7 +592,7 @@ private:
 
 class iterable : public object {
 public:
-    NB_OBJECT_DEFAULT(iterable, object, "Iterable", detail::iterable_check)
+    NB_OBJECT_DEFAULT(iterable, object, NB_TYPING_ITERABLE, detail::iterable_check)
 };
 
 /// Retrieve the Python type object associated with a C++ class
@@ -555,6 +608,10 @@ NB_INLINE bool isinstance(handle h) noexcept {
         return detail::nb_type_isinstance(h.ptr(), &typeid(detail::intrinsic_t<T>));
     else
         return detail::make_caster<T>().from_python(h, 0, nullptr);
+}
+
+NB_INLINE bool issubclass(handle h1, handle h2) {
+    return detail::issubclass(h1.ptr(), h2.ptr());
 }
 
 NB_INLINE str repr(handle h) { return steal<str>(detail::obj_repr(h.ptr())); }
@@ -608,7 +665,7 @@ class ellipsis : public object {
     static bool is_ellipsis(PyObject *obj) { return obj == Py_Ellipsis; }
 
 public:
-    NB_OBJECT(ellipsis, object, "EllipsisType", is_ellipsis)
+    NB_OBJECT(ellipsis, object, "types.EllipsisType", is_ellipsis)
     ellipsis() : object(Py_Ellipsis, detail::borrow_t()) {}
 };
 
@@ -616,25 +673,32 @@ class not_implemented : public object {
     static bool is_not_implemented(PyObject *obj) { return obj == Py_NotImplemented; }
 
 public:
-    NB_OBJECT(not_implemented, object, "NotImplementedType", is_not_implemented)
+    NB_OBJECT(not_implemented, object, "types.NotImplementedType", is_not_implemented)
     not_implemented() : object(Py_NotImplemented, detail::borrow_t()) {}
 };
 
 class callable : public object {
 public:
-    NB_OBJECT(callable, object, "Callable[..., object]", PyCallable_Check)
+    NB_OBJECT(callable, object, NB_TYPING_CALLABLE, PyCallable_Check)
     using object::object;
 };
 
 class weakref : public object {
 public:
-    NB_OBJECT(weakref, object, "weakref", PyWeakref_Check)
+    NB_OBJECT(weakref, object, "weakref.ReferenceType", PyWeakref_Check)
 
     explicit weakref(handle obj, handle callback = {})
         : object(PyWeakref_NewRef(obj.ptr(), callback.ptr()), detail::steal_t{}) {
         if (!m_ptr)
             raise_python_error();
     }
+};
+
+class any : public object {
+public:
+    using object::object;
+    using object::operator=;
+    static constexpr auto Name = detail::const_name("typing.Any");
 };
 
 template <typename T> class handle_t : public handle {
@@ -664,7 +728,12 @@ public:
     }
 };
 
-template <typename T, typename X> struct typed { T value; };
+template <typename T, typename...> class typed : public T {
+public:
+    constexpr static bool nb_typed = true;
+    using T::T;
+    using T::operator=;
+};
 
 template <typename T> struct pointer_and_handle {
     T *p;

@@ -21,8 +21,8 @@
 #  pragma warning(disable: 4251) // [..] needs to have a dll-interface to be used by clients of class [..]
 #endif
 
-#define NB_VERSION_MAJOR 1
-#define NB_VERSION_MINOR 7
+#define NB_VERSION_MAJOR 2
+#define NB_VERSION_MINOR 0
 #define NB_VERSION_PATCH 0
 
 // Core C++ headers that nanobind depends on
