@@ -1,599 +1,289 @@
-# NOTE: This file was generated using nanobind-stubgen, then fixed up manually:
-# - Redundant docstrings removed.
-# - Import statements added.
-# - Unnecessary `omnetpp.scave.scave_bindings.` type qualifiers removed.
-# - Added @staticmethod where necessary.
-# - Fixed functions with ndarray in their argument lists.
+# NOTE: generated automatically as
+#
+# $ python3 src/scave/python/3rdparty/nanobind/src/stubgen.py \
+#     -m omnetpp.scave.scave_bindings -o python/omnetpp/scave/scave_bindings.pyi.dist
+#
+# in the repo root, after `make MODE=release`.
 
-from typing import Any, Optional, overload
-from enum import Enum
-from math import inf
-from numpy import ndarray
+from collections.abc import Iterator, Sequence
+import enum
+from typing import Annotated, overload
 
-class DataType(Enum):
-    """
-    <attribute '__doc__' of 'DataType' objects>
-    """
+from numpy.typing import ArrayLike
 
-    DOUBLE: Any
 
-    ENUM: Any
+class DataType(enum.IntEnum):
+    NA = 0
 
-    INT: Any
+    INT = 2
 
-    NA: Any
+    DOUBLE = 3
 
-class FieldNum(Enum):
-    """
-    <attribute '__doc__' of 'FieldNum' objects>
-    """
+    ENUM = 4
 
-    COUNT: Any
+class FieldNum(enum.IntEnum):
+    NONE = 0
 
-    ENDTIME: Any
+    COUNT = 1
 
-    MAX: Any
+    SUM = 2
 
-    MEAN: Any
+    SUMWEIGHTS = 3
 
-    MIN: Any
+    MEAN = 4
 
-    NONE: Any
+    STDDEV = 5
 
-    NUMBINS: Any
+    MIN = 6
 
-    OVERFLOWS: Any
+    MAX = 7
 
-    RANGEMAX: Any
+    NUMBINS = 8
 
-    RANGEMIN: Any
+    RANGEMIN = 9
 
-    STARTTIME: Any
+    RANGEMAX = 10
 
-    STDDEV: Any
+    UNDERFLOWS = 11
 
-    SUM: Any
+    OVERFLOWS = 12
 
-    SUMWEIGHTS: Any
+    STARTTIME = 13
 
-    UNDERFLOWS: Any
+    ENDTIME = 14
 
 class Histogram:
+    def getBinEdges(self) -> list[float]: ...
 
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
-    def getBinEdge(self, arg: int, /) -> float:
-        ...
+    def getBinValues(self) -> list[float]: ...
 
-    def getBinEdges(self) -> list[float]:
-        ...
+    def getNumBins(self) -> int: ...
 
-    def getBinValue(self, arg: int, /) -> float:
-        ...
+    def getBinEdge(self, arg: int, /) -> float: ...
 
-    def getBinValues(self) -> list[float]:
-        ...
+    def getBinValue(self, arg: int, /) -> float: ...
 
-    def getNumBins(self) -> int:
-        ...
+    def getUnderflows(self) -> float: ...
 
-    def getOverflows(self) -> float:
-        ...
+    def getOverflows(self) -> float: ...
 
-    def getUnderflows(self) -> float:
-        ...
+class HistogramResult(StatisticsResult):
+    def getHistogram(self) -> Histogram: ...
 
-class HistogramResult:
+class HostType(enum.IntEnum):
+    STATISTICS = 1
 
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
+    HISTOGRAM = 2
 
-    def getAttribute(self, arg: str, /) -> str:
-        ...
-
-    def getAttributes(self) -> dict[str, str]:
-        ...
-
-    def getHistogram(self) -> Histogram:
-        ...
-
-    def getItemType(self) -> int:
-        ...
-
-    def getItemTypeString(self) -> str:
-        ...
-
-    def getModuleName(self) -> str:
-        ...
-
-    def getName(self) -> str:
-        ...
-
-    def getRun(self) -> Run:
-        ...
-
-    def getStatistics(self) -> Statistics:
-        ...
-
-    @staticmethod
-    def itemTypeToString(arg: int, /) -> str:
-        ...
-
-class HostType(Enum):
-    """
-    <attribute '__doc__' of 'HostType' objects>
-    """
-
-    HISTOGRAM: Any
-
-    STATISTICS: Any
-
-    VECTOR: Any
+    VECTOR = 3
 
 class IDList:
+    @overload
+    def __init__(self) -> None: ...
 
     @overload
-    def __init__(self, arg: int, /) -> None:
-        """
-        __init__(self, arg: int, /) -> None
-        """
-        ...
+    def __init__(self, arg: int, /) -> None: ...
 
-    @overload
-    def __init__(self) -> None:
-        """
-        __init__(self) -> None
-        """
-        ...
+    def isEmpty(self) -> bool: ...
 
-    def asVector(self) -> list[int]:
-        ...
+    def size(self) -> int: ...
 
-    def get(self, arg: int, /) -> int:
-        ...
+    def get(self, arg: int, /) -> int: ...
 
-    def indexOf(self, arg: int, /) -> int:
-        ...
+    def indexOf(self, arg: int, /) -> int: ...
 
-    def isEmpty(self) -> bool:
-        ...
+    def asVector(self) -> list[int]: ...
 
-    def size(self) -> int:
-        ...
+    def __iter__(self) -> Iterator[int]: ...
 
 class InterruptedFlag:
-
-    def __init__(self) -> None:
-        ...
+    def __init__(self) -> None: ...
 
     @property
-    def flag(self) -> bool:
-        ...
+    def flag(self) -> bool: ...
+
     @flag.setter
-    def flag(self, bool) -> None:
-        ...
+    def flag(self, arg: bool, /) -> None: ...
 
-class ItemType(Enum):
-    """
-    <attribute '__doc__' of 'ItemType' objects>
-    """
+class ItemType(enum.IntEnum):
+    PARAMETER = 1
 
-    ALL: Any
+    SCALAR = 2
 
-    HISTOGRAM: Any
+    STATISTICS = 4
 
-    PARAMETER: Any
+    HISTOGRAM = 8
 
-    SCALAR: Any
+    VECTOR = 16
 
-    STATISTICS: Any
+    ALL = 31
 
-    VECTOR: Any
+class LoadFlags(enum.IntEnum):
+    RELOAD = 1
 
-class LoadFlags(Enum):
-    """
-    <attribute '__doc__' of 'LoadFlags' objects>
-    """
+    RELOAD_IF_CHANGED = 2
 
-    ALLOW_INDEXING: Any
+    NEVER_RELOAD = 4
 
-    ALLOW_LOADING_WITHOUT_INDEX: Any
+    ALLOW_INDEXING = 8
 
-    IGNORE_LOCK_FILE: Any
+    SKIP_IF_NO_INDEX = 16
 
-    LOADFLAGS_DEFAULTS: Any
+    ALLOW_LOADING_WITHOUT_INDEX = 32
 
-    NEVER_RELOAD: Any
+    SKIP_IF_LOCKED = 64
 
-    RELOAD: Any
+    IGNORE_LOCK_FILE = 128
 
-    RELOAD_IF_CHANGED: Any
+    VERBOSE = 256
 
-    SKIP_IF_LOCKED: Any
+    LOADFLAGS_DEFAULTS = 74
 
-    SKIP_IF_NO_INDEX: Any
-
-    VERBOSE: Any
-
-class ParameterResult:
-
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
-
-    def getAttribute(self, arg: str, /) -> str:
-        ...
-
-    def getAttributes(self) -> dict[str, str]:
-        ...
-
-    def getItemType(self) -> int:
-        ...
-
-    def getItemTypeString(self) -> str:
-        ...
-
-    def getModuleName(self) -> str:
-        ...
-
-    def getName(self) -> str:
-        ...
-
-    def getRun(self) -> Run:
-        ...
-
-    def getValue(self) -> str:
-        ...
-
-    @staticmethod
-    def itemTypeToString(arg: int, /) -> str:
-        ...
+class ParameterResult(ResultItem):
+    def getValue(self) -> str: ...
 
 class ResultFile:
-
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
+    pass
 
 class ResultFileManager:
+    def __init__(self) -> None: ...
 
-    def __init__(self) -> None:
-        ...
+    def loadFile(self, arg0: str, arg1: str, arg2: int, interrupted: InterruptedFlag | None = None) -> ResultFile: ...
 
-    def clear(self) -> None:
-        ...
+    def getSerial(self) -> int: ...
 
-    def filterIDList(self, arg0: IDList, arg1: str, arg2: int = -1, interrupted: Optional[InterruptedFlag] = None) -> IDList:
-        ...
+    def clear(self) -> None: ...
 
-    def filterRunList(self, arg0: list[Run], arg1: str, /) -> list[Run]:
-        ...
+    def getRuns(self) -> list[Run]: ...
 
-    def getAllHistograms(self) -> IDList:
-        ...
+    def filterRunList(self, arg0: Sequence[Run], arg1: str, /) -> list[Run]: ...
 
-    def getAllItems(self, arg: bool, /) -> IDList:
-        ...
+    def getAllItems(self, arg: bool, /) -> IDList: ...
 
-    def getAllParameters(self) -> IDList:
-        ...
+    def getAllParameters(self) -> IDList: ...
 
-    def getAllScalars(self, arg: bool = False) -> IDList:
-        ...
+    def getAllScalars(self, arg: bool = False) -> IDList: ...
 
-    def getAllStatistics(self) -> IDList:
-        ...
+    def getAllVectors(self) -> IDList: ...
 
-    def getAllVectors(self) -> IDList:
-        ...
+    def getAllStatistics(self) -> IDList: ...
 
-    def getFieldScalar(self, arg: int, /) -> ScalarResult:
-        ...
+    def getAllHistograms(self) -> IDList: ...
 
-    def getHistogram(self, arg: int, /) -> HistogramResult:
-        ...
+    def filterIDList(self, arg0: IDList, arg1: str, arg2: int = -1, interrupted: InterruptedFlag | None = None) -> IDList: ...
 
-    def getItem(self, arg0: int, arg1: ScalarResult, /) -> ResultItem:
-        ...
+    def getNonfieldItem(self, arg: int, /) -> ResultItem: ...
 
-    def getNonfieldItem(self, arg: int, /) -> ResultItem:
-        ...
+    def getItem(self, arg0: int, arg1: ScalarResult, /) -> ResultItem: ...
 
-    def getNonfieldScalar(self, arg: int, /) -> ScalarResult:
-        ...
+    def getFieldScalar(self, arg: int, /) -> ScalarResult: ...
 
-    def getParameter(self, arg: int, /) -> ParameterResult:
-        ...
+    def getNonfieldScalar(self, arg: int, /) -> ScalarResult: ...
 
-    def getRuns(self) -> list[Run]:
-        ...
+    def getScalar(self, arg0: int, arg1: ScalarResult, /) -> ScalarResult: ...
 
-    def getScalar(self, arg0: int, arg1: ScalarResult, /) -> ScalarResult:
-        ...
+    def getParameter(self, arg: int, /) -> ParameterResult: ...
 
-    def getSerial(self) -> int:
-        ...
+    def getVector(self, arg: int, /) -> VectorResult: ...
 
-    def getStatistics(self, arg: int, /) -> StatisticsResult:
-        ...
+    def getStatistics(self, arg: int, /) -> StatisticsResult: ...
 
-    def getVector(self, arg: int, /) -> VectorResult:
-        ...
-
-    def loadFile(self, arg0: str, arg1: str, arg2: int, interrupted: Optional[InterruptedFlag] = None) -> ResultFile:
-        ...
+    def getHistogram(self, arg: int, /) -> HistogramResult: ...
 
 class ResultItem:
+    def getRun(self) -> Run: ...
 
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
+    def getName(self) -> str: ...
 
-    def getAttribute(self, arg: str, /) -> str:
-        ...
+    def getModuleName(self) -> str: ...
 
-    def getAttributes(self) -> dict[str, str]:
-        ...
+    def getItemType(self) -> int: ...
 
-
-    def getItemType(self) -> int:
-        ...
-
-    def getItemTypeString(self) -> str:
-        ...
-
-    def getModuleName(self) -> str:
-        ...
-
-    def getName(self) -> str:
-        ...
-
-    def getRun(self) -> Run:
-        ...
+    def getItemTypeString(self) -> str: ...
 
     @staticmethod
-    def itemTypeToString(arg: int, /) -> str:
-        ...
+    def itemTypeToString(arg: int, /) -> str: ...
+
+    def getAttribute(self, arg: str, /) -> str: ...
+
+    def getAttributes(self) -> dict[str, str]: ...
 
 class Run:
+    def getRunName(self) -> str: ...
 
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
+    def getAttributes(self) -> dict[str, str]: ...
 
-    def getAttribute(self, arg: str, /) -> str:
-        ...
+    def getAttribute(self, arg: str, /) -> str: ...
 
-    def getAttributes(self) -> dict[str, str]:
-        ...
+    def getIterationVariables(self) -> dict[str, str]: ...
 
-    def getConfigEntries(self) -> list[tuple[str, str]]:
-        ...
+    def getIterationVariable(self, arg: str, /) -> str: ...
 
-    def getIterationVariable(self, arg: str, /) -> str:
-        ...
+    def getConfigEntries(self) -> list[tuple[str, str]]: ...
 
-    def getIterationVariables(self) -> dict[str, str]:
-        ...
+    def getParamAssignmentConfigEntries(self) -> list[tuple[str, str]]: ...
 
-    def getNonParamAssignmentConfigEntries(self) -> list[tuple[str, str]]:
-        ...
+    def getNonParamAssignmentConfigEntries(self) -> list[tuple[str, str]]: ...
 
-    def getParamAssignmentConfigEntries(self) -> list[tuple[str, str]]:
-        ...
+class ScalarResult(ResultItem):
+    def __init__(self) -> None: ...
 
-    def getRunName(self) -> str:
-        ...
+    def getValue(self) -> float: ...
 
-class ScalarResult:
-
-    def __init__(self) -> None:
-        ...
-
-    def getAttribute(self, arg: str, /) -> str:
-        ...
-
-    def getAttributes(self) -> dict[str, str]:
-        ...
-
-
-    def getItemType(self) -> int:
-        ...
-
-    def getItemTypeString(self) -> str:
-        ...
-
-    def getModuleName(self) -> str:
-        ...
-
-    def getName(self) -> str:
-        ...
-
-    def getRun(self) -> Run:
-        ...
-
-    def getValue(self) -> float:
-        ...
-
-    def isField(self) -> bool:
-        ...
-
-    @staticmethod
-    def itemTypeToString(arg: int, /) -> str:
-        ...
+    def isField(self) -> bool: ...
 
 class Statistics:
+    def isWeighted(self) -> bool: ...
 
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
+    def getMin(self) -> float: ...
 
-    def getCount(self) -> int:
-        ...
+    def getMax(self) -> float: ...
 
-    def getMax(self) -> float:
-        ...
+    def getCount(self) -> int: ...
 
-    def getMean(self) -> float:
-        ...
+    def getSumWeights(self) -> float: ...
 
-    def getMin(self) -> float:
-        ...
+    def getMean(self) -> float: ...
 
-    def getStddev(self) -> float:
-        ...
+    def getStddev(self) -> float: ...
 
-    def getSum(self) -> float:
-        ...
+    def getVariance(self) -> float: ...
 
-    def getSumSqr(self) -> float:
-        ...
+    def getSum(self) -> float: ...
 
-    def getSumSquaredWeights(self) -> float:
-        ...
+    def getSumSqr(self) -> float: ...
 
-    def getSumWeightedSquaredValues(self) -> float:
-        ...
+    def getWeightedSum(self) -> float: ...
 
-    def getSumWeights(self) -> float:
-        ...
+    def getSumSquaredWeights(self) -> float: ...
 
-    def getVariance(self) -> float:
-        ...
+    def getSumWeightedSquaredValues(self) -> float: ...
 
-    def getWeightedSum(self) -> float:
-        ...
-
-    def isWeighted(self) -> bool:
-        ...
-
-class StatisticsResult:
-
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
-
-    def getAttribute(self, arg: str, /) -> str:
-        ...
-
-    def getAttributes(self) -> dict[str, str]:
-        ...
-
-
-    def getItemType(self) -> int:
-        ...
-
-    def getItemTypeString(self) -> str:
-        ...
-
-    def getModuleName(self) -> str:
-        ...
-
-    def getName(self) -> str:
-        ...
-
-    def getRun(self) -> Run:
-        ...
-
-    def getStatistics(self) -> Statistics:
-        ...
-
-    @staticmethod
-    def itemTypeToString(arg: int, /) -> str:
-        ...
+class StatisticsResult(ResultItem):
+    def getStatistics(self) -> Statistics: ...
 
 class UnitConversion:
+    @staticmethod
+    def getBaseUnit(arg: str, /) -> str: ...
 
     @staticmethod
-    def convertUnit(arg0: float, arg1: str, arg2: str, /) -> float:
-        ...
+    def convertUnit(arg0: float, arg1: str, arg2: str, /) -> float: ...
 
     @staticmethod
-    def convertUnitArray(arg0: ndarray[dtype=float64, shape=(*), order='C', device='cpu'], arg1: str, arg2: str, /) -> None
-        ...
+    def convertUnitArray(arg0: Annotated[ArrayLike, dict(dtype='float64', shape=(None), order='C', device='cpu')], arg1: str, arg2: str, /) -> None: ...
 
-    @staticmethod
-    def getBaseUnit(arg: str, /) -> str:
-        ...
-
-class VectorResult:
-
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
-
-    def getAttribute(self, arg: str, /) -> str:
-        ...
-
-    def getAttributes(self) -> dict[str, str]:
-        ...
-
-
-    def getItemType(self) -> int:
-        ...
-
-    def getItemTypeString(self) -> str:
-        ...
-
-    def getModuleName(self) -> str:
-        ...
-
-    def getName(self) -> str:
-        ...
-
-    def getRun(self) -> Run:
-        ...
-
-    def getStatistics(self) -> Statistics:
-        ...
-
-    @staticmethod
-    def itemTypeToString(arg: int, /) -> str:
-        ...
+class VectorResult(ResultItem):
+    def getStatistics(self) -> Statistics: ...
 
 class XYArray:
+    def length(self) -> int: ...
 
-    def __init__(*args, **kwargs):
-        """
-        Initialize self.  See help(type(self)) for accurate signature.
-        """
-        ...
+    def getX(self, arg: int, /) -> float: ...
 
-    def getEventNumber(self, arg: int, /) -> int:
-        ...
+    def getY(self, arg: int, /) -> float: ...
 
-    def getX(self, arg: int, /) -> float:
-        ...
+    def getEventNumber(self, arg: int, /) -> int: ...
 
-    def getY(self, arg: int, /) -> float:
-        ...
+def readVectorsIntoArrays(arg0: ResultFileManager, arg1: IDList, includePreciseX: bool, includeEventNumbers: bool, memoryLimitBytes: int = 18446744073709551615, simTimeStart: float = float('-inf'), simTimeEnd: float = float('inf'), interrupted: InterruptedFlag | None = None) -> list[XYArray]: ...
 
-    def length(self) -> int:
-        ...
-
-def readVectorsIntoArrays(arg0: ResultFileManager, arg1: IDList, includePreciseX: bool, includeEventNumbers: bool, memoryLimitBytes: int = 18446744073709551615, simTimeStart: float = -inf, simTimeEnd: float = inf, interrupted: Optional[InterruptedFlag] = None) -> list[XYArray]:
-    ...
-
-def xyArrayToNumpyArrays(arg0: XYArray, arg1: ndarray[dtype=float64, shape=(*), order='C', device='cpu'], arg2: ndarray[dtype=float64, shape=(*), order='C', device='cpu'], /) -> None
-    ...
-
+def xyArrayToNumpyArrays(arg0: XYArray, arg1: Annotated[ArrayLike, dict(dtype='float64', shape=(None), order='C', device='cpu')], arg2: Annotated[ArrayLike, dict(dtype='float64', shape=(None), order='C', device='cpu')], /) -> None: ...
