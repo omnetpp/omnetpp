@@ -44,7 +44,7 @@ namespace scave {
 /**
  * Returned by reference for missing values. It has value "".
  */
-extern const std::string NULLSTRING;
+extern const SCAVE_API std::string NULLSTRING;
 
 class ResultFileManager;
 class InterruptedFlag;
@@ -57,10 +57,10 @@ typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringMap;
 typedef std::vector< std::pair<std::string, std::string> > OrderedKeyValueList;
 
-struct StringMapPtrHash {
+struct SCAVE_API StringMapPtrHash {
    size_t operator() (const StringMap *stringmap) const;
 };
-struct StringMapPtrEq {
+struct SCAVE_API StringMapPtrEq {
     bool operator () (const StringMap *lhs, const StringMap *rhs) const;
 };
 
