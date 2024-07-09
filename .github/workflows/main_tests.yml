@@ -1,0 +1,70 @@
+name: Main tests
+
+on:
+  push:
+    branches:
+      - "master"
+      - "omnetpp-6.x"
+  pull_request:
+    branches:
+      - "master"
+      - "omnetpp-6.x"
+  workflow_dispatch:
+    # allows manual execution
+
+jobs:
+  main_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install system dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y --no-install-recommends \
+          build-essential git make ccache clang lld bison flex perl \
+          doxygen graphviz wget curl ca-certificates libdw-dev \
+          libxml2-dev zlib1g-dev libwebkit2gtk-4.1-0 xdg-utils \
+          qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5opengl5-dev \
+          python3 python3-pip libpython3-dev libopenscenegraph-dev
+
+    - name: Fetch ccache cache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        create-symlink: true
+        key: main-tests
+
+    - name: Install Python dependencies
+      uses: getsentry/action-setup-venv@v2.1.0
+      with:
+        python-version: 3.12.6
+        cache-dependency-path: python/requirements.txt
+        install-cmd: python3 -m pip install -r python/requirements.txt
+
+    - name: Configure
+      run: |
+        cp configure.user.dist configure.user
+        . setenv
+        ./configure WITH_LIBXML=yes WITH_QTENV=yes WITH_OSG=yes WITH_OSGEARTH=no
+
+    - name: Build
+      run: |
+        . setenv
+        make -j 4
+
+    - name: Run tests
+      run: |
+        . setenv
+        cd test
+        for TEST in common core envir featuretool anim models makemake makemake2 \
+          fingerprint sqliteresultfiles scave_results_api scave_charttemplates \
+          scave_analysis scave_multi_project scave_workspace;
+        do
+          echo "::group::test_$TEST";
+          make -j 4 test_$TEST;
+          echo "::endgroup::";
+        done
+
+    # test_toolchain only makes sense in release packages for macOS or MSYS
+
