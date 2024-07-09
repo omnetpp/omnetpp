@@ -1,0 +1,53 @@
+name: Build tests
+
+on:
+  push:
+    branches:
+      - "master"
+      - "omnetpp-6.x"
+  pull_request:
+    branches:
+      - "master"
+      - "omnetpp-6.x"
+  workflow_dispatch:
+    # allows manual execution
+
+jobs:
+  build_tests:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install system dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y --no-install-recommends \
+          build-essential git make ccache clang lld bison flex perl \
+          doxygen graphviz wget curl ca-certificates libdw-dev \
+          libxml2-dev zlib1g-dev libwebkit2gtk-4.1-0 xdg-utils \
+          qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5opengl5-dev \
+          python3 python3-pip libpython3-dev libopenscenegraph-dev
+        sudo apt install -y --no-install-recommends mpi-default-dev
+
+    - name: Fetch ccache cache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        create-symlink: true
+        key: build-tests-${{ github.base_ref || github.ref_name }}
+        save: ${{ github.event_name != 'pull_request' }}
+        max-size: 1G
+
+    - name: Install Python dependencies
+      uses: getsentry/action-setup-venv@v2.1.0
+      with:
+        python-version: 3.12.6
+        cache-dependency-path: python/requirements.txt
+        install-cmd: python3 -m pip install -r python/requirements.txt
+
+    - name: Run build tests
+      run: |
+        cp configure.user.dist configure.user
+        . setenv
+        cd test
+        make -j 4 test_build
