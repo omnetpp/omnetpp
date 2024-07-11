@@ -8956,7 +8956,7 @@ fi
 #---------------------------
 
 if ccache -V >/dev/null 2>/dev/null; then
-  if which "$CXX" | grep ccache >/dev/null 2>/dev/null; then
+  if command -v "$CXX" | grep ccache >/dev/null 2>/dev/null; then
     : # using ccache's compiler wrapper, OK
   elif echo "$CXX" | grep ccache >/dev/null 2>/dev/null; then
     : # compiler command prefixed with ccache, OK
