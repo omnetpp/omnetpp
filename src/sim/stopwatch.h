@@ -17,6 +17,7 @@
 #define __OMNETPP_STOPWATCH_H
 
 #include <ctime>  // clock_t
+#include <cstdint>
 #include "omnetpp/simkerneldefs.h"
 
 namespace omnetpp {
