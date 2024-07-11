@@ -17,6 +17,7 @@
 #define __OMNETPP_ENVIR_STOPWATCH_H
 
 #include <ctime>  // clock_t
+#include <cstdint>
 #include "envirdefs.h"
 
 namespace omnetpp {
