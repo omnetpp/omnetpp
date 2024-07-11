@@ -4260,8 +4260,8 @@ else
             # /usr/include directories as they are not added by default, but they are needed
             # to properly find the LibXML2 libraries.
             if test "$cross_compiling" = no ; then
-                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /opt/mingw64/include"
-                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/opt/mingw64/lib"
+                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /opt$MSYSTEM_PREFIX/include"
+                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/opt$MSYSTEM_PREFIX/lib"
             fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled Xml libs here. They should NOT reside in the default
@@ -7083,17 +7083,17 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 
       fi
 
-      # test also in the /mingw32 directory because on MSYS2 this is the default
+      # msys mingw/clang version
       if test $libxml_ok = no; then
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
 
-   CXXFLAGS="$CFLAGS -I/mingw32/include/libxml2"
+   CXXFLAGS="$CFLAGS -I$MSYSTEM_PREFIX/include/libxml2"
    LIBS="-lxml2"
 
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw32/include/libxml2\" LIBS=\"-lxml2\"" >&5
-printf %s "checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw32/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I$MSYSTEM_PREFIX/include/libxml2\" LIBS=\"-lxml2\"" >&5
+printf %s "checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I$MSYSTEM_PREFIX/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
 
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -7109,44 +7109,7 @@ _ACEOF
 if ac_fn_cxx_try_link "$LINENO"
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; libxml_ok=yes; LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2"
-else $as_nop
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }; libxml_ok=no;
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-      fi
-      if test $libxml_ok = no; then
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$CFLAGS -I/mingw64/include/libxml2"
-   LIBS="-lxml2"
-
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"" >&5
-printf %s "checking for LibXML XML parser with CFLAGS=\"$CFLAGS -I/mingw64/include/libxml2\" LIBS=\"-lxml2\"... " >&6; }
-
-   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <libxml/parser.h>
-int
-main (void)
-{
-xmlInitParser();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"
-then :
-  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }; libxml_ok=yes; LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2"
+printf "%s\n" "yes" >&6; }; libxml_ok=yes; LIBXML_CFLAGS="-I$MSYSTEM_PREFIX/include/libxml2" LIBXML_LIBS="-lxml2"
 else $as_nop
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }; libxml_ok=no;

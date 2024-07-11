@@ -374,8 +374,8 @@ else
             # /usr/include directories as they are not added by default, but they are needed
             # to properly find the LibXML2 libraries.
             if test "$cross_compiling" = no ; then
-                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /opt/mingw64/include"
-                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/opt/mingw64/lib"
+                CFLAGS_ARCH="$CFLAGS_ARCH -isystem /opt$MSYSTEM_PREFIX/include"
+                LDFLAGS_ARCH="$LDFLAGS_ARCH -L/opt$MSYSTEM_PREFIX/lib"
             fi
             # NOTE: if we are cross-compiling we may need to add the lib and include path
             # to the cross-compiled Xml libs here. They should NOT reside in the default
@@ -1161,14 +1161,10 @@ if test "$WITH_LIBXML" = "yes"; then
                         libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2" LIBXML_LIBS="-lxml2")
       fi
 
-      # test also in the /mingw32 directory because on MSYS2 this is the default
+      # msys mingw/clang version
       if test $libxml_ok = no; then
-          OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw32/include/libxml2, -lxml2,
-                        libxml_ok, LIBXML_CFLAGS="-I/mingw32/include/libxml2" LIBXML_LIBS="-lxml2")
-      fi
-      if test $libxml_ok = no; then
-          OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I/mingw64/include/libxml2, -lxml2,
-                        libxml_ok, LIBXML_CFLAGS="-I/mingw64/include/libxml2" LIBXML_LIBS="-lxml2")
+          OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $CFLAGS -I$MSYSTEM_PREFIX/include/libxml2, -lxml2,
+                        libxml_ok, LIBXML_CFLAGS="-I$MSYSTEM_PREFIX/include/libxml2" LIBXML_LIBS="-lxml2")
       fi
       # msys/visualc version
       if test $libxml_ok = no; then
