@@ -18,7 +18,7 @@
 #include <cstring>
 #include <clocale>
 #include <string>
-#include <functional> // reference_wrapper
+#include <typeindex>
 #include <unordered_map>
 #include "omnetpp/platdep/platmisc.h"
 #include "commonutil.h"
@@ -221,17 +221,7 @@ static std::string demangle(const char *mangledName)
 #endif
 }
 
-using TypeInfoRef = std::reference_wrapper<const std::type_info>;
-
-struct Hasher {
-    std::size_t operator()(TypeInfoRef code) const { return code.get().hash_code(); }
-};
-
-struct EqualTo {
-    bool operator()(TypeInfoRef lhs, TypeInfoRef rhs) const { return lhs.get() == rhs.get(); }
-};
-
-std::unordered_map<TypeInfoRef, std::string, Hasher, EqualTo> demangledNames;
+std::unordered_map<std::type_index, std::string> demangledNames;
 
 const char *opp_typename(const std::type_info& t)
 {
