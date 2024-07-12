@@ -209,6 +209,12 @@ int cDoubleParImpl::compare(const cParImpl *other) const
     const cDoubleParImpl *other2 = dynamic_cast<const cDoubleParImpl *>(other);
     if (flags & FL_ISEXPR)
         return expr->compare(other2->expr);
+    else if (std::isnan(val) && std::isnan(other2->val))
+        return 0;
+    else if (std::isnan(val))
+        return -1;
+    else if (std::isnan(other2->val))
+        return 1;
     else
         return (val == other2->val) ? 0 : (val < other2->val) ? -1 : 1;
 }
