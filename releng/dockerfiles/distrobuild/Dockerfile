@@ -1,4 +1,4 @@
-FROM ghcr.io/omnetpp/distrobuild-base:ubuntu20.04-macos12.3-240124
+FROM ghcr.io/omnetpp/distrobuild-base:ubuntu20.04-macos12.3-240715
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)
@@ -21,6 +21,9 @@ COPY tools/$TOOLS_VERSION $TOOLS_DIR/$TOOLS_VERSION
 
 # update the eclipse build's MAVEN cache for faster builds
 WORKDIR $OMNETPP_DIR
+
+# allow using the repo even if its owner is the root
+RUN git config --global --add safe.directory /root/omnetpp-repo/.git
 
 # getting only the dependnecies does not work correctly (not everything is cached unfortunately, so a full build is required)
 #RUN git checkout master && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -Dwhat=omnetpp -fn || true)) ; rm -rf $OMNETPP_DIR

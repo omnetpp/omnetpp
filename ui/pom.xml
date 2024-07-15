@@ -6,11 +6,11 @@
    <packaging>pom</packaging>
 
    <properties>
-      <tycho.version>4.0.7</tycho.version>
+      <tycho.version>4.0.8</tycho.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <eclipse-repo.url>https://download.eclipse.org/releases/2024-03</eclipse-repo.url>
-      <justj-repo.url>https://download.eclipse.org/justj/jres/17/updates/release/</justj-repo.url>
-      <pydev-repo.url>http://pydev.sourceforge.net/pydev_update_site/12.0.0</pydev-repo.url>
+      <eclipse-repo.url>https://download.eclipse.org/releases/2024-06</eclipse-repo.url>
+      <justj-repo.url>https://download.eclipse.org/justj/jres/21/updates/release/</justj-repo.url>
+      <pydev-repo.url>http://pydev.sourceforge.net/pydev_update_site/12.1.0</pydev-repo.url>
    </properties>
 
    <repositories>
@@ -71,8 +71,8 @@
                  execution environments while the rest of the build need an execution environment.
                  In a perfect world, 'executionEnvironment' would be set to 'none' 
                  and everything would work, but we are not living on that branch of the multiverse. -->    
-            <!-- force JavaSE-17 environment. -->
-            <executionEnvironment>JavaSE-17</executionEnvironment>
+            <!-- force JavaSE-21 environment. -->
+            <executionEnvironment>JavaSE-21</executionEnvironment>
             <!-- disable the negative requirement of an exeutionEnvoronment on JustJ -->
             <dependency-resolution>
                <profileProperties>
@@ -118,9 +118,9 @@
             <compilerArgs></compilerArgs>
             <useProjectSettings>false</useProjectSettings>
 
-            <!-- Java 17  -->
-            <source>17</source>
-            <target>17</target>
+            <!-- Java 21  -->
+            <source>21</source>
+            <target>21</target>
          </configuration>
          </plugin>
       </plugins>
