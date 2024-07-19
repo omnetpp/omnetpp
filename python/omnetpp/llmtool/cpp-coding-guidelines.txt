@@ -1,0 +1,376 @@
+### Constructors, Destructors
+
+Remove redundant constructor and destructor declarations from the code, such as:
+- Empty destructors: `~MyClass() {}`
+- Destructors marked with `default`: `~MyClass() = default`
+- Empty constructors: `MyClass() {}`
+- If the class has multiple constructors, the default constructor should be left there and marked with `=default`:
+
+```cpp
+// Example:
+class MyClass {
+    public:
+        MyClass() = default;  // this constructor is ONLY needed because there's another constructor (see below)
+        MyClass(int x) { ... }
+};
+```
+
+We do NOT use the `override` keyword for destructors.
+
+```cpp
+// Example:
+class Base {
+public:
+    virtual ~Base() {}
+};
+
+class Derived : public Base {
+public:
+    ~Derived() override {} // Do NOT use this
+};
+```
+
+When processing constructors, remove initializations of fields that are already
+initialized in the class (in the field declaration) to the same value.
+
+```cpp
+// Example:
+class MyClass {
+  private:
+    int foo = 3;
+  public:
+    MyClass();
+};
+
+MyClass::MyClass() :
+   foo(3)   // <----- this is redundant, should be removed!
+{
+}
+```
+
+
+### Data Members
+
+Inside classes, we prefer data members to precede member functions.
+
+
+### Curly Braces
+
+We prefer single-statement blocks without curly braces.
+
+```cpp
+// Example:
+if (condition)
+    doSomething();  // preferred without curly braces
+```
+
+### Inline Initialization
+
+We prefer initializing primitive class members inline (inside the class).
+We also prefer the `= 0` notation to the new `{}` notation.
+
+`simtime_t` variables should be initialized to zero. Do not zero-initialize `simsignal_t` variables.
+
+```cpp
+// Example:
+simtime_t startTime = 0; // initialize like this
+simsignal_t packetDelaySignal; // no initialization needed
+```
+
+### Conditions and other Boolean Expressions
+
+We are allergic `<some_condition> ? true : false` expressions. We prefer to use the plain condition there.
+Also, do not compare a Boolean to the `true` / `false` literals. `foo == true` should become simply `foo`,
+and `foo == false` should become `!foo`.
+
+Avoid implicit casts to `bool`. If a variables or expression of a non-boolean
+type is used as bool (e.g. as `if` or `while` condition), add a comparison to 0 (or similar)
+to make it boolean. For example, if `x` is an `int`, write `if (x != 0)` instead of plain `if (x)`.
+
+
+### Ternary Operator
+
+We only use `?:` in places where the resulting value is actually used (in an assignment, function argument, etc).
+
+```cpp
+// Example:
+std::string label = useFullPath ? obj->getFullPath() : obj->getFullName(); // OK
+(x > y) ? doSomething() : doSomethingElse(); // Do NOT use this
+```
+
+### Range-based for Loops
+
+We prefer range-based `for` loops for iterating over containers.
+
+### Use of auto
+
+We prefer to use `auto` in declarations for STL iterators, pairs, and other
+similarly lengthy templated types.
+
+```cpp
+// Example:
+auto it = connectionMap.find(key);
+```
+
+We do NOT like using `auto` in all other cases, and especially NOT for primitive
+or basic types like `double`, `int16_t`, `uint32_t`, `size_t`, `std::string`,
+`simtime_t`, `MacAddress`, `Ipv4Address`, or similar.
+
+```cpp
+// Example:
+auto x = 5; // Do NOT use this
+auto s = std::string("hello"); // Do NOT use this
+auto ip = dhcpOffer->getYiaddr();  // Do NOT use this
+auto e = irt->getRoute(i);  // Do NOT use this
+
+int x = 5; // Correct
+std::string s = "hello"; // Correct
+Ipv4Address ip = dhcpOffer->getYiaddr();  // Correct
+Ipv4Route *e = irt->getRoute(i);  // Correct
+```
+
+Sometimes, `auto` may also be used for pointer types if the assigned expression makes the
+type VERY clear and easy to see (e.g. in `auto msg = new cMessage();`. But generally
+we prefer spelling out the type.
+
+### Pointers
+
+We do not use `std::unique_ptr`; we use raw pointers or shared pointers instead.
+
+```cpp
+// Example:
+std::unique_ptr<ApplicationPacket> ptr = std::make_unique<ApplicationPacket>(); // Do NOT use this
+ApplicationPacket *ptr = new ApplicationPacket(); // Correct
+auto applicationPacket = makeShared<ApplicationPacket>();  // Correct
+```
+
+### Null Pointers
+
+We prefer to use the `nullptr` notation for null pointers instead of `NULL` or `0`.
+
+```cpp
+// Example:
+cMessage *msg = nullptr; // Correct
+cMessage *msg = NULL; // Do NOT use this
+cMessage *msg = 0; // Do NOT use this
+```
+
+### Null Pointer Check
+
+To test the null-ness of a pointer in a condition, we prefer to write out `== nullptr` or `!= nullptr`.
+
+```cpp
+// Example:
+InterfaceEntry *ie = getInterfaceEntry();
+if (ie) { // Do NOT use this
+    // Do something
+}
+
+// Correct:
+if (ie != nullptr) {
+    // Do something
+}
+```
+
+### String Operations
+
+We prefer `std::string` operations to `strcmp()`, `strcpy()` and the like.
+
+```cpp
+// Example:
+const char* str1 = "hello";
+const char* str2 = "world";
+if (strcmp(str1, str2) == 0) { // Do NOT use this
+    // Strings are equal
+}
+
+// Correct:
+std::string str1 = "hello";
+std::string str2 = "world";
+if (str1 == str2) {
+    // Strings are equal
+}
+```
+
+### opp_isempty()
+
+The use of `opp_isempty()` is OK for checking whether a C string is empty.
+
+```cpp
+// Example:
+const char *protocolAsString;
+if (!opp_isempty(protocolAsString)) ... // This is OK
+if (!std::string(protocolAsString).empty()) ... // Do NOT use this
+```
+
+### Inline Member Initialization
+
+We prefer class members to be initialized inline, within the class, as opposed to as part of the constructor.
+
+```cpp
+class INET_API EthernetSocketIo : public ApplicationBase, public EthernetSocket::ICallback
+{
+  protected:
+    // Initialize class members here:
+    NetworkInterface *networkInterface = nullptr;
+    const Protocol *protocol = nullptr;
+    int numSent = 0;
+    int numReceived = 0;
+  public:
+    EthernetSocketIo() {}   // and NOT here
+};
+```
+
+### C-style Casts
+
+We prefer C-style cast to `static_cast` when converting from one numeric type to another.
+For example, prefer `(double)x` to `static_cast<double>(x)`.
+
+### dynamic_cast
+
+`dynamic_cast` must always be followed by a `nullptr` check.
+
+### Includes
+
+The standard includes `<string.h>` and `<string>` are VERY different!
+`<string.h>` contains `strcpy()`, `strcmp()`, etc, while `<string>` contains
+`std::string`. To modernize `#include <string.h>` the correct solution is
+`#include <cstring>`.
+
+### OMNeT++ Specific Guidelines
+
+- `initialize()`, `numInitStages()`, `handleMessage()`, `finish()`,
+  `receiveSignal()`, `handleParameterChange()` in classes are inherited OMNeT++
+  module methods intended to be redefined in subclasses. Always mark them with
+  `override`, and do not change their signature in existing code.
+
+- For `simtime_t` (alias `omnetpp::simtime_t`), we also prefer explicit initialization to zero.
+  For example, `simtime_t startTimefoo = 0;`.
+
+- `simsignal_t` is an OMNeT++ type which we prefer not to initialize.
+
+- The OMNeT++ method `getName()` returns `const char *`, and `getFullPath()` returns `std::string`.
+
+- `check_and_cast` never returns `nullptr`. Its return value SHOULD NOT be checked against `nullptr`. Such checks should be removed.
+
+### `strcmp` Replacement
+
+Do not replace `strcmp` with plain comparison! It makes pointer comparison
+instead of content comparison, which does NOT do what is intended. E.g. it is a
+wrong change to change this: `if (!strcmp(mePkt->getType(), ACK_START_MECAPP))`,
+to this: `if (mePkt->getType() == ACK_START_MECAPP)`.
+
+### opp_streq()
+
+Use `opp_streq()` for string comparisons.
+
+### `using namespace`
+
+The code should always contain `using namespace omnetpp`, so explicit `omnetpp::` qualifications
+of type names should not be necessary. Remove any such prefix from the code.
+
+Same for `using namespace inet`.
+
+Inside header files that define a namespace, potential `using namespace` directives
+must MUST be inside a namespace, so that it does not affect source files
+that include that header.
+
+```cpp
+namespace simu5g {
+
+using namespace omnetpp; // placed inside simu5g
+using namespace inet;
+
+// class declarations, etc.
+
+} // namespace simu5g
+```
+
+# Reading Module Parameters
+
+Module parameters are accessed using the `par()` method of modules, e.g. `par("startTime")`.
+It returns a `cPar&` reference. `cPar` has accessor methods like `doubleValue()`, `intValue()`,
+`stringValue()` (returns `const char *`), `stdstringValue()` (returns `std::string`), but
+also conversion operators such as `operator int()` and `operator std::string()`.
+
+When reading a parameter into a variable, we prefer to use the conversion operators,
+that is, omitting the `doubleValue()` etc calls.
+
+Instead of this:
+
+```cpp
+intraBurstTime_ = par("intraBurstTime").doubleValue();  // .doubleValue() is too verbose, remove
+localPort_ = par("localPort").intValue();
+destPort_ = par("destPort").intValue();
+```
+
+write this:
+
+```cpp
+intraBurstTime_ = par("intraBurstTime");
+localPort_ = par("localPort");
+destPort_ = par("destPort");
+```cpp
+
+When accessing a string parameter, we prefer to read it into `std::string` and NOT `const char *`.
+
+So that the following:
+
+```cpp
+const char *selectionPolicyPar = par("selectionPolicy");  // we do not like reading parameter into const char *
+if (!strcmp(selectionPolicyPar, "MecServiceBased"))
+    mecHostSelectionPolicy_ = new MecServiceSelectionBased(this);
+else if (!strcmp(selectionPolicyPar, "AvailableResourcesBased"))
+    ...
+```
+
+Can be changed to this (which eliminates `strcmp` calls):
+
+```cpp
+std::string selectionPolicyPar = par("selectionPolicy");
+if (selectionPolicyPar == "MecServiceBased")
+    mecHostSelectionPolicy_ = new MecServiceSelectionBased(this);
+else if (selectionPolicyPar == "AvailableResourcesBased")
+    ...
+```
+
+However, when we have a variable which refers to a parameter (i.e. with type
+`cPar&` or `cPar*`), we prefer to use explicit accessor methods like `doubleValue()`
+to read its value.
+
+```cpp
+cPar *intervalPar = &par("interval");
+...
+simtime_t interval = intervalPar->doubleValue();
+```
+
+### Indentation Style
+
+We prefer Egyptian braces, so the closing brace should always be on a separate line.
+
+So, the `else` block of an `if` should look like this:
+
+```cpp
+}
+else {
+```
+
+and NOT like this:
+
+```cpp
+} else {   // wrong
+```
+
+The opening brace of a function or class definition should also go into a separate line. Like this:
+
+```cpp
+class Foo
+{
+    ...
+};
+
+void Foo::doSomething()
+{
+    ...
+}
+```

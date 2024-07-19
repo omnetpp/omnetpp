@@ -1,0 +1,12 @@
+{% include cpp-coding-guidelines.txt %}
+
+Improve the quality of the following C++ code according to our coding guidelines.
+
+Ignore (do not fix) smells regarding code formatting (indentation, inline spacing, etc).
+Resist the temptation to fix indentation or inline spacing.
+Do not remove comments, or code that has been commented out.
+
+Avoid reorganizing code, i.e. factoring out code into separate functions.
+
+The code is an OMNeT++ simulation model, part of the INET Framework.
+
