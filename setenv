@@ -21,6 +21,23 @@ if [ ! -f "$dir/configure.user" -o ! -f "$dir/include/omnetpp.h" -o ! -f "$dir/V
     return 1
 fi
 
+# Activate local python virtual environment if present in the root directory.
+# You can create a virtual environment with 'python3 -m venv .venv'
+# and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
+#
+# NOTE: the bin/activate script directly sets the PATH variable to a value saved during
+# an earlier run of the script to restore the PATH to that state. This may overwrite any
+# changes made to the PATH since the last run. Because of this it is EXTREMELY important
+# NOT to modify the PATH in the 'setenv' script before activating the virtual env.
+# In short, this activation MUST BE at the very beginning of the 'setenv' script.
+#
+if [ -f "$dir/.venv/bin/activate" ] ; then
+  if [ "$1" != "-q" ]; then
+    echo "Activating python virtual environment in '$dir/.venv'"
+  fi
+  source $dir/.venv/bin/activate
+fi
+
 # check for HOMEBREW (on macOS) environment and activate dependent packages
 if [ "$(command -v brew)" != "" ]; then
   echo "HOMEBREW detected, activating dependencies (qt@5, bison, flex, pkg-config, make)."
@@ -31,16 +48,6 @@ if [ "$(command -v brew)" != "" ]; then
   export PATH="$(brew --prefix make)/libexec/gnubin:$PATH"
   export LDFLAGS="-L$(brew --prefix)/lib $LDFLAGS"
   export CFLAGS="-I$(brew --prefix)/include $CFLAGS"
-fi
-
-# Activate local python virtual environment if present in the root directory.
-# You can create a virtual environment with 'python3 -m venv .venv'
-# and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
-if [ -f "$dir/.venv/bin/activate" ] ; then
-  if [ "$1" != "-q" ]; then
-    echo "Activating python virtual environment in '$dir/.venv'"
-  fi
-  source $dir/.venv/bin/activate
 fi
 
 function _numargs() { echo $#; }
