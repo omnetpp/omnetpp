@@ -60,8 +60,8 @@ rm -rf ide/win32-x86_64 ide/linux-x86_64 ide/linux-aarch64 ide/macosx-x86_64 ide
 
 # copy the self extracting toolchain file into the distro
 mkdir -p tools/macos.x86_64
-echo "Extracting tools archive..."
-tar xfz $TOOLS_DIR/$TOOLS_VERSION/macos.x86_64/opp-tools-macos-x86_64.tar.gz --keep-old-files --directory tools/macos.x86_64 || { echo --- error extracting opp-tools-macos-x86_64.tar.gz ---; exit 1;}
+#echo "Extracting tools archive..."
+#tar xfz $TOOLS_DIR/$TOOLS_VERSION/macos.x86_64/opp-tools-macos-x86_64.tar.gz --keep-old-files --directory tools/macos.x86_64 || { echo --- error extracting opp-tools-macos-x86_64.tar.gz ---; exit 1;}
 
 # pack the distro
 cd ..

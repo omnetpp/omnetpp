@@ -119,11 +119,6 @@ if [ $(uname) = "Darwin" ]; then
     if [ -d $dir/tools/macos.x86_64 ]; then
       TOOLS_DIR=$dir/tools/macos.x86_64
       export PATH=$TOOLS_DIR/bin:$PATH
-      export PIP_PREFIX=$TOOLS_DIR/lib/Python.framework/Versions/Current
-      export PYTHONNOUSERSITE=1
-      export BISON_PKGDATADIR=$TOOLS_DIR/share/bison
-      export QT_PLUGIN_PATH=$TOOLS_DIR/plugins
-      TOOLS_DIR=
     fi
   fi
 fi
