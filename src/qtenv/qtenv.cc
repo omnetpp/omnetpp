@@ -590,7 +590,7 @@ Qtenv::~Qtenv()
     }
 
     delete messageAnimator;
-    for (auto & silentEventFilter : silentEventFilters)
+    for (auto silentEventFilter : silentEventFilters)
         delete silentEventFilter;
 }
 
@@ -2107,11 +2107,9 @@ void Qtenv::connectionCreated(cGate *srcgate)
     else
         notifymodule = srcgate->getOwnerModule();
 
-    for (auto & inspector : inspectors) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
-        if (insp)
+    for (auto inspector : inspectors)
+        if (ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector))
             insp->connectionCreated(srcgate);
-    }
 }
 
 void Qtenv::connectionDeleted(cGate *srcgate)
@@ -2129,11 +2127,9 @@ void Qtenv::connectionDeleted(cGate *srcgate)
     else
         notifymodule = srcgate->getOwnerModule();
 
-    for (auto & inspector : inspectors) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
-        if (insp)
+    for (auto inspector : inspectors)
+        if (ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector))
             insp->connectionDeleted(srcgate);
-    }
 }
 
 void Qtenv::displayStringChanged(cComponent *component)
@@ -2312,11 +2308,9 @@ void Qtenv::channelDisplayStringChanged(cChannel *channel)
     else
         notifymodule = gate->getOwnerModule();
 
-    for (auto & inspector : inspectors) {
-        ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector);
-        if (insp)
+    for (auto inspector : inspectors)
+        if (ModuleInspector *insp = isModuleInspectorFor(notifymodule, inspector))
             insp->displayStringChanged(gate);
-    }
 }
 
 void Qtenv::moduleDisplayStringChanged(cModule *module)
@@ -2324,17 +2318,14 @@ void Qtenv::moduleDisplayStringChanged(cModule *module)
     // refresh inspector where this module is a submodule
     cModule *parentmodule = module->getParentModule();
 
-    for (auto & inspector : inspectors) {
-        ModuleInspector *insp = isModuleInspectorFor(parentmodule, inspector);
-        if (insp)
+    for (auto inspector : inspectors)
+        if (ModuleInspector *insp = isModuleInspectorFor(parentmodule, inspector))
             insp->displayStringChanged(module);
-    }
 
     // refresh inspector where this module is the parent (i.e. this is a
     // background display string change)
-    for (auto & inspector : inspectors) {
-        ModuleInspector *insp = isModuleInspectorFor(module, inspector);
-        if (insp)
+    for (auto inspector : inspectors) {
+        if (ModuleInspector *insp = isModuleInspectorFor(module, inspector))
             insp->displayStringChanged();
     }
 }
@@ -2363,11 +2354,9 @@ void Qtenv::bubble(cComponent *component, const char *text)
 
     if (component->getParentModule()) {
         cModule *enclosingmod = component->getParentModule();
-        for (auto & inspector : inspectors) {
-            ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector);
-            if (insp)
+        for (auto inspector : inspectors)
+            if (ModuleInspector *insp = isModuleInspectorFor(enclosingmod, inspector))
                 insp->bubble(component, text);
-        }
     }
 }
 

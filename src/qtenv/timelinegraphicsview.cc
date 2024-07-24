@@ -458,7 +458,7 @@ QVector<cObject *> TimeLineGraphicsView::getObjectsUnderCursor(QPointF pos)
     QList<QGraphicsItem *> items = scene()->items(rect);
 
     QVector<cObject *> objects;
-    for (auto & item : items) {
+    for (auto item : items) {
         cObject *object = item->data(ITEMDATA_COBJECT).value<cMessage *>();
         if (object && !objects.contains(object))
             objects.push_back(object);

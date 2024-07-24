@@ -47,7 +47,7 @@ LayersDialog::LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent) :
     QVBoxLayout *showFigLayout = static_cast<QVBoxLayout *>(ui->showFigWidget->layout());
     QVBoxLayout *hideFigLayout = static_cast<QVBoxLayout *>(ui->hideFigWidget->layout());
 
-    for (std::string t : allTags) {
+    for (const std::string& t : allTags) {
         QString tag(t.c_str());
 
         QCheckBox *enabledChkBox = new QCheckBox(tag);

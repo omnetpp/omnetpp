@@ -55,11 +55,11 @@ LogBuffer::Entry::Entry(Kind kind, eventnumber_t e, simtime_t t, cComponent *com
 LogBuffer::Entry::~Entry()
 {
     delete[] banner;
-    for (auto & line : lines) {
+    for (const auto& line : lines) {
         delete[] line.prefix;
         delete[] line.line;
     }
-    for (auto & msg : msgs) {
+    for (const auto& msg : msgs) {
         delete msg.msg;
     }
 }

@@ -436,7 +436,7 @@ void AnimationGroup::removeFromInspector(Inspector *insp)
 QString AnimationGroup::str() const
 {
     QString result = QString("Animation Group of ") + QString::number(parts.size()) + " parts, state " + stateText[state] + (isHolding() ? " HOLDING" : " NONHOLDING");
-    for (const auto &p : parts)
+    for (auto p : parts)
         result += "\n    - " + p->str().replace("\n", "\n      ");
     return result;
 }
@@ -1065,7 +1065,7 @@ void SendDirectAnimation::addToInspector(Inspector *insp)
     auto path = findDirectPath(srcModuleId, destModuleId);
 
     bool isUpdatePacket = msg->isPacket() && static_cast<cPacket *>(msg)->isUpdate();
-    for (auto & segment : path) {
+    for (const auto& segment : path) {
         cModule *from = segment.from;
         cModule *to = segment.to;
 

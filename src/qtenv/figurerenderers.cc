@@ -889,7 +889,7 @@ void PolygonFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
     else {
         path.moveTo(points[0].x, points[0].y);
 
-        for (auto & point : points)
+        for (const auto& point : points)
             path.lineTo(point.x, point.y);
     }
 

@@ -39,7 +39,7 @@ MessagePrinterTagsDialog::MessagePrinterTagsDialog(QWidget *parent, const QStrin
 
     //Q_ASSERT(rootModule);
 
-    for (auto t : allTags) {
+    for (const auto& t : allTags) {
         QListWidgetItem *item = new QListWidgetItem(t);
         ui->listWidget->addItem(item);
         //item->setData(0, Qt::UserRole, QVariant::fromValue((void *)rootModule));

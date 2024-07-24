@@ -545,7 +545,7 @@ std::vector<cObject *> OsgViewer::objectsAt(const QPoint &pos)
         pos.x() * scaleFactor(), height() * scaleFactor() - pos.y() * scaleFactor(), intersections);
 
     std::vector<cObject *> objects;
-    for (osgUtil::LineSegmentIntersector::Intersections::iterator hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
+    for (auto hitr = intersections.begin(); hitr != intersections.end(); ++hitr) {
         const osg::NodePath& nodePath = hitr->nodePath;
         // find cObject pointer node (OmnetppObjectNode) in nodepath, back to front
         for (int i = nodePath.size()-1; i >= 0; --i) {
