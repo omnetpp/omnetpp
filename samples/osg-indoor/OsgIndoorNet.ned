@@ -14,8 +14,8 @@ network OsgIndoorNet
 {
     parameters:
         @display("bgb=$playgroundWidth,$playgroundHeight");
-        double playgroundWidth @unit("m") = default(300m);
-        double playgroundHeight @unit("m") = default(150m);
+        double playgroundWidth = default(300);
+        double playgroundHeight = default(150);
         int numPeople = default(0);  // the number of people in the office
 
     submodules:
