@@ -30,7 +30,9 @@ summary of these key enhancements and other important changes in this release.
 
 Important: Please read the installation instructions even if you are familiar
 with OMNeT++, as there are new dependencies and the recommended way of
-installing Python packages has also changed.
+installing Python packages has also changed. There is a new `install.sh` script
+in the root of the source distribution that will help you install OMNeT++ on
+your machine.
 
 Simulation kernel:
 

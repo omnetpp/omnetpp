@@ -1,28 +1,62 @@
-INSTALLATION INSTRUCTIONS
+Installation Instructions
 =========================
 
-Detailed instructions are provided in the INSTALL GUIDE, doc/InstallGuide.pdf. The Install Guide also covers dependencies, optional packages, various build options as well as specific instructions for several Linux distributions (such as recent versions of Ubuntu, Fedora Core, SUSE Linux, etc.), mac OS and Windows. We highly recommend that you consult it before installing OMNeT++!
+For Linux and macOS
+-------------------
 
-If you find an error or omission in the Install Guide, please help us improve by letting us know about it.
+To install OMNeT++, execute the `install.sh` script located in the
+root directory of the OMNeT++ source distribution. This script will
+automatically detect your operating system and package manager, and
+proceed with the installation.
 
-If you are an expert in building software from source and want to start quickly without reading the Install Guide, then enter the commands (on Linux and macOS on the bash or zsh prompt.). 
+    $ ./install.sh
+
+After the installation completes, and for any subsequent use of
+OMNeT++, ensure you run the following command in your shell:
+
+    $ source setenv
+
+[!NOTE] Only a limited number of Linux distributions were tested
+with the script (Ubuntu, Fedora). You may need to adjust the script
+depending on the system package manager of your dstribution.
+
+For Windows
+-----------
+
+Begin by executing the `mingwenv.cmd` command. In the terminal
+window that opens, run the following commands:
+
+    $ ./configure
+    $ make -j16
+
+[!NOTE] The `mingwenv.cmd` command automatically installs all
+required dependencies and then executes the `source setenv` command.
+You can adjust the `-j16` parameter to match the number of cores on your
+machine for optimized performance.
+
+Manual Installation
+-------------------
+
+If you encounter any issues during the installation, please
+refer to the Install Guide. You might need to adjust the package
+names according to your OS version.
+
+Comprehensive installation instructions are available in the 
+`doc/InstallGuide.pdf` file. This guide includes information on
+dependencies, optional packages, various build options, and specific
+instructions for several Linux distributions (such as recent versions
+of Ubuntu and Fedora), macOS, and Windows. We highly recommend 
+reviewing this guide before installing OMNeT++.
+
+If you find any errors or omissions in the Install Guide, please let
+us know so we can improve it.
+
+For experienced users who have all dependencies already installed,
+you can directly enter the following commands (on Linux and macOS,
+using bash or zsh):
 
     $ source setenv 
     $ ./configure 
-    $ make 
+    $ make -j16
 
-On Windows, start the `mingwenv.cmd` command and then execute
-
-    $ ./configure
-    $ make
-
-in the opened terminal window.
-
-If you have any questions or there are issues, please read the Install Guide.
-
-Enjoy working with OMNeT++!
-
-
-
-
-
+We hope you enjoy working with OMNeT++!
