@@ -4252,6 +4252,12 @@ else
             IMPLIB_SUFFIX=".lib"
             LIB_PREFIX=""
         else # mingw compiler (clang or gcc) with GCC compatible ABI
+
+            # workaround for a libstdc++ issue surfacing with windows/clang/static linking:
+            # https://github.com/msys2/MINGW-packages/issues/17730
+            # this will probably be fixed/worked around in clang 19
+            CXXFLAGS="$CXXFLAGS -D__GXX_TYPEINFO_EQUALITY_INLINE=0"
+
             # on MinGW dll auto importing MUST be used with shared gcc and stdc++
             # otherwise exceptions can't be thrown across dll boundaries
             LDFLAGS_ARCH="$LDFLAGS_ARCH -L/usr/bin"
