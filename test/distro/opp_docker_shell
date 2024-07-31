@@ -1,0 +1,2 @@
+#!/bin/sh
+./tools/x11docker -it --sudouser --network --hostwayland -- --rm -v "$(pwd)/ut:/mnt" -u "$(id -u):$(id -g)" -- "$@"
