@@ -140,7 +140,7 @@ SHARED_LIBS=yes
 # this option off does not necessarily disable ccache if it is installed to be
 # used system-wide.
 #
-USE_CCACHE_PREFIX=no
+USE_CCACHE_PREFIX=yes
 
 #
 # Compiler and linker options for Qt
