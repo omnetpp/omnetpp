@@ -1231,7 +1231,7 @@ if test "$USE_CCACHE_PREFIX" = "yes"; then
   AC_CHECK_PROG(CCACHE, ccache, ccache, not found)
   if test "$CCACHE" = "not found"; then
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ccache"
-    AC_MSG_ERROR([ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes)])
+    AC_MSG_WARN([ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes). Not using ccache.])
   else
     CC="ccache $CC"
     CXX="ccache $CXX"

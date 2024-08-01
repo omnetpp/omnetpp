@@ -7398,7 +7398,8 @@ fi
 
   if test "$CCACHE" = "not found"; then
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ccache"
-    as_fn_error $? "ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes)" "$LINENO" 5
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes). Not using ccache." >&5
+printf "%s\n" "$as_me: WARNING: ccache program not found, but it is configured to be used in configure.user (USE_CCACHE_PREFIX=yes). Not using ccache." >&2;}
   else
     CC="ccache $CC"
     CXX="ccache $CXX"
