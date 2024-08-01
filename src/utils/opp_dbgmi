@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # A wrapper script to start 'lldbmi2' from the IDE nativelibs plugin (or fall back to system gdb) 
 #
@@ -12,21 +12,17 @@ if [ $# = 0 ]; then
 fi
 
 uname=$(uname)
-_ide_root=$(dirname $0)/../ide
+_ide_root=$(cd $(dirname "$0")/../ide; pwd)
 if [ ! -d "$_ide_root" ]; then
   echo "IDE is not available. Debugging is not supported."
   exit 1
 fi
-_ide_root=$(cd $_ide_root; pwd)
-
-# expand to an empty string if glob is not matching 
-shopt -s nullglob
 
 # NOTE: the () around the glob patterns below are IMPORTANT to expand them
 # so the dbgmi variable will contain the expanded filename and not the pattern itself
 if [ -z "$dbgmi" ]; then # if dbgmi is not specified in envvar then try to find it in the ide nativelibs plugin
   if [ "$uname" = "Linux" ]; then
-    dbgmi=("${_ide_root}/plugins/org.omnetpp.ide.nativelibs.linux."*/lldbmi2)
+    dbgmi=$(eval echo "${_ide_root}/plugins/org.omnetpp.ide.nativelibs.linux.*/lldbmi2")
     lldb=$(command -v lldb)
     if [ -n "$lldb" -a -f "$dbgmi" ]; then
       # if 'lldb' is installed and 'lldbmi2' is present in the plugins dir, figure out the liblldb version used by it and preload it
@@ -38,9 +34,9 @@ if [ -z "$dbgmi" ]; then # if dbgmi is not specified in envvar then try to find 
       dbgmi=
     fi
   elif [ "$uname" = "Darwin" ]; then
-    dbgmi=("${_ide_root}/opp_ide.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx_"*/lldbmi2)
+    dbgmi=$(eval echo "${_ide_root}/opp_ide.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx_*/lldbmi2")
   else # assuming we are on  Windows
-    dbgmi=("${_ide_root}/plugins/org.omnetpp.ide.nativelibs.win32."*/lldbmi2.exe)
+    dbgmi=$(eval echo "${_ide_root}/plugins/org.omnetpp.ide.nativelibs.win32.*/lldbmi2.exe")
   fi
 fi
 
