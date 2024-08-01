@@ -332,7 +332,7 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, false);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, "opp_dbgmi");
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, "sh ${opp_root}/bin/opp_dbgmi");
 
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
     }
