@@ -342,6 +342,87 @@ def apply_replace_blocks(content, blocks):
         content = content.replace(search_text, replace_text, 1)
     return content
 
+def extract_and_replace_cpp_regions_containing(source, regex):
+    spans = find_cpp_regions_containing(source, regex)
+    modified_source, placeholders_to_content = replace_spans_with_placeholders(source, spans)
+    return modified_source, placeholders_to_content
+
+def find_cpp_regions_containing(source, pattern):
+    # Find whole function or class definitions that contain the given regex pattern.
+    # Assumes properly formatted C++ code. Does not work properly for one-liner functions
+    # where everything is on one line (it selects more than necessary).
+
+    def find_region_start_index(source, start_index):
+        # Find the nearest unindented line above start_index, which will likely be the
+        # class/struct declaration header, or the header of out of-line method definition.
+        # Avoid considering preprocessor directives (`#`), the opening brace placed
+        # on its own line (`{`), and empty lines (`\n`),
+        matches = list(re.finditer(r'^[^#{ \t\f\n]', source[:start_index], re.MULTILINE))
+        return matches[-1].start() if matches else 0
+
+    def find_region_end_index(source, start_index):
+        # Find the next unindented close brace.
+        match = re.search(r'^\}.*?\n', source[start_index:], re.MULTILINE)
+        return start_index + match.end() if match else len(source)
+
+    def merge_spans(spans):
+        if len(spans) < 2:
+            return spans
+
+        # Sort spans by the start position
+        sorted_spans = sorted(spans, key=lambda x: x[0])
+
+        # Initialize the list to hold merged spans
+        merged_spans = [sorted_spans[0]]
+
+        for current in sorted_spans[1:]:
+            last = merged_spans[-1]
+
+            # If the current span overlaps or is adjacent to the last span, merge them
+            if current[0] <= last[1]:
+                merged_spans[-1] = (last[0], max(last[1], current[1]))
+            else:
+                merged_spans.append(current)
+
+        return merged_spans
+
+    # Tweak: it is customary to place the private/protected/public at the start of the line,
+    # but we don't want them to act as block start lines. The workaround is to tweak such lines
+    # by indenting them by two spaces.
+
+    source = source.replace('\r\n', '\n')
+    source = source.replace('\nprivate:', '\n  private:')
+    source = source.replace('\nprotected:', '\n  protected:')
+    source = source.replace('\npublic:', '\n  public:')
+
+    # Find all occurrences of the regex, then extend their spans to the start/end
+    # of the function definition or class declaration.
+    matches = re.finditer(pattern, source)
+    spans = [ (find_region_start_index(source, m.start()), find_region_end_index(source, m.end())) for m in matches]
+    spans = merge_spans(spans)
+    return spans
+
+def replace_spans_with_placeholders(text, spans):
+    # Sort spans by the start position
+    spans = sorted(spans, key=lambda x: x[0])
+
+    placeholder_to_content = {}
+    offset = 0
+    counter = 1
+
+    # Update text
+    for start, end in spans:
+        actual_start = start + offset
+        actual_end = end + offset
+        original_content = text[actual_start:actual_end]
+        placeholder = f"<@ PLACEHOLDER_{counter} @>\n"
+        text = text[:actual_start] + placeholder + text[actual_end:]
+        placeholder_to_content[placeholder] = original_content
+        offset += len(placeholder) - (end - start)
+        counter += 1
+
+    return text, placeholder_to_content
+
 def extract_and_replace_regions_between(text, start_regex, end_regex):
     # example: to match constructor implementations in cc files, try this:
     # --start-at='\b(\w+)::\1' --end-at='^}'
@@ -452,7 +533,10 @@ def apply_command_to_content(file_path, content, context, file_type, task, custo
     else:
         raise ValueError(f"Unsupported reply format '{reply_format}'")
 
-def apply_command_to_file(file_path, context_files, file_type, task, custom_prompt, model, reply_format, chunk_size=None, with_context=True, start_at=None, end_at=None, save_prompt=False):
+def apply_command_to_file(file_path, context_files, file_type, task, custom_prompt, model, reply_format, chunk_size=None,
+                          with_context=True, start_at=None, end_at=None, blocks_containing=None, save_prompt=False):
+    assert not (start_at or end_at) if blocks_containing else True, "start-at/end-at and blocks-containing are mutually exclusive"
+    assert file_type == "c++" if blocks_containing else True, "blocks-containing is only supported for C++ files"
     context_files = context_files or []
     if with_context:
         context_files += find_additional_context_files(file_path, file_type, task)
@@ -465,10 +549,12 @@ def apply_command_to_file(file_path, context_files, file_type, task, custom_prom
 
     content = read_file(file_path)
 
-    if not start_at and not end_at:
-        modified_content = apply_command_to_content(**dict_except(locals(), ["context_files", "placeholders_to_content", "with_context", "start_at", "end_at"]))
+    if not start_at and not end_at and not blocks_containing:
+        modified_content = apply_command_to_content(**dict_except(locals(), ["context_files", "placeholders_to_content", "with_context", "start_at", "end_at", "blocks_containing"]))
     else:
-        modified_content, placeholders_to_content = extract_and_replace_regions_between(content, start_at, end_at)
+        modified_content, placeholders_to_content = \
+            extract_and_replace_cpp_regions_containing(content, blocks_containing) if blocks_containing else \
+            extract_and_replace_regions_between(content, start_at, end_at)
         verify_regions(content, modified_content, placeholders_to_content)
         if not placeholders_to_content:
             print("   no match, skipping")
@@ -477,13 +563,15 @@ def apply_command_to_file(file_path, context_files, file_type, task, custom_prom
         # print("DEBUG:g", placeholders_to_content)
         region_seq = 0
         for placeholder, content_region in placeholders_to_content.items():
-            modified_region = apply_command_to_content(content=content_region, **dict_except(locals(), ["content", "content_region", "modified_content", "modified_region", "placeholder", "context_files", "placeholders_to_content", "with_context", "start_at", "end_at"]))
+            modified_region = apply_command_to_content(content=content_region, **dict_except(locals(), ["content", "content_region", "modified_content", "modified_region", "placeholder", "context_files", "placeholders_to_content", "with_context", "start_at", "end_at", "blocks_containing"]))
             modified_content = modified_content.replace(placeholder, modified_region)
             region_seq +=1
 
     write_file(file_path, modified_content)
 
-def apply_command_to_files(file_list, context_files, file_type, task, custom_prompt, model, reply_format, chunk_size=None, start_at=None, end_at=None, with_context=True, save_prompt=False):
+def apply_command_to_files(file_list, context_files, file_type, task, custom_prompt, model, reply_format,
+                           chunk_size=None, start_at=None, end_at=None, blocks_containing=None,
+                           with_context=True, save_prompt=False):
     args = dict(locals())
     del args["file_list"]
 
@@ -562,7 +650,9 @@ def resolve_file_list(paths, file_type, file_ext=None):
         return file_name.removesuffix(".h")
     return sorted(file_list, key=sort_key)
 
-def process_files(paths, context_files, file_type, file_ext, task, custom_prompt, prompt_file, model_name, reply_format, chunk_size=None, with_context=True, start_at=None, end_at=None, save_prompt=False):
+def process_files(paths, context_files, file_type, file_ext, task, custom_prompt, prompt_file,
+                  model_name, reply_format, chunk_size=None, with_context=True,
+                  start_at=None, end_at=None, blocks_containing=None, save_prompt=False):
     if prompt_file:
         if custom_prompt:
             raise ValueError("Cannot specify both --prompt and --prompt-file")
@@ -581,6 +671,7 @@ def process_files(paths, context_files, file_type, file_ext, task, custom_prompt
     if not file_type:
         file_type = detect_file_type(paths)
         print("File type (autodetected): " + file_type)
+
     file_list = resolve_file_list(paths, file_type, file_ext)
     print("Files to process: " + " ".join(file_list))
     print("Task: " + (task or "custom prompt"))
@@ -604,8 +695,8 @@ def main():
     parser.add_argument("--without-context", dest="with_context", action='store_false', help="Whether to add discovered context files to the prompt. (This does not affect --context-files, they are always added.)")
     parser.add_argument("--start-at", type=str, help="Regular expression to match the first line of the region (or regions) to process. Lines outside matched regions are not submitted to the LLM. Example: To process initialize() functions in a C++ source, use --start-at='::initialize\\(' --end-at='^}'. To process constructor implementations in a C++ source, use --start-at='\\b(\\w+)::\\1' --end-at='^}'")
     parser.add_argument("--end-at", type=str, help="Regular expression to match the last line of the region (or regions) to process. Lines outside matched regions are not submitted to the LLM.")
+    parser.add_argument("--blocks-containing", type=str, help="For C++ files only: Process source code regions (enclosing method definition, class declaration, etc.) containing the given regex pattern. Lines outside matched regions are not submitted to the LLM. Assumes that the C++ code is properly formatted, i.e. indentation conforms to the accepted norms.")
     parser.add_argument("--save-prompt", action='store_true', help="Save the LLM prompt for each input file as <filename>.prompt<N>.")
-
     args = parser.parse_args()
     process_files(**vars(args))
 
