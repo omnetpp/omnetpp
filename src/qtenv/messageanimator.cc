@@ -613,6 +613,8 @@ void MessageAnimator::addDeliveryAnimation(cMessage *msg, cModule *showIn, Deliv
 
     anim->removeMessagePointer(msg);
 
+    animationsForMessages.insert(std::make_pair(dup, anim));
+
     if (getQtenv()->getSimulationRunMode() != RUNMODE_FAST)
         updateAnimations();
 }
