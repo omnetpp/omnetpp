@@ -342,7 +342,7 @@ def apply_replace_blocks(content, blocks):
         content = content.replace(search_text, replace_text, 1)
     return content
 
-def extract_and_replace_regions(text, start_regex, end_regex):
+def extract_and_replace_regions_between(text, start_regex, end_regex):
     # example: to match constructor implementations in cc files, try this:
     # --start-at='\b(\w+)::\1' --end-at='^}'
 
@@ -395,12 +395,12 @@ def extract_and_replace_regions(text, start_regex, end_regex):
     modified_content = "".join(modified_lines)
     return modified_content, placeholders_to_content
 
-def extract_and_replace_regions_2(text, start_at=None, end_at=None):
-    # This a pure-regex version. Not that it has really poor runtime
-    # performance (several seconds per file!) if only end_regex is specified.
-    start_part = r"^.*" + start_at if start_at else ""
-    body_part = r"(.|\n)*" + ("?" if end_at else "")
-    end_part = end_at + r".*\n" if end_at else ""
+def extract_and_replace_regions_between_v2(text, start_regex=None, end_regex=None):
+    # This a pure-regex version. Note that it has really poor runtime
+    # performance (several seconds per file!) if only end_regex is specified --> UNUSED!
+    start_part = r"^.*" + start_regex if start_regex else ""
+    body_part = r"(.|\n)*" + ("?" if end_regex else "")
+    end_part = end_regex + r".*\n" if end_regex else ""
     regex = start_part + body_part + end_part
 
     placeholders = []
@@ -468,7 +468,7 @@ def apply_command_to_file(file_path, context_files, file_type, task, custom_prom
     if not start_at and not end_at:
         modified_content = apply_command_to_content(**dict_except(locals(), ["context_files", "placeholders_to_content", "with_context", "start_at", "end_at"]))
     else:
-        modified_content, placeholders_to_content = extract_and_replace_regions(content, start_at, end_at)
+        modified_content, placeholders_to_content = extract_and_replace_regions_between(content, start_at, end_at)
         verify_regions(content, modified_content, placeholders_to_content)
         if not placeholders_to_content:
             print("   no match, skipping")
