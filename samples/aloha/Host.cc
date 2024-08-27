@@ -87,6 +87,14 @@ void Host::handleMessage(cMessage *msg)
         // let visualization code know about the new packet
         if (transmissionRing != nullptr) {
             delete lastPacket;
+            transmissionRing->setVisible(false);
+            transmissionRing->setAssociatedObject(nullptr);
+
+            for (auto c : transmissionCircles) {
+                c->setVisible(false);
+                c->setAssociatedObject(nullptr);
+            }
+
             lastPacket = pk->dup();
         }
     }
@@ -169,6 +177,11 @@ void Host::refreshDisplay() const
         if (backRadius > ringMaxRadius) {
             transmissionRing->setVisible(false);
             transmissionRing->setAssociatedObject(nullptr);
+
+            for (auto c : transmissionCircles) {
+                c->setVisible(false);
+                c->setAssociatedObject(nullptr);
+            }
         }
         else {
             transmissionRing->setVisible(true);
