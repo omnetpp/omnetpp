@@ -47,7 +47,7 @@ public:
     bool stopOnMsgCancel();
 
 public Q_SLOTS:
-    virtual void accept();
+    void accept() override;
 
 private:
     Ui::RunUntilDialog *ui;

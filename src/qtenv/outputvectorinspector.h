@@ -85,8 +85,8 @@ class QTENV_API OutputVectorInspector : public Inspector
   public:
     OutputVectorInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
     ~OutputVectorInspector();
-    virtual void doSetObject(cObject *obj) override;
-    virtual void refresh() override;
+    void doSetObject(cObject *obj) override;
+    void refresh() override;
 };
 
 }  // namespace qtenv

@@ -252,30 +252,30 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       virtual double getZoomLevel(const cModule *module) override;
 
       // smooth animation API
-      virtual double getAnimationTime() const override;
-      virtual double getAnimationSpeed() const override;
-      virtual double getRemainingAnimationHoldTime() const override;
+      double getAnimationTime() const override;
+      double getAnimationSpeed() const override;
+      double getRemainingAnimationHoldTime() const override;
 
-      virtual void bubble(cComponent *component, const char *text) override;
+      void bubble(cComponent *component, const char *text) override;
 
-      virtual void log(cLogEntry *entry) override;
-      virtual void alert(const char *msg) override;
-      virtual std::string gets(const char *prompt, const char *defaultReply = nullptr) override;
-      virtual bool askYesNo(const char *question) override;
+      void log(cLogEntry *entry) override;
+      void alert(const char *msg) override;
+      std::string gets(const char *prompt, const char *defaultReply = nullptr) override;
+      bool askYesNo(const char *question) override;
 
-      virtual void refOsgNode(osg::Node *scene) override;
-      virtual void unrefOsgNode(osg::Node *scene) override;
-      virtual bool idle() override;
+      void refOsgNode(osg::Node *scene) override;
+      void unrefOsgNode(osg::Node *scene) override;
+      bool idle() override;
 
-      virtual void pausePoint() override;
-      virtual void requestQuitFromPausePointEventLoop(RunMode continueIn); // internal
-      virtual bool isPaused() { return pauseEventLoop->isRunning(); }
-      virtual int getPausePointNumber() { return pausePointNumber; }
+      void pausePoint() override;
+      void requestQuitFromPausePointEventLoop(RunMode continueIn); // internal
+      bool isPaused() { return pauseEventLoop->isRunning(); }
+      int getPausePointNumber() { return pausePointNumber; }
 
-      virtual bool ensureDebugger(cRuntimeError *error = nullptr) override;
+      bool ensureDebugger(cRuntimeError *error = nullptr) override;
 
       // with Qtenv, activity() modules need extra stack
-      virtual unsigned getExtraStackForEnvir() const override;
+      unsigned getExtraStackForEnvir() const override;
 
       MainWindow *getMainWindow() { return mainWindow; }
       MessageAnimator *getMessageAnimator() { return messageAnimator; }
@@ -323,18 +323,18 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
   protected:
       // redefined virtual functions from EnvirBase
-      virtual void doRun() override;
-      virtual void printUISpecificHelp() override;
+      void doRun() override;
+      void printUISpecificHelp() override;
 
-      virtual EnvirOptions *createOptions() override {return new QtenvOptions();}
-      virtual void readOptions() override;
-      virtual void readPerRunOptions() override;
+      EnvirOptions *createOptions() override {return new QtenvOptions();}
+      void readOptions() override;
+      void readPerRunOptions() override;
 
-      virtual void setupNetwork(cModuleType *network) override;
+      void setupNetwork(cModuleType *network) override;
 
-      virtual void askParameter(cPar *par, bool unassigned) override;
-      virtual void displayException(std::exception& e) override;
-      virtual std::string getWindowTitle();
+      void askParameter(cPar *par, bool unassigned) override;
+      void displayException(std::exception& e) override;
+      std::string getWindowTitle();
 
   public:
       // New functions:
@@ -356,7 +356,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       bool checkRunning();
 
       // declared here just to make it public, simply delegates back to the base class
-      virtual std::vector<int> resolveRunFilter(const char *configName, const char *runFilter) override;
+      std::vector<int> resolveRunFilter(const char *configName, const char *runFilter) override;
 
       void loadNedFile(const char *fname, const char *expectedPackage=nullptr, bool isXML=false);
 

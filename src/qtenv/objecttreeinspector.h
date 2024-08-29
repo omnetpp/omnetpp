@@ -49,8 +49,8 @@ public Q_SLOTS:
 public:
     ObjectTreeInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
 
-    virtual void doSetObject(cObject *obj) override;
-    virtual void refresh() override;
+    void doSetObject(cObject *obj) override;
+    void refresh() override;
 };
 
 }  // namespace qtenv
