@@ -41,8 +41,8 @@ class QTENV_API OutputVectorView : public QGraphicsView
     OutputVectorView(QGraphicsScene *scene, QWidget *parent = nullptr);
 
     void draw(const CircBuffer& circbuf);
-    void setMinY(const double minY);
-    void setMaxY(const double maxY);
+    void setMinY(double minY);
+    void setMaxY(double maxY);
     void setMinT(const simtime_t& minT);
     void setMaxT(const simtime_t& maxT);
 

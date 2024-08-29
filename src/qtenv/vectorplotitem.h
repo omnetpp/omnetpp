@@ -43,15 +43,15 @@ class QTENV_API VectorPlotItem : public QGraphicsItem
     double minX, maxX, minY, maxY;
 
     int mapFromSimtime(const simtime_t& t);
-    int mapFromValue(const double y);
+    int mapFromValue(double y);
 
   public:
     VectorPlotItem(QGraphicsItem *parent = nullptr);
 
-    void setMinX(const double minX);
-    void setMaxX(const double maxX);
-    void setMinY(const double minY);
-    void setMaxY(const double maxY);
+    void setMinX(double minX);
+    void setMaxX(double maxX);
+    void setMinY(double minY);
+    void setMaxY(double maxY);
 
     void setData(const CircBuffer *circBuf);
     void setColor(const QColor& color);

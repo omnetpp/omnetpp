@@ -61,7 +61,7 @@ QGraphicsRectItem *ChartGridItem::getDiagramFrame()
     return frame;
 }
 
-void ChartGridItem::setMinX(const double x)
+void ChartGridItem::setMinX(double x)
 {
     if (minX != x) {
         minX = x;
@@ -70,7 +70,7 @@ void ChartGridItem::setMinX(const double x)
     }
 }
 
-void ChartGridItem::setMaxX(const double x)
+void ChartGridItem::setMaxX(double x)
 {
     if (maxX != x) {
         maxX = x;
@@ -79,7 +79,7 @@ void ChartGridItem::setMaxX(const double x)
     }
 }
 
-void ChartGridItem::setMinY(const double y)
+void ChartGridItem::setMinY(double y)
 {
     if (minY != y) {
         isYAxisChanged = true;
@@ -90,7 +90,7 @@ void ChartGridItem::setMinY(const double y)
     }
 }
 
-void ChartGridItem::setMaxY(const double y)
+void ChartGridItem::setMaxY(double y)
 {
     if (maxY != y) {
         isYAxisChanged = true;
@@ -125,18 +125,18 @@ void ChartGridItem::correctBoundingRectangle()
         boundingRectangle.setHeight(MINIMUM_DIAGRAM_SIZE + getTextHeight());
 }
 
-QPoint ChartGridItem::mapFromData(const double t, const double y)
+QPoint ChartGridItem::mapFromData(double t, double y)
 {
     return QPoint(mapFromSimtime(t), mapFromValue(y));
 }
 
-int ChartGridItem::mapFromSimtime(const double t)
+int ChartGridItem::mapFromSimtime(double t)
 {
     double diagramWidth = std::max((double)MINIMUM_DIAGRAM_SIZE, boundingRectangle.width() - getYLabelWidth() - VERT_TEXT_DISTANCE);
     return (t - minX) * diagramWidth / (maxX - minX);
 }
 
-int ChartGridItem::mapFromValue(const double y)
+int ChartGridItem::mapFromValue(double y)
 {
     int diagramHeight = std::max((double)MINIMUM_DIAGRAM_SIZE, boundingRectangle.height() - getTextHeight());
     return (maxY - y) * diagramHeight / (maxY-minY);

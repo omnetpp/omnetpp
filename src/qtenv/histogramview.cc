@@ -49,18 +49,18 @@ HistogramView::HistogramView(QGraphicsScene *scene, QWidget *parent) :
     scene->addItem(gridItem);
 }
 
-QPointF HistogramView::mapToView(const double x, const double y) const
+QPointF HistogramView::mapToView(double x, double y) const
 {
     return QPointF(mapXToView(x), mapYToView(y));
 }
 
-int HistogramView::mapXToView(const double x) const
+int HistogramView::mapXToView(double x) const
 {
     int histogramWidth = gridItem->getDiagramFrame()->boundingRect().width();
     return histogramWidth - (maxX - x) * histogramWidth / (maxX - minX);
 }
 
-int HistogramView::mapYToView(const double y) const
+int HistogramView::mapYToView(double y) const
 {
     int histogramHeight = gridItem->getDiagramFrame()->boundingRect().height();
     return std::max(0.0, maxY - y) * histogramHeight / (maxY - minY);
@@ -146,25 +146,25 @@ void HistogramView::drawBin(ChartType type, DrawingStyle drawingStyle, int binIn
     item->setBrush(brush);
 }
 
-void HistogramView::setMinX(const double minX)
+void HistogramView::setMinX(double minX)
 {
     this->minX = minX;
     gridItem->setMinX(minX);
 }
 
-void HistogramView::setMaxX(const double maxX)
+void HistogramView::setMaxX(double maxX)
 {
     this->maxX = maxX;
     gridItem->setMaxX(maxX);
 }
 
-void HistogramView::setMinY(const double minY)
+void HistogramView::setMinY(double minY)
 {
     this->minY = minY;
     gridItem->setMinY(minY);
 }
 
-void HistogramView::setMaxY(const double maxY)
+void HistogramView::setMaxY(double maxY)
 {
     this->maxY = maxY;
     gridItem->setMaxY(maxY);

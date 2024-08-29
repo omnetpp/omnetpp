@@ -27,7 +27,7 @@ VectorPlotItem::VectorPlotItem(QGraphicsItem *parent) : QGraphicsItem(parent)
 {
 }
 
-void VectorPlotItem::setMinX(const double minX)
+void VectorPlotItem::setMinX(double minX)
 {
     if (this->minX != minX) {
         this->minX = minX;
@@ -35,7 +35,7 @@ void VectorPlotItem::setMinX(const double minX)
     }
 }
 
-void VectorPlotItem::setMaxX(const double maxX)
+void VectorPlotItem::setMaxX(double maxX)
 {
     if (this->maxX != maxX) {
         this->maxX = maxX;
@@ -43,7 +43,7 @@ void VectorPlotItem::setMaxX(const double maxX)
     }
 }
 
-void VectorPlotItem::setMinY(const double minY)
+void VectorPlotItem::setMinY(double minY)
 {
     if (this->minY != minY) {
         this->minY = minY;
@@ -51,7 +51,7 @@ void VectorPlotItem::setMinY(const double minY)
     }
 }
 
-void VectorPlotItem::setMaxY(const double maxY)
+void VectorPlotItem::setMaxY(double maxY)
 {
     if (this->maxY != maxY) {
         this->maxY = maxY;
@@ -195,7 +195,7 @@ inline int VectorPlotItem::mapFromSimtime(const simtime_t& t)
     return (t.dbl() - minX) * boundingRect().width() / (maxX - minX);
 }
 
-inline int VectorPlotItem::mapFromValue(const double y)
+inline int VectorPlotItem::mapFromValue(double y)
 {
     return (maxY - y) * boundingRect().height() / (maxY-minY);
 }

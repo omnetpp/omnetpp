@@ -68,7 +68,7 @@ double OutputVectorInspectorConfigDialog::getMinY() const
     return opp_atof(ui->yMinLineEdit->text().toLatin1());
 }
 
-void OutputVectorInspectorConfigDialog::setMinY(const double minY)
+void OutputVectorInspectorConfigDialog::setMinY(double minY)
 {
     ui->yMinLineEdit->setText(InspectorUtil::formatDouble(minY));
 }
@@ -83,7 +83,7 @@ double OutputVectorInspectorConfigDialog::getMaxY() const
     return opp_atof(ui->yMaxLineEdit->text().toLatin1());
 }
 
-void OutputVectorInspectorConfigDialog::setMaxY(const double maxY)
+void OutputVectorInspectorConfigDialog::setMaxY(double maxY)
 {
     ui->yMaxLineEdit->setText(InspectorUtil::formatDouble(maxY));
 }
@@ -98,7 +98,7 @@ double OutputVectorInspectorConfigDialog::getTimeScale() const
     return opp_atof(ui->timeScaleLineEdit->text().toLatin1());
 }
 
-void OutputVectorInspectorConfigDialog::setTimeScale(const double timeScale)
+void OutputVectorInspectorConfigDialog::setTimeScale(double timeScale)
 {
     ui->timeScaleLineEdit->setText(InspectorUtil::formatDouble(timeScale));
 }

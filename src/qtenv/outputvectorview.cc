@@ -42,13 +42,13 @@ OutputVectorView::OutputVectorView(QGraphicsScene *scene, QWidget *parent) :
     scene->addItem(gridItem);
 }
 
-void OutputVectorView::setMinY(const double minY)
+void OutputVectorView::setMinY(double minY)
 {
     gridItem->setMinY(minY);
     plotItem->setMinY(minY);
 }
 
-void OutputVectorView::setMaxY(const double maxY)
+void OutputVectorView::setMaxY(double maxY)
 {
     gridItem->setMaxY(maxY);
     plotItem->setMaxY(maxY);

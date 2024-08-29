@@ -69,7 +69,7 @@ void OverviewManipulator::setTransformation(const osg::Vec3d& eye, const osg::Ve
     _previousUp = getUpVector(getCoordinateFrame(_center));
 }
 
-bool OverviewManipulator::performMovementLeftMouseButton(const double eventTimeDelta, const double dx, const double dy)
+bool OverviewManipulator::performMovementLeftMouseButton(double eventTimeDelta, double dx, double dy)
 {
     // saving the original distance
     double distance = getDistance();
@@ -96,7 +96,7 @@ bool OverviewManipulator::performMovementLeftMouseButton(const double eventTimeD
 }
 
 // same as in TerrainManipulator
-bool OverviewManipulator::performMovementMiddleMouseButton(const double eventTimeDelta, const double dx, const double dy)
+bool OverviewManipulator::performMovementMiddleMouseButton(double eventTimeDelta, double dx, double dy)
 {
     // pan model.
     double scale = -0.3f * _distance * getThrowScale(eventTimeDelta);
@@ -140,7 +140,7 @@ bool OverviewManipulator::performMovementMiddleMouseButton(const double eventTim
     return true;
 }
 
-bool OverviewManipulator::performMovementRightMouseButton(const double eventTimeDelta, const double dx, const double dy)
+bool OverviewManipulator::performMovementRightMouseButton(double eventTimeDelta, double dx, double dy)
 {
     // same as for the middle mouse panning above (just positive)
     double scale = 0.3f * _distance * getThrowScale(eventTimeDelta);

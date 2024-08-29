@@ -41,15 +41,15 @@ class QTENV_API OutputVectorInspectorConfigDialog : public QDialog
 
     bool hasMinY() const;
     double getMinY() const;
-    void setMinY(const double minY);
+    void setMinY(double minY);
 
     bool hasMaxY() const;
     double getMaxY() const;
-    void setMaxY(const double maxY);
+    void setMaxY(double maxY);
 
     bool hasTimeScale() const;
     double getTimeScale() const;
-    void setTimeScale(const double timeScale);
+    void setTimeScale(double timeScale);
 
   private Q_SLOTS:
     void onApplyButtonClicked();

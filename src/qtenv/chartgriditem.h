@@ -40,9 +40,9 @@ class QTENV_API ChartGridItem : public QGraphicsItem
     void paintXAxis(QPainter *painter);
     void paintYAxis(QPainter *painter);
 
-    QPoint mapFromData(const double t, double y);
-    int mapFromSimtime(const double t);
-    int mapFromValue(const double y);
+    QPoint mapFromData(double t, double y);
+    int mapFromSimtime(double t);
+    int mapFromValue(double y);
     void calculateYTicks();
 
     double getYLabelWidth();
@@ -59,10 +59,10 @@ class QTENV_API ChartGridItem : public QGraphicsItem
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) override;
     QGraphicsRectItem *getDiagramFrame();
 
-    void setMinX(const double x);
-    void setMaxX(const double x);
-    void setMinY(const double y);
-    void setMaxY(const double y);
+    void setMinX(double x);
+    void setMaxX(double x);
+    void setMinY(double y);
+    void setMaxY(double y);
     void setRect(const QRectF& rect);
 };
 

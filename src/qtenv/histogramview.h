@@ -42,9 +42,9 @@ class QTENV_API HistogramView : public QGraphicsView
     double minY, maxY, minX, maxX;
     DrawingStyle drawingStyle;
 
-    QPointF mapToView(const double x, const double y) const;
-    int mapXToView(const double x) const;
-    int mapYToView(const double y) const;
+    QPointF mapToView(double x, double y) const;
+    int mapXToView(double x) const;
+    int mapYToView(double y) const;
 
     void showInfo(QPoint mousePos);
 
@@ -63,10 +63,10 @@ class QTENV_API HistogramView : public QGraphicsView
     HistogramView(QGraphicsScene *scene, QWidget *parent = nullptr);
     void draw(ChartType type, DrawingStyle drawingStyle, cAbstractHistogram *distr);
 
-    void setMinX(const double minX);
-    void setMaxX(const double maxX);
-    void setMinY(const double minY);
-    void setMaxY(const double maxY);
+    void setMinX(double minX);
+    void setMaxX(double maxX);
+    void setMinY(double minY);
+    void setMaxY(double maxY);
 };
 
 }  // namespace qtenv

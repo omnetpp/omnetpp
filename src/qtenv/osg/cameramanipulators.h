@@ -41,9 +41,9 @@ public:
     virtual void setTransformation(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
 protected:
-    virtual bool performMovementLeftMouseButton( const double eventTimeDelta, const double dx, const double dy );
-    virtual bool performMovementMiddleMouseButton( const double eventTimeDelta, const double dx, const double dy );
-    virtual bool performMovementRightMouseButton( const double eventTimeDelta, const double dx, const double dy );
+    virtual bool performMovementLeftMouseButton(double eventTimeDelta, double dx, double dy);
+    virtual bool performMovementMiddleMouseButton(double eventTimeDelta, double dx, double dy);
+    virtual bool performMovementRightMouseButton(double eventTimeDelta, double dx, double dy);
 
     osg::Vec3d _previousUp;
 };

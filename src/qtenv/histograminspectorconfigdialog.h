@@ -40,19 +40,19 @@ class QTENV_API HistogramInspectorConfigDialog : public QDialog
 
     bool hasMinY() const;
     double getMinY() const;
-    void setMinY(const double minY);
+    void setMinY(double minY);
 
     bool hasMaxY() const;
     double getMaxY() const;
-    void setMaxY(const double maxY);
+    void setMaxY(double maxY);
 
     bool hasMinX() const;
     double getMinX() const;
-    void setMinX(const double minX);
+    void setMinX(double minX);
 
     bool hasMaxX() const;
     double getMaxX() const;
-    void setMaxX(const double maxX);
+    void setMaxX(double maxX);
 
   Q_SIGNALS:
     void applyButtonClicked();

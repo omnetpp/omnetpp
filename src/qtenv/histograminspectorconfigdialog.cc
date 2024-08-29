@@ -64,7 +64,7 @@ double HistogramInspectorConfigDialog::getMinY() const
     return opp_atof(ui->yMinLineEdit->text().toLatin1());
 }
 
-void HistogramInspectorConfigDialog::setMinY(const double minY)
+void HistogramInspectorConfigDialog::setMinY(double minY)
 {
     ui->yMinLineEdit->setText(InspectorUtil::formatDouble(minY));
 }
@@ -79,7 +79,7 @@ double HistogramInspectorConfigDialog::getMaxY() const
     return opp_atof(ui->yMaxLineEdit->text().toLatin1());
 }
 
-void HistogramInspectorConfigDialog::setMaxY(const double maxY)
+void HistogramInspectorConfigDialog::setMaxY(double maxY)
 {
     ui->yMaxLineEdit->setText(InspectorUtil::formatDouble(maxY));
 }
@@ -94,7 +94,7 @@ double HistogramInspectorConfigDialog::getMinX() const
     return opp_atof(ui->xMinLineEdit->text().toLatin1());
 }
 
-void HistogramInspectorConfigDialog::setMinX(const double minX)
+void HistogramInspectorConfigDialog::setMinX(double minX)
 {
     ui->xMinLineEdit->setText(InspectorUtil::formatDouble(minX));
 }
@@ -109,7 +109,7 @@ double HistogramInspectorConfigDialog::getMaxX() const
     return opp_atof(ui->xMaxLineEdit->text().toLatin1());
 }
 
-void HistogramInspectorConfigDialog::setMaxX(const double maxX)
+void HistogramInspectorConfigDialog::setMaxX(double maxX)
 {
     ui->xMaxLineEdit->setText(InspectorUtil::formatDouble(maxX));
 }
