@@ -33,7 +33,7 @@ class QTENV_API HistogramInspectorConfigDialog : public QDialog
     Q_OBJECT
 
   public:
-    explicit HistogramInspectorConfigDialog(HistogramView::DrawingStyle style = HistogramView::DRAW_FILLED, QWidget *parent = 0);
+    explicit HistogramInspectorConfigDialog(HistogramView::DrawingStyle style = HistogramView::DRAW_FILLED, QWidget *parent = nullptr);
     ~HistogramInspectorConfigDialog();
 
     HistogramView::DrawingStyle getDrawingStyle() const;

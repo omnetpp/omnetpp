@@ -51,7 +51,7 @@ public Q_SLOTS:
     virtual void reject();
 
 public:
-    explicit LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent = 0);
+    explicit LayersDialog(ModuleCanvasViewer *canvasViewer, QWidget *parent = nullptr);
     ~LayersDialog();
 
     QStringList getEnabledTags() const { return enabledTags; }

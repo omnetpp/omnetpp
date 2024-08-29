@@ -39,7 +39,7 @@ class QTENV_API FindObjectsDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit FindObjectsDialog(cObject *ptr, QWidget *parent = 0);
+    explicit FindObjectsDialog(cObject *ptr, QWidget *parent = nullptr);
     ~FindObjectsDialog();
 
 public Q_SLOTS:

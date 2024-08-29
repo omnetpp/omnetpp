@@ -42,7 +42,7 @@ class QTENV_API AnimationControllerDialog : public QDialog
     double getMaxAnimSpeed(); // from the spinbox, NAN if "none"
 
 public:
-    explicit AnimationControllerDialog(QWidget *parent = 0);
+    explicit AnimationControllerDialog(QWidget *parent = nullptr);
     ~AnimationControllerDialog();
 
 public Q_SLOTS:

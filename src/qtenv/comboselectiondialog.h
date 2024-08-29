@@ -32,7 +32,7 @@ class QTENV_API ComboSelectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ComboSelectionDialog(QString netName, QStringList networkNames, QWidget *parent = 0);
+    explicit ComboSelectionDialog(QString netName, QStringList networkNames, QWidget *parent = nullptr);
     ~ComboSelectionDialog();
 
     QString getSelectedNetName();

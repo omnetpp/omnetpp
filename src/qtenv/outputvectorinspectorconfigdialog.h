@@ -33,7 +33,7 @@ class QTENV_API OutputVectorInspectorConfigDialog : public QDialog
     Q_OBJECT
 
   public:
-    explicit OutputVectorInspectorConfigDialog(VectorPlotItem::PlottingMode plottingMode, QWidget *parent = 0);
+    explicit OutputVectorInspectorConfigDialog(VectorPlotItem::PlottingMode plottingMode, QWidget *parent = nullptr);
     ~OutputVectorInspectorConfigDialog();
 
     // DrawingStyle

@@ -56,7 +56,7 @@ class QTENV_API MainWindow : public QMainWindow
     std::set<QObject*> disabledForLayouting;
 
 public:
-    explicit MainWindow(Qtenv *env, QWidget *parent = 0);
+    explicit MainWindow(Qtenv *env, QWidget *parent = nullptr);
     ~MainWindow();
 
     void updateSimtimeDisplay();

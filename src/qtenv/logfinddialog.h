@@ -38,7 +38,7 @@ class QTENV_API LogFindDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LogFindDialog(QWidget *parent = 0, QString lastText = "", SearchFlags options = 0);
+    explicit LogFindDialog(QWidget *parent = nullptr, QString lastText = "", SearchFlags options = 0);
     ~LogFindDialog();
 
     QString getText();

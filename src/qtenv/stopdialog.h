@@ -32,7 +32,7 @@ class QTENV_API StopDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit StopDialog(QWidget *parent = 0);
+    explicit StopDialog(QWidget *parent = nullptr);
     ~StopDialog();
 
 public Q_SLOTS:

@@ -44,7 +44,7 @@ private Q_SLOTS:
     void findNext();
 
 public:
-    explicit FileEditor(QWidget *parent = 0);
+    explicit FileEditor(QWidget *parent = nullptr);
     ~FileEditor();
 
     void setFile(QString fileName);

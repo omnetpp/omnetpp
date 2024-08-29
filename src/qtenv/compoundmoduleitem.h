@@ -87,7 +87,7 @@ protected:
     void updateGrid();
 
 public:
-    explicit CompoundModuleItem(QGraphicsItem *parent = 0);
+    explicit CompoundModuleItem(QGraphicsItem *parent = nullptr);
     ~CompoundModuleItem();
 
     void setZoomFactor(double zoom);

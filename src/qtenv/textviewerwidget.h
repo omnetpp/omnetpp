@@ -201,7 +201,7 @@ Q_SIGNALS:
     void rightClicked(QPoint globalPos, int lineIndex, int column);
 
 public:
-    explicit TextViewerWidget(QWidget *parent = 0);
+    explicit TextViewerWidget(QWidget *parent = nullptr);
     ~TextViewerWidget();
 
     void setContentProvider(TextViewerContentProvider *newContent);

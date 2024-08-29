@@ -33,7 +33,7 @@ class QTENV_API PreferencesDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit PreferencesDialog(eTab defaultPage = TAB_NOTDEFINED, QWidget *parent = 0);
+    explicit PreferencesDialog(eTab defaultPage = TAB_NOTDEFINED, QWidget *parent = nullptr);
     ~PreferencesDialog();
 
 private Q_SLOTS:

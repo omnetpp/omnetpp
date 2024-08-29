@@ -37,7 +37,7 @@ private:
     QList<cObject*> fesEvents(int maxNum, bool wantEvents, bool wantSelfMsgs, bool wantNonSelfMsgs, bool wantSilentMsgs);
 
 public:
-    explicit RunUntilDialog(QWidget *parent = 0);
+    explicit RunUntilDialog(QWidget *parent = nullptr);
     ~RunUntilDialog();
 
     simtime_t getTime();
