@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -260,13 +261,15 @@ public class ProjectUtils {
     public static IProject importProjectFromDirectory(File directory, String projectName, boolean open, IProgressMonitor monitor) throws CoreException {
         //
         // Note: code based on WizardProjectsImportPage.createExistingProject().
-        // Note2: description.setLocation() would only be needed when linking to a project
-        // outside the workspace directory
-        //
+        // Note2: description.setLocation() would only be needed when the project location
+        // is not <workspace_root>/<project_name>. In most cases when the project location is
+        // outside of the workspace.
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         final IProject project = workspace.getRoot().getProject(projectName);
         IProjectDescription description = workspace.newProjectDescription(projectName);
-        if (!workspace.getRoot().getLocation().isPrefixOf(new Path(directory.getPath())))
+        
+        IPath workspaceLocation = workspace.getRoot().getLocation();
+        if (!workspaceLocation.append(projectName).equals(new Path(directory.getPath())))
             description.setLocation(new Path(directory.toString()));
 
         try {
