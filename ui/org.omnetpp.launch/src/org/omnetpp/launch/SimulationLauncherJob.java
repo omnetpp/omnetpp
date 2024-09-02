@@ -71,6 +71,18 @@ public class SimulationLauncherJob extends Job {
     }
 
     /**
+     * Quotes a command line argument if it is necessary to be processed correctly by the shell.
+     * In addition the usual quoting rules it also quotes if the argument contains a semicolon
+     * because semicolon is used as a command separator in the shell.
+     */
+    private String quoteArgumentIfNeeded(String txt) {
+        if (StringUtils.needsQuotes(txt) || txt.contains(";"))
+            return StringUtils.quoteString(txt);
+
+        return txt;
+    }
+
+    /**
      * Launches a single instance of the simulation process
      * @param monitor the progress monitor to use for reporting progress to the user. It is the caller's
      * responsibility to call done() on the given monitor. Accepts null, indicating that no progress should be
@@ -84,7 +96,7 @@ public class SimulationLauncherJob extends Job {
         try {
             String additionalArgs = "";
             if (runFilter != "")
-                additionalArgs += " -r " + StringUtils.quoteStringIfNeeded(runFilter);
+                additionalArgs += " -r " + quoteArgumentIfNeeded(runFilter);
             if (port != -1)
                 additionalArgs += " -p  " + port;
 
@@ -99,7 +111,7 @@ public class SimulationLauncherJob extends Job {
             if (commandLine.endsWith("/opp_run_release"))
                 commandLine = "opp_run_release";
             for (int i = 1; i < cmdLineArgs.length; ++i)
-                commandLine += " " + cmdLineArgs[i];
+                commandLine += " " + quoteArgumentIfNeeded(cmdLineArgs[i]);
 
             // launch the process
             Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, cmdLineArgs);
