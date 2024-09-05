@@ -1,8 +1,7 @@
+import sys
 import logging
 import os
 import re
-import subprocess
-import unidiff
 import llm
 import argparse
 import tiktoken
@@ -49,7 +48,7 @@ def collect_matching_file_paths(directory, name_regex=None, content_pattern=None
                             if content_regex.search(content):
                                 matching_file_paths.append(file_path)
                         except Exception as e:
-                            print(f"Could not read file {file_path}: {e}")
+                            print(f"Could not read file {file_path}: {e}", file=sys.stderr)
 
     return matching_file_paths
 
@@ -338,7 +337,7 @@ def parse_replace_blocks(blocks_text):
 def apply_replace_blocks(content, blocks):
     for search_text, replace_text in blocks:
         if search_text not in content:
-            print(f"Warning: Search text `{search_text}`not found")
+            print(f"Warning: Search text `{search_text}` not found")
         content = content.replace(search_text, replace_text, 1)
     return content
 
@@ -535,8 +534,11 @@ def apply_command_to_content(file_path, content, context, file_type, task, custo
 
 def apply_command_to_file(file_path, context_files, file_type, task, custom_prompt, model, reply_format, chunk_size=None,
                           with_context=True, start_at=None, end_at=None, blocks_containing=None, save_prompt=False):
-    assert not (start_at or end_at) if blocks_containing else True, "start-at/end-at and blocks-containing are mutually exclusive"
-    assert file_type == "c++" if blocks_containing else True, "blocks-containing is only supported for C++ files"
+    if (start_at or end_at) and blocks_containing:
+        raise ValueError("start-at/end-at and blocks-containing are mutually exclusive")
+    if blocks_containing and file_type != "c++":
+        raise ValueError("blocks-containing is only supported for C++ files")
+
     context_files = context_files or []
     if with_context:
         context_files += find_additional_context_files(file_path, file_type, task)
@@ -581,7 +583,7 @@ def apply_command_to_files(file_list, context_files, file_type, task, custom_pro
             print(f"Processing file {i + 1}/{n} {file_path}")
             apply_command_to_file(file_path=file_path, **args)
         except Exception as e:
-            print(f"-> Exception: {e}")
+            print(f"-> Exception: {e}", file=sys.stderr)
 
 def detect_file_type(paths):
     # collect files
@@ -666,6 +668,9 @@ def process_files(paths, context_files, file_type, file_ext, task, custom_prompt
     model = llm.get_model(model_name)
     model.key = ''
 
+    if model_name.startswith("gpt-") and not os.getenv("OPENAI_API_KEY"):
+        raise Exception(f"The OPENAI_API_KEY environment variable is not set -- it is required to use the '{model_name}' LLM model")
+
     if not reply_format:
         reply_format = get_default_reply_format(file_type, task)
     if not file_type:
@@ -698,5 +703,10 @@ def main():
     parser.add_argument("--blocks-containing", type=str, help="For C++ files only: Process source code regions (enclosing method definition, class declaration, etc.) containing the given regex pattern. Lines outside matched regions are not submitted to the LLM. Assumes that the C++ code is properly formatted, i.e. indentation conforms to the accepted norms.")
     parser.add_argument("--save-prompt", action='store_true', help="Save the LLM prompt for each input file as <filename>.prompt<N>.")
     args = parser.parse_args()
-    process_files(**vars(args))
+    try:
+        process_files(**vars(args))
+    except KeyboardInterrupt:
+        print("Interrupted", file=sys.stderr)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
 
