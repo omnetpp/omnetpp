@@ -129,8 +129,8 @@ def get_recommended_model(task, file_type):
     return recommended_models[key]
 
 def get_default_reply_format(file_type, task):
-    #return "patch" if file_type == "c++" else "whole-file" -- not used because replies are much lower quality with "patch"
-    return "whole-file"
+    #return "patch" if file_type == "c++" else "updated-content" -- not used because replies are much lower quality with "patch"
+    return "updated-content"
 
 def find_additional_context_files(file_path, file_type, task):
     context_files = []
@@ -165,7 +165,7 @@ def create_prompt(file_path, content, context, task, custom_prompt, file_type, r
 
     if reply_type == "patch":
         reply_prompt = read_resource_file("patch-format.txt")
-    elif reply_type == "whole-file":
+    elif reply_type == "updated-content":
         reply_prompt = "Respond with the updated content verbatim without any additional commentary.\n"
     else:
         raise ValueError(f'Unsupported reply type "{reply_type}"')
@@ -513,7 +513,7 @@ def apply_command_to_content(file_path, content, context, file_type, task, custo
         _logger.debug(f"Applied {len(blocks)} to {file_path}.")
         return modified_content
 
-    elif reply_format == "whole-file":
+    elif reply_format == "updated-content":
         if chunk_size is None:
             chunk_size = get_llm_context_window(model)*2  - len(context) # assume average token length of 2 chars TODO also system prompt
         modified_content = ""
@@ -693,7 +693,7 @@ def main():
     parser.add_argument("--task", type=str, choices=["proofread", "improve", "eliminate-you-addressing", "neddoc"], default="improve", help="The task to perform on the files.")
     parser.add_argument("--prompt", type=str, dest="custom_prompt", help="Custom LLM prompt to use. Generic instructions and the content of context files will be added. Takes precedence over --task.")
     parser.add_argument("--prompt-file", type=str, help="Like --prompt, but allows the text to be provided in a file.")
-    parser.add_argument("--reply-format", type=str, choices=["patch", "whole-file"], help="The format of the reply from the LLM model. The default depends on the file type and task. Patch is faster and cheaper due to being more concise, but it is also less reliable.")
+    parser.add_argument("--reply-format", type=str, choices=["patch", "updated-content"], help="The format of the reply from the LLM model. The default depends on the file type and task. Patch is faster and cheaper due to being more concise, but it is also less reliable.")
     parser.add_argument("--model", type=str, dest="model_name", default=None, help="The name of the LLM model to use.")
     parser.add_argument("--chunk-size", type=int, default=None, help="The maximum number of characters to be sent to the LLM model at once.")
     parser.add_argument("--context-files", type=str, nargs='*', help="Files to the added to the prompt as context.")
