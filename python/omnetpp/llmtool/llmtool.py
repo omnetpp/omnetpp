@@ -158,17 +158,17 @@ def find_additional_context_files(file_path, file_type, task):
             append_if_file_exists(replace_extension(file_path, ".cc"))
     return context_files
 
-def create_prompt(file_path, content, context, task, custom_prompt, file_type, reply_type, region_seq=None, part_seq=None, num_parts=None, save_prompt=False):
+def create_prompt(file_path, content, context, task, custom_prompt, file_type, reply_format, region_seq=None, part_seq=None, num_parts=None, save_prompt=False):
     base_prompt = "Update a file.\n" if region_seq is None and part_seq is None and num_parts is None else "Update a portion of a file.\n"
     context_prompt = f"Here is some content which is related to the file that should be updated. Use it as context that provides addition information for the task. \n{context}\n" if context else ""
     command_prompt = custom_prompt if custom_prompt else generate_command_text(task, file_type)
 
-    if reply_type == "patch":
+    if reply_format == "patch":
         reply_prompt = read_resource_file("patch-format.txt")
-    elif reply_type == "updated-content":
+    elif reply_format == "updated-content":
         reply_prompt = "Respond with the updated content verbatim without any additional commentary.\n"
     else:
-        raise ValueError(f'Unsupported reply type "{reply_type}"')
+        raise ValueError(f'Unsupported reply type "{reply_format}"')
 
     if content is None:
         assert region_seq is None and part_seq is None and num_parts is None
@@ -502,7 +502,7 @@ def verify_regions(original_content, modified_content, placeholders_to_content):
 
 def apply_command_to_content(file_path, content, context, file_type, task, custom_prompt, model, reply_format, region_seq=None, chunk_size=None, save_prompt=False):
     if reply_format == "patch":
-        prompt = create_prompt(file_path=file_path, content=content, context=context, task=task, custom_prompt=custom_prompt, file_type=file_type, reply_type=reply_format, region_seq=region_seq, save_prompt=save_prompt)
+        prompt = create_prompt(file_path=file_path, content=content, context=context, task=task, custom_prompt=custom_prompt, file_type=file_type, reply_format=reply_format, region_seq=region_seq, save_prompt=save_prompt)
         reply_text = invoke_llm(prompt, model)
         if save_prompt:
             write_file(file_path+".reply", reply_text)
@@ -521,7 +521,7 @@ def apply_command_to_content(file_path, content, context, file_type, task, custo
         for i, content_part in enumerate(content_parts):
             if len(content_parts) > 1:
                 print(f"   part {i + 1}/{len(content_parts)}")
-            prompt = create_prompt(file_path=file_path, content=content_part, context=context, task=task, custom_prompt=custom_prompt, file_type=file_type, reply_type=reply_format, region_seq=region_seq, part_seq=i+1, num_parts=len(content_parts), save_prompt=save_prompt)
+            prompt = create_prompt(file_path=file_path, content=content_part, context=context, task=task, custom_prompt=custom_prompt, file_type=file_type, reply_format=reply_format, region_seq=region_seq, part_seq=i+1, num_parts=len(content_parts), save_prompt=save_prompt)
             reply_text = invoke_llm(prompt, model)
             modified_content += extract(reply_text, content_part)
 
