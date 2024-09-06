@@ -5,6 +5,7 @@ import re
 import llm
 import argparse
 import tiktoken
+import time
 
 # logging.basicConfig(level=logging.INFO)
 _logger = logging.getLogger(__name__)
@@ -177,6 +178,7 @@ def create_prompt(file_path, content, context, task, custom_prompt, file_type, r
     file_prompt = ""
     if region_seq is not None:
         file_prompt = "The content below is just a portion of a file. Do NOT generate any additional code in an attempt to \"complete\" the file.\n"
+
     if num_parts is None or num_parts == 1:
         file_prompt += f"Here is the content that should be updated, enclosed in triple backticks:\n\n{file_path}:\n```\n{content}\n```\n"
     else:
@@ -201,12 +203,23 @@ def create_prompt(file_path, content, context, task, custom_prompt, file_type, r
 
     return prompt
 
-def invoke_llm(prompt, model):
+def invoke_llm(prompt, model, print_stats=False):
     check_token_count(prompt, model)
 
+    def info(txt):
+        lines = txt.count("\n") + 1
+        chars = len(txt)
+        return f"{lines:,} li / {chars:,} ch"
+
     _logger.debug(f"Sending prompt to LLM: {prompt}")
+    if print_stats:
+        print(f"     sending prompt: {info(prompt)}", end="", flush=True)
+    start_time = time.perf_counter()
     reply = model.prompt(prompt)
     reply_text = reply.text()
+    end_time = time.perf_counter()
+    if print_stats:
+        print(f" --> reply {info(reply_text)} ({end_time - start_time:.2f} sec)")
     _logger.debug(f"Received result from LLM: {reply_text}")
     return reply_text
 
@@ -500,10 +513,10 @@ def verify_regions(original_content, modified_content, placeholders_to_content):
         restored_content = restored_content.replace(placeholder, placeholders_to_content[placeholder])
     assert restored_content == original_content
 
-def apply_command_to_content(file_path, content, context, file_type, task, custom_prompt, model, reply_format, region_seq=None, chunk_size=None, save_prompt=False):
+def apply_command_to_content(file_path, content, context, file_type, task, custom_prompt, model, reply_format, region_seq=None, chunk_size=None, save_prompt=False, print_stats=False):
     if reply_format == "patch":
         prompt = create_prompt(file_path=file_path, content=content, context=context, task=task, custom_prompt=custom_prompt, file_type=file_type, reply_format=reply_format, region_seq=region_seq, save_prompt=save_prompt)
-        reply_text = invoke_llm(prompt, model)
+        reply_text = invoke_llm(prompt, model, print_stats=print_stats)
         if save_prompt:
             write_file(file_path+".reply", reply_text)
 
@@ -522,7 +535,7 @@ def apply_command_to_content(file_path, content, context, file_type, task, custo
             if len(content_parts) > 1:
                 print(f"   part {i + 1}/{len(content_parts)}")
             prompt = create_prompt(file_path=file_path, content=content_part, context=context, task=task, custom_prompt=custom_prompt, file_type=file_type, reply_format=reply_format, region_seq=region_seq, part_seq=i+1, num_parts=len(content_parts), save_prompt=save_prompt)
-            reply_text = invoke_llm(prompt, model)
+            reply_text = invoke_llm(prompt, model, print_stats=print_stats)
             modified_content += extract(reply_text, content_part)
 
         modified_content = discard_trailing_whitespace(modified_content)
@@ -533,7 +546,7 @@ def apply_command_to_content(file_path, content, context, file_type, task, custo
         raise ValueError(f"Unsupported reply format '{reply_format}'")
 
 def apply_command_to_file(file_path, context_files, file_type, task, custom_prompt, model, reply_format, chunk_size=None,
-                          with_context=True, start_at=None, end_at=None, blocks_containing=None, save_prompt=False):
+                          with_context=True, start_at=None, end_at=None, blocks_containing=None, save_prompt=False, print_stats=False):
     if (start_at or end_at) and blocks_containing:
         raise ValueError("start-at/end-at and blocks-containing are mutually exclusive")
     if blocks_containing and file_type != "c++":
@@ -573,7 +586,7 @@ def apply_command_to_file(file_path, context_files, file_type, task, custom_prom
 
 def apply_command_to_files(file_list, context_files, file_type, task, custom_prompt, model, reply_format,
                            chunk_size=None, start_at=None, end_at=None, blocks_containing=None,
-                           with_context=True, save_prompt=False):
+                           with_context=True, save_prompt=False, print_stats=False):
     args = dict(locals())
     del args["file_list"]
 
@@ -654,7 +667,7 @@ def resolve_file_list(paths, file_type, file_ext=None):
 
 def process_files(paths, context_files, file_type, file_ext, task, custom_prompt, prompt_file,
                   model_name, reply_format, chunk_size=None, with_context=True,
-                  start_at=None, end_at=None, blocks_containing=None, save_prompt=False):
+                  start_at=None, end_at=None, blocks_containing=None, save_prompt=False, print_stats=False):
     if prompt_file:
         if custom_prompt:
             raise ValueError("Cannot specify both --prompt and --prompt-file")
@@ -704,7 +717,7 @@ def main():
     parser.add_argument("--save-prompt", action='store_true', help="Save the LLM prompt for each input file as <filename>.prompt<N>.")
     args = parser.parse_args()
     try:
-        process_files(**vars(args))
+        process_files(**vars(args), print_stats=True)
     except KeyboardInterrupt:
         print("Interrupted", file=sys.stderr)
     except Exception as e:
