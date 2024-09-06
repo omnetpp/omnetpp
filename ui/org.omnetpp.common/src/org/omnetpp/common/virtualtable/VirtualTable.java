@@ -1052,8 +1052,10 @@ public class VirtualTable<T>
                         }
                     }
                 }
+                rowTransform.dispose();
             }
         }
+        transform.dispose();
     }
 
     public void refresh() {
