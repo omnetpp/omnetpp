@@ -55,7 +55,7 @@ void OutputVectorInspectorConfigDialog::onTextChanged()
 
 VectorPlotItem::PlottingMode OutputVectorInspectorConfigDialog::getPlottingMode() const
 {
-    return (VectorPlotItem::PlottingMode)ui->styleComboBox->currentIndex();
+    return static_cast<VectorPlotItem::PlottingMode>(ui->styleComboBox->currentIndex());
 }
 
 bool OutputVectorInspectorConfigDialog::hasMinY() const

@@ -99,7 +99,7 @@ QVariant ObjectListModel::data(const QModelIndex& index, int role) const
                     return objects[index.row()]->str().c_str();
             }
             break;
-        case Qt:: DecorationRole:
+        case Qt::DecorationRole:
             return index.column() == 0
                     ? getObjectIcon(objects[index.row()])
                     : QVariant();

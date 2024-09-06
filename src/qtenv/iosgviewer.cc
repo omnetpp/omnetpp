@@ -74,7 +74,7 @@ IOsgViewer *IOsgViewer::createOne()
 {
     ensureViewerFactory();
 
-    auto viewer = osgViewerFactory->createViewer();
+    IOsgViewer *viewer = osgViewerFactory->createViewer();
 
     if (!viewer)
         throw cRuntimeError("Could not create OsgViewer.");
@@ -112,7 +112,7 @@ void DummyOsgViewer::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
 
-    auto rect = QRect({0,0}, size());
+    QRect rect({0, 0}, size());
 
     QPalette pal = palette();
     pal.setCurrentColorGroup(QPalette::Disabled);

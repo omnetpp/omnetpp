@@ -37,8 +37,8 @@ LogFindDialog::LogFindDialog(QWidget *parent, QString lastText, SearchFlags opti
     ui->wholeWordsCheckBox->setChecked(options & FIND_WHOLE_WORDS);
     ui->backwardsCheckBox->setChecked(options & FIND_BACKWARDS);
 
-    connect(ui->text, SIGNAL(textChanged(QString)), this, SLOT(updateRegExpValidation()));
-    connect(ui->regexpCheckBox, SIGNAL(toggled(bool)), this, SLOT(updateRegExpValidation()));
+    connect(ui->text, &QLineEdit::textChanged, this, &LogFindDialog::updateRegExpValidation);
+    connect(ui->regexpCheckBox, &QCheckBox::toggled, this, &LogFindDialog::updateRegExpValidation);
     updateRegExpValidation();
 }
 
@@ -74,7 +74,7 @@ QString LogFindDialog::getText()
 
 SearchFlags LogFindDialog::getOptions()
 {
-    SearchFlags options;
+    SearchFlags options = 0;
 
     if (ui->regexpCheckBox->isChecked())
         options |= FIND_REGULAR_EXPRESSION;

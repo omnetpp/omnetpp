@@ -1407,7 +1407,7 @@ void MainWindow::on_actionInspectByPointer_triggered()
 
 void MainWindow::on_actionRecordVideo_toggled(bool checked)
 {
-    auto duc = env->getDisplayUpdateController();
+    DisplayUpdateController *duc = env->getDisplayUpdateController();
     // have to resize the mainwindow to be a size of a multiple of 4 in both dimensions
     // because many video encoders (like x264) demand it
     if (checked) {
@@ -1434,7 +1434,7 @@ void MainWindow::on_actionRecordVideo_toggled(bool checked)
 
 void MainWindow::on_actionShowAnimationParams_toggled(bool checked)
 {
-    auto duc = env->getDisplayUpdateController();
+    DisplayUpdateController *duc = env->getDisplayUpdateController();
     if (checked)
         duc->showDialog(ui->actionShowAnimationParams);
     else

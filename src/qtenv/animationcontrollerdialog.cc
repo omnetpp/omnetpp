@@ -86,8 +86,8 @@ AnimationControllerDialog::~AnimationControllerDialog()
 
 RunModeProfile *AnimationControllerDialog::getSelectedProfile() {
     switch (ui->profileComboBox->currentData().toInt()) {
-        case RUNMODE_NORMAL: return duc->getStepRunProfile(); break;
-        case RUNMODE_FAST:   return duc->getFastProfile(); break;
+        case RUNMODE_NORMAL: return duc->getStepRunProfile();
+        case RUNMODE_FAST:   return duc->getFastProfile();
         default: ASSERT(false);
     }
     return nullptr; // just to silence a warning

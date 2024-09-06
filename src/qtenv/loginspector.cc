@@ -186,9 +186,8 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
 LogInspector::~LogInspector()
 {
-    if (mode == MESSAGES) {
+    if (mode == MESSAGES)
         saveColumnWidths();
-    }
 }
 
 void LogInspector::onFontChanged()
@@ -474,7 +473,7 @@ void LogInspector::onCaretMoved(int lineIndex, int column)
 
 void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 {
-    auto msg = (cMessage *)textWidget->getContentProvider()->getUserData(lineIndex);
+    cMessage *msg = static_cast<cMessage *>(textWidget->getContentProvider()->getUserData(lineIndex));
     QMenu *menu = msg
         ? InspectorUtil::createInspectorContextMenu(msg, this)
         : new QMenu(this);

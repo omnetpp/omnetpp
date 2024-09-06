@@ -38,8 +38,8 @@ class QTENV_API ComponentHistory
     std::map<int,Data> components; // indexed by componentId
 
     const Data& lookup(int componentId) const {
-        std::map<int,Data>::const_iterator it = components.find(componentId);
-        ASSERT(it!=components.end());
+        auto it = components.find(componentId);
+        ASSERT(it != components.end());
         return it->second;
     }
 

@@ -815,7 +815,7 @@ void OsgViewer::mousePressEvent(QMouseEvent *event)
         getEventQueue()->mouseButtonPress(event->x() * widgetAspectRatio() * scaleFactor(), event->y() * scaleFactor(), osgButton, getTimestamp(event));
 
     if (event->button() == Qt::LeftButton) {
-        auto objects = objectsAt(event->pos());
+        std::vector<cObject *> objects = objectsAt(event->pos());
         if (!objects.empty()) {
             if (event->type() == QEvent::MouseButtonDblClick) {
                 Inspector *insp = InspectorUtil::getContainingInspector(this);
@@ -838,7 +838,7 @@ void OsgViewer::mouseReleaseEvent(QMouseEvent *event)
 
     if (event->button() == Qt::RightButton
             && (lastRightClick - event->pos()).manhattanLength() < 3) {
-        auto objects = objectsAt(event->pos());
+        std::vector<cObject *> objects = objectsAt(event->pos());
         Inspector *insp = InspectorUtil::getContainingInspector(this);
         QMenu *menu;
         if (!objects.empty() && insp && insp->supportsObject(objects.front())) {

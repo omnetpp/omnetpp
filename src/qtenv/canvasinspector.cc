@@ -198,6 +198,6 @@ void CanvasInspector::onContextMenuRequested(QContextMenuEvent *event)
     }
 }
 
-}  // namespace omnetpp
+}  // namespace qtenv
 }  // namespace omnetpp
 

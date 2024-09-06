@@ -49,8 +49,8 @@ public:
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     void setObjects(QVector<cObject *> objects);
 
-    int getLastSortColumn() { return lastSortColumn; }
-    Qt::SortOrder getLastSortOrder() { return lastSortOrder; }
+    int getLastSortColumn() const { return lastSortColumn; }
+    Qt::SortOrder getLastSortOrder() const { return lastSortOrder; }
 };
 
 }  // namespace qtenv

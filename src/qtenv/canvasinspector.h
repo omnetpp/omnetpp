@@ -35,7 +35,7 @@ class QTENV_API CanvasInspector : public Inspector
       void zoomBy(double mult);
 
    protected:
-      virtual cCanvas *getCanvas();
+      cCanvas *getCanvas();
       QToolBar *createToolbar();
 
       CanvasViewer *canvasViewer = nullptr;
@@ -47,11 +47,10 @@ class QTENV_API CanvasInspector : public Inspector
       void onContextMenuRequested(QContextMenuEvent *event);
 
    public Q_SLOTS:
-      virtual void redraw();
+      void redraw();
 
    public:
       CanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);
-      ~CanvasInspector() {}
       void doSetObject(cObject *obj) override;
       void refresh() override;
       void postRefresh() override;

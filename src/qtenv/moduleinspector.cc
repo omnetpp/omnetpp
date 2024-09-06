@@ -282,7 +282,7 @@ void ModuleInspector::doSetObject(cObject *obj)
     cOsgCanvas *osgCanvas = getOsgCanvas();
     setOsgCanvas(osgCanvas);
 
-    bool enabled = ((getPref(PREF_MODE, IOsgViewer::isOsgPreferred() ? 1 : 0).toInt() == 1));
+    bool enabled = (getPref(PREF_MODE, IOsgViewer::isOsgPreferred() ? 1 : 0).toInt() == 1);
     if (osgCanvas != nullptr && enabled)
         switchToOsgView();
     else

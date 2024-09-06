@@ -475,7 +475,7 @@ int SubmoduleItem::addRangeItem(double radius, double outlineWidth, const QColor
 
 int SubmoduleItem::addRangeItem(const RangeData& data)
 {
-    auto range = new QGraphicsEllipseItem();
+    QGraphicsEllipseItem *range = new QGraphicsEllipseItem();
 
     ranges.append(data);
     rangeItems.append(range);

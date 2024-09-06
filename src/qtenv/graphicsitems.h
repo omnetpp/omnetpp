@@ -93,7 +93,7 @@ protected:
 
 public:
     OutlinedTextItem(QGraphicsItem *parent = nullptr);
-    virtual ~OutlinedTextItem();
+    ~OutlinedTextItem();
 
     QRectF boundingRect() const;
     QRectF textRect() const; // this would be the bounding box without the outline
