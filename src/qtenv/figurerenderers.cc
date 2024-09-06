@@ -415,7 +415,7 @@ QPointF FigureRenderer::getAnchorOffset(cFigure::Anchor anchor, double width, do
         case cFigure::ANCHOR_N:
         case cFigure::ANCHOR_S:
         case cFigure::ANCHOR_BASELINE_MIDDLE:
-            offset.setX(width/2);
+            offset.setX(width / 2);
             break;
         case cFigure::ANCHOR_E:
         case cFigure::ANCHOR_NE:
@@ -431,7 +431,7 @@ QPointF FigureRenderer::getAnchorOffset(cFigure::Anchor anchor, double width, do
         case cFigure::ANCHOR_CENTER:
         case cFigure::ANCHOR_E:
         case cFigure::ANCHOR_W:
-            offset.setY(height/2);
+            offset.setY(height / 2);
             break;
         case cFigure::ANCHOR_S:
         case cFigure::ANCHOR_SE:
@@ -592,7 +592,7 @@ void AbstractLineFigureRenderer::refreshVisual(const FigureRenderingArgs& args)
     ArrowheadItem *endItem = static_cast<ArrowheadItem *>(lineItem->childItems()[1]);
 
     auto lineColor = lineFigure->getLineColor();
-    QColor color(lineColor.red, lineColor.green, lineColor.blue, lineFigure->getLineOpacity()*255);
+    QColor color(lineColor.red, lineColor.green, lineColor.blue, lineFigure->getLineOpacity() * 255);
     double penWidth = lineFigure->getLineWidth() / (lineFigure->getZoomLineWidth() ? 1.0 : args.zoom);
 
     // start arrowhead
@@ -658,7 +658,7 @@ void ArcFigureRenderer::setArrows(const FigureRenderingArgs& args)
 
     auto b = arcFigure->getBounds();
     QPointF center(b.getCenter().x, b.getCenter().y);
-    QPointF radii(b.width/2, b.height/2);
+    QPointF radii(b.width / 2, b.height / 2);
 
     // in radians
     double startAngle = arcFigure->getStartAngle();
@@ -689,8 +689,8 @@ void ArcFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
 
     cFigure::Rectangle bounds = arcFigure->getBounds();
     // angles, converted to degrees
-    double start = arcFigure->getStartAngle()*180/M_PI;
-    double end = arcFigure->getEndAngle()*180/M_PI;
+    double start = arcFigure->getStartAngle() * 180 / M_PI;
+    double end = arcFigure->getEndAngle() * 180 / M_PI;
 
     QPainterPath path;
     path.arcMoveTo(bounds.x, bounds.y, bounds.width, bounds.height, start);
@@ -752,9 +752,9 @@ void PolylineFigureRenderer::refreshGeometry(const FigureRenderingArgs& args)
         path.lineTo(points[1].x, points[1].y);
     else if (polyFigure->getSmooth())
         for (size_t i = 2; i < points.size(); i++) {
-            const cFigure::Point& control = points[i-1];
-            bool isLast = (i == points.size()-1);
-            cFigure::Point to = isLast ? points[i] : (points[i-1] + points[i]) * 0.5;
+            const cFigure::Point& control = points[i - 1];
+            bool isLast = (i == points.size() - 1);
+            cFigure::Point to = isLast ? points[i] : (points[i - 1] + points[i]) * 0.5;
             path.quadTo(control.x, control.y, to.x, to.y);
         }
     else

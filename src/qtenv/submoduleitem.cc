@@ -470,7 +470,7 @@ void SubmoduleItem::setRangeLayer(GraphicsLayer *layer)
 
 int SubmoduleItem::addRangeItem(double radius, double outlineWidth, const QColor& fillColor, const QColor& outlineColor)
 {
-    return addRangeItem(RangeData { radius, outlineWidth, fillColor, outlineColor });
+    return addRangeItem(RangeData{ radius, outlineWidth, fillColor, outlineColor });
 }
 
 int SubmoduleItem::addRangeItem(const RangeData& data)

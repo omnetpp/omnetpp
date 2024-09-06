@@ -112,9 +112,9 @@ void QtenvGraphLayouterEnvironment::scaleCoords(double& x, double& y)
     nextbbox = nextbbox.united(QRectF(x, y, 1, 1));
     x -= bbox.left();
     y -= bbox.top();
-    float scale =std::min(1.0,
-                          std::min((viewSize.width()-hMargin*2) / bbox.width(),
-                                   (viewSize.height()-vMargin*2) / bbox.height()));
+    float scale = std::min(1.0,
+                           std::min((viewSize.width()-hMargin*2) / bbox.width(),
+                                    (viewSize.height()-vMargin*2) / bbox.height()));
     x *= scale;
     y *= scale;
     x += hMargin;

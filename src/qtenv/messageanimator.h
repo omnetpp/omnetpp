@@ -271,7 +271,7 @@ public:
     bool willAnimate(cMessage *msg);
 
     void setMarkedModule(cModule *mod);
-    cModule *getMarkedModule() const {return markedModule;}
+    cModule *getMarkedModule() const { return markedModule; }
 
     void clearDeliveries();
     void clear();

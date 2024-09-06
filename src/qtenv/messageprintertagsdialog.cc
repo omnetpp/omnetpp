@@ -30,7 +30,7 @@ void MessagePrinterTagsDialog::onItemChanged(QListWidgetItem *item)
 
 }
 
-MessagePrinterTagsDialog::MessagePrinterTagsDialog(QWidget *parent, const QStringList& allTags, cMessagePrinter::Options *options):
+MessagePrinterTagsDialog::MessagePrinterTagsDialog(QWidget *parent, const QStringList& allTags, cMessagePrinter::Options *options) :
     QDialog(parent),
     ui(new Ui::messageprintertagsdialog)
 {

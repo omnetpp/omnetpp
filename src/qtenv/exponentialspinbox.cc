@@ -55,7 +55,7 @@ void ExponentialSpinBox::stepBy(int steps)
 {
     QDoubleSpinBox::stepBy(steps);
     if ((steps > 0) && value() == minimum()) {
-        setValue(2*minimum());
+        setValue(2 * minimum());
         if (minimum() == 0) {
             setValue(singleStep());
             if (singleStep() == 0)

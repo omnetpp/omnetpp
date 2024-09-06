@@ -440,7 +440,7 @@ FindObjectsDialog::~FindObjectsDialog()
 
 void FindObjectsDialog::invalidate()
 {
-    listModel->setObjects(QVector<cObject*>(0));
+    listModel->setObjects(QVector<cObject *>(0));
 }
 
 }  // namespace qtenv

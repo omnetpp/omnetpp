@@ -2175,7 +2175,7 @@ void Qtenv::getTextExtent(const cFigure::Font& font, const char *text, double& o
     QStringList lines = QString(text).split(QChar('\n'));
 
     double w = 0;
-    for (const auto &l : lines)
+    for (const auto& l : lines)
         w = std::max(metrics.width(l), w);
 
     outWidth = w;

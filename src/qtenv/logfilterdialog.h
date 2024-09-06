@@ -38,14 +38,14 @@ class QTENV_API LogFilterDialog : public QDialog
 
     Ui::logfilterdialog *ui;
 
-    void addModuleChildren(cModule *module, QTreeWidgetItem *item, const std::set<int> &excludedModuleIds);
+    void addModuleChildren(cModule *module, QTreeWidgetItem *item, const std::set<int>& excludedModuleIds);
     static QString getTextForModule(cModule *module);
 
 private Q_SLOTS:
     void onItemChanged(QTreeWidgetItem *item, int column);
 
 public:
-    explicit LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int> &excludedModuleIds);
+    explicit LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int>& excludedModuleIds);
     ~LogFilterDialog();
 
     std::set<int> getExcludedModuleIds();

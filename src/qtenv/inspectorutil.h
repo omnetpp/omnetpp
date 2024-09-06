@@ -43,7 +43,7 @@ public:
     static QVector<InspectorType> supportedInspTypes(cObject *object);
     static Inspector *getContainingInspector(QWidget *widget);
     static QMenu *createInspectorContextMenu(QVector<cObject *> objects, Inspector *insp = nullptr);
-    static QMenu *createInspectorContextMenu(cObject* object, Inspector *insp = nullptr);
+    static QMenu *createInspectorContextMenu(cObject *object, Inspector *insp = nullptr);
     static void copyToClipboard(cObject *object, eCopy what);
     static void setClipboard(QString str);
     static void preferencesDialog(eTab defaultPage = TAB_NOTDEFINED);

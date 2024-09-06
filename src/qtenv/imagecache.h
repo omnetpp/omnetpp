@@ -59,7 +59,7 @@ public:
     ImageCache(std::ostream& out);
     ~ImageCache();
 
-    void setVerbose(bool verbose) {this->verbose = verbose;}
+    void setVerbose(bool verbose) { this->verbose = verbose; }
     void loadImages(const char *path);
     void loadImage(const char *fileName, const char *imageName = nullptr);
 

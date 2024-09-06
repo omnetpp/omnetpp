@@ -47,7 +47,7 @@ class QTENV_API IOsgViewer : public QOpenGLWidget
 
   public:
 
-    IOsgViewer(QWidget *parent=nullptr): QOpenGLWidget(parent) { /* empty */ }
+    IOsgViewer(QWidget *parent = nullptr) : QOpenGLWidget(parent) { /* empty */ }
 
     // static interface for easy access, delegates to the factory, loads the library on-demand
     static IOsgViewer *createOne();
@@ -90,7 +90,7 @@ public:
 };
 
 
-class QTENV_API DummyOsgViewer: public IOsgViewer
+class QTENV_API DummyOsgViewer : public IOsgViewer
 {
     Q_OBJECT
 
@@ -99,7 +99,7 @@ class QTENV_API DummyOsgViewer: public IOsgViewer
 
   public:
 
-    DummyOsgViewer(QWidget *parent=nullptr): IOsgViewer(parent) {}
+    DummyOsgViewer(QWidget *parent = nullptr) : IOsgViewer(parent) {}
 
     void setOsgCanvas(cOsgCanvas *) override {}
     cOsgCanvas *getOsgCanvas() const override { return nullptr; }

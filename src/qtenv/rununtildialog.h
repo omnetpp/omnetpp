@@ -34,7 +34,7 @@ class QTENV_API RunUntilDialog : public QDialog
 {
     Q_OBJECT
 private:
-    QList<cObject*> fesEvents(int maxNum, bool wantEvents, bool wantSelfMsgs, bool wantNonSelfMsgs, bool wantSilentMsgs);
+    QList<cObject *> fesEvents(int maxNum, bool wantEvents, bool wantSelfMsgs, bool wantNonSelfMsgs, bool wantSilentMsgs);
 
 public:
     explicit RunUntilDialog(QWidget *parent = nullptr);
