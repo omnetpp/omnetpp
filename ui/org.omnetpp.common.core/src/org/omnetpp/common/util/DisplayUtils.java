@@ -7,6 +7,8 @@
 
 package org.omnetpp.common.util;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 
@@ -54,5 +56,64 @@ public class DisplayUtils {
 
     public static boolean isDarkTheme() {
         return Display.isSystemDarkTheme();
+    }
+
+    /*
+     * Dumps SWT system colors to the console.
+     */
+    public static void dumpSwtSystemColors() {
+        Object[][] colorConstants = {
+            {SWT.COLOR_BLACK, "COLOR_BLACK"},
+            {SWT.COLOR_WHITE, "COLOR_WHITE"},
+            {SWT.COLOR_RED, "COLOR_RED"},
+            {SWT.COLOR_DARK_RED, "COLOR_DARK_RED"},
+            {SWT.COLOR_GREEN, "COLOR_GREEN"},
+            {SWT.COLOR_DARK_GREEN, "COLOR_DARK_GREEN"},
+            {SWT.COLOR_YELLOW, "COLOR_YELLOW"},
+            {SWT.COLOR_DARK_YELLOW, "COLOR_DARK_YELLOW"},
+            {SWT.COLOR_BLUE, "COLOR_BLUE"},
+            {SWT.COLOR_DARK_BLUE, "COLOR_DARK_BLUE"},
+            {SWT.COLOR_MAGENTA, "COLOR_MAGENTA"},
+            {SWT.COLOR_DARK_MAGENTA, "COLOR_DARK_MAGENTA"},
+            {SWT.COLOR_CYAN, "COLOR_CYAN"},
+            {SWT.COLOR_DARK_CYAN, "COLOR_DARK_CYAN"},
+            {SWT.COLOR_GRAY, "COLOR_GRAY"},
+            {SWT.COLOR_DARK_GRAY, "COLOR_DARK_GRAY"},
+
+    	    {SWT.COLOR_WIDGET_DARK_SHADOW, "COLOR_WIDGET_DARK_SHADOW"},
+    	    {SWT.COLOR_WIDGET_NORMAL_SHADOW, "COLOR_WIDGET_NORMAL_SHADOW"},
+    	    {SWT.COLOR_WIDGET_LIGHT_SHADOW, "COLOR_WIDGET_LIGHT_SHADOW"},
+    	    {SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW, "COLOR_WIDGET_HIGHLIGHT_SHADOW"},
+    	    {SWT.COLOR_WIDGET_FOREGROUND, "COLOR_WIDGET_FOREGROUND"},
+    	    {SWT.COLOR_WIDGET_BACKGROUND, "COLOR_WIDGET_BACKGROUND"},
+    	    {SWT.COLOR_WIDGET_BORDER, "COLOR_WIDGET_BORDER"},
+    	    {SWT.COLOR_LIST_FOREGROUND, "COLOR_LIST_FOREGROUND"},
+    	    {SWT.COLOR_LIST_BACKGROUND, "COLOR_LIST_BACKGROUND"},
+    	    {SWT.COLOR_LIST_SELECTION, "COLOR_LIST_SELECTION"},
+    	    {SWT.COLOR_LIST_SELECTION_TEXT, "COLOR_LIST_SELECTION_TEXT"},
+    	    {SWT.COLOR_INFO_FOREGROUND, "COLOR_INFO_FOREGROUND"},
+    	    {SWT.COLOR_INFO_BACKGROUND, "COLOR_INFO_BACKGROUND"},
+    	    {SWT.COLOR_TITLE_FOREGROUND, "COLOR_TITLE_FOREGROUND"},
+    	    {SWT.COLOR_TITLE_BACKGROUND, "COLOR_TITLE_BACKGROUND"},
+    	    {SWT.COLOR_TITLE_BACKGROUND_GRADIENT, "COLOR_TITLE_BACKGROUND_GRADIENT"},
+    	    {SWT.COLOR_TITLE_INACTIVE_FOREGROUND, "COLOR_TITLE_INACTIVE_FOREGROUND"},
+    	    {SWT.COLOR_TITLE_INACTIVE_BACKGROUND, "COLOR_TITLE_INACTIVE_BACKGROUND"},
+    	    {SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT, "COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT"},
+    	    {SWT.COLOR_LINK_FOREGROUND, "COLOR_LINK_FOREGROUND"},
+    	    {SWT.COLOR_TRANSPARENT, "COLOR_TRANSPARENT"},
+    	    {SWT.COLOR_TEXT_DISABLED_BACKGROUND, "COLOR_TEXT_DISABLED_BACKGROUND"},
+    	    {SWT.COLOR_WIDGET_DISABLED_FOREGROUND, "COLOR_WIDGET_DISABLED_FOREGROUND"},
+        };
+        
+        var display = Display.getCurrent();
+        // Print the name and RGB values of the system colors
+        for (Object[] colorConstant : colorConstants) {
+            int colorId = (int) colorConstant[0];
+            String colorName = (String) colorConstant[1];
+            Color color = display.getSystemColor(colorId);
+            System.out.println("Color Name: " + colorName + ", RGB: " 
+                               + color.getRed() + "," + color.getGreen() + "," + color.getBlue());
+        }
+
     }
 }
