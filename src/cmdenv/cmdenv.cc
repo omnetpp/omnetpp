@@ -286,6 +286,7 @@ void Cmdenv::doRun()
             // delete network
             if (networkSetupDone) {
                 try {
+                    loggingEnabled = !opt->expressMode;
                     getSimulation()->deleteNetwork();
                 }
                 catch (std::exception& e) {
