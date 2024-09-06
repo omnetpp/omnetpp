@@ -7,11 +7,8 @@
 
 package org.omnetpp.common.util;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
-import org.omnetpp.common.color.ColorFactory;
 
 public class DisplayUtils {
     public static void runNowOrAsyncInUIThread(Runnable runnable) {
@@ -57,13 +54,5 @@ public class DisplayUtils {
 
     public static boolean isDarkTheme() {
         return Display.isSystemDarkTheme();
-    }
-
-    public static Color getForegroundColor() {
-        var display = Display.getCurrent();
-        if (display == null)
-            return ColorFactory.BLACK;
-
-        return display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
     }
 }
