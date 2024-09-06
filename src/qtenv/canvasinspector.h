@@ -38,7 +38,7 @@ class QTENV_API CanvasInspector : public Inspector
       virtual cCanvas *getCanvas();
       QToolBar *createToolbar();
 
-      CanvasViewer *canvasViewer;
+      CanvasViewer *canvasViewer = nullptr;
 
    private Q_SLOTS:
       void zoomIn();

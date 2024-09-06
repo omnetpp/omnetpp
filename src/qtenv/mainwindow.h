@@ -181,7 +181,8 @@ private:
     static QString aboutText;
     QList<int> defaultTimeLineSize;
     FileEditor *fileEditor;
-    QLabel *simTimeLabel, *eventNumLabel;
+    QLabel *simTimeLabel = nullptr;
+    QLabel *eventNumLabel = nullptr;
     bool simTimeUnits;
 
     enum DigitGrouping

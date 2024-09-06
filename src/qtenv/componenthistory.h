@@ -31,9 +31,9 @@ namespace qtenv {
 class QTENV_API ComponentHistory
 {
     struct Data {
-        int parentModuleId;
+        int parentModuleId = -1;
         opp_string fullName; //TODO stringpool it!
-        cComponentType *componentType;
+        cComponentType *componentType = nullptr;
     };
     std::map<int,Data> components; // indexed by componentId
 

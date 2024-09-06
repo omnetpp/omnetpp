@@ -29,7 +29,7 @@ class QTENV_API OsgCanvasInspector : public Inspector
     Q_OBJECT
 
    private:
-      IOsgViewer *osgViewer;
+      IOsgViewer *osgViewer = nullptr;
 
    public:
       OsgCanvasInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f);

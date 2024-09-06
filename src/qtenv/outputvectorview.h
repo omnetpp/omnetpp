@@ -30,8 +30,8 @@ class ChartGridItem;
 class QTENV_API OutputVectorView : public QGraphicsView
 {
   private:
-    ChartGridItem *gridItem;
-    VectorPlotItem *plotItem;
+    ChartGridItem *gridItem = nullptr;
+    VectorPlotItem *plotItem = nullptr;
 
   protected:
     // Disable mouse scrolling

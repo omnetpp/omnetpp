@@ -81,32 +81,32 @@ enum RunMode {
 // Custom types for QVariant
 struct InspectActionData
 {
-    cObject *object;
+    cObject *object = nullptr;
     InspectorType type;
 };
 
 struct RunUntilActionData
 {
-    cObject *object;
+    cObject *object = nullptr;
     RunMode runMode;
 };
 
 struct RunUntilNextEventActionData
 {
-    cObject *object;
+    cObject *object = nullptr;
     RunMode runMode;
-    Inspector *insp;
+    Inspector *insp = nullptr;
 };
 
 struct CopyActionData
 {
-    cObject *object;
+    cObject *object = nullptr;
     eCopy copy;
 };
 
 struct ComponentLogActionData
 {
-    cComponent *component;
+    cComponent *component = nullptr;
     LogLevel logLevel;
 };
 
