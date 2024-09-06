@@ -201,7 +201,7 @@ eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
         return -1;
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
     return eventEntry->eventNumber;
-};
+}
 
 int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
 {
@@ -211,7 +211,7 @@ int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
     if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
         return -1;
     return adjustLineIndexForPrefaceOut(entryStartLineNumbers[entryIndex]);
-};
+}
 
 simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
 {
@@ -224,7 +224,7 @@ simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
         return -1;
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
     return eventEntry->simtime;
-};
+}
 
 int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
 {
@@ -234,7 +234,7 @@ int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
     if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
         return -1;
     return adjustLineIndexForPrefaceOut(entryStartLineNumbers[entryIndex]);
-};
+}
 
 using Bookmark = ModuleOutputContentProvider::Bookmark;
 

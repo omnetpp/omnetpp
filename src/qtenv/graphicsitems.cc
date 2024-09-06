@@ -405,7 +405,7 @@ void MultiLineOutlinedTextItem::setFont(const QFont &font) {
         i->setFont(font);
         realignLines();
     }
-};
+}
 
 void MultiLineOutlinedTextItem::setPen(const QPen &pen) {
     for (auto i : textItems)
