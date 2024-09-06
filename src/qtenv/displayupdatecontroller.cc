@@ -459,7 +459,6 @@ void DisplayUpdateController::recordFrame()
         targetUnit = "ps";
     double v = UnitConversion::convertUnit(frameTime.dbl(), "s", targetUnit);
 
-
     snprintf(temp, sizeof(temp), "delta: %.3g %s", v, targetUnit);
     //painter.drawText(frame.size().width() - 380, 250, temp);
     std::stringstream ss;
@@ -584,7 +583,6 @@ void DisplayUpdateController::renderFrame(bool record)
 
     lastGuiUpdateAt = now;
     lastFrameAt = now;
-
 
     double holdTime = qtenv->getRemainingAnimationHoldTime();
     bool inHold = (holdTime > 0 || msgAnim->isHoldActive()) && runMode != RUNMODE_FAST;

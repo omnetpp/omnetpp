@@ -69,7 +69,6 @@ HistogramInspector::HistogramInspector(QWidget *parent, bool isTopLevel, Inspect
     layout->addWidget(view);
     layout->addWidget(statusBar);
 
-
     layout->setContentsMargins(0, 0, 1, 1);
 
     setLayout(layout);

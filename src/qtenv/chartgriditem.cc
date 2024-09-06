@@ -171,7 +171,6 @@ double ChartGridItem::getYLabelWidth()
         if (tick.first >= minY && tick.first <= maxY && tick.second && getTextWidth(tick.first.str().c_str()) > yLabelWidth)
             yLabelWidth = getTextWidth(tick.first.str().c_str());
 
-
     return yLabelWidth;
 }
 

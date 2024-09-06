@@ -771,7 +771,6 @@ void SendOnConnAnimation::begin()
     }
 }
 
-
 void SendOnConnAnimation::update()
 {
     MessageAnimation::update();
