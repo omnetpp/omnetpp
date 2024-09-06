@@ -79,7 +79,7 @@ class QTENV_API IOsgViewer : public QOpenGLWidget
 
 class QTENV_API IOsgViewerFactory : noncopyable
 {
-public:
+  public:
     virtual IOsgViewer *createViewer() = 0;
     virtual void shutdown() = 0;
 

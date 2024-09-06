@@ -444,8 +444,8 @@ bool EventEntryLinesProvider::shouldShowBanner(LogBuffer::Entry *entry, bool sho
     return shouldShowAnyLine;
 }
 
- bool EventEntryLinesProvider::shouldShowLine(LogBuffer::Entry *entry, size_t lineIndex)
- {
+bool EventEntryLinesProvider::shouldShowLine(LogBuffer::Entry *entry, size_t lineIndex)
+{
     LogBuffer::Line &line = entry->lines[lineIndex];
     return !contains(excludedComponents, line.contextComponentId)
         && (entry->isSystemMessage() || line.contextComponentId <= 0 ||

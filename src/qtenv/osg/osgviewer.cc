@@ -406,8 +406,8 @@ bool OsgViewer::event(QEvent *event)
     }
 
     if (auto inputEvent = dynamic_cast<QInputEvent *>(event))
-         if (firstInputEventTimestamp == 0)
-             firstInputEventTimestamp = inputEvent->timestamp();
+        if (firstInputEventTimestamp == 0)
+            firstInputEventTimestamp = inputEvent->timestamp();
 
     bool handled = QOpenGLWidget::event(event);
 
