@@ -41,6 +41,7 @@ class cFingerprintCalculator;
 class cModuleType;
 class cEnvir;
 class cSoftOwner;
+class cUsageCollector; // (internal)
 
 SIM_API extern cSoftOwner globalOwningContext; // also in globals.h
 
@@ -96,6 +97,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     bool parameterMutabilityCheck = true;  // when disabled, module parameters can be set without them being declared @mutable
 
     cFingerprintCalculator *fingerprint = nullptr; // used for fingerprint calculation
+    cUsageCollector *usageCollector = nullptr; // used for coverage tests and for detecting unread parameters
 
   private:
     // internal
@@ -105,6 +107,9 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     // internal
     void setParameterMutabilityCheck(bool b) {parameterMutabilityCheck = b;}
     bool getParameterMutabilityCheck() const {return parameterMutabilityCheck;}
+    // internal, for cUsageCollector
+    void parametersAdded(cComponent *component);
+    void parameterAccessed(cPar *par);
 
   public:
     /** @name Constructor, destructor. */

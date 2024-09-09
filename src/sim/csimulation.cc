@@ -42,6 +42,7 @@
 #include "omnetpp/cparimpl.h"
 #include "omnetpp/cfingerprint.h"
 #include "omnetpp/cconfiguration.h"
+#include "omnetpp/cconfigoption.h"
 #include "omnetpp/ccoroutine.h"
 #include "omnetpp/clifecyclelistener.h"
 #include "omnetpp/platdep/platmisc.h"  // for DEBUG_TRAP
@@ -70,6 +71,9 @@ extern std::set<cOwnedObject *> objectlist;
 void printAllObjects();
 #endif
 
+Register_PerRunConfigOption(CFGID_PRINT_INSTANTIATED_NED_TYPES, "print-instantiated-ned-types", CFG_BOOL, "false", "When set to true, the simulation will print the names of all instantiated NED types at the end of the simulation. This is useful for coverage tests.");
+Register_PerRunConfigOption(CFGID_PRINT_UNUSED_PARAMETERS, "print-unused-parameters", CFG_BOOL, "false", "When set to true, the simulation will print the names of all parameters that have not been accessed during simulation, i.e. did not have any effect, pointing to possible deficiencies in the model.");
+
 
 /**
  * Stops the simulation at the time it is scheduled for.
@@ -85,6 +89,30 @@ class SIM_API cEndSimulationEvent : public cEvent, public noncopyable
     virtual cEvent *dup() const override { copyNotSupported(); return nullptr; }
     virtual cObject *getTargetObject() const override { return nullptr; }
     virtual void execute() override { delete this; throw cTerminationException(E_SIMTIME); }
+};
+
+/**
+ * Internal helper class to collect the list of module types used in a simulation
+ * (for coverage tests), and the set of parameters queried by the simulation
+ * (for detecting parameters that take no effect).
+ */
+class cUsageCollector
+{
+  private:
+    bool collectInstantiatedNedTypes = false;
+    bool collectParameterAccesses = false;
+    std::set<std::string> instantiatedNedTypes;
+    // map key: component qualified NED type name, value: set of parameter names instances of that type have / access
+    std::map<std::string, std::set<std::string>> allParametersPerComponentType;
+    std::map<std::string, std::set<std::string>> accessedParametersPerComponentType;
+  public:
+    void setPrintInstantiatedNedTypes(bool enabled) {collectInstantiatedNedTypes = enabled;}
+    void setPrintUnusedParameters(bool enabled) {collectParameterAccesses = enabled;}
+
+    void componentCreated(cComponent *component);
+    void parametersAdded(cComponent *component);
+    void parameterAccessed(cPar *par);
+    void printResults(std::ostream& out);
 };
 
 cSimulation::cSimulation(const char *name, cEnvir *env) : cNamedObject(name, false)
@@ -116,6 +144,7 @@ cSimulation::~cSimulation()
     delete fingerprint;
     delete scheduler;
     dropAndDelete(fes);
+    delete usageCollector;
 }
 
 void cSimulation::setActiveSimulation(cSimulation *sim)
@@ -304,6 +333,10 @@ int cSimulation::registerComponent(cComponent *component)
     componentv[id] = component;
     component->simulation = this;
     component->componentId = id;
+
+    if (usageCollector)
+        usageCollector->componentCreated(component);
+
     return id;
 }
 
@@ -335,6 +368,19 @@ void cSimulation::setSystemModule(cModule *module)
     systemModule = module;
     take(module);
 }
+
+void cSimulation::parametersAdded(cComponent *component)
+{
+    if (usageCollector)
+        usageCollector->parametersAdded(component);
+}
+
+void cSimulation::parameterAccessed(cPar *par)
+{
+    if (usageCollector)
+        usageCollector->parameterAccessed(par);
+}
+
 cModule *cSimulation::getModuleByPath(const char *path) const
 {
     cModule *module = findModuleByPath(path);
@@ -365,6 +411,18 @@ void cSimulation::setupNetwork(cModuleType *network)
         throw cRuntimeError("setupNetwork(): nullptr received");
     if (!network->isNetwork())
         throw cRuntimeError("Cannot set up network: '%s' is not a network type", network->getFullName());
+
+    // set up usage collector if needed
+    delete usageCollector;
+    usageCollector = nullptr;
+
+    bool printInstantiatedNedTypes = getEnvir()->getConfig()->getAsBool(CFGID_PRINT_INSTANTIATED_NED_TYPES);
+    bool printUnusedParameters = getEnvir()->getConfig()->getAsBool(CFGID_PRINT_UNUSED_PARAMETERS);
+    if (printInstantiatedNedTypes || printUnusedParameters) {
+        usageCollector = new cUsageCollector();
+        usageCollector->setPrintInstantiatedNedTypes(printInstantiatedNedTypes);
+        usageCollector->setPrintUnusedParameters(printUnusedParameters);
+    }
 
     // set cNetworkType pointer
     networkType = network;
@@ -449,6 +507,9 @@ void cSimulation::deleteNetwork()
 {
     if (!systemModule)
         return;  // network already deleted
+
+    if (usageCollector)
+        usageCollector->printResults(getEnvir()->getOutputStream());
 
     if (cSimulation::getActiveSimulation() != this)
         throw cRuntimeError("cSimulation: Cannot invoke deleteNetwork() on an instance that is not the active one (see cSimulation::getActiveSimulation())");  // because cModule::deleteModule() would crash
@@ -717,6 +778,72 @@ void cSimulation::insertEvent(cEvent *event)
 }
 
 //----
+
+void cUsageCollector::componentCreated(cComponent *component)
+{
+    if (collectInstantiatedNedTypes) {
+        std::string typeName = component->getComponentType()->getFullName();
+        instantiatedNedTypes.insert(typeName);
+    }
+}
+
+void cUsageCollector::parametersAdded(cComponent *component)
+{
+    if (collectParameterAccesses) {
+        // We cannot obtain the list of parameters from the component type,
+        // so we collect it from the instance the first time the component type
+        // is instantiated. We also need to pay attention we do not accidentally
+        // register parameter accesses during collection, so this function
+        // must be called before parameters are finalized.
+        ASSERT(!component->parametersFinalized());
+        std::string typeName = component->getComponentType()->getFullName();
+        if (allParametersPerComponentType.find(typeName) == allParametersPerComponentType.end()) {
+            for (int i = 0; i < component->getNumParams(); i++) {
+                cPar& par = component->par(i);
+                allParametersPerComponentType[typeName].insert(par.getFullName());
+            }
+            accessedParametersPerComponentType[typeName]; // make sure it exists
+        }
+    }
+}
+
+void cUsageCollector::parameterAccessed(cPar *par)
+{
+    if (collectParameterAccesses) {
+        // We need to filter out accesses before parameters are finalized (those
+        // done by the simulation kernel for technical reasons, during the construction
+        // of the network), and those during finish() and network cleanup (for example,
+        // recording parameters into the scalar file accesses all parameters, which we
+        // want to ignore).
+        cComponent *component = par->getOwnerComponent();
+        ContextType contextType = getSimulation()->getContextType();
+        if (component->parametersFinalized() && contextType != CTX_FINISH && contextType != CTX_CLEANUP) {
+            std::string typeName = component->getComponentType()->getFullName();
+            accessedParametersPerComponentType[typeName].insert(par->getName());
+        }
+    }
+}
+
+void cUsageCollector::printResults(std::ostream& out)
+{
+    // each line is prefixed in the output so as to facilitate grepping
+    if (collectInstantiatedNedTypes) {
+        for (auto& typeName : instantiatedNedTypes)
+            out << "instantiated NED type: " << typeName << "\n";
+    }
+
+    if (collectParameterAccesses) {
+        for (auto &[typeName, accessedParams] : accessedParametersPerComponentType) {
+            auto paramNames = allParametersPerComponentType[typeName];
+            for (auto& paramName : paramNames)
+                if (accessedParams.find(paramName) == accessedParams.end())
+                    out << "unused parameter: " << typeName << "." << paramName << "\n";
+        }
+    }
+}
+
+//----
+
 
 /**
  * A dummy implementation of cEnvir, only provided so that one

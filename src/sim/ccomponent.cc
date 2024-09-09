@@ -278,7 +278,9 @@ cPar& cComponent::par(int k)
 {
     if (k < 0 || k >= numPars)
         throw cRuntimeError(this, "Parameter id %d out of range", k);
-    return parArray[k];
+    cPar& p = parArray[k];
+    simulation->parameterAccessed(&p);
+    return p;
 }
 
 cPar& cComponent::par(const char *parName)
@@ -286,7 +288,9 @@ cPar& cComponent::par(const char *parName)
     int k = findPar(parName);
     if (k < 0)
         throw cRuntimeError(this, "Unknown parameter '%s'", parName);
-    return parArray[k];
+    cPar& p = parArray[k];
+    simulation->parameterAccessed(&p);
+    return p;
 }
 
 int cComponent::findPar(const char *parName) const
@@ -316,6 +320,8 @@ void cComponent::finalizeParameters()
         par(i).read();
     for (int i = 0; i < n; i++)
         par(i).finalize();
+
+    simulation->parametersAdded(this);
 
     setFlag(FL_PARAMSFINALIZED, true);
 
