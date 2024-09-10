@@ -113,10 +113,6 @@ Cmdenv::Cmdenv() : opt((CmdenvOptions *&)EnvirBase::opt)
     // Note: ctor should only contain trivial initializations, because
     // the class may be instantiated only for the purpose of calling
     // printUISpecificHelp() on it
-
-    logStream = fopen(".cmdenv-log", "w");
-    if (!logStream)
-        logStream = stdout;
 }
 
 void Cmdenv::readOptions()

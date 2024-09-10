@@ -62,10 +62,6 @@ class CMDENV_API Cmdenv : public EnvirBase
      int runsTried = 0;
      int numRuns = 0;
 
-     // logging
-     bool logging = true;
-     FILE *logStream;
-
      FakeGUI *fakeGUI = nullptr;
 
    protected:
