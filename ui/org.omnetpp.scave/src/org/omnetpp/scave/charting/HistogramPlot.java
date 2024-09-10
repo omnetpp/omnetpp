@@ -171,6 +171,8 @@ public class HistogramPlot extends PlotBase {
         case PROP_HIST_DENSITY: setHistogramDensity(Converter.stringToBoolean(value)); break;
         case PROP_SHOW_OVERFLOW_CELL: setShowOverflowCell(Converter.stringToBoolean(value)); break;
         case PROP_BAR_BASELINE: setBarBaseline(Converter.stringToDouble(value)); break;
+        case PROP_X_AXIS_MIN: setXMin(Converter.stringToDouble(value)); break;
+        case PROP_X_AXIS_MAX: setXMax(Converter.stringToDouble(value)); break;
         case PROP_Y_AXIS_LOGARITHMIC: setLogarithmicY(Converter.stringToBoolean(value)); break;
         default: super.setProperty(prop, value);
         }
