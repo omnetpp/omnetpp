@@ -521,6 +521,12 @@ class SIM_API cEnvir
     virtual bool askYesNo(const char *prompt) = 0;
 
     /**
+     * Get the generic output stream that where informative messages can be printed
+     * for the user (~ standard output).
+     */
+    virtual std::ostream& getOutputStream() = 0;
+
+    /**
      * Returns the size of the image with the given name (e.g. "block/switch_l")
      * in pixels. If the image does not exist, it returns the size of the
      * "unknown" icon (as that is the image actually displayed). Non-GUI

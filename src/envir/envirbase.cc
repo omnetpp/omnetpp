@@ -1952,6 +1952,11 @@ char **EnvirBase::getArgVector() const
     return args->getArgVector();
 }
 
+std::ostream& EnvirBase::getOutputStream()
+{
+    return out;
+}
+
 //-------------------------------------------------------------
 
 void EnvirBase::resetClock()

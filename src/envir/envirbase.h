@@ -280,6 +280,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // misc
     virtual int getArgCount() const override;
     virtual char **getArgVector() const override;
+    virtual std::ostream& getOutputStream() override;
     virtual int getParsimProcId() const override;
     virtual int getParsimNumPartitions() const override;
     virtual unsigned long getUniqueNumber() override;

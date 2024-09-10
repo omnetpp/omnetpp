@@ -746,6 +746,7 @@ class StaticEnv : public cEnvir
     void unsupported() const { throw opp_runtime_error("StaticEnv: Unsupported method called"); }
     virtual void alert(const char *msg) override { ::printf("\n<!> %s\n\n", msg); }
     virtual bool askYesNo(const char *msg) override  { unsupported(); return false; }
+    virtual std::ostream& getOutputStream() override {return std::cout;}
 
   public:
     // constructor, destructor
