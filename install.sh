@@ -108,7 +108,7 @@ install_deps() {
             source /etc/os-release
         fi
 
-        # detect the package manager    
+        # detect the package manager
         if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu
             # apt-get is used on debian (i.e. Ubuntu,  etc.)
             packages="build-essential pkg-config ccache clang lld gdb bison flex perl python3 python3-pip python3-venv libpython3-dev libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
@@ -121,7 +121,7 @@ install_deps() {
                 packages="$packages libopenscenegraph-dev"
             fi
 
-            echo_root_run "apt update -y ; apt install -y $packages ; apt clean"
+            echo_root_run "apt update -y ; DEBIAN_FRONTEND=noninteractive apt install -y $packages ; apt clean"
 
         elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora
             # dnf is used on fedora
