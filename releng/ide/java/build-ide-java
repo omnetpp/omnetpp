@@ -94,6 +94,8 @@ chmod +x ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/plugins/org.omnetpp.ide.
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
 echo org.eclipse.update.reconcile=false >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini
 echo osgi.instance.area.default=../../../../../samples >>ide/macosx-x86_64/Eclipse.app/Contents/Eclipse/configuration/config.ini
+# patch the NSRequiresAquaSystemAppearance key so Light/Dark mode is suppoted by the process
+perl -i -0777 -pe 's|<key>NSRequiresAquaSystemAppearance</key>[\n\s]*?<true/>\n||' ide/macosx-x86_64/Eclipse.app/Contents/Info.plist
 
 # macOS aarch64
 cp -rl macosx/cocoa/aarch64 ide
@@ -107,3 +109,5 @@ chmod +x ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/plugins/org.omnetpp.ide
 # we have to adjust the config.ini manually, bacause tycho is not properly updating it form the .product file
 echo org.eclipse.update.reconcile=false >>ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/configuration/config.ini
 echo osgi.instance.area.default=../../../../../samples >>ide/macosx-aarch64/Eclipse.app/Contents/Eclipse/configuration/config.ini
+# patch the NSRequiresAquaSystemAppearance key so Light/Dark mode is suppoted by the process
+perl -i -0777 -pe 's|<key>NSRequiresAquaSystemAppearance</key>[\n\s]*?<true/>\n||' ide/macosx-aarch64/Eclipse.app/Contents/Info.plist
