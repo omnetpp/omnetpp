@@ -1,0 +1,99 @@
+%description:
+This test currently demonstrates a NED parameter processing error:
+
+Both 'Area' and 'LAN' modules has 'outerBitrate' parameter with same name.
+
+The network set the Area's outerBitrate to 100Mbps,
+Area sets the LAN.outerBitrate to 10Mbps,
+LAN sets the switch.eth[1..] bitrate to LAN.outerBitrate.
+
+But the switch.eth[1] bitrate value is 100Mbps.
+
+%file: test.ned
+
+network Test
+{
+    parameters:
+        router.eth[*].bitrate = 100 Mbps;
+        area.outerBitrate = 100 Mbps;
+    types:
+        module Nic
+        {
+            parameters:
+                double bitrate @unit(Mbps);
+            gates:
+                inout ethg;
+            connections allowunconnected:
+        }
+        module Node
+        {
+            gates:
+                inout ethg[];
+            submodules:
+                eth[sizeof(ethg)]: Nic;
+            connections:
+                for i=0..sizeof(ethg) - 1 {
+                    eth[i].ethg <--> ethg++;
+                }
+        }
+        module LAN
+        {
+            parameters:
+                double outerBitrate @unit(Mbps);
+                host.eth[*].bitrate = 1 Mbps;
+                switch.eth[0].bitrate = 1 Mbps;
+                switch.eth[1..].bitrate = outerBitrate;
+            gates:
+                inout ethg[];
+            submodules:
+                switch: Node;
+                host: Node;
+            connections:
+                host.ethg++ <--> switch.ethg++;
+                for i=0..sizeof(ethg) - 1 {
+                    switch.ethg++ <--> ethg++;
+                }
+        }
+
+        module Area
+        {
+            parameters:
+                double outerBitrate @unit(Mbps);
+                lan.outerBitrate = 10 Mbps;
+                router.eth[0].bitrate = 10 Mbps;
+                router.eth[1..].bitrate = outerBitrate;
+            gates:
+                inout ethg[];
+            submodules:
+                lan: LAN;
+                router: Node;
+            connections:
+                router.ethg++ <--> lan.ethg++;
+                for i=0..sizeof(ethg) - 1 {
+                    router.ethg++ <--> ethg++;
+                }
+        }
+
+    submodules:
+        router: Node;
+        area: Area;
+    connections:
+        router.ethg++ <--> area.ethg++;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-event-banners = false
+
+%postrun-command: grep " bitrate " results/General-\#0.sca > results/bitrate.sca || true
+
+%contains: results/bitrate.sca
+par Test.router.eth[0] bitrate 100Mbps
+par Test.area.lan.switch.eth[0] bitrate 1Mbps
+par Test.area.lan.switch.eth[1] bitrate 10Mbps
+par Test.area.lan.host.eth[0] bitrate 1Mbps
+par Test.area.router.eth[0] bitrate 10Mbps
+par Test.area.router.eth[1] bitrate 100Mbps
+
