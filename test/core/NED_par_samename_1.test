@@ -7,7 +7,8 @@ The network set the Area's outerBitrate to 100Mbps,
 Area sets the LAN.outerBitrate to 10Mbps,
 LAN sets the switch.eth[1..] bitrate to LAN.outerBitrate.
 
-But the switch.eth[1] bitrate value is 100Mbps.
+Before the bugfix, the switch.eth[1] bitrate value was 100Mbps (bogus).
+As of omnetpp-6.1, the switch.eth[1] bitrate value was 10Mbps, which is the correct value.
 
 %file: test.ned
 
@@ -21,20 +22,11 @@ network Test
         {
             parameters:
                 double bitrate @unit(Mbps);
-            gates:
-                inout ethg;
-            connections allowunconnected:
         }
         module Node
         {
-            gates:
-                inout ethg[];
             submodules:
-                eth[sizeof(ethg)]: Nic;
-            connections:
-                for i=0..sizeof(ethg) - 1 {
-                    eth[i].ethg <--> ethg++;
-                }
+                eth[2]: Nic;
         }
         module LAN
         {
@@ -43,16 +35,9 @@ network Test
                 host.eth[*].bitrate = 1 Mbps;
                 switch.eth[0].bitrate = 1 Mbps;
                 switch.eth[1..].bitrate = outerBitrate;
-            gates:
-                inout ethg[];
             submodules:
                 switch: Node;
                 host: Node;
-            connections:
-                host.ethg++ <--> switch.ethg++;
-                for i=0..sizeof(ethg) - 1 {
-                    switch.ethg++ <--> ethg++;
-                }
         }
 
         module Area
@@ -62,23 +47,14 @@ network Test
                 lan.outerBitrate = 10 Mbps;
                 router.eth[0].bitrate = 10 Mbps;
                 router.eth[1..].bitrate = outerBitrate;
-            gates:
-                inout ethg[];
             submodules:
                 lan: LAN;
                 router: Node;
-            connections:
-                router.ethg++ <--> lan.ethg++;
-                for i=0..sizeof(ethg) - 1 {
-                    router.ethg++ <--> ethg++;
-                }
         }
 
     submodules:
         router: Node;
         area: Area;
-    connections:
-        router.ethg++ <--> area.ethg++;
 }
 
 %inifile: test.ini
@@ -91,9 +67,11 @@ cmdenv-event-banners = false
 
 %contains: results/bitrate.sca
 par Test.router.eth[0] bitrate 100Mbps
+par Test.router.eth[1] bitrate 100Mbps
 par Test.area.lan.switch.eth[0] bitrate 1Mbps
 par Test.area.lan.switch.eth[1] bitrate 10Mbps
 par Test.area.lan.host.eth[0] bitrate 1Mbps
+par Test.area.lan.host.eth[1] bitrate 1Mbps
 par Test.area.router.eth[0] bitrate 10Mbps
 par Test.area.router.eth[1] bitrate 100Mbps
 
