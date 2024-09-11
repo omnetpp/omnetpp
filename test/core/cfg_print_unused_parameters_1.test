@@ -1,0 +1,107 @@
+%description:
+Test print-unused-parameters = true
+
+%file: test.ned
+
+import ned.*;
+
+channel ChannelExt extends ned.DatarateChannel
+{
+    parameters:
+       datarate = 1Gbps;
+       double cost = default(0);
+       string options = default("");
+}
+
+simple Source
+{
+    parameters:
+        int numPackets = default(3);
+        volatile int packetLength = default(640);
+        double extraParam = default(0.1);
+    gates:
+        output out;
+}
+
+simple Sink
+{
+    gates:
+        input in[];
+}
+
+network Test
+{
+    parameters:
+        bool dummy1 = false;
+        int dummy2 = 753;
+        int numSources = 1;
+    submodules:
+        source[numSources]: Source;
+        sink: Sink;
+    connections:
+        source[i].out --> ChannelExt --> sink.in++ for i = 0..numSources-1;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Source : public cSimpleModule
+{
+  private:
+    int numPackets;
+  public:
+    Source() : cSimpleModule(16384) { }
+  protected:
+    virtual void initialize() override;
+    virtual void activity() override;
+};
+
+Define_Module(Source);
+
+void Source::initialize()
+{
+    numPackets = par("numPackets");
+}
+
+void Source::activity()
+{
+    for (int i = 0; i < numPackets; i++) {
+        cPacket *pk = new cPacket("packet");
+        pk->setBitLength(par("packetLength").intValue());
+        send(pk, "out");
+        wait(1);
+    }
+}
+
+class Sink : public cSimpleModule
+{
+  public:
+    virtual void handleMessage(cMessage *msg) override;
+};
+
+Define_Module(Sink);
+
+void Sink::handleMessage(cMessage *msg)
+{
+    delete msg;
+}
+
+}; //namespace
+
+%inifile: test.ini
+print-unused-parameters = true
+
+%contains: stdout
+Calling finish() at end of Run #0...
+unused parameter: ChannelExt.cost
+unused parameter: ChannelExt.options
+unused parameter: Source.extraParam
+unused parameter: Test.dummy1
+unused parameter: Test.dummy2
+
+End.

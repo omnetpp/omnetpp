@@ -1,0 +1,51 @@
+%description:
+Tests print-instantiated-ned-types
+
+%file: test.ned
+
+module Nic
+{
+}
+
+module Node
+{
+    gates:
+        inout eth[];
+    submodules:
+        nic: Nic;
+}
+
+network Test
+{
+    types:
+        module Area
+        {
+            gates:
+                inout g[];
+            submodules:
+                lan: LAN;
+                router: Node;
+        }
+        module LAN {
+            submodules:
+                switch: Node;
+                host: Node;
+        }
+
+    submodules:
+        router: Node;
+        area: Area;
+}
+
+%inifile: test.ini
+print-instantiated-ned-types = true
+
+%contains: stdout
+Calling finish() at end of Run #0...
+instantiated NED type: Nic
+instantiated NED type: Node
+instantiated NED type: Test
+instantiated NED type: Test.Area
+instantiated NED type: Test.LAN
+
+End.
