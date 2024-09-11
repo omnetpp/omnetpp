@@ -39,6 +39,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.RGBA;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.layout.FillLayout;
@@ -57,10 +58,12 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.IEnumerator;
 import org.omnetpp.common.collections.IRangeSet;
 import org.omnetpp.common.collections.RangeSet;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.CsvWriter;
+import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * VirtualTable is a widget that displays a list of (potentially huge
@@ -91,7 +94,7 @@ public class VirtualTable<T>
     extends Composite
     implements IVirtualContentWidget<T>, ISelectionProvider
 {
-    private static final Color LINE_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+    private static final Color LINE_COLOR = DisplayUtils.isDarkTheme() ? ColorFactory.GREY22 : ColorFactory.GREY78;
 
     private final static boolean debug = false;
 

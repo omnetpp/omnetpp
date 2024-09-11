@@ -55,10 +55,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.IntRangeSet;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.CsvWriter;
+import org.omnetpp.common.util.DisplayUtils;
 
 /**
  * Custom-drawn table control that can display a virtually unlimited number of
@@ -109,7 +111,7 @@ import org.omnetpp.common.util.CsvWriter;
  */
 public class LargeTable extends Composite
 {
-    private static final Color LINE_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+    private static final Color LINE_COLOR = DisplayUtils.isDarkTheme() ? ColorFactory.GREY22 : ColorFactory.GREY78;
 
     /**
      * The number of rows in the table.
@@ -373,7 +375,7 @@ public class LargeTable extends Composite
 
         canvas.addListener(SWT.MouseWheel, new Listener() {
             public void handleEvent(Event event) {
-                scroll(-event.count);
+                scroll((SWT.getPlatform().equals("carbon") ? 1 : -1) * event.count);
             }
         });
     }
