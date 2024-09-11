@@ -629,10 +629,19 @@ with the \fopt{-h configdetails} option.
     instantiated. Specify numeric partition ID, or a comma-separated list of
     partition IDs for compound modules that span across multiple partitions.
     Ranges (\ttt{5..{\allowbreak}9}) and \ttt{*} (=all) are accepted too.
+\item[print-instantiated-ned-types] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    When set to true, the simulation will print the names of all instantiated
+    NED types at the end of the simulation. This is useful for coverage tests.
 \item[print-undisposed] = \textit{<bool>}, default: \ttt{true}\\
     \textit{Per-simulation-run setting.}\\
     Whether to report objects left (that is, not deallocated by simple module
     destructors) after network cleanup.
+\item[print-unused-parameters] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    When set to true, the simulation will print the names of all parameters
+    that have not been accessed during simulation, i.e. did not have any
+    effect, pointing to possible deficiencies in the model.
 \item[qtenv-default-config] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies which config Qtenv should set up automatically on startup. The
