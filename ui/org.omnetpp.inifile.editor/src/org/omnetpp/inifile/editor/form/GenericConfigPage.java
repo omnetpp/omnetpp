@@ -221,6 +221,8 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_PARAMETER_MUTABILITY_CHECK, "Do not allow runtime changes made to parameters not marked as @mutable");
             addCheckboxFieldEditor(group, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
             addCheckboxFieldEditor(group, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
+            addCheckboxFieldEditor(group, CFGID_PRINT_INSTANTIATED_NED_TYPES, "Print list of instantiated NED types");
+            addCheckboxFieldEditor(group, CFGID_PRINT_UNUSED_PARAMETERS, "Print names of unused parameters per NED type");
             addCheckboxFieldEditor(group, CFGID_WARNINGS, "Warnings"); //XXX
             addSpacer(form);
         }

@@ -280,7 +280,7 @@ public class ConfigRegistry {
         "specified runtime log level and the `COMPILETIME_LOGLEVEL` macro that is " +
         "used to completely remove log statements from the executable.");
     public static final ConfigOption CFGID_CMDENV_LOG_PREFIX = addPerRunOption(
-        "cmdenv-log-prefix", CFG_STRING, "[%l]  ",
+        "cmdenv-log-prefix", CFG_STRING, "[%l]	",
         "Specifies the format string that determines the prefix of each log line. " +
         "The format string may contain format directives in the syntax `%x` (a `%` " +
         "followed by a single format character).  For example `%l` stands for log " +
@@ -723,10 +723,19 @@ public class ConfigRegistry {
         "instantiated. Specify numeric partition ID, or a comma-separated list of " +
         "partition IDs for compound modules that span across multiple partitions. " +
         "Ranges (`5..9`) and `*` (=all) are accepted too.");
+    public static final ConfigOption CFGID_PRINT_INSTANTIATED_NED_TYPES = addPerRunOption(
+        "print-instantiated-ned-types", CFG_BOOL, "false",
+        "When set to true, the simulation will print the names of all instantiated " +
+        "NED types at the end of the simulation. This is useful for coverage tests.");
     public static final ConfigOption CFGID_PRINT_UNDISPOSED = addPerRunOption(
         "print-undisposed", CFG_BOOL, "true",
         "Whether to report objects left (that is, not deallocated by simple module " +
         "destructors) after network cleanup.");
+    public static final ConfigOption CFGID_PRINT_UNUSED_PARAMETERS = addPerRunOption(
+        "print-unused-parameters", CFG_BOOL, "false",
+        "When set to true, the simulation will print the names of all parameters " +
+        "that have not been accessed during simulation, i.e. did not have any " +
+        "effect, pointing to possible deficiencies in the model.");
     public static final ConfigOption CFGID_QTENV_DEFAULT_CONFIG = addGlobalOption(
         "qtenv-default-config", CFG_STRING, null,
         "Specifies which config Qtenv should set up automatically on startup. The " +
