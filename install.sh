@@ -121,7 +121,7 @@ install_deps() {
                 packages="$packages libopenscenegraph-dev"
             fi
 
-            echo_root_run "apt update -y ; DEBIAN_FRONTEND=noninteractive apt install -y $packages ; apt clean"
+            echo_root_run "DEBIAN_FRONTEND=noninteractive apt install -y $packages ; apt clean"
 
         elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora
             # dnf is used on fedora
@@ -135,7 +135,7 @@ install_deps() {
                 packages="$packages OpenSceneGraph-devel"
             fi
 
-            echo_root_run "dnf check-update -y ; dnf install -y $packages ; dnf clean packages"
+            echo_root_run "dnf install -y $packages ; dnf clean packages"
 
         elif [[ "$(command -v dnf)" != "" &&  ( "$ID" == "almalinux" || "$ID" == "rhel" ) ]]; then
             packages="make clang lld gdb bison flex perl python3-devel python3-pip libxml2-devel zlib-devel graphviz xdg-utils elfutils-devel"
@@ -149,7 +149,7 @@ install_deps() {
                 exit 1
             fi
 
-            echo_root_run "dnf check-update -y ; dnf install -y $packages ; dnf clean packages"
+            echo_root_run "dnf install -y $packages ; dnf clean packages"
 
         elif [[ "$(command -v zypper)" != "" && "$ID" == "opensuse-tumbleweed" ]]; then
             # zypper is used on OpenSUSE. leap is not supported because of old (3.6) python
@@ -163,7 +163,7 @@ install_deps() {
                 packages="$packages libOpenSceneGraph-devel"
             fi
 
-            echo_root_run "zypper refresh ; zypper install -y $packages ; zypper clean"
+            echo_root_run "zypper install -y $packages ; zypper clean"
 
         elif [[ "$(command -v pacman)" != "" ]]; then
             # pacman is used on Arch Linux
@@ -177,7 +177,7 @@ install_deps() {
                 packages="$packages openscenegraph"
             fi
 
-            echo_root_run "pacman -Syu --noconfirm ; pacman -S --needed --noconfirm $packages ; pacman -Scc --noconfirm"
+            echo_root_run "pacman -S --needed --noconfirm $packages ; pacman -Scc --noconfirm"
 
         else
             echo -e "${RED}Package manager (apt, dnf, zypper, pacman) not detected.\nSee 'doc/InstallGuide.pdf' and install the required packages manually.${RESET}"
