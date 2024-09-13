@@ -149,6 +149,13 @@ fi
 AC_MSG_NOTICE(Reading configure.user for your custom settings.)
 . ./configure.user
 
+# Delete (and backup) the current Makefile.inc so there will be no stale Makefile.inc
+# in case the configure script fails. The build process will give a proper error
+# and ask ro re-run ./configure if Makefile.inc is not present in the folder.
+
+AC_MSG_NOTICE([Creating a backup of 'Makefile.inc'.])
+mv -f ./Makefile.inc ./Makefile.inc.last_known_good
+
 # force MS-ABI / x64 compatible target if requested by the user
 if test "$USE_MS_ABI" = "yes"; then
   CFLAGS="$CFLAGS --target=x86_64-windows-msvc"
@@ -1416,6 +1423,9 @@ echo "#define OMNETPP_VERSION_STR \"$OMNETPP_VERSION\"" >>ver.h && \
 echo "#define OMNETPP_BUILDID \"$OMNETPP_BUILDID\"" >>ver.h && \
 echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 )
+
+# now that the Makefile.inc is written out, remove the "last known good" backup file
+rm -f ./Makefile.inc.last_known_good
 
 #---------------------------
 # Check for SystemC settings

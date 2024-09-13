@@ -64,6 +64,10 @@ endif
 #
 #=====================================================================
 
+ifeq ($(wildcard Makefile.inc),)
+  $(error Makefile.inc does not exist. Run './configure' to generate it)
+endif
+
 include Makefile.inc
 
 #=====================================================================
