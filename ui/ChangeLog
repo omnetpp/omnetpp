@@ -1,3 +1,52 @@
+2024-09-11  Rudolf Hornig
+
+	* Fine-tuned line color and mouse wheel scroll direction for some
+	custom-drawn tables (e.g. EventLog) on macOS
+
+2024-09-11  Andras Varga
+
+	* Inifile Editor: Updated with newly introduced config options:
+	`print-instantiated-ned-types`, `print-unused-parameters`
+
+2024-09-10  Attila Torok
+
+	* Analysis Tool: Support X axis limits for native Histogram plots,
+	see https://github.com/omnetpp/omnetpp/issues/9227
+
+2024-09-06  Rudolf Hornig
+
+	* IDE: Better dark theme detection and related fixes for custom widgets; affects
+	some tables in Analysis Tool and EventLog View.
+
+2024-09-02  Rudolf Hornig
+
+	* Simulation Launcher: When printing the simulation launch command line into
+	the Console, add quotes around command line options that require them.
+
+	This fixes the issue that the simulation launch command often did not work
+	when copy/pasted into the terminal, because arguments like the NED path or
+	NED exclusion path contained a semicolon, which the shell interprets as
+	command separator.
+
+2024-08-30  Rudolf Hornig
+
+	* IDE: Fixed the issue that the OMNeT++ sample projects did not auto-import
+	correctly when the configured IDE workspace contained the whole `samples`
+	directory.
+
+2024-08-01  Rudolf Hornig
+
+	* Launcher: Fixed the issue that the debugger did not launch on Windows/msys.
+
+2024-07-15  Rudolf Hornig
+
+	* IDE: Updated Eclipse and dependencies:
+
+	- JDK 21
+	- Eclipse 4.32
+	- CDT 11.6
+	- PyDev 12.1
+
 2024-06-19  Andras Varga
 
 	* Analysis Tool: Rename "Scatter Chart MPL" to "Scatter Chart with Matplotlib",

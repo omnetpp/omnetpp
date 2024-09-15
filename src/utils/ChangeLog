@@ -1,3 +1,19 @@
+2024-09-10  Andras Varga
+
+	* opp_test: built-in activity() stack increased to 1MiB
+
+2024-08-01  Rudolf Hornig
+
+	* opp_dbgmi: changes for Windows/msys
+
+2024-07-23  Rudolf Hornig
+
+	* opp_dbgmi: fixes for macOS
+
+2024-07-08  Rudolf Hornig
+
+	* Added shortcut.cmd for installing shortcuts on Windows
+
 2023-12-19  Rudolf Hornig
 
 	* Added opp_dbgmi, a wrapper script for invoking the appropriate

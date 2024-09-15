@@ -1,3 +1,15 @@
+2024-07-19  Andras Varga
+
+	* Added experimental llmtool utility
+
+2024-05-24  Andras Varga
+
+	* Added experimental package nedlinter
+
+2024-07-16  Attila Torok
+
+	* omnetpp.scave: vectorops.py: Make the expression vector operation work with NumPy 2.0
+
 2024-06-24  Attila Torok
 
 	* omnetpp.scave: Make native module loading fallback less verbose.

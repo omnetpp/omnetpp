@@ -1,3 +1,13 @@
+2024-09-10  Andras Varga
+
+	* cEnvir: added getOutputStream()
+
+2024-06-18  Andras Varga
+
+	* SimTime: SimTime(cPar& d) constructor signature changed to
+	SimTime(const cPar& d). This fixes a compile error when assigning
+	simtime_t from cPar from a const function.
+
 2024-06-10  Andras Varga
 
 	* cComponent: Deprecate getAncestorPar()

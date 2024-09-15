@@ -1,3 +1,16 @@
+2024-09-06  Attila Torok
+
+	* Code cosmetics, based on changes generated via LLM technology
+
+2024-08-27  Attila Torok
+
+	* Fix undefined behavior in delivery animations.
+
+	The delivery animations not being added to this quick-access map meant
+	that the these animations weren't reached when it was time to "forget"
+	the message upon it being deleted, which lead to a dangling pointer being
+	left in them, later causing a crash.
+
 2024-06-26  Attila Torok
 
 	* Log: Fix finding next/previous string near formatting sequences

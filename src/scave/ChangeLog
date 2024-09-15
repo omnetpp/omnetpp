@@ -1,6 +1,33 @@
+2024-07-11  Rudolf Hornig
+
+	* build: scave bindings now link directly with the created .o files
+	instead of the common and scave shared libs
+
+	This avoids depending on the common and scave shared libs which in turn
+	allows us to use the scave bindings module even if omnet++ is not
+	installed on the machine. This opens the possibility to submit the
+	library to pypi.
+
+	Additionally, there was a shared library loading issue on recent versions
+	of msys2 systems that prevented the loading of the model. Avoiding the
+	use of shared libs works around this issue.
+
+	NOTE: probably it would be even better to build both static and shared
+	libraries from OMNeT++ at the same time (instead of choosing at
+	configuration time) and then link specifically with the static libs
+	(instead of enumerating all the .o files directly)
+
+2024-07-08  Rudolf Hornig
+
+	* build: fix nanobind build process on Windows
+
+2024-07-08  Rudolf Hornig
+
+	* nanobind upgrade 1.7 -> 2.0
+
 2024-06-04  Rudolf Hornig
 
-	- Fix several issues while building scave Python bindings.
+	- build: Fix several issues while building scave Python bindings.
 	Introduced WITH_SCAVE_PYTHON_BINDINGS variable to control whether
 	Python scave bindings are built.
 

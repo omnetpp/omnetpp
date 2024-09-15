@@ -1,3 +1,13 @@
+2024-08-27  Attila Torok
+
+	* aloha: fix: Don't leave deleted messages as associated objects on figures.
+	This fixes crashes when clicking on the ring/circle figures, especially when
+	running in Fast mode.
+
+2024-07-24  Rudolf Hornig
+
+	* osg-indoor: fix: Removed m unit from playground parameters
+
 2024-06-24  Attila Torok
 
 	* resultfiles: Update/reset all charts to current template; add another

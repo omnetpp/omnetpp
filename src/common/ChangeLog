@@ -1,3 +1,21 @@
+2024-07-12  Levente Meszaros
+
+	* opp_typename(): Simplified storing demangled names.
+
+2024-07-04  Rudolf Hornig
+
+	* checked_int_cast(): fixed error on macOS.
+
+2024-07-02  Rudolf Hornig
+
+	* build: Turn off `backward` crash stack trace library on Windows,
+	as it does not provide a usable stacktrace with DWARF symbols.
+
+2024-05-29  Attila Torok
+
+	* QuantityFormatter: nit: Silence "-Wformat" warnings when printing
+	enums as ints.
+
 2023-01-09  Andras Varga
 
 	* fileutil.cc/h: added canonicalize()

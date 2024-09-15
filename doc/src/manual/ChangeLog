@@ -1,3 +1,8 @@
+2024-09-11  Andras Varga
+
+	* Appendix: updated with newly added `print-instantiated-ned-types` and
+	`print-unused-parameters` config options
+
 2024-06-07  Andras Varga
 
 	* Removed obsolete sections, refreshed list of profilers/sanitizers

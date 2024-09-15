@@ -30,6 +30,7 @@
 	- core/statistic_enum_n1.test
 	- core/statistic_enum_n2.test
 	- core/statistic_vector_1.test
+	- distro/*
 	- envir/qtenv_displaystringaccess_1.test
 	- makemake2/*
 

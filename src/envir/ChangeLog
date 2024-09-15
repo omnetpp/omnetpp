@@ -1,3 +1,7 @@
+2024-09-10  Andras Varga
+
+	* EnvirBase: follow cEnvir change: added getOutputStream().
+
 2024-05-27  Andras Varga
 
 	* Inifile parsing: Fix trailing space in section header causing parse
