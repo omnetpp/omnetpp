@@ -137,7 +137,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     copySelectionAction = new QAction(QIcon(":/tools/copy"), "&Copy", this);
     connect(copySelectionAction, SIGNAL(triggered()), textWidget, SLOT(copySelectionUnformatted()));
     copySelectionAction->setToolTip("Copy selected text to clipboard\nUse Ctrl+Shift+C to include formatting");
-    copySelectionAction->setShortcut(Qt::ControlModifier + Qt::Key_C);
+    copySelectionAction->setShortcuts({Qt::ControlModifier + Qt::Key_C, Qt::ControlModifier + Qt::Key_Insert});
     copySelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(copySelectionAction);
 
