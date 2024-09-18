@@ -946,8 +946,6 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
             drawLine(painter, lineIndex, x, y, false);
 
             painter.save();
-            auto metrics = painter.fontMetrics();
-
             painter.setClipRect(left - horizontalScrollOffset, y, right - left, lineSpacing);
             drawLine(painter, lineIndex, x, y, true);
             painter.restore();

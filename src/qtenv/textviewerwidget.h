@@ -157,8 +157,8 @@ protected:
 
 
     /**
-     * A mouse move event has occurred.  See if we should start autoscrolling.  If
-     * the move position is outside of the client area, initiate autoscrolling.
+     * A mouse move event has occurred. See if we should start autoscrolling.
+     * If the move position is outside of the client area, initiate autoscrolling.
      * Otherwise, we've moved back into the widget so end autoscrolling.
      */
     void doAutoScroll(QMouseEvent *event);
