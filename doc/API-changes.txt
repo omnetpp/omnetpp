@@ -88,6 +88,8 @@ OMNeT++ 6.1
         if the model contains a custom environment class that directly inherits
         from cEnvir, it may need to be adjusted.
 
+(!)     cEnvir: interface change: added getOutputStream().
+
 (!)     cFingerprintCalculator: interface change: addVectorResult() was split to
         registerVectorResult() and a (changed) addVectorResult(). Most models
         are not affected; but if the model includes a custom fingerprint
