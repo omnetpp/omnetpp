@@ -6,8 +6,8 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
-OMNeT++ 6.1 (July 2024)
------------------------
+OMNeT++ 6.1 (September 2024)
+----------------------------
 
 This update marks a significant refinement of OMNeT++ since version 6.0,
 impacting virtually every aspect of the simulation framework, including the IDE
@@ -123,6 +123,13 @@ Simulation kernel:
     with line numbers and source snippets on Linux, you must install
     `libdw-dev`, `libdw-devel`, or `elfutils`, depending on your package
     manager; see the Install Guide for specific instructions.
+
+  - Added two new configuration options: `print-instantiated-ned-types` prints
+    the names of all instantiated NED types at the end of the simulation,
+    facilitating the creation of coverage tests for model libraries; and
+    `print-unused-parameters` lists all NED parameters that have not been
+    accessed during the simulation, pointing to possible deficiencies in the
+    model.
 
   - Several smaller changes and improvements.
 
@@ -306,7 +313,7 @@ IDE General:
     (`.metadata/startup.bsh` ), which can be used for auto-importing projects
     and similar tasks.
 
-  - Upgrade to Eclipse 2024-06 (4.32), PyDev 11.1.0, CDT 11.6.
+  - Upgrade to Eclipse 2024-06 (4.32), PyDev 12.1, CDT 11.6.
 
 Python library:
 
