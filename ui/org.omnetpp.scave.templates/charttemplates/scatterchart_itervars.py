@@ -20,10 +20,7 @@ if df.empty:
 
 xaxis_itervar, group_by = utils.select_xaxis_and_groupby(df, props)
 
-try:
-    df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar])
-except:
-    raise chart.ChartScriptError(f"The values of the iteration variable for the X axis ({xaxis_itervar}) are not numeric.")
+df = utils.to_numeric(df, xaxis_itervar)
 
 confidence_level = utils.get_confidence_level(props)
 

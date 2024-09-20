@@ -36,15 +36,7 @@ utils.assert_columns_exist(df, [yaxis_itervar], "The iteration variable for the 
 if xaxis_itervar == yaxis_itervar:
     raise chart.ChartScriptError("The iteration variable for the X and Y axes cannot be the same: " + xaxis_itervar)
 
-try:
-    df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar])
-except:
-    raise chart.ChartScriptError(f"The values of the iteration variable for the X axis ({xaxis_itervar}) are not numeric.")
-
-try:
-    df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar])
-except:
-    raise chart.ChartScriptError(f"The values of the iteration variable for the Y axis ({yaxis_itervar}) are not numeric.")
+df = utils.to_numeric(df, [xaxis_itervar, yaxis_itervar])
 
 title_cols, legend_cols = utils.extract_label_columns(df, props)
 
