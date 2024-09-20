@@ -63,8 +63,8 @@ public class SyntaxHighlightHelper {
             docDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
             docKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_YELLOW)));
             docTagToken = new Token(new TextAttribute(ColorFactory.GREY31));
-            docPrivateDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_BLUE), null, SWT.ITALIC));
-            docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
+            docPrivateDefaultToken = new Token(new TextAttribute(ColorFactory.GREY31, null, SWT.ITALIC));
+            docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_YELLOW)));
             codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
             codeKeywordToken = new Token(new TextAttribute(ColorFactory.LIGHT_GOLDENROD4, null, SWT.BOLD));
             codeFunctionToken = new Token(new TextAttribute(ColorFactory.LIGHT_SLATE_BLUE));
