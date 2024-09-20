@@ -104,6 +104,6 @@ void RobustnessTester::refreshDisplay() const
 void RobustnessTester::throwException(const char *s) const
 {
     exceptionThrown = true;
-    throw cRuntimeError(s);
+    throw cRuntimeError("%s", s);
 }
 
