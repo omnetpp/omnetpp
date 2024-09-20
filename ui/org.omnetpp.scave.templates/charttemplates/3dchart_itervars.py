@@ -36,8 +36,7 @@ utils.assert_columns_exist(df, [yaxis_itervar], "The iteration variable for the 
 if xaxis_itervar == yaxis_itervar:
     raise chart.ChartScriptError("The itervar for the X and Y axes are the same: " + xaxis_itervar)
 
-df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
-df[yaxis_itervar] = pd.to_numeric(df[yaxis_itervar], errors="ignore")
+df = utils.to_numeric(df, [xaxis_itervar, yaxis_itervar])
 
 title_cols, legend_cols = utils.extract_label_columns(df, props)
 

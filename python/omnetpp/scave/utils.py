@@ -1733,8 +1733,7 @@ def pivot_for_barchart(df, groups, series, confidence_level=None, sort=True):
 
     -  A triplet of DataFrames containing the pivoted data: (values, errors, metadata)
     """
-    for c in groups + series:
-        df[c] = pd.to_numeric(df[c], errors="ignore")
+    df = to_numeric(df, groups + series)
 
     if sort:
         df.sort_values(by=groups+series, axis='index', inplace=True)
@@ -1790,11 +1789,7 @@ def pivot_for_scatterchart(df, xaxis_itervar, group_by, confidence_level=None):
     -  A DataFrame containing the pivoted data, with these columns:
        `name`, `x`, `y`, and optionally `error` - if `confidence_level` is given.
     """
-
-    for gb in group_by:
-        df[gb] = pd.to_numeric(df[gb], errors="ignore")
-
-    df[xaxis_itervar] = pd.to_numeric(df[xaxis_itervar], errors="ignore")
+    df = to_numeric(df, group_by + [xaxis_itervar])
 
     newdf = pd.DataFrame()
     if confidence_level is None:
@@ -2267,7 +2262,7 @@ def assert_columns_exist(df, cols, message="Expected column missing from DataFra
             raise chart.ChartScriptError(message + ": " + c)
 
 
-def to_numeric(df, columns=None, errors="ignore", downcast=None):
+def to_numeric(df, columns=list()):
     """
     Convenience function. Runs `pandas.to_numeric` on the given
     (or all) columns of `df`. If any of the given columns doesn't
@@ -2276,11 +2271,16 @@ def to_numeric(df, columns=None, errors="ignore", downcast=None):
     Parameters:
 
     - `df` (DataFrame): The DataFrame to operate on
-    - `columns` (list of strings): The list of column names to convert.
-      If not given, all columns will be converted.
-    - `errors`, `downcast` (string): Will be passed to `pandas.to_numeric()`
+    - `columns` (string or list of strings): The column name or list of
+       column names to convert. If not given, all columns will be converted.
     """
+    if not columns:
+        columns = list(df.columns.values)
+
     df = df.copy()
+
+    if not isinstance(columns, list):
+        columns = [columns]
 
     if columns:
         assert_columns_exist(df, columns)
@@ -2288,7 +2288,11 @@ def to_numeric(df, columns=None, errors="ignore", downcast=None):
         columns = df.columns.values
 
     for c in columns:
-        df[c] = pd.to_numeric(df[c], errors=errors, downcast=downcast)
+        # Attempt to convert the entire column to numeric, but store the result separately
+        numeric_data = pd.to_numeric(df[c], errors='coerce')
+
+        # Update only the successfully converted (non-NaN) values back into the DataFrame
+        df.loc[numeric_data.notna(), c] = numeric_data[numeric_data.notna()]
 
     return df
 
