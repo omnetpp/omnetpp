@@ -325,8 +325,8 @@ class FingerprintTestCase(SimulationTestCase):
         # run the simulation
         workingdir = _iif(self.wd.startswith('/'), rootDir + "/" + self.wd, self.wd)
         wdname = '' + self.wd + ' ' + self.cmdLine
-        wdname = re.sub('/', '_', wdname)
-        wdname = re.sub('[\W]+', '_', wdname)
+        wdname = re.sub(r'/', '_', wdname)
+        wdname = re.sub(r'[\W]+', '_', wdname)
         resultdir = os.path.abspath(".") + "/results/" + self.csvFile + "/" + wdname
         ensure_dir(resultdir)
 
