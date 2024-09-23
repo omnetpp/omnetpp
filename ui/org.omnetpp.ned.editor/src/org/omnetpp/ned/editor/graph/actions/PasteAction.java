@@ -138,7 +138,7 @@ public class PasteAction extends SelectionAction {
         GraphicalViewer graphicalViewer = getGraphicalViewer();
         graphicalViewer.getRootEditPart().refresh();
         getGraphicalViewer().deselectAll();
-        Map<INedElement,EditPart> editPartRegistry = graphicalViewer.getEditPartRegistry();
+        Map<Object,EditPart> editPartRegistry = graphicalViewer.getEditPartRegistry();
         for (INedElement element : pastedElements) {
             EditPart editPart = editPartRegistry.get(element);
             if (editPart != null)
