@@ -29,7 +29,7 @@ RUN git config --global --add safe.directory /root/omnetpp-repo/.git
 #RUN git checkout master && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -Dwhat=omnetpp -fn || true)) ; rm -rf $OMNETPP_DIR
 
 # we dummy build the IDE and then delete the whole OMNeT++ source, so as a side effect the maven cache will be updated
-RUN git checkout master && \
+RUN git checkout omnetpp-6.x && \
     cp configure.user.dist configure.user && \
     source ./setenv -f && \
     ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \

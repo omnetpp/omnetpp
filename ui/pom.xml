@@ -8,9 +8,9 @@
    <properties>
       <tycho.version>4.0.8</tycho.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <eclipse-repo.url>https://download.eclipse.org/releases/2024-06</eclipse-repo.url>
+      <eclipse-repo.url>https://download.eclipse.org/releases/2024-09</eclipse-repo.url>
       <justj-repo.url>https://download.eclipse.org/justj/jres/21/updates/release/</justj-repo.url>
-      <pydev-repo.url>http://pydev.sourceforge.net/pydev_update_site/12.1.0</pydev-repo.url>
+      <pydev-repo.url>http://pydev.sourceforge.net/pydev_update_site/12.2.0</pydev-repo.url>
    </properties>
 
    <repositories>

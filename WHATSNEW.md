@@ -313,7 +313,7 @@ IDE General:
     (`.metadata/startup.bsh` ), which can be used for auto-importing projects
     and similar tasks.
 
-  - Upgrade to Eclipse 2024-06 (4.32), PyDev 12.1, CDT 11.6.
+  - Upgrade to Eclipse 2024-09 (4.33), PyDev 12.2, CDT 11.6.
 
 Python library:
 
