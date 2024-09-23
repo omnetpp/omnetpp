@@ -62,7 +62,6 @@ import org.eclipse.gef.ui.palette.PaletteEditPartFactory;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerPreferences;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
-import org.eclipse.gef.ui.palette.editparts.PaletteAnimator;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
@@ -894,7 +893,7 @@ public class GraphicalNedEditor
      * @author levy
      */
     private final class LocalDrawerEditPart extends DrawerEditPart {
-        private final class LocalDrawerFigure extends DrawerFigure {
+        private class LocalDrawerFigure extends DrawerFigure {
             private final int ICON_WIDTH = 16;
             private final int ICON_SPACING = 2;
             private String oldText;
@@ -1010,22 +1009,23 @@ public class GraphicalNedEditor
 
         @Override
         public IFigure createFigure() {
-            DrawerFigure figure = new LocalDrawerFigure((Composite)getViewer().getControl());
+            DrawerFigure fig = new LocalDrawerFigure((Composite)getViewer().getControl());
 
-            // the following is copied over from the superclass'es constructor
-            figure.setExpanded(((PaletteDrawer)getModel()).isInitiallyOpen());
-            figure.setPinned(((PaletteDrawer)getModel()).isInitiallyPinned());
+            // the following is copied over from the superclass'es createFigure() function
+            // it may require updating if the superclass changes
+            fig.setExpanded(getModel().isInitiallyOpen());
+            fig.setPinned(getModel().isInitiallyPinned());
 
-            figure.getCollapseToggle().addFocusListener(new FocusListener.Stub() {
+            fig.getCollapseToggle().addFocusListener(new FocusListener.Stub() {
                 @Override
                 public void focusGained(FocusEvent fe) {
                     getViewer().select(LocalDrawerEditPart.this);
                 }
             });
 
-            figure.getScrollpane().getContents().addLayoutListener((PaletteAnimator)getViewer().getEditPartRegistry().get(PaletteAnimator.class));
+            fig.getScrollpane().getContents().addLayoutListener(getViewer().getPaletteAnimator());
 
-            return figure;
+            return fig;
         }
     }
 
