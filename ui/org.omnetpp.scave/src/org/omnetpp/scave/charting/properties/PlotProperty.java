@@ -51,7 +51,7 @@ public enum PlotProperty {
     PROP_GRID("Axes.Grid", ShowGrid.class, ShowGrid.Major),
     PROP_GRID_COLOR("Axes.GridColor", Color.class, ColorFactory.GREY80),
     PROP_INSETS_LINE_COLOR("Insets.LineColor", Color.class, ColorFactory.BLACK),
-    PROP_INSETS_BACKGROUND_COLOR("Insets.BackgroundColor", Color.class, Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND)),
+    PROP_INSETS_BACKGROUND_COLOR("Insets.BackgroundColor", Color.class, ColorFactory.GREY96),
     // Legend
     PROP_DISPLAY_LEGEND("Legend.Display", Boolean.class, true),
     PROP_LEGEND_BORDER("Legend.Border", Boolean.class, false),
