@@ -206,12 +206,14 @@ contains "Qtenv : Qt-based graphical user interface" yes
 (runtest makemake)
 
 #########################################
-# check building with OSGEARTH
-CFG=with_osgearth
-(WITH_OSG=yes WITH_OSGEARTH=yes compile)
-(TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
-(TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
-(runtest makemake)
+# check building with OSGEARTH, if available
+if which osgearth_version > /dev/null 2>&1; then
+    CFG=with_osgearth
+    (WITH_OSG=yes WITH_OSGEARTH=yes compile)
+    (TEST_PROG="opp_run -v" contains "WITH_OSG" yes)
+    (TEST_PROG="opp_run -v" contains "WITH_OSGEARTH" yes)
+    (runtest makemake)
+fi
 
 #########################################
 # check building without OSG and OSGEARTH
