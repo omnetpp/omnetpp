@@ -139,7 +139,7 @@ export OMNETPP_IMAGE_PATH="$dir/images:$OMNETPP_IMAGE_PATH"
 export HOSTNAME
 export HOST
 export QT_SELECT=5 # on systems with qtchooser, switch to Qt5
-export QT_LOGGING_RULES='*.debug=false;qt.qpa.*=false' # disable some qt logging
+export QT_LOGGING_RULES='*.warning=false;qt.qpa.*=false' # disable some qt logging
 
 export OMNETPP_RELEASE=$(cat $dir/Version)
 export __omnetpp_root_dir=$dir
