@@ -247,7 +247,7 @@ charts += make_charts(
         case("markersize", ["3","10"], props={"marker":".", "drawstyle":"none"}),
 
         # misc
-        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("plt.style", ["default", "ggplot", "grayscale"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
         case("cycle_seed", ["0", "1"], None)
     ]
 )
@@ -316,7 +316,7 @@ charts += make_charts(
         case("markersize", ["3","10"], props={"marker":"."}),
 
         # misc
-        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("plt.style", ["default", "ggplot", "grayscale"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
         case("cycle_seed", ["0", "1"], None)
 
     ]
@@ -368,7 +368,7 @@ charts += make_charts(
         case("show_overflows", ["false", "true"]),
 
         # misc
-        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("plt.style", ["default", "ggplot", "grayscale"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
         case("cycle_seed", ["0", "1"], None)
 
 
@@ -431,7 +431,7 @@ charts += make_charts(
         case("show_overflows", ["false", "true"]),
 
         # misc
-        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("plt.style", ["default", "ggplot", "grayscale"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
         case("cycle_seed", ["0", "1"], None)
     ]
 )
@@ -516,7 +516,7 @@ charts += make_charts(
         case("legend_placement", legend_placement_inside + legend_placement_outside, only_for="linechart_native"),
 
         # misc
-        case("plt.style", ["default", "ggplot", "grayscale", "seaborn"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
+        case("plt.style", ["default", "ggplot", "grayscale"], only_for=["linechart_mpl", "linechart_separate_mpl"]),
         case("cycle_seed", ["0", "1"], None)
     ]
 )
