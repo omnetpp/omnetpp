@@ -14,6 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "omnetpp/platdep/config.h"
+
 #ifdef WITH_MPI
 
 #ifndef __OMNETPP_CMPICOMMBUFFER_H

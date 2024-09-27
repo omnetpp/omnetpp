@@ -19,6 +19,7 @@
 #include "cproxygate.h"
 
 #include <cstdio>
+#include "omnetpp/platdep/config.h" // for WITH_MPI
 #include "cfilecomm.h"
 #include "cnamedpipecomm.h"
 #include "cmpicomm.h"
