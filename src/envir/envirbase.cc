@@ -1589,7 +1589,7 @@ void EnvirBase::setupRNGMapping(cComponent *component)
             if (*endptr != '\0') {
                 // not a numeric constant, try parsing it as an expression
                 cDynamicExpression expr;
-                expr.parse(value);
+                expr.parseNedExpr(value);
                 cExpression::Context context(component, entry.getBaseDirectory());
                 cValue tmp = expr.evaluate(&context);
                 if (!tmp.isNumeric())
