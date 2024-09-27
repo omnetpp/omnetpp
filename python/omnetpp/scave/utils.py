@@ -481,11 +481,35 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
         df.sort_index(axis="index", inplace=True)
 
     if errors_df is not None:
-        errors_df.sort_index(axis="columns", inplace=True)
-        errors_df.sort_index(axis="index", inplace=True)
+        assert df.shape == errors_df.shape
 
-        assert(df.columns.equals(errors_df.columns))
-        assert(df.index.equals(errors_df.index))
+        if not df.columns.equals(errors_df.columns):
+            # check whether the values in the column headers are the same
+            # in the data and error DataFrames (in perhaps different order)
+            assert set(df.columns) == set(errors_df.columns)
+            # check whether the values in the column headers are unique
+            # in both the data and error DataFrames
+            assert len(df.columns) == len(df.columns.unique())
+            assert len(errors_df.columns) == len(errors_df.columns.unique())
+
+            # put the errors_df columns  into the same order as in the data df
+            def column_key(col):
+                return [list(df.columns).index(c) for c in col]
+            errors_df.sort_index(axis="columns", inplace=True, key=column_key)
+
+        assert df.columns.equals(errors_df.columns)
+
+        # Now the same again, but with rows instead of columns.
+        if not df.index.equals(errors_df.index):
+            assert set(df.index) == set(errors_df.index)
+            assert len(df.index) == len(df.index.unique())
+            assert len(errors_df.index) == len(errors_df.index.unique())
+
+            def index_key(index):
+                return [list(df.index).index(i) for i in index]
+            errors_df.sort_index(axis="index", inplace=True, key=index_key)
+
+        assert df.index.equals(errors_df.index)
 
     title_cols, legend_cols = extract_label_columns(meta_df.reset_index(), props)
 
