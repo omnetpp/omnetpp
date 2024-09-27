@@ -52,6 +52,7 @@
 #include "omnetpp/cnedfunction.h"
 #include "omnetpp/regmacros.h"
 #include "omnetpp/simtime.h"
+#include "omnetpp/platdep/config.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "omnetpp/cstatisticbuilder.h"
 #include "omnetpp/fileline.h"
