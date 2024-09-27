@@ -1,0 +1,81 @@
+%description:
+Test that the `seed-%-rng` option allows wildcards and numeric ranges to be specified in the key.
+Incidentally, it also tests that the `rng-%` option allows NED expressions (e.g. `index`)
+as value.
+
+Method:
+- set up a module array where every node should have its own RNG
+- assign seed=1 to node[0], seed=2 to node[1..5], and seed=3 to node[6..9]
+- we assign random values to the `rand` parameter of each node; in the nodes
+  that were assigned the same seed, the random values should be the same.
+
+Note that RNG seed cannot be read from C++
+
+%file: test.ned
+import testlib.Dump;
+
+module Node {
+    int rand = intuniform(0,1000);
+}
+
+network Test {
+    submodules:
+        node[10]: Node;
+        dump: Dump;
+}
+
+%inifile: test.ini
+num-rngs = 10
+*.node[*].rng-0 = index
+
+seed-0-mt = 1
+seed-{..5}-mt = 2
+seed-*-mt = 3
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.node[0]: Node {
+            parameters:
+                rand = 37
+        }
+        module Test.node[1]: Node {
+            parameters:
+                rand = 168
+        }
+        module Test.node[2]: Node {
+            parameters:
+                rand = 168
+        }
+        module Test.node[3]: Node {
+            parameters:
+                rand = 168
+        }
+        module Test.node[4]: Node {
+            parameters:
+                rand = 168
+        }
+        module Test.node[5]: Node {
+            parameters:
+                rand = 168
+        }
+        module Test.node[6]: Node {
+            parameters:
+                rand = 874
+        }
+        module Test.node[7]: Node {
+            parameters:
+                rand = 874
+        }
+        module Test.node[8]: Node {
+            parameters:
+                rand = 874
+        }
+        module Test.node[9]: Node {
+            parameters:
+                rand = 874
+        }
+}
+

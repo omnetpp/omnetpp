@@ -139,7 +139,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     std::string runId;
 
     std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
-    std::map<std::string,Entry> config; // config entries (i.e. keys not containing a dot or wildcard)
+    SuffixBin config; // config entries (i.e. keys not containing a dot)
     std::map<std::string,SuffixBin> suffixBins;  // bins for each non-wildcard suffix
     SuffixBin wildcardSuffixBin; // bin for entries that contain wildcards
 

@@ -143,7 +143,7 @@ void SectionBasedConfiguration::clear()
     activeConfig = "";
     activeRunNumber = 0;
     entries.clear();
-    config.clear();
+    config.entries.clear();
     suffixBins.clear();
     wildcardSuffixBin.entries.clear();
     variables.clear();
@@ -862,15 +862,32 @@ static int selectNext(const SectionChainList& sectionChains)
     return -1;
 }
 
+static const char *findLastDot(const char *key)
+{
+    // ignore dots inside [] and {} pairs, such as those in `[0..5]`
+    const char *lastDot = nullptr;
+    char closer = '\0';
+    for (const char *p = key; *p; ++p) {
+        if (!closer && (*p == '[' || *p == '{'))
+            closer = *p == '[' ? ']' : '}';
+        else if (*p == closer)
+            closer = '\0';
+        else if (!closer && *p == '.')
+            lastDot = p;
+    }
+    return lastDot;
+}
+
 void SectionBasedConfiguration::addEntry(const Entry& entry)
 {
     entries.push_back(entry);
     const std::string& key = entry.key;
-    const char *lastDot = strrchr(key.c_str(), '.');
-    if (!lastDot && !PatternMatcher::containsWildcards(key.c_str())) {
-        // config: add if not already in there
-        if (config.find(key) == config.end())
-            config[key] = entry;
+    const char *lastDot = findLastDot(key.c_str());
+    if (!lastDot) {
+        MatchableEntry entry2(entry);
+        if (PatternMatcher::containsWildcards(key.c_str()))
+            entry2.suffixPattern = new PatternMatcher(key.c_str(), true, true, true);
+        config.entries.push_back(entry2);
     }
     else {
         // key contains wildcard or dot: parameter or per-object configuration
@@ -923,7 +940,7 @@ void SectionBasedConfiguration::splitKey(const char *key, std::string& outOwnerN
 {
     std::string tmp = key;
 
-    const char *lastDotPos = strrchr(key, '.');
+    const char *lastDotPos = findLastDot(key);
     const char *doubleAsterisk = !lastDotPos ? nullptr : strstr(lastDotPos, "**");
 
     if (!lastDotPos || doubleAsterisk) {
@@ -1194,14 +1211,18 @@ bool SectionBasedConfiguration::isIgnorableConfigKey(const char *ignoredKeyPatte
 
 const char *SectionBasedConfiguration::getConfigValue(const char *key) const
 {
-    std::map<std::string, Entry>::const_iterator it = config.find(key);
-    return it == config.end() ? nullptr : it->second.value.c_str();
+    for (const auto & entry : config.entries)
+        if (entry.suffixPattern ? entry.suffixPattern->matches(key) : opp_streq(entry.key.c_str(), key))
+            return entry.value.c_str();
+    return nullptr;
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getConfigEntry(const char *key) const
 {
-    std::map<std::string, Entry>::const_iterator it = config.find(key);
-    return it == config.end() ? (const KeyValue&)nullEntry : (const KeyValue&)it->second;
+    for (const auto & entry : config.entries)
+        if (entry.suffixPattern ? entry.suffixPattern->matches(key) : opp_streq(entry.key.c_str(), key))
+            return (const KeyValue&)entry;
+    return (const KeyValue&)nullEntry;
 }
 
 std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const char *pattern) const
@@ -1209,10 +1230,9 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
     std::vector<const char *> result;
     PatternMatcher matcher(pattern, true, true, true);
 
-    // iterate over the map -- this is going to be sloooow...
-    for (const auto & it : config)
-        if (matcher.matches(it.first.c_str()))
-            result.push_back(it.first.c_str());
+    for (const auto & entry : config.entries)
+        if (matcher.matches(entry.key.c_str()))
+            result.push_back(entry.key.c_str());
     return result;
 }
 
@@ -1369,8 +1389,8 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 void SectionBasedConfiguration::dump() const
 {
     printf("Config:\n");
-    for (const auto & it : config)
-        printf("  %s = %s\n", it.first.c_str(), it.second.value.c_str());
+    for (const auto & entry : config.entries)
+        printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
 
     for (const auto & suffixBin : suffixBins) {
         const std::string& suffix = suffixBin.first;
