@@ -588,7 +588,7 @@ public final class InifileAnalyzer {
         if (e == null) {
             if (OBSOLETE_OPTIONS.containsKey(key))
                 markers.addError(section, key, OBSOLETE_OPTIONS.get(key));
-            else if (!key.matches("[a-zA-Z0-9-_]+"))
+            else if (!key.matches("[a-zA-Z0-9-_*{}.]+"))
                 markers.addError(section, key, "Syntax error in configuration option: "+key);
             else if (ConfigRegistry.getIgnoredOptions().contains(key))
                 markers.addInfo(section, key, "Known custom configuration option (see Preferences): "+key);
@@ -1226,8 +1226,9 @@ public final class InifileAnalyzer {
     }
 
     protected void validatePerObjectConfig(String section, String key, INedTypeResolver ned) {
-        Assert.isTrue(key.lastIndexOf('.') > 0);
-        String optionName = key.substring(key.lastIndexOf('.')+1);
+        int indexOfLastDot = InifileUtils.findLastDot(key);
+        Assert.isTrue(indexOfLastDot > 0);
+        String optionName = key.substring(indexOfLastDot+1);
         ConfigOption e = ConfigRegistry.getPerObjectOption(optionName);
         if (e == null) {
             if (OBSOLETE_OPTIONS.containsKey(optionName))
@@ -1390,8 +1391,9 @@ public final class InifileAnalyzer {
                         String fullPath = paramResolution.fullPath;
                         String paramAssignment = paramResolution.paramAssignment != null ? paramResolution.paramAssignment.getName() : paramResolution.paramDeclaration.getName();
 
+                        int indexOfLastDot = InifileUtils.findLastDot(fullPath);
                         if (paramAssignment.indexOf('.') != -1)
-                            fullPath = fullPath.substring(0, fullPath.lastIndexOf('.'));
+                            fullPath = fullPath.substring(0, indexOfLastDot);
 
                         paramPattern = fullPath + "." + paramAssignment;
                     }

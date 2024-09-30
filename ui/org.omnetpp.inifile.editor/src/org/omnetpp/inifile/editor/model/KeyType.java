@@ -12,7 +12,8 @@ public enum KeyType {
      * Classify an inifile key, based on its syntax.
      */
     public static KeyType getKeyType(String key) {
-        if (!key.contains("."))
+        int indexOfLastDot = InifileUtils.findLastDot(key);
+        if (indexOfLastDot == -1)
             return CONFIG;  // contains no dot
         else if (!key.contains("-") && !key.endsWith("."+ConfigRegistry.TYPENAME))
             return PARAM; // contains dot, but no hyphen

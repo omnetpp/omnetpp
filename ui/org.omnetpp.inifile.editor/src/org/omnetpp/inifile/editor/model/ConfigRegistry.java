@@ -110,15 +110,11 @@ public class ConfigRegistry {
     }
 
     private static ConfigOption lookupWildcardConfigOption(Map<String, ConfigOption> map, String key) {
-        // config keys may contain wildcards: '*' (any string) and '%' (numeric string)
-        for (ConfigOption e : map.values()) {
-            if (e.containsWildcard()) {
-                String pattern = e.getName().replace("*", ".+").replace("%", "[0-9]+");
-                if (key.matches(pattern))
-                    return e;
-            }
-        }
-        return null;
+        // Declared config keys may contain '%' (for numeric string), such as "seed-%-mt". '%' only occurs after hyphen.
+        // In ini files, the '%' part may be replaced with wildcards or numeric ranges, such as "seed-*-mt" or "seed-{5..10}-mt".
+        String declaredKey = key.replaceAll("-(\\d+|\\*|\\{.*?\\})", "-%");
+        ConfigOption e = options.get(declaredKey);
+        return e;
     }
 
     /**

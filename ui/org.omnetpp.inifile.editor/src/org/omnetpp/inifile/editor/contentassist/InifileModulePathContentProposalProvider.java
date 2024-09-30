@@ -80,7 +80,7 @@ public class InifileModulePathContentProposalProvider extends ContentProposalPro
             Set<String> otherProposals = new HashSet<String>();
 
             // find last "**" or "." ==> (part1,rest)
-            int lastDotPos = prefix.lastIndexOf('.');
+            int lastDotPos = InifileUtils.findLastDot(prefix);
             int lastXXPos = prefix.lastIndexOf("**");
             int restPos = Math.max(lastDotPos==-1 ? 0 : lastDotPos+1, lastXXPos==-1 ? 0 : lastXXPos+2);
             String prefixPart1 = prefix.substring(0, restPos);  // if no dot or **, prefixPart1 will be ""

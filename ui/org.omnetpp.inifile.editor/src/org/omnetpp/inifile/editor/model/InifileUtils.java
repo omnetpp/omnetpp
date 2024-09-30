@@ -179,6 +179,26 @@ public class InifileUtils {
     }
 
     /**
+     * Find position of the last dot within the string key,
+     * ignoring dots inside [] and {} pairs, such as those in `[0..5]`.
+     * Returns -1 of not found.
+     */
+    public static int findLastDot(String key) {
+        int lastDot = -1;
+        char closer = '\0';
+        for (int p = 0; p < key.length(); p++) {
+            char ch = key.charAt(p);
+            if (closer == '\0' && (ch == '[' || ch == '{'))
+                closer = ch == '[' ? ']' : '}';
+            else if (ch == closer)
+                closer = '\0';
+            else if (closer == '\0' && ch == '.')
+                lastDot = p;
+        }
+        return lastDot;
+    }
+
+    /**
      * Resolves the run-time NED type of a "like" submodule, using the parameter
      * settings in the inifile. Returns null if the lookup is unsuccessful.
      */

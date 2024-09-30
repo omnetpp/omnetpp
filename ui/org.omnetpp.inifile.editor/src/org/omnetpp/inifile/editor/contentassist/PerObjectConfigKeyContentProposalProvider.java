@@ -66,8 +66,9 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
     @Override
     protected List<IContentProposal> getProposalCandidates(String prefix) {
         ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
-        if (section != null && prefix.contains(".")) {
-            String prefixBase = prefix.substring(0, prefix.lastIndexOf('.'));
+        int indexOfLastDot = InifileUtils.findLastDot(prefix);
+        if (section != null && indexOfLastDot >= 0) {
+            String prefixBase = prefix.substring(0, indexOfLastDot);
             Set<ObjectKind> possibleObjectKinds = getPossibleObjectKinds(prefixBase);
             for (ConfigOption e : ConfigRegistry.getPerObjectOptions()) {
                 if (possibleObjectKinds.contains(e.getObjectKind())) {
@@ -172,7 +173,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
         // then assume that it is the name of a scalar or vector.
         // Also add SCALAR and VECTOR to the possibilities if pattern ends with '**'.
         if ((objectKinds.isEmpty() && objectNamePattern.contains(".")) || objectNamePattern.endsWith("**")) {
-            int index = objectNamePattern.lastIndexOf('.');
+            int index = InifileUtils.findLastDot(objectNamePattern);
             String modulePrefix = index >= 0 ? objectNamePattern.substring(0, index) : objectNamePattern;
             PatternMatcher modulePattern = new PatternMatcher(modulePrefix, true, true, true);
             Map<String,ISubmoduleOrConnection> parentModules = ParamCollector.collectModules(doc, section, modulePattern, resolver, null);
