@@ -1,0 +1,121 @@
+name: Build release
+
+on:
+  push:
+    branches:
+      - "master"
+      - "omnetpp-6.x"
+  pull_request:
+    branches:
+      - "master"
+      - "omnetpp-6.x"
+  workflow_dispatch:
+    # allows manual execution
+
+jobs:
+  build_ide:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build IDE
+        working-directory: releng
+        run: ./build-omnetpp-in-docker
+
+      # These have to be separate steps in order for the builds to be in their own artifacts
+      - name: Upload Linux build
+        uses: actions/upload-artifact@v4
+        with: { name: linux-x86_64, path: releng/dist/*linux-x86_64* }
+
+      - name: Upload macOS build
+        uses: actions/upload-artifact@v4
+        with: { name: macos-aarch64, path: releng/dist/*macos-aarch64* }
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with: { name: windows-x86_64, path: releng/dist/*windows-x86_64* }
+
+  install_natively:
+    needs: build_ide
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, build: linux-x86_64, preinstall_cmd: "sudo apt update" }
+          - { os: macos-14, build: macos-aarch64 }
+          - { os: windows-latest, build: windows-x86_64 }
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/download-artifact@v4
+        name: Download release
+        with:
+          name: ${{ matrix.build }}
+
+      - uses: msys2/setup-msys2@v2
+        if: matrix.os == 'windows-latest'
+        name: Setup MSYS
+        with:
+          install: unzip
+
+      - name: Install release (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: msys2 {0} # Can't be set with an expression using the matrix unfortunately
+        run: |
+          unzip *${{ matrix.build }}*
+          cd omnetpp-6.1
+          ./install.sh -y
+          source setenv
+          cd samples/aloha
+          ./aloha -u Cmdenv -c PureAloha1 --sim-time-limit=10s
+
+      - name: Install release (non-Windows)
+        if: matrix.os != 'windows-latest'
+        run: |
+          tar -xf *${{ matrix.build }}*
+          cd omnetpp-6.1
+          ${{ matrix.preinstall_cmd }}
+          ./install.sh -y
+          source setenv
+          cd samples/aloha
+          ./aloha -u Cmdenv -c PureAloha1 --sim-time-limit=10s
+
+  install_in_docker:
+    needs: build_ide
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { image: "ubuntu:latest", preinstall_cmd: "apt update" }
+          - { image: "fedora:latest" }
+          - { image: "archlinux:latest", preinstall_cmd: "pacman -Syy" }
+          - { image: "opensuse/tumbleweed:latest", preinstall_cmd: "zypper refresh" }
+          - { image: "almalinux:9", install_opts: "--no-3d" }
+          - { image: "debian:latest", preinstall_cmd: "apt update" }
+
+    steps:
+      - uses: actions/download-artifact@v4
+        name: Download release
+        with:
+          name: linux-x86_64
+
+      - name: Install release
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ matrix.image }}
+          options: -v ${{ github.workspace }}:/omnetpp
+          shell: bash
+          run: |
+            cd /omnetpp
+            tar -xf *linux-x86_64.tgz
+            cd omnetpp-6.1
+            ${{ matrix.preinstall_cmd }}
+            ./install.sh -y ${{ matrix.install_opts }}
+            source setenv
+            cd samples/aloha
+            ./aloha -u Cmdenv -c PureAloha1 --sim-time-limit=10s
