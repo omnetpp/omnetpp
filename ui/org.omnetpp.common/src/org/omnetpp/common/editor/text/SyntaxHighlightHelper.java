@@ -47,12 +47,12 @@ public class SyntaxHighlightHelper {
     public static IToken docTagToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED)));
     public static IToken docPrivateDefaultToken = new Token(new TextAttribute(ColorFactory.GREY80, null, SWT.ITALIC));
     public static IToken docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE)));
-    public static IToken codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+    public static IToken codeDefaultToken = new Token(new TextAttribute(ColorFactory.GREY10, null, SWT.ITALIC));
     public static IToken codeKeywordToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_RED), null, SWT.BOLD));
     public static IToken codeFunctionToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_MAGENTA)));
     public static IToken codeTypeToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_BLUE), null, SWT.BOLD));
-    public static IToken codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
-    public static IToken codePropertyToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND), null, SWT.BOLD));
+    public static IToken codeIdentifierToken = new Token(new TextAttribute(ColorFactory.GREY10));
+    public static IToken codePropertyToken = new Token(new TextAttribute(ColorFactory.GREY10, null, SWT.BOLD));
     public static IToken codeStringToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
     public static IToken codeNumberToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GREEN)));
 
@@ -65,11 +65,11 @@ public class SyntaxHighlightHelper {
             docTagToken = new Token(new TextAttribute(ColorFactory.GREY31));
             docPrivateDefaultToken = new Token(new TextAttribute(ColorFactory.GREY31, null, SWT.ITALIC));
             docPrivateTodoToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_YELLOW)));
-            codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+            codeDefaultToken = new Token(new TextAttribute(ColorFactory.GREY80));
             codeKeywordToken = new Token(new TextAttribute(ColorFactory.LIGHT_GOLDENROD4, null, SWT.BOLD));
             codeFunctionToken = new Token(new TextAttribute(ColorFactory.LIGHT_SLATE_BLUE));
             codeTypeToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
-            codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+            codeIdentifierToken = new Token(new TextAttribute(ColorFactory.GREY80));
             codePropertyToken = new Token(new TextAttribute(ColorFactory.KHAKI3, null, SWT.BOLD));
             codeStringToken = new Token(new TextAttribute(ColorFactory.PALE_GREEN3));
             codeNumberToken = new Token(new TextAttribute(ColorFactory.PALE_GREEN3));
