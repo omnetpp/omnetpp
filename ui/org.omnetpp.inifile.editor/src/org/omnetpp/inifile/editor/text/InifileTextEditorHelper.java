@@ -93,8 +93,8 @@ public class InifileTextEditorHelper {
     static {
         if (DisplayUtils.isDarkTheme()) {
             commentToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_GRAY), null, SWT.ITALIC));
-            codeDefaultToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
-            codeIdentifierToken = new Token(new TextAttribute(getColor(SWT.COLOR_WIDGET_FOREGROUND)));
+            codeDefaultToken = new Token(new TextAttribute(ColorFactory.GREY80));
+            codeIdentifierToken = new Token(new TextAttribute(ColorFactory.GREY80));
             codeConfigKeyToken = new Token(new TextAttribute(getColor(SWT.COLOR_DARK_CYAN), null, SWT.BOLD));
             codeKeywordToken = new Token(new TextAttribute(ColorFactory.KHAKI3, null, SWT.BOLD));
             codeFunctionToken = new Token(new TextAttribute(ColorFactory.LIGHT_SLATE_BLUE));
