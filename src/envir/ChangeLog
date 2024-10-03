@@ -1,3 +1,25 @@
+2024-09-27  Attila Torok
+
+	* EnvirBase: fix: Make the MPI implementation of parsim actually get built
+	in when available and requested, by adding missing inclusions of
+	platdep/config.h before any WITH_MPI (or WITH_PARSIM) macro usages.
+
+2024-09-27  Andras Varga
+
+	* Accept wildcards in config names, e.g. `seed-*-mt`. In
+	SectionBasedConfiguration, instead of storing config entries in a plain map,
+	use a matcher list and first-match lookup.
+
+	Also, for numeric ranges (e.g. `seed-{0..5}-mt` ) to work, dots between
+	braces/brackets need to be ignored when looking for the last dot to separate
+	path and suffix part.
+
+2024-09-27  Andras Varga
+
+	* EvnvirBase: fix: make `*.host[*].rng-0 = index` work in omnetpp.ini.
+	`index` was not recognized ("no such variable")
+-
+
 2024-09-10  Andras Varga
 
 	* EnvirBase: follow cEnvir change: added getOutputStream().

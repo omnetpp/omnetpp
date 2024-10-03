@@ -14,6 +14,7 @@
 	- common/unitconversion_bestUnit_options_1.test
 	- core/cEnum_registration_1.test
 	- core/cEnum_registration_2.test
+	- core/envir_rng_seed_wildcards_1.test
 	- core/msg_enum_4.test
 	- core/NED_display_n7.test
 	- core/NED_inheritance_unresolved_n1.test

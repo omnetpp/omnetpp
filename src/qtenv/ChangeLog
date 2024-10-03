@@ -1,3 +1,12 @@
+2024-09-17  Attila Torok
+
+	* Feature: Add Ctrl+Insert as another hotkey for copying in LogInspector
+
+2021-01-26  Attila Torok
+
+	* Don't try to save the event/line index if there is no inspected object.
+	This can't succeed anyways, and can result in a crash on network rebuild.
+
 2024-09-06  Attila Torok
 
 	* Code cosmetics, based on changes generated via LLM technology

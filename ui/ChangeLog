@@ -1,4 +1,32 @@
-2024-09-11  Rudolf Hornig
+2024-10-02  Rudolf Hornig
+
+	* Inifile Editor, NED editor: fix editor foreground color on Windows in dark mode
+
+2024-09-30  Andras Varga
+
+	* Inifile Editor: Proper support for "seed-%-mt" and other options containing "%".
+	Now it recognizes inifile keys like "seed-17-mt", "seed-*-mt", "seed-{5..10}-mt".
+	Does not flag them as error, colors them as config options, provided help
+	(in hover popups), etc.
+
+2024-09-24  Attila Torok
+
+	* Analysis Tool: fix: Make plot axis (and tick) labels legible in dark mode.
+
+2024-09-25  Rudolf Hornig
+
+	* IDE: Use an older version of GEF because of an issue on Linux/Wayland.
+	Because of the issue at: https://github.com/eclipse/gef-classic/issues/568
+	we have to use a nightly version of GEF classic. The issue is already fixed
+	in the head of the gef-classic repo, but the eclipse 24-09 release already
+	contains the version with the issue, so until we upgrade to eclipse 24-12
+	we should keep this patch.
+
+2024-09-23  Rudolf Hornig
+
+	* IDE: Upgrade to Eclipse 4.33
+
+024-09-11  Rudolf Hornig
 
 	* Fine-tuned line color and mouse wheel scroll direction for some
 	custom-drawn tables (e.g. EventLog) on macOS

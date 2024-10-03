@@ -1,3 +1,9 @@
+2024-09-27  Attila Torok
+
+	* Fix: Make the MPI implementation of parsim actually get built in
+	when available and requested, by adding missing inclusions of
+	platdep/config.h before any WITH_MPI (or WITH_PARSIM) macro usages.
+
 2024-09-09  Andras Varga
 
 	* Added the "print-instantiated-ned-types" and "print-unused-parameters"

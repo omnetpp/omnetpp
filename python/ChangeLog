@@ -1,3 +1,9 @@
+2024-09-27  Attila Torok
+
+	* omnetpp.scave: plot_bars(): Arrange the errors dataframe the same way as
+	the data dataframe, so that even when sorting is disabled, the values will
+	still correspond to each other as one would expect.
+
 2024-07-19  Andras Varga
 
 	* Added experimental llmtool utility

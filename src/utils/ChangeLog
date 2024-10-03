@@ -1,3 +1,8 @@
+2024-09-20  Attila Torok
+
+	* opp_fingerprinttest: Mark a regex literal as such. Until now, it was an
+	invalid escape sequence.
+
 2024-09-10  Andras Varga
 
 	* opp_test: built-in activity() stack increased to 1MiB
