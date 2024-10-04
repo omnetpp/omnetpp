@@ -3300,6 +3300,12 @@ public class SequenceChart
      * DRAWING
      */
 
+    protected void drawBackround(Graphics graphics) {
+        graphics.setBackgroundColor(styleProvider.getBackgroundColor());
+        graphics.getClip(Rectangle.SINGLETON);
+        graphics.fillRectangle(Rectangle.SINGLETON);
+    }
+
     /**
      * Draws a notification message to the center of the viewport.
      */
@@ -3438,6 +3444,8 @@ public class SequenceChart
         IEvent[] eventRange = getFirstLastEventForViewportRange(Rectangle.SINGLETON.x - extraClipping, Rectangle.SINGLETON.right() + extraClipping);
         IEvent startEvent = eventRange[0];
         IEvent endEvent = eventRange[1];
+
+        drawBackround(graphics);
 
         if (showZeroSimulationTimeRegions)
             drawZeroSimulationTimeRegions(graphics, startEvent, endEvent);
