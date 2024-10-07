@@ -931,8 +931,7 @@ public class GraphicalNedEditor
                     }
                 });
 
-                filterFigure = new ImageFigure(ImageFactory.global().getImage("_internal/toolbar/filter"));
-                filterFigure.setToolTip(new Label("Hello"));
+                filterFigure = new ImageFigure(ImageFactory.global().getImage("_internal/toolbar/zoom"));
                 filterFigure.addMouseListener(new MouseListener() {
                     public void mouseDoubleClicked(MouseEvent me) {
                     }
@@ -948,7 +947,7 @@ public class GraphicalNedEditor
 
             @Override
             public IFigure getToolTip() {
-                return createToolTip();
+                return new Label("Click the search icon to filter the submodules");
             }
 
             @Override
