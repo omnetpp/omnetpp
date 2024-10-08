@@ -283,7 +283,7 @@ foreach $element (@elements)
     print H "    $enumname{$element},\n";
 }
 if ($ned eq 'msg') {
-    foreach $element (keys(%sharedElements)) {
+    foreach my $element (sort keys(%sharedElements)) {
         my $nedEnumName = $enumname{$element};
         $nedEnumName =~ s/^MSG_/NED_/;
         print H "    $enumname{$element} = $nedEnumName,\n";
