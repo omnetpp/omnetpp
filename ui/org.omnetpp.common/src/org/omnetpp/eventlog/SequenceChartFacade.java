@@ -357,8 +357,10 @@ public class SequenceChartFacade extends EventLogFacade
                 long eventNumber = (long)Math.floor(timelineCoordinate) + timelineCoordinateSystemOriginEventNumber;
                 if (eventNumber < 0)
                     return null;
-                else
+                else if (eventNumber <= eventLog.getLastEventNumber())
                     return eventLog.getLastEventNotAfterEventNumber(eventNumber);
+                else
+                    return eventLog.getLastEvent();
             }
             case STEP:
             case NONLINEAR: {
@@ -384,8 +386,10 @@ public class SequenceChartFacade extends EventLogFacade
                 long eventNumber = (long)Math.floor(timelineCoordinate) + timelineCoordinateSystemOriginEventNumber;
                 if (eventNumber < 0)
                     return eventLog.getFirstEvent();
-                else
+                else if (eventNumber <= eventLog.getLastEventNumber())
                     return eventLog.getFirstEventNotBeforeEventNumber(eventNumber);
+                else
+                    return null;
             }
             case STEP:
             case NONLINEAR: {
