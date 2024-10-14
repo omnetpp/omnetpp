@@ -66,7 +66,7 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
     { CFGVAR_INIFILE,          "Name of the (primary) inifile" },
     { CFGVAR_CONFIGNAME,       "Name of the active configuration" },
     { CFGVAR_RUNNUMBER,        "Sequence number of the current run within all runs in the active configuration" },
-    { CFGVAR_DESCRIPTION       "Description of the current configuration" },
+    { CFGVAR_DESCRIPTION,      "Description of the current configuration" },
     { CFGVAR_NETWORK,          "Value of the `network` configuration option" },
     { CFGVAR_EXPERIMENT,       "Value of the `experiment-label` configuration option" },
     { CFGVAR_MEASUREMENT,      "Value of the `measurement-label` configuration option" },
