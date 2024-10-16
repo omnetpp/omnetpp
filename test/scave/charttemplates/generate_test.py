@@ -474,11 +474,11 @@ charts += make_charts(
         case("filter", "runattr:experiment =~ PureAlohaExperiment AND name =~ channel*"),
 
         case("xaxis_itervar", "iaMean"),
-        case("xaxis_itervar", "numHosts", errmsg="The itervar for the X and Y axes are the same"),
+        case("xaxis_itervar", "numHosts", errmsg="The iteration variable for the X and Y axes cannot be the same"),
         case("xaxis_itervar", "aa bb", errmsg="iteration variable for the X axis could not be found"),
         case("xaxis_itervar", "", errmsg="set both the X Axis and Y Axis options"),
 
-        case("yaxis_itervar", "iaMean", errmsg="The itervar for the X and Y axes are the same"),
+        case("yaxis_itervar", "iaMean", errmsg="The iteration variable for the X and Y axes cannot be the same"),
         case("yaxis_itervar", "numHosts"),
         case("yaxis_itervar", "aa bb", errmsg="iteration variable for the Y axis could not be found"),
         case("yaxis_itervar", "", errmsg="set both the X Axis and Y Axis options"),
