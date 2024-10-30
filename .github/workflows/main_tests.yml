@@ -33,7 +33,7 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         create-symlink: true
-        key: main-tests
+        key: main-tests-${{ github.base_ref || github.ref_name }}
 
     - name: Install Python dependencies
       uses: getsentry/action-setup-venv@v2.1.0

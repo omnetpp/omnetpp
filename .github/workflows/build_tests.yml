@@ -34,7 +34,7 @@ jobs:
       uses: hendrikmuhs/ccache-action@v1.2
       with:
         create-symlink: true
-        key: build-tests
+        key: build-tests-${{ github.base_ref || github.ref_name }}
         max-size: 1G
 
     - name: Install Python dependencies
