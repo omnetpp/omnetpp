@@ -35,6 +35,7 @@ jobs:
       with:
         create-symlink: true
         key: build-tests-${{ github.base_ref || github.ref_name }}
+        save: ${{ github.event_name != 'pull_request' }}
         max-size: 1G
 
     - name: Install Python dependencies

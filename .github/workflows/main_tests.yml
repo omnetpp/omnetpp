@@ -34,6 +34,7 @@ jobs:
       with:
         create-symlink: true
         key: main-tests-${{ github.base_ref || github.ref_name }}
+        save: ${{ github.event_name != 'pull_request' }}
 
     - name: Install Python dependencies
       uses: getsentry/action-setup-venv@v2.1.0
