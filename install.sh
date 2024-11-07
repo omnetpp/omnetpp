@@ -111,7 +111,7 @@ install_deps() {
         # detect the package manager
         if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu
             # apt-get is used on debian (i.e. Ubuntu,  etc.)
-            packages="build-essential pkg-config ccache clang lld gdb bison flex perl python3 python3-pip python3-venv libpython3-dev libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
+            packages="build-essential pkg-config ccache clang lld gdb bison flex perl python3 python3-pip python3-venv python3-dev libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
 
             if ! $no_gui; then
                 packages="$packages qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5opengl5-dev libwebkit2gtk-4.1-0"
