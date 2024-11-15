@@ -183,7 +183,7 @@ static cValue pyObjectToValue(PyObject *obj)
     if (PyBool_Check(obj))
         return cValue(PyObject_IsTrue(obj) ? true : false);
     if (PyLong_Check(obj))
-        return cValue(PyLong_AsLong(obj));
+        return cValue((omnetpp::intval_t)PyLong_AsLong(obj));
     if (PyFloat_Check(obj))
         return cValue(PyFloat_AsDouble(obj));
     if (PyUnicode_Check(obj))
