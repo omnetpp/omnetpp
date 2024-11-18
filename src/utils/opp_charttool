@@ -232,21 +232,21 @@ def main():
     for chart in selected_charts:
         try:
             if args.command == 'run':
-                print(f"Running {chart.name}...")
+                print(f'Running "{chart.name}"...')
                 analysis.run_chart(chart, anf_dir, workspace, show=args.show, extra_props=props, suppress_print=args.suppress_print)
             elif args.command == 'imageexport':
-                print(f"Exporting {chart.name}...")
+                print(f'Exporting "{chart.name}"...')
                 analysis.export_image(chart, anf_dir, workspace, enforce=False,
                                         format=args.format, target_folder=args.target_folder, filename=args.out_file,
                                         width=args.width, height=args.height, dpi=args.dpi,
                                         extra_props=props, suppress_print=args.suppress_print)
             elif args.command == 'dataexport':
-                print(f"Exporting {chart.name}...")
+                print(f'Exporting "{chart.name}"...')
                 analysis.export_data(chart, anf_dir, workspace, enforce=False,
                                         format=args.format, target_folder=args.target_folder, filename=args.out_file,
                                         extra_props=props, suppress_print=args.suppress_print)
         except Exception as e:
-            print(f"\nError in chart {chart.name}: {str(e)}", file = sys.stderr)
+            print(f'\nError in chart "{chart.name}": {str(e)}', file=sys.stderr)
             if not isinstance(e, ChartScriptError) or args.debug:
                 print(traceback.format_exc(), file = sys.stderr)
             error_list.append(chart.name)
