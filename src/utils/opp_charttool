@@ -35,6 +35,8 @@ def parse_command_line():
 
     root_parser = argparse.ArgumentParser()
     root_parser.add_argument('-g', dest="debug", default=False, action='store_true', help='Debug: Print stack trace on error')
+    root_parser.add_argument('-v', dest="verbose", default=False, action='store_true', help='Verbose operation')
+    root_parser.add_argument("-l", "--log-level", choices=["ERROR", "WARN", "INFO", "DEBUG"], default="WARN", help="Sets the log level")
 
     chart_select_parser = argparse.ArgumentParser(parents=[root_parser], add_help=False)
     chart_select_parser.add_argument('anf_file', type=str, nargs=1, default="", help='The Analysis (.anf) file')
@@ -48,8 +50,6 @@ def parse_command_line():
     common_parser.add_argument('-p', metavar='project_path', type=str, nargs='*', default=[], help='Adds a workspace path to filesystem directory mapping (format: "/project=.")')
     common_parser.add_argument('-w', metavar='workspace_directory', type=str, nargs=1, default=[None], help='The workspace directory. Acts as a fallback after -p. The input patterns are relative to this')
     common_parser.add_argument('-D', metavar='properties', dest='properties', type=str, nargs='*', default=[], help='Extra properties to pass to the chart script, format: key=value')
-    common_parser.add_argument('-v', dest="verbose", default=False, action='store_true', help='Verbose operation')
-    common_parser.add_argument("-l", "--log-level", choices=["ERROR", "WARN", "INFO", "DEBUG"], default="WARN", help="Sets the log level")
     common_parser.add_argument('-s', dest="suppress_print", default=False, action='store_true', help='Suppress `print` from chart scripts')
 
     run_parser = subparsers.add_parser('run', help='Run a selected chart', parents=[common_parser], add_help=False)
@@ -70,7 +70,6 @@ def parse_command_line():
     dataexport_parser.add_argument('-o', metavar='filename', dest='out_file', type=str, default=None, help='The filename to export as')
 
     templates_parser = subparsers.add_parser('templates', help='List available chart templates', parents=[root_parser], add_help=False)
-    templates_parser.add_argument('-v', dest="verbose", default=False, action='store_true', help='Verbose operation')
     templates_parser.add_argument('-I', metavar='templates_path', dest='templates_path', type=str, default=None, help='Colon-separated list of directories where chart templates are to be loaded from')
     templates_parser.add_argument('--properties', dest="print_properties", default=False, action='store_true', help='Print chart properties')
 
