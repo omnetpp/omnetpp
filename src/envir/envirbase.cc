@@ -173,6 +173,7 @@ Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHEC
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
 Register_PerObjectConfigOption(CFGID_RNG_K, "rng-%", KIND_COMPONENT, CFG_INT, "", "Maps a module-local RNG to one of the global RNGs. Example: `**.gen.rng-1=3` maps the local RNG 1 of modules matching `**.gen` to the global RNG 3. The value may be an expression, with the `index` and `ancestorIndex()` operators being potentially very useful. The default is one-to-one mapping, i.e. RNG k of all modules refer to the global RNG k (`for k=0..num-rngs-1`).\nUsage: `<module-full-path>.rng-<local-index>=<global-index>`. Examples: `**.mac.rng-0=1; **.source[*].rng-0=index`");
 
+Register_PerRunConfigOption(CFGID_RECORD_SCALAR_RESULTS, "record-scalar-results", CFG_BOOL, "true", "Enables writing an output scalar (`.sca`) file. See the `output-scalar-file` option too.");
 Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_FILE, "output-scalar-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.sca", "Name for the output scalar file.");
 Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_FILE_APPEND, "output-scalar-file-append", CFG_BOOL, "false", "What to do when the output scalar file already exists: append to it (OMNeT++ 3.x behavior), or delete it and begin a new file (default).");
 Register_PerRunConfigOption(CFGID_OUTPUT_SCALAR_PRECISION, "output-scalar-precision", CFG_INT, DEFAULT_OUTPUT_SCALAR_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision). This has no effect on SQLite recording, as it stores values as 8-byte IEEE floating point numbers.");
@@ -181,6 +182,7 @@ Register_PerObjectConfigOption(CFGID_SCALAR_RECORDING, "scalar-recording", KIND_
 Register_PerObjectConfigOption(CFGID_BIN_RECORDING, "bin-recording", KIND_SCALAR, CFG_BOOL, "true", "Whether the bins of the matching histogram object should be recorded, provided that recording of the histogram object itself is enabled (`**.<scalar-name>.scalar-recording=true`).\nUsage: `<module-full-path>.<scalar-name>.bin-recording=true/false`. To control histogram recording from a `@statistic`, use `<statistic-name>:histogram` for `<scalar-name>`.\nExample: `**.ping.roundTripTime:histogram.bin-recording=false`");
 Register_PerObjectConfigOption(CFGID_PARAM_RECORDING, "param-recording", KIND_PARAMETER, CFG_BOOL, "true", "Whether the matching module (and channel) parameters should be recorded.\nUsage: `<module-full-path>.<parameter-name>.param-recording=true/false`.\nExample: `**.app.pkLen.param-recording=true`");
 
+Register_PerRunConfigOption(CFGID_RECORD_VECTOR_RESULTS, "record-vector-results", CFG_BOOL, "true", "Enables writing an output vector (`.vec`) file. See the `output-vector-file` option too.");
 Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_FILE, "output-vector-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.vec", "Name for the output vector file.");
 Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_FILE_APPEND, "output-vector-file-append", CFG_BOOL, "false", "What to do when the output vector file already exists: append to it, or delete it and begin a new file (default). Note: `cIndexedFileOutputVectorManager` currently does not support appending.");
 Register_PerRunConfigOption(CFGID_OUTPUT_VECTOR_PRECISION, "output-vector-precision", CFG_INT, DEFAULT_OUTPUT_VECTOR_PRECISION, "The number of significant digits for recording data into the output vector file. The maximum value is ~15 (IEEE double precision). This setting has no effect on SQLite recording (it stores values as 8-byte IEEE floating point numbers), and for the \"time\" column which is represented as fixed-point numbers and always get recorded precisely.");
@@ -1487,6 +1489,8 @@ void EnvirBase::readPerRunOptions()
 #endif
 
     recordEventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
+    recordScalarResults = cfg->getAsBool(CFGID_RECORD_SCALAR_RESULTS);
+    recordVectorResults = cfg->getAsBool(CFGID_RECORD_VECTOR_RESULTS);
 }
 
 int EnvirBase::parseSimtimeResolution(const char *resolution)
@@ -1629,58 +1633,81 @@ void EnvirBase::setupRNGMapping(cComponent *component)
 
 void *EnvirBase::registerOutputVector(const char *modulename, const char *vectorname, opp_string_map *attributes)
 {
-    ASSERT(outvectorManager);
-    void *vechandle = outvectorManager->registerVector(modulename, vectorname, attributes);
-    if (getSimulation()->getFingerprintCalculator()) {
-        cComponent *component = getSimulation()->findModuleByPath(modulename); //TODO won't work for vectors recorded by channels
-        getSimulation()->getFingerprintCalculator()->registerVectorResult(vechandle, component, vectorname);
+    if (!recordVectorResults) {
+        // Note: we do not return nullptr, as it would contradict the interface docu, see cEnvir::registerOutputVector(); nullptr also causes assertion e.g. in VectorRecorder and cOutVector
+        void * const DUMMY_VECTOR_HANDLE = (void*)1;
+        return DUMMY_VECTOR_HANDLE;
     }
-    return vechandle;
+    else {
+        ASSERT(outvectorManager);
+        void *vechandle = outvectorManager->registerVector(modulename, vectorname, attributes);
+        if (getSimulation()->getFingerprintCalculator()) {
+            cComponent *component = getSimulation()->findModuleByPath(modulename); //TODO won't work for vectors recorded by channels
+            getSimulation()->getFingerprintCalculator()->registerVectorResult(vechandle, component, vectorname);
+        }
+        return vechandle;
+    }
 }
 
 void EnvirBase::deregisterOutputVector(void *vechandle)
 {
-    ASSERT(outvectorManager);
-    outvectorManager->deregisterVector(vechandle);
+    if (recordVectorResults) {
+        ASSERT(outvectorManager);
+        outvectorManager->deregisterVector(vechandle);
+    }
 }
 
 bool EnvirBase::recordInOutputVector(void *vechandle, simtime_t t, double value)
 {
-    ASSERT(outvectorManager);
-    bool recorded = outvectorManager->record(vechandle, t, value);
-    if (recorded && getSimulation()->getFingerprintCalculator())
-        getSimulation()->getFingerprintCalculator()->addVectorResult(vechandle, t, value);
-    return recorded;
+    if (!recordVectorResults)
+        return false;
+    else {
+        ASSERT(outvectorManager);
+        bool recorded = outvectorManager->record(vechandle, t, value);
+        if (recorded && getSimulation()->getFingerprintCalculator())
+            getSimulation()->getFingerprintCalculator()->addVectorResult(vechandle, t, value);
+        return recorded;
+    }
 }
 
 //-------------------------------------------------------------
 
 void EnvirBase::recordScalar(cComponent *component, const char *name, double value, opp_string_map *attributes)
 {
-    ASSERT(outScalarManager);
-    bool recorded = outScalarManager->recordScalar(component, name, value, attributes);
-    if (recorded && getSimulation()->getFingerprintCalculator())
-        getSimulation()->getFingerprintCalculator()->addScalarResult(component, name, value);
+    if (recordScalarResults) {
+        ASSERT(outScalarManager);
+        bool recorded = outScalarManager->recordScalar(component, name, value, attributes);
+        // note: the following is skipped if recordScalarResults is turned off!
+        if (recorded && getSimulation()->getFingerprintCalculator())
+            getSimulation()->getFingerprintCalculator()->addScalarResult(component, name, value);
+    }
 }
 
 void EnvirBase::recordStatistic(cComponent *component, const char *name, cStatistic *statistic, opp_string_map *attributes)
 {
-    ASSERT(outScalarManager);
-    bool recorded = outScalarManager->recordStatistic(component, name, statistic, attributes);
-    if (recorded && getSimulation()->getFingerprintCalculator())
-        getSimulation()->getFingerprintCalculator()->addStatisticResult(component, name, statistic);
+    if (recordScalarResults) {
+        ASSERT(outScalarManager);
+        bool recorded = outScalarManager->recordStatistic(component, name, statistic, attributes);
+        // note: the following is skipped if recordScalarResults is turned off!
+        if (recorded && getSimulation()->getFingerprintCalculator())
+            getSimulation()->getFingerprintCalculator()->addStatisticResult(component, name, statistic);
+    }
 }
 
 void EnvirBase::recordParameter(cPar *par)
 {
-    assert(outScalarManager);
-    outScalarManager->recordParameter(par);
+    if (recordScalarResults) {
+        ASSERT(outScalarManager);
+        outScalarManager->recordParameter(par);
+    }
 }
 
 void EnvirBase::recordComponentType(cComponent *component)
 {
-    assert(outScalarManager);
-    outScalarManager->recordComponentType(component);
+    if (recordScalarResults) {
+        ASSERT(outScalarManager);
+        outScalarManager->recordComponentType(component);
+    }
 }
 
 //-------------------------------------------------------------

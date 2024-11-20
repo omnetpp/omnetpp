@@ -156,6 +156,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Indicates whether eventlog recording is currently enabled (note: eventlogManager contains further filters).
     // It MUST be in sync with EventlogFileManager::isRecordingEnabled.
     bool recordEventlog;
+    bool recordScalarResults = true;
+    bool recordVectorResults = true;
 
     // Output file managers
     cIEventlogManager *eventlogManager;  // nullptr if no eventlog is being written, must be non nullptr if record_eventlog is true
