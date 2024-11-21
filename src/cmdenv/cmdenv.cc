@@ -70,6 +70,7 @@ Register_PerRunConfigOption(CFGID_CMDENV_EXPRESS_MODE, "cmdenv-express-mode", CF
 Register_PerRunConfigOption(CFGID_CMDENV_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call `fflush(stdout)` after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
 Register_PerRunConfigOption(CFGID_CMDENV_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When `cmdenv-express-mode=false`: turns printing event banners on/off.")
 Register_PerRunConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When `cmdenv-express-mode=false`: print extra information after event banners.")
+Register_PerRunConfigOption(CFGID_CMDENV_PROGRESS_UPDATES, "cmdenv-progress-updates", CFG_BOOL, "true", "When `cmdenv-express-mode=true`: print a periodic status update on the progress of the simulation.")
 Register_PerRunConfigOptionU(CFGID_CMDENV_STATUS_FREQUENCY, "cmdenv-status-frequency", "s", "2s", "When `cmdenv-express-mode=true`: print status update every n seconds.")
 Register_PerRunConfigOption(CFGID_CMDENV_PERFORMANCE_DISPLAY, "cmdenv-performance-display", CFG_BOOL, "true", "When `cmdenv-express-mode=true`: print detailed performance information. Turning it on results in a 3-line entry printed on each update, containing ev/sec, simsec/sec, ev/simsec, number of messages created/still present/currently scheduled in FES.")
 Register_PerRunConfigOption(CFGID_CMDENV_LOG_PREFIX, "cmdenv-log-prefix", CFG_STRING, "[%l]\t", "Specifies the format string that determines the prefix of each log line. The format string may contain format directives in the syntax `%x` (a `%` followed by a single format character).  For example `%l` stands for log level, and `%J` for source component. See the manual for the list of available format characters.");
@@ -139,6 +140,7 @@ void Cmdenv::readPerRunOptions()
     opt->autoflush = cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH);
     opt->printEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS);
     opt->detailedEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS);
+    opt->printProgressUpdates = cfg->getAsBool(CFGID_CMDENV_PROGRESS_UPDATES);
     opt->statusFrequencyMs = 1000*cfg->getAsDouble(CFGID_CMDENV_STATUS_FREQUENCY);
     opt->printPerformanceData = cfg->getAsBool(CFGID_CMDENV_PERFORMANCE_DISPLAY);
     setLogFormat(getConfig()->getAsString(CFGID_CMDENV_LOG_PREFIX).c_str());
@@ -347,13 +349,15 @@ void Cmdenv::simulate()
 
     cSimulation *simulation = getSimulation();
 
+    bool printProgressUpdates = opt->expressMode && opt->printProgressUpdates;
+
     // The following macro was originally written as a lambda, but on macOS it caused
     // the program to crash while writing to the `out` stream after returning from simulate(),
     // due to some spurious compiler bug which only manifested in MODE=debug.
     // Converting `auto finally = [&] { ... }` to a macro solved the issue.
 
 #define FINALLY() { \
-        if (opt->expressMode) \
+        if (printProgressUpdates) \
             doStatusUpdate(speedometer); \
         loggingEnabled = true; \
         stopClock(); \
@@ -395,7 +399,8 @@ void Cmdenv::simulate()
 
             int64_t last_update = opp_get_monotonic_clock_usecs();
 
-            doStatusUpdate(speedometer);
+            if (printProgressUpdates)
+                doStatusUpdate(speedometer);
 
             while (true) {
                 cEvent *event = simulation->takeNextEvent();
@@ -405,7 +410,7 @@ void Cmdenv::simulate()
                 speedometer.addEvent(simulation->getSimTime());
 
                 // print event banner from time to time
-                if ((simulation->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
+                if (printProgressUpdates && (simulation->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
                     doStatusUpdate(speedometer);
 
                 if (fakeGUI)

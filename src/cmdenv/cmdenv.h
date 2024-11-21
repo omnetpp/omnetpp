@@ -42,6 +42,7 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
     bool printModuleMsgs = false;  // if normal mode
     bool printEventBanners = true; // if normal mode
     bool detailedEventBanners = false; // if normal mode
+    bool printProgressUpdates = true; // if express mode
     long statusFrequencyMs = 2000; // if express mode
     bool printPerformanceData = false; // if express mode
     bool fakeGUI = false; // all modes
