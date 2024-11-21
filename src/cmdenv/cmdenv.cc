@@ -211,7 +211,7 @@ void Cmdenv::doRun()
                 const char *runId = cfg->getVariable(CFGVAR_RUNID);
                 const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
                 if (!opt->silent && !opt->verbose)
-                    out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
+                    out << opt->configName << " run #" << runNumber << ": " << iterVars << (opp_isempty(iterVars) ? "" : ", ") << "$repetition=" << repetition << " (runID: " << runId << ")" << endl; // print before redirection; useful as progress indication from opp_runall
 
                 if (opt->redirectOutput) {
                     processFileName(opt->outputFile);
@@ -223,7 +223,7 @@ void Cmdenv::doRun()
                 }
 
                 if (opt->verbose) {
-                    if (iterVars && strlen(iterVars) > 0)
+                    if (!opp_isempty(iterVars))
                         out << "Scenario: " << iterVars << ", $repetition=" << repetition << endl;
                     out << "Assigned runID=" << runId << endl;
                 }
