@@ -680,6 +680,12 @@ AS_NEEDED_OFF
 AS_NEEDED_ON
 WHOLE_ARCHIVE_OFF
 WHOLE_ARCHIVE_ON
+LDFLAGS_PROFILE
+CFLAGS_PROFILE
+LDFLAGS_COVERAGE
+CFLAGS_COVERAGE
+LDFLAGS_SANITIZE
+CFLAGS_SANITIZE
 LDFLAG_IMPDEF
 LDFLAG_IMPLIB
 LDFLAG_LIB
@@ -688,7 +694,6 @@ LDFLAG_LIBPATH
 DEFINES
 CFLAGS_RELEASE
 CFLAGS_DEBUG
-SANITIZE_FLAGS
 OMNETPP_EDITION
 OMNETPP_BUILDID
 OMNETPP_VERSION
@@ -2863,10 +2868,17 @@ LIB_PREFIX="lib"
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-SANITIZE_FLAGS=${SANITIZE_FLAGS:- -g1 -fsanitize=leak,address,undefined}
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -O0 -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1 -g1 -ffp-contract=off}
 CFLAGS=${CFLAGS:-}
+
+CFLAGS_SANITIZE=${CFLAGS_SANITIZE:- -g1 -fsanitize=leak,address,undefined}
+LDFLAGS_SANITIZE=${LDFLAGS_SANITIZE:- $CFLAGS_SANITIZE}
+CFLAGS_COVERAGE=${CFLAGS_COVERAGE:- -fprofile-instr-generate -fcoverage-mapping}
+LDFLAGS_COVERAGE=${LDFLAGS_COVERAGE:- $CFLAGS_COVERAGE}
+CFLAGS_PROFILE=${CFLAGS_PROFILE:- -g -O2 -fno-omit-frame-pointer -fno-optimize-sibling-calls}
+LDFLAGS_PROFILE=${LDFLAGS_PROFILE:- $CFLAGS_PROFILE}
+
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
 CXXFLAGS=${CXXFLAGS:-}
 DEFINES=${DEFINES:-}
@@ -7497,6 +7509,11 @@ ac_config_headers="$ac_config_headers include/omnetpp/platdep/config.h"
 #----------------------
 # Substitutions.
 #----------------------
+
+
+
+
+
 
 
 

@@ -204,10 +204,17 @@ LIB_PREFIX="lib"
 # Set variables to defaults if not already set.
 # Note: ${VAR:-defaultvalue} used below appears to be a POSIX syntax.
 #----------------------
-SANITIZE_FLAGS=${SANITIZE_FLAGS:- -g1 -fsanitize=leak,address,undefined}
 CFLAGS_DEBUG=${CFLAGS_DEBUG:- -O0 -Wall}
 CFLAGS_RELEASE=${CFLAGS_RELEASE:- -O3 -DNDEBUG=1 -g1 -ffp-contract=off}
 CFLAGS=${CFLAGS:-}
+
+CFLAGS_SANITIZE=${CFLAGS_SANITIZE:- -g1 -fsanitize=leak,address,undefined}
+LDFLAGS_SANITIZE=${LDFLAGS_SANITIZE:- $CFLAGS_SANITIZE}
+CFLAGS_COVERAGE=${CFLAGS_COVERAGE:- -fprofile-instr-generate -fcoverage-mapping}
+LDFLAGS_COVERAGE=${LDFLAGS_COVERAGE:- $CFLAGS_COVERAGE}
+CFLAGS_PROFILE=${CFLAGS_PROFILE:- -g -O2 -fno-omit-frame-pointer -fno-optimize-sibling-calls}
+LDFLAGS_PROFILE=${LDFLAGS_PROFILE:- $CFLAGS_PROFILE}
+
 DEPENDFLAGS=${DEPENDFLAGS:- -MMD -MP -MF \$@.d}
 CXXFLAGS=${CXXFLAGS:-}
 DEFINES=${DEFINES:-}
@@ -714,7 +721,7 @@ then
    # would cause duplicate symbol linker errors, because multiple import symbols from headers
    # that are included from several files would be included in the final executable.
    # normally the linker garbage collection would remove this, but --whole-archive prevents this.
-   # We add -Wl,--allow-multiple-definition, so at least the linker would not throw an error, 
+   # We add -Wl,--allow-multiple-definition, so at least the linker would not throw an error,
    # just a warning. It still generates a lot of warnings in these cases.
    if test "$PLATFORM" = "win32"; then
       WHOLE_ARCHIVE_ON="-Wl,--allow-multiple-definition $WHOLE_ARCHIVE_ON"
@@ -1327,7 +1334,6 @@ AC_SUBST(LEX)
 AC_SUBST(CC)
 AC_SUBST(CXX)
 AC_SUBST(CXXFLAGS)
-AC_SUBST(SANITIZE_FLAGS)
 AC_SUBST(CFLAGS_DEBUG)
 AC_SUBST(CFLAGS_RELEASE)
 AC_SUBST(CFLAGS)
@@ -1338,6 +1344,12 @@ AC_SUBST(LDFLAG_INCLUDE)
 AC_SUBST(LDFLAG_LIB)
 AC_SUBST(LDFLAG_IMPLIB)
 AC_SUBST(LDFLAG_IMPDEF)
+AC_SUBST(CFLAGS_SANITIZE)
+AC_SUBST(LDFLAGS_SANITIZE)
+AC_SUBST(CFLAGS_COVERAGE)
+AC_SUBST(LDFLAGS_COVERAGE)
+AC_SUBST(CFLAGS_PROFILE)
+AC_SUBST(LDFLAGS_PROFILE)
 AC_SUBST(WHOLE_ARCHIVE_ON)
 AC_SUBST(WHOLE_ARCHIVE_OFF)
 AC_SUBST(AS_NEEDED_ON)

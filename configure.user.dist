@@ -32,7 +32,7 @@ PREFER_LLD=yes
 # USE_MS_ABI=yes
 
 #
-# Compiler optimization switches. There are two sets of switches,
+# Compiler switches. There are two sets of switches,
 # and the MODE variable ("debug" or "release") decides which one gets used.
 # (Note: For maximum debugging info use switch -ggdb or -gstabs+3 when using gcc and gdb)
 # With gcc, do NOT use --omit-frame-pointer (it crashes when coroutines and
@@ -40,6 +40,19 @@ PREFER_LLD=yes
 #
 #CFLAGS_DEBUG='-g -Wall'
 #CFLAGS_RELEASE='-O3 -DNDEBUG=1'
+
+#
+# Compiler and linker options for special use cases: sanitizing, profiling and code coverage reports.
+# They are activated by building the project using MODE=sanitize, MODE=profile and MODE=coverage.
+# These options are specific for clang. Use the perf program for profiling; use clang tools
+# (llvm-profdata, llvm-cov) for generating coverage reports.
+#
+#CFLAGS_SANITIZE='-g1 -fsanitize=leak,address,undefined'  # additional to CFLAGS_DEBUG
+#LDFLAGS_SANITIZE=$CFLAGS_SANITIZE
+#CFLAGS_PROFILE='-fprofile-generate' # must include appropriate CFLAGS
+#LDFLAGS_PROFILE=$CFLAGS_PROFILE
+#CFLAGS_COVERAGE='-fprofile-instr-generate -fcoverage-mapping'  # additional to CFLAGS_DEBUG
+#LDFLAGS_COVERAGE=$CFLAGS_COVERAGE
 
 #
 # C++ specific compiler options. As OMNeT++ requires C++14 or later, this is
