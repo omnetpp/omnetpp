@@ -72,7 +72,7 @@ enum class DebuggerPresence {
     CANT_DETECT
 };
 
-#define ARGSPEC "h?f:u:l:c:r:n:x:i:p:q:e:avwsm"
+#define ARGSPEC "h?f:u:l:c:r:n:x:i:p:q:e:avwsSm"
 
 struct ENVIR_API EnvirOptions
 {
@@ -109,6 +109,7 @@ struct ENVIR_API EnvirOptions
 
     bool useStderr;
     bool verbose;
+    bool silent;
     bool warnings;
     bool printUndisposed;
 

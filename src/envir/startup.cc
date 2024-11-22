@@ -103,6 +103,7 @@ int setupUserInterface(int argc, char *argv[])
     SectionBasedConfiguration *bootConfig = nullptr;
     cConfigurationEx *config = nullptr;
     bool verbose = false;
+    bool silent = false;
     int exitCode = 0;
     try {
         // construct global lists
@@ -117,7 +118,8 @@ int setupUserInterface(int argc, char *argv[])
 
         useStderr = !args.optionGiven('m');
 
-        verbose = !args.optionGiven('s');  // "not silent"
+        silent = args.optionGiven('S');
+        verbose = !silent && !args.optionGiven('s');
         if (verbose) {
             std::cout << OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2024 Andras Varga, OpenSim Ltd." << endl;
             std::cout << "Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION << endl;

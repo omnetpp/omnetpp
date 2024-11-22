@@ -137,6 +137,8 @@ void Cmdenv::readPerRunOptions()
     opt->stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
     opt->expressMode = cfg->getAsBool(CFGID_CMDENV_EXPRESS_MODE);
     opt->interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
+    if (opt->silent && opt->interactive)
+        throw cRuntimeError("Cannot specify both silent (-S) and cmdenv-interactive=true");
     opt->autoflush = cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH);
     opt->printEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS);
     opt->detailedEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS);
@@ -200,7 +202,7 @@ void Cmdenv::doRun()
                 const char *iterVars = cfg->getVariable(CFGVAR_ITERATIONVARS);
                 const char *runId = cfg->getVariable(CFGVAR_RUNID);
                 const char *repetition = cfg->getVariable(CFGVAR_REPETITION);
-                if (!opt->verbose)
+                if (!opt->silent && !opt->verbose)
                     out << opt->configName << " run " << runNumber << ": " << iterVars << ", $repetition=" << repetition << endl; // print before redirection; useful as progress indication from opp_runall
 
                 if (opt->redirectOutput) {
@@ -237,7 +239,7 @@ void Cmdenv::doRun()
                 if (opt->verbose)
                     out << "Initializing..." << endl;
 
-                loggingEnabled = !opt->expressMode;
+                loggingEnabled = !opt->silent && !opt->expressMode;
 
                 prepareForRun();
 
@@ -249,7 +251,7 @@ void Cmdenv::doRun()
                 // finish() should not be called.
                 notifyLifecycleListeners(LF_ON_SIMULATION_START);
                 simulate();
-                loggingEnabled = true;
+                loggingEnabled = !opt->silent;
 
                 if (opt->verbose)
                     out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
@@ -308,7 +310,7 @@ void Cmdenv::doRun()
                 break;
         }
 
-        if (numRuns > 1 && opt->verbose) {
+        if (!opt->silent && numRuns > 1) {
             int numSkipped = numRuns - runsTried;
             int numSuccess = runsTried - numErrors;
             out << "\nRun statistics: total " << numRuns;
@@ -349,7 +351,7 @@ void Cmdenv::simulate()
 
     cSimulation *simulation = getSimulation();
 
-    bool printProgressUpdates = opt->expressMode && opt->printProgressUpdates;
+    bool printProgressUpdates = !opt->silent && opt->expressMode && opt->printProgressUpdates;
 
     // The following macro was originally written as a lambda, but on macOS it caused
     // the program to crash while writing to the `out` stream after returning from simulate(),
@@ -373,7 +375,7 @@ void Cmdenv::simulate()
 
                 // flush *between* printing event banner and event processing, so that
                 // if event processing crashes, it can be seen which event it was
-                if (opt->autoflush)
+                if (opt->autoflush && !opt->silent)
                     out.flush();
 
                 if (fakeGUI)
@@ -445,6 +447,7 @@ void Cmdenv::simulate()
 
 void Cmdenv::printEventBanner(cEvent *event)
 {
+    ASSERT(!opt->silent);
     out << "** Event #" << getSimulation()->getEventNumber()
         << "  t=" << getSimulation()->getSimTime()
         << progressPercentage() << "   ";  // note: IDE launcher uses this to track progress
@@ -468,6 +471,7 @@ void Cmdenv::printEventBanner(cEvent *event)
 
 void Cmdenv::doStatusUpdate(Speedometer& speedometer)
 {
+    ASSERT(!opt->silent && opt->printProgressUpdates);
     speedometer.beginNewInterval();
 
     if (opt->printPerformanceData) {
@@ -533,7 +537,7 @@ void Cmdenv::componentInitBegin(cComponent *component, int stage)
     EnvirBase::componentInitBegin(component, stage);
 
     // TODO: make this an EV_INFO in the component?
-    if (!opt->expressMode && opt->printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
+    if (!opt->silent && !opt->expressMode && opt->printEventBanners && component->getLogLevel() != LOGLEVEL_OFF)
         out << "Initializing " << (component->isModule() ? "module" : "channel") << " " << component->getFullPath() << ", stage " << stage << endl;
 }
 
@@ -542,7 +546,7 @@ void Cmdenv::simulationEvent(cEvent *event)
     EnvirBase::simulationEvent(event);
 
     // print event banner if necessary
-    if (!opt->expressMode && opt->printEventBanners)
+    if (!opt->silent && !opt->expressMode && opt->printEventBanners)
         if (!event->isMessage() || static_cast<cMessage *>(event)->getArrivalModule()->getLogLevel() != LOGLEVEL_OFF)
             printEventBanner(event);
 }

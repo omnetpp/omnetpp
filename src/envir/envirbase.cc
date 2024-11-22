@@ -354,7 +354,8 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
     args = new ArgList();
     args->parse(argc, argv, ARGSPEC);
     opt->useStderr = !args->optionGiven('m');
-    opt->verbose = !args->optionGiven('s');
+    opt->silent = args->optionGiven('S');
+    opt->verbose = !opt->silent && !args->optionGiven('s');
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
@@ -702,7 +703,8 @@ void EnvirBase::printHelp()
     out << "                minus sign will turn off the built-in web server.\n";
     out << "                The default value is \"8000+\".\n";
 #endif
-    out << "  -s            Silent mode; makes the output less verbose.\n";
+    out << "  -s            Make the output less verbose.\n";
+    out << "  -S            Silent mode: suppress all output by the simulation framework.\n";
     out << "  -v            Print version and build info, and exit.\n";
     out << "  -m            Merge standard error into standard output, i.e. report errors on\n";
     out << "                the standard output instead of the default standard error.\n";
@@ -1957,12 +1959,17 @@ std::string EnvirBase::getFormattedMessage(std::exception& ex)
 void EnvirBase::displayException(std::exception& ex)
 {
     std::string msg = getFormattedMessage(ex);
-    if (dynamic_cast<cTerminationException*>(&ex) != nullptr)
-        out << endl << "<!> " << msg << endl;
-    else if (msg.substr(0,5) == "Error")
-        errWithoutPrefix() << msg << endl;
-    else
-        err() << msg << endl;
+    bool isNormalTermination = dynamic_cast<cTerminationException*>(&ex) != nullptr;
+    if (isNormalTermination) {
+        if (!opt->silent)
+            out << endl << "<!> " << msg << endl;
+    }
+    else {
+        if (msg.substr(0,5) == "Error")
+            errWithoutPrefix() << msg << endl;
+        else
+            err() << msg << endl;
+    }
 }
 
 bool EnvirBase::idle()
