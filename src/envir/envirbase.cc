@@ -1301,7 +1301,9 @@ std::ostream& EnvirBase::err()
     std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
         (opt->useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> Error: ";
+    if (!opt->useStderr)
+        err << endl;
+    err << "<!> Error: ";
     return err;
 }
 
@@ -1310,7 +1312,9 @@ std::ostream& EnvirBase::errWithoutPrefix()
     std::ostream& err = opt->useStderr && !isOutputRedirected() ? std::cerr : out;
     if (isOutputRedirected())
         (opt->useStderr ? std::cerr : std::cout) << "<!> Error -- see " << redirectionFilename << " for details" << endl;
-    err << endl << "<!> ";
+    if (!opt->useStderr)
+        err << endl;
+    err << "<!> ";
     return err;
 }
 
