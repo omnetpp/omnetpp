@@ -38,6 +38,10 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
     bool redirectOutput = false;
     bool expressMode = false;
     bool interactive = false;
+    bool logDuringInitialize = true;
+    bool logDuringSimulation = true;
+    bool logDuringFinish = true;
+    bool logDuringCleanup = true;
     bool autoflush = true; // all modes
     bool printModuleMsgs = false;  // if normal mode
     bool printEventBanners = true; // if normal mode
@@ -46,6 +50,7 @@ struct CMDENV_API CmdenvOptions : public EnvirOptions
     long statusFrequencyMs = 2000; // if express mode
     bool printPerformanceData = false; // if express mode
     bool fakeGUI = false; // all modes
+
 };
 
 /**

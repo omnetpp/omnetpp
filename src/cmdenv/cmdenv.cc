@@ -67,6 +67,10 @@ Register_PerRunConfigOption(CFGID_CMDENV_INTERACTIVE, "cmdenv-interactive", CFG_
 Register_PerRunConfigOption(CFGID_CMDENV_OUTPUT_FILE, "cmdenv-output-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.out", "When `cmdenv-record-output=true`: file name to redirect standard output to. See also `fname-append-host`.")
 Register_PerRunConfigOption(CFGID_CMDENV_REDIRECT_OUTPUT, "cmdenv-redirect-output", CFG_BOOL, "false", "Causes Cmdenv to redirect standard output of simulation runs to a file or separate files per run. This option can be useful with running simulation campaigns (e.g. using opp_runall), and also with parallel simulation. See also: `cmdenv-output-file`, `fname-append-host`.");
 Register_PerRunConfigOption(CFGID_CMDENV_EXPRESS_MODE, "cmdenv-express-mode", CFG_BOOL, "true", "Selects normal (debug/trace) or express mode.")
+Register_PerRunConfigOption(CFGID_CMDENV_LOG_INITIALIZATION, "cmdenv-log-initialization", CFG_BOOL, nullptr, "Specifies whether to enable logging during network initialization. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
+Register_PerRunConfigOption(CFGID_CMDENV_LOG_SIMULATION, "cmdenv-log-simulation", CFG_BOOL, nullptr, "Specifies whether to enable logging during the simulation, i.e. event processing. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
+Register_PerRunConfigOption(CFGID_CMDENV_LOG_FINALIZATION, "cmdenv-log-finalization", CFG_BOOL, nullptr, "Specifies whether to enable logging during network finalization. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
+Register_PerRunConfigOption(CFGID_CMDENV_LOG_CLEANUP, "cmdenv-log-cleanup", CFG_BOOL, nullptr, "Specifies whether to enable logging during network cleanup. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
 Register_PerRunConfigOption(CFGID_CMDENV_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call `fflush(stdout)` after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
 Register_PerRunConfigOption(CFGID_CMDENV_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When `cmdenv-express-mode=false`: turns printing event banners on/off.")
 Register_PerRunConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When `cmdenv-express-mode=false`: print extra information after event banners.")
@@ -139,6 +143,10 @@ void Cmdenv::readPerRunOptions()
     opt->interactive = cfg->getAsBool(CFGID_CMDENV_INTERACTIVE);
     if (opt->silent && opt->interactive)
         throw cRuntimeError("Cannot specify both silent (-S) and cmdenv-interactive=true");
+    opt->logDuringInitialize = cfg->getAsBool(CFGID_CMDENV_LOG_INITIALIZATION, !opt->silent && !opt->expressMode);
+    opt->logDuringSimulation = cfg->getAsBool(CFGID_CMDENV_LOG_SIMULATION, !opt->silent && !opt->expressMode);
+    opt->logDuringFinish = cfg->getAsBool(CFGID_CMDENV_LOG_FINALIZATION, !opt->silent && !opt->expressMode);
+    opt->logDuringCleanup = cfg->getAsBool(CFGID_CMDENV_LOG_CLEANUP, !opt->silent && !opt->expressMode);
     opt->autoflush = cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH);
     opt->printEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS);
     opt->detailedEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS);
@@ -239,22 +247,21 @@ void Cmdenv::doRun()
                 if (opt->verbose)
                     out << "Initializing..." << endl;
 
-                loggingEnabled = !opt->silent && !opt->expressMode;
-
+                loggingEnabled = opt->logDuringInitialize;
                 prepareForRun();
 
                 // run the simulation
                 if (opt->verbose)
                     out << "\nRunning simulation..." << endl;
 
-                // simulate() should only throw exception if error occurred and
-                // finish() should not be called.
+                loggingEnabled = opt->logDuringSimulation;
                 notifyLifecycleListeners(LF_ON_SIMULATION_START);
                 simulate();
-                loggingEnabled = !opt->silent;
 
                 if (opt->verbose)
                     out << "\nCalling finish() at end of Run #" << runNumber << "..." << endl;
+
+                loggingEnabled = opt->logDuringFinish;
                 getSimulation()->callFinish();
                 cLogProxy::flushLastLine();
 
@@ -265,7 +272,6 @@ void Cmdenv::doRun()
                 finishedOK = true;
             }
             catch (std::exception& e) {
-                loggingEnabled = true;
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
@@ -286,7 +292,7 @@ void Cmdenv::doRun()
             // delete network
             if (networkSetupDone) {
                 try {
-                    loggingEnabled = !opt->expressMode;
+                    loggingEnabled = opt->logDuringCleanup;
                     getSimulation()->deleteNetwork();
                 }
                 catch (std::exception& e) {
@@ -361,7 +367,6 @@ void Cmdenv::simulate()
 #define FINALLY() { \
         if (printProgressUpdates) \
             doStatusUpdate(speedometer); \
-        loggingEnabled = true; \
         stopClock(); \
         deinstallSignalHandler(); \
     }
