@@ -1,0 +1,19 @@
+%description:
+Verify the effect of -s (non-verbose mode)
+
+%inifile: test.ini
+[General]
+network = testlib.VerboseModule
+#cmdenv-express-mode = true - this is the default
+cmdenv-progress-updates=false
+
+%no-default-inifile: 1
+
+%extraargs: -s
+
+%subst: /runID: .*\)/runID: XXX)/
+
+%equals: stdout
+General run #0: $repetition=0 (runID: XXX)
+
+<!> No more events, simulation completed -- at t=15s, event #1

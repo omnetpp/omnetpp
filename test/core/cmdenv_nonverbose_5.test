@@ -1,0 +1,20 @@
+%description:
+Check --cmdenv-log-cleanup=true.
+
+%inifile: test.ini
+[General]
+network = testlib.VerboseModule
+#cmdenv-express-mode = true - this is the default
+cmdenv-progress-updates=false
+
+%no-default-inifile: 1
+
+%extraargs: -s --cmdenv-log-cleanup=true
+
+%subst: /runID: .*\)/runID: XXX)/
+
+%equals: stdout
+General run #0: $repetition=0 (runID: XXX)
+
+<!> No more events, simulation completed -- at t=15s, event #1
+[INFO]	destructor at 15

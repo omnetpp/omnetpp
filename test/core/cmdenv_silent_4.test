@@ -1,0 +1,11 @@
+%description:
+Check --cmdenv-log-finalization=true.
+
+%inifile: test.ini
+[General]
+network = testlib.VerboseModule
+
+%extraargs: -S --cmdenv-log-finalization=true
+
+%equals: stdout
+finish() at 15

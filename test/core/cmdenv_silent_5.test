@@ -1,0 +1,11 @@
+%description:
+Check --cmdenv-log-cleanup=true.
+
+%inifile: test.ini
+[General]
+network = testlib.VerboseModule
+
+%extraargs: -S --cmdenv-log-cleanup=true
+
+%equals: stdout
+destructor at 15

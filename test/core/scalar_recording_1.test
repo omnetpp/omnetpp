@@ -1,0 +1,9 @@
+%description:
+Verify that setting record-scalar-results=false actually turns off creating an output scalar file.
+
+%inifile: omnetpp.ini
+[General]
+network = testlib.Statistics
+record-scalar-results = false
+
+%postrun-command: if [ -f results/*.sca ]; then exit 1; fi

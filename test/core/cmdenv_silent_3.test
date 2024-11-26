@@ -1,0 +1,12 @@
+%description:
+Check --cmdenv-log-simulation=true.
+
+%inifile: test.ini
+[General]
+network = testlib.VerboseModule
+
+%extraargs: -S --cmdenv-log-simulation=true
+
+%equals: stdout
+handleMessage() at 15
+

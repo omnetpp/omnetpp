@@ -1,0 +1,9 @@
+%description:
+Verify that setting record-vector-results=false actually turns off creating an output vector file.
+
+%inifile: omnetpp.ini
+[General]
+network = testlib.Statistics
+record-vector-results = false
+
+%postrun-command: if [ -f results/*.vec ]; then exit 1; fi

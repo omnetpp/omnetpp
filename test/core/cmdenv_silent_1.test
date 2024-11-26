@@ -1,0 +1,11 @@
+%description:
+Verify that with -S, the program does not output anything.
+
+%inifile: test.ini
+[General]
+network = testlib.VerboseModule
+
+%extraargs: -S
+
+%not-contains-regex: stdout
+.
