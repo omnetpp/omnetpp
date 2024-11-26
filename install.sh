@@ -17,6 +17,7 @@ RESET='\033[0m'
 assume_yes=false
 no_3d=false
 no_gui=false
+no_embedded_python=false
 PYTHON3=python3
 
 # print the usage and supported options
@@ -25,10 +26,11 @@ print_usage() {
     echo
     echo "Usage: $0 [options]"
     echo "Options:"
-    echo "  -h            Display this help message"
-    echo "  -y            Assume 'yes' answer for all interactive prompts"
-    echo "  --no-gui      Do not install GUI related dependencies for Qtenv and the IDE (implies --no-3d)"
-    echo "  --no-3d       Do not install 3D-related dependencies for Qtenv OpenSceneGraph support"
+    echo "  -h                      Display this help message"
+    echo "  -y                      Assume 'yes' answer for all interactive prompts"
+    echo "  --no-gui                Do not install GUI related dependencies for Qtenv and the IDE (implies --no-3d)"
+    echo "  --no-3d                 Do not install 3D-related dependencies for Qtenv OpenSceneGraph support"
+    echo "  --no-embedded-python    Disable embedded Python support"
 }
 
 # prompt user for yes/no response
@@ -98,6 +100,13 @@ install_python_deps() {
     echo -e "${GREEN}*** Installing required python packages ***${RESET}"
     echo
     echo_run python3 -m pip install -r python/requirements.txt
+
+    if ! $no_embedded_python; then
+        echo
+        echo -e "${GREEN}*** Installing required python packages for embedded python support ***${RESET}"
+        echo
+        echo_run python3 -m pip install -r python/requirements-for-embedded-python.txt
+    fi
 }
 
 # install dependencies
@@ -271,6 +280,10 @@ while [[ $# -gt 0 ]]; do
             no_3d=true
             shift
             ;;
+        --no-embedded-python)
+            no_embedded_python=true
+            shift
+            ;;
         *)
             echo "Invalid option: $1" >&2
             print_usage
@@ -318,6 +331,7 @@ echo
 # disable some config options based on the provided command-line flags
 if $no_gui; then CONFIGOPTS="$CONFIGOPTS WITH_QTENV=no"; fi
 if $no_3d; then CONFIGOPTS="$CONFIGOPTS WITH_OSG=no"; fi
+if $no_embedded_python; then CONFIGOPTS="$CONFIGOPTS WITH_PYTHON=no"; fi
 echo_run ./configure $CONFIGOPTS
 
 # build
