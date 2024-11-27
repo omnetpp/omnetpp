@@ -151,6 +151,7 @@ class OppTest:
         'exitcode'           : '1v',
         'ignore-exitcode'    : '1v',
         'expected-failure'   : '1v',
+        'no-default-inifile' : '1v',
 
         'prerun-command'     : 'v',
         'postrun-command'    : 'v'
@@ -376,13 +377,14 @@ cmdenv-log-prefix = ""
         if 'ignore-exitcode(1)' in self.values and 'exitcode(1)' in self.values:
             fail(f"error in test file `{testfilename}': %ignore-exitcode excludes %exitcode\n")
 
-        # fake a _defaults.ini after the other inifiles
-        key = "inifile"
-        self.count.setdefault(key, 0)
-        self.count[key] += 1
-        key_index = f"{key}({self.count[key]})"
-        self.values[key_index] = "_defaults.ini"
-        self.bodies[key_index] = self.INITemplate
+        if 'no-default-inifile(1)' not in self.values:
+            # fake a _defaults.ini after the other inifiles
+            key = "inifile"
+            self.count.setdefault(key, 0)
+            self.count[key] += 1
+            key_index = f"{key}({self.count[key]})"
+            self.values[key_index] = "_defaults.ini"
+            self.bodies[key_index] = self.INITemplate
 
         # substitute TESTNAME and other macros, kill comments
         for key in self.values:
