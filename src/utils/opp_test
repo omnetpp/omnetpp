@@ -137,6 +137,11 @@ class OppTest:
         'contains-regex'     : 'vbf',
         'not-contains-regex' : 'vbf',
 
+        'equals'             : 'vbf',
+        'not-equals'         : 'vbf',
+        'equals-regex'       : 'vbf',
+        'not-equals-regex'   : 'vbf',
+
         'file-exists'        : 'vf',
         'file-not-exists'    : 'vf',
 
@@ -637,7 +642,7 @@ Supported .test file entry types:
         if (self.args.mode == 'run'):
             # delete temp files before running the test case
             for key, value in self.values.items():
-                if (key.startswith('contains')):  # any form of "contains-..."
+                if ('contains' in key or 'equals' in key):  # any form of "%contains" and "%equals"
                     # read file
                     if (value == 'stdout'):
                         infname = outfname
@@ -776,7 +781,7 @@ Supported .test file entry types:
 
         # check output files
         for key,value in self.values.items():
-            if 'contains' in key:  # any form of "...contains..."
+            if ('contains' in key or 'equals' in key):  # any form of "%contains" and "%equals"
                 # read file
                 if (value == 'stdout'):
                     infname = outfname
@@ -873,6 +878,30 @@ Supported .test file entry types:
                         self.lprint(1, quote("unexpected pattern", pattern, maxPrintableSize, patternfilename))
                         self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
                         self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match.start())+1))
+
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
+                        self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
+                        self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
+                        return
+                elif 'equals(' in key or 'not-equals(' in key: # check for equals and not-equals
+                    match = txt.strip() == pattern if 'equals(' in key else txt != pattern
+                    self.lprint(2, "%{} match: {}".format(key, match))
+                    if (key.startswith('equals(') and not match):
+                        self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
+
+                        self.lprint(1, quote("expected value", pattern, maxPrintableSize, patternfilename))
+                        self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
+
+                        self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
+                        self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
+                        self.lprint(1, " OR: meld '{}' '{}'\n".format(testfilename, resultfilename))
+                        return
+                    elif (key.startswith('not-equals(') and match):
+                        self.testfailed(testfilename, "{} fails %{} rule".format(self.values[key], key))
+
+                        self.lprint(1, quote("unexpected value", pattern, maxPrintableSize, patternfilename))
+                        self.lprint(1, quote("actual output", txt, maxPrintableSize, realinfname))
+                        self.lprint(1, "at line {}\n".format(txt.count("\n", 0, match)+1))
 
                         self.lprint(1, "CMD: (cd " + testworkdir + " && " + " && ".join(runCommands) + ")")
                         self.lprint(1, "TRY: meld '{}' '{}'".format(patternfilename, resultfilename))
