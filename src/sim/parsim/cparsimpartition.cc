@@ -57,7 +57,7 @@ cParsimPartition::~cParsimPartition()
     shutdown(); //TODO this should probably be done earlier, when things are still up and running
 }
 
-void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg)
+void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg, int procId)
 {
     sim = simulation;
 
@@ -76,7 +76,7 @@ void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg)
 
     // initialize them
     int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
-    int parsimProcId = cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
+    int parsimProcId = procId != -1 ? procId : cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
     comm->configure(sim, cfg, parsimNumPartitions, parsimProcId);
 }
 

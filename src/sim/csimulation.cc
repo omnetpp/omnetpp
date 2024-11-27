@@ -268,7 +268,7 @@ std::string cSimulation::getFullPath() const
     return getFullName();
 }
 
-void cSimulation::configure(cConfiguration *cfg)
+void cSimulation::configure(cConfiguration *cfg, int procId)
 {
     this->cfg = cfg;
 
@@ -287,7 +287,7 @@ void cSimulation::configure(cConfiguration *cfg)
 #ifdef WITH_PARSIM
         delete parsimPartition;
         parsimPartition = new cParsimPartition();
-        parsimPartition->configure(getSimulation(), cfg);
+        parsimPartition->configure(this, cfg, procId);
 #else
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
@@ -675,7 +675,7 @@ cModuleType *cSimulation::resolveNetwork(const char *networkName, const char *ba
     return networkType;
 }
 
-void cSimulation::setupNetwork(cConfiguration *cfg)
+void cSimulation::setupNetwork(cConfiguration *cfg, int procId)
 {
     cConfiguration *effectiveCfg = cfg ? cfg : this->cfg;
     if (!effectiveCfg)
@@ -688,10 +688,10 @@ void cSimulation::setupNetwork(cConfiguration *cfg)
     cModuleType *networkType = resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
     ASSERT(networkType);
 
-    setupNetwork(networkType, cfg); // use original arg which can be nullptr, so that the configure() call inside setupNetwork() is not repeated unnecessarily
+    setupNetwork(networkType, cfg, procId); // use original arg which can be nullptr, so that the configure() call inside setupNetwork() is not repeated unnecessarily
 }
 
-void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
+void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg, int procId)
 {
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: before setupNetwork: %d objects\n", (int)cOwnedObject::getLiveObjectCount());
@@ -712,7 +712,7 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg)
     cComponent::clearSignalState();
 
     if (cfg)
-        configure(cfg);
+        configure(cfg, procId);
 
     StageSwitcher _(this, STAGE_BUILD);
 

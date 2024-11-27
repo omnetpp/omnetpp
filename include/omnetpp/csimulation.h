@@ -453,7 +453,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * values for unassigned module parameters and additional configuration
      * when a network is set up for simulation (see setupNetwork()).
      */
-    virtual void configure(cConfiguration *cfg);
+    virtual void configure(cConfiguration *cfg, int procId=-1);
 
     /**
      * Sets the NED loader associated with this simulation. In order to allow
@@ -536,7 +536,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * configure() method. Values for unassigned module parameters and additional
      * configuration also come from the configuration object.
      */
-    virtual void setupNetwork(cConfiguration *cfg=nullptr);
+    virtual void setupNetwork(cConfiguration *cfg=nullptr, int procId=-1);
 
     /**
      * Sets up the given module type as a network to simulate. Values for unassigned
@@ -544,7 +544,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * object passed in the second argument, or if none is given, from the configuration
      * object previously passed to the configure() method.
      */
-    virtual void setupNetwork(cModuleType *networkType, cConfiguration *cfg=nullptr);
+    virtual void setupNetwork(cModuleType *networkType, cConfiguration *cfg=nullptr, int procId=-1);
 
     /**
      * Should be called after setupNetwork(), but before the first
