@@ -236,7 +236,7 @@ cmdenv-log-prefix = ""
         # (to speed up make process)
 
         skipwrite = False
-        if (os.path.exists(filename)):
+        if os.path.exists(filename):
             try:
                 infile = open(filename, 'r')
                 oldbody = infile.read()
@@ -244,7 +244,7 @@ cmdenv-log-prefix = ""
             except (IOError, OSError) as e:
                 fail(f"Cannot read file `{filename}': ({e})")
 
-            if (body == oldbody):   #FIXME check it on Windows/Mac
+            if body == oldbody:   #FIXME check it on Windows/Mac
                 skipwrite = True
 
         if skipwrite:
@@ -314,20 +314,20 @@ cmdenv-log-prefix = ""
         key_index = ''
         for line in testfile:
             line = line.rstrip()
-            if (line[:2] == '%#'):
+            if line[:2] == '%#':
                 # ignore comments
                 pass
-            elif (line[:2] == '%%'):
+            elif line[:2] == '%%':
                 # '%%' replaced to '%', added to body
                 body += line[1:] + "\n"
-            elif (line[:1] =='%'):
+            elif line[:1] == '%':
                 if re.match(r'^\s*$', body):
                     body = ''
                 self.bodies[key_index] = body
                 body = ''
 
                 m = re.match(r"^%([^:]*):?(.*?)$", line)
-                if (not m):
+                if not m:
                     fail(f"illegal key line: `{line}'")
                 key = m.group(1)
                 value = m.group(2)
@@ -351,31 +351,31 @@ cmdenv-log-prefix = ""
         # check entries
         for key_index in self.values:
             m = re.match(r'^(.*)\((\d+)\)$', key_index)
-            if (not m):
+            if not m:
                 fail(f"illegal key in values: `{key_index}'")
             key = m.group(1)
             index = m.group(2)
-            if (key not in self.entries):
+            if key not in self.entries:
                 fail(f"error in test file `{testfilename}': invalid entry `{key}'\n")
             desc = self.entries[key]
-            if (('1' in desc) and int(index) > 1):
+            if '1' in desc and int(index) > 1:
                 fail(f"error in test file `{testfilename}': entry `%{key}' should occur only once.\n")
-            if (('v' in desc) and self.values[key_index] == ""):
+            if 'v' in desc and self.values[key_index] == "":
                 fail(f"error in test file `{testfilename}': entry `%{key}' expects value after ':'\n")
-            if (('v' not in desc) and self.values[key_index] != ""):
+            if 'v' not in desc and self.values[key_index] != "":
                 fail(f"error in test file `{testfilename}': entry `%{key}' expects nothing after ':' ---{self.values[key_index]}---\n")
-            if (('b' in desc) and self.bodies[key_index] == ""):
-                if ('v' in desc):
+            if 'b' in desc and self.bodies[key_index] == "":
+                if 'v' in desc:
                     fail(f"error in test file `{testfilename}': entry `%{key}: {self.values[key_index]}' expects body\n")
                 else:
                     fail(f"error in test file `{testfilename}': entry `%{key}' expects body\n")
-            if (('b' not in desc) and self.bodies[key_index] != ""):
+            if 'b' not in desc and self.bodies[key_index] != "":
                 fail(f"error in test file `{testfilename}': entry `%{key}' expects no body: >>>{self.bodies[key_index]}<<<\n")
 
         # additional manual tests
-        if (('activity(1)' in self.bodies) and ('module(1)' in self.bodies)):
+        if 'activity(1)' in self.bodies and 'module(1)' in self.bodies:
             fail(f"error in test file `{testfilename}': %activity excludes %module\n")
-        if (('ignore-exitcode(1)' in self.values) and ('exitcode(1)' in self.values)):
+        if 'ignore-exitcode(1)' in self.values and 'exitcode(1)' in self.values:
             fail(f"error in test file `{testfilename}': %ignore-exitcode excludes %exitcode\n")
 
         # fake a _defaults.ini after the other inifiles
@@ -412,10 +412,10 @@ cmdenv-log-prefix = ""
         self.writefile(nedfname, ned)
 
         # let the user specify the network explicitly
-        networkname = (self.values['network(1)'] if ('network(1)' in self.values and self.values['network(1)'] != "") else "Test")
+        networkname = (self.values['network(1)'] if 'network(1)' in self.values and self.values['network(1)'] != "" else "Test")
 
         # 'activity' template
-        if ('activity(1)' in self.bodies):
+        if 'activity(1)' in self.bodies:
             module = networkname
             activity = self.bodies['activity(1)']
             includescode = self.bodies['includes(1)']
@@ -439,7 +439,7 @@ cmdenv-log-prefix = ""
             self.writefile(cppfname, cpp)
 
         # 'module' template
-        if ('module(1)' in self.bodies):
+        if 'module(1)' in self.bodies:
             module = self.values['module(1)']
             module_src = self.bodies['module(1)']
             networkname = module
@@ -465,7 +465,7 @@ cmdenv-log-prefix = ""
         # ini files
         inifilekeys = []
         for key  in self.values:
-            if (re.match(r"^inifile\([0-9]+\)", key)):
+            if re.match(r"^inifile\([0-9]+\)", key):
                 inifilekeys.append(key)
 
         for key in inifilekeys:
@@ -478,7 +478,7 @@ cmdenv-log-prefix = ""
         # source files (export them after the templated files,
         # so that user can overwrite them if needed)
         for key in self.values:
-            if (re.match(r"^file\([0-9]+\)", key)):
+            if re.match(r"^file\([0-9]+\)", key):
                 # write out file
                 fname = os.path.join(self.args.workdir, self.testname, self.values[key])
                 self.writefile(fname, self.bodies[key])
@@ -551,8 +551,8 @@ Supported .test file entry types:
             return
 
         f.seek(0, os.SEEK_END)
-        if (f.tell() > self.taillength):
-            f.seek(f.tell()-self.taillength, os.SEEK_SET) # note: SEEK_END would throw 'io.UnsupportedOperation: can't do nonzero end-relative seeks' unless file is opened as binary
+        if f.tell() > self.taillength:
+            f.seek(f.tell() - self.taillength, os.SEEK_SET) # note: SEEK_END would throw 'io.UnsupportedOperation: can't do nonzero end-relative seeks' unless file is opened as binary
             istail = True
             f.readline()  # skip incomplete line
         else:
@@ -568,7 +568,7 @@ Supported .test file entry types:
             if istail:
                 print(f"tail of {label}:")
             else:
-                print( f"{label}:")
+                print(f"{label}:")
             print(f">>>>{txt}<<<<")
 
     def testskipped(self, testname, reason):
@@ -593,7 +593,7 @@ Supported .test file entry types:
         print(f"*** {testname}: {red('ERROR')} ({reason})")
 
     def testfailed(self, testname, reason):
-        if ('expected-failure(1)' in self.values):
+        if 'expected-failure(1)' in self.values:
             self.num_expectedfail += 1
             self.expectedfail_tests.append(testname)
             self.result[testname] = 'EXPECTEDFAIL'
@@ -639,20 +639,20 @@ Supported .test file entry types:
         if nedPath:
             runCommands.append(f'export NEDPATH="{nedPath}"')
 
-        if (self.args.mode == 'run'):
+        if self.args.mode == 'run':
             # delete temp files before running the test case
             for key, value in self.values.items():
-                if ('contains' in key or 'equals' in key):  # any form of "%contains" and "%equals"
+                if 'contains' in key or 'equals' in key:  # any form of "%contains" and "%equals"
                     # read file
-                    if (value == 'stdout'):
+                    if value == 'stdout':
                         infname = outfname
-                    elif (value == 'stderr'):
+                    elif value == 'stderr':
                         infname = errfname
                     else:
                         infname = os.path.join(self.testname, value)
                     infPath = os.path.join(self.args.workdir, infname)
                     isgenerated = not infname.endswith(('.cc', '.h', '.msg', '.ned', '.ini'))
-                    if (isgenerated and os.path.exists(infPath)):
+                    if isgenerated and os.path.exists(infPath):
                         self.lprint(2, f"  deleting old copy of file `{infname}'")
                         os.remove(infPath)
 
@@ -673,24 +673,24 @@ Supported .test file entry types:
                 self.lprint(2, f"  setting environment variable `{envkey}' = `{envvalue}'")
 
         # execute pre-run commands
-        if (self.args.mode == 'run'):
+        if self.args.mode == 'run':
             for key,value in sorted(self.values.items()):
-                if (key.startswith('prerun-command(')):
+                if key.startswith('prerun-command('):
                     # execute file
                     runCommands.append(f"{value}>{key}.out 2>{key}.err")
                     exitcode = self.exec_program(value, testworkdir, f"{key}.out", f"{key}.err")
-                    if (exitcode != 0):
+                    if exitcode != 0:
                         self.testerror(testfilename, f"pre-run command \"{value}\" returned nonzero exit code: {exitcode}")
                         self.lprint(1, f"CMD: (cd {testworkdir} && {' && '.join(runCommands)})")
                         return
 
         # run the program
-        if (self.args.mode == 'run'):
+        if self.args.mode == 'run':
             myargs = self.values['extraargs(1)'] if 'extraargs(1)' in self.values else ''
 
             inifilenames = ''
             for key,value in sorted(self.values.items()):
-                if (key.startswith('inifile(')):
+                if key.startswith('inifile('):
                     inifilenames += f" {value}"
 
             if inifilenames == '':
@@ -702,15 +702,15 @@ Supported .test file entry types:
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
             else:
                 testprogwithpath = os.path.join(self.args.workdir, self.args.testprogram)
-                if (not os.path.exists(testprogwithpath) and not os.path.exists(f"{testprogwithpath}.exe")):
+                if not os.path.exists(testprogwithpath) and not os.path.exists(f"{testprogwithpath}.exe"):
                     fail(f"test program '{testprogwithpath}' not found\n")
-                if (not os.access(testprogwithpath, os.X_OK) and not os.access(f"{testprogwithpath}.exe", os.X_OK)):
+                if not os.access(testprogwithpath, os.X_OK) and not os.access(f"{testprogwithpath}.exe", os.X_OK):
                     fail(f"test program '{testprogwithpath}' is not executable\n")
                 cmdline = os.path.join("..",self.args.testprogram) + f" -u Cmdenv {space(myargs)} {space(self.args.extraargs)} {space(inifilenames)}"
                 runCommands.append(f"{cmdline} \"$@\"")
                 exitcode = self.exec_program(cmdline, os.path.join(self.args.workdir,self.testname), outfname, errfname)
 
-            if (exitcode == 127):
+            if exitcode == 127:
                 self.testerror(testfilename, "could not execute test program")
                 self.lprint(1, f"CMD: (cd {testworkdir} && {' && '.join(runCommands)})")
                 return
@@ -720,26 +720,26 @@ Supported .test file entry types:
         with open(os.path.join(self.args.workdir, self.testname, outfname), 'r') as f:
             for line in f:
                 m=re.match(r'^#SKIPPED:? *(.*)', line)
-                if (m):
+                if m:
                     self.testskipped(testfilename, f"test program says SKIPPED: {m.group(1)}")
                     return
 
         # check exitcode against expected one
-        if (self.args.mode == 'run'):
+        if self.args.mode == 'run':
             exitCodeFail = True
             insteadOf = ''
 
-            if ('ignore-exitcode(1)' in self.values):
-                if (exitcode != 0):
+            if 'ignore-exitcode(1)' in self.values:
+                if exitcode != 0:
                     self.lprint(2, f"  ignoring exitcode {exitcode}")
                 exitCodeFail = False
-            elif ('exitcode(1)' in self.values):
+            elif 'exitcode(1)' in self.values:
                 if str(exitcode) in self.values['exitcode(1)'].split(' '):
                     self.lprint(2, f"  exitcode ok ({exitcode})")
                     exitCodeFail = False
                 else:
                     insteadOf = f" instead of {self.values['exitcode(1)']}"
-            elif (exitcode == 0):
+            elif exitcode == 0:
                 exitCodeFail = False
             else:
                 pass
@@ -753,13 +753,13 @@ Supported .test file entry types:
                 return
 
         # execute post-run commands
-        if (self.args.mode == 'run'):
+        if self.args.mode == 'run':
             for key, value in  sorted(self.values.items()):
-                if (key.startswith('postrun-command(')):
+                if key.startswith('postrun-command('):
                     # execute file
                     runCommands.append(value)
                     exitcode = self.exec_program(value, testworkdir, f"{key}.out", f"{key}.err")
-                    if (exitcode != 0):
+                    if exitcode != 0:
                         self.testerror(testfilename, f"post-run command \"{value}\" returned nonzero exit code: {exitcode}")
                         self.lprint(1, f"CMD: (cd {testworkdir} && {' && '.join(runCommands)})")
                         return
@@ -774,18 +774,18 @@ Supported .test file entry types:
         os.chmod(retestfile, 0o755) # make it executable
 
         def quote(label, txt, limit, filename):
-            if (len(txt) <= limit):
+            if len(txt) <= limit:
                 return f"{label}:\n>>>>{txt}<<<<"
             else:
                 return f"{label} too long to dump, see file `{filename}' in work directory"
 
         # check output files
         for key,value in self.values.items():
-            if ('contains' in key or 'equals' in key):  # any form of "%contains" and "%equals"
+            if 'contains' in key or 'equals' in key:  # any form of "%contains" and "%equals"
                 # read file
-                if (value == 'stdout'):
+                if value == 'stdout':
                     infname = outfname
-                elif (value == 'stderr'):
+                elif value == 'stderr':
                     infname = errfname
                 else:
                     infname = value
@@ -821,7 +821,7 @@ Supported .test file entry types:
                         replacement = ruleSlices[2]
                         replacement = re.sub(r'\$(\d)', r'\\\1', replacement)   # perl regex compatibility: perl was accept the '$<n>', python accepts only '\<n>'
                         flags = ruleSlices[3] if len(ruleSlices) > 3 else ''
-                        if (not re.match(r'^[ism]*$', flags)):
+                        if not re.match(r'^[ism]*$', flags):
                             self.testerror(testfilename, f"wrong subst rule: invalid flags '{flags}': only 'i', 's' and 'm' supported ('g' is implicit)")
                             return
 
@@ -862,7 +862,7 @@ Supported .test file entry types:
                         self.testerror(testfilename, f"%subst: wrong pattern in `{key}': {e}")
                         return
 
-                    if (key.startswith('contains-regex(') and not match):
+                    if key.startswith('contains-regex(') and not match:
                         self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
 
                         self.lprint(1, quote("expected pattern", pattern, maxPrintableSize, patternfilename))
@@ -872,7 +872,7 @@ Supported .test file entry types:
                         self.lprint(1, f"TRY: meld '{patternfilename}' '{resultfilename}'")
                         self.lprint(1, f" OR: meld '{testfilename}' '{resultfilename}'\n")
                         return
-                    elif (key.startswith('not-contains-regex(') and match):
+                    elif key.startswith('not-contains-regex(') and match:
                         self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
 
                         self.lprint(1, quote("unexpected pattern", pattern, maxPrintableSize, patternfilename))
@@ -887,7 +887,7 @@ Supported .test file entry types:
                 elif 'equals(' in key or 'not-equals(' in key: # check for equals and not-equals
                     match = txt.strip() == pattern if 'equals(' in key else txt != pattern
                     self.lprint(2, f"%{key} match: {match}")
-                    if (key.startswith('equals(') and not match):
+                    if key.startswith('equals(') and not match:
                         self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
 
                         self.lprint(1, quote("expected value", pattern, maxPrintableSize, patternfilename))
@@ -897,7 +897,7 @@ Supported .test file entry types:
                         self.lprint(1, f"TRY: meld '{patternfilename}' '{resultfilename}'")
                         self.lprint(1, f" OR: meld '{testfilename}' '{resultfilename}'\n")
                         return
-                    elif (key.startswith('not-equals(') and match):
+                    elif key.startswith('not-equals(') and match:
                         self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
 
                         self.lprint(1, quote("unexpected value", pattern, maxPrintableSize, patternfilename))
@@ -912,7 +912,7 @@ Supported .test file entry types:
                 else:
                     match = txt.find(pattern)
                     self.lprint(2, f"%{key} match: {match}")
-                    if (key.startswith('contains(') and match == -1):
+                    if key.startswith('contains(') and match == -1:
                         self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
 
                         diff = difflib.ndiff(addMissingNewLine(pattern).splitlines(True), addMissingNewLine(txt).splitlines(True))
@@ -922,7 +922,7 @@ Supported .test file entry types:
                             diff = colorDiff(diff)
                         difftxt = ''.join(diff)
 
-                        if (len(difftxt) <= maxPrintableSize):
+                        if len(difftxt) <= maxPrintableSize:
                             self.lprint(1, "\n" + difftxt)
                         else:
                             self.lprint(1, quote("expected substring", pattern, maxPrintableSize, patternfilename))
@@ -932,7 +932,7 @@ Supported .test file entry types:
                         self.lprint(1, f"TRY: meld '{patternfilename}' '{resultfilename}'")
                         self.lprint(1, f" OR: meld '{testfilename}' '{resultfilename}'\n")
                         return
-                    elif (key.startswith('not-contains(') and match != -1):
+                    elif key.startswith('not-contains(') and match != -1:
                         self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
 
                         self.lprint(1, quote("unexpected substring", pattern, maxPrintableSize, patternfilename))
@@ -945,13 +945,13 @@ Supported .test file entry types:
                         self.lprint(1, f" OR: meld '{testfilename}' '{resultfilename}'\n")
                         return
 
-            elif (key.startswith('file-exists(')):
-                if (not os.path.exists(os.path.join(self.args.workdir, self.testname,self.values[key]))):
+            elif key.startswith('file-exists('):
+                if not os.path.exists(os.path.join(self.args.workdir, self.testname,self.values[key])):
                     self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
                     self.lprint(1, f"CMD: (cd {testworkdir} && {' && '.join(runCommands)})")
                     return
-            elif (key.startswith('file-not-exists(')):
-                if (os.path.exists(os.path.join(self.args.workdir, self.testname, self.values[key]))):
+            elif key.startswith('file-not-exists('):
+                if os.path.exists(os.path.join(self.args.workdir, self.testname, self.values[key])):
                     self.testfailed(testfilename, f"{self.values[key]} fails %{key} rule")
                     self.lprint(1, f"CMD: (cd {testworkdir} && {' && '.join(runCommands)})")
                     return
@@ -965,15 +965,15 @@ Supported .test file entry types:
         self.lprint(2, self.args)
 
         # test existence of work directory
-        if (not os.path.isdir(self.args.workdir)):
+        if not os.path.isdir(self.args.workdir):
             fail(f'work directory {self.args.workdir} does not exist\n')
 
         # argument fixes
-        if self.args.extraargs == None:
+        if self.args.extraargs is None:
             self.args.extraargs = []
 
         # produce name of test program (only used for tests not containing '%testprog')
-        if (self.args.testprogram == ''):
+        if self.args.testprogram == '':
             tmp = os.path.basename(self.args.workdir)
             self.args.testprogram = os.path.join(".", tmp)
 
@@ -983,7 +983,7 @@ Supported .test file entry types:
         #
         # generate test files
         #
-        if (self.args.mode == 'gen'):
+        if self.args.mode == 'gen':
             print(f"{self.progname}: extracting files from *.test files into {self.args.workdir}...")
 
             self.define_templates()
@@ -1016,13 +1016,13 @@ Supported .test file entry types:
                 self.testcase_run(testfilename)
 
             print("========================================")
-            if (self.num_fail > 0):
+            if self.num_fail > 0:
                 self.lprint(1, red("FAILED: ") + ' '.join(self.failed_tests))
-            if (self.num_error > 0):
+            if self.num_error > 0:
                 self.lprint(1, red("ERROR: ") + ' '.join(self.error_tests))
-            if (self.num_expectedfail > 0):
+            if self.num_expectedfail > 0:
                 self.lprint(1, yellow("EXPECTEDFAIL: ") + ' '.join(self.expectedfail_tests))
-            if (self.num_skipped > 0):
+            if self.num_skipped > 0:
                 self.lprint(1, blue("SKIPPED: ") + ' '.join(self.skipped_tests))
             print("========================================")
             print(f"{green('PASS:')} {self.num_pass}   {red('FAIL:')} {self.num_fail}   {red('ERROR:')} {self.num_error}   {yellow('EXPECTEDFAIL:')} {self.num_expectedfail}   {blue('SKIPPED:')} {self.num_skipped}\n")
