@@ -85,6 +85,7 @@ void Tester::activity()
 network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
+cmdenv-log-cleanup = true
 
 %subst: /omnetpp:://
 %contains: stdout

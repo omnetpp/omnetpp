@@ -10,8 +10,6 @@ class Noisy
     virtual ~Noisy() {EV << "Noisy dtor!\n";}
 };
 
-
-
 %activity:
 EV << "begin\n";
 Noisy x;
@@ -22,6 +20,7 @@ wait(1000);
 [General]
 network = Test
 cmdenv-express-mode = false
+cmdenv-log-cleanup = true
 sim-time-limit = 5s
 
 %contains-regex: stdout

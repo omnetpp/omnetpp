@@ -13,5 +13,7 @@ Noisy noisy;
 
 receive();  // simulation will end inside receive(), because of "no more events"
 
+%extraargs: --cmdenv-log-cleanup=true
+
 %contains: stdout
 Noisy destructor called

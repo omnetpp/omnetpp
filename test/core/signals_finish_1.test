@@ -11,6 +11,8 @@ EV << "Subscribing:\n";
 NoisyListener *listener = new NoisyListener();
 subscribe("dummy", listener);
 
+%extraargs: --cmdenv-log-cleanup=true
+
 %contains: stdout
 Subscribing:
 NOISYLISTENER CONSTRUCTOR

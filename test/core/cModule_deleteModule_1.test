@@ -65,6 +65,7 @@ network Test
 network = Test
 cmdenv-express-mode = false
 cmdenv-event-banners = false
+cmdenv-log-cleanup = true
 sim-time-limit = 10s
 
 %contains: stdout
