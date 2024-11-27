@@ -70,7 +70,7 @@ Register_PerRunConfigOption(CFGID_CMDENV_EXPRESS_MODE, "cmdenv-express-mode", CF
 Register_PerRunConfigOption(CFGID_CMDENV_LOG_INITIALIZATION, "cmdenv-log-initialization", CFG_BOOL, nullptr, "Specifies whether to enable logging during network initialization. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
 Register_PerRunConfigOption(CFGID_CMDENV_LOG_SIMULATION, "cmdenv-log-simulation", CFG_BOOL, nullptr, "Specifies whether to enable logging during the simulation, i.e. event processing. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
 Register_PerRunConfigOption(CFGID_CMDENV_LOG_FINALIZATION, "cmdenv-log-finalization", CFG_BOOL, nullptr, "Specifies whether to enable logging during network finalization. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
-Register_PerRunConfigOption(CFGID_CMDENV_LOG_CLEANUP, "cmdenv-log-cleanup", CFG_BOOL, nullptr, "Specifies whether to enable logging during network cleanup. The default depends on whether the simulation is run in express mode or not (see `cmdenv-express-mode`).")
+Register_PerRunConfigOption(CFGID_CMDENV_LOG_CLEANUP, "cmdenv-log-cleanup", CFG_BOOL, "false", "Specifies whether to enable logging during network cleanup.")
 Register_PerRunConfigOption(CFGID_CMDENV_AUTOFLUSH, "cmdenv-autoflush", CFG_BOOL, "false", "Call `fflush(stdout)` after each event banner or status update; affects both express and normal mode. Turning on autoflush may have a performance penalty, but it can be useful with printf-style debugging for tracking down program crashes.")
 Register_PerRunConfigOption(CFGID_CMDENV_EVENT_BANNERS, "cmdenv-event-banners", CFG_BOOL, "true", "When `cmdenv-express-mode=false`: turns printing event banners on/off.")
 Register_PerRunConfigOption(CFGID_CMDENV_EVENT_BANNER_DETAILS, "cmdenv-event-banner-details", CFG_BOOL, "false", "When `cmdenv-express-mode=false`: print extra information after event banners.")
@@ -146,7 +146,7 @@ void Cmdenv::readPerRunOptions()
     opt->logDuringInitialize = cfg->getAsBool(CFGID_CMDENV_LOG_INITIALIZATION, !opt->silent && !opt->expressMode);
     opt->logDuringSimulation = cfg->getAsBool(CFGID_CMDENV_LOG_SIMULATION, !opt->silent && !opt->expressMode);
     opt->logDuringFinish = cfg->getAsBool(CFGID_CMDENV_LOG_FINALIZATION, !opt->silent && !opt->expressMode);
-    opt->logDuringCleanup = cfg->getAsBool(CFGID_CMDENV_LOG_CLEANUP, !opt->silent && !opt->expressMode);
+    opt->logDuringCleanup = cfg->getAsBool(CFGID_CMDENV_LOG_CLEANUP);
     opt->autoflush = cfg->getAsBool(CFGID_CMDENV_AUTOFLUSH);
     opt->printEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNERS);
     opt->detailedEventBanners = cfg->getAsBool(CFGID_CMDENV_EVENT_BANNER_DETAILS);
