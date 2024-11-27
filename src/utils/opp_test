@@ -334,10 +334,8 @@ cmdenv-log-prefix = ""
                 key = key.strip()
                 value = value.strip()
 
-                if key in self.count:
-                    self.count[key] += 1
-                else:
-                    self.count[key] = 1
+                self.count.setdefault(key, 0)
+                self.count[key] += 1
                 key_index = f"{key}({self.count[key]})"
                 self.values[key_index] = value
             else:
@@ -380,10 +378,8 @@ cmdenv-log-prefix = ""
 
         # fake a _defaults.ini after the other inifiles
         key = "inifile"
-        if key in self.count:
-            self.count[key] += 1
-        else:
-            self.count[key] = 1
+        self.count.setdefault(key, 0)
+        self.count[key] += 1
         key_index = f"{key}({self.count[key]})"
         self.values[key_index] = "_defaults.ini"
         self.bodies[key_index] = self.INITemplate
