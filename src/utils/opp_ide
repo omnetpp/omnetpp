@@ -29,7 +29,7 @@ DEFAULT_WORKSPACE_ARGS="-vmargs -Dosgi.instance.area.default=$IDEDIR/../samples"
 
 case $PLATFORM in
 *MINGW*)
-        $IDEDIR/${LAUNCHER}.exe --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
+        $IDEDIR/${LAUNCHER}.exe --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2> $HOME/.omnet-error.log &
         ;;
 *Linux*)
         if [ $(grep -i microsoft /proc/version) ]; then
@@ -37,7 +37,9 @@ case $PLATFORM in
             export GDK_BACKEND=x11
         fi
         export WEBKIT_DISABLE_DMABUF_RENDERER=1 # workaround for crashes on eclipse 24-03. (later versions should not need this)
-        $IDEDIR/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
+        STATE_DIR=${XDG_STATE_HOME:-$HOME/.local/state}/omnetpp
+        mkdir -p $STATE_DIR
+        $IDEDIR/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2> $STATE_DIR/error.log &
         ;;
 *Darwin*)
         # remove the quarantine extended bit so the IDE will not be copied to a private dir on macOS sierra and later
@@ -46,7 +48,7 @@ case $PLATFORM in
         IDE_NATIVE_PLUGIN_DIR=$(echo "$IDEDIR/${LAUNCHER}.app"/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx*)
         export PATH="$IDE_NATIVE_PLUGIN_DIR:$PATH"
         # starting the executable directly allows to avoid unsigned app warnings showing up
-        $IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2>$IDEDIR/error.log &
+        $IDEDIR/${LAUNCHER}.app/Contents/MacOS/${LAUNCHER} --launcher.openFile "$@" $DEFAULT_WORKSPACE_ARGS 2> $HOME/.omnet-error.log &
         ;;
 *)
         echo $PRODUCT IDE is supported only on: Linux, Windows and macOS
