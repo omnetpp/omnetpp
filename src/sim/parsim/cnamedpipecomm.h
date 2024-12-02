@@ -109,6 +109,21 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     virtual int getProcId() const override;
 
     /**
+     * Sending pointers is not supported.
+     */
+    virtual bool supportsTransferringPointers() override {return false;}
+
+    /**
+     * Serializes the message into the buffer.
+     */
+    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId) override;
+
+    /**
+     * Deserializes the message from the buffer.
+     */
+    virtual cMessage *unpackMessage(cCommBuffer *buffer) override;
+
+    /**
      * Creates an empty buffer of type cMemCommBuffer.
      */
     virtual cCommBuffer *createCommBuffer() override;

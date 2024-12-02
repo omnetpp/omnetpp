@@ -98,6 +98,17 @@ int cMPICommunications::getProcId() const
     return myRank;
 }
 
+bool cMPICommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId)
+{
+    buffer->packObject(msg);
+    return false;
+}
+
+cMessage *cMPICommunications::unpackMessage(cCommBuffer *buffer)
+{
+    return (cMessage *)buffer->unpackObject();
+}
+
 cMPICommBuffer *cMPICommunications::doCreateCommBuffer()
 {
     return new cMPICommBuffer();

@@ -24,6 +24,7 @@ namespace omnetpp {
 class cCommBuffer;
 class cConfiguration;
 class cSimulation;
+class cMessage;
 
 #define PARSIM_ANY_TAG  -1
 
@@ -72,6 +73,23 @@ class SIM_API cParsimCommunications : public cObject
 
     /** @name Buffers, send, receive */
     //@{
+    /**
+     * Whether messages need to be serialized to be transferred, or sending the pointer also works.
+     */
+    virtual bool supportsTransferringPointers() = 0;
+
+    /**
+     * Packs a message object into the buffer. Returns a "keepit" flag, which
+     * will be used as the value returned from cProxyGate::deliver();
+     * see cGate::deliver() for more info.
+     */
+    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId) = 0;
+
+    /**
+     * Unpacks a message object from the buffer.
+     */
+    virtual cMessage *unpackMessage(cCommBuffer *buffer) = 0;
+
     /**
      * Creates an empty buffer that can be used to send/receive data
      */

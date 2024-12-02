@@ -34,6 +34,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
+#include "omnetpp/cmessage.h"
 #include "cmemcommbuffer.h"
 
 namespace omnetpp {
@@ -152,6 +153,17 @@ int cNamedPipeCommunications::getNumPartitions() const
 int cNamedPipeCommunications::getProcId() const
 {
     return myProcId;
+}
+
+bool cNamedPipeCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId)
+{
+    buffer->packObject(msg);
+    return false;
+}
+
+cMessage *cNamedPipeCommunications::unpackMessage(cCommBuffer *buffer)
+{
+    return (cMessage *)buffer->unpackObject();
 }
 
 cCommBuffer *cNamedPipeCommunications::createCommBuffer()

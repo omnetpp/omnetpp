@@ -29,6 +29,7 @@
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
 #include "omnetpp/clog.h"
+#include "omnetpp/cmessage.h"
 #include "omnetpp/platdep/platmisc.h"
 #include "cfilecomm.h"
 #include "cfilecommbuffer.h"
@@ -79,6 +80,17 @@ int cFileCommunications::getNumPartitions() const
 int cFileCommunications::getProcId() const
 {
     return myProcId;
+}
+
+bool cFileCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId)
+{
+    buffer->packObject(msg);
+    return false;
+}
+
+cMessage *cFileCommunications::unpackMessage(cCommBuffer *buffer)
+{
+    return (cMessage *)buffer->unpackObject();
 }
 
 cCommBuffer *cFileCommunications::createCommBuffer()

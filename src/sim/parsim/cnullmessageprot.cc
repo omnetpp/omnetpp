@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include "omnetpp/cmessage.h"
+#include "omnetpp/cpacket.h"
 #include "omnetpp/cmodule.h"
 #include "omnetpp/cgate.h"
 #include "omnetpp/cenvir.h"
@@ -155,7 +156,7 @@ bool cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptio
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
         packOptions(buffer, options);
-        buffer->packObject(msg);
+        comm->packMessage(buffer, msg, destProcId);
         comm->send(buffer, TAG_CMESSAGE_WITH_NULLMESSAGE, destProcId);
     }
     else
@@ -166,11 +167,13 @@ bool cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptio
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
         packOptions(buffer, options);
-        buffer->packObject(msg);
+        comm->packMessage(buffer, msg, destProcId);
         comm->send(buffer, TAG_CMESSAGE, destProcId);
     }
     comm->recycleCommBuffer(buffer);
-    return false; // caller should delete msg
+
+    bool keepit = comm->supportsTransferringPointers();
+    return keepit;
 }
 
 void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
@@ -180,22 +183,16 @@ void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, i
     simtime_t eit;
 
     switch (tag) {
-        case TAG_CMESSAGE_WITH_NULLMESSAGE: {
+        case TAG_CMESSAGE_WITH_NULLMESSAGE:
             buffer->unpack(eit);
             processReceivedEIT(sourceProcId, eit);
-            buffer->unpack(destModuleId);
-            buffer->unpack(destGateId);
-            SendOptions options = unpackOptions(buffer);
-            cMessage *msg = (cMessage *)buffer->unpackObject();
-            processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
-            break;
-        }
+            // **no break** -- intentional fallthrough to TAG_CMESSAGE
 
         case TAG_CMESSAGE: {
             buffer->unpack(destModuleId);
             buffer->unpack(destGateId);
             SendOptions options = unpackOptions(buffer);
-            cMessage *msg = (cMessage *)buffer->unpackObject();
+            cMessage *msg = comm->unpackMessage(buffer);
             processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
             break;
         }
