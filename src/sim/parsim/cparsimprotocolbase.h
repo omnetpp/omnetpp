@@ -62,8 +62,10 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
 
     /**
      * Performs no optimization, just sends out the cMessage to the given partition.
+     * The return value is a "keepit" flag that cProxyGate::deliver() will
+     * return; see cGate::deliver() for explanation.
      */
-    virtual void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
+    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
 };
 
 }  // namespace omnetpp

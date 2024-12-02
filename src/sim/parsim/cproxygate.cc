@@ -45,8 +45,7 @@ bool cProxyGate::deliver(cMessage *msg, const SendOptions& options, simtime_t t)
         throw cRuntimeError(this, "Cannot deliver message '%s': Not connected to remote gate", msg->getName());
 
     msg->setArrivalTime(t);  // merge arrival time into message
-    partition->processOutgoingMessage(msg, options, remoteProcId, remoteModuleId, remoteGateId, data);
-    return false;  // meaning message should be deleted
+    return partition->processOutgoingMessage(msg, options, remoteProcId, remoteModuleId, remoteGateId, data);
 }
 
 void cProxyGate::setRemoteGate(short procId, int moduleId, int gateId)

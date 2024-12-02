@@ -146,8 +146,10 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * A hook called from cProxyGate::deliver() when an outgoing cMessage
      * arrives at partition boundary. We just pass it up to the synchronization
      * layer (see similar method in cParsimSynchronizer).
+     * The return value is a "keepit" flag that cProxyGate::deliver() will
+     * return; see cGate::deliver() for explanation.
      */
-    virtual void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data);
+    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data);
 
     /**
      * Process messages coming from other partitions. This method is called from

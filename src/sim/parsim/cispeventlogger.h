@@ -71,7 +71,7 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
      * Overridden to check that the model doesn't set message priority which
      * we need for our own purposes.
      */
-    void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
+    bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
 
     /**
      * Scheduler function. The addition to the base class is

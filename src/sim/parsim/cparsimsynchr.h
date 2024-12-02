@@ -100,8 +100,10 @@ class SIM_API cParsimSynchronizer : public cScheduler
      * It is provided here so that the synchronizer can potentially
      * perform optimizations, such as piggybacking null messages
      * (see null message algorithm) on outgoing messages.
+     * The return value is a "keepit" flag that cProxyGate::deliver() will
+     * return; see cGate::deliver() for explanation.
      */
-    virtual void processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) = 0;
+    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) = 0;
 };
 
 }  // namespace omnetpp

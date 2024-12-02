@@ -47,7 +47,7 @@ void cParsimProtocolBase::packOptions(cCommBuffer *buffer, const SendOptions& op
     buffer->pack(options.remainingDuration);
 }
 
-void cParsimProtocolBase::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *)
+bool cParsimProtocolBase::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *)
 {
     cCommBuffer *buffer = comm->createCommBuffer();
 
@@ -58,6 +58,7 @@ void cParsimProtocolBase::processOutgoingMessage(cMessage *msg, const SendOption
     comm->send(buffer, TAG_CMESSAGE, destProcId);
 
     comm->recycleCommBuffer(buffer);
+    return false; // caller should delete msg
 }
 
 void cParsimProtocolBase::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)

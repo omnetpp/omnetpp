@@ -287,13 +287,13 @@ bool cParsimPartition::isModuleLocal(cModule *parentmod, const char *modname, in
     }
 }
 
-void cParsimPartition::processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data)
+bool cParsimPartition::processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data)
 {
     if (debug)
         EV << "sending message '" << msg->getFullName() << "' (for T="
            << msg->getArrivalTime() << " to procId=" << procId << ")\n";
 
-    synch->processOutgoingMessage(msg, options, procId, moduleId, gateId, data);
+    return synch->processOutgoingMessage(msg, options, procId, moduleId, gateId, data);
 }
 
 void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)

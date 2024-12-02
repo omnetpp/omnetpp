@@ -129,7 +129,7 @@ void cNullMessageProtocol::endRun()
     lookaheadcalc->endRun();
 }
 
-void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *data)
+bool cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *data)
 {
     // calculate lookahead
     simtime_t lookahead = lookaheadcalc->getCurrentLookahead(msg, destProcId, data);
@@ -170,6 +170,7 @@ void cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptio
         comm->send(buffer, TAG_CMESSAGE, destProcId);
     }
     comm->recycleCommBuffer(buffer);
+    return false; // caller should delete msg
 }
 
 void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
