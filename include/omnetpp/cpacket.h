@@ -171,6 +171,13 @@ class SIM_API cPacket : public cMessage
     virtual void parsimUnpack(cCommBuffer *buffer) override;
 
     /**
+     * Make sure the message does not share objects with other messages.
+     * Overridden to deal with encapsulated packets that are shared among
+     * copies of the same packet.
+     */
+    virtual void unshare() override;
+
+    /**
      * Returns true.
      */
     virtual bool isPacket() const override {return true;}

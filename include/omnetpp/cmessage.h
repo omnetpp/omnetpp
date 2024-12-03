@@ -232,6 +232,14 @@ class SIM_API cMessage : public cEvent
      * See cObject for more details.
      */
     virtual void parsimUnpack(cCommBuffer *buffer) override;
+
+    /**
+     * Make sure the message does not share objects with other messages. This is
+     * used e.g. to avoid race conditions in multithreaded parallel simulation
+     * when the message object is passed to another thread. To be redefined
+     * in subclasses that contain shared pointers or a similar mechanism.
+     */
+    virtual void unshare();
     //@}
 
     /** @name Message attributes. */

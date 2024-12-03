@@ -187,6 +187,10 @@ void cMessage::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
+void cMessage::unshare()
+{
+}
+
 cMessage& cMessage::operator=(const cMessage& msg)
 {
     if (this == &msg)

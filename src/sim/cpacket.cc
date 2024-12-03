@@ -122,6 +122,19 @@ void cPacket::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
+void cPacket::unshare()
+{
+#ifdef REFCOUNTING
+    if (encapsulatedPacket) {
+        if (encapsulatedPacket->shareCount > 0) {
+            encapsulatedPacket->shareCount--;
+            take(encapsulatedPacket = (cPacket *)encapsulatedPacket->dup());
+        }
+        encapsulatedPacket->unshare();
+    }
+#endif
+}
+
 cPacket& cPacket::operator=(const cPacket& msg)
 {
     if (this == &msg)
