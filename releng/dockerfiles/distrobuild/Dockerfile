@@ -1,4 +1,4 @@
-FROM ghcr.io/omnetpp/distrobuild-base:ubuntu20.04-macos12.3-240715
+FROM ghcr.io/omnetpp/distrobuild-base:ubuntu20.04-macos12.3-241218
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)
@@ -32,7 +32,7 @@ RUN git config --global --add safe.directory /root/omnetpp-repo/.git
 RUN git checkout master && \
     cp configure.user.dist configure.user && \
     source ./setenv -f && \
-    ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no WITH_PYTHON=no && \
+    ./configure WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no && \
     make MODE=release ui -j$(nproc) && \
     OFFLINE=no releng/ide/java/build-ide-java && \
     rm -rf $OMNETPP_DIR

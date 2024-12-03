@@ -122,8 +122,8 @@ opp_rwildcard=$(foreach d,$(wildcard $1*),$(call opp_rwildcard,$d/,$2) $(filter 
 PERL = perl
 YACC = bison -y -Wno-yacc
 LEX = flex
-CC = x86_64-w64-mingw32-gcc-posix
-CXX = x86_64-w64-mingw32-g++-posix
+CC = x86_64-w64-mingw32-gcc
+CXX = x86_64-w64-mingw32-g++
 TOOLCHAIN_NAME = gcc
 DEFINES =
 SANITIZE_FLAGS =  -fsanitize=leak,address,undefined
@@ -155,7 +155,7 @@ LN = ln -f
 MKPATH = mkdir -p
 SHLIB_POSTPROCESS = opp_shlib_postprocess
 SWIG = swig
-QMAKE =
+QMAKE = 
 MOC=
 UIC=
 RCC=
@@ -163,23 +163,23 @@ RCC=
 HAVE_DLOPEN = 0
 HAVE_SWAPCONTEXT = 0
 SYS_LIBS =
-QT_CFLAGS =
-QT_LIBS =
-QTENV_LDFLAGS =
-OSG_CFLAGS =
-OSG_LIBS =
-OSGEARTH_CFLAGS =
-OSGEARTH_LIBS =
-ZLIB_CFLAGS =
+QT_CFLAGS = 
+QT_LIBS = 
+QTENV_LDFLAGS = 
+OSG_CFLAGS = 
+OSG_LIBS = 
+OSGEARTH_CFLAGS = 
+OSGEARTH_LIBS = 
+ZLIB_CFLAGS = 
 ZLIB_LIBS = -lz
-MPI_CFLAGS =
-MPI_LIBS =
+MPI_CFLAGS = 
+MPI_LIBS = 
 PTHREAD_CFLAGS =  -mthreads
 PTHREAD_LIBS = -lpthread -mthreads
-LIBXML_CFLAGS =
-LIBXML_LIBS =
-AKAROA_CFLAGS =
-AKAROA_LIBS =
+LIBXML_CFLAGS = 
+LIBXML_LIBS = 
+AKAROA_CFLAGS = 
+AKAROA_LIBS = 
 
 #
 # platform specific library and executable prefixes and extensions
@@ -235,6 +235,7 @@ ifeq ($(WITH_PARSIM),yes)
     KERNEL_LIBS += $(MPI_LIBS)
   endif
 endif
+
 
 # this macro can be used to pass EXPORT macros to the compiler if omnet is built as shared library
 ifeq ($(SHARED_LIBS),yes)
