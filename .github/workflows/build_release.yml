@@ -43,7 +43,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, build: linux-x86_64, preinstall_cmd: "sudo apt update" }
+          - { os: ubuntu-24.04, build: linux-x86_64, preinstall_cmd: "sudo apt update" }
           - { os: macos-14, build: macos-aarch64 }
           - { os: windows-latest, build: windows-x86_64 }
 
@@ -110,7 +110,7 @@ jobs:
 
   install_in_docker:
     needs: build_ide
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     strategy:
       fail-fast: false
