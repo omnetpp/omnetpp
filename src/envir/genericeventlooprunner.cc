@@ -15,6 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <thread>
+#include <fstream>
 #include "common/stringutil.h"
 #include "omnetpp/cevent.h"
 #include "omnetpp/cmessage.h"
@@ -242,6 +243,34 @@ static char *timeToStr(double t, char *buf)
     return buf;
 }
 
+#ifdef __linux__
+
+static long getCpuFrequencyHz(int coreid)
+{
+    std::string cpuinfoPath = std::string("/sys/devices/system/cpu/cpu") + std::to_string(coreid) + std::string("/cpufreq/scaling_cur_freq");
+    std::ifstream f(cpuinfoPath.c_str());
+    if (!f.is_open())
+        return 0;
+    std::string line;
+    std::getline(f, line);
+    f.close();
+    return 1000*opp_atol(line.c_str());
+}
+
+inline std::string formatFrequencyHz(long hz)
+{
+    if (hz >= 1000000000)
+        return std::to_string(hz/1000000000.0) + " GHz";
+    else if (hz >= 1000000)
+        return std::to_string(hz/1000000.0) + " MHz";
+    else if (hz >= 1000)
+        return std::to_string(hz/1000.0) + " kHz";
+    else
+        return std::to_string(hz) + " Hz";
+}
+
+#endif
+
 void GenericEventLoopRunner::printStatusUpdate()
 {
     speedometer.beginNewInterval();
@@ -262,6 +291,11 @@ void GenericEventLoopRunner::printStatusUpdate()
         out << "     Messages:  created: " << cMessage::getTotalMessageCount()
             << "   present: " << cMessage::getLiveMessageCount()
             << "   in FES: " << simulation->getFES()->getLength() << std::endl;
+
+#ifdef __linux__
+        int coreid = sched_getcpu();
+        out << "     Running on core " << coreid << " at " << formatFrequencyHz(getCpuFrequencyHz(coreid)) << std::endl;
+#endif
     }
     else {
         char buf[64];
