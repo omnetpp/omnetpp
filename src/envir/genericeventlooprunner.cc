@@ -277,7 +277,10 @@ void GenericEventLoopRunner::printStatusUpdate()
 
     if (printPerformanceData) {
         char buf[64];
-        out << "** Event #" << simulation->getEventNumber()
+        out << "** ";
+        if (simulation->getParsimNumPartitions() > 1)
+            out << "Partition " << simulation->getParsimProcId() << "   ";
+        out << "Event #" << simulation->getEventNumber()
             << "   t=" << simulation->getSimTime()
             << "   Elapsed: " << timeToStr(simulation->getElapsedTime(), buf);
         if (printThreadId)
