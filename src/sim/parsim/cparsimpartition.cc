@@ -133,13 +133,12 @@ void cParsimPartition::shutdown()
 
 void cParsimPartition::connectRemoteGates()
 {
-    cCommBuffer *buffer = comm->createCommBuffer();
-
     //
     // Step 1: broadcast list of all "normal" input gates that may have corresponding
     // proxy gates in other partitions (as they need to redirect here)
     //
     EV << "connecting remote gates: step 1 - broadcasting input gates...\n";
+    std::vector<RemoteGateInfo> inputGates;
     for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
         cModule *mod = sim->getModule(modId);
         if (mod && !mod->isPlaceholder()) {
@@ -150,79 +149,48 @@ void cParsimPartition::connectRemoteGates()
                     // be a local module and our module will be a placeholder with proxy gates
                     cGate *srcg = g->getPathStartGate();
                     if (srcg != g && srcg->getOwnerModule()->isPlaceholder()) {
-                        // pack gate "address" here
-                        buffer->pack(g->getOwnerModule()->getId());
-                        buffer->pack(g->getId());
-                        // pack gate name
-                        buffer->pack(g->getOwnerModule()->getFullPath().c_str());
-                        buffer->pack(g->getName());
-                        buffer->pack(g->isVector() ? g->getIndex() : -1);
+                        RemoteGateInfo rgi;
+                        rgi.moduleId = g->getOwnerModule()->getId();
+                        rgi.gateId = g->getId();
+                        rgi.moduleFullPath = g->getOwnerModule()->getFullPath();
+                        rgi.gateName = g->getName();
+                        rgi.gateIndex = g->isVector() ? g->getIndex() : -1;
+                        inputGates.push_back(rgi);
                     }
                 }
             }
         }
     }
-    buffer->pack(-1);  // "the end"
-    comm->broadcast(buffer, TAG_SETUP_LINKS);
 
     //
     // Step 2: collect info broadcast by others, and use it to fill in output cProxyGates
     //
     EV << "connecting remote gates: step 2 - collecting broadcasts sent by others...\n";
-    for (int i = 0; i < comm->getNumPartitions()-1; i++) {
-        // receive:
-        int tag, remoteProcId;
-        // note: *must* filter for TAG_SETUP_LINKS here, to prevent race conditions
-        if (!comm->receiveBlocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId))
-            throw cRuntimeError("connectRemoteGates() interrupted by user");
-        ASSERT(tag == TAG_SETUP_LINKS);
+    std::vector<RemoteGateInfo> remoteGates = communicateRemoteGates(inputGates);
 
-        EV << "  processing msg from procId=" << remoteProcId << "...\n";
+    // process what we got:
+    for (const RemoteGateInfo& rgi : remoteGates) {
+        // find corresponding output gate (if we have it) and set remote
+        // gate address to the received one
+        cModule *m = sim->findModuleByPath(rgi.moduleFullPath.c_str());
+        cGate *g = !m ? nullptr : rgi.gateIndex == -1 ? m->gate(rgi.gateName.c_str()) : m->gate(rgi.gateName.c_str(), rgi.gateIndex);
+        cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
 
-        // process what we got:
-        while (true) {
-            int remoteModId;
-            int remoteGateId;
-            char *moduleFullPath;
-            char *gateName;
-            int gateIndex;
+        EV << "    gate: " << rgi.moduleFullPath << "." << rgi.gateName;
+        if (rgi.gateIndex >= 0)
+            EV << "["  << rgi.gateIndex << "]";
+        EV << " - ";
+        if (!pg)
+            EV << "not here\n";
+        else
+            EV << "points to (procId=" << rgi.remoteProcId << " moduleId=" << rgi.moduleId << " gateId=" << rgi.gateId << ")\n";
 
-            // unpack a gate -- modId==-1 indicates end of packet
-            buffer->unpack(remoteModId);
-            if (remoteModId == -1)
-                break;
-            buffer->unpack(remoteGateId);
-            buffer->unpack(moduleFullPath);
-            buffer->unpack(gateName);
-            buffer->unpack(gateIndex);
-
-            // find corresponding output gate (if we have it) and set remote
-            // gate address to the received one
-            cModule *m = sim->findModuleByPath(moduleFullPath);
-            cGate *g = !m ? nullptr : gateIndex == -1 ? m->gate(gateName) : m->gate(gateName, gateIndex);
-            cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
-
-            EV << "    gate: " << moduleFullPath << "." << gateName;
-            if (gateIndex >= 0)
-                EV << "["  << gateIndex << "]";
-            EV << " - ";
-            if (!pg)
-                EV << "not here\n";
-            else
-                EV << "points to (procId=" << remoteProcId << " moduleId=" << remoteModId << " gateId=" << remoteGateId << ")\n";
-
-            if (pg) {
-                pg->setPartition(this);
-                pg->setRemoteGate(remoteProcId, remoteModId, remoteGateId);
-            }
-
-            delete[] moduleFullPath;
-            delete[] gateName;
+        if (pg) {
+            pg->setPartition(this);
+            pg->setRemoteGate(rgi.remoteProcId, rgi.moduleId, rgi.gateId);
         }
-        buffer->assertBufferEmpty();
     }
     EV << "  done.\n";
-    comm->recycleCommBuffer(buffer);
 
     // verify that all gates have been connected
     for (int modId = 0; modId <= sim->getLastComponentId(); modId++) {
@@ -237,6 +205,44 @@ void cParsimPartition::connectRemoteGates()
             }
         }
     }
+}
+
+std::vector<cParsimPartition::RemoteGateInfo> cParsimPartition::communicateRemoteGates(const std::vector<RemoteGateInfo>& inputGates)
+{
+    cCommBuffer *buffer = comm->createCommBuffer();
+    for (const RemoteGateInfo& rgi : inputGates) {
+        buffer->pack(rgi.moduleId);
+        buffer->pack(rgi.gateId);
+        buffer->pack(rgi.moduleFullPath.c_str());
+        buffer->pack(rgi.gateName.c_str());
+        buffer->pack(rgi.gateIndex);
+    }
+    buffer->pack(-1);  // "the end"
+    comm->broadcast(buffer, TAG_SETUP_LINKS);
+
+    std::vector<RemoteGateInfo> remoteGates;
+    for (int i = 0; i < comm->getNumPartitions()-1; i++) {
+        // receive:
+        int tag, remoteProcId;
+        // note: *must* filter for TAG_SETUP_LINKS here, to prevent race conditions
+        if (!comm->receiveBlocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId))
+            throw cRuntimeError("connectRemoteGates() interrupted by user");
+        ASSERT(tag == TAG_SETUP_LINKS);
+        RemoteGateInfo rgi;
+        rgi.remoteProcId = remoteProcId;
+        while (true) {
+            buffer->unpack(rgi.moduleId);
+            if (rgi.moduleId == -1)
+                break;
+            buffer->unpack(rgi.gateId);
+            buffer->unpack(rgi.moduleFullPath);
+            buffer->unpack(rgi.gateName);
+            buffer->unpack(rgi.gateIndex);
+            remoteGates.push_back(rgi);
+        }
+        EV << "  processing msg from procId=" << remoteProcId << "...\n";
+    }
+    return remoteGates;
 }
 
 bool cParsimPartition::isModuleLocal(cModule *parentmod, const char *modname, int index)

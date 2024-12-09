@@ -63,9 +63,21 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     cParsimSynchronizer *synch = nullptr;
     bool debug = false;
 
+    // internal: helper for connectRemoteGates()
+    struct RemoteGateInfo
+    {
+        int remoteProcId;
+        int moduleId;
+        int gateId;
+        opp_string moduleFullPath;
+        opp_string gateName;
+        int gateIndex;
+    };
+
   protected:
     // internal: fills in remote gate addresses of all cProxyGate's in the current partition
     void connectRemoteGates();
+    std::vector<RemoteGateInfo> communicateRemoteGates(const std::vector<RemoteGateInfo>& inputGates);
 
     /**
      * A cISimulationLifecycleListener method. Delegates to startRun(), endRun() and
