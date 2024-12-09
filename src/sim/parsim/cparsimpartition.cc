@@ -209,39 +209,45 @@ void cParsimPartition::connectRemoteGates()
 
 std::vector<cParsimPartition::RemoteGateInfo> cParsimPartition::communicateRemoteGates(const std::vector<RemoteGateInfo>& inputGates)
 {
-    cCommBuffer *buffer = comm->createCommBuffer();
     for (const RemoteGateInfo& rgi : inputGates) {
+        cCommBuffer *buffer = comm->createCommBuffer();
         buffer->pack(rgi.moduleId);
         buffer->pack(rgi.gateId);
         buffer->pack(rgi.moduleFullPath.c_str());
         buffer->pack(rgi.gateName.c_str());
         buffer->pack(rgi.gateIndex);
+        comm->broadcast(buffer, TAG_SETUP_LINKS);
+        comm->recycleCommBuffer(buffer);
     }
+    cCommBuffer *buffer = comm->createCommBuffer();
     buffer->pack(-1);  // "the end"
     comm->broadcast(buffer, TAG_SETUP_LINKS);
+    comm->recycleCommBuffer(buffer);
 
+    buffer = comm->createCommBuffer();
     std::vector<RemoteGateInfo> remoteGates;
-    for (int i = 0; i < comm->getNumPartitions()-1; i++) {
-        // receive:
+    int numEnds = 0;
+    while (numEnds < comm->getNumPartitions()-1) {
         int tag, remoteProcId;
-        // note: *must* filter for TAG_SETUP_LINKS here, to prevent race conditions
         if (!comm->receiveBlocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId))
             throw cRuntimeError("connectRemoteGates() interrupted by user");
         ASSERT(tag == TAG_SETUP_LINKS);
+
         RemoteGateInfo rgi;
         rgi.remoteProcId = remoteProcId;
-        while (true) {
-            buffer->unpack(rgi.moduleId);
-            if (rgi.moduleId == -1)
-                break;
+        buffer->unpack(rgi.moduleId);
+        if (rgi.moduleId == -1)
+            numEnds++;
+        else {
             buffer->unpack(rgi.gateId);
             buffer->unpack(rgi.moduleFullPath);
             buffer->unpack(rgi.gateName);
             buffer->unpack(rgi.gateIndex);
             remoteGates.push_back(rgi);
         }
-        EV << "  processing msg from procId=" << remoteProcId << "...\n";
+        //EV << "  processing msg from procId=" << remoteProcId << "...\n";
     }
+    comm->recycleCommBuffer(buffer);
     return remoteGates;
 }
 
