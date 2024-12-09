@@ -209,45 +209,53 @@ void cParsimPartition::connectRemoteGates()
 
 std::vector<cParsimPartition::RemoteGateInfo> cParsimPartition::communicateRemoteGates(const std::vector<RemoteGateInfo>& inputGates)
 {
-    for (const RemoteGateInfo& rgi : inputGates) {
-        cCommBuffer *buffer = comm->createCommBuffer();
-        buffer->pack(rgi.moduleId);
-        buffer->pack(rgi.gateId);
-        buffer->pack(rgi.moduleFullPath.c_str());
-        buffer->pack(rgi.gateName.c_str());
-        buffer->pack(rgi.gateIndex);
-        comm->broadcast(buffer, TAG_SETUP_LINKS);
-        comm->recycleCommBuffer(buffer);
-    }
-    cCommBuffer *buffer = comm->createCommBuffer();
-    buffer->pack(-1);  // "the end"
-    comm->broadcast(buffer, TAG_SETUP_LINKS);
-    comm->recycleCommBuffer(buffer);
-
-    buffer = comm->createCommBuffer();
     std::vector<RemoteGateInfo> remoteGates;
     int numEnds = 0;
-    while (numEnds < comm->getNumPartitions()-1) {
-        int tag, remoteProcId;
-        if (!comm->receiveBlocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId))
-            throw cRuntimeError("connectRemoteGates() interrupted by user");
-        ASSERT(tag == TAG_SETUP_LINKS);
+    int inputGateIndexToSend = 0;
+    while (inputGateIndexToSend < inputGates.size() || numEnds < comm->getNumPartitions()-1) {
 
-        RemoteGateInfo rgi;
-        rgi.remoteProcId = remoteProcId;
-        buffer->unpack(rgi.moduleId);
-        if (rgi.moduleId == -1)
-            numEnds++;
-        else {
-            buffer->unpack(rgi.gateId);
-            buffer->unpack(rgi.moduleFullPath);
-            buffer->unpack(rgi.gateName);
-            buffer->unpack(rgi.gateIndex);
-            remoteGates.push_back(rgi);
+        if (inputGateIndexToSend < inputGates.size()) {
+            // send one item
+            cCommBuffer *buffer = comm->createCommBuffer();
+            auto& rgi = inputGates[inputGateIndexToSend++];
+            buffer->pack(rgi.moduleId);
+            buffer->pack(rgi.gateId);
+            buffer->pack(rgi.moduleFullPath.c_str());
+            buffer->pack(rgi.gateName.c_str());
+            buffer->pack(rgi.gateIndex);
+            comm->broadcast(buffer, TAG_SETUP_LINKS);
+            comm->recycleCommBuffer(buffer);
+
+            if (inputGateIndexToSend == inputGates.size()) {
+                cCommBuffer *buffer = comm->createCommBuffer();
+                buffer->pack(-1);  // "the end"
+                comm->broadcast(buffer, TAG_SETUP_LINKS);
+                comm->recycleCommBuffer(buffer);
+            }
         }
-        //EV << "  processing msg from procId=" << remoteProcId << "...\n";
+
+        if (numEnds < comm->getNumPartitions()-1) {
+            // receive one item
+            int tag, remoteProcId;
+            cCommBuffer *buffer = comm->createCommBuffer();
+            while (comm->receiveNonblocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId)) {
+                ASSERT(tag == TAG_SETUP_LINKS);
+                RemoteGateInfo rgi;
+                rgi.remoteProcId = remoteProcId;
+                buffer->unpack(rgi.moduleId);
+                if (rgi.moduleId == -1)
+                    numEnds++;
+                else {
+                    buffer->unpack(rgi.gateId);
+                    buffer->unpack(rgi.moduleFullPath);
+                    buffer->unpack(rgi.gateName);
+                    buffer->unpack(rgi.gateIndex);
+                    remoteGates.push_back(rgi);
+                }
+            }
+            comm->recycleCommBuffer(buffer);
+        }
     }
-    comm->recycleCommBuffer(buffer);
     return remoteGates;
 }
 
