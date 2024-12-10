@@ -69,6 +69,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     // common impl. for receiveBlocking() and receiveNonblocking()
     bool receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
     bool doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
+    void extract(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, const ReceivedBuffer& item);
 
   public:
     /**

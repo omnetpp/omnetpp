@@ -23,18 +23,17 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
-
 #include "omnetpp/cexception.h"
+#include "omnetpp/clog.h"
 #include "omnetpp/globals.h"
 #include "omnetpp/regmacros.h"
+#include "omnetpp/cconfigoption.h"
+#include "omnetpp/stringutil.h"
 #include "omnetpp/cenvir.h"
-#include "omnetpp/clog.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfiguration.h"
-#include "omnetpp/cconfigoption.h"
 #include "omnetpp/cmessage.h"
 #include "cmemcommbuffer.h"
-#include "parsimutil.h"
 
 namespace omnetpp {
 
@@ -43,6 +42,40 @@ Register_Class(cNamedPipeCommunications);
 Register_GlobalConfigOption(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX, "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp", "When `cNamedPipeCommunications` is selected as parsim communications class: selects the name prefix for Windows named pipes created.");
 
 #define PIPE_INBUFFERSIZE    (1024*1024) /*1MB*/
+
+static int readBytes(HANDLE h, void *buf, int len)
+{
+    int tot = 0;
+    DWORD bytesRead;
+    while (tot < len) {
+        if (!ReadFile(h, (char *)buf+tot, len-tot, &bytesRead, nullptr)) {
+            DWORD error = GetLastError();
+            if (error == ERROR_NO_DATA)  // this is not an error
+                bytesRead = 0;
+            else
+                return -1;
+        }
+        tot += bytesRead;
+    }
+    return tot;
+}
+
+static int writeBytes(HANDLE h, void *buf, int len)
+{
+    int tot = 0;
+    DWORD bytesWritten;
+    while (tot < len) {
+        if (!WriteFile(h, (char *)buf+tot, len-tot, &bytesWritten, nullptr)) {
+            DWORD error = GetLastError();
+            if (error == ERROR_NO_DATA)  // this is not an error
+                bytesWritten = 0;
+            else
+                return -1;
+        }
+        tot += bytesWritten;
+    }
+    return tot;
+}
 
 // FIXME resolve duplication -- we have this in Envir as well
 static std::string getWindowsError()
@@ -80,12 +113,22 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
 {
     delete[] rpipes;
     delete[] wpipes;
+
+    for (auto item : receivedBuffers)
+        delete item.buffer;
 }
 
-void cNamedPipeCommunications::configure(cConfiguration *cfg, int np, int procId)
+void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int procId)
 {
+    simulation = sim;
     numPartitions = np;
     myProcId = procId;
+    if (numPartitions == -1)
+        throw cRuntimeError("%s: Number of partitions not specified", getClassName());
+    if (myProcId == -1)
+        throw cRuntimeError("%s: procID not specified", getClassName());
+    if (numPartitions < 1 || myProcId < 0 || myProcId >= numPartitions)
+        throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or procID (%d)", getClassName(), np, procId);
     prefix = cfg->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
 
     EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
@@ -145,6 +188,16 @@ void cNamedPipeCommunications::configure(cConfiguration *cfg, int np, int procId
 
 void cNamedPipeCommunications::shutdown()
 {
+    for (int i = 0; i < numPartitions; i++) {
+        if (rpipes != nullptr && rpipes[i] != INVALID_HANDLE_VALUE) {
+            CloseHandle(rpipes[i]);
+            rpipes[i] = INVALID_HANDLE_VALUE;
+        }
+        if (wpipes != nullptr && wpipes[i] != INVALID_HANDLE_VALUE) {
+            CloseHandle(wpipes[i]);
+            wpipes[i] = INVALID_HANDLE_VALUE;
+        }
+    }
 }
 
 int cNamedPipeCommunications::getNumPartitions() const
@@ -163,7 +216,7 @@ bool cNamedPipeCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, i
     return false;
 }
 
-void cNamedPipeCommunications::unpackMessage()
+cMessage *cNamedPipeCommunications::unpackMessage(cCommBuffer *buffer)
 {
     return (cMessage *)buffer->unpackObject();
 }
@@ -186,39 +239,61 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
     struct PipeHeader ph;
     ph.tag = tag;
     ph.contentLength = b->getMessageSize();
+    if (writeBytes(h, &ph, sizeof(ph)) == -1)
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
+    if (writeBytes(h, b->getBuffer(), ph.contentLength) == -1)
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
+}
 
-    unsigned long bytesWritten;
-    if (!WriteFile(h, &ph, sizeof(ph), &bytesWritten, 0))
-        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
-    if (!WriteFile(h, b->getBuffer(), ph.contentLength, &bytesWritten, 0))
-        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
+inline void cNamedPipeCommunications::extract(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, const ReceivedBuffer& item)
+{
+    receivedTag = item.receivedTag;
+    sourceProcId = item.sourceProcId;
+    ((cMemCommBuffer*)buffer)->swap(item.buffer);
+    delete item.buffer;
 }
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
-    // return one from the previously buffered ones, if exist
-    for (auto it = receivedBuffers.begin(); it != receivedBuffers.end(); ++it) {
-        if (it->receivedTag == filtTag || filtTag == PARSIM_ANY_TAG) {
-            receivedTag = it->receivedTag;
-            sourceProcId = it->sourceProcId;
-            ((cMemCommBuffer*)buffer)->swap(it->buffer);
-            delete it->buffer;
+    if (filtTag == PARSIM_ANY_TAG) {
+        // try returning a previously received one
+        if (!receivedBuffers.empty()) {
+            extract(buffer, receivedTag, sourceProcId, receivedBuffers.front());
+            receivedBuffers.pop_front();
+            return true;
+        }
+
+        // receive from pipe
+        bool received = doReceive(buffer, receivedTag, sourceProcId, blocking);
+        while (!received && blocking)
+            received = doReceive(buffer, receivedTag, sourceProcId, blocking);
+        return received;
+    }
+    else {
+        // try returning a previously received one
+        auto it = std::find_if(receivedBuffers.begin(), receivedBuffers.end(), [filtTag](const ReceivedBuffer& elem) { return elem.receivedTag == filtTag; });
+        if (it != receivedBuffers.end()) {
+            extract(buffer, receivedTag, sourceProcId, *it);
             receivedBuffers.erase(it);
             return true;
         }
-    }
 
-    // receive from pipe
-    bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
+        // receive from pipe
+        bool received;
+        do {
+            received = doReceive(buffer, receivedTag, sourceProcId, blocking);
 
-    // if received one with a wrong tag, store it for later and return false
-    if (recv && filtTag != PARSIM_ANY_TAG && filtTag != receivedTag) {
-        cMemCommBuffer *copy = new cMemCommBuffer();
-        ((cMemCommBuffer*)buffer)->swap(copy);
-        receivedBuffers.push_back({receivedTag, sourceProcId, copy});
-        return false;
+            // if received one with a wrong tag, store it for later
+            if (received && filtTag != receivedTag) {
+                cMemCommBuffer *copy = new cMemCommBuffer();
+                ((cMemCommBuffer*)buffer)->swap(copy);
+                receivedBuffers.push_back({receivedTag, sourceProcId, copy});
+                received = false; // continue trying if blocking
+            }
+        } while (blocking && !received);
+
+        return received;
     }
-    return recv;
 }
 
 bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)

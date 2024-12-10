@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <algorithm>
 #include <cerrno>
 #include <fcntl.h>
 #include <unistd.h>
@@ -59,6 +60,22 @@ static int readBytes(int fd, void *buf, int len)
     return tot;
 }
 
+static int writeBytes(int fd, void *buf, int len)
+{
+    int tot = 0;
+    while (tot < len) {
+        int n = write(fd, (char *)buf+tot, len-tot);
+        if (n == -1) {
+            if (errno == EAGAIN)  // this is not an error
+                n = 0;
+            else
+                return -1;
+        }
+        tot += n;
+    }
+    return tot;
+}
+
 struct PipeHeader
 {
     int tag;
@@ -83,8 +100,10 @@ void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, 
     simulation = sim;
     numPartitions = np;
     myProcId = procId;
-    if (numPartitions == -1 || myProcId == -1)
-        throw cRuntimeError("%s: Number of partitions or procID not specified", getClassName());
+    if (numPartitions == -1)
+        throw cRuntimeError("%s: Number of partitions not specified", getClassName());
+    if (myProcId == -1)
+        throw cRuntimeError("%s: procID not specified", getClassName());
     if (numPartitions < 1 || myProcId < 0 || myProcId >= numPartitions)
         throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or procID (%d)", getClassName(), np, procId);
 
@@ -93,24 +112,22 @@ void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, 
     EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
 
     // create and open pipes for read
-    int i;
     rpipes = new int[numPartitions];
-    for (i = 0; i < numPartitions; i++) {
-        if (i == myProcId) {
-            rpipes[i] = -1;
+    std::fill_n(rpipes, numPartitions, -1);
+    for (int i = 0; i < numPartitions; i++) {
+        if (i == myProcId)
             continue;
-        }
 
         char fname[256];
         sprintf(fname, "%spipe-%d-%d", prefix.buffer(), myProcId, i);
         EV << "cNamedPipeCommunications: creating and opening pipe '" << fname << "' for read...\n";
         unlink(fname);
-        if (mknod(fname, S_IFIFO|0600, 0) == -1)
+        if (mkfifo(fname, 0600) == -1)
             throw cRuntimeError("cNamedPipeCommunications: Cannot create pipe '%s': %s", fname, strerror(errno));
         rpipes[i] = open(fname, O_RDONLY|O_NONBLOCK);
         if (rpipes[i] == -1)
             throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for read: %s", fname, strerror(errno));
-
+        fcntl(rpipes[i], F_SETPIPE_SZ, 1024*1024);
         if (rpipes[i] > maxFdPlus1)
             maxFdPlus1 = rpipes[i];
     }
@@ -118,30 +135,32 @@ void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, 
 
     // open pipes for write
     wpipes = new int[numPartitions];
-    for (i = 0; i < numPartitions; i++) {
-        if (i == myProcId) {
-            wpipes[i] = -1;
+    std::fill_n(wpipes, numPartitions, -1);
+    for (int i = 0; i < numPartitions; i++) {
+        if (i == myProcId)
             continue;
-        }
 
         char fname[256];
         sprintf(fname, "%spipe-%d-%d", prefix.buffer(), i, myProcId);
         EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
-        wpipes[i] = open(fname, O_WRONLY);
-        for (int k = 0; k < 30 && wpipes[i] == -1; k++) {
-            sleep(1);
-            wpipes[i] = open(fname, O_WRONLY);
+        wpipes[i] = open(fname, O_WRONLY|O_NONBLOCK);
+        for (int k = 0; k < 100 && wpipes[i] == -1; k++) {
+            usleep(10000);
+            wpipes[i] = open(fname, O_WRONLY|O_NONBLOCK);
         }
         if (wpipes[i] == -1)
             throw cRuntimeError("cNamedPipeCommunications: Cannot open pipe '%s' for write: %s", fname, strerror(errno));
+        fcntl(wpipes[i], F_SETPIPE_SZ, 1024*1024);
     }
 }
 
 void cNamedPipeCommunications::shutdown()
 {
     for (int i = 0; i < numPartitions; i++) {
-        close(rpipes[i]);
-        close(wpipes[i]);
+        if (rpipes != nullptr && rpipes[i] != -1)
+            close(rpipes[i]);
+        if (wpipes != nullptr && wpipes[i] != -1)
+            close(wpipes[i]);
     }
 }
 
@@ -184,37 +203,61 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
     struct PipeHeader ph;
     ph.tag = tag;
     ph.contentLength = b->getMessageSize();
-    if (write(fd, &ph, sizeof(ph)) == -1)
+    if (writeBytes(fd, &ph, sizeof(ph)) == -1)
         throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
-    if (write(fd, b->getBuffer(), ph.contentLength) == -1)
+    if (writeBytes(fd, b->getBuffer(), ph.contentLength) == -1)
         throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
+}
+
+inline void cNamedPipeCommunications::extract(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, const ReceivedBuffer& item)
+{
+    receivedTag = item.receivedTag;
+    sourceProcId = item.sourceProcId;
+    ((cMemCommBuffer*)buffer)->swap(item.buffer);
+    delete item.buffer;
 }
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
-    // return one from the previously buffered ones, if exist
-    for (auto it = receivedBuffers.begin(); it != receivedBuffers.end(); ++it) {
-        if (it->receivedTag == filtTag || filtTag == PARSIM_ANY_TAG) {
-            receivedTag = it->receivedTag;
-            sourceProcId = it->sourceProcId;
-            ((cMemCommBuffer*)buffer)->swap(it->buffer);
-            delete it->buffer;
+    if (filtTag == PARSIM_ANY_TAG) {
+        // try returning a previously received one
+        if (!receivedBuffers.empty()) {
+            extract(buffer, receivedTag, sourceProcId, receivedBuffers.front());
+            receivedBuffers.pop_front();
+            return true;
+        }
+
+        // receive from pipe
+        bool received = doReceive(buffer, receivedTag, sourceProcId, blocking);
+        while (!received && blocking)
+            received = doReceive(buffer, receivedTag, sourceProcId, blocking);
+        return received;
+    }
+    else {
+        // try returning a previously received one
+        auto it = std::find_if(receivedBuffers.begin(), receivedBuffers.end(), [filtTag](const ReceivedBuffer& elem) { return elem.receivedTag == filtTag; });
+        if (it != receivedBuffers.end()) {
+            extract(buffer, receivedTag, sourceProcId, *it);
             receivedBuffers.erase(it);
             return true;
         }
-    }
 
-    // receive from pipe
-    bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
+        // receive from pipe
+        bool received;
+        do {
+            received = doReceive(buffer, receivedTag, sourceProcId, blocking);
 
-    // if received one with a wrong tag, store it for later and return false
-    if (recv && filtTag != PARSIM_ANY_TAG && filtTag != receivedTag) {
-        cMemCommBuffer *copy = new cMemCommBuffer();
-        ((cMemCommBuffer*)buffer)->swap(copy);
-        receivedBuffers.push_back({receivedTag, sourceProcId, copy});
-        return false;
+            // if received one with a wrong tag, store it for later
+            if (received && filtTag != receivedTag) {
+                cMemCommBuffer *copy = new cMemCommBuffer();
+                ((cMemCommBuffer*)buffer)->swap(copy);
+                receivedBuffers.push_back({receivedTag, sourceProcId, copy});
+                received = false; // continue trying if blocking
+            }
+        } while (blocking && !received);
+
+        return received;
     }
-    return recv;
 }
 
 bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
@@ -229,6 +272,8 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     for (i = 0; i < numPartitions; i++)
         if (rpipes[i] != -1)
             FD_SET(rpipes[i], &fdset);
+        else
+            ASSERT(i == myProcId);
 
 
     struct timeval tv;
