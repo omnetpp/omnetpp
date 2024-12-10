@@ -141,7 +141,7 @@ void cModule::doDeleteModule()
         for (const auto& vector: subcomponentData->submoduleVectors)
             for (cModule *module: vector.array)
                 if (module != nullptr)
-                    module->deleteModule();
+                    module->doDeleteModule();
     }
 
     // delete remaining connections
