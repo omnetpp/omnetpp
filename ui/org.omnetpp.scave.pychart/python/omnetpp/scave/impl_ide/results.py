@@ -77,7 +77,9 @@ def _get_array_from_shm(name_and_size : str):
 
     name, shm = shm_ctor_wrapper(name)
 
-    arr = np.copy(np.frombuffer(shm.buf, dtype=np.double, offset=8))
+    # We have to pass the count too, because macOS may give us a slightly larger buffer
+    # than we asked for, and we must not read the extra zeroes after the real data.
+    arr = np.copy(np.frombuffer(shm.buf, dtype=np.double, offset=8, count=(size-8)//8))
     shm.buf[0] = 1 # signal that we got it
     shm.buf.release()
     shm.close()
