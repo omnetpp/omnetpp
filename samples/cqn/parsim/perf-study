@@ -1,0 +1,251 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import pandas as pd
+import itertools
+import subprocess
+import matplotlib.pyplot as plt
+import datetime
+
+base_cmdline = ['../cqn_dbg', '-s', '-n..', '-u', 'Cmdenv', '-f', 'omnetpp.ini', '-f', 'partitioning.ini', '--real-time-limit=10s']
+
+model_variables = {
+    'numInitialJobs': [2],
+    'queueServiceTime': ['exponential(10s)'],
+    'numTandems': [120],
+    'numQueues': [10],
+    'queueDelay': ['1s'],
+    'switchDelay': ['1s', '10s', '100s', '1000s']
+}
+
+parsim_variables = {
+    'communication': ['mt-mem-msgpacking', 'mt-mem-msgptrpassing', 'mt-mem-msgptrpassing-spinlock', 'mt-np'],
+    'numPartitions': [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
+}
+
+variable_to_args = {
+    'numInitialJobs': ['--**.numInitialJobs={value}'],
+    'queueServiceTime': ['--**.serviceTime={value}'],
+    'numTandems': ['--*.numTandems={value}'],
+    'numQueues': ['--**.numQueues={value}'],
+    'queueDelay': ['--**.qDelay={value}'],
+    'switchDelay': ['--**.sDelay={value}'],
+    'communication': {
+        'seq': [
+            '--parallel-simulation=false'
+        ],
+        'mt-np': [
+            '--parallel-simulation=true',
+            '--parsim-mode=multithreaded',
+            '--parsim-communications-class=cNamedPipeCommunications'
+        ],
+        'mt-mem-msgpacking': [
+            '--parallel-simulation=true',
+            '--parsim-mode=multithreaded',
+            '--parsim-communications-class=cInProcessCommunications',
+            '--parsim-inprocess-comm-send-pointers=false',
+            '--parsim-inprocess-comm-use-spinlock=false'
+        ],
+        'mt-mem-msgptrpassing': [
+            '--parallel-simulation=true',
+            '--parsim-mode=multithreaded',
+            '--parsim-communications-class=cInProcessCommunications',
+            '--parsim-inprocess-comm-send-pointers=true',
+            '--parsim-inprocess-comm-use-spinlock=false'
+        ],
+        'mt-mem-msgptrpassing-spinlock': [
+            '--parallel-simulation=true',
+            '--parsim-mode=multithreaded',
+            '--parsim-communications-class=cInProcessCommunications',
+            '--parsim-inprocess-comm-send-pointers=true',
+            '--parsim-inprocess-comm-use-spinlock=true'
+        ],
+    }
+}
+
+def make_cmdline(row):
+    args = []
+    for k, v in variable_to_args.items():
+        if isinstance(v, dict):
+            args.extend(v[row[k]])
+        else:
+            args.extend([vi.format(value=row[k]) for vi in v])
+
+    num_tandems = row['numTandems']
+    num_partitions = row['numPartitions']
+    inifile = f"cqn-{row['numTandems']}-partitioning.ini"
+
+    partitioning_config = [
+        "-f",
+        inifile,
+        "-c",
+        f"Cqn-{num_tandems}-{num_partitions}"
+    ]
+
+    if not os.path.exists(inifile):
+        write_partitioning_ini(num_tandems, 16, inifile)
+
+    return base_cmdline + args + partitioning_config
+
+def create_input_dataframe():
+    # Generate all parsim combinations
+    all_variables = {**model_variables, **parsim_variables}
+    parsim_tuples = list(itertools.product(*all_variables.values()))
+
+    # Generate corresponding sequential simulation combinations
+    seq_variables = {
+        'communication': ['seq'],
+        'numPartitions': [1]
+    }
+    all_seq_variables = {**model_variables, **seq_variables}
+    seq_tuples = list(itertools.product(*all_seq_variables.values()))
+    assert all_variables.keys() == all_seq_variables.keys()
+
+    # Create dataframe
+    df = pd.DataFrame(seq_tuples + parsim_tuples, columns=all_variables.keys())
+
+    # Add 'cmdline' column
+    df['cmdline'] = df.apply(make_cmdline, axis=1)
+    return df
+
+def run_simulation(cmdline, progress_label):
+    print("***", progress_label+':', ' '.join(cmdline))
+    proc = subprocess.run(cmdline, capture_output=True, text=True)
+    with open('log.txt', 'a') as f:
+        f.write("-"*80 + "\n")
+        f.write(datetime.datetime.now().isoformat() + "\n")
+        f.write('*** ' + progress_label + ': ' + ' '.join(cmdline) + '\n')
+        f.write("\nstdout:\n")
+        f.write(proc.stdout)
+        if proc.stderr:
+            f.write("\nstderr:\n")
+            f.write(proc.stderr)
+        f.write("\n"*3)
+
+    if proc.returncode != 0:
+        print("error, see log.txt")
+        return None, None, None
+
+    output = proc.stdout
+    output = output.split('--------------', 1)[1] if '--------------' in output else output
+    simulated_time = float(output.split('Simulated Time: ')[1].split('\n', 1)[0])
+    elapsed_seconds = float(output.split('Elapsed Seconds: ')[1].split('\n', 1)[0])
+    events_simulated = int(output.split('Events Simulated: ')[1].split('\n', 1)[0])
+
+    print(f"  - Simulated Time: {simulated_time:.2f}s")
+    print(f"  - Elapsed Seconds: {elapsed_seconds:.2f}s")
+    print(f"  - Events Simulated: {events_simulated}")
+    print(f"  - Performance: {events_simulated / elapsed_seconds:.2f} ev/s")
+
+    return simulated_time, elapsed_seconds, events_simulated
+
+def run_simulations(df):
+    for idx, row in df.iterrows():
+        progress_label = f"{idx+1}/{len(df)}"
+        simulated_time, elapsed_seconds, events_simulated = run_simulation(row['cmdline'], progress_label)
+        df.loc[idx, 'simulated_time'] = simulated_time
+        df.loc[idx, 'elapsed_seconds'] = elapsed_seconds
+        df.loc[idx, 'events_simulated'] = events_simulated
+        df.loc[idx, 'ev-per-sec'] = (events_simulated / elapsed_seconds) if simulated_time else None
+
+def write_partitioning_ini(num_tandems, max_num_partitions, ini_file_name):
+    configs = [ generate_partitioning_config(num_tandems, n) for n in range(1, max_num_partitions+1) ]
+    with open(ini_file_name, 'w') as f:
+        f.write('\n\n'.join(configs))
+
+def generate_partitioning_config(num_tandems, num_partitions):
+    if num_partitions > num_tandems:
+        raise ValueError("Number of partitions cannot exceed number of tandem queues")
+
+    # Calculate base number of queues per partition and remaining queues
+    base_size = num_tandems // num_partitions
+    remainder = num_tandems % num_partitions
+
+    # Generate partition assignments
+    ini_content = [
+        f"[Cqn-{num_tandems}-{num_partitions}]",
+        f'*.numTandems = {num_tandems}',
+        f'parsim-num-partitions = {num_partitions}',
+    ]
+    current_queue = 0
+    for partition_id in range(num_partitions):
+        # Determine the number of queues in this partition
+        partition_size = base_size + (1 if partition_id < remainder else 0)
+        start_queue = current_queue
+        end_queue = start_queue + partition_size - 1
+
+        # Add to ini content
+        ini_content.append(f"*.tandemQueue[{start_queue}..{end_queue}]**.partition-id = {partition_id}")
+
+        # Update the current queue index
+        current_queue += partition_size
+
+    return "\n".join(ini_content)
+
+def get_sequential_ev_per_sec(row):
+    seq_df = df[(df['numInitialJobs'] == row['numInitialJobs']) &
+                (df['queueServiceTime'] == row['queueServiceTime']) &
+                (df['numTandems'] == row['numTandems']) &
+                (df['numQueues'] == row['numQueues']) &
+                (df['queueDelay'] == row['queueDelay']) &
+                (df['switchDelay'] == row['switchDelay']) &
+                (df['communication'] == 'seq')]
+    if len(seq_df) != 1:
+        print(f"Warning: No (or more than one) sequential simulation found for {row}")
+        return None
+    return seq_df['ev-per-sec'].iloc[0]
+
+def compute_speedup(df):
+    df['seq-ev-per-sec'] = df.apply(get_sequential_ev_per_sec, axis=1)
+    df['speedup'] = df['ev-per-sec'] / df['seq-ev-per-sec']
+
+# pd.set_option('display.max_colwidth', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_rows', None)
+
+def plot_speedup(df, filename):
+    # for communication, group in df.groupby('communication'):
+    #     plt.plot(group['numPartitions'], group['ev-per-sec'], label=communication)
+    # for switchDelay, group in df.groupby('switchDelay'):
+    #     plt.plot(group['numPartitions'], group['ev-per-sec'], label=switchDelay)
+    # for (communication, switchDelay), group in df.groupby(['communication', 'switchDelay']):
+    #     plt.plot(group['numPartitions'], group['ev-per-sec'], label=f"{communication} - {switchDelay}")
+    plt.figure(figsize=(16,9))
+    markers = itertools.cycle(('o', 's', '^'))
+    colors = itertools.cycle(plt.cm.tab10.colors)
+
+    for communication, color in zip(df['switchDelay'].unique(), colors):
+        for switchDelay, marker in zip([c for c in df['communication'].unique() if c != 'seq'], markers):
+            group = df[(df['switchDelay'] == communication) & (df['communication'] == switchDelay)]
+            plt.plot(group['numPartitions'], group['speedup'], marker=marker, color=color,
+                     label=f"{communication} - {switchDelay}")
+    plt.xlim(xmin=0)
+    plt.ylim(ymin=0)
+    plt.xlabel('Number of cores')
+    plt.ylabel('Speedup')
+    plt.grid(True, which='major', linestyle='--', alpha=0.5)
+    plt.grid(True, which='minor', linestyle=':', alpha=0.5)
+    plt.minorticks_on()
+    plt.legend()
+    if filename:
+        plt.savefig(filename, bbox_inches='tight')
+    plt.show()
+
+#
+# Main entry point
+#
+if len(sys.argv) > 1:
+    csv_file = sys.argv[1]
+    df = pd.read_csv(csv_file)
+    print(df)
+    plot_speedup(df, csv_file.replace('.csv', '.pdf'))
+else:
+    df = create_input_dataframe()
+    print(df)
+    run_simulations(df)
+    compute_speedup(df)
+    print(df)
+    timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    df.to_csv(f'simulation_results-{timestamp}.csv', index=False)
+    plot_speedup(df, f'simulation_results-{timestamp}.pdf')
