@@ -36,6 +36,7 @@
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/checkandcast.h"
 #include "omnetpp/ceventlooprunner.h"
+#include "sim/stopwatch.h"
 #include "sim/netbuilder/cnedloader.h"
 #include "cmdenvsimulationrunner.h"
 #include "cmdenvnarrator.h"
@@ -241,11 +242,17 @@ void CmdenvSimulationRunner::doRunSimulation(BatchState& state, InifileContents 
     narrator->preparing(configName, runNumber);
 
     std::unique_ptr<cConfiguration> cfg(ini->extractConfig(configName, runNumber));
-    cTerminationException *reason = setupAndRunSimulation(state, cfg.get());
-    delete reason;
+    SimulationSummary result = setupAndRunSimulation(state, cfg.get());
+
+    std::cout << "-------------------------------------" << std::endl;
+    std::cout << "Simulated Time: " << result.simulatedTime.str() << std::endl;
+    std::cout << "Elapsed Seconds: " << result.elapsedSecs << std::endl;
+    std::cout << "Events Simulated: " << result.eventsSimulated << std::endl;
+    if (result.terminationReason)
+        std::cout << "Termination Reason: " << result.terminationReason->what() << std::endl;
 }
 
-cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(BatchState& state, cConfiguration *cfg)
+CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunSimulation(BatchState& state, cConfiguration *cfg, int partitionId)
 {
     state.stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
 
@@ -283,19 +290,34 @@ cTerminationException *CmdenvSimulationRunner::setupAndRunSimulation(BatchState&
 
     //TODO some errors logged from lifecycle listener, but not those thrown directly! -- DO NOT LOG VIA LIFECYCLE LISTENER
     try {
-        simulation->setupNetwork(cfg);
+        simulation->setupNetwork(cfg, partitionId);
 
-        bool isTerminated = !simulation->run(runner, true);
+        Stopwatch stopwatch;
+
+        simulation->callInitialize();
+
+        stopwatch.startClock();
+        bool isTerminated = !simulation->run(runner, false);
+        stopwatch.stopClock();
+
+        simulation->callFinish();
+
+        SimulationSummary result;
+        result.simulatedTime = simulation->getSimTime();
+        result.elapsedSecs = stopwatch.getElapsedSecs(); // note: this is pure event processing, excluding initialization and finalization
+        result.eventsSimulated = simulation->getEventNumber();
+        cTerminationException *terminationReason = simulation->getTerminationReason()->dup();
+        result.terminationReason = std::shared_ptr<cTerminationException>(terminationReason);
+
         if (!isTerminated)
             throw cRuntimeError("Simulation paused before running to completion");
 
-        cTerminationException *terminationReason = simulation->getTerminationReason()->dup();
         if (redirectOutput)
             narrator->logException(fout, *terminationReason);  //TODO why not from listener?
 
         simulation->deleteNetwork();  // note: without this, exceptions during teardown would be swallowed by cSimulation dtor
 
-        return terminationReason;
+        return result;
     }
     catch (cRuntimeError& e) {
         simulation->deleteNetworkOnError(e);
