@@ -349,10 +349,15 @@ void cGate::installChannel(cChannel *chan)
 
 void cGate::disconnect()
 {
+    doDisconnect(true);
+}
+
+void cGate::doDisconnect(bool shouldCallPreDelete)
+{
     if (!nextGate)
         return;
 
-    if (channel)
+    if (channel && shouldCallPreDelete)
         channel->callPreDelete(channel);
 
     // notify pre-change listeners

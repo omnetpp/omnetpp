@@ -130,7 +130,7 @@ void cModule::doDeleteModule()
     for (GateIterator it(this); !it.end(); ++it) {
         cGate *gate = *it;
         if (gate->isConnectedOutside())
-            gate->disconnect();
+            gate->doDisconnect(false);
     }
 
     // delete submodules
@@ -148,9 +148,9 @@ void cModule::doDeleteModule()
     for (GateIterator it(this); !it.end(); ++it) {
         cGate *gate = *it;
         if (gate->getNextGate())
-            gate->disconnect();
+            gate->doDisconnect(false);
         if (gate->getPreviousGate())
-            gate->getPreviousGate()->disconnect();
+            gate->getPreviousGate()->doDisconnect(false);
     }
 
     // delete all gates

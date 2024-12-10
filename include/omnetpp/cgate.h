@@ -150,6 +150,9 @@ class SIM_API cGate : public cObject, noncopyable
     // internal
     void checkChannels() const;
 
+    // internal
+    void doDisconnect(bool shouldCallPreDelete);
+
 #ifdef SIMFRONTEND_SUPPORT
     // internal
     virtual bool hasChangedSince(int64_t lastRefreshSerial);
