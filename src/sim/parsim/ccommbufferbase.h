@@ -17,6 +17,7 @@
 #ifndef __OMNETPP_CCOMMBUFFERBASE_H
 #define __OMNETPP_CCOMMBUFFERBASE_H
 
+#include <thread>
 #include "omnetpp/ccommbuffer.h"
 
 namespace omnetpp {
@@ -28,12 +29,16 @@ namespace omnetpp {
 class SIM_API cCommBufferBase : public cCommBuffer
 {
   protected:
+#ifndef NDEBUG
+    std::thread::id ownerThread;
+#endif
     char *mBuffer = nullptr; // the buffer
     int mBufferSize = 0;     // size of buffer allocated
     int mMsgSize = 0;        // current msg size (incremented by pack() functions)
     int mPosition = 0;       // current position in buffer for unpacking
 
   protected:
+    void initOwnerThread();
     void extendBufferFor(int dataSize);
 
   public:
@@ -66,6 +71,24 @@ class SIM_API cCommBufferBase : public cCommBuffer
      * Copies the contents of another buffer into this buffer.
      */
     virtual void copyFrom(const cCommBuffer *other) override;
+
+    /**
+     * Records the thread ID of the thread that owns this buffer. This is used
+     * to detect incorrect thread access in debug builds.
+     */
+    void setOwnerThread(std::thread::id tid);
+
+    /**
+     * Returns the thread ID of the thread that owns this buffer. Throws an
+     * exception in release-mode builds.
+     */
+    std::thread::id getOwnerThread() const;
+
+    /**
+     * Checks whether the buffer is being accessed from the thread that owns it.
+     * Does nothing in release-mode builds.
+     */
+    void checkThreadAccess() const { ASSERT(ownerThread == std::this_thread::get_id()); }
 
     /** @name Buffer management */
     //@{
