@@ -37,6 +37,21 @@ class SIM_API cMemCommBuffer : public cCommBufferBase
     cMemCommBuffer() {}
 
     /**
+     * Copy constructor.
+     */
+    cMemCommBuffer(const cMemCommBuffer& other) : cCommBufferBase(other) {}
+
+    /**
+     * Move constructor.
+     */
+    cMemCommBuffer(cMemCommBuffer&& other) : cCommBufferBase(std::move(other)) {}
+
+    /**
+     * Move assignment operator.
+     */
+    cMemCommBuffer& operator=(cMemCommBuffer&& other) noexcept;
+
+    /**
      * Destructor.
      */
     virtual ~cMemCommBuffer() {}

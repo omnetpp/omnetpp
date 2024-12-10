@@ -40,12 +40,32 @@ class SIM_API cCommBufferBase : public cCommBuffer
     /**
      * Constructor.
      */
-    cCommBufferBase() {}
+    cCommBufferBase();
+
+    /**
+     * Copy constructor.
+     */
+    cCommBufferBase(const cCommBufferBase& other);
+
+    /**
+     * Move constructor.
+     */
+    cCommBufferBase(cCommBufferBase&& other);
+
+    /**
+     * Move assignment operator.
+     */
+    cCommBufferBase& operator=(cCommBufferBase&& other) noexcept;
 
     /**
      * Destructor.
      */
     virtual ~cCommBufferBase();
+
+    /**
+     * Copies the contents of another buffer into this buffer.
+     */
+    virtual void copyFrom(const cCommBuffer *other) override;
 
     /** @name Buffer management */
     //@{

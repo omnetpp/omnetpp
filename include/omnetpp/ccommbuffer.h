@@ -19,6 +19,8 @@
 #include <cstdint>
 #include "cobject.h"
 #include "simtime.h"
+#include "cexception.h"
+#include "errmsg.h"
 
 namespace omnetpp {
 
@@ -45,6 +47,19 @@ class SIM_API cCommBuffer : public cObject
      * Virtual destructor
      */
     virtual ~cCommBuffer() {}
+
+    /**
+     * Copies the contents of another buffer into this buffer. The contents of
+     * the source buffer is not modified. The source buffer must be the same
+     * cCommBuffer subclass as this one.
+     */
+    virtual void copyFrom(const cCommBuffer *other) = 0;
+
+    /**
+     * dup() is not supported, because comm buffers are supposed to be acquired
+     * from cParsimCommunications::createCommBuffer(), and not created directly.
+     */
+    virtual cCommBuffer *dup() const override { throw cRuntimeError(this, E_CANTDUP); }
 
     /** @name Buffer management */
     //@{

@@ -19,6 +19,54 @@
 
 namespace omnetpp {
 
+cCommBufferBase::cCommBufferBase()
+{
+}
+
+cCommBufferBase::cCommBufferBase(const cCommBufferBase& other) : cCommBuffer(other)
+{
+    mBuffer = nullptr;
+    mBufferSize = other.mBufferSize;
+    mMsgSize = other.mMsgSize;
+    mPosition = other.mPosition;
+    if (other.mBuffer) {
+        mBuffer = new char[mBufferSize];
+        std::copy(other.mBuffer, other.mBuffer + mBufferSize, mBuffer);
+    }
+}
+
+cCommBufferBase::cCommBufferBase(cCommBufferBase&& other) : mBuffer(other.mBuffer), mBufferSize(other.mBufferSize), mMsgSize(other.mMsgSize), mPosition(other.mPosition)
+{
+    other.mBuffer = nullptr;
+    other.mBufferSize = other.mMsgSize = other.mPosition = 0;
+}
+
+cCommBufferBase& cCommBufferBase::operator=(cCommBufferBase&& other) noexcept
+{
+    if (this != &other) {
+        if (mBuffer) {
+            delete[] mBuffer;
+            mBuffer = nullptr;
+        }
+        std::swap(mBuffer, other.mBuffer);
+        mBufferSize = other.mBufferSize;
+        mMsgSize = other.mMsgSize;
+        mPosition = other.mPosition;
+
+        other.mBufferSize = other.mMsgSize = other.mPosition = 0;
+    }
+    return *this;
+}
+
+void cCommBufferBase::copyFrom(const cCommBuffer *other)
+{
+    const cCommBufferBase *oth = static_cast<const cCommBufferBase *>(other);
+    allocateAtLeast(oth->getMessageSize());
+    mMsgSize = oth->getMessageSize();
+    mPosition = 0;
+    std::copy(oth->getBuffer(), oth->getBuffer() + mMsgSize, mBuffer);
+}
+
 cCommBufferBase::~cCommBufferBase()
 {
     delete[] mBuffer;
