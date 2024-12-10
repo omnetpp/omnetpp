@@ -1,0 +1,113 @@
+%description:
+Test that preDelete is called exactly once for each component in the network teardown phase.
+
+%file: test.ned
+channel NoisyChannel extends ned.IdealChannel {
+    @class(NoisyChannel);
+}
+
+module NoisyModule {
+    parameters:
+        @class(NoisyModule);
+        int numChildren = default(0);
+    gates:
+        inout g @loose;
+    submodules:
+        children[numChildren]: NoisyModule;
+    connections allowunconnected:
+        g <--> NoisyChannel <--> children[0].g if numChildren > 0;
+}
+
+network Test
+{
+    submodules:
+        root: NoisyModule {
+            numChildren = 3;
+            *.numChildren = 2;
+            *.*.numChildren = 2;
+        };
+}
+
+%file: test.cc
+
+#include <cstring>
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class NoisyModule : public cModule
+{
+  public:
+    virtual void preDelete(cComponent *root) override {
+        EV << "preDelete() on " << getFullPath() << " as part of " << root->getFullPath() << std::endl;
+    }
+};
+
+Define_Module(NoisyModule);
+
+class NoisyChannel : public cIdealChannel
+{
+  public:
+    virtual void preDelete(cComponent *root) override {
+        EV << "preDelete() on " << getFullPath() << " as part of " << root->getFullPath() << std::endl;
+    }
+};
+
+Define_Channel(NoisyChannel);
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+cmdenv-log-cleanup = true
+
+%contains: stdout
+Calling finish() at end of Run #0...
+preDelete() on Test.root.g$i.channel as part of Test
+preDelete() on Test.root.children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[0].g$i.channel as part of Test
+preDelete() on Test.root.children[0].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[0].children[0].g$i.channel as part of Test
+preDelete() on Test.root.children[0].children[0].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[0].children[0].children[0] as part of Test
+preDelete() on Test.root.children[0].children[0].children[1] as part of Test
+preDelete() on Test.root.children[0].children[0] as part of Test
+preDelete() on Test.root.children[0].children[1].g$i.channel as part of Test
+preDelete() on Test.root.children[0].children[1].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[0].children[1].children[0] as part of Test
+preDelete() on Test.root.children[0].children[1].children[1] as part of Test
+preDelete() on Test.root.children[0].children[1] as part of Test
+preDelete() on Test.root.children[0] as part of Test
+preDelete() on Test.root.children[1].g$i.channel as part of Test
+preDelete() on Test.root.children[1].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[1].children[0].g$i.channel as part of Test
+preDelete() on Test.root.children[1].children[0].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[1].children[0].children[0] as part of Test
+preDelete() on Test.root.children[1].children[0].children[1] as part of Test
+preDelete() on Test.root.children[1].children[0] as part of Test
+preDelete() on Test.root.children[1].children[1].g$i.channel as part of Test
+preDelete() on Test.root.children[1].children[1].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[1].children[1].children[0] as part of Test
+preDelete() on Test.root.children[1].children[1].children[1] as part of Test
+preDelete() on Test.root.children[1].children[1] as part of Test
+preDelete() on Test.root.children[1] as part of Test
+preDelete() on Test.root.children[2].g$i.channel as part of Test
+preDelete() on Test.root.children[2].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[2].children[0].g$i.channel as part of Test
+preDelete() on Test.root.children[2].children[0].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[2].children[0].children[0] as part of Test
+preDelete() on Test.root.children[2].children[0].children[1] as part of Test
+preDelete() on Test.root.children[2].children[0] as part of Test
+preDelete() on Test.root.children[2].children[1].g$i.channel as part of Test
+preDelete() on Test.root.children[2].children[1].children[0].g$o.channel as part of Test
+preDelete() on Test.root.children[2].children[1].children[0] as part of Test
+preDelete() on Test.root.children[2].children[1].children[1] as part of Test
+preDelete() on Test.root.children[2].children[1] as part of Test
+preDelete() on Test.root.children[2] as part of Test
+preDelete() on Test.root as part of Test
+
+End.
