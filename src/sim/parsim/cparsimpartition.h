@@ -167,22 +167,13 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId);
 
     /**
-     * Called when a cTerminationException occurs (i.e. the simulation is
-     * about to be finished normally), this methods notifies other partitions
-     * about the exception.
+     * Called when an exception occurs, this methods notifies other partitions
+     * about the exception. This handles both cTerminationExceptions (i.e. when
+     * the simulation is about to be finished normally), and others (when the
+     * simulation is about to be stopped with an error message).
      *
-     * This methods "eats" exceptions that occur during broadcast. (We're
-     * not interested in cascading exceptions.)
-     */
-    virtual void broadcastTerminationException(cTerminationException& e);
-
-    /**
-     * Called when an exception occurs (i.e. the simulation is about to be
-     * stopped with an error), this methods notifies other partitions
-     * about the exception.
-     *
-     * This methods "eats" exceptions that occur during broadcast. (We're
-     * not interested in cascading exceptions.)
+     * This methods "eats" exceptions that occur during broadcast. (We're not
+     * interested in cascading exceptions.)
      */
     virtual void broadcastException(std::exception& e);
 };

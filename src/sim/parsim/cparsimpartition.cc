@@ -99,7 +99,7 @@ void cParsimPartition::lifecycleEvent(SimulationLifecycleEventType eventType, cO
             cTerminationException *e = check_and_cast<cTerminationException *>(details);
             bool isReceivedException = dynamic_cast<cReceivedTerminationException *>(e) != nullptr;
             if (!isReceivedException)
-                broadcastTerminationException(*e);
+                broadcastException(*e);
         }
         case LF_ON_SIMULATION_ERROR: {
             cException *e = check_and_cast<cException *>(details);
@@ -345,27 +345,14 @@ void cParsimPartition::processReceivedMessage(cMessage *msg, const SendOptions& 
         EVCB.endSend(msg);
 }
 
-void cParsimPartition::broadcastTerminationException(cTerminationException& e)
-{
-    // send TAG_TERMINATIONEXCEPTION to all partitions
-    cCommBuffer *buffer = comm->createCommBuffer();
-    buffer->pack(e.what());
-    try {
-        comm->broadcast(buffer, TAG_TERMINATIONEXCEPTION);
-    }
-    catch (std::exception&) {
-        // swallow exceptions -- here we're not interested in them
-    }
-    comm->recycleCommBuffer(buffer);
-}
-
 void cParsimPartition::broadcastException(std::exception& e)
 {
     // send TAG_EXCEPTION to all partitions
     cCommBuffer *buffer = comm->createCommBuffer();
     buffer->pack(e.what());
     try {
-        comm->broadcast(buffer, TAG_EXCEPTION);
+        int tag = dynamic_cast<cTerminationException*>(&e) != nullptr ? TAG_TERMINATIONEXCEPTION : TAG_EXCEPTION;
+        comm->broadcast(buffer, tag);
     }
     catch (std::exception&) {
         // swallow any exceptions -- here we're not interested in them
