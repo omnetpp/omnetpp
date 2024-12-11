@@ -2370,8 +2370,8 @@ void Qtenv::confirm(DialogKind kind, const char *msg)
     else {
         switch (kind) {
         case INFO: QMessageBox::information(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok); break;
-        case WARNING: QMessageBox::warning(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok); break;
-        case ERROR: QMessageBox::critical(mainWindow, "Confirm", msg, QMessageBox::StandardButton::Ok); break;
+        case WARNING: QMessageBox::warning(mainWindow, "Warning", msg, QMessageBox::StandardButton::Ok); break;
+        case ERROR: QMessageBox::critical(mainWindow, "Error", msg, QMessageBox::StandardButton::Ok); break;
         }
     }
 }
