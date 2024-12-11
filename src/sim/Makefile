@@ -68,6 +68,7 @@ OBJS_PARSIM=\
     $O/parsim/cidealsimulationprot.o $O/parsim/cispeventlogger.o \
     $O/parsim/ccommbufferbase.o $O/parsim/cfilecomm.o \
     $O/parsim/cfilecommbuffer.o $O/parsim/cnamedpipecomm-win.o $O/parsim/cnamedpipecomm.o \
+    $O/parsim/cinprocesscomm.o \
     $O/parsim/creceivedexception.o $O/parsim/cmpicomm.o $O/parsim/cmpicommbuffer.o
 
 OBJS= $(OBJS_STD)
