@@ -101,7 +101,10 @@ class SIM_API cParsimCommunications : public cObject
     virtual void recycleCommBuffer(cCommBuffer *buffer) = 0;
 
     /**
-     * Sends packed data with given tag to destination.
+     * Sends packed data with given tag to destination. IMPORTANT: send() is not
+     * guaranteed to preserve the buffer, i.e. it may be a destructive operation!
+     * Some subclasses may move the content out of the buffer, or replace it with
+     * arbitrary content.
      */
     virtual void send(cCommBuffer *buffer, int tag, int destination) = 0;
 

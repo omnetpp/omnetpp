@@ -33,16 +33,20 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
 
     int n = getNumPartitions();
     int myProcId = getProcId();
+    cCommBuffer *workBuffer = createCommBuffer();
     for (int i = 0; i < n; i++) {
         try {
-            if (myProcId != i)
-                send(buffer, tag, i);
+            if (myProcId != i) {
+                workBuffer->copyFrom(buffer);
+                send(workBuffer, tag, i);
+            }
         }
         catch (std::exception& e) {
             hadException = true;
             exceptionText = e.what();
         }
     }
+    recycleCommBuffer(workBuffer);
 
     if (hadException)
         throw cRuntimeError("Error during broadcast: %s", exceptionText.c_str());
