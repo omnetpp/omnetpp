@@ -89,6 +89,7 @@ using std::ostream;
 
 Register_GlobalConfigOption(CFGID_NETWORK, "network", CFG_STRING, nullptr, "The name of the network to be simulated. The package name can be omitted if the ini file is in the same directory as the NED file that contains the network.");
 Register_GlobalConfigOption(CFGID_PARALLEL_SIMULATION, "parallel-simulation", CFG_BOOL, "false", "Enables parallel distributed simulation.");
+Register_GlobalConfigOption(CFGID_PARSIM_MODE, "parsim-mode", CFG_CUSTOM, "distributed", "If `parallel-simulation=true`: Defines the operation mode of parallel simulation. Possible values: `distributed`, `multithreaded`. In `distributed` mode, simulations of parts of the whole network run in separate processes, which may execute in the same host or different hosts (if the transport layer supports it). In `multithreaded` mode, simulations of parts of the whole network run in separate threads within the same process, which allows utilization of multi-core CPUs and efficient communication. For both modes, `parsim-communications-class` needs to be set appropriately.");
 Register_GlobalConfigOption(CFGID_FUTUREEVENTSET_CLASS, "futureeventset-class", CFG_STRING, "omnetpp::cEventHeap", "Part of the Envir plugin mechanism: selects the class for storing the future events in the simulation. The class has to implement the `cFutureEventSet` interface.");
 Register_GlobalConfigOption(CFGID_SCHEDULER_CLASS, "scheduler-class", CFG_STRING, "omnetpp::cSequentialScheduler", "Part of the Envir plugin mechanism: selects the scheduler class. This plugin interface allows for implementing real-time, hardware-in-the-loop, distributed and distributed parallel simulation. The class has to implement the `cScheduler` interface.");
 Register_GlobalConfigOption(CFGID_FINGERPRINT, "fingerprint", CFG_STRING, nullptr, "The expected fingerprints of the simulation. If you need multiple fingerprints, separate them with commas. When provided, the fingerprints will be calculated from the specified properties of simulation events, messages, and statistics during execution, and checked against the provided values. Fingerprints are suitable for crude regression tests. As fingerprints occasionally differ across platforms, more than one value can be specified for a single fingerprint, separated by spaces, and a match with any of them will be accepted. To obtain a fingerprint, enter a dummy value (such as `0000`), and run the simulation.");
@@ -282,6 +283,11 @@ void cSimulation::configure(cConfiguration *cfg, int partitionId)
     if (parsim)
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
+
+    // validate parsim-mode here
+    const char *parsimMode = cfg->getAsCustom(CFGID_PARSIM_MODE);
+    if (parsim && !opp_streq(parsimMode, "multithreaded") && !opp_streq(parsimMode, "distributed"))
+        throw cRuntimeError("Invalid value \"%s\" for the 'parsim-mode' configuration option, must be \"multithreaded\" or \"distributed\"", parsimMode);
 
     // parallel simulation
     if (parsim) {

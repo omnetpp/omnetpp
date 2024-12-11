@@ -54,6 +54,7 @@ class CMDENV_API CmdenvSimulationRunner
      static bool sigintReceived;  // set to true on SIGINT/SIGTERM signals
 
      struct SimulationSummary {
+          bool successful = true;
           simtime_t simulatedTime = 0;
           double elapsedSecs = 0;
           eventnumber_t eventsSimulated = 0;
@@ -80,6 +81,7 @@ class CMDENV_API CmdenvSimulationRunner
      virtual void doRunSimulations(BatchState& state, InifileContents *ini, const char *configName, const std::vector<int>& runNumbers);
      virtual void doRunSimulation(BatchState& state, InifileContents *ini, const char *configName, int runNumber); // note: throws on error
      virtual BatchResult extractResult(const BatchState& state);
+     virtual SimulationSummary setupAndRunMultithreadedParallelSimulation(BatchState& state, cConfiguration *cfg);
      virtual SimulationSummary setupAndRunSimulation(BatchState& state, cConfiguration *cfg, int partitionId=-1);
      static void sigintHandler(int signum);
 

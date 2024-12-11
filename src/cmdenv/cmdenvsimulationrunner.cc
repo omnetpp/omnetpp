@@ -53,6 +53,11 @@ using namespace omnetpp::internal;
 #endif
 
 namespace omnetpp {
+
+extern cConfigOption *CFGID_PARALLEL_SIMULATION;
+extern cConfigOption *CFGID_PARSIM_MODE;
+extern cConfigOption *CFGID_PARSIM_NUM_PARTITIONS;
+
 namespace cmdenv {
 
 Register_GlobalConfigOption(CFGID_CMDENV_CONFIG_NAME, "cmdenv-config-name", CFG_STRING, nullptr, "Specifies the name of the configuration to be run (for a value `Foo`, section `[Config Foo]` will be used from the ini file). See also `cmdenv-runs-to-execute`. The `-c` command line option overrides this setting.")
@@ -242,7 +247,17 @@ void CmdenvSimulationRunner::doRunSimulation(BatchState& state, InifileContents 
     narrator->preparing(configName, runNumber);
 
     std::unique_ptr<cConfiguration> cfg(ini->extractConfig(configName, runNumber));
-    SimulationSummary result = setupAndRunSimulation(state, cfg.get());
+
+    bool parsimEnabled = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
+    const char *parsimMode = cfg->getAsCustom(CFGID_PARSIM_MODE);
+
+    SimulationSummary result;
+    if (parsimEnabled && opp_streq(parsimMode, "multithreaded")) {
+        result = setupAndRunMultithreadedParallelSimulation(state, cfg.get());
+    }
+    else {
+        result = setupAndRunSimulation(state, cfg.get());
+    }
 
     std::cout << "-------------------------------------" << std::endl;
     std::cout << "Simulated Time: " << result.simulatedTime.str() << std::endl;
@@ -250,6 +265,54 @@ void CmdenvSimulationRunner::doRunSimulation(BatchState& state, InifileContents 
     std::cout << "Events Simulated: " << result.eventsSimulated << std::endl;
     if (result.terminationReason)
         std::cout << "Termination Reason: " << result.terminationReason->what() << std::endl;
+}
+
+CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunMultithreadedParallelSimulation(BatchState& state, cConfiguration *cfg)
+{
+    int numPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS);
+
+    //TODO we might ourselves run in a thread! ensureNedLoader() needs locking
+    ensureNedLoader(cfg);
+
+    narrator->usingThreads(numPartitions); //TODO different call
+
+    //Py_BEGIN_ALLOW_THREADS
+
+    std::vector<SimulationSummary> results(numPartitions);
+
+    // create and launch threads
+    std::vector<std::thread> threads;
+    for (int i = 0; i < numPartitions; i++) {
+        auto fn = [this, &results](BatchState *state, cConfiguration *cfg, int partitionId) {
+            try {
+                results[partitionId] = setupAndRunSimulation(*state, cfg, partitionId);
+            } catch (std::exception& e) {
+                results[partitionId].successful = false;
+                narrator->displayException(e);
+            }
+        };
+        threads.push_back(std::thread(fn, &state, cfg, i));
+    }
+
+    // wait for them to finish
+    for (int i = 0; i < numPartitions; i++)
+        threads[i].join();
+
+    //Py_END_ALLOW_THREADS
+
+    SimulationSummary aggregateResult;
+    for (auto& r : results) {
+        aggregateResult.successful = aggregateResult.successful && r.successful;
+        aggregateResult.simulatedTime = aggregateResult.simulatedTime.isZero() ? r.simulatedTime : std::min(aggregateResult.simulatedTime, r.simulatedTime);
+        aggregateResult.elapsedSecs = std::max(aggregateResult.elapsedSecs, r.elapsedSecs);
+        aggregateResult.eventsSimulated += r.eventsSimulated;
+        if (r.terminationReason)
+            aggregateResult.terminationReason = r.terminationReason;
+    }
+
+    if (!aggregateResult.successful)
+        throw cRuntimeError("One or more partitions stopped with an error");
+    return aggregateResult;
 }
 
 CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunSimulation(BatchState& state, cConfiguration *cfg, int partitionId)
