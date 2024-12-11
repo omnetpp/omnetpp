@@ -2464,7 +2464,7 @@ void Qtenv::showException(std::exception& e)
         if (runtimeError->displayed)
             return;
 
-    confirm(ERROR, getFormattedMessage(e).c_str());
+    confirm(dynamic_cast<cTerminationException*>(&e) ? INFO : ERROR, getFormattedMessage(e).c_str());
 }
 
 std::string Qtenv::gets(const char *prompt, const char *defaultReply)
