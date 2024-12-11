@@ -49,7 +49,8 @@ int MatchExpressionLexer::getNextToken(char **valuep)
             case ')':
                 return ')';
 
-            case '"': {
+            case '"':
+            case '\'': {
                 std::string str = opp_parsequotedstr(start, ptr);
                 *valuep = dup(str);
                 return STRINGLITERAL;
