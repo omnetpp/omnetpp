@@ -41,7 +41,8 @@ inline cValue evaluate(const char *s)
 {
     cDynamicExpression e;
     e.parseNedExpr(s);
-    cExpression::Context ctx(getSimulation()->getContext(), nullptr /*TODO*/);
+    cSimulation *sim = getSimulation();
+    cExpression::Context ctx(sim ? sim->getContext() : nullptr, nullptr /*TODO*/);
     return e.evaluate(&ctx);
 }
 
