@@ -52,7 +52,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
   protected:
     cSimulation *simulation = nullptr;
     int numPartitions = -1;
-    int myProcId = -1;
+    int myPartitionId = -1;
 
     // pipes
     opp_string prefix;
@@ -62,14 +62,14 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     int rrBase = 0;
 
     // reordering buffer needed because of tag filtering support (filtTag)
-    struct ReceivedBuffer {int receivedTag; int sourceProcId; cMemCommBuffer *buffer;};
+    struct ReceivedBuffer {int receivedTag; int sourcePartitionId; cMemCommBuffer *buffer;};
     std::list<ReceivedBuffer> receivedBuffers;
 
   protected:
     // common impl. for receiveBlocking() and receiveNonblocking()
-    bool receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
-    bool doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
-    void extract(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, const ReceivedBuffer& item);
+    bool receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, bool blocking);
+    bool doReceive(cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, bool blocking);
+    void extract(cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, const ReceivedBuffer& item);
 
   public:
     /**
@@ -87,7 +87,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     /**
      * Init the library. Here we create and open the named pipes.
      */
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int procId) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int partitionId) override;
 
     /**
      * Shutdown the communications library. Closes and removes the named pipes.
@@ -107,7 +107,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     /**
      * Returns the id of this partition.
      */
-    virtual int getProcId() const override;
+    virtual int getPartitionId() const override;
 
     /**
      * Sending pointers is not supported.
@@ -117,7 +117,7 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     /**
      * Serializes the message into the buffer.
      */
-    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId) override;
+    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destPartitionId) override;
 
     /**
      * Deserializes the message from the buffer.
@@ -140,17 +140,17 @@ class SIM_API cNamedPipeCommunications : public cParsimCommunications
     virtual void send(cCommBuffer *buffer, int tag, int destination) override;
 
     /**
-     * Receives packed data, and also returns tag and source procId.
+     * Receives packed data, and also returns tag and source partitionId.
      * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) override;
+    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId) override;
 
     /**
-     * Receives packed data, and also returns tag and source procId.
+     * Receives packed data, and also returns tag and source partitionId.
      * Call is non-blocking -- it returns true if something has been
      * received, false otherwise.
      */
-    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId) override;
+    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourcePartitionId) override;
     //@}
 };
 

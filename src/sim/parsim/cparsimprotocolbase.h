@@ -40,10 +40,10 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
     virtual bool receiveBlocking();
 
     // process buffers coming from other partitions
-    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId);
+    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourcePartitionId);
 
     // process cMessages received from other partitions
-    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId);
+    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId);
 
     // utility
     SendOptions unpackOptions(cCommBuffer *buffer);
@@ -65,7 +65,7 @@ class SIM_API cParsimProtocolBase : public cParsimSynchronizer
      * The return value is a "keepit" flag that cProxyGate::deliver() will
      * return; see cGate::deliver() for explanation.
      */
-    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
+    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data) override;
 };
 
 }  // namespace omnetpp

@@ -40,7 +40,7 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
     // stores one external event, as needed for the ISP algorithm
     struct ExternalEvent {
         simtime_t t;    // time of event
-        int srcProcId;  // origin of event
+        int srcPartitionId;  // origin of event
     };
 
   protected:
@@ -57,7 +57,7 @@ class SIM_API cIdealSimulationProtocol : public cParsimProtocolBase
   protected:
     // process cMessages received from other partitions; see same method in2
     // cISPEventLogger for more explanation
-    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId) override;
+    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId) override;
 
     // read an event from event log file
     virtual void readNextRecordedEvent();

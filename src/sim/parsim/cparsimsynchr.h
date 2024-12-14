@@ -103,7 +103,7 @@ class SIM_API cParsimSynchronizer : public cScheduler
      * The return value is a "keepit" flag that cProxyGate::deliver() will
      * return; see cGate::deliver() for explanation.
      */
-    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) = 0;
+    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data) = 0;
 };
 
 }  // namespace omnetpp

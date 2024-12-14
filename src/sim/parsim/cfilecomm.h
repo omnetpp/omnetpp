@@ -37,7 +37,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
   protected:
     cSimulation *simulation = nullptr;
     int numPartitions = -1;
-    int myProcId = -1;
+    int myPartitionId = -1;
 
     int seqNum = 0;
     opp_string commDirPrefix;
@@ -60,7 +60,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Init the library.
      */
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int procId) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int partitionId) override;
 
     /**
      * Shutdown the communications library.
@@ -80,7 +80,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Returns the id of this partition.
      */
-    virtual int getProcId() const override;
+    virtual int getPartitionId() const override;
 
     /**
      * Sending pointers is not supported.
@@ -90,7 +90,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Serializes the message into the buffer.
      */
-    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId) override;
+    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destPartitionId) override;
 
     /**
      * Deserializes the message from the buffer.
@@ -116,14 +116,14 @@ class SIM_API cFileCommunications : public cParsimCommunications
      * Receives packed data with given tag from given destination.
      * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) override;
+    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId) override;
 
     /**
      * Receives packed data with given tag from given destination.
      * Call is non-blocking -- it returns true if something has been
      * received, false otherwise.
      */
-    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId) override;
+    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourcePartitionId) override;
     //@}
 };
 

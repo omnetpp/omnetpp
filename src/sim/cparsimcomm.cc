@@ -32,11 +32,11 @@ void cParsimCommunications::broadcast(cCommBuffer *buffer, int tag)
     std::string exceptionText;
 
     int n = getNumPartitions();
-    int myProcId = getProcId();
+    int myPartitionId = getPartitionId();
     cCommBuffer *workBuffer = createCommBuffer();
     for (int i = 0; i < n; i++) {
         try {
-            if (myProcId != i) {
+            if (myPartitionId != i) {
                 workBuffer->copyFrom(buffer);
                 send(workBuffer, tag, i);
             }

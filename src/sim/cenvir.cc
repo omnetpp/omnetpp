@@ -56,7 +56,7 @@ uint64_t cEnvir::getUniqueNumber()
 
 int cEnvir::getParsimProcId() const
 {
-    return getSimulation()->getParsimProcId();
+    return getSimulation()->getParsimPartitionId();
 }
 
 int cEnvir::getParsimNumPartitions() const

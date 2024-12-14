@@ -43,10 +43,11 @@ Register_Class(cParsimPartition);
 
 Register_GlobalConfigOption(CFGID_PARSIM_DEBUG, "parsim-debug", CFG_BOOL, "true", "With `parallel-simulation=true`: turns on printing of log messages from the parallel simulation code.");
 Register_GlobalConfigOption(CFGID_PARSIM_NUM_PARTITIONS, "parsim-num-partitions", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the number of parallel processes being used. This value must be in agreement with the number of simulator instances launched, e.g. with the `-n` or `-np` command-line option specified to the `mpirun` program when using MPI.");
-Register_GlobalConfigOption(CFGID_PARSIM_PROCID, "parsim-procid", CFG_INT, nullptr, "If `parallel-simulation=true`, it specifies the ordinal of the current simulation process within the list parallel processes. The value must be in the range 0...n-1, where n is the number of partitions. This option is not required when using MPI communications, because MPI has its own way of conveying this information.");
+Register_GlobalConfigOption(CFGID_PARSIM_PROCID, "parsim-procid", CFG_INT, nullptr, "Replaced by `parsim-process-partitionid`.");
+Register_GlobalConfigOption(CFGID_PARSIM_PROCESS_PARTITIONID, "parsim-process-partitionid", CFG_INT, nullptr, "If `parallel-simulation=true` and `parsim-mode=distributed`, it specifies the ordinal of the current simulation process within the list parallel processes. The value must be in the range 0...n-1, where n is the number of partitions. This option is not required when using MPI communications, because MPI has its own way of conveying this information.");
 Register_GlobalConfigOption(CFGID_PARSIM_COMMUNICATIONS_CLASS, "parsim-communications-class", CFG_STRING, "omnetpp::cFileCommunications", "If `parallel-simulation=true`, it selects the class that implements communication between partitions. The class must implement the `cParsimCommunications` interface.");
 Register_GlobalConfigOption(CFGID_PARSIM_SYNCHRONIZATION_CLASS, "parsim-synchronization-class", CFG_STRING, "omnetpp::cNullMessageProtocol", "If `parallel-simulation=true`, it selects the parallel simulation algorithm. The class must implement the `cParsimSynchronizer` interface.");
-Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
+Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "If `parallel-simulation=true`, it specifies in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
 
 cParsimPartition::cParsimPartition()
 {
@@ -57,7 +58,7 @@ cParsimPartition::~cParsimPartition()
     shutdown(); //TODO this should probably be done earlier, when things are still up and running
 }
 
-void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg, int procId)
+void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg, int partitionId)
 {
     sim = simulation;
 
@@ -76,8 +77,10 @@ void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg, i
 
     // initialize them
     int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
-    int parsimProcId = procId != -1 ? procId : cfg->getAsInt(CFGID_PARSIM_PROCID, -1);
-    comm->configure(sim, cfg, parsimNumPartitions, parsimProcId);
+    if (cfg->getAsInt(CFGID_PARSIM_PROCID, -999) != -999)
+        throw cRuntimeError("Configuration option `parsim-procid` has been renamed to `parsim-process-partitionid`, please use the latter name");
+    int parsimPartitionId = partitionId != -1 ? partitionId : cfg->getAsInt(CFGID_PARSIM_PROCESS_PARTITIONID, -1);
+    comm->configure(sim, cfg, parsimNumPartitions, parsimPartitionId);
 }
 
 int cParsimPartition::getNumPartitions() const
@@ -85,9 +88,9 @@ int cParsimPartition::getNumPartitions() const
     return comm->getNumPartitions();
 }
 
-int cParsimPartition::getProcId() const
+int cParsimPartition::getPartitionId() const
 {
-    return comm->getProcId();
+    return comm->getPartitionId();
 }
 
 void cParsimPartition::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)
@@ -180,11 +183,11 @@ void cParsimPartition::connectRemoteGates()
         if (!pg)
             EV << "not here\n";
         else
-            EV << "points to (procId=" << rgi.remoteProcId << " moduleId=" << rgi.moduleId << " gateId=" << rgi.gateId << ")\n";
+            EV << "points to (partitionId=" << rgi.remotePartitionId << " moduleId=" << rgi.moduleId << " gateId=" << rgi.gateId << ")\n";
 
         if (pg) {
             pg->setPartition(this);
-            pg->setRemoteGate(rgi.remoteProcId, rgi.moduleId, rgi.gateId);
+            pg->setRemoteGate(rgi.remotePartitionId, rgi.moduleId, rgi.gateId);
         }
     }
     EV << "  done.\n";
@@ -195,7 +198,7 @@ void cParsimPartition::connectRemoteGates()
         if (mod && mod->isPlaceholder()) {
             for (cModule::GateIterator it(mod); !it.end(); ++it) {
                 cProxyGate *pg = dynamic_cast<cProxyGate *>(*it);
-                if (pg && pg->getRemoteProcId() == -1 && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
+                if (pg && pg->getRemotePartitionId() == -1 && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder())
                     throw cRuntimeError("Parallel simulation error: Dangling proxy gate '%s' "
                                         "(module '%s' or some of its submodules not instantiated in any partition?)",
                             pg->getFullPath().c_str(), mod->getFullPath().c_str());
@@ -233,12 +236,12 @@ std::vector<cParsimPartition::RemoteGateInfo> cParsimPartition::communicateRemot
 
         if (numEnds < comm->getNumPartitions()-1) {
             // receive one item
-            int tag, remoteProcId;
+            int tag, remotePartitionId;
             cCommBuffer *buffer = comm->createCommBuffer();
-            while (comm->receiveNonblocking(TAG_SETUP_LINKS, buffer, tag, remoteProcId)) {
+            while (comm->receiveNonblocking(TAG_SETUP_LINKS, buffer, tag, remotePartitionId)) {
                 ASSERT(tag == TAG_SETUP_LINKS);
                 RemoteGateInfo rgi;
-                rgi.remoteProcId = remoteProcId;
+                rgi.remotePartitionId = remotePartitionId;
                 buffer->unpack(rgi.moduleId);
                 if (rgi.moduleId == -1)
                     numEnds++;
@@ -270,15 +273,15 @@ bool cParsimPartition::isModuleLocal(cModule *parentmod, const char *modname, in
         sprintf(parname, "%s.%s", parentmod->getFullPath().c_str(), modname);
     else
         sprintf(parname, "%s.%s[%d]", parentmod->getFullPath().c_str(), modname, index);  // FIXME this is incorrectly chosen for non-vector modules too!
-    std::string procIds = getEnvir()->getConfig()->getAsString(parname, CFGID_PARTITION_ID, ""); //TODO eliminate getEnvir()
-    if (procIds.empty()) {
+    std::string partitionIds = getEnvir()->getConfig()->getAsString(parname, CFGID_PARTITION_ID, ""); //TODO eliminate getEnvir()
+    if (partitionIds.empty()) {
         // modules inherit the setting from their parents, except when the parent is the system module (the network) itself
         if (!parentmod->getParentModule())
             throw cRuntimeError("Incomplete partitioning: Missing value for '%s'", parname);
         // "true" means "inherit", because an ancestor which answered "false" doesn't get recursed into
         return true;
     }
-    else if (strcmp(procIds.c_str(), "*") == 0) {
+    else if (strcmp(partitionIds.c_str(), "*") == 0) {
         // present on all partitions (provided that ancestors have "*" set as well)
         return true;
     }
@@ -286,65 +289,65 @@ bool cParsimPartition::isModuleLocal(cModule *parentmod, const char *modname, in
         // we expect a partition Id (or partition Ids, separated by commas) where this
         // module needs to be instantiated. So we return true if any of the numbers
         // is the Id of the local partition, otherwise false.
-        EnumStringIterator procIdIter(procIds.c_str());
-        if (procIdIter.hasError())
+        EnumStringIterator partitionIdIter(partitionIds.c_str());
+        if (partitionIdIter.hasError())
             throw cRuntimeError("Wrong partitioning: Syntax error in value '%s' for '%s' "
                                 "(allowed syntax: '', '*', '1', '0,3,5-7')",
-                    procIds.c_str(), parname);
+                    partitionIds.c_str(), parname);
         int numPartitions = comm->getNumPartitions();
-        int myProcId = comm->getProcId();
-        for ( ; procIdIter() != -1; procIdIter++) {
-            if (procIdIter() >= numPartitions)
+        int myPartitionId = comm->getPartitionId();
+        for ( ; partitionIdIter() != -1; partitionIdIter++) {
+            if (partitionIdIter() >= numPartitions)
                 throw cRuntimeError("Wrong partitioning: Value %d too large for '%s' (total partitions=%d)",
-                        procIdIter(), parname, numPartitions);
-            if (procIdIter() == myProcId)
+                        partitionIdIter(), parname, numPartitions);
+            if (partitionIdIter() == myPartitionId)
                 return true;
         }
         return false;
     }
 }
 
-bool cParsimPartition::processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data)
+bool cParsimPartition::processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data)
 {
     if (debug)
         EV << "sending message '" << msg->getFullName() << "' (for T="
-           << msg->getArrivalTime() << " to procId=" << procId << ")\n";
+           << msg->getArrivalTime() << " to partitionId=" << partitionId << ")\n";
 
-    return synch->processOutgoingMessage(msg, options, procId, moduleId, gateId, data);
+    return synch->processOutgoingMessage(msg, options, partitionId, moduleId, gateId, data);
 }
 
-void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
+void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourcePartitionId)
 {
     opp_string errmsg;
     switch (tag) {
         case TAG_TERMINATIONEXCEPTION:
             buffer->unpack(errmsg);
-            throw cReceivedTerminationException(sourceProcId, errmsg.c_str());
+            throw cReceivedTerminationException(sourcePartitionId, errmsg.c_str());
 
         case TAG_EXCEPTION:
             buffer->unpack(errmsg);
-            throw cReceivedException(sourceProcId, errmsg.c_str());
+            throw cReceivedException(sourcePartitionId, errmsg.c_str());
 
         default:
             throw cRuntimeError("cParsimPartition::processReceivedBuffer(): Unexpected tag %d "
-                                "from procId %d", tag, sourceProcId);
+                                "from partitionId %d", tag, sourcePartitionId);
     }
     buffer->assertBufferEmpty();
 }
 
-void cParsimPartition::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
+void cParsimPartition::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId)
 {
-    msg->setSrcProcId(sourceProcId);
+    msg->setSrcPartitionId(sourcePartitionId);
     cModule *mod = sim->getModule(destModuleId);
     if (!mod)
         throw cRuntimeError("Parallel simulation error: Destination module id=%d for message \"%s\""
                              "from partition %d does not exist (any longer)",
-                             destModuleId, msg->getName(), sourceProcId);
+                             destModuleId, msg->getName(), sourcePartitionId);
     cGate *g = mod->gate(destGateId);
     if (!g)
         throw cRuntimeError("Parallel simulation error: Destination gate %d of module id=%d "
                              "for message \"%s\" from partition %d does not exist",
-                             destGateId, destModuleId, msg->getName(), sourceProcId);
+                             destGateId, destModuleId, msg->getName(), sourcePartitionId);
 
     // do our best to set the source gate (the gate of a cPlaceholderModule)
     cGate *srcg = g->getPathStartGate();

@@ -268,7 +268,7 @@ std::string cSimulation::getFullPath() const
     return getFullName();
 }
 
-void cSimulation::configure(cConfiguration *cfg, int procId)
+void cSimulation::configure(cConfiguration *cfg, int partitionId)
 {
     this->cfg = cfg;
 
@@ -278,6 +278,7 @@ void cSimulation::configure(cConfiguration *cfg, int procId)
     parsim = cfg->getAsBool(CFGID_PARALLEL_SIMULATION);
 
 #ifndef WITH_PARSIM
+    // checks
     if (parsim)
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
@@ -287,7 +288,7 @@ void cSimulation::configure(cConfiguration *cfg, int procId)
 #ifdef WITH_PARSIM
         delete parsimPartition;
         parsimPartition = new cParsimPartition();
-        parsimPartition->configure(this, cfg, procId);
+        parsimPartition->configure(this, cfg, partitionId);
 #else
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
@@ -332,7 +333,7 @@ void cSimulation::configure(cConfiguration *cfg, int procId)
     setUniqueNumberRange(0, 0); // =until it wraps
 #ifdef WITH_PARSIM
     if (parsim) {
-        uint64_t myRank = parsimPartition->getProcId();
+        uint64_t myRank = parsimPartition->getPartitionId();
         uint64_t range = UINT64_MAX / parsimPartition->getNumPartitions();
         setUniqueNumberRange(myRank * range, (myRank+1) * range);
     }
@@ -357,7 +358,7 @@ void cSimulation::configure(cConfiguration *cfg, int procId)
     bool allowObjectStealing = cfg->getAsBool(CFGID_ALLOW_OBJECT_STEALING_ON_DELETION);
     cSoftOwner::setAllowObjectStealing(allowObjectStealing);
 
-    rngManager->configure(this, cfg, getParsimProcId(), getParsimNumPartitions());
+    rngManager->configure(this, cfg, getParsimPartitionId(), getParsimNumPartitions());
 
     // note: this must come last, as e.g. result manager initializations call cSimulation::isParsimEnabled()
     envir->configure(cfg);
@@ -675,7 +676,7 @@ cModuleType *cSimulation::resolveNetwork(const char *networkName, const char *ba
     return networkType;
 }
 
-void cSimulation::setupNetwork(cConfiguration *cfg, int procId)
+void cSimulation::setupNetwork(cConfiguration *cfg, int partitionId)
 {
     cConfiguration *effectiveCfg = cfg ? cfg : this->cfg;
     if (!effectiveCfg)
@@ -688,10 +689,10 @@ void cSimulation::setupNetwork(cConfiguration *cfg, int procId)
     cModuleType *networkType = resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
     ASSERT(networkType);
 
-    setupNetwork(networkType, cfg, procId); // use original arg which can be nullptr, so that the configure() call inside setupNetwork() is not repeated unnecessarily
+    setupNetwork(networkType, cfg, partitionId); // use original arg which can be nullptr, so that the configure() call inside setupNetwork() is not repeated unnecessarily
 }
 
-void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg, int procId)
+void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg, int partitionId)
 {
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: before setupNetwork: %d objects\n", (int)cOwnedObject::getLiveObjectCount());
@@ -712,7 +713,7 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg, in
     cComponent::clearSignalState();
 
     if (cfg)
-        configure(cfg, procId);
+        configure(cfg, partitionId);
 
     StageSwitcher _(this, STAGE_BUILD);
 
@@ -1338,10 +1339,10 @@ uint64_t& cSimulation::getSharedCounter(const char *name, uint64_t initialValue)
     return getSharedCounter(registerSharedCounterName(name), initialValue);
 }
 
-int cSimulation::getParsimProcId() const
+int cSimulation::getParsimPartitionId() const
 {
 #ifdef WITH_PARSIM
-    return parsimPartition? parsimPartition->getProcId() : 0;
+    return parsimPartition? parsimPartition->getPartitionId() : 0;
 #else
     return 0;
 #endif

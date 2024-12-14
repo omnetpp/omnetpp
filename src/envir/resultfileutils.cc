@@ -142,7 +142,7 @@ std::string ResultFileUtils::augmentFileName(const std::string& fname)
         return fname;
 
     // insert ".<hostname>.<pid>" if requested before file extension
-    // (note: parsimProcId cannot be appended because of initialization order)
+    // (note: parsimPartitionId cannot be appended because of initialization order)
     std::string result = fname;
     std::string extension = "";
     std::string::size_type index = fname.rfind('.');

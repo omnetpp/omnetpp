@@ -33,7 +33,7 @@ namespace envir {
 Register_Class(cAkaroaRNG);
 
 void cAkaroaRNG::initialize(int runNumber, int rngId, int numRngs,
-                            int parsimProcId, int parsimNumPartitions,
+                            int parsimPartitionId, int parsimNumPartitions,
                             cConfiguration *cfg)
 {
     // no manual seeding, and only one RNG stream

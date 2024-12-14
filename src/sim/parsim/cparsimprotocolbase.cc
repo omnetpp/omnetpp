@@ -47,7 +47,7 @@ void cParsimProtocolBase::packOptions(cCommBuffer *buffer, const SendOptions& op
     buffer->pack(options.remainingDuration);
 }
 
-bool cParsimProtocolBase::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *)
+bool cParsimProtocolBase::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destPartitionId, int destModuleId, int destGateId, void *)
 {
     cCommBuffer *buffer = comm->createCommBuffer();
 
@@ -55,13 +55,13 @@ bool cParsimProtocolBase::processOutgoingMessage(cMessage *msg, const SendOption
     buffer->pack(destGateId);
     packOptions(buffer, options);
     buffer->packObject(msg);
-    comm->send(buffer, TAG_CMESSAGE, destProcId);
+    comm->send(buffer, TAG_CMESSAGE, destPartitionId);
 
     comm->recycleCommBuffer(buffer);
     return false; // caller should delete msg
 }
 
-void cParsimProtocolBase::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
+void cParsimProtocolBase::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourcePartitionId)
 {
     switch (tag) {
         case TAG_CMESSAGE: {
@@ -71,29 +71,29 @@ void cParsimProtocolBase::processReceivedBuffer(cCommBuffer *buffer, int tag, in
             buffer->unpack(destGateId);
             SendOptions options = unpackOptions(buffer);
             cMessage *msg = (cMessage *)buffer->unpackObject();
-            processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
+            processReceivedMessage(msg, options, destModuleId, destGateId, sourcePartitionId);
             break;
         }
 
         default: {
-            partition->processReceivedBuffer(buffer, tag, sourceProcId);
+            partition->processReceivedBuffer(buffer, tag, sourcePartitionId);
             break;
         }
     }
     buffer->assertBufferEmpty();
 }
 
-void cParsimProtocolBase::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
+void cParsimProtocolBase::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId)
 {
-    partition->processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
+    partition->processReceivedMessage(msg, options, destModuleId, destGateId, sourcePartitionId);
 }
 
 void cParsimProtocolBase::receiveNonblocking()
 {
-    int tag, sourceProcId;
+    int tag, sourcePartitionId;
     cCommBuffer *buffer = comm->createCommBuffer();
-    while (comm->receiveNonblocking(PARSIM_ANY_TAG, buffer, tag, sourceProcId))
-        processReceivedBuffer(buffer, tag, sourceProcId);
+    while (comm->receiveNonblocking(PARSIM_ANY_TAG, buffer, tag, sourcePartitionId))
+        processReceivedBuffer(buffer, tag, sourcePartitionId);
     comm->recycleCommBuffer(buffer);
 }
 
@@ -101,15 +101,15 @@ bool cParsimProtocolBase::receiveBlocking()
 {
     cCommBuffer *buffer = comm->createCommBuffer();
 
-    int tag, sourceProcId;
-    if (!comm->receiveBlocking(PARSIM_ANY_TAG, buffer, tag, sourceProcId)) {
+    int tag, sourcePartitionId;
+    if (!comm->receiveBlocking(PARSIM_ANY_TAG, buffer, tag, sourcePartitionId)) {
         comm->recycleCommBuffer(buffer);
         return false;
     }
 
-    processReceivedBuffer(buffer, tag, sourceProcId);
-    while (comm->receiveNonblocking(PARSIM_ANY_TAG, buffer, tag, sourceProcId))
-        processReceivedBuffer(buffer, tag, sourceProcId);
+    processReceivedBuffer(buffer, tag, sourcePartitionId);
+    while (comm->receiveNonblocking(PARSIM_ANY_TAG, buffer, tag, sourcePartitionId))
+        processReceivedBuffer(buffer, tag, sourcePartitionId);
 
     comm->recycleCommBuffer(buffer);
     return true;

@@ -44,7 +44,7 @@ cRngManager::~cRngManager()
     delete[] rngs;
 }
 
-void cRngManager::configure(cSimulation *simulation, cConfiguration *cfg, int parsimProcId, int parsimNumPartitions)
+void cRngManager::configure(cSimulation *simulation, cConfiguration *cfg, int parsimPartitionId, int parsimNumPartitions)
 {
     this->cfg = cfg;
 
@@ -64,7 +64,7 @@ void cRngManager::configure(cSimulation *simulation, cConfiguration *cfg, int pa
     rngs = new cRNG *[numRNGs];
     for (int i = 0; i < numRNGs; i++) {
         rngs[i] = createByClassName<cRNG>(rngClass.c_str(), "random number generator");
-        rngs[i]->configure(seedset, i, numRNGs, parsimProcId, parsimNumPartitions, cfg);
+        rngs[i]->configure(seedset, i, numRNGs, parsimPartitionId, parsimNumPartitions, cfg);
     }
 }
 

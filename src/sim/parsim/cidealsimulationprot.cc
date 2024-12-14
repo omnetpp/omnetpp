@@ -55,7 +55,7 @@ cIdealSimulationProtocol::~cIdealSimulationProtocol()
 void cIdealSimulationProtocol::startRun()
 {
     char fname[200];
-    sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
+    sprintf(fname, "ispeventlog-%d.dat", comm->getPartitionId());
     fin = fopen(fname, "rb");
     if (!fin)
         throw cRuntimeError("cIdealSimulationProtocol error: Cannot open file '%s' for read", fname);
@@ -68,10 +68,10 @@ void cIdealSimulationProtocol::endRun()
     fclose(fin);
 }
 
-void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
+void cIdealSimulationProtocol::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId)
 {
-    msg->setSchedulingPriority(sourceProcId);
-    cParsimProtocolBase::processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
+    msg->setSchedulingPriority(sourcePartitionId);
+    cParsimProtocolBase::processReceivedMessage(msg, options, destModuleId, destGateId, sourcePartitionId);
 }
 
 cEvent *cIdealSimulationProtocol::takeNextEvent()
@@ -86,14 +86,14 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
 
     // if we aren't at the next external even yet --> nothing special to do
     if (eventTime < nextExternalEvent.t) {
-        ASSERT(event->getSrcProcId() == -1);  // must be local message
+        ASSERT(event->getSrcPartitionId() == -1);  // must be local message
         return event;
     }
 
     // if we reached the next external event in the log file, do it
-    if (event->getSrcProcId() == nextExternalEvent.srcProcId && eventTime == nextExternalEvent.t) {
+    if (event->getSrcPartitionId() == nextExternalEvent.srcPartitionId && eventTime == nextExternalEvent.t) {
         if (debug)
-            EV << "expected external event (srcProcId=" << event->getSrcProcId()
+            EV << "expected external event (srcPartitionId=" << event->getSrcPartitionId()
                << " t=" << nextExternalEvent.t << ") has already arrived, good!\n";
         readNextRecordedEvent();
         event->setSchedulingPriority(0);
@@ -116,12 +116,12 @@ cEvent *cIdealSimulationProtocol::takeNextEvent()
             return nullptr;
         event = sim->getFES()->peekFirst();
         eventTime = event->getArrivalTime();
-    } while (event->getSrcProcId() != nextExternalEvent.srcProcId || eventTime > nextExternalEvent.t);
+    } while (event->getSrcPartitionId() != nextExternalEvent.srcPartitionId || eventTime > nextExternalEvent.t);
 
     if (eventTime < nextExternalEvent.t) {
         throw cRuntimeError("cIdealSimulationProtocol: Event trace does not match actual events: "
                             "expected event with timestamp %s from proc=%d, and got one with timestamp %s",
-                            SIMTIME_STR(nextExternalEvent.t), nextExternalEvent.srcProcId, SIMTIME_STR(eventTime));
+                            SIMTIME_STR(nextExternalEvent.t), nextExternalEvent.srcPartitionId, SIMTIME_STR(eventTime));
     }
 
     // we have the next external event we wanted, return it
@@ -149,7 +149,7 @@ void cIdealSimulationProtocol::readNextRecordedEvent()
     nextExternalEvent = table[nextPos++];
 
     if (debug)
-        EV << "next expected external event: srcProcId=" << nextExternalEvent.srcProcId
+        EV << "next expected external event: srcPartitionId=" << nextExternalEvent.srcPartitionId
            << " t=" << nextExternalEvent.t << "\n";
 }
 

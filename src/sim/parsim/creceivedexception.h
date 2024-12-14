@@ -32,7 +32,7 @@ class cReceivedException : public cException
     /**
      * Constructor.
      */
-    cReceivedException(int sourceProcId, const char *msg);
+    cReceivedException(int sourcePartitionId, const char *msg);
 };
 
 /**
@@ -47,7 +47,7 @@ class cReceivedTerminationException : public cTerminationException
     /**
      * Constructor.
      */
-    cReceivedTerminationException(int sourceProcId, const char *msg);
+    cReceivedTerminationException(int sourcePartitionId, const char *msg);
 };
 
 }  // namespace omnetpp

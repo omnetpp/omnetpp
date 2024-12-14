@@ -49,7 +49,7 @@ class SIM_API cIRngManager : public cNoncopyableOwnedObject
     /**
      * Sets the configuration to be used for configuring this object.
      */
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int parsimProcId, int parsimNumPartitions) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int parsimPartitionId, int parsimNumPartitions) = 0;
 
     /**
      * Sets up RNGs for the given component.
@@ -96,7 +96,7 @@ class SIM_API cRngManager : public cIRngManager
 
     /** @name Redefined cIRngManager methods. */
     //@{
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int parsimProcId, int parsimNumPartitions) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int parsimPartitionId, int parsimNumPartitions) override;
     virtual void configureRNGs(cComponent *component) override;
     virtual int getNumRNGs(const cComponent *component) const override;
     virtual cRNG *getRNG(const cComponent *component, int k) override;

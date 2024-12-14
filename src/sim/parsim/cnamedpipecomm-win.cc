@@ -118,32 +118,32 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
         delete item.buffer;
 }
 
-void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int procId)
+void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int partitionId)
 {
     simulation = sim;
     numPartitions = np;
-    myProcId = procId;
+    myPartitionId = partitionId;
     if (numPartitions == -1)
         throw cRuntimeError("%s: Number of partitions not specified", getClassName());
-    if (myProcId == -1)
-        throw cRuntimeError("%s: procID not specified", getClassName());
-    if (numPartitions < 1 || myProcId < 0 || myProcId >= numPartitions)
-        throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or procID (%d)", getClassName(), np, procId);
+    if (myPartitionId == -1)
+        throw cRuntimeError("%s: partitionId not specified", getClassName());
+    if (numPartitions < 1 || myPartitionId < 0 || myPartitionId >= numPartitions)
+        throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or partitionId (%d)", getClassName(), np, partitionId);
     prefix = cfg->getAsString(CFGID_PARSIM_NAMEDPIPECOMM_PREFIX);
 
-    EV << "cNamedPipeCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
+    EV << "cNamedPipeCommunications: started as process " << myPartitionId << " out of " << numPartitions << ".\n";
 
     // create and open pipes for read
     int i;
     rpipes = new HANDLE[numPartitions];
     for (i = 0; i < numPartitions; i++) {
-        if (i == myProcId) {
+        if (i == myPartitionId) {
             rpipes[i] = INVALID_HANDLE_VALUE;
             continue;
         }
 
         char fname[256];
-        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), myProcId, i);
+        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), myPartitionId, i);
         EV << "cNamedPipeCommunications: creating pipe '" << fname << "' for read...\n";
 
         int openMode = PIPE_ACCESS_INBOUND;
@@ -156,13 +156,13 @@ void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, 
     // open pipes for write
     wpipes = new HANDLE[numPartitions];
     for (i = 0; i < numPartitions; i++) {
-        if (i == myProcId) {
+        if (i == myPartitionId) {
             wpipes[i] = INVALID_HANDLE_VALUE;
             continue;
         }
 
         char fname[256];
-        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), i, myProcId);
+        sprintf(fname, "\\\\.\\pipe\\%s-%d-%d", prefix.buffer(), i, myPartitionId);
         EV << "cNamedPipeCommunications: opening pipe '" << fname << "' for write...\n";
         for (int k = 0; k < 60; k++) {
             if (k > 0 && k%5 == 0)
@@ -178,9 +178,9 @@ void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, 
 
     // now wait until everybody else also opens the pipes for write
     for (i = 0; i < numPartitions; i++) {
-        if (i == myProcId)
+        if (i == myPartitionId)
             continue;
-        EV << "cNamedPipeCommunications: opening pipe from procId=" << i << " for read...\n";
+        EV << "cNamedPipeCommunications: opening pipe from partitionId=" << i << " for read...\n";
         if (!ConnectNamedPipe(rpipes[i], nullptr) && GetLastError() != ERROR_PIPE_CONNECTED)
             throw cRuntimeError("cNamedPipeCommunications: ConnectNamedPipe operation failed: %s", getWindowsError().c_str());
     }
@@ -205,12 +205,12 @@ int cNamedPipeCommunications::getNumPartitions() const
     return numPartitions;
 }
 
-int cNamedPipeCommunications::getProcId() const
+int cNamedPipeCommunications::getPartitionId() const
 {
-    return myProcId;
+    return myPartitionId;
 }
 
-bool cNamedPipeCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId)
+bool cNamedPipeCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destPartitionId)
 {
     buffer->packObject(msg);
     return false;
@@ -240,40 +240,40 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
     ph.tag = tag;
     ph.contentLength = b->getMessageSize();
     if (writeBytes(h, &ph, sizeof(ph)) == -1)
-        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to partitionId=%d: %s", destination, strerror(errno));
     if (writeBytes(h, b->getBuffer(), ph.contentLength) == -1)
-        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to procId=%d: %s", destination, strerror(errno));
+        throw cRuntimeError("cNamedPipeCommunications: Cannot write pipe to partitionId=%d: %s", destination, strerror(errno));
 }
 
-inline void cNamedPipeCommunications::extract(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, const ReceivedBuffer& item)
+inline void cNamedPipeCommunications::extract(cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, const ReceivedBuffer& item)
 {
     receivedTag = item.receivedTag;
-    sourceProcId = item.sourceProcId;
+    sourcePartitionId = item.sourcePartitionId;
     ((cMemCommBuffer*)buffer)->swap(item.buffer);
     delete item.buffer;
 }
 
-bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
+bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, bool blocking)
 {
     if (filtTag == PARSIM_ANY_TAG) {
         // try returning a previously received one
         if (!receivedBuffers.empty()) {
-            extract(buffer, receivedTag, sourceProcId, receivedBuffers.front());
+            extract(buffer, receivedTag, sourcePartitionId, receivedBuffers.front());
             receivedBuffers.pop_front();
             return true;
         }
 
         // receive from pipe
-        bool received = doReceive(buffer, receivedTag, sourceProcId, blocking);
+        bool received = doReceive(buffer, receivedTag, sourcePartitionId, blocking);
         while (!received && blocking)
-            received = doReceive(buffer, receivedTag, sourceProcId, blocking);
+            received = doReceive(buffer, receivedTag, sourcePartitionId, blocking);
         return received;
     }
     else {
         // try returning a previously received one
         auto it = std::find_if(receivedBuffers.begin(), receivedBuffers.end(), [filtTag](const ReceivedBuffer& elem) { return elem.receivedTag == filtTag; });
         if (it != receivedBuffers.end()) {
-            extract(buffer, receivedTag, sourceProcId, *it);
+            extract(buffer, receivedTag, sourcePartitionId, *it);
             receivedBuffers.erase(it);
             return true;
         }
@@ -281,13 +281,13 @@ bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
         // receive from pipe
         bool received;
         do {
-            received = doReceive(buffer, receivedTag, sourceProcId, blocking);
+            received = doReceive(buffer, receivedTag, sourcePartitionId, blocking);
 
             // if received one with a wrong tag, store it for later
             if (received && filtTag != receivedTag) {
                 cMemCommBuffer *copy = new cMemCommBuffer();
                 ((cMemCommBuffer*)buffer)->swap(copy);
-                receivedBuffers.push_back({receivedTag, sourceProcId, copy});
+                receivedBuffers.push_back({receivedTag, sourcePartitionId, copy});
                 received = false; // continue trying if blocking
             }
         } while (blocking && !received);
@@ -296,7 +296,7 @@ bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
     }
 }
 
-bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
+bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, bool blocking)
 {
     cMemCommBuffer *b = (cMemCommBuffer *)buffer;
     b->reset();
@@ -307,11 +307,11 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     int i, k;
     for (k = 0; k < numPartitions; k++) {
         i = (rrBase+k)%numPartitions;  // shift by rrBase for Round-Robin query
-        if (i == myProcId)
+        if (i == myPartitionId)
             continue;
         unsigned long bytesAvail, bytesLeft;
         if (!PeekNamedPipe(rpipes[i], nullptr, 0, nullptr, &bytesAvail, &bytesLeft))
-            throw cRuntimeError("cNamedPipeCommunications: Cannot peek pipe to procId=%d: %s",
+            throw cRuntimeError("cNamedPipeCommunications: Cannot peek pipe to partitionId=%d: %s",
                     i, getWindowsError().c_str());
         if (bytesAvail > 0)
             break;
@@ -320,15 +320,15 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
         return false;
 
     rrBase = (rrBase+1)%numPartitions;
-    sourceProcId = i;
+    sourcePartitionId = i;
     HANDLE h = rpipes[i];
 
     // read message from selected pipe (handle h)
     unsigned long bytesRead;
     struct PipeHeader ph;
     if (!ReadFile(h, &ph, sizeof(ph), &bytesRead, nullptr))
-        throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe to procId=%d: %s",
-                sourceProcId, getWindowsError().c_str());
+        throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe to partitionId=%d: %s",
+                sourcePartitionId, getWindowsError().c_str());
     if (bytesRead < sizeof(ph))
         throw cRuntimeError("cNamedPipeCommunications: ReadFile returned less data than expected");
 
@@ -337,19 +337,19 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     b->setMessageSize(ph.contentLength);
 
     if (!ReadFile(h, b->getBuffer(), ph.contentLength, &bytesRead, nullptr))
-        throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe to procId=%d: %s",
-                sourceProcId, getWindowsError().c_str());
+        throw cRuntimeError("cNamedPipeCommunications: Cannot read from pipe to partitionId=%d: %s",
+                sourcePartitionId, getWindowsError().c_str());
     if (bytesRead < ph.contentLength)
         throw cRuntimeError("cNamedPipeCommunications: ReadFile returned less data than expected");
     return true;
 }
 
-bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId)
 {
     // receive() currently doesn't handle blocking (PeekNamedPipe() returns
     // immediately if nothing has been received), so we need to sleep a little
     // between invocations, in order to save CPU cycles.
-    while (!receive(filtTag, buffer, receivedTag, sourceProcId, true)) {
+    while (!receive(filtTag, buffer, receivedTag, sourcePartitionId, true)) {
         if (getEnvir()->idle())
             return false;
         usleep(10000);  // be polite and wait 0.01s
@@ -357,9 +357,9 @@ bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer,
     return true;
 }
 
-bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId)
 {
-    return receive(filtTag, buffer, receivedTag, sourceProcId, false);
+    return receive(filtTag, buffer, receivedTag, sourcePartitionId, false);
 }
 
 }  // namespace omnetpp

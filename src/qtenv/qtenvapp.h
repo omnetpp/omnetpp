@@ -141,7 +141,7 @@ class QTENV_API QtenvApp : public QObject, public AppBase
    protected:
       QApplication *app = nullptr;
       MainWindow *mainWindow = nullptr;
-      std::string windowTitlePrefix;// contains "procId=.." when using parsim
+      std::string windowTitlePrefix;// contains "partitionId=.." when using parsim
 
       QEventLoop *pauseEventLoop = nullptr; // has to be a pointer so it's not constructed unnecessarily. always exists, only started/stopped as needed
       int pausePointNumber = 0;    // which "stop" are we within an event, incremented in pause(), reset after an event is done

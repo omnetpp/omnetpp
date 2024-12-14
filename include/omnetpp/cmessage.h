@@ -53,7 +53,7 @@ enum eMessageKind
  * @ingroup Parsim
  */
 // Note: it cannot go to cparsimcomm.h, without causing unwanted dependency on sim/parsim
-#define MAX_PARSIM_PARTITIONS  32768 // srcprocid in cMessage
+#define MAX_PARSIM_PARTITIONS  32768   // see cMessage::srcPartitionId
 
 
 /**
@@ -100,7 +100,7 @@ class SIM_API cMessage : public cEvent
     };
     // note: fields are in an order that maximizes packing (minimizes sizeof(cMessage))
     short messageKind;              // message kind -- 0>= user-defined meaning, <0 reserved
-    short srcProcId = -1;           // reserved for use by parallel execution: id of source partition
+    short srcPartitionId = -1;      // reserved for use by parallel execution: id of source partition
     cArray *parList = nullptr;      // ptr to list of parameters
     cObject *controlInfo = nullptr; // ptr to "control info"
     void *contextPointer = nullptr; // a stored pointer -- user-defined meaning, used with self-messages
@@ -140,10 +140,10 @@ class SIM_API cMessage : public cEvent
     void setSentFrom(cModule *module, int gateId, simtime_t_cref t);
 
     // internal: used by the parallel simulation kernel.
-    void setSrcProcId(int procId) {srcProcId = (short)procId;}
+    void setSrcPartitionId(int partitionId) {srcPartitionId = (short)partitionId;}
 
     // internal: used by the parallel simulation kernel.
-    virtual int getSrcProcId() const override {return srcProcId;}
+    virtual int getSrcPartitionId() const override {return srcPartitionId;}
 
     // internal: returns the parameter list object, or nullptr if it hasn't been used yet
     cArray *getParListPtr()  {return parList;}

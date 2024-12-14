@@ -59,7 +59,7 @@ class SIM_API cRNG : public cObject
      * of a simulation run. Seed selection should take place here.
      */
     virtual void configure(int seedSet, int rngId, int numRngs,
-                           int parsimProcId, int parsimNumPartitions,
+                           int parsimPartitionId, int parsimNumPartitions,
                            cConfiguration *cfg) = 0;
 
     /**

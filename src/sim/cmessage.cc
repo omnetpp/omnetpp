@@ -204,7 +204,7 @@ void cMessage::copy(const cMessage& msg)
 {
     messageKind = msg.messageKind;
     timestamp = msg.timestamp;
-    srcProcId = msg.srcProcId;
+    srcPartitionId = msg.srcPartitionId;
 
     creationTime = msg.creationTime;
 

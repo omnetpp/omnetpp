@@ -66,7 +66,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     // internal: helper for connectRemoteGates()
     struct RemoteGateInfo
     {
-        int remoteProcId;
+        int remotePartitionId;
         int moduleId;
         int gateId;
         opp_string moduleFullPath;
@@ -99,7 +99,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Pass cParsimPartition the objects it has to cooperate with.
      */
-    void configure(cSimulation *simulation, cConfiguration *cfg, int procId=-1);
+    void configure(cSimulation *simulation, cConfiguration *cfg, int partitionId=-1);
 
     /**
      * Returns the simulation instance associated with the object.
@@ -141,7 +141,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Returns id of this partition, an integer in the range 0..getNumPartitions()-1.
      */
-    virtual int getProcId() const;
+    virtual int getPartitionId() const;
 
     /**
      * Returns true if the named future submodule of the given parent module is,
@@ -161,7 +161,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * The return value is a "keepit" flag that cProxyGate::deliver() will
      * return; see cGate::deliver() for explanation.
      */
-    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data);
+    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data);
 
     /**
      * Process messages coming from other partitions. This method is called from
@@ -169,7 +169,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * processed all tags that it understands (namely, cMessages
      * (tag=TAG_CMESSAGE) and all tags used by the synchronization protocol).
      */
-    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId);
+    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourcePartitionId);
 
     /**
      * Process cMessages received from other partitions. This method is called from
@@ -178,7 +178,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
      * module/gate still exists, sets the source module/gate to the appropriate
      * placeholder module, and inserts the message into the FES.
      */
-    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId);
+    virtual void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId);
 
     /**
      * Called when an exception occurs, this methods notifies other partitions

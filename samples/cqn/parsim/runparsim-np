@@ -24,8 +24,8 @@ mkdir comm comm/read
 # start simulations
 parsim_opts="--parallel-simulation=true --parsim-communications-class=cNamedPipeCommunications"
 for i in $(seq 0 $(expr $N - 1)); do
-  echo "\$ $* $parsim_opts --parsim-procid=$i &"
-  $* $parsim_opts --parsim-procid=$i &
+  echo "\$ $* $parsim_opts --parsim-process-partitionid=$i &"
+  $* $parsim_opts --parsim-process-partitionid=$i &
 done
 
 # wait for the simulations to exit, kill them when interrupted

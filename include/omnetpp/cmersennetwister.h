@@ -49,7 +49,7 @@ class SIM_API cMersenneTwister : public cRNG
 
     /** Sets up the RNG. */
     virtual void configure(int seedSet, int rngId, int numRngs,
-                            int parsimProcId, int parsimNumPartitions,
+                            int parsimPartitionId, int parsimNumPartitions,
                             cConfiguration *cfg) override;
 
     /** Tests correctness of the RNG */

@@ -63,13 +63,13 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
 
   protected:
     // process buffers coming from other partitions
-    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId) override;
+    virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourcePartitionId) override;
 
     // processes a received EIT: reschedule partition's EIT message
-    virtual void processReceivedEIT(int sourceProcId, simtime_t eit);
+    virtual void processReceivedEIT(int sourcePartitionId, simtime_t eit);
 
     // resend null message to this partition
-    virtual void sendNullMessage(int procId, simtime_t now);
+    virtual void sendNullMessage(int partitionId, simtime_t now);
 
     // reschedule event in FES, to the given time
     virtual void rescheduleEvent(cMessage *msg, simtime_t t);
@@ -130,7 +130,7 @@ class SIM_API cNullMessageProtocol : public cParsimProtocolBase
      * given partition), it also does lookahead calculation and optional
      * piggybacking of null message on the cMessage.
      */
-    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
+    virtual bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data) override;
 };
 
 }  // namespace omnetpp

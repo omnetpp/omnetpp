@@ -35,9 +35,9 @@ class cParsimPartition;
  * instead -- so cParsimPartition can deliver them to the remote partition.
  *
  * cProxyGate contains the address of the corresponding remote gate as
- * a (procId, moduleId, gateId) triplet:
+ * a (partitionId, moduleId, gateId) triplet:
  *
- * - procId is a partition identifier (also used by cParsimCommunications;
+ * - partitionId is a partition identifier (also used by cParsimCommunications;
  *   in the MPI implementation of cParsimCommunications it maps to MPI_rank)
  *
  * - moduleId and gateId identify the target ("to-") gate on the remote partition.
@@ -49,7 +49,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
     friend class cPlaceholderModule;
   private:
     cParsimPartition *partition = nullptr;
-    short remoteProcId = -1;
+    short remotePartitionId = -1;
     int remoteModuleId = -1;
     int remoteGateId = -1;
     void *data = nullptr;
@@ -63,7 +63,7 @@ class SIM_API cProxyGate : public cGate // noncopyable
     /** @name Redefined cObject member functions */
     //@{
     /**
-     * Redefined here to display remoteProcId, remoteModId and remoteGateId.
+     * Redefined here to display remotePartitionId, remoteModId and remoteGateId.
      */
     virtual std::string str() const override;
     //@}
@@ -86,12 +86,12 @@ class SIM_API cProxyGate : public cGate // noncopyable
     /**
      * Sets remote gate address.
      */
-    void setRemoteGate(short procId, int moduleId, int gateId);
+    void setRemoteGate(short partitionId, int moduleId, int gateId);
 
     /**
      * Returns partition where remote gate resides.
      */
-    short getRemoteProcId()   {return remoteProcId;}
+    short getRemotePartitionId()   {return remotePartitionId;}
 
     /**
      * Returns module Id in remote partition where remote gate resides.

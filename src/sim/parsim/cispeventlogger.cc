@@ -32,7 +32,7 @@ void cISPEventLogger::startRun()
     cNullMessageProtocol::startRun();
 
     char fname[200];
-    sprintf(fname, "ispeventlog-%d.dat", comm->getProcId());
+    sprintf(fname, "ispeventlog-%d.dat", comm->getPartitionId());
     fout = fopen(fname, "wb");
     if (!fout)
         throw cRuntimeError("cISPEventLogger error: Cannot open file '%s' for write", fname);
@@ -44,33 +44,33 @@ void cISPEventLogger::endRun()
     fclose(fout);
 }
 
-void cISPEventLogger::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId)
+void cISPEventLogger::processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId)
 {
-    msg->setSchedulingPriority(sourceProcId);
-    cParsimProtocolBase::processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
+    msg->setSchedulingPriority(sourcePartitionId);
+    cParsimProtocolBase::processReceivedMessage(msg, options, destModuleId, destGateId, sourcePartitionId);
 }
 
-bool cISPEventLogger::processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data)
+bool cISPEventLogger::processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data)
 {
     if (msg->getSchedulingPriority() != 0)
         throw cRuntimeError("cISPEventLogger: Outgoing message (%s)%s has nonzero priority set -- "
                             "this conflicts with ISP which uses priority for its own purposes",
                             msg->getClassName(), msg->getName());
-    return cParsimProtocolBase::processOutgoingMessage(msg, options, procId, moduleId, gateId, data);
+    return cParsimProtocolBase::processOutgoingMessage(msg, options, partitionId, moduleId, gateId, data);
 }
 
 cEvent *cISPEventLogger::takeNextEvent()
 {
     cEvent *event = cNullMessageProtocol::takeNextEvent();
 
-    if (event->getSrcProcId() != -1) {  // received from another partition
+    if (event->getSrcPartitionId() != -1) {  // received from another partition
         // restore original priority
         event->setSchedulingPriority(0);
 
         // log event to file
         cIdealSimulationProtocol::ExternalEvent e;
         e.t = event->getArrivalTime();
-        e.srcProcId = event->getSrcProcId();
+        e.srcPartitionId = event->getSrcPartitionId();
 
         if (fwrite(&e, sizeof(cIdealSimulationProtocol::ExternalEvent), 1, fout) < 1)
             throw cRuntimeError("cISPEventLogger: File write failed (disk full?)");

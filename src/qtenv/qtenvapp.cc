@@ -704,7 +704,7 @@ int QtenvApp::doRunApp()
     // create windowtitle prefix
     if (simulation->getParsimNumPartitions() > 0) {
         char tmp[32];
-        sprintf(tmp, "Proc %d/%d - ", simulation->getParsimProcId(), simulation->getParsimNumPartitions());
+        sprintf(tmp, "Proc %d/%d - ", simulation->getParsimPartitionId(), simulation->getParsimNumPartitions());
         windowTitlePrefix = tmp;
     }
 

@@ -48,21 +48,21 @@ cFileCommunications::cFileCommunications()
 {
 }
 
-void cFileCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int procId)
+void cFileCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int partitionId)
 {
     simulation = sim;
     numPartitions = np;
-    myProcId = procId;
-    if (numPartitions == -1 || myProcId == -1)
-        throw cRuntimeError("%s: Number of partitions or procID not specified", getClassName());
-    if (numPartitions < 1 || myProcId < 0 || myProcId >= numPartitions)
-        throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or procID (%d)", getClassName(), np, procId);
+    myPartitionId = partitionId;
+    if (numPartitions == -1 || myPartitionId == -1)
+        throw cRuntimeError("%s: Number of partitions or partitionId not specified", getClassName());
+    if (numPartitions < 1 || myPartitionId < 0 || myPartitionId >= numPartitions)
+        throw cRuntimeError("%s: Invalid value for the number of partitions (%d) or partitionId (%d)", getClassName(), np, partitionId);
 
     commDirPrefix = cfg->getAsString(CFGID_FILECOMM_PREFIX);
     readDirPrefix = cfg->getAsString(CFGID_FILECOMM_READ_PREFIX);
     preserveReadFiles = cfg->getAsBool(CFGID_FILECOMM_PRESERVE_READ);
 
-    EV << "cFileCommunications: started as process " << myProcId << " out of " << numPartitions << ".\n";
+    EV << "cFileCommunications: started as process " << myPartitionId << " out of " << numPartitions << ".\n";
 
     // We cannot check here that the communications directory is empty, because
     // other partitions may have already sent messages to us...
@@ -77,12 +77,12 @@ int cFileCommunications::getNumPartitions() const
     return numPartitions;
 }
 
-int cFileCommunications::getProcId() const
+int cFileCommunications::getPartitionId() const
 {
-    return myProcId;
+    return myPartitionId;
 }
 
-bool cFileCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId)
+bool cFileCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destPartitionId)
 {
     buffer->packObject(msg);
     return false;
@@ -110,7 +110,7 @@ void cFileCommunications::send(cCommBuffer *buffer, int tag, int destination)
     // to prevent concurrency problems, first create the file as .tmp,
     // then rename it to .msg
     char fname[100], fname2[100];
-    sprintf(fname, "%s#%.6d-s%d-d%d-t%d.tmp", commDirPrefix.buffer(), seqNum++, myProcId, destination, tag);
+    sprintf(fname, "%s#%.6d-s%d-d%d-t%d.tmp", commDirPrefix.buffer(), seqNum++, myPartitionId, destination, tag);
 
     // create
     FILE *f = fopen(fname, "wb");
@@ -130,9 +130,9 @@ void cFileCommunications::send(cCommBuffer *buffer, int tag, int destination)
         throw cRuntimeError("cFileCommunications: Cannot rename %s to %s: %s", fname, fname2, strerror(errno));
 }
 
-bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId)
 {
-    while (!receiveNonblocking(filtTag, buffer, receivedTag, sourceProcId)) {
+    while (!receiveNonblocking(filtTag, buffer, receivedTag, sourcePartitionId)) {
         if (getEnvir()->idle())
             return false;
         usleep(100000);  // be nice and polite: wait 0.1s
@@ -140,7 +140,7 @@ bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int&
     return true;
 }
 
-bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId)
 {
     cFileCommBuffer *b = (cFileCommBuffer *)buffer;
     b->reset();
@@ -148,9 +148,9 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
     char fmask[100];
     char fname2[100];
     if (filtTag == PARSIM_ANY_TAG)
-        sprintf(fmask, "%s#*-s*-d%d-t*.msg", commDirPrefix.buffer(), myProcId);
+        sprintf(fmask, "%s#*-s*-d%d-t*.msg", commDirPrefix.buffer(), myPartitionId);
     else
-        sprintf(fmask, "%s#*-s*-d%d-t%d.msg", commDirPrefix.buffer(), myProcId, filtTag);
+        sprintf(fmask, "%s#*-s*-d%d-t%d.msg", commDirPrefix.buffer(), myPartitionId, filtTag);
 
     bool ret = false;
     const char *fname = FileGlobber(fmask).getNext();
@@ -159,13 +159,13 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
 
         // parse fname
         const char *s = strstr(fname, "-s");
-        sourceProcId = atol(s+2);
+        sourcePartitionId = atol(s+2);
         const char *t = strstr(fname, "-t");
         receivedTag = atol(t+2);
         // const char *n = strstr(fname, "#");
         // int seqNum = atol(n+2);
 
-        // DBG: printf("%d: filecomm: found %s -- src=%d, tag=%d\n",getProcId(),fname,sourceProcId,receivedTag);
+        // DBG: printf("%d: filecomm: found %s -- src=%d, tag=%d\n",getPartitionId(),fname,sourcePartitionId,receivedTag);
 
         // read data
         struct stat statbuf;
@@ -214,7 +214,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
                 throw cRuntimeError("cFileCommunications: Cannot delete file %s: %s", fname, strerror(errno));
         }
     }
-    // DBG: printf("%d: filecomm: nothing found matching %s\n",getProcId(),fmask);
+    // DBG: printf("%d: filecomm: nothing found matching %s\n",getPartitionId(),fmask);
     return ret;
 }
 

@@ -52,7 +52,7 @@ class SIM_API cParsimCommunications : public cObject
     /**
      * Initialize the communications library.
      */
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions=-1, int procId=-1) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions=-1, int partitionId=-1) = 0;
 
     /**
      * Shutdown the communications library.
@@ -69,7 +69,7 @@ class SIM_API cParsimCommunications : public cObject
     /**
      * Returns id of this partition, an integer in the range 0..getNumPartitions()-1.
      */
-    virtual int getProcId() const = 0;
+    virtual int getPartitionId() const = 0;
 
     /** @name Buffers, send, receive */
     //@{
@@ -83,7 +83,7 @@ class SIM_API cParsimCommunications : public cObject
      * will be used as the value returned from cProxyGate::deliver();
      * see cGate::deliver() for more info.
      */
-    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId) = 0;
+    virtual bool packMessage(cCommBuffer *buffer, cMessage *msg, int destPartitionId) = 0;
 
     /**
      * Unpacks a message object from the buffer.
@@ -118,14 +118,14 @@ class SIM_API cParsimCommunications : public cObject
      * Receives packed data with given tag from given destination.
      * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) = 0;
+    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId) = 0;
 
     /**
      * Receives packed data with given tag from given destination.
      * Call is non-blocking -- it returns true if something has been
      * received, false otherwise.
      */
-    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) = 0;
+    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId) = 0;
     //@}
 };
 

@@ -52,7 +52,7 @@ void cLinkDelayLookahead::startRun()
 
     numSeg = comm->getNumPartitions();
     segInfo = new PartitionInfo[numSeg];
-    int myProcId = comm->getProcId();
+    int myPartitionId = comm->getPartitionId();
 
     // temporarily initialize everything to zero.
     for (int i = 0; i < numSeg; i++)
@@ -68,7 +68,7 @@ void cLinkDelayLookahead::startRun()
                 cGate *g = *it;
                 cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
                 if (pg && !pg->getPathStartGate()->getOwnerModule()->isPlaceholder()) {
-                    ASSERT(pg->getRemoteProcId() >= 0);
+                    ASSERT(pg->getRemotePartitionId() >= 0);
                     // check we have a delay on this link (it gives us lookahead)
                     simtime_t linkDelay = collectPathDelay(pg);
                     if (linkDelay <= 0.0)
@@ -76,9 +76,9 @@ void cLinkDelayLookahead::startRun()
                                 pg->getFullPath().c_str());
 
                     // store
-                    int procId = pg->getRemoteProcId();
-                    if (segInfo[procId].minDelay == -1 || segInfo[procId].minDelay > linkDelay)
-                        segInfo[procId].minDelay = linkDelay;
+                    int partitionId = pg->getRemotePartitionId();
+                    if (segInfo[partitionId].minDelay == -1 || segInfo[partitionId].minDelay > linkDelay)
+                        segInfo[partitionId].minDelay = linkDelay;
                 }
             }
         }
@@ -86,13 +86,13 @@ void cLinkDelayLookahead::startRun()
 
     // if two partitions are not connected, the lookeahead is "infinity"
     for (int i = 0; i < numSeg; i++)
-        if (i != myProcId && segInfo[i].minDelay == -1)
+        if (i != myPartitionId && segInfo[i].minDelay == -1)
             segInfo[i].minDelay = SIMTIME_MAX;
 
 
     for (int i = 0; i < numSeg; i++)
-        if (i != myProcId)
-            EV << "    lookahead to procId=" << i << " is " << segInfo[i].minDelay << "\n";
+        if (i != myPartitionId)
+            EV << "    lookahead to partitionId=" << i << " is " << segInfo[i].minDelay << "\n";
 
 
     EV << "  setup done.\n";
@@ -117,14 +117,14 @@ void cLinkDelayLookahead::endRun()
     segInfo = nullptr;
 }
 
-simtime_t cLinkDelayLookahead::getCurrentLookahead(cMessage *, int procId, void *)
+simtime_t cLinkDelayLookahead::getCurrentLookahead(cMessage *, int partitionId, void *)
 {
-    return segInfo[procId].minDelay;
+    return segInfo[partitionId].minDelay;
 }
 
-simtime_t cLinkDelayLookahead::getCurrentLookahead(int procId)
+simtime_t cLinkDelayLookahead::getCurrentLookahead(int partitionId)
 {
-    return segInfo[procId].minDelay;
+    return segInfo[partitionId].minDelay;
 }
 
 }  // namespace omnetpp

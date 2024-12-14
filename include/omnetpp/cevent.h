@@ -73,7 +73,7 @@ class SIM_API cEvent : public cOwnedObject
     void setArrivalTime(simtime_t t) {ASSERT(!isScheduled()); arrivalTime = t;}
 
     // internal: used by the parallel simulation kernel.
-    virtual int getSrcProcId() const {return -1;}
+    virtual int getSrcPartitionId() const {return -1;}
 
     // internal: utility function
     static int compareBySchedulingOrder(const cEvent *a, const cEvent *b);

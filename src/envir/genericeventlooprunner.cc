@@ -279,7 +279,7 @@ void GenericEventLoopRunner::printStatusUpdate()
         char buf[64];
         out << "** ";
         if (simulation->getParsimNumPartitions() > 1)
-            out << "Partition " << simulation->getParsimProcId() << "   ";
+            out << "Partition " << simulation->getParsimPartitionId() << "   ";
         out << "Event #" << simulation->getEventNumber()
             << "   t=" << simulation->getSimTime()
             << "   Elapsed: " << timeToStr(simulation->getElapsedTime(), buf);

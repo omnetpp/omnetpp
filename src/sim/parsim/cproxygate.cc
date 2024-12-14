@@ -32,7 +32,7 @@ cProxyGate::cProxyGate() : cGate()
 std::string cProxyGate::str() const
 {
     std::stringstream out;
-    out << "remote:(procId=" << remoteProcId << ",modId=" << remoteModuleId << ",gateId=" << remoteGateId << ") ";
+    out << "remote:(partitionId=" << remotePartitionId << ",modId=" << remoteModuleId << ",gateId=" << remoteGateId << ") ";
     out << cGate::str();
     return out.str();
 }
@@ -41,16 +41,16 @@ bool cProxyGate::deliver(cMessage *msg, const SendOptions& options, simtime_t t)
 {
     ASSERT(nextGate == nullptr);
     ASSERT(partition != nullptr);
-    if (remoteProcId == -1)
+    if (remotePartitionId == -1)
         throw cRuntimeError(this, "Cannot deliver message '%s': Not connected to remote gate", msg->getName());
 
     msg->setArrivalTime(t);  // merge arrival time into message
-    return partition->processOutgoingMessage(msg, options, remoteProcId, remoteModuleId, remoteGateId, data);
+    return partition->processOutgoingMessage(msg, options, remotePartitionId, remoteModuleId, remoteGateId, data);
 }
 
-void cProxyGate::setRemoteGate(short procId, int moduleId, int gateId)
+void cProxyGate::setRemoteGate(short partitionId, int moduleId, int gateId)
 {
-    remoteProcId = procId;
+    remotePartitionId = partitionId;
     remoteModuleId = moduleId;
     remoteGateId = gateId;
 }

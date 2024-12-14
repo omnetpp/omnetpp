@@ -80,7 +80,7 @@ void cNullMessageProtocol::startRun()
 
     numSeg = comm->getNumPartitions();
     segInfo = new PartitionInfo[numSeg];
-    int myProcId = comm->getProcId();
+    int myPartitionId = comm->getPartitionId();
 
     char buf[30];
     int i;
@@ -99,7 +99,7 @@ void cNullMessageProtocol::startRun()
     // create "resend-EOT" events and schedule them to zero (1st thing to do)
     EV << "  scheduling 'resend-EOT' events...\n";
     for (i = 0; i < numSeg; i++) {
-        if (i != myProcId) {
+        if (i != myPartitionId) {
             sprintf(buf, "resendEOT-%d", i);
             cMessage *eotMsg = new cMessage(buf, MK_PARSIM_RESENDEOT);
             eotMsg->setContextPointer((void *)(uintptr_t)i);  // khmm...
@@ -111,7 +111,7 @@ void cNullMessageProtocol::startRun()
     // create EIT events and schedule them to zero (null msgs will bump them)
     EV << "  scheduling 'EIT' events...\n";
     for (i = 0; i < numSeg; i++) {
-        if (i != myProcId) {
+        if (i != myPartitionId) {
             sprintf(buf, "EIT-%d", i);
             cMessage *eitMsg = new cMessage(buf, MK_PARSIM_EIT);
             segInfo[i].eitEvent = eitMsg;
@@ -130,45 +130,45 @@ void cNullMessageProtocol::endRun()
     lookaheadcalc->endRun();
 }
 
-bool cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destProcId, int destModuleId, int destGateId, void *data)
+bool cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptions& options, int destPartitionId, int destModuleId, int destGateId, void *data)
 {
     // calculate lookahead
-    simtime_t lookahead = lookaheadcalc->getCurrentLookahead(msg, destProcId, data);
+    simtime_t lookahead = lookaheadcalc->getCurrentLookahead(msg, destPartitionId, data);
     simtime_t eot = sim->getSimTime() + lookahead;
-    if (eot < segInfo[destProcId].lastEotSent)
+    if (eot < segInfo[destPartitionId].lastEotSent)
         throw cRuntimeError("cNullMessageProtocol error: Attempt to decrease EOT");
 
     // send a null message only if EOT is better than last time
-    bool sendNull = (eot > segInfo[destProcId].lastEotSent);
+    bool sendNull = (eot > segInfo[destPartitionId].lastEotSent);
 
     // send message
     cCommBuffer *buffer = comm->createCommBuffer();
     if (sendNull) {
         // update "resend-EOT" timer
-        segInfo[destProcId].lastEotSent = eot;
+        segInfo[destPartitionId].lastEotSent = eot;
         simtime_t eotResendTime = sim->getSimTime() + lookahead*laziness;
-        rescheduleEvent(segInfo[destProcId].eotEvent, eotResendTime);
+        rescheduleEvent(segInfo[destPartitionId].eotEvent, eotResendTime);
 
-        {if (debug) EV << "piggybacking null msg on '" << msg->getName() << "' to " << destProcId << ", lookahead=" << lookahead << ", EOT=" << eot << "; next resend at " << eotResendTime << "\n";}
+        {if (debug) EV << "piggybacking null msg on '" << msg->getName() << "' to " << destPartitionId << ", lookahead=" << lookahead << ", EOT=" << eot << "; next resend at " << eotResendTime << "\n";}
 
         // send cMessage with piggybacked null message
         buffer->pack(eot);
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
         packOptions(buffer, options);
-        comm->packMessage(buffer, msg, destProcId);
-        comm->send(buffer, TAG_CMESSAGE_WITH_NULLMESSAGE, destProcId);
+        comm->packMessage(buffer, msg, destPartitionId);
+        comm->send(buffer, TAG_CMESSAGE_WITH_NULLMESSAGE, destPartitionId);
     }
     else
     {
-        {if (debug) EV << "sending '" << msg->getName() << "' to " << destProcId << "\n";}
+        {if (debug) EV << "sending '" << msg->getName() << "' to " << destPartitionId << "\n";}
 
         // send cMessage
         buffer->pack(destModuleId);
         buffer->pack(destGateId);
         packOptions(buffer, options);
-        comm->packMessage(buffer, msg, destProcId);
-        comm->send(buffer, TAG_CMESSAGE, destProcId);
+        comm->packMessage(buffer, msg, destPartitionId);
+        comm->send(buffer, TAG_CMESSAGE, destPartitionId);
     }
     comm->recycleCommBuffer(buffer);
 
@@ -176,7 +176,7 @@ bool cNullMessageProtocol::processOutgoingMessage(cMessage *msg, const SendOptio
     return keepit;
 }
 
-void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId)
+void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, int sourcePartitionId)
 {
     int destModuleId;
     int destGateId;
@@ -185,7 +185,7 @@ void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, i
     switch (tag) {
         case TAG_CMESSAGE_WITH_NULLMESSAGE:
             buffer->unpack(eit);
-            processReceivedEIT(sourceProcId, eit);
+            processReceivedEIT(sourcePartitionId, eit);
             // **no break** -- intentional fallthrough to TAG_CMESSAGE
 
         case TAG_CMESSAGE: {
@@ -193,29 +193,29 @@ void cNullMessageProtocol::processReceivedBuffer(cCommBuffer *buffer, int tag, i
             buffer->unpack(destGateId);
             SendOptions options = unpackOptions(buffer);
             cMessage *msg = comm->unpackMessage(buffer);
-            processReceivedMessage(msg, options, destModuleId, destGateId, sourceProcId);
+            processReceivedMessage(msg, options, destModuleId, destGateId, sourcePartitionId);
             break;
         }
 
         case TAG_NULLMESSAGE: {
             buffer->unpack(eit);
-            processReceivedEIT(sourceProcId, eit);
+            processReceivedEIT(sourcePartitionId, eit);
             break;
         }
 
         default: {
-            partition->processReceivedBuffer(buffer, tag, sourceProcId);
+            partition->processReceivedBuffer(buffer, tag, sourcePartitionId);
             break;
         }
     }
     buffer->assertBufferEmpty();
 }
 
-void cNullMessageProtocol::processReceivedEIT(int sourceProcId, simtime_t eit)
+void cNullMessageProtocol::processReceivedEIT(int sourcePartitionId, simtime_t eit)
 {
-    cMessage *eitMsg = segInfo[sourceProcId].eitEvent;
+    cMessage *eitMsg = segInfo[sourcePartitionId].eitEvent;
 
-    {if (debug) EV << "null msg received from " << sourceProcId << ", EIT=" << eit << ", rescheduling EIT event\n";}
+    {if (debug) EV << "null msg received from " << sourcePartitionId << ", EIT=" << eit << ", rescheduling EIT event\n";}
 
     // sanity check
     ASSERT(eit > eitMsg->getArrivalTime());
@@ -245,8 +245,8 @@ cEvent *cNullMessageProtocol::takeNextEvent()
         cMessage *msg = event->isMessage() ? static_cast<cMessage *>(event) : nullptr;
         if (msg && msg->getKind() == MK_PARSIM_RESENDEOT) {
             // send null messages if window closed for a partition
-            int procId = (uintptr_t)msg->getContextPointer();  // khmm...
-            sendNullMessage(procId, event->getArrivalTime());
+            int partitionId = (uintptr_t)msg->getContextPointer();  // khmm...
+            sendNullMessage(partitionId, event->getArrivalTime());
         }
         else if (msg && msg->getKind() == MK_PARSIM_EIT) {
             // wait until it gets out of the way (i.e. we get a higher EIT)
@@ -272,30 +272,30 @@ void cNullMessageProtocol::putBackEvent(cEvent *event)
                         "cannot be used with this scheduler (putBackEvent() not implemented)");
 }
 
-void cNullMessageProtocol::sendNullMessage(int procId, simtime_t now)
+void cNullMessageProtocol::sendNullMessage(int partitionId, simtime_t now)
 {
     // calculate EOT and sending of next null message
-    simtime_t lookahead = lookaheadcalc->getCurrentLookahead(procId);
+    simtime_t lookahead = lookaheadcalc->getCurrentLookahead(partitionId);
     simtime_t eot = now + lookahead;
 
     // ensure that even with eager resend, we only send out EOTs that
     // differ from previous one!
-    if (eot == segInfo[procId].lastEotSent)
+    if (eot == segInfo[partitionId].lastEotSent)
         return;
-    if (eot < segInfo[procId].lastEotSent)
+    if (eot < segInfo[partitionId].lastEotSent)
         throw cRuntimeError("cNullMessageProtocol error: Attempt to decrease EOT");
-    segInfo[procId].lastEotSent = eot;
+    segInfo[partitionId].lastEotSent = eot;
 
     // calculate time of next null message sending, and schedule "resend-EOT" event
     simtime_t eotResendTime = now + lookahead*laziness;
-    rescheduleEvent(segInfo[procId].eotEvent, eotResendTime);
+    rescheduleEvent(segInfo[partitionId].eotEvent, eotResendTime);
 
-    {if (debug) EV << "sending null msg to " << procId << ", lookahead=" << lookahead << ", EOT=" << eot << "; next resend at " << eotResendTime << "\n";}
+    {if (debug) EV << "sending null msg to " << partitionId << ", lookahead=" << lookahead << ", EOT=" << eot << "; next resend at " << eotResendTime << "\n";}
 
     // send out null message
     cCommBuffer *buffer = comm->createCommBuffer();
     buffer->pack(eot);
-    comm->send(buffer, TAG_NULLMESSAGE, procId);
+    comm->send(buffer, TAG_NULLMESSAGE, partitionId);
     comm->recycleCommBuffer(buffer);
 }
 

@@ -845,7 +845,7 @@ class SIM_API cEnvir
     [[deprecated]] virtual uint64_t getUniqueNumber();
 
     /**
-     * Delegates to cSimulation.
+     * Delegates to cSimulation::getParsimPartitionId()
      */
     [[deprecated]] virtual int getParsimProcId() const;
 

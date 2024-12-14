@@ -18,13 +18,13 @@
 
 namespace omnetpp {
 
-cReceivedException::cReceivedException(int sourceProcId, const char *msg)
-    : cException("Error occurred in procId=%d: %s", sourceProcId, msg)
+cReceivedException::cReceivedException(int sourcePartitionId, const char *msg)
+    : cException("Error occurred in partitionId=%d: %s", sourcePartitionId, msg)
 {
 }
 
-cReceivedTerminationException::cReceivedTerminationException(int sourceProcId, const char *msg)
-    : cTerminationException("Terminating simulation on request from procId=%d: %s", sourceProcId, msg)
+cReceivedTerminationException::cReceivedTerminationException(int sourcePartitionId, const char *msg)
+    : cTerminationException("Terminating simulation on request from partitionId=%d: %s", sourcePartitionId, msg)
 {
 }
 

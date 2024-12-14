@@ -32,12 +32,12 @@ Register_GlobalConfigOption(CFGID_SEED_N_MT, "seed-%-mt", CFG_INT, nullptr, "Whe
 Register_GlobalConfigOption(CFGID_SEED_N_MT_P, "seed-%-mt-p%", CFG_INT, nullptr, "With parallel simulation: When Mersenne Twister is selected as random number generator (default): seed for RNG number k in partition number p. (Substitute k for the first '%' in the key, and p for the second.)");
 
 void cMersenneTwister::configure(int seedSet, int rngId, int numRngs,
-        int parsimProcId, int parsimNumPartitions,
+        int parsimPartitionId, int parsimNumPartitions,
         cConfiguration *cfg)
 {
     char key[40], key2[40];
     sprintf(key, "seed-%d-mt", rngId);
-    sprintf(key2, "seed-%d-mt-p%d", rngId, parsimProcId);
+    sprintf(key2, "seed-%d-mt-p%d", rngId, parsimPartitionId);
 
     uint32_t seed;
     if (parsimNumPartitions > 1) {
@@ -51,7 +51,7 @@ void cMersenneTwister::configure(int seedSet, int rngId, int numRngs,
                 EV << "Warning: cMersenneTwister: ignoring config key " << key << "=<seed>"
                    << " for parallel simulation -- please use partition-specific variant "
                    << key2 << "=<seed>\n";
-            seed = (seedSet * numRngs + rngId) * MAX_PARSIM_PARTITIONS + parsimProcId;
+            seed = (seedSet * numRngs + rngId) * MAX_PARSIM_PARTITIONS + parsimPartitionId;
         }
     }
     else {

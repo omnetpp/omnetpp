@@ -78,12 +78,12 @@ class SIM_API cAdvancedLinkDelayLookahead : public cNMPLookahead
      * Updates lookahead information, based on the delay of the link
      * where message is sent out. Returns EOT.
      */
-    virtual simtime_t getCurrentLookahead(cMessage *msg, int procId, void *data);
+    virtual simtime_t getCurrentLookahead(cMessage *msg, int partitionId, void *data);
 
     /**
      * Returns minimum of link delays toward the given partition.
      */
-    virtual simtime_t getCurrentLookahead(int procId);
+    virtual simtime_t getCurrentLookahead(int partitionId);
 };
 
 }  // namespace omnetpp

@@ -50,7 +50,7 @@ cMPICommunications::~cMPICommunications()
     delete recycledBuffer;
 }
 
-void cMPICommunications::configure(cSimulation *simulation, cConfiguration *cfg, int np, int procId)
+void cMPICommunications::configure(cSimulation *simulation, cConfiguration *cfg, int np, int partitionId)
 {
     static bool mpiInitialized = false;
     if (mpiInitialized)
@@ -68,8 +68,8 @@ void cMPICommunications::configure(cSimulation *simulation, cConfiguration *cfg,
         EV_WARN << "MPI thinks this process is the only one in the session (did you use mpirun to start this program?)\n";
     if (np != -1 && numPartitions != np)
         throw cRuntimeError("cMPICommunications: The number of partitions configured (%d) differs from the number of instances started by MPI (%d)", np, numPartitions);
-    if (procId != -1 && procId != myRank)
-        throw cRuntimeError("cMPICommunications: The specified procId (%d) and the one reported by MPI as rank (%d) don't agree", procId, myRank);
+    if (partitionId != -1 && partitionId != myRank)
+        throw cRuntimeError("cMPICommunications: The specified partitionId (%d) and the one reported by MPI as rank (%d) don't agree", partitionId, myRank);
 
     // set up MPI send buffer (+16K prevents MPI_Buffer_attach() error if numPartitions==1)
     int defaultBufSize = MPI_SEND_BUFFER_PER_PARTITION * (numPartitions-1) + 16384;
@@ -93,12 +93,12 @@ int cMPICommunications::getNumPartitions() const
     return numPartitions;
 }
 
-int cMPICommunications::getProcId() const
+int cMPICommunications::getPartitionId() const
 {
     return myRank;
 }
 
-bool cMPICommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destProcId)
+bool cMPICommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destPartitionId)
 {
     buffer->packObject(msg);
     return false;
@@ -154,7 +154,7 @@ void cMPICommunications::broadcast(cCommBuffer *buffer, int tag)
     cParsimCommunications::broadcast(buffer, tag);
 }
 
-bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId)
 {
     // use MPI_Probe() to determine message size, then receive it
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
@@ -171,11 +171,11 @@ bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& 
         throw cRuntimeError("cMPICommunications::receiveBlocking(): MPI error %d", err);
     b->setMessageSize(msgsize);
     receivedTag = status.MPI_TAG;
-    sourceProcId = status.MPI_SOURCE;
+    sourcePartitionId = status.MPI_SOURCE;
     return true;
 }
 
-bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId)
 {
     // probe if we have something to receive ...
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
@@ -196,7 +196,7 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
             throw cRuntimeError("cMPICommunications::receiveNonBlocking(): MPI error %d", err);
         b->setMessageSize(msgsize);
         receivedTag = status.MPI_TAG;
-        sourceProcId = status.MPI_SOURCE;
+        sourcePartitionId = status.MPI_SOURCE;
         return true;
     }
     return false;

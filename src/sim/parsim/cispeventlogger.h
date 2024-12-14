@@ -38,11 +38,11 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
     FILE *fout = nullptr;  // the event log file (stores ExternalEvent's)
 
   protected:
-    // Overridden to set message priority to sourceProcId. We do the same in
+    // Overridden to set message priority to sourcePartitionId. We do the same in
     // cIdealSimulationProtocol. This ensures that messages with equal
     // timestamps will get processed in the same order in both protocols,
     // whatever the concrete timing conditions.
-    void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourceProcId) override;
+    void processReceivedMessage(cMessage *msg, const SendOptions& options, int destModuleId, int destGateId, int sourcePartitionId) override;
 
   public:
     /**
@@ -71,7 +71,7 @@ class SIM_API cISPEventLogger : public cNullMessageProtocol
      * Overridden to check that the model doesn't set message priority which
      * we need for our own purposes.
      */
-    bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int procId, int moduleId, int gateId, void *data) override;
+    bool processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data) override;
 
     /**
      * Scheduler function. The addition to the base class is

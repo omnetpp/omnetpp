@@ -75,8 +75,8 @@ void cAdvancedLinkDelayLookahead::startRun()
             for (cModule::GateIterator i(mod); !i.end(); i++) {
                 cGate *g = i();
                 cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->getPreviousGate() && pg->getRemoteProcId() >= 0)
-                    segInfo[pg->getRemoteProcId()].numLinks++;
+                if (pg && pg->getPreviousGate() && pg->getRemotePartitionId() >= 0)
+                    segInfo[pg->getRemotePartitionId()].numLinks++;
             }
         }
     }
@@ -98,7 +98,7 @@ void cAdvancedLinkDelayLookahead::startRun()
                 // FIXME leave out gates from other cPlaceholderModules
                 cGate *g = i();
                 cProxyGate *pg = dynamic_cast<cProxyGate *>(g);
-                if (pg && pg->getPreviousGate() && pg->getRemoteProcId() >= 0) {
+                if (pg && pg->getPreviousGate() && pg->getRemotePartitionId() >= 0) {
                     // check we have a delay on this link (it gives us lookahead)
                     cGate *fromg = pg->getPreviousGate();
                     cChannel *chan = fromg ? fromg->getChannel() : nullptr;
@@ -109,17 +109,17 @@ void cAdvancedLinkDelayLookahead::startRun()
                         throw cRuntimeError("cAdvancedLinkDelayLookahead: Zero delay on link from gate '%s', no lookahead for parallel simulation", fromg->getFullPath().c_str());
 
                     // store
-                    int procId = pg->getRemoteProcId();
+                    int partitionId = pg->getRemotePartitionId();
                     int k = 0;
-                    while (segInfo[procId].links[k])
+                    while (segInfo[partitionId].links[k])
                         k++;  // find 1st empty slot
                     LinkOut *link = new LinkOut;
-                    segInfo[procId].links[k] = link;
+                    segInfo[partitionId].links[k] = link;
                     pg->setSynchData(link);
                     link->lookahead = linkDelay;
                     link->eot = 0.0;
 
-                    EV << "    link " << k << " to procId=" << procId << " on gate '" << fromg->getFullPath() <<"': delay=" << linkDelay << "\n";
+                    EV << "    link " << k << " to partitionId=" << partitionId << " on gate '" << fromg->getFullPath() <<"': delay=" << linkDelay << "\n";
                 }
             }
         }
@@ -132,9 +132,9 @@ void cAdvancedLinkDelayLookahead::endRun()
 {
 }
 
-simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int procId, void *data)
+simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int partitionId, void *data)
 {
-    // find LinkOut structure in segInfo[destProcId].
+    // find LinkOut structure in segInfo[destPartitionId].
     LinkOut *link = (LinkOut *)data;
     if (!link)
         throw cRuntimeError("Internal parallel simulation error: cProxyGate has no associated data pointer");
@@ -148,9 +148,9 @@ simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(cMessage *msg, int pr
     return 0.0;
 }
 
-simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(int procId)
+simtime_t cAdvancedLinkDelayLookahead::getCurrentLookahead(int partitionId)
 {
-    return segInfo[procId].lookahead;
+    return segInfo[partitionId].lookahead;
 }
 
 }  // namespace omnetpp
