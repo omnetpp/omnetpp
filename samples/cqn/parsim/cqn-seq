@@ -1,3 +1,4 @@
 #! /bin/sh
-../cqn -n.. -c LargeLookahead omnetpp.ini $*
+if [ -x ../cqn ]; then CQN=../cqn; else CQN=../cqn_dbg; fi
+$CQN -n.. -u Cmdenv -c LargeLookahead omnetpp.ini $*
 

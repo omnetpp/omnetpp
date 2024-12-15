@@ -18,8 +18,8 @@ if test $? != 0 -o -z "$N" ; then
 fi
 
 # clean up files left from previous run
-rm -rf comm
-mkdir comm comm/read
+mkdir -p comm
+rm -rf comm/*
 
 # start simulations
 parsim_opts="--parallel-simulation=true --parsim-communications-class=cNamedPipeCommunications"

@@ -1,2 +1,3 @@
 #! /bin/sh
-./runparsim-mpi ../cqn -n.. -u Cmdenv -c LargeLookahead omnetpp.ini partitioning.ini $*
+if [ -x ../cqn ]; then CQN=../cqn; else CQN=../cqn_dbg; fi
+./runparsim-mpi $CQN -n.. -u Cmdenv -c LargeLookahead omnetpp.ini partitioning.ini $*
