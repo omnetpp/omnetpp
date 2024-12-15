@@ -1,0 +1,70 @@
+#include <iostream>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
+#include <chrono>
+
+class ThreadQueue {
+public:
+    void push(int value) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        queue_.push(value);
+        cond_var_.notify_one();
+    }
+
+    int pop() {
+        std::unique_lock<std::mutex> lock(mutex_);
+        cond_var_.wait(lock, [this] { return !queue_.empty(); });
+        int value = queue_.front();
+        queue_.pop();
+        return value;
+    }
+
+private:
+    std::queue<int> queue_;
+    std::mutex mutex_;
+    std::condition_variable cond_var_;
+};
+
+void thread_func(ThreadQueue& input_queue, ThreadQueue& output_queue, int count, bool is_ping_thread) {
+    for (int i = 0; i < count; ++i) {
+        int value = input_queue.pop();
+        value++;
+        output_queue.push(value);
+    }
+}
+
+int main() {
+    const int iterations = 100000; // Number of ping-pong exchanges
+
+    ThreadQueue queue1, queue2;
+
+    // Push the initial message to start the ping-pong
+    queue1.push(0);
+
+    // Start timing
+    auto start_time = std::chrono::high_resolution_clock::now();
+
+    // Launch the two threads
+    std::thread ping_thread(thread_func, std::ref(queue1), std::ref(queue2), iterations, true);
+    std::thread pong_thread(thread_func, std::ref(queue2), std::ref(queue1), iterations, false);
+
+    // Wait for the threads to complete
+    ping_thread.join();
+    pong_thread.join();
+
+    // Stop timing
+    auto end_time = std::chrono::high_resolution_clock::now();
+
+    // Compute the elapsed time
+    std::chrono::duration<double> elapsed = end_time - start_time;
+
+    // Print results
+    std::cout << "Total time for " << iterations << " ping-pong exchanges: "
+              << elapsed.count() << " seconds" << std::endl;
+    std::cout << "Average time per exchange: " << (elapsed.count() / iterations) * 1e6 << " microseconds" << std::endl;
+
+    return 0;
+}
+
