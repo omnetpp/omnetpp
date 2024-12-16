@@ -1,0 +1,4 @@
+#! /bin/sh
+# single-process multi-theaded parallel simulation with named pipe communication
+if [ -x ../cqn ]; then CQN=../cqn; else CQN=../cqn_dbg; fi
+$CQN -n.. -u Cmdenv --parallel-simulation=true --parsim-mode=multithreaded --parsim-communications-class=cInProcessCommunications  -c LargeLookahead omnetpp.ini partitioning.ini $*
