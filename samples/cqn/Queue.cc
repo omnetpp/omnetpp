@@ -8,6 +8,7 @@
 //
 
 #include <omnetpp.h>
+#include "Job_m.h"
 
 using namespace omnetpp;
 
@@ -107,9 +108,13 @@ void Queue::initialize()
 {
     AbstractQueue::initialize();
 
-    long numInitialJobs = par("numInitialJobs");
-    for (long i = 0; i < numInitialJobs; i++) {
-        cMessage *job = new cMessage("job");
+    int numInitialJobs = par("numInitialJobs");
+    int jobPayloadBytes = par("jobPayloadBytes");
+    for (int i = 0; i < numInitialJobs; i++) {
+        Job *job = new Job("job");
+        job->setPayloadArraySize(jobPayloadBytes);
+        for (int j = 0; j < job->getPayloadArraySize(); j++)
+            job->setPayload(j, j % 256);
         queue.insert(job);
         queueLength.record(queue.getLength());
     }

@@ -17,6 +17,7 @@ simple Queue
 {
     parameters:
         int numInitialJobs;
+        int jobPayloadBytes = default(0); // affects packing length of a job in parallel simulation
         volatile double serviceTime @unit(s);
         int priority = default(0);
         @display("i=block/activeq;q=queue");
