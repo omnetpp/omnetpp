@@ -16,7 +16,8 @@ model_variables = {
     'numTandems': [120],
     'numQueues': [10],
     'queueDelay': ['1s'],
-    'switchDelay': ['1s', '10s', '100s', '1000s']
+    'switchDelay': ['1s', '10s', '100s', '1000s'],
+    'jobPayloadBytes': [0, 10000]
 }
 
 parsim_variables = {
@@ -31,6 +32,7 @@ variable_to_args = {
     'numQueues': ['--**.numQueues={value}'],
     'queueDelay': ['--**.qDelay={value}'],
     'switchDelay': ['--**.sDelay={value}'],
+    'jobPayloadBytes': ['--**.jobPayloadBytes={value}'],
     'communication': {
         'seq': [
             '--parallel-simulation=false'
