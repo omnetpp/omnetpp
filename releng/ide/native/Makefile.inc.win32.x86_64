@@ -121,8 +121,8 @@ opp_rwildcard=$(foreach d,$(wildcard $1*),$(call opp_rwildcard,$d/,$2) $(filter 
 PERL = perl
 YACC = bison -y -Wno-yacc
 LEX = flex
-CC = x86_64-w64-mingw32-gcc
-CXX = x86_64-w64-mingw32-g++
+CC = x86_64-w64-mingw32-gcc-posix
+CXX = x86_64-w64-mingw32-g++-posix
 TOOLCHAIN_NAME = gcc
 DEFINES =
 SANITIZE_FLAGS =  -fsanitize=leak,address,undefined
