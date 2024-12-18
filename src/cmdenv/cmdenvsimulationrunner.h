@@ -82,7 +82,7 @@ class CMDENV_API CmdenvSimulationRunner
      virtual void doRunSimulation(BatchState& state, InifileContents *ini, const char *configName, int runNumber); // note: throws on error
      virtual BatchResult extractResult(const BatchState& state);
      virtual SimulationSummary setupAndRunMultithreadedParallelSimulation(BatchState& state, cConfiguration *cfg);
-     virtual SimulationSummary setupAndRunSimulation(BatchState& state, cConfiguration *cfg, int partitionId=-1);
+     virtual SimulationSummary setupAndRunSimulation(BatchState& state, cConfiguration *cfg, const std::map<std::string,cValue>& extraData={});
      static void sigintHandler(int signum);
 
    public:

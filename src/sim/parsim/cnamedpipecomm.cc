@@ -95,7 +95,7 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
         delete item.buffer;
 }
 
-void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int partitionId)
+void cNamedPipeCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int partitionId, const std::map<std::string,cValue>& extraData)
 {
     simulation = sim;
     numPartitions = np;

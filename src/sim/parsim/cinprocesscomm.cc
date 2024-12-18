@@ -52,7 +52,7 @@ cInProcessCommunications::~cInProcessCommunications()
     delete spareBuffer;
 }
 
-void cInProcessCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int partitionId)
+void cInProcessCommunications::configure(cSimulation *sim, cConfiguration *cfg, int np, int partitionId, const std::map<std::string,cValue>& extraData)
 {
     ownerThread = std::this_thread::get_id();
     simulation = sim;

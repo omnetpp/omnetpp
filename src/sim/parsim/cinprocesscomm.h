@@ -87,7 +87,7 @@ class SIM_API cInProcessCommunications : public cParsimCommunications
     /**
      * Init the library. Here we create and open the named pipes.
      */
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int partitionId) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int partitionId, const std::map<std::string,cValue>& extraData) override;
 
     /**
      * Shutdown the communications library. Closes and removes the named pipes.

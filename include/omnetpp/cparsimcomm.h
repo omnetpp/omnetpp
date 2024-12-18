@@ -17,7 +17,9 @@
 #ifndef __OMNETPP_CPARSIMCOMM_H
 #define __OMNETPP_CPARSIMCOMM_H
 
+#include <map>
 #include "cobject.h"
+#include "cvalue.h"
 
 namespace omnetpp {
 
@@ -52,7 +54,7 @@ class SIM_API cParsimCommunications : public cObject
     /**
      * Initialize the communications library.
      */
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions=-1, int partitionId=-1) = 0;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions=-1, int partitionId=-1, const std::map<std::string,cValue>& extraData={}) = 0;
 
     /**
      * Shutdown the communications library.

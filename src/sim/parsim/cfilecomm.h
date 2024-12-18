@@ -60,7 +60,7 @@ class SIM_API cFileCommunications : public cParsimCommunications
     /**
      * Init the library.
      */
-    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int partitionId) override;
+    virtual void configure(cSimulation *simulation, cConfiguration *cfg, int numPartitions, int partitionId, const std::map<std::string,cValue>& extraData) override;
 
     /**
      * Shutdown the communications library.

@@ -269,7 +269,7 @@ std::string cSimulation::getFullPath() const
     return getFullName();
 }
 
-void cSimulation::configure(cConfiguration *cfg, int partitionId)
+void cSimulation::configure(cConfiguration *cfg, const std::map<std::string,cValue>& extraData)
 {
     this->cfg = cfg;
 
@@ -294,7 +294,7 @@ void cSimulation::configure(cConfiguration *cfg, int partitionId)
 #ifdef WITH_PARSIM
         delete parsimPartition;
         parsimPartition = new cParsimPartition();
-        parsimPartition->configure(this, cfg, partitionId);
+        parsimPartition->configure(this, cfg, extraData);
 #else
         throw cRuntimeError("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
@@ -682,7 +682,7 @@ cModuleType *cSimulation::resolveNetwork(const char *networkName, const char *ba
     return networkType;
 }
 
-void cSimulation::setupNetwork(cConfiguration *cfg, int partitionId)
+void cSimulation::setupNetwork(cConfiguration *cfg, const std::map<std::string,cValue>& extraData)
 {
     cConfiguration *effectiveCfg = cfg ? cfg : this->cfg;
     if (!effectiveCfg)
@@ -695,10 +695,10 @@ void cSimulation::setupNetwork(cConfiguration *cfg, int partitionId)
     cModuleType *networkType = resolveNetwork(networkName.c_str(), inifileNetworkDir.c_str());
     ASSERT(networkType);
 
-    setupNetwork(networkType, cfg, partitionId); // use original arg which can be nullptr, so that the configure() call inside setupNetwork() is not repeated unnecessarily
+    setupNetwork(networkType, cfg, extraData); // use original cfg arg which can be nullptr, so that the configure() call inside setupNetwork() is not repeated unnecessarily
 }
 
-void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg, int partitionId)
+void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg, const std::map<std::string,cValue>& extraData)
 {
 #ifdef DEVELOPER_DEBUG
     printf("DEBUG: before setupNetwork: %d objects\n", (int)cOwnedObject::getLiveObjectCount());
@@ -719,7 +719,7 @@ void cSimulation::setupNetwork(cModuleType *networkType, cConfiguration *cfg, in
     cComponent::clearSignalState();
 
     if (cfg)
-        configure(cfg, partitionId);
+        configure(cfg, extraData);
 
     StageSwitcher _(this, STAGE_BUILD);
 

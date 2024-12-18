@@ -285,7 +285,9 @@ CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunMul
     for (int i = 0; i < numPartitions; i++) {
         auto fn = [this, &results](BatchState *state, cConfiguration *cfg, int partitionId) {
             try {
-                results[partitionId] = setupAndRunSimulation(*state, cfg, partitionId);
+                std::map<std::string,cValue> extraData;
+                extraData["partitionId"] = partitionId;
+                results[partitionId] = setupAndRunSimulation(*state, cfg, extraData);
             } catch (std::exception& e) {
                 results[partitionId].successful = false;
                 narrator->displayException(e);
@@ -315,7 +317,7 @@ CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunMul
     return aggregateResult;
 }
 
-CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunSimulation(BatchState& state, cConfiguration *cfg, int partitionId)
+CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunSimulation(BatchState& state, cConfiguration *cfg, const std::map<std::string,cValue>& extraData)
 {
     state.stopBatchOnError = cfg->getAsBool(CFGID_CMDENV_STOP_BATCH_ON_ERROR);
 
@@ -353,7 +355,7 @@ CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunSim
 
     //TODO some errors logged from lifecycle listener, but not those thrown directly! -- DO NOT LOG VIA LIFECYCLE LISTENER
     try {
-        simulation->setupNetwork(cfg, partitionId);
+        simulation->setupNetwork(cfg, extraData);
 
         Stopwatch stopwatch;
 

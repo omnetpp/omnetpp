@@ -50,7 +50,7 @@ cMPICommunications::~cMPICommunications()
     delete recycledBuffer;
 }
 
-void cMPICommunications::configure(cSimulation *simulation, cConfiguration *cfg, int np, int partitionId)
+void cMPICommunications::configure(cSimulation *simulation, cConfiguration *cfg, int np, int partitionId, const std::map<std::string,cValue>& extraData)
 {
     static bool mpiInitialized = false;
     if (mpiInitialized)

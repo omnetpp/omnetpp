@@ -58,7 +58,7 @@ cParsimPartition::~cParsimPartition()
     shutdown(); //TODO this should probably be done earlier, when things are still up and running
 }
 
-void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg, int partitionId)
+void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg, const std::map<std::string,cValue>& extraData)
 {
     sim = simulation;
 
@@ -79,8 +79,12 @@ void cParsimPartition::configure(cSimulation *simulation, cConfiguration *cfg, i
     int parsimNumPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS, -1);
     if (cfg->getAsInt(CFGID_PARSIM_PROCID, -999) != -999)
         throw cRuntimeError("Configuration option `parsim-procid` has been renamed to `parsim-process-partitionid`, please use the latter name");
+    int partitionId = extraData.count("partitionId") ? extraData.at("partitionId").intValue() : -1;
     int parsimPartitionId = partitionId != -1 ? partitionId : cfg->getAsInt(CFGID_PARSIM_PROCESS_PARTITIONID, -1);
-    comm->configure(sim, cfg, parsimNumPartitions, parsimPartitionId);
+
+    auto extraData2 = extraData;
+    extraData2.erase("partitionId");
+    comm->configure(sim, cfg, parsimNumPartitions, parsimPartitionId, extraData2);
 }
 
 int cParsimPartition::getNumPartitions() const

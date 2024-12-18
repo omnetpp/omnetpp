@@ -99,7 +99,7 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     /**
      * Pass cParsimPartition the objects it has to cooperate with.
      */
-    void configure(cSimulation *simulation, cConfiguration *cfg, int partitionId=-1);
+    void configure(cSimulation *simulation, cConfiguration *cfg, const std::map<std::string,cValue>& extraData);
 
     /**
      * Returns the simulation instance associated with the object.
