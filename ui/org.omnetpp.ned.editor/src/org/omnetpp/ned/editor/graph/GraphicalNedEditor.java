@@ -55,6 +55,7 @@ import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
 import org.eclipse.gef.ui.actions.PrintAction;
+import org.eclipse.gef.ui.palette.PaletteColorProvider;
 import org.eclipse.gef.ui.palette.PaletteContextMenuProvider;
 import org.eclipse.gef.ui.palette.PaletteEditPartFactory;
 import org.eclipse.gef.ui.palette.PaletteViewer;
@@ -874,7 +875,7 @@ public class GraphicalNedEditor
             private IFigure filterFigure;
 
             private LocalDrawerFigure(Composite control) {
-                super(control);
+                super(control, PaletteColorProvider.INSTANCE);
 
                 text = new Text(control, SWT.BORDER | SWT.SINGLE);
                 text.setVisible(false);

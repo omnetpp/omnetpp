@@ -13,6 +13,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.GraphicalEditPart;
+import org.eclipse.gef.Handle;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
@@ -102,8 +103,8 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
      * change the color of all selection handles (read only parts will be different color)
      */
     @Override
-    protected List<?> createSelectionHandles() {
-        List<?> handles = super.createSelectionHandles();
+    protected List<? extends Handle> createSelectionHandles() {
+        List<? extends Handle> handles = super.createSelectionHandles();
         Color color = EditPartUtil.isEditable(getHost()) ?
                 GraphicalNedEditor.HIGHLIGHT_COLOR : GraphicalNedEditor.LOWLIGHT_COLOR;
         // set the color for all handles

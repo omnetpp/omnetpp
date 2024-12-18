@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.graph.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
@@ -56,7 +57,7 @@ public class CutAction extends SelectionAction {
         CompoundCommand compoundCommand = new CompoundCommand();
 
         // collect selected editparts
-        List<EditPart> selectedEditParts = new ArrayList<EditPart>(getSelectedObjects());
+        List<EditPart> selectedEditParts = new ArrayList<EditPart>((Collection<? extends EditPart>) getSelectedObjects());
         selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));
 
         // translate from editparts to model elements
