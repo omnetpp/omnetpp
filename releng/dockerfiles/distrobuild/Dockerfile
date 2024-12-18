@@ -1,4 +1,4 @@
-FROM ghcr.io/omnetpp/distrobuild-base:ubuntu20.04-macos12.3-240715
+FROM ghcr.io/omnetpp/distrobuild-base:ubuntu20.04-macos12.3-241218
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)

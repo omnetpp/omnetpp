@@ -70,6 +70,7 @@ OMNETPP_INCL_DIR = $(OMNETPP_ROOT)/include
 OMNETPP_LIB_DIR = $(OMNETPP_ROOT)/lib$(OUTPUT_PREFIX)
 OMNETPP_OUT_DIR = $(OMNETPP_ROOT)/out$(OUTPUT_PREFIX)
 OMNETPP_SRC_DIR = $(OMNETPP_ROOT)/src
+OMNETPP_PYTHON_DIR = $(OMNETPP_ROOT)/python
 OMNETPP_UTILS_DIR = $(OMNETPP_SRC_DIR)/utils
 OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
 OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
@@ -119,14 +120,14 @@ opp_rwildcard=$(foreach d,$(wildcard $1*),$(call opp_rwildcard,$d/,$2) $(filter 
 #
 PERL = perl
 YACC = bison -y -Wno-yacc
-LEX = flex
+LEX = flex --nounistd
 CC = clang
 CXX = clang++
 TOOLCHAIN_NAME = clang
-DEFINES =
-SANITIZE_FLAGS =  -fsanitize=leak,address,undefined
+DEFINES = 
+SANITIZE_FLAGS =  -g1 -fsanitize=leak,address,undefined
 CFLAGS_DEBUG =  -O0 -Wall -glldb -fstandalone-debug
-CFLAGS_RELEASE =  -O3 -DNDEBUG=1
+CFLAGS_RELEASE =  -O3 -DNDEBUG=1 -g1 -ffp-contract=off
 CFLAGS += $(CFLAGS_EXTRA)  -MMD -MP -MF $@.d  -fPIC  -Wno-deprecated-register -Wno-unused-function -fno-omit-frame-pointer -include $(OMNETPP_ROOT)/releng/ide/native/force_link_glibc_2.12.2.h $(DEFINES)
 CXXFLAGS = -std=c++17
 LDFLAG_LIBPATH = -L
@@ -134,7 +135,7 @@ LDFLAG_INCLUDE = -Wl,-u,
 LDFLAG_LIB = -l
 LDFLAG_IMPLIB = -Wl,--out-implib,
 LDFLAG_IMPDEF = -Wl,--output-def,
-LDFLAGS += $(LDFLAGS_EXTRA) -static-libgcc -static-libstdc++ -Wl,-rpath,$(OMNETPP_LIB_DIR) -Wl,-rpath,$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,.  -Wl,--export-dynamic $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
+LDFLAGS += $(LDFLAGS_EXTRA) -fuse-ld=lld -static-libgcc -static-libstdc++ -Wl,-rpath,$(OMNETPP_LIB_DIR) -Wl,-rpath,. -Wl,-rpath,$(OMNETPP_TOOLS_DIR)/lib  -Wl,--export-dynamic $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
 WHOLE_ARCHIVE_ON = -Wl,--whole-archive
 WHOLE_ARCHIVE_OFF = -Wl,--no-whole-archive
 AS_NEEDED_ON = -Wl,--as-needed
@@ -163,7 +164,10 @@ HAVE_SWAPCONTEXT = 1
 SYS_LIBS = -ldl
 QT_CFLAGS = 
 QT_LIBS = 
+PYTHON_CFLAGS = 
+PYTHON_LDFLAGS = 
 QTENV_LDFLAGS = 
+BACKWARD_LDFLAGS = 
 OSG_CFLAGS = 
 OSG_LIBS = 
 OSGEARTH_CFLAGS = 

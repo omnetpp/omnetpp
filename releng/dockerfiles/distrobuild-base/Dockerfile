@@ -5,7 +5,7 @@ LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 RUN apt-get update && \
     apt-get upgrade -yy && \
     apt-get install --no-install-recommends -yy \
-        bison flex openjdk-21-jdk swig doxygen graphviz inkscape librsvg2-bin \
+        bison flex lld openjdk-21-jdk swig doxygen graphviz inkscape librsvg2-bin \
         pkg-config python3 python3-dev python3-pip python3-setuptools \
         texlive texlive-latex-extra latexmk \
         txt2html ssh zip p7zip-full git wget curl \
