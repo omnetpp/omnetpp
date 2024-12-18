@@ -666,6 +666,15 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
         else:
             plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
 
+    # " means inches, % means percentage of total size
+    # horizontal left/right space around the whole plot: 0.08"+0%
+    # vertical top/bottom space around the whole plot:   0.01"+1%
+    # horizontal space between subplots: 0"+0%
+    # vertical space between subplots:   0.01"+5% divided between the subplots
+    # increasing h_pad from 0.01" would unnecessarily increase the distance between subplots
+    if ax is not None:
+        ax.get_figure().set_constrained_layout_pads(w_pad=0.08, h_pad=0.01, wspace=0, hspace=0.05, rect=(0, 0.01, 1, 0.98))
+
     plt.subplot(df.shape[0], 1, 1)
 
     title = get_prop("title") or make_chart_title(df, title_cols)
@@ -1189,6 +1198,7 @@ def preconfigure_plot(props):
         mpl.rcParams.update(_filter_by_key_prefix(props, "matplotlibrc."))
         mpl.rcParams.update(parse_rcparams(get_prop("matplotlibrc") or ""))
         _make_scroll_navigable(plt.gcf())
+        plt.gcf().set_layout_engine('compressed')
 
     _initialize_cycles(props)
 
@@ -1285,7 +1295,6 @@ def postconfigure_plot(props):
                     args["handlelength"] = 0
                 if handles:
                     plt.legend(**args)
-        plt.tight_layout()
 
 
 def export_image_if_needed(props):
@@ -1422,9 +1431,6 @@ def export_image_if_needed(props):
 
             ax.set_xlim(left=min_x, right=max_x)
             ax.set_ylim(bottom=min_y, top=max_y)
-
-            # reducing margins all around
-            plt.tight_layout()
 
         def _make_image_metadata():
             # Include versions of various software components into the metadata,
@@ -2369,7 +2375,6 @@ def make_fancy_xticklabels(ax):
         angle = max(0, min(90, angle))
 
         plt.xticks(rotation=angle, horizontalalignment="right")
-        plt.tight_layout()
 
     ax.callbacks.connect('xlim_changed', on_xlims_change)
 
