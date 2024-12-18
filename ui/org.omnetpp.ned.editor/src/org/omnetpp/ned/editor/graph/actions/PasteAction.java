@@ -138,7 +138,7 @@ public class PasteAction extends SelectionAction {
         GraphicalViewer graphicalViewer = getGraphicalViewer();
         graphicalViewer.getRootEditPart().refresh();
         getGraphicalViewer().deselectAll();
-        Map<Object,EditPart> editPartRegistry = graphicalViewer.getEditPartRegistry();
+        Map<Object, EditPart> editPartRegistry = graphicalViewer.getEditPartRegistry();
         for (INedElement element : pastedElements) {
             EditPart editPart = editPartRegistry.get(element);
             if (editPart != null)
@@ -306,7 +306,7 @@ public class PasteAction extends SelectionAction {
     protected INedElement getPrimarySelectionElement() {
         // return the element from the primary selection
         GraphicalViewer graphicalViewer = getGraphicalViewer();
-        List<? extends EditPart> selectedEditParts = graphicalViewer.getSelectedEditParts();
+        List<EditPart> selectedEditParts = (List<EditPart>) graphicalViewer.getSelectedEditParts();
         if (selectedEditParts.size() > 0 && selectedEditParts.get(0) instanceof INedModelProvider)
             return ((INedModelProvider)selectedEditParts.get(0)).getModel();
         else

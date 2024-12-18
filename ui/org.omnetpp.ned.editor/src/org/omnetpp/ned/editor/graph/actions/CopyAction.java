@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.graph.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
@@ -50,7 +51,7 @@ public class CopyAction extends SelectionAction {
     @Override @SuppressWarnings("unchecked")
     public void run() {
         // collect selected editparts
-        List<EditPart> selectedEditParts = new ArrayList<EditPart>(getSelectedObjects());
+        List<EditPart> selectedEditParts = new ArrayList<EditPart>((Collection<? extends EditPart>) getSelectedObjects());
         selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));  // FIXME skip connections that already selected
 
         // translate from editparts to model elements
