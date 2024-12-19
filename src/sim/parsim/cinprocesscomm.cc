@@ -36,10 +36,6 @@ Register_Class(cInProcessCommunications);
 Register_GlobalConfigOption(CFGID_PARSIM_INPROCESS_COMM_SEND_POINTERS, "parsim-inprocess-comm-send-pointers", CFG_BOOL, "true", "With `parallel-simulation=true` and `parsim-communications-class=omnetpp::cInProcessCommunications`: specifies whether messages are sent by sending pointers to the messages (default) or by serializing the messages.");
 Register_GlobalConfigOption(CFGID_PARSIM_INPROCESS_COMM_USE_SPINLOCK, "parsim-inprocess-comm-use-spinlock", CFG_BOOL, "false", "With `parallel-simulation=true` and `parsim-communications-class=omnetpp::cInProcessCommunications`: specifies whether a spinlock or a mutex is used to synchronize access to the message queues. Using spinlocks instead of mutexes avoids context switches, potentially reducing communication latency and improving performance, at the cost of consuming more CPU cycles due to busy waiting.");
 
-//TODO this should NOT be global, as it's possible to run several parsim runs in parallel (if there's enough cores)
-static std::vector<cInProcessCommunications*> partitions;
-static std::mutex partitionsMutex;
-static std::condition_variable partitionsConditionVariable;
 
 cInProcessCommunications::cInProcessCommunications()
 {
@@ -70,16 +66,51 @@ void cInProcessCommunications::configure(cSimulation *sim, cConfiguration *cfg, 
 
     EV << "cInProcessCommunications: started as process " << myPartitionId << " out of " << numPartitions << ".\n";
 
-    // register this partition in partitions[]
-    std::unique_lock<std::mutex> lock(partitionsMutex);
-    partitions.resize(np);
-    partitions[partitionId] = this;
-    partitionsConditionVariable.notify_all();
+    int simulationId = extraData.at("parsimSimulationId").intValue();
+    fillPartitionsArray(simulationId, numPartitions, partitionId);
+}
 
-    // wait until all partitions register themselves in partitions[]
-    partitionsConditionVariable.wait(lock, [&] {
-        return std::all_of(partitions.begin(), partitions.end(), [](auto p) { return p != nullptr; });
-    });
+void cInProcessCommunications::fillPartitionsArray(int simulationId, int numPartitions, int partitionId)
+{
+    struct SetupData
+    {
+        std::vector<cInProcessCommunications*> partitions;
+        std::mutex partitionsMutex;
+        std::condition_variable partitionsConditionVariable;
+    };
+
+    static std::mutex setupDataMutex;
+    static std::map<int,SetupData> simulationsSetupData;
+
+    // create a SetupData shared among all partitions in this parsim;
+    // use lock to protect accesses to simulationsSetupData global var
+    SetupData *mySetupData = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(setupDataMutex);
+        mySetupData = &simulationsSetupData[simulationId]; // find or create entry
+        mySetupData->partitions.resize(numPartitions);
+    }
+
+    {
+        // register this partition in partitions[]
+        std::unique_lock<std::mutex> lock(mySetupData->partitionsMutex);
+        mySetupData->partitions[partitionId] = this;
+        mySetupData->partitionsConditionVariable.notify_all();
+
+        // wait until all partitions register themselves in partitions[]
+        mySetupData->partitionsConditionVariable.wait(lock, [&] {
+            return std::all_of(mySetupData->partitions.begin(), mySetupData->partitions.end(), [](auto p) { return p != nullptr; });
+        });
+
+        // done, make our own copy
+        partitions = mySetupData->partitions;
+    }
+
+    // // first partition to get here removes the entry from perSimulationSetupData
+    // {
+    //     std::lock_guard<std::mutex> lock(setupDataMutex);
+    //     simulationsSetupData.erase(simulationId);
+    // }
 }
 
 void cInProcessCommunications::shutdown()

@@ -280,12 +280,16 @@ CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunMul
 
     std::vector<SimulationSummary> results(numPartitions);
 
+    static int parsimId;
+    parsimId++;
+
     // create and launch threads
     std::vector<std::thread> threads;
     for (int i = 0; i < numPartitions; i++) {
-        auto fn = [this, &results](BatchState *state, cConfiguration *cfg, int partitionId) {
+        auto fn = [this, &results](BatchState *state, cConfiguration *cfg, int parsimId, int partitionId) {
             try {
                 std::map<std::string,cValue> extraData;
+                extraData["parsimSimulationId"] = parsimId;
                 extraData["partitionId"] = partitionId;
                 results[partitionId] = setupAndRunSimulation(*state, cfg, extraData);
             } catch (std::exception& e) {
@@ -293,7 +297,7 @@ CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunMul
                 narrator->displayException(e);
             }
         };
-        threads.push_back(std::thread(fn, &state, cfg, i));
+        threads.push_back(std::thread(fn, &state, cfg, parsimId, i));
     }
 
     // wait for them to finish

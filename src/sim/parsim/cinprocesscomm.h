@@ -51,6 +51,8 @@ class SIM_API cInProcessCommunications : public cParsimCommunications
     cSimulation *simulation = nullptr; // (unused)
     cMemCommBuffer *spareBuffer = nullptr;
 
+    std::vector<cInProcessCommunications*> partitions; // my peers
+
     struct ReceivedBuffer {int sourcePartitionId; int tag; cMemCommBuffer *buffer;};
     std::deque<ReceivedBuffer> receiveQueue;
 
@@ -70,6 +72,7 @@ class SIM_API cInProcessCommunications : public cParsimCommunications
     bool receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, bool blocking);
     bool doReceive(cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, bool blocking);
     void extract(cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, const ReceivedBuffer& item);
+    void fillPartitionsArray(int simulationId, int numPartitions, int partitionId);
 
   public:
     /**
