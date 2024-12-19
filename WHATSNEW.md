@@ -6,6 +6,10 @@ simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
+OMNeT++ 6.1.1 (January 2025)
+----------------------------
+
+
 OMNeT++ 6.1 (September 2024)
 ----------------------------
 
