@@ -127,6 +127,13 @@ int cInProcessCommunications::getPartitionId() const
     return myPartitionId;
 }
 
+cParsimPartition *cInProcessCommunications::getPartition(int partitionId) const
+{
+    if (partitionId < 0 || partitionId >= numPartitions)
+        throw cRuntimeError("Invalid partition ID %d", partitionId);
+    return partitions[partitionId]->getSimulation()->getParsimPartition();
+}
+
 bool cInProcessCommunications::packMessage(cCommBuffer *buffer, cMessage *msg, int destPartitionId)
 {
     if (sendPointers) {

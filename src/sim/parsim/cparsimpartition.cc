@@ -34,6 +34,8 @@
 #include "cparsimsynchr.h"
 #include "creceivedexception.h"
 #include "messagetags.h"
+#include "cinprocesscomm.h"
+
 
 using namespace omnetpp::common;
 
@@ -309,6 +311,55 @@ bool cParsimPartition::isModuleLocal(cModule *parentmod, const char *modname, in
         }
         return false;
     }
+}
+
+cParsimPartition *cParsimPartition::getPartition(int partitionId) const
+{
+    cParsimCommunications *comm = getCommunications();
+    cInProcessCommunications *inProcessComm = dynamic_cast<cInProcessCommunications*>(comm);
+    if (!inProcessComm)
+        throw cRuntimeError("Cannot access partition %d: Communications layer is not in-process", partitionId);
+    return inProcessComm->getPartition(partitionId);
+}
+
+cGate *cParsimPartition::resolveProxyGate(cGate *gate) const
+{
+    if (getSimulation()->getStage() != cSimulation::STAGE_INITIALIZE)
+        throw cRuntimeError("Cannot access gate %s: Simulation is not in stage INITIALIZE", gate->getFullName());
+
+    cProxyGate *proxyGate = dynamic_cast<cProxyGate*>(gate);
+    if (!proxyGate)
+        return gate;
+
+    short remotePartitionId = proxyGate->getRemotePartitionId();
+    int remoteModuleId = proxyGate->getRemoteModuleId();
+    int remoteGateId = proxyGate->getRemoteGateId();
+    cParsimPartition *partition = getPartition(remotePartitionId);
+    cSimulation *remoteSimulation = partition->getSimulation();
+    cModule *remoteModule = remoteSimulation->getModule(remoteModuleId);
+    return remoteModule->gate(remoteGateId);
+}
+
+cModule *cParsimPartition::getModuleByPath(const char *modulePath) const
+{
+    if (getSimulation()->getStage() != cSimulation::STAGE_INITIALIZE)
+        throw cRuntimeError("Cannot access module %s: Simulation is not in stage INITIALIZE", modulePath);
+
+    int numPartitions = getNumPartitions();
+    cModule *foundModule = nullptr;
+    for (int i = 0; i < numPartitions; ++i) {
+        cParsimPartition *partition = getPartition(i);
+        cSimulation *remoteSimulation = partition->getSimulation();
+        cModule *remoteModule = remoteSimulation->findModuleByPath(modulePath);
+        if (remoteModule && !remoteModule->isPlaceholder()) {
+            if (foundModule)
+                throw cRuntimeError("Module '%s' found in multiple partitions", modulePath);
+            foundModule = remoteModule;
+        }
+    }
+    if (!foundModule)
+        throw cRuntimeError("Module '%s' not found", modulePath);
+    return foundModule;
 }
 
 bool cParsimPartition::processOutgoingMessage(cMessage *msg, const SendOptions& options, int partitionId, int moduleId, int gateId, void *data)

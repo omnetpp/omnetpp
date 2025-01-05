@@ -162,6 +162,8 @@ cSimulation::cSimulation(const char *name, cEnvir *env, cINedLoader *loader) : c
 
     sharedCounters.resize(MAX_NUM_COUNTERS, CTR_UNINITIALIZED);
 
+    parsimUtil.sim = this;
+
     // install default objects
     setFES(new cEventHeap("fes"));
     setScheduler(new cSequentialScheduler());
@@ -214,6 +216,27 @@ cSimulation::~cSimulation()
 
     if (nedLoaderOwned)
         delete nedLoader;
+}
+
+cSimulation *cSimulation::ParsimUtil::getPartitionSimulation(int partitionId) const
+{
+    if (!sim->isParsimEnabled())
+        throw cRuntimeError("getPartitionSimulation(): Simulation is not a parallel simulation");
+    return sim->getParsimPartition()->getPartition(partitionId)->getSimulation();
+}
+
+cGate *cSimulation::ParsimUtil::resolveProxyGate(cGate *gate) const
+{
+    if (!sim->isParsimEnabled())
+        return gate;
+    return sim->getParsimPartition()->resolveProxyGate(gate);
+}
+
+cModule *cSimulation::ParsimUtil::getModuleByPath(const char *modulePath) const
+{
+    if (!sim->isParsimEnabled())
+        return sim->getModuleByPath(modulePath);
+    return sim->getParsimPartition()->getModuleByPath(modulePath);
 }
 
 cSimulation *cSimulation::getActiveSimulation()

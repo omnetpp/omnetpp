@@ -155,6 +155,21 @@ class SIM_API cParsimPartition : public cObject, public cISimulationLifecycleLis
     virtual bool isModuleLocal(cModule *parent, const char *submoduleName, int submoduleIndex);
 
     /**
+     * See cSimulation::ParsimUtil::getPartition().
+     */
+    virtual cParsimPartition *getPartition(int partitionId) const;
+
+    /**
+     * See cSimulation::ParsimUtil::resolveProxyGate().
+     */
+    virtual cGate *resolveProxyGate(cGate *gate) const;
+
+    /**
+     * See cSimulation::ParsimUtil::getModuleByPath().
+     */
+    virtual cModule *getModuleByPath(const char *modulePath) const;
+
+    /**
      * A hook called from cProxyGate::deliver() when an outgoing cMessage
      * arrives at partition boundary. We just pass it up to the synchronization
      * layer (see similar method in cParsimSynchronizer).

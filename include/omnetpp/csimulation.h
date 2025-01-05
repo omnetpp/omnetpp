@@ -74,6 +74,7 @@ typedef int sharedvarhandle_t;
  */
 typedef int sharedcounterhandle_t;
 
+
 /**
  * @brief Simulation manager class.
  *
@@ -119,6 +120,64 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
         STAGE_REFRESHDISPLAY,
         STAGE_FINISH,
         STAGE_CLEANUP
+    };
+
+    /**
+     * A utility class for accessing other partitions in a parallel simulation
+     * running in the multi-threaded mode. (In distributed mode, other partitions
+     * cannot be accessed, as they are part of separate OS processes that possibly
+     * execute on remote hosts.)
+     *
+     * An instance of this class can be accessed using cSimulation::getParsimUtil().
+     */
+    class SIM_API ParsimUtil
+    {
+      private:
+        friend class cSimulation;
+        cSimulation *sim;
+
+      public:
+        /**
+         * Returns the pointer of the simulation object of the partition identified
+         * by partitionId (0..numPartitions-1). See cSimulation::getParsimNumPartitions()
+         * and cSimulation::getParsimPartitionId().
+         *
+         * Note that accessing other partitions must be done by adhering to parallel
+         * programming best practices (use of mutexes, etc.). Also, one must keep
+         * in mind that partitions, although coupled, run independently and maintain
+         * their own virtual times, and therefore accessing another partition
+         * means reaching into the the past or the future (depending on whether the
+         * given partition is behind or ahead of the caller partition).
+         */
+        cSimulation *getPartitionSimulation(int partitionId) const;
+
+        /**
+         * Returns the target gate (on another partition) of the given proxy gate,
+         * or the gate itself if it is not a proxy gate. See cProxyGate and
+         * cPlaceholderModule.
+         *
+         * This method may only be called during initialization, as initialization
+         * stages are guaranteed to be synchronized across partitions. After the
+         * initialization phase, the use of this function is inherently unsafe,
+         * and therefore it is not allowed (an error will be raised).
+         */
+        cGate *resolveProxyGate(cGate *gate) const;
+
+        /**
+         * Returns the actual (non-placeholder) module identified by its full path,
+         * searching all partitions. See cModule::isPlaceholder().
+         *
+         * Note that compound modules are instantiated in all partitions they have
+         * submodules in, and therefore, the lookup of compound modules that have
+         * submodules in more than one partitions is ambiguous. This function will
+         * raise an error for such modules.
+         *
+         * This method may only be called during initialization, as initialization
+         * stages are guaranteed to be synchronized across partitions. After the
+         * initialization phase, the use of this function is inherently unsafe,
+         * and therefore it is not allowed (an error will be raised).
+         */
+        cModule *getModuleByPath(const char *modulePath) const;
     };
 
   private:
@@ -170,6 +229,7 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
     bool parsim = false;
 #ifdef WITH_PARSIM
     cParsimPartition *parsimPartition = nullptr;
+    ParsimUtil parsimUtil;
 #endif
 
     struct SharedDataHandles {
@@ -893,6 +953,14 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
      * is not currently active, i.e. isParsimEnabled() = false.
      */
     cParsimPartition *getParsimPartition() const {return parsimPartition;}
+
+    /**
+     * Returns a pointer to utility object that allows accessing other partitions
+     * in a parallel simulation running in the multi-threaded mode.
+     * (In distributed mode, other partitions cannot be accessed, as they are part
+     * of separate OS processes that possibly execute on remote hosts.)
+     */
+    const ParsimUtil *getParsimUtil() const {return &parsimUtil;}
 #endif
 
     /**

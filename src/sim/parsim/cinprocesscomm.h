@@ -33,6 +33,7 @@
 namespace omnetpp {
 
 class cMemCommBuffer;
+class cParsimPartition;
 
 /**
  * @brief Implementation of parsim communications layer for partitions
@@ -111,6 +112,11 @@ class SIM_API cInProcessCommunications : public cParsimCommunications
      * Returns the id of this partition.
      */
     virtual int getPartitionId() const override;
+
+    /**
+     * Returns the partition specified by its ID.
+     */
+    cParsimPartition *getPartition(int partitionId) const;
 
     /**
      * Transferring messages by pointer is supported.
