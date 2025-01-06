@@ -55,22 +55,47 @@ jobs:
         with:
           name: ${{ matrix.build }}
 
-      - uses: msys2/setup-msys2@v2
+      - name: Extract artifact
         if: matrix.os == 'windows-latest'
-        name: Setup MSYS
-        with:
-          install: unzip
+        run: Expand-Archive -Path *${{ matrix.build }}* -DestinationPath .
+
+      - name: Extract tools
+        if: matrix.os == 'windows-latest'
+        working-directory: omnetpp-7.0.0pre2/tools
+        shell: cmd # Because I had some trouble with pwsh.
+        # Better use backslashes here for paths...
+        run: |
+          7za.exe x -aos -y -owin32.x86_64 opp-tools-win32-x86_64-mingw64-toolchain.7z
+          del opp-tools-win32-x86_64-mingw64-toolchain.7z
+
+          7za.exe x -aos -y -owin32.x86_64\opt\mingw64 opp-tools-win32-x86_64-mingw64-dependencies.7z
+          del opp-tools-win32-x86_64-mingw64-dependencies.7z
+
+          win32.x86_64\opt\mingw64\bin\qtbinpatcher.exe --qt-dir=win32.x86_64\opt\mingw64
 
       - name: Install release (Windows)
         if: matrix.os == 'windows-latest'
-        shell: msys2 {0} # Can't be set with an expression using the matrix unfortunately
-        run: |
-          unzip *${{ matrix.build }}*
-          cd omnetpp-7.0.0pre2
-          ./install.sh -y --no-python
-          source setenv
-          cd samples/aloha
-          ./aloha -u Cmdenv -c PureAloha1 --sim-time-limit=10s
+        working-directory: omnetpp-7.0.0pre2/tools
+        # These are needed for the bundled MinGW bash to find the included binaries.
+        env:
+          MSYSTEM: MINGW64
+          MSYSCON: defterm
+        # GitHub doesn't reliably provide the repo name on its own anywhere,
+        # so we have to extract it from the username/repository slug.
+        # "${{ github.workspace }}" is "D:\a\<repository-name>\<repository-name>\",
+        # but we need to MinGW-ify it for bash...
+        # The > means the following is a single line, hence the semicolons for bash.
+        run: >
+          win32.x86_64\usr\bin\bash -l -c '
+            GITHUB_REPOSITORY="${{ github.repository }}";
+            REPOSITORY_NAME="${GITHUB_REPOSITORY#*/}";
+            cd /d/a/$REPOSITORY_NAME/$REPOSITORY_NAME/omnetpp-7.0.0pre2;
+            source setenv;
+            ./configure;
+            make -j4;
+            cd samples/aloha;
+            ./aloha -u Cmdenv -c PureAloha1 --sim-time-limit=10s;
+          '
 
       - name: Install release (non-Windows)
         if: matrix.os != 'windows-latest'
