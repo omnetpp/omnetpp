@@ -44,7 +44,7 @@ jobs:
       matrix:
         include:
           - { os: ubuntu-24.04, build: linux-x86_64, preinstall_cmd: "sudo apt update" }
-          - { os: macos-14, build: macos-aarch64 }
+          - { os: macos-14, build: macos-aarch64, install_opts: "--no-embedded-python" }
           - { os: windows-latest, build: windows-x86_64 }
 
     runs-on: ${{ matrix.os }}
@@ -91,7 +91,7 @@ jobs:
             REPOSITORY_NAME="${GITHUB_REPOSITORY#*/}";
             cd /d/a/$REPOSITORY_NAME/$REPOSITORY_NAME/omnetpp-7.0.0pre2;
             source setenv;
-            ./configure;
+            ./configure WITH_PYTHON=no;
             make -j4;
             cd samples/aloha;
             ./aloha -u Cmdenv -c PureAloha1 --sim-time-limit=10s;
@@ -103,7 +103,7 @@ jobs:
           tar -xf *${{ matrix.build }}*
           cd omnetpp-7.0.0pre2
           ${{ matrix.preinstall_cmd }}
-          ./install.sh -y
+          ./install.sh -y ${{ matrix.install_opts }}
           source setenv
           cd samples/aloha
           ./aloha -u Cmdenv -c PureAloha1 --sim-time-limit=10s
