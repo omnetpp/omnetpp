@@ -154,6 +154,12 @@ class SIM_API cInProcessCommunications : public cParsimCommunications
      * received, false otherwise.
      */
     virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourcePartitionId) override;
+
+
+    virtual void initStageBarrier(int stage);
+
+    virtual void initializationCompletedBarrier();
+
     //@}
 };
 

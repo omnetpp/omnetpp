@@ -39,6 +39,8 @@
 #include "omnetpp/cosgcanvas.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cmodelchange.h"
+#include "parsim/cparsimpartition.h"
+#include "parsim/cinprocesscomm.h"
 
 using namespace omnetpp::common;
 
@@ -1630,7 +1632,11 @@ void cModule::callInitialize()
     // and channels must be ready for that at that time, i.e. passed at least
     // stage==0.
     //
+    bool barrierNeeded = getParentModule() == nullptr && getSimulation()->isParsimEnabled();
+    cInProcessCommunications *comm = barrierNeeded ? dynamic_cast<cInProcessCommunications *>(getSimulation()->getParsimPartition()->getCommunications()) : nullptr;
     int stage = 0;
+    if (comm)
+        comm->initStageBarrier(stage);
     bool moreChannelStages = true, moreModuleStages = true;
     while (moreChannelStages || moreModuleStages) {
         if (moreChannelStages)
@@ -1638,7 +1644,11 @@ void cModule::callInitialize()
         if (moreModuleStages)
             moreModuleStages = initializeModules(stage);
         ++stage;
+        if (comm)
+            comm->initStageBarrier(stage);
     }
+    if (comm)
+        comm->initializationCompletedBarrier();
 }
 
 bool cModule::callInitialize(int stage)

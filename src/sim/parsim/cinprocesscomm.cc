@@ -154,7 +154,7 @@ cMessage *cInProcessCommunications::unpackMessage(cCommBuffer *buffer)
         intptr_t ptr;
         buffer->unpack(ptr);
         msg = (cMessage *)ptr;
-        drop(msg); //TODO or implement yieldOwnership() to do nothing
+        drop(msg); // or implement yieldOwnership() to do nothing
     }
     else {
         msg = (cMessage *)buffer->unpackObject();
@@ -261,6 +261,68 @@ bool cInProcessCommunications::receive(int filtTag, cCommBuffer *buffer, int& re
     }
 
     return false;
+}
+
+struct InitializationBarrierData
+{
+    int currentStage = 0;
+    int stageCompleted = -1;  // not really needed (always currentStage-1)
+    int stageReachedCounter = 0;
+    int initializationCompletedCounter = 0;
+    bool fullyCompleted = false;
+    std::mutex mtx;
+    std::condition_variable cv;
+};
+
+//TODO prevent other simulations from entering here too!!!!!!!!!!!!!!!!!!!!
+static InitializationBarrierData initializationBarrierData;
+
+void cInProcessCommunications::initStageBarrier(int stage)
+{
+    InitializationBarrierData *data = &initializationBarrierData;
+    std::unique_lock<std::mutex> lock(data->mtx);
+
+    if (data->fullyCompleted)
+        throw cRuntimeError("initStageBarrier(): fullyCompleted flag already set (trying to reuse cInProcessCommunications?)");
+    if (stage != data->currentStage)
+        throw cRuntimeError("initStageBarrier(): Stage mismatch");
+
+    ++data->stageReachedCounter;
+
+    if (data->stageReachedCounter + data->initializationCompletedCounter == numPartitions) {
+        // Reset for next stage
+        data->stageCompleted = stage;
+        data->currentStage++;
+        data->stageReachedCounter = 0;
+        data->cv.notify_all();
+    }
+    else {
+        // Wait until the sum of stageReached and initializationCompleted reaches numPartitions
+        data->cv.wait(lock, [data,stage]() { return data->stageCompleted == stage; });
+    }
+}
+
+void cInProcessCommunications::initializationCompletedBarrier()
+{
+    InitializationBarrierData *data = &initializationBarrierData;
+    std::unique_lock<std::mutex> lock(data->mtx);
+
+    ++data->initializationCompletedCounter;
+
+    if (data->initializationCompletedCounter == numPartitions) {
+        // Signal other partitions; note that resetting the fields is not needed,
+        // as cParsimCommunications objects are not reused for multiple simulations.
+        data->fullyCompleted = true;
+        data->currentStage = -1;
+        data->stageCompleted = -1;
+        data->stageReachedCounter = 0;
+        data->initializationCompletedCounter = 0;
+        data->cv.notify_all();
+    }
+    else {
+        // Wait until all threads have completed initialization
+        data->cv.wait(lock, [data]() { return data->fullyCompleted; });
+    }
 }
 
 bool cInProcessCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourcePartitionId, bool blocking)
