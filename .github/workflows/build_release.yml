@@ -64,7 +64,7 @@ jobs:
 
       - name: Extract tools
         if: matrix.os == 'windows-latest'
-        working-directory: omnetpp-6.1/tools
+        working-directory: omnetpp-6.1.1/tools
         shell: cmd # Because I had some trouble with pwsh.
         # Better use backslashes here for paths...
         run: |
@@ -78,7 +78,7 @@ jobs:
 
       - name: Install release (Windows)
         if: matrix.os == 'windows-latest'
-        working-directory: omnetpp-6.1/tools
+        working-directory: omnetpp-6.1.1/tools
         # These are needed for the bundled MinGW bash to find the included binaries.
         env:
           MSYSTEM: MINGW64
@@ -92,7 +92,7 @@ jobs:
           win32.x86_64\usr\bin\bash -l -c '
             GITHUB_REPOSITORY="${{ github.repository }}";
             REPOSITORY_NAME="${GITHUB_REPOSITORY#*/}";
-            cd /d/a/$REPOSITORY_NAME/$REPOSITORY_NAME/omnetpp-6.1;
+            cd /d/a/$REPOSITORY_NAME/$REPOSITORY_NAME/omnetpp-6.1.1;
             source setenv;
             ./configure;
             make -j4;
@@ -104,7 +104,7 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           tar -xf *${{ matrix.build }}*
-          cd omnetpp-6.1
+          cd omnetpp-6.1.1
           ${{ matrix.preinstall_cmd }}
           ./install.sh -y
           source setenv
@@ -141,7 +141,7 @@ jobs:
           run: |
             cd /omnetpp
             tar -xf *linux-x86_64.tgz
-            cd omnetpp-6.1
+            cd omnetpp-6.1.1
             ${{ matrix.preinstall_cmd }}
             ./install.sh -y ${{ matrix.install_opts }}
             source setenv
