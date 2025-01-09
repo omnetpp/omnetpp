@@ -2616,6 +2616,7 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
         //@{
         virtual double getAngle() const  {return angle;}
         virtual void setAngle(double angle);
+        virtual Rectangle getBounds() const override;
         //@}
 };
 

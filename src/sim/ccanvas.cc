@@ -3438,6 +3438,53 @@ void cLabelFigure::setAngle(double angle)
     fireGeometryChange();
 }
 
+cFigure::Rectangle cLabelFigure::getBounds() const
+{
+    double angle = getAngle();
+    // negative because the rotation is CCW, while the coordinate system is CW
+    double sina = std::sin(-angle);
+    double cosa = std::cos(-angle);
+
+    Point position = getPosition();
+
+    // returns `p` rotated by `angle` around `position`
+    auto rotate = [&sina, &cosa, &position](Point p) {
+        p = p - position;
+        p = Point(p.x * cosa - p.y * sina, p.x * sina + p.y * cosa);
+        return p + position;
+    };
+
+    Rectangle result(INFINITY, INFINITY, -INFINITY, -INFINITY);
+
+    // extends `result` in place to include `p`
+    auto include = [&result](const Point& p) {
+        if (result.x > p.x) {
+            double delta = result.x - p.x;
+            result.x = p.x;
+            result.width = std::max(0.0, result.width + delta);
+        }
+        if (result.y > p.y) {
+            double delta = result.y - p.y;
+            result.y = p.y;
+            result.height = std::max(0.0, result.height + delta);
+        }
+        if (result.x + result.width < p.x)
+            result.width = p.x - result.x;
+        if (result.y + result.height < p.y)
+            result.height = p.y - result.y;
+    };
+
+    // unrotated bounds
+    Rectangle bounds = cAbstractTextFigure::getBounds();
+
+    include(rotate(Point(bounds.x, bounds.y))); // top left
+    include(rotate(Point(bounds.x + bounds.width, bounds.y))); // top right
+    include(rotate(Point(bounds.x, bounds.y + bounds.height))); // bottom left
+    include(rotate(Point(bounds.x + bounds.width, bounds.y + bounds.height))); // bottom right
+
+    return result;
+}
+
 void cLabelFigure::hashTo(cHasher& hasher) const
 {
     cAbstractTextFigure::hashTo(hasher);
