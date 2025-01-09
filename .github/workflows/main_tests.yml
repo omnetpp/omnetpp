@@ -40,8 +40,10 @@ jobs:
       uses: getsentry/action-setup-venv@v2.1.0
       with:
         python-version: 3.12.6
-        cache-dependency-path: python/requirements.txt
-        install-cmd: python3 -m pip install -r python/requirements.txt
+        cache-dependency-path: |
+          python/requirements.txt
+          python/requirements-for-embedded-python.txt
+        install-cmd: python3 -m pip install -r python/requirements.txt -r python/requirements-for-embedded-python.txt
 
     - name: Configure
       run: |
