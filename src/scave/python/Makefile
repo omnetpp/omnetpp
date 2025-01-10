@@ -13,8 +13,8 @@ O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave/python
 SCAVE_PYTHON_DIR=$(OMNETPP_PYTHON_DIR)/omnetpp/scave
 TARGET_LIB_FILES=$(SCAVE_PYTHON_DIR)/$(LIBNAME)$(PYTHON_EXT_SUFFIX)
 
-CFLAGS += -DOMNETPP_MODE_SUFFIX=$D -DNB_SHARED -DNB_BUILD
-LDFLAGS += -static-libstdc++
+CFLAGS += -DOMNETPP_MODE_SUFFIX=$D -DNB_SHARED -DNB_BUILD $(PYTHON_BINDINGS_CFLAGS)
+LDFLAGS += -static-libstdc++ $(PYTHON_BINDINGS_LDFLAGS)
 
 NANOBIND_DIR=3rdparty/nanobind
 NBO=$(O)/3rdparty/nanobind
@@ -26,7 +26,7 @@ NANOBIND_OBJS=$(NBO)/common.o $(NBO)/implicit.o $(NBO)/nb_func.o $(NBO)/nb_ndarr
 INCL_FLAGS=-I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" \
     -I"$(NANOBIND_DIR)/ext/robin_map/include" -I"$(NANOBIND_DIR)/include"
 
-COPTS=$(CFLAGS) $(PYTHON_CFLAGS) $(LIBXML_CFLAGS) $(INCL_FLAGS)
+COPTS=$(CFLAGS) $(LIBXML_CFLAGS) $(INCL_FLAGS)
 
 # Do not link with the omnetpp libs dynamically, instead use the generated object files directly
 # because we want to minimize the dependencies on shared libs so re-distribution of the python module
