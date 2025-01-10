@@ -224,6 +224,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
 
         SWTFactory.createLabel(imageOptionsPanel, "DPI:", 1);
         dpiCombo = SWTFactory.createCombo(imageOptionsPanel, SWT.BORDER, 1, "72 150 300 600 720".split(" "));
+        dpiCombo.select(2);
         dpiCombo.addModifyListener((e) -> validateDialogContents());
 
         SWTFactory.configureEnablerCheckbox(exportImagesCheckbox, imageGroup, false);

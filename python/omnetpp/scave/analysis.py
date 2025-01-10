@@ -468,7 +468,7 @@ class Analysis:
             mpl.rcParams.update(orig_rcparams)
 
 
-    def export_image(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra_props=dict(), suppress_print=False):
+    def export_image(self, chart, wd, workspace, format="svg", target_folder=None, filename=None, width=None, height=None, dpi=300, enforce=True, extra_props=dict(), suppress_print=False):
         """
         Runs a chart script for image export. This method just calls `run_chart()`
         with extra properties that instruct the chart script to perform image export.

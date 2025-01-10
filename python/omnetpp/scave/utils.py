@@ -1308,7 +1308,7 @@ def export_image_if_needed(props):
        version of the chart name is used.
     - `image_export_width`: Image width in inches (default: 6")
     - `image_export_height`: Image height in inches (default: 4")
-    - `image_export_dpi`: DPI setting, default 96. For raster image formats, the
+    - `image_export_dpi`: DPI setting, default 300. For raster image formats, the
        image dimensions are produced as width (or height) times dpi.
 
     Note that these properties come from two sources to allow meaningful batch
@@ -1331,7 +1331,7 @@ def export_image_if_needed(props):
         format = get_prop("image_export_format") or "svg"
         width = float(get_prop("image_export_width") or 6)
         height = float(get_prop("image_export_height") or 4)
-        dpi = float(get_prop("image_export_dpi") or "96")
+        dpi = float(get_prop("image_export_dpi") or "300")
 
         logger.info(f"exporting image to: '{filepath}' as {format}")
         os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
