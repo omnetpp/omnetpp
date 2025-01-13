@@ -5885,6 +5885,16 @@ test -n "$PYTHON_CONFIG" || PYTHON_CONFIG="nope"
   # needed here, we don't need to link native modules to libpython
   PYTHON_BINDINGS_LDFLAGS=$($PYTHON_CONFIG --ldflags)
 
+  # - On Windows, the native module has to be linked with the Python DLL, because
+  #   unresolved symbols are not allowed. python-config takes care of this there.
+  # - On Linux, the module doesn't have to be linked with the Python library,
+  #   because the unresolved symbols will be resolved at runtime.
+  # - On macOS, the module doesn't need to be linked with the Python dylib, but
+  #   undefined symbols have to be allowed explicitly.
+  if test "$PLATFORM" = "macos"; then
+    PYTHON_BINDINGS_LDFLAGS="$PYTHON_BINDINGS_LDFLAGS -undefined dynamic_lookup"
+  fi
+
 
    save_CXXFLAGS=$CXXFLAGS
    save_LIBS=$LIBS
