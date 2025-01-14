@@ -3371,6 +3371,20 @@ cFigure::Rectangle cAbstractTextFigure::getBounds() const
     return computeBoundingBox(position, Point(width, height), ascent, anchor);
 }
 
+cFigure::Point cAbstractTextFigure::getTextExtent() const
+{
+    double width, height, ascent;
+    getEnvir()->getTextExtent(getFont(), getText(), width, height, ascent);
+    return Point(width, height);
+}
+
+double cAbstractTextFigure::getFontAscent() const
+{
+    double width, height, ascent;
+    getEnvir()->getTextExtent(getFont(), getText(), width, height, ascent);
+    return ascent;
+}
+
 void cAbstractTextFigure::hashTo(cHasher& hasher) const
 {
     cFigure::hashTo(hasher);

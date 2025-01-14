@@ -2479,8 +2479,41 @@ class SIM_API cAbstractTextFigure : public cFigure
          * may return completely made-up (but not entirely unrealistic) numbers.
          *
          * @see cEnvir::getTextExtent()
+         * @see getTextExtent()
+         * @see getFontAscent()
          */
         virtual Rectangle getBounds() const;
+
+        /**
+         * Returns the size of the text figure, not taking into account the
+         * anchor point, the position, or (in case of cLabelFigure) the angle.
+         *
+         * Caveat: The result depends on the details of font rendering and other
+         * factors, so the returned numbers and their accuracy may vary across
+         * user interfaces, operating systems or even installations. Cmdenv and
+         * other non-GUI environments may return completely made-up (but not
+         * entirely unrealistic) numbers.
+         *
+         * @see cEnvir::getTextExtent()
+         * @see getBounds()
+         * @see getFontAscent()
+         */
+        virtual Point getTextExtent() const;
+
+        /**
+         * Returns the ascent of the font set on the text figure.
+         *
+         * Caveat: The result depends on the details of font rendering and other
+         * factors, so the returned number and its accuracy may vary across user
+         * interfaces, operating systems or even installations. Cmdenv and other
+         * non-GUI environments may return a completely made-up (but not entirely
+         * unrealistic) number.
+         *
+         * @see cEnvir::getTextExtent()
+         * @see getBounds()
+         * @see getTextExtent()
+         */
+        virtual double getFontAscent() const;
         //@}
 
         /** @name Styling */
