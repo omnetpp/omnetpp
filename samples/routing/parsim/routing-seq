@@ -1,0 +1,4 @@
+#! /bin/sh
+if [ -x ../routing ]; then ROUTING=../routing; else ROUTING=../routing_dbg; fi
+$ROUTING -n.. -u Cmdenv -c Net60-parsim omnetpp.ini $*
+

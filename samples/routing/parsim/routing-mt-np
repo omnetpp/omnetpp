@@ -1,0 +1,6 @@
+#! /bin/sh
+# single-process multi-theaded parallel simulation with named pipe communication
+mkdir -p comm
+if [ -x ../routing ]; then ROUTING=../routing; else ROUTING=../routing_dbg; fi
+$ROUTING -n.. -u Cmdenv --parallel-simulation=true --parsim-mode=multithreaded --parsim-communications-class=cNamedPipeCommunications  -c Net60-parsim omnetpp.ini $*
+
