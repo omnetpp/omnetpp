@@ -270,6 +270,10 @@ void CmdenvSimulationRunner::doRunSimulation(BatchState& state, InifileContents 
 CmdenvSimulationRunner::SimulationSummary CmdenvSimulationRunner::setupAndRunMultithreadedParallelSimulation(BatchState& state, cConfiguration *cfg)
 {
     int numPartitions = cfg->getAsInt(CFGID_PARSIM_NUM_PARTITIONS);
+    if (numPartitions < 1)
+        throw cRuntimeError("The number of partitions is not specified via the %s configuration option", CFGID_PARSIM_NUM_PARTITIONS->getName());
+    if (numPartitions == 1)
+        return setupAndRunSimulation(state, cfg);
 
     //TODO we might ourselves run in a thread! ensureNedLoader() needs locking
     ensureNedLoader(cfg);
