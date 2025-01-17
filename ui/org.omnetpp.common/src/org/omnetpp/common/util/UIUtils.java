@@ -133,6 +133,22 @@ public class UIUtils {
     }
 
     /**
+     * Recursively finds the first descendent of the given control (including itself)
+     * that is an instance of the given class.
+     */
+    public static <T extends Control> T findWidgetByClass(Control control, Class<T> clazz) {
+        if (clazz.isInstance(control))
+            return (T)control;
+        if (control instanceof Composite)
+            for (Control child : ((Composite)control).getChildren()) {
+                T found = findWidgetByClass(child, clazz);
+                if (found != null)
+                    return found;
+            }
+        return null;
+    }
+
+    /**
      * Wraps existing listeners of the widget (control) with code that measures
      * and prints their execution time.
      */

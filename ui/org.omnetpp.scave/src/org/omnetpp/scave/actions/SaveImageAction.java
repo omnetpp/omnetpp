@@ -17,9 +17,15 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.internal.ide.misc.ContainerSelectionGroup;
+import org.omnetpp.common.ui.SWTFactory;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScaveImages;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ChartScriptEditor;
@@ -69,7 +75,17 @@ public class SaveImageAction extends AbstractScaveAction {
             public void create() {
                 super.create();
                 setTitle("Save Image"); // note: these calls won't work when called before the dialog has been created...
-                setMessage("Saves the chart's current view. Popular vector and raster formats are accepted.");
+                setMessage("Saves the chart's current view.");
+            }
+
+            @Override
+            protected Control createDialogArea(Composite parent) {
+                Composite container = (Composite)super.createDialogArea(parent);
+                Control containerSelectionGroup = UIUtils.findWidgetByClass(container, ContainerSelectionGroup.class);
+                Label label = SWTFactory.createWrapLabel(containerSelectionGroup.getParent(),
+                    "HINT: Edit the file extension to choose the file format.\nPopular vector and raster formats are accepted (png, jpg, svg, etc.).", 1);
+                label.moveBelow(containerSelectionGroup);
+                return container;
             }
         };
         dialog.setOriginalFile(defaultFolder.getFile(new Path(defaultFileName)));
