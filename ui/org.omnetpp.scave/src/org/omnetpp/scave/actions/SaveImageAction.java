@@ -46,7 +46,7 @@ public class SaveImageAction extends AbstractScaveAction {
         if (chartViewer instanceof MatplotlibChartViewer && !((MatplotlibChartViewer)chartViewer).isSaveImagePossible())
             return;
 
-        String defaultFileName = chartEditor.getChart().getName() + ".svg";
+        String defaultFileName = chartEditor.getChart().getName() + ".png";
         IContainer defaultFolder = scaveEditor.getAnfFile().getParent();
 
         String fileName = askFileName(parentShell, defaultFolder, defaultFileName);
