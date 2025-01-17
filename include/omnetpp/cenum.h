@@ -129,6 +129,39 @@ class SIM_API cEnum : public cOwnedObject
     intval_t resolve(const char *name);
 
     /**
+     * Resolve a string and return the corresponding value in the enum type
+     * given as template argument. The enum must have been registered previously
+     * with one of the Register_Enum() macros.
+     *
+     * Example:
+     * <pre>
+     * State state = cEnum::resolveName<State>("IDLE");
+     * </pre>
+     */
+    template<typename E>
+    static E resolveName(const char *name) {
+        cEnum *e = get(opp_typename(typeid(E)));
+        return static_cast<E>(e->resolve(name));
+    }
+
+    /**
+     * Resolve an enum value of type E and return the corresponding string
+     * representation. The enum must have been registered previously with one of
+     * the Register_Enum() macros.
+     *
+     * Example:
+     * <pre>
+     * State state = State::IDLE;
+     * const char *stateName = cEnum::getNameForValue(state);
+     * </pre>
+     */
+    template<typename E>
+    static const char *getNameForValue(E value) {
+        cEnum *e = get(opp_typename(typeid(E)));
+        return e->getStringFor(static_cast<int>(value));
+    }
+
+    /**
      * Returns a map with the enum members (names as key, and numeric value map value).
      */
     const std::map<std::string,intval_t>& getNameValueMap() const {return nameToValueMap;}
@@ -138,8 +171,8 @@ class SIM_API cEnum : public cOwnedObject
     //@{
     /**
      * Returns the cEnum for the given enum name, or nullptr if not found.
-     * The enum must have been registered previously with the Register_Enum()
-     * macro.
+     * The enum must have been registered previously with one of the
+     * Register_Enum() macros.
      */
     static cEnum *find(const char *enumName, const char *contextNamespace=nullptr);
 
