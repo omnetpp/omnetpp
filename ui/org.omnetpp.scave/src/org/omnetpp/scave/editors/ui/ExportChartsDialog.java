@@ -169,11 +169,8 @@ public class ExportChartsDialog extends TitleAreaDialog {
         gridData.widthHint = 320;
         gridData.heightHint = 200;
         chartsTree.setLayoutData(gridData);
-        for (Chart chart : charts) {
-            TreeItem item = new TreeItem(chartsTree, SWT.NONE);
-            item.setText(ScaveModelUtil.getChartLabelForImageExport(chart, " / "));
-            //item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); -- looks ugly
-        }
+        for (int i = 0; i < charts.size(); ++i)
+            new TreeItem(chartsTree, SWT.NONE);
 
         SelectionListener dialogValidator = new SelectionAdapter() {
             @Override
@@ -231,6 +228,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
         dpiCombo = SWTFactory.createCombo(imageOptionsPanel, SWT.BORDER, 1, "72 150 300 600 720".split(" "));
         dpiCombo.select(2);
         dpiCombo.addModifyListener((e) -> validateDialogContents());
+        dpiCombo.addModifyListener((e) -> updateChartLabels());
 
         SWTFactory.configureEnablerCheckbox(exportImagesCheckbox, imageGroup, false);
 
@@ -253,10 +251,12 @@ public class ExportChartsDialog extends TitleAreaDialog {
         SWTFactory.setIndent(stopOnErrorCheckbox, 30);
 
         restoreDialogSettings();
+        updateChartLabels();
 
         if (singleChart) {
             SWTFactory.setEnabled(chartsPanel, false, null);
             SWTFactory.setEnabled(jobGroup, false, null);
+            chartsTree.deselectAll();
         }
 
         Display.getCurrent().asyncExec(() -> {
@@ -301,6 +301,14 @@ public class ExportChartsDialog extends TitleAreaDialog {
         if (getButton(OK) != null) { // it is null during dialog creation
             setErrorMessage(err);
             getButton(OK).setEnabled(err == null);
+        }
+    }
+
+    protected void updateChartLabels() {
+        int dpi = Integer.parseInt(dpiCombo.getText());
+        for (int i = 0; i < charts.size(); i++) {
+            String label = ScaveModelUtil.getChartLabelForImageExport(charts.get(i), " / ", dpi);
+            chartsTree.getItem(i).setText(label);
         }
     }
 
@@ -351,7 +359,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
 
     protected List<Chart> getSelectedChartsFromTree() {
         List<Chart> result = new ArrayList<Chart>();
-        for (int i = 0; i < charts.size(); ++i) {
+        for (int i = 0; i < charts.size(); i++) {
             TreeItem item = chartsTree.getItem(i);
             if (item.getChecked())
                 result.add(charts.get(i));

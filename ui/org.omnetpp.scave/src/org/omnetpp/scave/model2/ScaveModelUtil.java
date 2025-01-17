@@ -181,12 +181,23 @@ public class ScaveModelUtil {
         return chartName;
     }
 
-    public static String getChartLabelForImageExport(Chart chart, String separator) {
+    public static String getChartLabelForImageExport(Chart chart, String separator, int dpi) {
         String chartName = getDisplayFullPath(chart, separator);
 
-        String widthStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_height"), "4");
-        String heightStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_width"), "6");
-        chartName += "  (" + widthStr + "″x" + heightStr +  "″)";
+        String widthStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_width"), "6");
+        String heightStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_height"), "4");
+        chartName += "  (" + widthStr + "″x" + heightStr +  "″";
+        try {
+            double width = Double.parseDouble(widthStr);
+            double height = Double.parseDouble(heightStr);
+            int widthInPixels = (int)(width * dpi);
+            int heightInPixels = (int)(height * dpi);
+            chartName += ", " + widthInPixels + "x" + heightInPixels + " px at " + dpi + " dpi";
+        } catch (NumberFormatException e) {
+            // don't care
+        }
+
+        chartName += ")";
 
         if (chart.getType() != ChartType.MATPLOTLIB)
             chartName += " *";
