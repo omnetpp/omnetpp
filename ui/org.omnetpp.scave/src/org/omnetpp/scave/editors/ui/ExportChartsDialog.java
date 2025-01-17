@@ -50,6 +50,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -170,7 +171,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
         chartsTree.setLayoutData(gridData);
         for (Chart chart : charts) {
             TreeItem item = new TreeItem(chartsTree, SWT.NONE);
-            item.setText(ScaveModelUtil.getDisplayFullPathWithSize(chart, " / "));
+            item.setText(ScaveModelUtil.getChartLabelForImageExport(chart, " / "));
             //item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); -- looks ugly
         }
 
@@ -207,6 +208,10 @@ public class ExportChartsDialog extends TitleAreaDialog {
 
         numSelectedLabel = SWTFactory.createLabel(chartsButtonPanel, "n/a", 1);
         numSelectedLabel.setAlignment(SWT.RIGHT);
+
+        boolean hasNativeChart = charts.stream().anyMatch(chart -> chart.getType() != ChartType.MATPLOTLIB);
+        if (hasNativeChart)
+            SWTFactory.createWrapLabel(dialogArea, "* Native chart, image export is emulated using Matplotlib - results might differ in appearance.", 1);
 
         Group imageGroup = SWTFactory.createGroup(dialogArea, "Image Export", 1, 1, new GridData(SWT.FILL, SWT.FILL, true, false));
 

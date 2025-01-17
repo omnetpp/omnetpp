@@ -33,6 +33,7 @@ import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
+import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Folder;
@@ -180,12 +181,16 @@ public class ScaveModelUtil {
         return chartName;
     }
 
-    public static String getDisplayFullPathWithSize(Chart chart, String separator) {
+    public static String getChartLabelForImageExport(Chart chart, String separator) {
         String chartName = getDisplayFullPath(chart, separator);
 
         String widthStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_height"), "4");
         String heightStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_width"), "6");
         chartName += "  (" + widthStr + "″x" + heightStr +  "″)";
+
+        if (chart.getType() != ChartType.MATPLOTLIB)
+            chartName += " *";
+
         return chartName;
     }
 
