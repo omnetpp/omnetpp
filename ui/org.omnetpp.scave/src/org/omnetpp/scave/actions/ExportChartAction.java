@@ -43,7 +43,7 @@ public class ExportChartAction extends AbstractScaveAction {
         List<Chart> tmp = new ArrayList<Chart>();
         tmp.add(chart);
 
-        ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), chart, editor.getAnfFile());
+        ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), chart, editor.getAnfFile(), editor.getActiveCommandStack());
         if (dialog.open() == Window.OK) {
             try {
                 ExportChartsDialog.Result result = dialog.getResult();

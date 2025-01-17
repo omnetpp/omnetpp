@@ -9,8 +9,10 @@ package org.omnetpp.scave.editors.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -21,6 +23,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.window.Window;
@@ -51,6 +54,9 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Chart.ChartType;
+import org.omnetpp.scave.model.commands.CommandStack;
+import org.omnetpp.scave.model.commands.CompoundCommand;
+import org.omnetpp.scave.model.commands.SetChartPropertiesCommand;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
@@ -77,6 +83,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
     // widgets
     private Tree chartsTree;
     private Label numSelectedLabel;
+    private Button setSizeButton;
     private Button exportImagesCheckbox;
     private Button exportDataCheckbox;
     private Text imageTargetFolderText;
@@ -85,6 +92,8 @@ public class ExportChartsDialog extends TitleAreaDialog {
     private Text dataTargetFolderText;
     private Spinner concurrencySpinner;
     private Button stopOnErrorCheckbox;
+
+    private CommandStack commandStack;
 
     // result
     public static class Result {
@@ -101,7 +110,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
 
     private Result result = null;
 
-    private String[] fileFormats = new String[] { //TODO get this list from Matplotlib
+    private static final String[] fileFormats = new String[] { //TODO get this list from Matplotlib
             // note: first word must be a recognized Matplotlib format name
             "png (Portable Network Graphics)",
             "jpg (Joint Photographic Experts Group)",
@@ -115,22 +124,114 @@ public class ExportChartsDialog extends TitleAreaDialog {
             "raw (Raw RGBA bitmap)",
     };
 
-    public ExportChartsDialog(Shell parentShell, List<Chart> charts, IFile anfFile) { // take initialSelection from DialogSettings
-        this(parentShell, charts, null, anfFile);
+
+    private static class SetSizeDialog extends Dialog {
+        private Text widthText;
+        private Text heightText;
+        private String width;
+        private String height;
+
+        public SetSizeDialog(Shell parentShell, String initialWidth, String initialHeight) {
+            super(parentShell);
+            this.width = initialWidth;
+            this.height = initialHeight;
+        }
+
+        @Override
+        protected void configureShell(Shell newShell) {
+            super.configureShell(newShell);
+            newShell.setText("Set Chart Export Size");
+        }
+
+        protected void validate() {
+            String wText = widthText.getText();
+            String hText = heightText.getText();
+
+            boolean valid = true;
+
+            if (!wText.isEmpty()) {
+                try {
+                    Double.parseDouble(wText);
+                }
+                catch (Exception e) {
+                    valid = false;
+                }
+            }
+
+            if (!hText.isEmpty()) {
+                try {
+                    Double.parseDouble(hText);
+                }
+                catch (Exception e) {
+                    valid = false;
+                }
+            }
+
+            getButton(OK).setEnabled(valid);
+        }
+
+        @Override
+        protected Control createDialogArea(Composite parent) {
+            Composite container = (Composite) super.createDialogArea(parent);
+            container.setLayout(new GridLayout(2, false));
+
+            SWTFactory.createLabel(container, "Set the size of the chart(s) upon export:", 2);
+
+            SWTFactory.createLabel(container, "Width in inches:", 1);
+            widthText = SWTFactory.createSingleText(container, 1);
+            if (width != null)
+                widthText.setText(width);
+            widthText.addModifyListener(e -> validate());
+
+            SWTFactory.createLabel(container, "Height in inches:", 1);
+            heightText = SWTFactory.createSingleText(container, 1);
+            if (height != null)
+                heightText.setText(height);
+            heightText.addModifyListener(e -> validate());
+
+            // making it so that the last label doesn't increase the width of the dialog
+            container.pack();
+            int dialogWidthHint = container.getSize().x;
+            Label l = SWTFactory.createWrapLabel(container, "This affects the same chart properties as available on the Export tab in their Configuration dialogs.\nLeave either empty to not change that dimension.", 2);
+            ((GridData)l.getLayoutData()).widthHint = dialogWidthHint;
+
+            return container;
+        }
+
+        @Override
+        protected void okPressed() {
+            width = widthText.getText();
+            height = heightText.getText();
+            super.okPressed();
+        }
+
+        public String getWidth() {
+            return width;
+        }
+
+        public String getHeight() {
+            return height;
+        }
     }
 
-    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection, IFile anfFile) { // initialSelection: should be an IStructuralSelection?
+    public ExportChartsDialog(Shell parentShell, List<Chart> charts, IFile anfFile, CommandStack commandStack) { // take initialSelection from DialogSettings
+        this(parentShell, charts, null, anfFile, commandStack);
+    }
+
+    public ExportChartsDialog(Shell parentShell, List<Chart> charts, List<Chart> initialSelection, IFile anfFile, CommandStack commandStack) { // initialSelection: should be an IStructuralSelection?
         super(parentShell);
         this.charts = charts;
         this.initialSelection = initialSelection;
         this.anfFile = anfFile;
+        this.commandStack = commandStack;
     }
 
-    public ExportChartsDialog(Shell parentShell, Chart chart, IFile anfFile) {
+    public ExportChartsDialog(Shell parentShell, Chart chart, IFile anfFile, CommandStack commandStack) {
         super(parentShell);
         this.charts = this.initialSelection = Arrays.asList(new Chart[] {chart});
         this.singleChart = true;
         this.anfFile = anfFile;
+        this.commandStack = commandStack;
     }
 
     public Result getResult() {
@@ -164,7 +265,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
 
         Composite chartsPanel = SWTFactory.createComposite(dialogArea, 2, new GridData(SWT.FILL, SWT.FILL, true, true));
         SWTFactory.createLabel(chartsPanel, "Select charts to export:", 2);
-        chartsTree = new Tree(chartsPanel, SWT.CHECK | SWT.BORDER);
+        chartsTree = new Tree(chartsPanel, SWT.CHECK | SWT.BORDER | SWT.MULTI);
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         gridData.widthHint = 320;
         gridData.heightHint = 200;
@@ -182,29 +283,89 @@ public class ExportChartsDialog extends TitleAreaDialog {
         chartsTree.addSelectionListener(dialogValidator);
 
         Composite chartsButtonPanel = SWTFactory.createComposite(chartsPanel, 1, new GridData(SWT.CENTER, SWT.TOP, false, false));
+        if (!singleChart) {
+            Button button = SWTFactory.createPushButton(chartsButtonPanel, "Select All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+            button.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    for (TreeItem item : chartsTree.getItems())
+                        item.setChecked(true);
+                    chartsTree.selectAll();
+                    validateDialogContents();
+                }
+            });
 
-        Button button = SWTFactory.createPushButton(chartsButtonPanel, "Select All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
-        button.addSelectionListener(new SelectionAdapter() {
+            button = SWTFactory.createPushButton(chartsButtonPanel, "Deselect All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+            button.addSelectionListener(new SelectionAdapter() {
+                @Override
+                public void widgetSelected(SelectionEvent e) {
+                    for (TreeItem item : chartsTree.getItems())
+                        item.setChecked(false);
+                    chartsTree.deselectAll();
+                    validateDialogContents();
+                }
+            });
+
+            numSelectedLabel = SWTFactory.createLabel(chartsButtonPanel, "n/a", 1);
+            numSelectedLabel.setAlignment(SWT.RIGHT);
+        }
+
+        setSizeButton = SWTFactory.createPushButton(chartsButtonPanel, "Set Size", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+        setSizeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                for (TreeItem item : chartsTree.getItems())
-                    item.setChecked(true);
-                validateDialogContents();
+
+                Set<String> widthValues = new HashSet<String>();
+                Set<String> heightValues = new HashSet<String>();
+
+                // If the export dialog is opened for a single chart (from within its own editor),
+                // the tree widget is disabled, and the single entry in it is kept unselected, to make it more readable.
+                TreeItem[] selectedItems;
+                if (singleChart) {
+                    selectedItems = new TreeItem[1];
+                    selectedItems[0] = chartsTree.getItem(0);
+                }
+                else {
+                    selectedItems = chartsTree.getSelection();
+                }
+
+                for (TreeItem ti : selectedItems) {
+                    int i = chartsTree.indexOf(ti);
+                    Chart chart = charts.get(i);
+                    String widthProp = chart.getPropertyValue("image_export_width");
+                    String heightProp = chart.getPropertyValue("image_export_height");
+                    widthValues.add(widthProp);
+                    heightValues.add(heightProp);
+                }
+
+                String initialWidth = widthValues.size() == 1 ? widthValues.iterator().next() : null;
+                String initialHeight = heightValues.size() == 1 ? heightValues.iterator().next() : null;
+                SetSizeDialog dialog = new SetSizeDialog(Display.getCurrent().getActiveShell(), initialWidth, initialHeight);
+                if (dialog.open() == Window.OK) {
+                    String width = dialog.getWidth();
+                    String height = dialog.getHeight();
+                    if (StringUtils.isBlank(width) && StringUtils.isBlank(height))
+                        return;
+                    CompoundCommand command = new CompoundCommand("Set chart image export size");
+                    for (TreeItem ti : selectedItems) {
+                        int i = chartsTree.indexOf(ti);
+                        Chart chart = charts.get(i);
+
+                        Map<String, String> properties = new HashMap<String, String>();
+                        if (!StringUtils.isBlank(width) && !width.equals(chart.getPropertyValue("image_export_width")))
+                            properties.put("image_export_width", width);
+                        if (!StringUtils.isBlank(height) && !height.equals(chart.getPropertyValue("image_export_height")))
+                            properties.put("image_export_height", height);
+
+                        if (!properties.isEmpty())
+                            command.append(new SetChartPropertiesCommand(chart, properties));
+                    }
+                    if (!command.isEmpty())
+                        commandStack.execute(command);
+                    updateChartLabels();
+                }
             }
         });
-
-        button = SWTFactory.createPushButton(chartsButtonPanel, "Deselect All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
-        button.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                for (TreeItem item : chartsTree.getItems())
-                    item.setChecked(false);
-                validateDialogContents();
-            }
-        });
-
-        numSelectedLabel = SWTFactory.createLabel(chartsButtonPanel, "n/a", 1);
-        numSelectedLabel.setAlignment(SWT.RIGHT);
 
         boolean hasNativeChart = charts.stream().anyMatch(chart -> chart.getType() != ChartType.MATPLOTLIB);
         if (hasNativeChart)
@@ -254,8 +415,9 @@ public class ExportChartsDialog extends TitleAreaDialog {
         updateChartLabels();
 
         if (singleChart) {
-            SWTFactory.setEnabled(chartsPanel, false, null);
+            chartsTree.setEnabled(false);
             SWTFactory.setEnabled(jobGroup, false, null);
+            // The text is more readable in disabled widgets if the item is not selected
             chartsTree.deselectAll();
         }
 
@@ -296,12 +458,15 @@ public class ExportChartsDialog extends TitleAreaDialog {
         String err = doValidate(tmp);
         //numSelectedLabel.setText(StringUtils.formatCounted(tmp.selectedCharts.size(), "chart")); // too long
         //numSelectedLabel.setText("Selected: " + tmp.selectedCharts.size());
-        numSelectedLabel.setText("" + tmp.selectedCharts.size() + " selected");
+        if (numSelectedLabel != null)
+            numSelectedLabel.setText("" + tmp.selectedCharts.size() + " selected");
 
         if (getButton(OK) != null) { // it is null during dialog creation
             setErrorMessage(err);
             getButton(OK).setEnabled(err == null);
         }
+
+        setSizeButton.setEnabled(singleChart || chartsTree.getSelectionCount() > 0);
     }
 
     protected void updateChartLabels() {
@@ -434,12 +599,14 @@ public class ExportChartsDialog extends TitleAreaDialog {
             }
         }
 
+        ArrayList<TreeItem> selection = new ArrayList<TreeItem>();
         for (TreeItem item: chartsTree.getItems())
-            if (item.getChecked()) {
-                chartsTree.setSelection(item);
-                chartsTree.showItem(item);
-                break;
-            }
+            if (item.getChecked())
+                selection.add(item);
+
+        chartsTree.setSelection(selection.toArray(new TreeItem[0]));
+        if (!selection.isEmpty())
+            chartsTree.showItem(selection.get(0));
 
         String exportImages = settings.get(KEY_EXPORT_IMAGES);
         exportImagesCheckbox.setSelection(exportImages == null || exportImages.equals("true"));

@@ -39,7 +39,7 @@ public class ExportChartsAction extends AbstractScaveAction {
         final List<Chart> allCharts = ScaveModelUtil.collectCharts(editor.getAnalysis().getRootFolder());
         List<Chart> initialSelection = selection.isEmpty() ? null /*reuse last setting*/ : ScaveModelUtil.getChartsFromSelection(asStructuredOrEmpty(selection));
 
-        ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), allCharts, initialSelection, editor.getAnfFile());
+        ExportChartsDialog dialog = new ExportChartsDialog(editor.getSite().getShell(), allCharts, initialSelection, editor.getAnfFile(), editor.getActiveCommandStack());
         if (dialog.open() == Window.OK) {
             try {
                 ExportChartsDialog.Result result = dialog.getResult();
