@@ -170,7 +170,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
         chartsTree.setLayoutData(gridData);
         for (Chart chart : charts) {
             TreeItem item = new TreeItem(chartsTree, SWT.NONE);
-            item.setText(ScaveModelUtil.getDisplayFullPath(chart, " / "));
+            item.setText(ScaveModelUtil.getDisplayFullPathWithSize(chart, " / "));
             //item.setImage(ScavePlugin.getCachedImage(ScaveImages.IMG_OBJ16_CHART)); -- looks ugly
         }
 

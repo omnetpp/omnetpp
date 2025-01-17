@@ -180,6 +180,15 @@ public class ScaveModelUtil {
         return chartName;
     }
 
+    public static String getDisplayFullPathWithSize(Chart chart, String separator) {
+        String chartName = getDisplayFullPath(chart, separator);
+
+        String widthStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_height"), "4");
+        String heightStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_width"), "6");
+        chartName += "  (" + widthStr + "″x" + heightStr +  "″)";
+        return chartName;
+    }
+
     /**
      * Finds an enclosing object having type {@code type}.
      * If the {@code object} itself has the type, it is returned.
