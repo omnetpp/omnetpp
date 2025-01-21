@@ -292,9 +292,9 @@ public class ExportChartsDialog extends TitleAreaDialog {
 
         chartsTree.addSelectionListener(dialogValidator);
 
-        Composite chartsButtonPanel = SWTFactory.createComposite(chartsPanel, 1, new GridData(SWT.CENTER, SWT.TOP, false, false));
+        Composite chartsButtonPanel = SWTFactory.createComposite(chartsPanel, 1, new GridData(SWT.FILL, SWT.FILL, false, true));
         if (!singleChart) {
-            Button button = SWTFactory.createPushButton(chartsButtonPanel, "Check All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+            Button button = SWTFactory.createPushButton(chartsButtonPanel, "Check All", null, new GridData(SWT.FILL, SWT.CENTER, false, false));
             button.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -304,7 +304,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
                 }
             });
 
-            button = SWTFactory.createPushButton(chartsButtonPanel, "Uncheck All", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+            button = SWTFactory.createPushButton(chartsButtonPanel, "Uncheck All", null, new GridData(SWT.FILL, SWT.CENTER, false, false));
             button.addSelectionListener(new SelectionAdapter() {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
@@ -320,7 +320,7 @@ public class ExportChartsDialog extends TitleAreaDialog {
             new Label(chartsButtonPanel, SWT.NONE);
         }
 
-        setSizeButton = SWTFactory.createPushButton(chartsButtonPanel, "Set Export Size...", null, new GridData(SWT.FILL, SWT.CENTER, true, false));
+        setSizeButton = SWTFactory.createPushButton(chartsButtonPanel, "Set Export Size...", null, new GridData(SWT.FILL, SWT.CENTER, false, false));
         setSizeButton.addSelectionListener(SelectionListener.widgetSelectedAdapter((e)-> openSetSizeDialog()));
 
         boolean hasNativeChart = charts.stream().anyMatch(chart -> chart.getType() != ChartType.MATPLOTLIB);
