@@ -33,7 +33,6 @@ import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.AnalysisItem;
 import org.omnetpp.scave.model.Chart;
-import org.omnetpp.scave.model.Chart.ChartType;
 import org.omnetpp.scave.model.Chart.DialogPage;
 import org.omnetpp.scave.model.ChartTemplate;
 import org.omnetpp.scave.model.Folder;
@@ -178,30 +177,6 @@ public class ScaveModelUtil {
         Folder folder = item.getParentFolder();
         if (folder != null && folder.getParentFolder() != null)  // not parentless temp chart, and not in the root folder
             chartName = folder.getPathAsString(separator) + separator + chartName;
-        return chartName;
-    }
-
-    public static String getChartLabelForImageExport(Chart chart, String separator, int dpi) {
-        String chartName = getDisplayFullPath(chart, separator);
-
-        String widthStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_width"), "6");
-        String heightStr = StringUtils.defaultIfBlank(chart.getPropertyValue("image_export_height"), "4");
-        chartName += "  (" + widthStr + "″x" + heightStr +  "″";
-        try {
-            double width = Double.parseDouble(widthStr);
-            double height = Double.parseDouble(heightStr);
-            int widthInPixels = (int)(width * dpi);
-            int heightInPixels = (int)(height * dpi);
-            chartName += ", " + widthInPixels + "x" + heightInPixels + " px at " + dpi + " dpi";
-        } catch (NumberFormatException e) {
-            // don't care
-        }
-
-        chartName += ")";
-
-        if (chart.getType() != ChartType.MATPLOTLIB)
-            chartName += " *";
-
         return chartName;
     }
 
