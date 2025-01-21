@@ -1,0 +1,30 @@
+%description:
+Test cEnum::resolveName<>() and cEnum::getNameForValue()
+
+%global:
+
+namespace foo {
+enum State { STATE_IDLE, STATE_BUSY, STATE_SLEEPING };
+Register_Enum(State, (STATE_IDLE, STATE_BUSY, STATE_SLEEPING));
+};
+
+using namespace foo;
+
+%activity:
+
+State state = cEnum::resolveName<State>("STATE_BUSY");
+ASSERT(state == STATE_BUSY);
+EV << state << std::endl;
+
+state = STATE_SLEEPING;
+const char *stateName = cEnum::getNameForValue(state);
+ASSERT(strcmp(stateName, "STATE_SLEEPING")==0);
+EV << stateName << std::endl;
+
+EV << ".\n";
+
+%contains: stdout
+1
+STATE_SLEEPING
+.
+
