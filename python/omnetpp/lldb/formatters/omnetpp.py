@@ -12,7 +12,7 @@ def simtime_t_SummaryProvider(value, internal_dict):
         return "0s"
     scaleexp = value.GetTarget().FindFirstGlobalVariable("omnetpp::SimTime::scaleexp").GetValueAsSigned()
     s = Decimal(str(t) + 'E' + str(scaleexp)).normalize()
-    return str(s) + "s"
+    return str(s) + " s"
 
 def cNamedObject_SummaryProvider(value, internal_dict):
     return value.GetChildMemberWithName("name").GetSummary()[1:-1]
@@ -22,8 +22,8 @@ def cOwnedObject_SummaryProvider(value, internal_dict):
         value.GetChildMemberWithName("owner").GetSummary() + ")"
 
 def cModule_SummaryProvider(value, internal_dict):
-    return value.GetChildMemberWithName("fullPath").GetSummary()[1:-1] + \
-    ": " + value.GetChildMemberWithName("componentType").GetSummary()[1:-1]
+    return "(" + value.GetChildMemberWithName("componentType").GetSummary()[1:-1] + ") " + \
+        value.GetChildMemberWithName("fullPath").GetSummary()[1:-1]
 
 def cComponentType_SummaryProvider(value, internal_dict):
     return value.GetChildMemberWithName("qualifiedName").GetSummary()
