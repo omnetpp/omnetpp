@@ -24,17 +24,20 @@ def set_warning(warning):
 
 def plot(xs, ys, key, label, drawstyle, linestyle, linewidth, color, marker, markersize):
     params = {k:v for k, v in locals().items() if k is not None and k not in ["key", "xs", "ys"]}
+    plt.gcf().set_layout_engine('compressed')
     return plt.plot(xs, ys, **params)
 
 
 def bar(x, height, width, key, label, color, edgecolor):
     params = {k:v for k, v in locals().items() if k is not None and k not in ["key"]}
+    plt.gcf().set_layout_engine('compressed')
     return plt.bar(**params)
 
 
 def hist(x, bins, key, density, weights, cumulative, bottom, histtype, color, label, linewidth,
          underflows, overflows, minvalue, maxvalue):
     params = {k:v for k, v in locals().items() if k is not None and k not in ["underflows", "overflows", "minvalue", "maxvalue", "key"]}
+    plt.gcf().set_layout_engine('compressed')
     return plt.hist(**params)
 
 
