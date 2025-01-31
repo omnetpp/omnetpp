@@ -430,7 +430,7 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
     - `unit`: If present, it is required to be the same for all series, and it will be used in the automatic y axis label.
     """
     unit = _check_same_unit(meta_df)
-    p = ideplot if ideplot.is_native_plot() else plt
+    p = ideplot if chart.is_native_chart() else plt
 
     def get_prop(k):
         return props[k] if k in props else None
@@ -516,7 +516,7 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
     for i, ((index, row), meta_row) in enumerate(zip(df.iterrows(), meta_df.reset_index().itertuples(index=False))):
         style = _make_bar_args(props, df)
 
-        if not ideplot.is_native_plot(): # FIXME: noot pretty...
+        if not chart.is_native_chart():
             extra_args['zorder'] = 1 - (i / len(df.index) / 10)
             extra_args['bottom'] = bottoms + stacks
 
@@ -524,7 +524,7 @@ def plot_bars(df, errors_df=None, meta_df=None, props={}, sort=True):
         ys = row.values
         p.bar(xs, ys-bottoms, width, label=label, **extra_args, **style)
 
-        if not ideplot.is_native_plot() and errors_df is not None and not errors_df.iloc[i].isna().all():
+        if not chart.is_native_chart() and errors_df is not None and not errors_df.iloc[i].isna().all():
             plt.errorbar(xs, ys + stacks, yerr=errors_df.iloc[i], capsize=float(get_prop("cap_size") or 4), **style, linestyle="none", ecolor=mpl.rcParams["axes.edgecolor"])
 
         xs += group_increment
