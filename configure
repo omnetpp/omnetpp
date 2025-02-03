@@ -5691,18 +5691,22 @@ else
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
 printf "%s\n" "no" >&6; }
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Some Python modules required by the IDE were not found: $output" >&5
-printf "%s\n" "$as_me: WARNING: Some Python modules required by the IDE were not found: $output" >&2;}
-    if test ! -f .venv/bin/activate; then
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: Install a Python virtual environment (if you do not have one already):" >&5
-printf "%s\n" "$as_me: TIP: Install a Python virtual environment (if you do not have one already):" >&6;}
-      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: python3 -m venv .venv && source .venv/bin/activate" >&5
-printf "%s\n" "$as_me: TIP: python3 -m venv .venv && source .venv/bin/activate" >&6;}
-    fi
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Some Python modules required by the IDE were not found (or have wrong versions): $output" >&5
+printf "%s\n" "$as_me: WARNING: Some Python modules required by the IDE were not found (or have wrong versions): $output" >&2;}
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: Install the missing Python modules by typing:" >&5
 printf "%s\n" "$as_me: TIP: Install the missing Python modules by typing:" >&6;}
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: python3 -m pip install -r python/requirements.txt" >&5
 printf "%s\n" "$as_me: TIP: python3 -m pip install -r python/requirements.txt" >&6;}
+    if test ! -f .venv/bin/activate; then
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP:" >&5
+printf "%s\n" "$as_me: TIP:" >&6;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: Before installing the above modules, consider creating and activating" >&5
+printf "%s\n" "$as_me: TIP: Before installing the above modules, consider creating and activating" >&6;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: a separate Python virtual environment for this OMNeT++ installation:" >&5
+printf "%s\n" "$as_me: TIP: a separate Python virtual environment for this OMNeT++ installation:" >&6;}
+      { printf "%s\n" "$as_me:${as_lineno-$LINENO}: TIP: python3 -m venv .venv && source .venv/bin/activate" >&5
+printf "%s\n" "$as_me: TIP: python3 -m venv .venv && source .venv/bin/activate" >&6;}
+    fi
     if test -d ide; then
       as_fn_error $? "Install the missing Python modules and restart the configure script." "$LINENO" 5
     fi
