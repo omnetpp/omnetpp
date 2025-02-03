@@ -446,21 +446,60 @@ Plot Navigation
 This section outlines the mouse and keyboard bindings for navigating two types
 of plots in the Analysis Tool: native plots and Matplotlib-based plots.
 
-- **Native Plots**: These plots support two main modes: Pan mode and Zoom
-  mode. In Pan mode, you can scroll with the mouse wheel and drag the chart. In
-  Zoom mode, the user can zoom in on the chart by left-clicking and zoom out by
-  doing a :kbd:`Shift` plus left-click or using the mouse wheel. Dragging
-  selects a rectangular area for zooming. The toolbar icons switch between
-  Pan and Zoom modes. You can also find toolbar buttons to zoom in, zoom out, and
-  zoom to fit. Zooming and moving actions are remembered in the navigation
-  history.
 
-- **Matplotlib plots**: Navigation in Matplotlib plots generally follows
-  standard Matplotlib interactions but includes a few enhancements for better
-  control. One addition is the following: the mouse wheel, :kbd:`Shift` plus mouse wheel, and
-  :kbd:`Ctrl` plus mouse wheel pans vertically / horizontally or zooms. There is
-  also a third mode, called Interactive mode, which is used to manipulate
-  interactive elements on the plot, such as widgets, if present.
+Navigation in Native Plots
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These plots support two modes, Pan and Zoom, which can be switched using toolbar buttons.
+
+- **Pan Mode:**
+   - Scroll vertically with the mouse wheel
+   - Scroll horizontally with :kbd:`Shift` plus the mouse wheel
+   - Drag the chart (holding the left mouse button) to pan around
+   - Zoom in/out around the cursor with :kbd:`Ctrl` plus the mouse wheel
+
+- **Zoom Mode:**
+   - Zoom in around the cursor by left-clicking
+   - Zoom out by holding :kbd:`Shift` and left-clicking
+   - Zoom in/out around the cursor using the mouse wheel
+   - Zoom in on a rectangular area by selecting it by dragging (moving the pointer while holding the left mouse button)
+
+Additional toolbar buttons are available to:
+   - Zoom in/out horizontally/vertically (4 buttons)
+   - Reset original view
+
+
+Navigation in Matplotlib Plots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Navigation in Matplotlib plots generally follows standard Matplotlib interactions
+but includes a few enhancements for better control.
+
+The following mouse wheel gestures are always available:
+   - Scroll vertically with the mouse wheel
+   - Scroll horizontally with :kbd:`Shift` plus the mouse wheel
+   - Zoom in/out around the cursor with :kbd:`Ctrl` plus the mouse wheel
+
+These plots support three modes, Pan, Zoom, and Interaction, which can be switched using toolbar buttons.
+
+- **Pan Mode:**
+   - Pan by dragging the mouse, holding the left button
+   - Zoom in/out by dragging the mouse, holding the right button
+   - To make zooming and panning only affect one of the axes, hold the :kbd:`X` or :kbd:`Y` key
+   - To keep the aspect ratio while zooming, hold :kbd:`Ctrl`
+
+- **Zoom Mode:**
+   - Zoom in on a selected rectangular area by dragging (moving the pointer while holding the left mouse button)
+   - Zoom out to fit the current view into a selected rectangular area by right-click dragging (holding the right mouse button while moving the pointer)
+   - To make zooming only affect one of the axes, hold the :kbd:`X` or :kbd:`Y` key
+
+- **Interaction Mode:**
+   - This mode lets you interact with plots that include active elements like sliders, buttons, and other widgets.
+
+Additional toolbar buttons are available to:
+   - Reset original view
+   - Back to previous view
+   - Forward to next view
 
 
 The Chart Properties Dialog
