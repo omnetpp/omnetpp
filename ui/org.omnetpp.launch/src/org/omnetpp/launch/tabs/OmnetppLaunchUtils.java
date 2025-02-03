@@ -512,7 +512,7 @@ public class OmnetppLaunchUtils {
         String shLibStr = config.getAttribute(IOmnetppLaunchConstants.OPP_SHARED_LIBS, "").trim();
         shLibStr = StringUtils.substituteVariables(shLibStr);
         for (String lib : StringUtils.split(shLibStr)) {
-            lib = makeRelativePathTo(getLocationForWorkspacePath(lib, workingdirStr, true), workingdirLocation).toString(); // convert to file system location
+            lib = getLocationForWorkspacePath(lib, workingdirStr, true).toString(); // convert to file system location
             args.add("-l");
             args.add(lib);
         }
