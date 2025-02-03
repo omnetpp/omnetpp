@@ -878,13 +878,15 @@ if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
 else
     AC_MSG_RESULT(no)
     OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  Python modules ($output)"
-    AC_MSG_WARN([Some Python modules required by the IDE were not found: $output])
-    if test ! -f .venv/bin/activate; then
-      AC_MSG_NOTICE([TIP: Install a Python virtual environment (if you do not have one already):])
-      AC_MSG_NOTICE([TIP: python3 -m venv .venv && source .venv/bin/activate])
-    fi
+    AC_MSG_WARN([Some Python modules required by the IDE were not found (or have wrong versions): $output])
     AC_MSG_NOTICE([TIP: Install the missing Python modules by typing:])
     AC_MSG_NOTICE([TIP: python3 -m pip install -r python/requirements.txt])
+    if test ! -f .venv/bin/activate; then
+      AC_MSG_NOTICE([TIP:])
+      AC_MSG_NOTICE([TIP: Before installing the above modules, consider creating and activating])
+      AC_MSG_NOTICE([TIP: a separate Python virtual environment for this OMNeT++ installation:])
+      AC_MSG_NOTICE([TIP: python3 -m venv .venv && source .venv/bin/activate])
+    fi
     if test -d ide; then
       AC_MSG_ERROR([Install the missing Python modules and restart the configure script.])
     fi
