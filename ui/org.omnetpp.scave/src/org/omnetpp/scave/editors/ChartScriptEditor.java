@@ -78,6 +78,7 @@ import org.omnetpp.scave.actions.ConfigureChartAction;
 import org.omnetpp.scave.actions.CopyImageToClipboardAction;
 import org.omnetpp.scave.actions.ExportChartAction;
 import org.omnetpp.scave.actions.KillPythonProcessAction;
+import org.omnetpp.scave.actions.ShowHelpInViewAction;
 import org.omnetpp.scave.actions.RefreshChartAction;
 import org.omnetpp.scave.actions.RefreshResultFilesAction;
 import org.omnetpp.scave.actions.SaveImageAction;
@@ -211,6 +212,10 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
     private ZoomChartAction zoomOutHorizAction = new ZoomChartAction(true, false, 1 / 2.0);
     private ZoomChartAction zoomInVertAction = new ZoomChartAction(false, true, 2.0);
     private ZoomChartAction zoomOutVertAction = new ZoomChartAction(false, true, 1 / 2.0);
+
+    private static final String HELP_RESOURCE_URL = "/org.omnetpp.doc/content/guides/userguide/result-analysis.html";
+    private static final String NATIVE_NAVIGATION_SECTION = "navigation-in-native-plots";
+    private static final String MATPLOTLIB_NAVIGATION_SECTION = "navigation-in-matplotlib-plots";
 
     private KillPythonProcessAction killAction;
 
@@ -690,6 +695,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             chartPage.addToToolbar(interactAction);
             chartPage.addToToolbar(panAction);
             chartPage.addToToolbar(zoomAction);
+            chartPage.addToToolbar(new ShowHelpInViewAction("Navigation Help", HELP_RESOURCE_URL + "#" + MATPLOTLIB_NAVIGATION_SECTION));
             chartPage.addSeparatorToToolbar();
             chartPage.addToToolbar(homeAction);
             chartPage.addToToolbar(backAction);
@@ -708,6 +714,7 @@ public class ChartScriptEditor extends PyEdit {  //TODO ChartEditor?
             chartPage.addToToolbar(zoomOutHorizAction);
             chartPage.addToToolbar(zoomInVertAction);
             chartPage.addToToolbar(zoomOutVertAction);
+            chartPage.addToToolbar(new ShowHelpInViewAction("Navigation Help", HELP_RESOURCE_URL + "#" + NATIVE_NAVIGATION_SECTION));
         }
 
         chartPage.addSeparatorToToolbar();
