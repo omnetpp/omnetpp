@@ -113,7 +113,7 @@ public class ConfigRegistry {
         // Declared config keys may contain '%' (for numeric string), such as "seed-%-mt". '%' only occurs after hyphen.
         // In ini files, the '%' part may be replaced with wildcards or numeric ranges, such as "seed-*-mt" or "seed-{5..10}-mt".
         String declaredKey = key.replaceAll("-(\\d+|\\*|\\{.*?\\})", "-%");
-        ConfigOption e = options.get(declaredKey);
+        ConfigOption e = map.get(declaredKey);
         return e;
     }
 
