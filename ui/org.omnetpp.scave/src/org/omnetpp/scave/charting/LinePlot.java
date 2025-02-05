@@ -605,7 +605,7 @@ public class LinePlot extends PlotBase {
     }
 
     public void zoomToFitData() {
-        zoomToArea(lines.calculatePlotArea(Lines.PlotAreaCalculationMode.DATA_WITH_PADDING));
+        setZoomedArea(lines.calculatePlotArea(Lines.PlotAreaCalculationMode.DATA_WITH_PADDING));
     }
 
     @Override
@@ -620,8 +620,8 @@ public class LinePlot extends PlotBase {
             remaining = legend.layout(graphics, remaining, pass);
 
             mainArea = remaining.getCopy();
-            axesInsets = xAxis.layout(graphics, mainArea, new Insets(), coordsMapping, pass);
-            axesInsets = yAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
+            axesInsets = yAxis.layout(graphics, mainArea, new Insets(), coordsMapping, pass);
+            axesInsets = xAxis.layout(graphics, mainArea, axesInsets, coordsMapping, pass);
 
             // tentative plotArea calculation (y axis ticks width missing from the picture yet)
             Rectangle plotArea = mainArea.getCopy().shrink(axesInsets);

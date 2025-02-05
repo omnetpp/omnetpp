@@ -107,8 +107,12 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
                 Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
     /* bounds calculated from the dataset */
     protected RectangularArea chartArea;
-    /* area to be displayed */
-    private RectangularArea zoomedArea;
+    /* If this is not null, it stores a request to change the data area upon the next relayout.
+     * This is necessary because the layouting process can change the scrolled viewport size
+     * (because of changing scrollbar visibilities and axis tick label lengths), so the initial
+     * requested data range may not end up being exactly what's visible at the end without this.
+     */
+    private RectangularArea zoomedAreaRequest;
 
     private ZoomableCanvasMouseSupport mouseSupport;
 
@@ -171,6 +175,16 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
 
         layoutDepth++;
         if (debug) Debug.println("layoutChart(), level "+layoutDepth);
+
+        // NOTE: This is a bit of a HACK, to help setZoomedArea() be a bit more accurate.
+        // We make an educated guess about the final visibility state of the scroll bars,
+        // and set them so early, to start the layouting process with the final viewport size.
+        if (zoomedAreaRequest != null) {
+            if (debug) Debug.println("zoomedAreaRequest=" + zoomedAreaRequest);
+            getHorizontalBar().setVisible(zoomedAreaRequest.minX > getMinX() || zoomedAreaRequest.maxX < getMaxX());
+            getVerticalBar().setVisible(zoomedAreaRequest.minY > getMinY() || zoomedAreaRequest.maxY < getMaxY());
+        }
+
         Image image = new Image(getDisplay(), 1, 1);
         GC gc = new GC(image);
         Graphics graphics = new SWTGraphics(gc);
@@ -187,8 +201,10 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
                     zoomToFitX();
                 if (shouldZoomOutY)
                     zoomToFitY();
-                validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
+
+                updateZoomedArea(false);
             }
+            validateZoom(); //Note: scrollbar.setVisible() triggers Resize too
         }
         catch (Throwable e) {
             ScavePlugin.logError(e);
@@ -208,10 +224,12 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
      * The change will be applied when the chart is layouted next time.
      */
     public void setZoomedArea(RectangularArea area) {
-        if (dataset != null && !getClientArea().isEmpty())
-            zoomToArea(area);
-        else
-            this.zoomedArea = area;
+        this.zoomedAreaRequest = area;
+        layoutChart();
+    }
+
+    private void updateZoomedArea() {
+        updateZoomedArea(true);
     }
 
     /**
@@ -219,11 +237,12 @@ public abstract class PlotBase extends ZoomableCachingCanvas implements IPlotVie
      * To be called after the has an area (calculated from the dataset)
      * and the virtual size of the canvas is calculated.
      */
-    private void updateZoomedArea() {
-        if (zoomedArea != null && !getBounds().isEmpty() && dataset != null) {
-            if (debug) Debug.format("Restoring zoomed area: %s%n", zoomedArea);
-            RectangularArea area = zoomedArea;
-            zoomedArea = null;
+    private void updateZoomedArea(boolean clear) {
+        if (zoomedAreaRequest != null && !getBounds().isEmpty() && dataset != null) {
+            if (debug) Debug.format("Restoring zoomed area: %s%n", zoomedAreaRequest);
+            RectangularArea area = zoomedAreaRequest;
+            if (clear)
+                zoomedAreaRequest = null;
             zoomToArea(area);
         }
     }
