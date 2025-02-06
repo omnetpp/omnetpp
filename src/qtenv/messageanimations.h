@@ -144,7 +144,7 @@ protected:
     // called just before their begin() calls,
     // (at some time in this sequence's update())
     // and not in this sequence's init() or begin().
-    // If not set, they will be called in the sequence's begin()
+    // If not set, they will be called in the sequence's init()
     bool deferPartsInit;
 
     // Returns a new AnimationSequence which contains the parts of
@@ -169,6 +169,7 @@ public:
     // If this sequence consists entierly of holding parts.
     bool isHoldingOnly() const;
 
+    void init() override;
     void begin() override;
     void update() override;
     void end() override;

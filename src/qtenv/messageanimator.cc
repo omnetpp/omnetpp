@@ -322,9 +322,6 @@ void MessageAnimator::endSend(cMessage *msg)
     for (auto insp : getQtenv()->getInspectors())
         sendAnim->addToInspector(insp);
 
-    if (!sendAnim->isEmpty())
-        sendAnim->advance();
-
     // if we are in a method, and this whole message sequence will take 0 SimTime, performing it in the method
     if (currentMethodCall && sendAnim->isHolding() && transDuration.isZero())
         currentMethodCall->addOperation(sendAnim);

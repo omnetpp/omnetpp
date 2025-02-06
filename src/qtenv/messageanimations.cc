@@ -252,14 +252,19 @@ bool AnimationSequence::isHoldingOnly() const
     return true;
 }
 
-void AnimationSequence::begin()
+void AnimationSequence::init()
 {
-    Animation::begin();
+    Animation::init();
 
     if (!deferPartsInit)
         for (auto p : parts)
             if (p->getState() == PENDING)
                 p->init();
+}
+
+void AnimationSequence::begin()
+{
+    Animation::begin();
 
     while (currentPart < parts.size()) {
         // looking for the first non-empty anim
