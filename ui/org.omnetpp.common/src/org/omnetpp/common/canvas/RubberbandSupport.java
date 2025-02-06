@@ -219,6 +219,16 @@ public abstract class RubberbandSupport {
             r.height = -r.height;
             r.y -= r.height;
         }
+
+        // The following is a workaround for this issue: https://github.com/eclipse-gef/gef-classic/issues/689
+        // If either size of the rubberband bounds is 0, `intersect` resets its position to (0,0), let's avoid that.
+        // Undoing this correction after the intersection is not really necessary, it's just one pixel of difference,
+        // and zooming in (which is the only use case for this class) on a zero-area region doesn't make sense anyway.
+        if (r.width == 0)
+            r.width = 1;
+        if (r.height == 0)
+            r.height = 1;
+
         r.intersect(r2);
         if (widthNegative) {
             r.x += r.width;
