@@ -18,7 +18,6 @@ import org.omnetpp.scave.charttemplates.ChartTemplateRegistry;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.InputFile;
-import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model2.AndFilter;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 import org.w3c.dom.NamedNodeMap;
@@ -208,8 +207,7 @@ public class LegacyAnalysisLoader {
             if ("properties".equals(propertyNode.getNodeName())) {
                 String propertyName = propertyNode.getAttributes().getNamedItem("name").getNodeValue();
                 String propertyValue = propertyNode.getAttributes().getNamedItem("value").getNodeValue();
-                Property property = new Property(propertyName, propertyValue);
-                chart.addProperty(property);
+                chart.setPropertyValue(propertyName, propertyValue);
             } else if ("filters".equals(propertyNode.getNodeName())) {
                 String filterExpression = propertyNode.getAttributes().getNamedItem("filterPattern").getNodeValue();
                 filterExpression = AndFilter.translateLegacyFilterExpression(filterExpression);
