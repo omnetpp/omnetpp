@@ -501,7 +501,7 @@ class Analysis:
 
         self.run_chart(chart, wd, workspace, extra_props=props, show=False, suppress_print=suppress_print)
 
-        fname = utils.get_image_export_filepath(props)
+        fname = utils.get_image_export_filepath(dict(chart.properties, **props))
         fname = os.path.join(wd, fname)
         return self._check_file_created(fname, "image", enforce)
 
@@ -525,7 +525,7 @@ class Analysis:
 
         self.run_chart(chart, wd, workspace, extra_props=props, show=False, suppress_print=suppress_print)
 
-        fname = utils.get_data_export_filepath(props)
+        fname = utils.get_data_export_filepath(dict(chart.properties, **props))
         fname = os.path.join(wd, fname)
         return self._check_file_created(fname, "data", enforce)
 
