@@ -1,0 +1,49 @@
+%description:
+Verify that getDisplayString() is not willing to accidentally create a dangling channel object
+
+%file: test.ned
+
+simple MyModule
+{
+    gates:
+        inout iogate;
+}
+
+network Test
+{
+    submodules:
+        A: MyModule;
+        B: MyModule;
+    connections:
+        A.iogate <--> B.iogate;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class MyModule : public cSimpleModule
+{
+  public:
+    void initialize() override;
+};
+
+Define_Module(MyModule);
+
+void MyModule::initialize()
+{
+    cGate *gateIn = gate("iogate$i");
+    gateIn->getDisplayString();
+}
+
+}; // namespace
+
+%exitcode: 1
+
+%contains: stderr
+Connection display string is not available, because this gate is not the source gate of a connection (i.e. getNextGate() is nullptr)
+

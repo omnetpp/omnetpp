@@ -615,6 +615,8 @@ bool cGate::isPathOK() const
 cDisplayString& cGate::getDisplayString()
 {
     if (!getChannel()) {
+        if (!getNextGate())
+            throw cRuntimeError(this, "getDisplayString(): Connection display string is not available, because this gate is not the source gate of a connection (i.e. getNextGate() is nullptr)");
         installChannel(cIdealChannel::create("channel"));
         channel->callInitialize();
     }
