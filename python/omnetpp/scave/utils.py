@@ -1477,8 +1477,7 @@ def get_image_export_filepath(props):
     format = get_prop("image_export_format") or "svg"
     folder = get_prop("image_export_folder") or "."
     filename = get_prop("image_export_filename") or _sanitize_filename(chart.get_name())
-    if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
-        filename = filename + "." + format
+    filename = filename + "." + format
     return os.path.normpath(os.path.join(folder, filename))
 
 def _format_to_extension(format):
@@ -1626,8 +1625,7 @@ def get_data_export_filepath(props):
     extension = _format_to_extension(format)
     folder = get_prop("data_export_folder") or "."
     filename = get_prop("data_export_filename") or _sanitize_filename(chart.get_name())
-    if not re.match(string=filename, pattern=r".+\.\w{3,4}$"):
-        filename = filename + "." + extension
+    filename = filename + "." + extension
     return os.path.normpath(os.path.join(folder, filename))
 
 
