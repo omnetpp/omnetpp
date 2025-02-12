@@ -1157,19 +1157,19 @@ void Qtenv::finishSimulation()
 
 bool Qtenv::checkRunning()
 {
-    const char *warningText = nullptr;
+    const char *message = nullptr;
 
     if (getSimulationState() == Qtenv::SIM_RUNNING) {
         if (getQtenv()->isPaused())
-            warningText = "The simulation is paused in the middle of an event -- press STOP to finish processing it.";
+            message = "The simulation is paused in the middle of an event -- press STOP to finish processing it.";
         else
-            warningText = "Sorry, you cannot do this while the simulation is running. Please stop it first.";
+            message = "Sorry, you cannot do this while the simulation is running. Please stop it first.";
     }
     if (getSimulationState() == Qtenv::SIM_BUSY)
-        warningText = "The simulation is waiting for external synchronization -- press STOP to interrupt it.";
+        message = "The simulation is waiting for external synchronization -- press STOP to interrupt it.";
 
-    if (warningText != nullptr) {
-        QMessageBox::warning(mainWindow, "Warning", warningText, QMessageBox::Ok);
+    if (message != nullptr) {
+        QMessageBox::critical(mainWindow, "Error", message, QMessageBox::Ok);
         return true;
     }
     else
@@ -1831,7 +1831,7 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
             message += QString("\n\nLaunch a debugger with the following command?\n\n") + debuggerCommand.c_str();
     }
 
-    QMessageBox messageBox(QMessageBox::Icon::Critical, title, message, QMessageBox::NoButton, getMainWindow());
+    QMessageBox messageBox(QMessageBox::Icon::Question, title, message, QMessageBox::NoButton, getMainWindow());
 
     QPushButton *acceptButton;
 
@@ -1860,12 +1860,12 @@ bool Qtenv::ensureDebugger(cRuntimeError *error)
     else if (debuggerAttachmentPermitted() != DebuggerAttachmentPermission::DENIED)
         attachDebugger();
     else { // no debugger, and can't attach either
-        QMessageBox(QMessageBox::Icon::Critical, "Debugger Attachment Blocked",
+        QMessageBox::critical(getMainWindow(), "Debugger Attachment Blocked",
                     "No attached debugger was detected, and your current system setup does not "
                     "permit attaching a debugger to a non-child process.\nStart your simulation "
                     "in a debugger, or see this for how to allow on-demand attachment:\n\n"
                     "https://askubuntu.com/questions/41629/after-upgrade-gdb-wont-attach-to-process/41656#41656",
-                    QMessageBox::StandardButton::Close, getMainWindow()).exec();
+                    QMessageBox::StandardButton::Close);
 
         // The user might have allowed attachment and attached a debugger
         // while the dialog was up, so let's check again.

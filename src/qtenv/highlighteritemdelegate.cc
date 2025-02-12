@@ -135,7 +135,7 @@ void HighlighterItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *
         QStyledItemDelegate::setModelData(editor, model, index);
     }
     catch (std::exception& e) {
-        QMessageBox::warning(editor, "Error editing item: " + index.data().toString(), e.what(), QMessageBox::StandardButton::Ok);
+        QMessageBox::critical(editor, "Error Editing Item", "Cannot change " + index.data().toString() + ".\n\n" + e.what(), QMessageBox::StandardButton::Ok);
     }
 }
 

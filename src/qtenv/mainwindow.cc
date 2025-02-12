@@ -825,7 +825,7 @@ bool MainWindow::isSimulationOk()
 bool MainWindow::networkPresent()
 {
     if (!getSimulation()->getSystemModule()) {
-        QMessageBox::warning(this, "Error", "No network has been set up yet.", QMessageBox::Ok);
+        QMessageBox::critical(this, "Error", "No network has been set up yet.", QMessageBox::Ok);
         return false;
     }
     return true;
@@ -1030,10 +1030,10 @@ void MainWindow::on_actionDebugNextEvent_triggered()
 
     if (isRunning()) {
         if (env->isPaused())
-            QMessageBox::warning(this, "Error", "Simulation is paused in the middle of an event -- please press 'stop' first.",
+            QMessageBox::critical(this, "Error", "Simulation is paused in the middle of an event -- please press 'stop' first.",
                     QMessageBox::Ok);
         else
-            QMessageBox::warning(this, "Error", "Simulation is currently running -- please stop it first.",
+            QMessageBox::critical(this, "Error", "Simulation is currently running -- please stop it first.",
                     QMessageBox::Ok);
     }
     else {
@@ -1226,7 +1226,7 @@ void MainWindow::on_actionOpenPrimaryIniFile_triggered()
 {
     QString fileName = getQtenv()->getIniFileName();
     if (fileName.isEmpty()) {
-        QMessageBox::information(this, "Info", "The current configuration manager doesn't use file input.",
+        QMessageBox::critical(this, "Error", "The current configuration manager doesn't use file input.",
                 QMessageBox::Ok);
         return;
     }
@@ -1276,7 +1276,7 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
                 ? "Current state of simulation has been saved."
                 : QString("Current state of simulation has been saved into \"") + getQtenv()->getSnapshotFileName() + "\".";
 
-        QMessageBox::information(this, "Snapshot created", msg, QMessageBox::Ok);
+        QMessageBox::information(this, "Snapshot Created", msg, QMessageBox::Ok);
     }
 }
 
@@ -1292,18 +1292,18 @@ void MainWindow::on_actionConcludeSimulation_triggered()
 
     // check state is not SIM_FINISHCALLED
     if (getQtenv()->getSimulationState() == Qtenv::SIM_FINISHCALLED) {
-        QMessageBox::information(this, "Error", "finish() has been invoked already.", QMessageBox::Ok);
+        QMessageBox::information(this, "Information", "finish() has been invoked already.", QMessageBox::Ok);
         return;
     }
 
     // check state is not SIM_ERROR
     if (getQtenv()->getSimulationState() == Qtenv::SIM_ERROR) {
         QMessageBox::StandardButton ans =
-            QMessageBox::question(this, "Warning",
+            QMessageBox::warning(this, "Warning",
                     "Simulation has stopped with error, calling finish() might produce unexpected results. Proceed anyway?",
-                    QMessageBox::Yes | QMessageBox::No);
+                    QMessageBox::Ok | QMessageBox::Cancel);
 
-        if (ans == QMessageBox::No)
+        if (ans == QMessageBox::Cancel)
             return;
     }
     else {

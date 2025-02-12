@@ -282,7 +282,7 @@ void FindObjectsDialog::refresh()
         visitor.process(root);
 
     if (visitor.getArraySize() == 0) {
-        QMessageBox::warning(this, "Error",
+        QMessageBox::critical(this, "Error",
                 QString("Object to search in (\"") + fullPath.c_str() + "\") could not be resolved.",
                 QMessageBox::StandardButton::Ok);
         return;

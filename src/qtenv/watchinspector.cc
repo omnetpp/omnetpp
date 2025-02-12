@@ -85,7 +85,7 @@ void WatchInspector::commit()
         getQtenv()->callRefreshInspectors();
     }
     else
-        QMessageBox::warning(this, "Warning", "This inspector doesn't support changing the value.", QMessageBox::Ok);
+        QMessageBox::critical(this, "Error", "This inspector doesn't support changing the value.", QMessageBox::Ok);
 }
 
 }  // namespace qtenv

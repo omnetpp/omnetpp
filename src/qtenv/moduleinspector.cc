@@ -266,7 +266,7 @@ void ModuleInspector::doSetObject(cObject *obj)
             setSubmoduleNameFormat((SubmoduleNameFormat)getPref(PREF_SUBMODULENAMEFORMAT, (int)SubmoduleNameFormat::FMT_FULLNAME_AND_QDISPLAYNAME).toInt());
         }
         catch (std::exception& e) {
-            QMessageBox::warning(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
+            QMessageBox::critical(this, QString("Error"), QString("Error displaying network graphics: ") + e.what());
         }
         getQtenv()->getMessageAnimator()->addInspector(this);
 
@@ -754,7 +754,7 @@ void ModuleInspector::showCanvasLayersDialog()
 {
     CanvasRenderer *canvasRenderer = canvasViewer->getCanvasRenderer();
     if (!canvasRenderer->hasCanvas()) {
-        QMessageBox::warning(this, "Warning", "No default canvas has been created for this module yet.",
+        QMessageBox::information(this, "Information", "No default canvas has been created for this module yet.",
                 QMessageBox::Ok);
         return;
     }

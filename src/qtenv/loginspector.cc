@@ -418,7 +418,7 @@ void LogInspector::onGoToSimTimeAction()
             goToSimTime(t);
         }
         catch (cRuntimeError& e) {
-            QMessageBox::warning(this, "Error", e.what());
+            QMessageBox::critical(this, "Error", e.what());
         }
     }
 }
