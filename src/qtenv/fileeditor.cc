@@ -128,7 +128,7 @@ void FileEditor::findNext()
         textCursor = ui->plainTextEdit->document()->find(searchString, ui->plainTextEdit->textCursor(), flags);
 
     if (textCursor.isNull())
-        QMessageBox::warning(this, tr("Find"), tr("'") + searchString + tr("' not found."), QMessageBox::Ok);
+        QMessageBox::warning(this, "Find", "'" + searchString + "' not found.", QMessageBox::Ok);
     else
         ui->plainTextEdit->setTextCursor(textCursor);
 }
@@ -189,7 +189,7 @@ void FileEditor::show()
 {
     file.open(QIODevice::ReadWrite | QIODevice::Text);
     if (file.error() != QFile::NoError) {
-        QMessageBox::warning(this, tr("Info"), tr("Error: ") + "The file could not be opened.", QMessageBox::Ok);
+        QMessageBox::warning(this, "Info", "Error: The file could not be opened.", QMessageBox::Ok);
         file.close();
         return;
     }

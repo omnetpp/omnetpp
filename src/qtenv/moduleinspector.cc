@@ -754,7 +754,7 @@ void ModuleInspector::showCanvasLayersDialog()
 {
     CanvasRenderer *canvasRenderer = canvasViewer->getCanvasRenderer();
     if (!canvasRenderer->hasCanvas()) {
-        QMessageBox::warning(this, tr("Warning"), tr("No default canvas has been created for this module yet."),
+        QMessageBox::warning(this, "Warning", "No default canvas has been created for this module yet.",
                 QMessageBox::Ok);
         return;
     }

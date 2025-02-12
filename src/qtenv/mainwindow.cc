@@ -803,7 +803,7 @@ bool MainWindow::networkReady()
     if (isSimulationOk())
         return true;
     else {
-        int ans = QMessageBox::warning(this, tr("Warning"), tr("Cannot continue this simulation. Rebuild network?"),
+        int ans = QMessageBox::warning(this, "Warning", "Cannot continue this simulation. Rebuild network?",
                     QMessageBox::Yes | QMessageBox::No);
         if (ans == QMessageBox::Yes) {
             on_actionRebuildNetwork_triggered();
@@ -825,7 +825,7 @@ bool MainWindow::isSimulationOk()
 bool MainWindow::networkPresent()
 {
     if (!getSimulation()->getSystemModule()) {
-        QMessageBox::warning(this, tr("Error"), tr("No network has been set up yet."), QMessageBox::Ok);
+        QMessageBox::warning(this, "Error", "No network has been set up yet.", QMessageBox::Ok);
         return false;
     }
     return true;
@@ -1212,7 +1212,7 @@ void MainWindow::on_actionLoadNedFile_triggered()
     QString lastNedFile = getQtenv()->getPref("last-nedfile", ".").value<QString>();
 
     QString fileName = QFileDialog::getOpenFileName(this,
-                tr("Open NED file"), lastNedFile, tr("NED Files (*.ned);;All files (*)"));
+                "Open NED file", lastNedFile, "NED Files (*.ned);;All files (*)");
 
     if (!fileName.isNull()) {
         getQtenv()->setPref("last-nedfile", fileName);
@@ -1226,7 +1226,7 @@ void MainWindow::on_actionOpenPrimaryIniFile_triggered()
 {
     QString fileName = getQtenv()->getIniFileName();
     if (fileName.isEmpty()) {
-        QMessageBox::information(this, tr("Info"), tr("The current configuration manager doesn't use file input."),
+        QMessageBox::information(this, "Info", "The current configuration manager doesn't use file input.",
                 QMessageBox::Ok);
         return;
     }
@@ -1276,7 +1276,7 @@ void MainWindow::on_actionCreate_Snapshot_triggered()
                 ? "Current state of simulation has been saved."
                 : QString("Current state of simulation has been saved into \"") + getQtenv()->getSnapshotFileName() + "\".";
 
-        QMessageBox::information(this, tr("Snapshot created"), msg, QMessageBox::Ok);
+        QMessageBox::information(this, "Snapshot created", msg, QMessageBox::Ok);
     }
 }
 
@@ -1292,14 +1292,14 @@ void MainWindow::on_actionConcludeSimulation_triggered()
 
     // check state is not SIM_FINISHCALLED
     if (getQtenv()->getSimulationState() == Qtenv::SIM_FINISHCALLED) {
-        QMessageBox::information(this, tr("Error"), tr("finish() has been invoked already."), QMessageBox::Ok);
+        QMessageBox::information(this, "Error", "finish() has been invoked already.", QMessageBox::Ok);
         return;
     }
 
     // check state is not SIM_ERROR
     if (getQtenv()->getSimulationState() == Qtenv::SIM_ERROR) {
         QMessageBox::StandardButton ans =
-            QMessageBox::question(this, tr("Warning"),
+            QMessageBox::question(this, "Warning",
                     "Simulation has stopped with error, calling finish() might produce unexpected results. Proceed anyway?",
                     QMessageBox::Yes | QMessageBox::No);
 
@@ -1308,7 +1308,7 @@ void MainWindow::on_actionConcludeSimulation_triggered()
     }
     else {
         QMessageBox::StandardButton ans =
-            QMessageBox::question(this, tr("Question"),
+            QMessageBox::question(this, "Question",
                     "Do you want to conclude this simulation run and invoke finish() on all modules?",
                     QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 
