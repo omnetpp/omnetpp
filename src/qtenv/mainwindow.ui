@@ -711,7 +711,7 @@ Total number of messages created since start of the simulation</string>
      <normaloff>:/tools/debugnextevent</normaloff>:/tools/debugnextevent</iconset>
    </property>
    <property name="text">
-    <string>&amp;Debug Next Event</string>
+    <string>&amp;Debug Simulation</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F9</string>

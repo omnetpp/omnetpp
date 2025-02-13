@@ -1027,24 +1027,14 @@ void MainWindow::on_actionDebugNextEvent_triggered()
 {
     // implements Simulate|Debug next event
 
-    // TODO: deduplicate this, delegating to Qtenv::checkRunning?
-    if (isRunning()) {
-        if (env->isPaused())
-            QMessageBox::critical(this, "Error", "Simulation is paused in the middle of an event -- please first Step the simulation (F4) until the event is done.",
-                    QMessageBox::Ok);
-        else
-            QMessageBox::critical(this, "Error", "Simulation is currently running -- please stop it first.",
-                    QMessageBox::Ok);
-    }
-    else {
-        if (!networkReady())
-            return;
+    if (!networkReady())
+        return;
 
-        setGuiForRunmode(RUNMODE_STEP);
-        getSimulation()->requestTrapOnNextEvent();
-        on_actionOneStep_triggered();
-        setGuiForRunmode(RUNMODE_NOT_RUNNING);
-    }
+
+    setGuiForRunmode(RUNMODE_STEP);
+    getSimulation()->requestTrapOnNextEvent();
+    on_actionOneStep_triggered();
+    setGuiForRunmode(RUNMODE_NOT_RUNNING);
 }
 
 void MainWindow::on_actionDebugOnErrors_triggered(bool checked)

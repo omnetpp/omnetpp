@@ -1808,6 +1808,13 @@ void Qtenv::pausePoint()
 
         mainWindow->setGuiForRunmode(runMode);
     }
+
+    if (getSimulation()->isTrapOnNextEventRequested()) {
+        getSimulation()->clearTrapOnNextEvent();
+        if (ensureDebugger())
+            DEBUG_TRAP;
+        // YOU ARE ABOUT TO LEAVE THE pausePoint() CALL YOU REQUESTED -- SELECT "STEP OUT" IN YOUR DEBUGGER
+    }
 }
 
 void Qtenv::requestQuitFromPausePointEventLoop(RunMode continueIn)
