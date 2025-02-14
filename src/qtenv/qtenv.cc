@@ -1165,7 +1165,7 @@ bool Qtenv::checkRunning()
 
     if (getSimulationState() == Qtenv::SIM_RUNNING) {
         if (getQtenv()->isPaused())
-            message = "The simulation is paused in the middle of an event -- press STOP to finish processing it.";
+            message = "The simulation is paused in the middle of an event -- please first Step the simulation (F4) until the event is done.";
         else
             message = "Sorry, you cannot do this while the simulation is running. Please stop it first.";
     }

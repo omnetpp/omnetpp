@@ -520,8 +520,7 @@ void MainWindow::runSimulation(RunMode runMode)
 void MainWindow::stopSimulation()
 {
     if (getQtenv()->isPaused())
-        getQtenv()->requestQuitFromPausePointEventLoop(RunMode::RUNMODE_NOT_RUNNING);
-        // no return here!
+        return; // do nothing
 
     // implements Simulate|Stop
     if (env->getSimulationState() == Qtenv::SIM_RUNNING || env->getSimulationState() == Qtenv::SIM_BUSY) {
@@ -1028,9 +1027,10 @@ void MainWindow::on_actionDebugNextEvent_triggered()
 {
     // implements Simulate|Debug next event
 
+    // TODO: deduplicate this, delegating to Qtenv::checkRunning?
     if (isRunning()) {
         if (env->isPaused())
-            QMessageBox::critical(this, "Error", "Simulation is paused in the middle of an event -- please press 'stop' first.",
+            QMessageBox::critical(this, "Error", "Simulation is paused in the middle of an event -- please first Step the simulation (F4) until the event is done.",
                     QMessageBox::Ok);
         else
             QMessageBox::critical(this, "Error", "Simulation is currently running -- please stop it first.",
