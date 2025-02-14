@@ -479,14 +479,19 @@ void MessageAnimator::updateAnimations()
         }
     }
     else {
-        // Only advancing them until one is found that is not instantly done.
+        // Only advancing them until one is found that is not instantly done,
+        // AND doesn't turn into a non-holding one immediately.
         for (auto& e : holdingAnims) {
             auto& p = e.second;
             if (!p->advance()) {
+                // This anim has just ended, remove it and carry on.
                 delete p;
                 p = nullptr;
-            }
-            // isHolding can change
+            } // no `else break;` here, breaking has further conditions:
+            // If the anim has not ended yet (didn't get removed), but has turned
+            // into non-holding instead (`isHolding` can change in `advance`), we
+            // can still go on to the next holding anim. So, we should only stop
+            // if the current animation is still not done, and is still holding.
             if (p && p->isHolding())
                 break;
         }
