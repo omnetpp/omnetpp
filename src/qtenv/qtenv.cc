@@ -947,6 +947,8 @@ bool Qtenv::doRunSimulation()
 
         if (runMode != RUNMODE_FAST)
             performHoldAnimations();
+        else
+            skipHoldAnimations();
 
         // if there is no event, we have to let the control through to
         // takeNextEvent, and it will terminate the simulation with an exception.
@@ -997,6 +999,8 @@ bool Qtenv::doRunSimulation()
 
         if (messageAnimator->getShowAnimations() && runMode != RUNMODE_FAST)
             performHoldAnimations();
+        else
+            skipHoldAnimations();
 
         messageAnimator->setMarkedModule(sim->guessNextModule());
 
@@ -1933,6 +1937,8 @@ void Qtenv::simulationEvent(cEvent *event)
             // and it would disappear otherwise
             if (runMode != RUNMODE_FAST)
                 performHoldAnimations();
+            else
+                skipHoldAnimations();
         }
     }
 }
