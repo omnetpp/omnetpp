@@ -578,7 +578,7 @@ void MainWindow::on_actionRunUntil_triggered()
         return;
     }
 
-    RunUntilDialog runUntilDialog;
+    RunUntilDialog runUntilDialog(this);
     if (!runUntilDialog.exec()) {
         // popping the button back out
         setGuiForRunmode(getQtenv()->getSimulationRunMode());
@@ -592,9 +592,8 @@ void MainWindow::on_actionRunUntil_triggered()
     bool stopOnMsgCancel = runUntilDialog.stopOnMsgCancel();
 
     bool untilMode = time.dbl() != 0 || event != 0 || msg != nullptr;
+    setGuiForRunmode(runMode, untilMode);
     if (isRunning()) {
-        // XXX: this would cause an assertion failure in DisplayUpdateController
-        //setGuiForRunmode(runMode, untilMode);
         getQtenv()->setSimulationRunMode(runMode);
         getQtenv()->setSimulationRunUntil(time, event, msg, stopOnMsgCancel);
         if (getQtenv()->isPaused())
@@ -604,7 +603,6 @@ void MainWindow::on_actionRunUntil_triggered()
         if (!networkReady())
             return;
 
-        setGuiForRunmode(runMode, untilMode);
         getQtenv()->runSimulation(runMode, time, event, msg, nullptr, stopOnMsgCancel);
         setGuiForRunmode(RUNMODE_NOT_RUNNING);
         closeStopDialog();
