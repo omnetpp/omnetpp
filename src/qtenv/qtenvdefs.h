@@ -73,9 +73,6 @@ enum RunMode {
     RUNMODE_EXPRESS = 3,
     RUNMODE_STEP = 4,
     RUNMODE_NOT_RUNNING = 5,
-    // Within a pausePoint() call in a handleMessage()
-    // Never actually set in Qtenv, only used to configure the GUI
-    RUNMODE_PAUSED = 6,
 };
 
 // Custom types for QVariant

@@ -1800,7 +1800,7 @@ void Qtenv::pausePoint()
     // only actually blocking the execution of the event if the user stepped
     if (runMode == RUNMODE_STEP) {
         // pop out all the "play" buttons
-        mainWindow->setGuiForRunmode(RUNMODE_PAUSED);
+        mainWindow->setGuiForRunmode(RUNMODE_NOT_RUNNING);
 
         displayUpdateController->pause();
         pauseEventLoop->exec();
