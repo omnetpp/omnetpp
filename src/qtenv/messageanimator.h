@@ -243,6 +243,9 @@ public:
     double getAnimationSpeed();
 
 
+    // TODO: Add an "in-between" mode, where only non-holding animations are shown
+    // (for RUNMODE_FAST). This is currently achieved by deciding on calling either
+    // performHoldAnimations or skipHoldAnimations on Qtenv, in a lot of places.
     bool getShowAnimations() { return showAnimations; }
     void setShowAnimations(bool show);
 
