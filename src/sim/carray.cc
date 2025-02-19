@@ -209,7 +209,7 @@ void cArray::setCapacity(int newCapacity)
     cObject **newVect = new cObject *[newCapacity];
     for (int i = 0; i <= last; i++)
         newVect[i] = vect[i];
-    for (int i = last + 1; i < capacity; i++)
+    for (int i = last + 1; i < newCapacity; i++)
         newVect[i] = nullptr;
     delete[] vect;
     vect = newVect;
