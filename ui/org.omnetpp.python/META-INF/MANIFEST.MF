@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Python helper
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-SymbolicName: org.omnetpp.python;singleton:=true
+Bundle-Vendor: OpenSim Ltd.
+Bundle-Version: 6.1.0.qualifier
+Bundle-Activator: org.omnetpp.python.Activator
+Require-Bundle: org.omnetpp.dsp,
+ org.omnetpp.scave.pychart,
+ org.eclipse.ui,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.views,
+ org.eclipse.ui.ide,
+ org.eclipse.e4.ui.ide,
+ org.eclipse.core.runtime,
+ org.eclipse.tm.terminal.control,
+ org.eclipse.tm.terminal.connector.local,
+ org.eclipse.tm.terminal.connector.process,
+ org.eclipse.tm.terminal.connector.ssh,
+ org.eclipse.tm.terminal.connector.telnet,
+ org.eclipse.tm.terminal.view.core,
+ org.eclipse.tm.terminal.view.ui,
+ org.eclipse.core.resources
+Automatic-Module-Name: org.omnetpp.python
+Bundle-ActivationPolicy: lazy
+Export-Package: org.omnetpp.python

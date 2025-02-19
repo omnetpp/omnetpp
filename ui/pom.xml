@@ -250,6 +250,7 @@
       <module>org.omnetpp.ned.editor</module>
       <module>org.omnetpp.ned.model</module>
       <module>org.omnetpp.neddoc</module>
+      <module>org.omnetpp.python</module>
       <module>org.omnetpp.scave</module>
       <module>org.omnetpp.scave.builder</module>
       <module>org.omnetpp.scave.model</module>
