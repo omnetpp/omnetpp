@@ -372,6 +372,7 @@ void Cmdenv::simulate()
     }
 
     try {
+        bool checkBeforeEvent = fakeGUI || matchEventCondition != nullptr;
         if (!opt->expressMode) {
             while (true) {
                 cEvent *event = simulation->takeNextEvent();
@@ -383,8 +384,12 @@ void Cmdenv::simulate()
                 if (opt->autoflush && !opt->silent)
                     out.flush();
 
-                if (fakeGUI)
-                    fakeGUI->beforeEvent(event);
+                if (checkBeforeEvent) {
+                    if (fakeGUI)
+                        fakeGUI->beforeEvent(event);
+                    if (matchEventCondition && matchEventCondition(event))
+                        handleMatchingEvent(event);
+                }
 
                 // execute event
                 simulation->executeEvent(event);
@@ -420,8 +425,12 @@ void Cmdenv::simulate()
                 if (printProgressUpdates && (simulation->getEventNumber()&0xff) == 0 && elapsed(opt->statusFrequencyMs, last_update))
                     doStatusUpdate(speedometer);
 
-                if (fakeGUI)
-                    fakeGUI->beforeEvent(event);
+                if (checkBeforeEvent) {
+                    if (fakeGUI)
+                        fakeGUI->beforeEvent(event);
+                    if (matchEventCondition && matchEventCondition(event))
+                        handleMatchingEvent(event);
+                }
 
                 // execute event
                 simulation->executeEvent(event);
@@ -751,6 +760,13 @@ unsigned Cmdenv::getExtraStackForEnvir() const
 {
     return opt->extraStack;
 }
+
+void Cmdenv::setMatchEventCondition(bool (*f)(cEvent *))
+{
+    auto cmdenv = check_and_cast<Cmdenv *>(cSimulation::getActiveSimulation()->getEnvir());
+    cmdenv->matchEventCondition = f;
+}
+
 }  // namespace cmdenv
 }  // namespace omnetpp
 

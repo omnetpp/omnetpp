@@ -70,12 +70,20 @@ class CMDENV_API Cmdenv : public EnvirBase
 
      FakeGUI *fakeGUI = nullptr;
 
+     // The user is expected to set a function pointer that checks for specific events and set a
+     // breakpoint on the handleMatchingEvent function. This is much faster than using the conditional
+     // breakpoint of the debugger, because that would require a context switch at each event.
+     bool (*matchEventCondition)(cEvent *) = [] (omnetpp::cEvent *event) -> bool { return false; };
+
    protected:
      virtual void log(cLogEntry *entry) override;
      virtual void alert(const char *msg) override;
      virtual bool askYesNo(const char *question) override;
      virtual void printEventBanner(cEvent *event);
      virtual void doStatusUpdate(Speedometer& speedometer);
+
+     virtual void handleMatchingEvent(cEvent *event) { }
+     static void setMatchEventCondition(bool (*f)(cEvent *));
 
    public:
      Cmdenv();
