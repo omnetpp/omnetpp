@@ -273,6 +273,12 @@ class SIM_API cTerminationException : public cException
     virtual bool isError() const override {return false;}
 };
 
+// The debugger needs to check if the exception that is being thrown is a termination exception or not,
+// because the user mostly doesn't want to break into the debugger when the simulation terminates.
+// Unfortunately, the std::type_info structure can't easily be used in the breakpoint conditional expression,
+// so we provide this function that returns a pointer to the type_info of cTerminationException.
+extern const std::type_info *getTerminationExceptionTypeInfoPointer();
+
 /**
  * @brief Thrown when the simulation kernel or other components detect a
  * runtime error.

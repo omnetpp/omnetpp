@@ -186,6 +186,8 @@ cTerminationException::cTerminationException(const char *msgFormat...)
     init(nullptr, E_CUSTOM, msg);
 }
 
+const std::type_info *getTerminationExceptionTypeInfoPointer() { return &typeid(cTerminationException); }
+
 //---
 
 cRuntimeError::cRuntimeError(ErrorCodeInt errorCode...)
