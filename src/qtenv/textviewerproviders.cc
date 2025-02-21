@@ -87,9 +87,12 @@ ModuleOutputContentProvider::~ModuleOutputContentProvider()
 
 void ModuleOutputContentProvider::setExcludedModuleIds(std::set<int> excludedModuleIds)
 {
-    this->excludedModuleIds = excludedModuleIds;
-    invalidateIndex();
-    Q_EMIT textChanged();
+    // NOTE: equality check is properly defined by the standard for std::set, but not std::unordered_set!
+    if (this->excludedModuleIds != excludedModuleIds) {
+        this->excludedModuleIds = excludedModuleIds;
+        invalidateIndex();
+        Q_EMIT textChanged();
+    }
 }
 
 void ModuleOutputContentProvider::refresh()
