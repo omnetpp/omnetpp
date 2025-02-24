@@ -988,6 +988,9 @@ Supported .test file entry types:
             for testfilename in self.args.filenames:
                 self.testcase_generatesources(testfilename)
 
+        return self.run_tests()
+
+    def run_tests(self):
         self.num_pass = 0
         self.num_fail = 0
         self.num_expectedfail = 0
