@@ -705,6 +705,11 @@ void cSimulation::executeEvent(cEvent *event)
         setGlobalContext();
         e.getModuleToDelete()->deleteModule();
     }
+    catch (cTerminationException& e) { // NOTE: this helps lldb knowing the exception type_info and it allows skipping the C++ throw exception breakpoint
+        // restore global context before throwing the exception further
+        setGlobalContext();
+        throw e;
+    }
     catch (cException&) {
         // restore global context before throwing the exception further
         setGlobalContext();
