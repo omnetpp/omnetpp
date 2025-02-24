@@ -545,7 +545,7 @@ Supported .test file entry types:
         try:
             f = open(fname, 'r')
         except (IOError, OSError) as e:
-            print(f"cannot open {fname} file: {e}")
+            self.lprint(0, f"cannot open {fname} file: {e}")
             return
 
         f.seek(0, os.SEEK_END)
@@ -564,31 +564,31 @@ Supported .test file entry types:
 
         if txt != '':
             if istail:
-                print(f"tail of {label}:")
+                self.lprint(0, f"tail of {label}:")
             else:
-                print(f"{label}:")
-            print(f">>>>{txt}<<<<")
+                self.lprint(0, f"{label}:")
+            self.lprint(0, f">>>>{txt}<<<<")
 
     def testskipped(self, testname, reason):
         self.num_skipped += 1
         self.skipped_tests.append(testname)
         self.result[testname] = 'SKIPPED'
         self.reason[testname] = reason
-        print(f"*** {testname}: {blue('SKIPPED')} ({reason})")
+        self.lprint(0, f"*** {testname}: {blue('SKIPPED')} ({reason})")
 
     def testexpectedfail(self, testname, reason):
         self.num_expectedfail += 1
         self.expectedfail_tests.append(testname)
         self.result[testname] = 'EXPECTEDFAIL'
         self.reason[testname] = reason
-        print(f"*** {testname}: {yellow('EXPECTEDFAIL')} ({reason})")
+        self.lprint(0, f"*** {testname}: {yellow('EXPECTEDFAIL')} ({reason})")
 
     def testerror(self, testname, reason):
         self.num_error += 1
         self.error_tests.append(testname)
         self.result[testname] = 'ERROR'
         self.reason[testname] = reason
-        print(f"*** {testname}: {red('ERROR')} ({reason})")
+        self.lprint(0, f"*** {testname}: {red('ERROR')} ({reason})")
 
     def testfailed(self, testname, reason):
         if 'expected-failure(1)' in self.values:
@@ -596,19 +596,19 @@ Supported .test file entry types:
             self.expectedfail_tests.append(testname)
             self.result[testname] = 'EXPECTEDFAIL'
             self.reason[testname] = reason
-            print(f"*** {testname}: {yellow('EXPECTEDFAIL')} ({reason})")
+            self.lprint(0, f"*** {testname}: {yellow('EXPECTEDFAIL')} ({reason})")
         else:
             self.num_fail += 1
             self.failed_tests.append(testname)
             self.result[testname] = 'FAIL'
             self.reason[testname] = reason
-            print(f"*** {testname}: {red('FAIL')} ({reason})")
+            self.lprint(0, f"*** {testname}: {red('FAIL')} ({reason})")
 
     def testpassed(self, testname):
         self.num_pass += 1
         self.result[testname] = 'PASS'
         self.reason[testname] = ''
-        print(f"*** {testname}: {green('PASS')}")
+        self.lprint(0, f"*** {testname}: {green('PASS')}")
 
     def saveOriginalEnv(self):
         self.savedEnv = {}
@@ -982,7 +982,7 @@ Supported .test file entry types:
         # generate test files
         #
         if self.args.mode == 'gen':
-            print(f"{self.progname}: extracting files from *.test files into {self.args.workdir}...")
+            self.lprint(0, f"{self.progname}: extracting files from *.test files into {self.args.workdir}...")
 
             self.define_templates()
             for testfilename in self.args.filenames:
@@ -999,9 +999,9 @@ Supported .test file entry types:
         #
         if self.args.mode == 'run' or self.args.mode == 'check':
             if self.args.mode == 'run':
-                print(f"{progname}: running tests using {self.args.testprogram}...")
+                self.lprint(0, f"{progname}: running tests using {self.args.testprogram}...")
             if self.args.mode == 'check':
-                print(f"{progname}: checking existing output files...")
+                self.lprint(0, f"{progname}: checking existing output files...")
 
             self.reason = {}
             self.result = {}
@@ -1013,7 +1013,7 @@ Supported .test file entry types:
             for testfilename in self.args.filenames:
                 self.testcase_run(testfilename)
 
-            print("========================================")
+            self.lprint(0, "========================================")
             if self.num_fail > 0:
                 self.lprint(1, red("FAILED: ") + ' '.join(self.failed_tests))
             if self.num_error > 0:
@@ -1022,9 +1022,9 @@ Supported .test file entry types:
                 self.lprint(1, yellow("EXPECTEDFAIL: ") + ' '.join(self.expectedfail_tests))
             if self.num_skipped > 0:
                 self.lprint(1, blue("SKIPPED: ") + ' '.join(self.skipped_tests))
-            print("========================================")
-            print(f"{green('PASS:')} {self.num_pass}   {red('FAIL:')} {self.num_fail}   {red('ERROR:')} {self.num_error}   {yellow('EXPECTEDFAIL:')} {self.num_expectedfail}   {blue('SKIPPED:')} {self.num_skipped}\n")
-            print(f"Aggregate result: {red('ERROR') if self.num_error > 0 else red('FAIL') if self.num_fail > 0 else green('PASS')}\n")
+            self.lprint(0, "========================================")
+            self.lprint(0, f"{green('PASS:')} {self.num_pass}   {red('FAIL:')} {self.num_fail}   {red('ERROR:')} {self.num_error}   {yellow('EXPECTEDFAIL:')} {self.num_expectedfail}   {blue('SKIPPED:')} {self.num_skipped}\n")
+            self.lprint(0, f"Aggregate result: {red('ERROR') if self.num_error > 0 else red('FAIL') if self.num_fail > 0 else green('PASS')}\n")
 
         return 0 if (self.num_fail == 0 and self.num_error == 0) else 2
 
