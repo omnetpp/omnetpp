@@ -86,6 +86,8 @@ void LogBuffer::addInitialize(cComponent *component, const char *banner)
 {
     Entry *entry = new Entry(Entry::Kind::COMPONENT_INIT_STAGE, 0, simTime(), component, banner);
     entries.push_back(entry);
+    discardEventsIfLimitExceeded();
+
     Q_EMIT logEntryAdded();
 }
 
@@ -212,8 +214,9 @@ void LogBuffer::setMaxNumEntries(int limit)
 
 void LogBuffer::discardEventsIfLimitExceeded()
 {
-    // discard first entry
+    // a limit of 0 means no limit
     while (maxNumEntries > 0 && entries.size() > maxNumEntries) {
+        // discard first entry
         auto discardedEntry = entries.front();
         entries.pop_front();
         entriesDiscarded++;
