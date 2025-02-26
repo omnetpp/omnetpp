@@ -189,6 +189,9 @@ double DisplayUpdateController::getAnimationHoldEndTime() const
 
 void DisplayUpdateController::setRunMode(RunMode value)
 {
+    if (runMode == value)
+        return;
+
     auto oldMode = runMode;
     runMode = value;
     currentProfile = &runProfile;
