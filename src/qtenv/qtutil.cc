@@ -607,23 +607,21 @@ const std::string& stripFormatting(const std::string& input, std::string& buffer
     if (strchr(input.c_str(), '\x1b') == nullptr)
         return input;
 
-    buffer.clear();
-    if (buffer.capacity() < input.length())
-        buffer.reserve(input.length());
-
+    buffer.resize(input.length());
+    char *op = buffer.data();
     const char *p = input.c_str();
     while (*p) {
         if (*p == '\x1b' && *(p+1) == '[') {
             p += 2;
-            while (*p && !isalpha(*p))  // skip until "m"
+            while (*p && *p != 'm')  // skip until "m"
                 p++;
             if (*p)
                 p++; // skip past 'm'
         }
-        else {
-            buffer += *p++;
-        }
+        else
+            *op++ = *p++;
     }
+    buffer.resize(op - buffer.data());
     return buffer;
 }
 
