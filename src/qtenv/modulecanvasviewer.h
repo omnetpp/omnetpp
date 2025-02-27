@@ -45,6 +45,10 @@ struct FigureRenderingHints;
 class CanvasRenderer;
 class ZoomLabel;
 
+/**
+ * Viewer for displaying network modules and their connections in a canvas.
+ * Supports zooming, panning, selection, and various visualization options.
+ */
 class QTENV_API ModuleCanvasViewer : public QGraphicsView
 {
     Q_OBJECT
@@ -115,8 +119,9 @@ private:
     void renderToPaintDevice(QPaintDevice& paintDevice, const QRectF& sceneRect, const QRectF& pageRect);
 
     // similar logic as in getObjectsAt()
-    QString gatherTooltips(const QPoint& pos, int threshold = 4);
-    QString gatherTooltips(const QRect& rect);
+    QString tooltipAt(const QPoint& pos, int threshold = 4);
+    QString tooltipAt(const QRect& rect);
+    QStringList gatherTooltips(const QList<QGraphicsItem*>& items, bool singleObjectTooltip);
 
 protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;

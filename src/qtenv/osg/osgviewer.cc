@@ -395,7 +395,7 @@ bool OsgViewer::event(QEvent *event)
 
         if (comp)
             QToolTip::showText(helpEvent->globalPos(),
-                               makeObjectTooltip(comp),
+                               makeObjectTooltip(comp, true),
                                this, rect);
         else
             QToolTip::hideText();

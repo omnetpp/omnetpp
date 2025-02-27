@@ -108,7 +108,7 @@ const QString &getObjectShortTypeName(cObject *object); // uses the current sett
 const QString &getObjectShortTypeName(cObject *object, StripNamespace stripMode);
 const char *getObjectFullTypeName(cObject *object);
 
-QTENV_API QString makeObjectTooltip(cObject *obj);
+QTENV_API QString makeObjectTooltip(cObject *obj, bool verboseTooltip);
 
 const std::string& stripFormatting(const std::string& input, std::string& buffer);
 

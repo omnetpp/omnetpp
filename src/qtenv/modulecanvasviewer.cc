@@ -141,28 +141,53 @@ void ModuleCanvasViewer::updateZoomLabelPos()
     zoomLabel->setPos(size.x() - zoomLabel->boundingRect().width() - 4, size.y() - zoomLabel->boundingRect().height() - 4);
 }
 
-QString ModuleCanvasViewer::gatherTooltips(const QPoint &pos, int threshold)
+QString ModuleCanvasViewer::tooltipAt(const QPoint &pos, int threshold)
 {
-    QString tip = gatherTooltips(QRect(pos, pos));
+    QString tooltip = tooltipAt(QRect(pos, pos));
 
-    if (tip.isEmpty())
-        tip = gatherTooltips(QRect(pos, pos).adjusted(-threshold, -threshold, threshold, threshold));
+    if (tooltip.isEmpty())
+        tooltip = tooltipAt(QRect(pos, pos).adjusted(-threshold, -threshold, threshold, threshold));
 
-    return tip;
+    return tooltip;
 }
 
-QString ModuleCanvasViewer::gatherTooltips(const QRect& rect)
+QString ModuleCanvasViewer::tooltipAt(const QRect& rect)
 {
-    auto items = scene()->items(mapToScene(rect));
-
-    QStringList tip;
-
-    // The individial items' setToolTip() method cannot be used
+    // Note: The individual items' setToolTip() method cannot be used
     // because that way they are stealing the ToolTip event,
     // and then the viewer itself doesn't have a chance to collect
     // all the relevant tooltips for every component/message/figure
     // under the cursor, and aggregate them.
     // So we have to store their tooltips as custom user data.
+
+    auto items = scene()->items(mapToScene(rect));
+    bool singleObjectTooltip = (items.size() == 1);  // initially
+
+    auto tips = gatherTooltips(items, singleObjectTooltip);
+    if (tips.empty())
+        return "";
+
+    // if we got the flag wrong, redo it with the flag flipped
+    if ((tips.size() <= 1) != singleObjectTooltip) {
+        tips = gatherTooltips(items, !singleObjectTooltip);
+    }
+
+    // multi-object tooltips should not be wrapped (they're one line per object)
+    if (tips.size() > 1 || !tips[0].contains("\n"))
+        tips[0] = "<p style='white-space:pre'>" + tips[0];
+
+    QString joined;
+    for (int i = 0; i < tips.size(); ++i) {
+        if (i > 0)
+            joined += "<br>";
+        joined += tips[i].replace("\n", "<br>");
+    }
+    return joined;
+}
+
+QStringList ModuleCanvasViewer::gatherTooltips(const QList<QGraphicsItem*>& items, bool singleObjectTooltip)
+{
+    QStringList tips;
     for (auto i : items) {
         QString itemTip = i->data(ITEMDATA_TOOLTIP).toString();
 
@@ -170,15 +195,14 @@ QString ModuleCanvasViewer::gatherTooltips(const QRect& rect)
             cObject *itemObject = i->data(ITEMDATA_COBJECT).value<cObject *>();
 
             if (itemObject && itemObject != object)
-                itemTip = makeObjectTooltip(itemObject);
+                itemTip = makeObjectTooltip(itemObject, singleObjectTooltip);
         }
 
         // skipping empties, deduplication
-        if (!itemTip.isEmpty() && !tip.contains(itemTip))
-            tip += itemTip;
+        if (!itemTip.isEmpty() && !tips.contains(itemTip))
+            tips += itemTip;
     }
-
-    return tip.join("\n");
+    return tips;
 }
 
 void ModuleCanvasViewer::setZoomLabelVisible(bool visible)
@@ -263,7 +287,7 @@ void ModuleCanvasViewer::mouseReleaseEvent(QMouseEvent *event)
 void ModuleCanvasViewer::mouseMoveEvent(QMouseEvent *event)
 {
     if (QToolTip::isVisible())
-        QToolTip::showText(event->globalPos(), gatherTooltips(event->pos()), this);
+        QToolTip::showText(event->globalPos(), tooltipAt(event->pos()), this);
 
     if (rubberBand->isVisible() && (event->modifiers() & Qt::ControlModifier))
         rubberBand->setGeometry(QRect(rubberBandStartPos, event->pos()).normalized());
@@ -312,7 +336,7 @@ bool ModuleCanvasViewer::event(QEvent *event)
 
         case QEvent::ToolTip: {
             auto helpEvent = static_cast<QHelpEvent *>(event);
-            QToolTip::showText(helpEvent->globalPos(), gatherTooltips(helpEvent->pos()), this);
+            QToolTip::showText(helpEvent->globalPos(), tooltipAt(helpEvent->pos()), this);
             break;
         }
 

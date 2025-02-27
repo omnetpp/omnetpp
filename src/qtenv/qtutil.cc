@@ -441,7 +441,7 @@ bool isAPL()
 //----------------------------------------------------------------------
 
 
-QString makeObjectTooltip(cObject *obj)
+QString makeObjectTooltip(cObject *obj, bool verboseTooltip)
 {
     // figures are handled specially
     if (auto fig = dynamic_cast<cFigure *>(obj)) {
@@ -453,11 +453,11 @@ QString makeObjectTooltip(cObject *obj)
         // If two figures are associated to each other,
         // we have to avoid the infinite recursion.
         if (assocObj && !dynamic_cast<cFigure*>(assocObj))
-            return makeObjectTooltip(assocObj);
+            return makeObjectTooltip(assocObj, verboseTooltip);
 
         // figures inherit the tooltip if they themselves don't have one
         cFigure *parent = fig->getParentFigure();
-        return parent ? makeObjectTooltip(parent) : "";
+        return parent ? makeObjectTooltip(parent, verboseTooltip) : "";
         // no other defaults for figures
     }
 
