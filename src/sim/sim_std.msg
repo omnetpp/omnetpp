@@ -324,6 +324,7 @@ class cComponentType extends cNoncopyableOwnedObject
     @overwritePreviousDefinition;
     @descriptor(readonly);
     string nedSource @getter(getNedSource) @hint("NED source of component if available");
+    string documentation @getter(getDocumentation) @hint("Documentation of component if available");
 }
 
 class cModuleType extends cComponentType

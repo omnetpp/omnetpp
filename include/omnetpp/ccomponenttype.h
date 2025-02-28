@@ -183,6 +183,11 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     virtual std::string getNedSource() const = 0;
 
     /**
+     * Returns the documentation of the component, if available.
+     */
+     virtual std::string getDocumentation() const = 0;
+
+    /**
      * Finds a component type by fully qualified NED type name.
      * Returns nullptr if not found.
      */

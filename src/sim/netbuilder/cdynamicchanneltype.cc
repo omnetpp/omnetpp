@@ -49,6 +49,11 @@ std::string cDynamicChannelType::getNedSource() const
     return getDecl()->getNedSource();
 }
 
+std::string cDynamicChannelType::getDocumentation() const
+{
+    return getDecl()->getDocumentation();
+}
+
 cChannel *cDynamicChannelType::createChannelObject()
 {
     const char *classname = getDecl()->getImplementationClassName();

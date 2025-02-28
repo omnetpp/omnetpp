@@ -72,6 +72,11 @@ class SIM_API cDynamicChannelType : public cChannelType
      * Returns the NED source code of the component.
      */
     virtual std::string getNedSource() const override;
+
+    /**
+     * Returns the documentation of the component.
+     */
+    virtual std::string getDocumentation() const override;
     //@}
 };
 

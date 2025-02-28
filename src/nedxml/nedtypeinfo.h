@@ -21,6 +21,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <optional>
 #include "common/commonutil.h"
 #include "nedelements.h"
 
@@ -71,6 +72,8 @@ class NEDXML_API NedTypeInfo
 
     // simple module/channel C++ class to instantiate
     std::string implClassName;
+    // cached return value of getDocumentation
+    mutable std::optional<std::string> documentation;
 
     // local declarations by name
     NameToElementMap localInnerTypeDecls;
@@ -149,6 +152,11 @@ class NEDXML_API NedTypeInfo
      * Returns the NED declaration.
      */
     virtual std::string getNedSource() const;
+
+    /**
+     * Returns the NED documentation.
+     */
+    virtual std::string getDocumentation() const;
 
     /**
      * Returns true if this NED type has already been resolved. See resolve().

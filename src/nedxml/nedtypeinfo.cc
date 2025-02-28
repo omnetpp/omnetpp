@@ -140,6 +140,61 @@ std::string NedTypeInfo::getNedSource() const
     return out.str();
 }
 
+std::string NedTypeInfo::getDocumentation() const
+{
+    if (documentation.has_value())
+        return documentation.value();
+
+    CommentElement *commentElement = (CommentElement *)getTree()->getFirstChildWithAttribute(NED_COMMENT, "locid", "banner");
+    const char *comment = commentElement ? commentElement->getContent() : nullptr;
+
+    std::string result;
+    if (!opp_isblank(comment)) {
+        std::vector<std::string> lines = opp_split(comment, "\n");
+
+        for (std::string& line : lines) {
+            // cut off any leading spaces or tabs, then any slashes after that
+            int i = 0;
+            while (i < line.length() && (line[i] == ' ' || line[i] == '\t'))
+                i++;
+            while (i < line.length() && line[i] == '/')
+                i++;
+            line = line.substr(i);
+        }
+
+        // drop any leading and trailing blank lines
+        while (!lines.empty() && opp_isblank(lines.back().c_str()))
+            lines.pop_back();
+        while (!lines.empty() && opp_isblank(lines.front().c_str()))
+            lines.erase(lines.begin());
+
+        // count the minimum number of leading spaces or tabs across all lines
+        int minIndent = -1;
+        for (const std::string& line : lines) {
+            // blank lines in the middle don't matter
+            if (opp_isblank(line.c_str()))
+                continue;
+            int indent = line.find_first_not_of(" \t");
+            minIndent = (minIndent == -1) ? indent : std::min(minIndent, indent);
+        }
+
+        // dedent all lines equally
+        if (minIndent > 0) {
+            for (std::string& line : lines) {
+                if (opp_isblank(line.c_str()))
+                    line = "";
+                else
+                    line = line.substr(std::min((int)line.length(), minIndent));
+            }
+        }
+
+        result = opp_join(lines, "\n");
+    }
+
+    documentation = result;
+    return result;
+}
+
 void NedTypeInfo::resolve()
 {
     if (resolved)

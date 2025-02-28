@@ -80,6 +80,11 @@ class SIM_API cDynamicModuleType : public cModuleType
     virtual std::string getNedSource() const override;
 
     /**
+     * Returns the documentation of the component.
+     */
+    virtual std::string getDocumentation() const override;
+
+    /**
      * Returns true if the module type was declared with the "network" keyword.
      */
     virtual bool isNetwork() const override;

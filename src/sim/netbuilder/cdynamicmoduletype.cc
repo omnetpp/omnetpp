@@ -49,6 +49,11 @@ std::string cDynamicModuleType::getNedSource() const
     return getDecl()->getNedSource();
 }
 
+std::string cDynamicModuleType::getDocumentation() const
+{
+    return getDecl()->getDocumentation();
+}
+
 bool cDynamicModuleType::isNetwork() const
 {
     return getDecl()->isNetwork();
