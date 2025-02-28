@@ -660,7 +660,7 @@ static const char *strcasestr(const char *haystack, const char *needle)
     }
     for (; *haystack; ++haystack) {
         if (toupper(*haystack) == toupper(*needle)) {
-            const char* h, *n;
+            const char *h, *n;
             for (h = haystack, n = needle; *h && *n; ++h, ++n) {
                 if (toupper(*h) != toupper(*n)) {
                     break;

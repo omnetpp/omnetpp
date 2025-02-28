@@ -63,8 +63,8 @@ public:
     std::vector<std::string> getAllTagsAsVector();
     std::string getEnabledTags();
     std::string getExceptTags();
-    void setEnabledTags(const char* tags);
-    void setExceptTags(const char* tags);
+    void setEnabledTags(const char *tags);
+    void setExceptTags(const char *tags);
 };
 
 }  // namespace qtenv
