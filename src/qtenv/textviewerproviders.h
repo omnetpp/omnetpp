@@ -189,6 +189,28 @@ public:
     static SimTime getReferenceTime() { return referenceTime; }
 };
 
+// A lazily expanding cache for the text of content lines in ModuleOutputContentProvider.
+// Encapsulates a circular buffer to allow efficiently discarding lines from the front.
+class LineCache {
+private:
+    // expanded on-demand, only by put, not by find
+    circular_buffer<const char *> cachedLines;
+
+public:
+    LineCache(): cachedLines(1024) { }
+    ~LineCache() { clear(); }
+
+    // Deletes all contents.
+    void clear();
+    // Drops the first `numLines` lines from the cache.
+    // `numLines` is allowed to be >= than the number of lines in the cache.
+    void drop(int numLines);
+    // Puts a line into the cache at the given index.
+    void put(int index, const std::string& line);
+    // Returns the line at the given index, or nullptr if it is not in the cache.
+    const char *const find(int index) const;
+};
+
 /**
  * The main content provider for LogInspector that displays either textual log,
  * or the sent messages, which are relevant for a given component.
@@ -247,7 +269,7 @@ private:
     // Use adjustLineIndexForPrefaceIn() and adjustLineIndexForPrefaceOut() to correct for this!
     int lineCount = 1; // for the last empty line
     std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
-    std::unordered_map<int, std::string> lineCache;
+    LineCache lineCache;
 
 public:
     ModuleOutputContentProvider(Qtenv *qtenv, cComponent *inspectedComponent, LogInspector::Mode mode, const cMessagePrinter::Options *messagePrinterOptions);

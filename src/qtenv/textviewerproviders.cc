@@ -30,6 +30,45 @@ namespace qtenv {
 // must use the default ctor because it is static
 SimTime EventEntryMessageLinesProvider::referenceTime;
 
+void LineCache::clear()
+{
+    for (const char *line : cachedLines)
+        delete[] line;
+    cachedLines.clear();
+}
+
+void LineCache::drop(int numLines)
+{
+    for (int i = 0; i < std::min(cachedLines.size(), numLines); i++)
+        delete[] cachedLines[i];
+    if (numLines >= cachedLines.size())
+        cachedLines.clear();
+    else
+        cachedLines.pop_front(numLines);
+}
+
+void LineCache::put(int index, const std::string& line)
+{
+    if (index <(int)cachedLines.size()) {
+        ASSERT(cachedLines[index] == nullptr);
+    }
+    else {
+        int oldSize = cachedLines.size();
+        cachedLines.resize(index + 1);
+        for (int i = oldSize; i < index; i++)
+            cachedLines[i] = nullptr;
+    }
+    const char *newLine = new char[line.size() + 1];
+    strcpy(const_cast<char *>(newLine), line.c_str());
+    cachedLines[index] = newLine;
+}
+
+const char *const LineCache::find(int index) const
+{
+    if (index >= (int)cachedLines.size())
+        return nullptr;
+    return cachedLines[index];
+}
 
 QStringList ModuleOutputContentProvider::gatherEnabledColumnNames()
 {
@@ -138,15 +177,16 @@ std::string ModuleOutputContentProvider::getLineText(int lineIndex)
     if (lineIndex == lineCount-1)  // empty last line
         return "";
 
-    auto it = lineCache.find(lineIndex);
-    if (it != lineCache.end())
-        return it->second;
+    auto found = lineCache.find(lineIndex);
+    if (found)
+        return found;
 
     int entryIndex = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
 
     auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
-    return lineCache[lineIndex] = lineText;
+    lineCache.put(lineIndex, lineText);
+    return lineText;
 }
 
 bool ModuleOutputContentProvider::showHeaders()
