@@ -75,6 +75,9 @@ TextViewerWidget::TextViewerWidget(QWidget *parent)
     // so the first single clicks behave normally
     timeSinceLastDoubleClick.invalidate();
 
+    status = new QLabel();
+    status->setContentsMargins(horizontalMargin, horizontalMargin, horizontalMargin, horizontalMargin);
+
     setFont(getMonospaceFont());
 
     headerModel = new QStandardItemModel(this);
@@ -96,13 +99,15 @@ TextViewerWidget::TextViewerWidget(QWidget *parent)
      *                      stretch          contentsMargin
      *                0        1       2    /              \
      *            +--------+-------+-------+
-     * optional 0 | headerview (colspan 3) |       ver
+     * optional 0 | headerview (colspan 3) |
+     *            +--------+-------+-------+
+     * optional 1 | statustext (colspan 3) |       ver
      *            +--------+-------+-------+       tic
-     *          1 | empty row, for spacing |       al
+     *          2 | empty row, for spacing |       al
      *            +--------+-------+-------+       scr
-     *  stretch 2 |spacing |toolbar|spacing|       oll
+     *  stretch 3 |spacing |toolbar|spacing|       oll
      *            +--------+-------+-------+       bar
-     *          3 | empty row, for spacing |
+     *          4 | empty row, for spacing |
      *            +--------+-------+-------+
      *                                      \
      *               horizontal scrollbar    contentsMargin
@@ -122,21 +127,23 @@ TextViewerWidget::TextViewerWidget(QWidget *parent)
      */
 
     layout->addWidget(header, 0, 0, 1, 3);
+    layout->addWidget(status, 1, 0, 1, 3);
 
-    layout->setRowStretch(0, 0); // the header is here
-    layout->setRowStretch(1, 0); // the spacing is fixed size
-    layout->setRowStretch(2, 1); // the toolbar lives here
-    layout->setRowStretch(3, 0); // the spacing is fixed size
+    layout->setRowStretch(0, 0); // the header view is here
+    layout->setRowStretch(1, 0); // the status label is here
+    layout->setRowStretch(2, 0); // the spacing is fixed size
+    layout->setRowStretch(3, 1); // the toolbar lives here
+    layout->setRowStretch(4, 0); // the spacing is fixed size
 
-    layout->setRowMinimumHeight(1, toolbarSpacing); // spacing above the toolbar (and below the header)
-    layout->setRowMinimumHeight(3, toolbarSpacing); // spacing below the toolbar
+    layout->setRowMinimumHeight(2, toolbarSpacing); // spacing above the toolbar (and below the header)
+    layout->setRowMinimumHeight(4, toolbarSpacing); // spacing below the toolbar
 
     layout->setColumnStretch(0, 0); // the spacing is fixed size
     layout->setColumnStretch(1, 1); // the toolbar lives here
     layout->setColumnStretch(2, 0); // the spacing is fixed size
 
     layout->setColumnMinimumWidth(0, toolbarSpacing); // spacing left of the toolbar
-    layout->setColumnMinimumWidth(2, toolbarSpacing); // spacing right of the toolbar
+    layout->setColumnMinimumWidth(3, toolbarSpacing); // spacing right of the toolbar
 
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -188,7 +195,7 @@ void TextViewerWidget::setToolBar(QToolBar *toolBar)
 {
     this->toolBar = toolBar;
     if (toolBar) {
-        static_cast<QGridLayout*>(layout())->addWidget(toolBar, 2, 1, Qt::Alignment(Qt::AlignRight | Qt::AlignTop));
+        static_cast<QGridLayout*>(layout())->addWidget(toolBar, 3, 1, Qt::Alignment(Qt::AlignRight | Qt::AlignTop));
         toolBar->setAutoFillBackground(false);
     }
 }
@@ -484,24 +491,27 @@ void TextViewerWidget::setContentProvider(TextViewerContentProvider *newContent)
     if (content) {
         connect(content, SIGNAL(textChanged()), this, SLOT(onContentChanged()));
         connect(content, SIGNAL(linesDiscarded(int)), this, SLOT(onLinesDiscarded(int)));
+        connect(content, SIGNAL(statusTextChanged()), this, SLOT(onStatusTextChanged()));
     }
 
     headerModel->clear();
     auto headers = content->getHeaders();
     headerModel->setHorizontalHeaderLabels(headers);
 
+    int statusHeight = status->isVisible() ? status->height() : 0;
+
     if (content->showHeaders()) {
         header->show();
         // no other way of setting a fixed height worked correctly for me
         header->setFixedHeight(header->sizeHint().height());
-        setViewportMargins(0, header->height(), 0, 0);
+        setViewportMargins(0, statusHeight + header->height(), 0, 0);
         for (int i = 0; i < headers.size(); ++i) {
             header->setSectionHidden(i, false);
         }
     }
     else {
         header->hide();
-        setViewportMargins(0, 0, 0, 0);
+        setViewportMargins(0, statusHeight, 0, 0);
         for (int i = 0; i < headers.size(); ++i) {
             // needed to make all of them 0 width (except the last one, which will stretch)
             header->setSectionHidden(i, true);
@@ -869,7 +879,7 @@ void TextViewerWidget::paintEvent(QPaintEvent *event)
     painter.setBackground(backgroundColor);
     painter.setBrush(foregroundColor);
 
-    QRect r = contentsRect();
+    QRect r = contentsRect(); // TODO: should this be `viewport()->rect();` instead?
     painter.fillRect(r, backgroundColor);
 
     painter.setFont(font);
@@ -1462,6 +1472,21 @@ void TextViewerWidget::handleContentChange()
 {
     ASSERT2(content->getLineCount() > 0, "content must be at least one line");
 
+    { // update status label // TODO separate flag for whether this changed or not?
+        std::string statusText = content->getStatusText();
+        if (!statusText.empty()) {
+            status->setVisible(true);
+            status->setText(QString::fromStdString(statusText));
+        }
+        else
+            status->setVisible(false);
+
+        int statusHeight = status->isVisible() ? status->height() : 0;
+        int headerHeight = header->isVisible() ? header->height() : 0;
+
+        setViewportMargins(0, statusHeight + headerHeight, 0, 0);
+    }
+
     // adjust caret and selection line index
     int oldCaretLineIndex = caretLineIndex;
     caretLineIndex = clip(0, content->getLineCount()-1, caretLineIndex);
@@ -1593,6 +1618,11 @@ void TextViewerWidget::onLinesDiscarded(int numLinesDiscarded)
         selectionAnchorColumn = 0;
     }
 
+    contentChangedFlag = true;
+}
+
+void TextViewerWidget::onStatusTextChanged()
+{
     contentChangedFlag = true;
 }
 

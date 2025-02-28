@@ -63,6 +63,9 @@ public:
     virtual bool showHeaders() = 0;
     virtual QStringList getHeaders() = 0;
 
+    // empty means no status text
+    virtual std::string getStatusText() = 0;
+
     // Only used in messages mode, in which
     // it returns a valid cMessage*, it is
     // a void* here only for the sake of genericity.
@@ -86,6 +89,7 @@ Q_SIGNALS:
     // so the content will not "slide up underneath them"
     // when lines are disappearing from the top.
     void linesDiscarded(int numDiscardedLines);
+    void statusTextChanged(); // TODO - maybe newStatusText as a parameter?
 };
 
 
@@ -252,18 +256,14 @@ public:
  *
  * The output text looks like this:
  *
- *  [<preface line>]                   <- optional, based on `LogBuffer::getNumEntriesDiscarded()`
  *  <lines for LogBuffer entries>*     <- 0 or more
  *     - Lines for each entry provided by an AbstractEventEntryLinesProvider, a separate
  *       implementation for each mode (LOG, MESSAGES), 0 or more for each.
  *  <empty last line>                  <- mandatory
  *
- * Depending on whether there's a preface present or not, there may or may not
- * be an offset of 1 between the line indices of the provided text, and the
- * lines gathered from the LogBuffer entries. Pay attention to this!
- * This preface line shows a message about the number of discarded entries.
  * The last empty line ensures that the content is never empty.
- * See also: isPrefacePresent(), adjustLineIndexForPrefaceIn(), and adjustLineIndexForPrefaceOut()
+ * The status text contains a message about the number of discarded entries
+ * and whether module filtering is active.
  */
 class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     Q_OBJECT
@@ -300,8 +300,6 @@ private:
 
     QStringList gatherEnabledColumnNames();
 
-    // Cached data - NOTE that NONE of these include the line index offset caused by the preface, if present!
-    // Use adjustLineIndexForPrefaceIn() and adjustLineIndexForPrefaceOut() to correct for this!
     int lineCount = 1; // for the last empty line
     EntryIndex entryIndex;
     LineCache lineCache;
@@ -319,6 +317,7 @@ public:
 
     void refresh();
 
+    std::string getStatusText() override;
     int getLineCount() override;
     std::string getLineText(int lineIndex) override;
     bool showHeaders() override;
@@ -345,12 +344,7 @@ public:
     int getLineForBookmark(const Bookmark& bookmark);
 
 protected:
-    // NOTE: The lineIndex parameter here should be corrected for the preface offset!
     int getIndexOfEntryAt(int lineIndex);
-
-    bool isPrefacePresent() const { return logBuffer->getNumEntriesDiscarded() > 0; }
-    int adjustLineIndexForPrefaceIn(int lineIndex) const { return isPrefacePresent() ? lineIndex - 1 : lineIndex; }
-    int adjustLineIndexForPrefaceOut(int lineIndex) const { return isPrefacePresent() ? lineIndex + 1 : lineIndex; }
 
     void invalidateIndex();
     bool isIndexValid();

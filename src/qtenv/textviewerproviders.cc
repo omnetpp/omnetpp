@@ -198,6 +198,7 @@ void ModuleOutputContentProvider::setExcludedModuleIds(std::set<int> excludedMod
         this->excludedModuleIds = excludedModuleIds;
         invalidateIndex();
         Q_EMIT textChanged();
+        Q_EMIT statusTextChanged();
     }
 }
 
@@ -219,26 +220,31 @@ bool ModuleOutputContentProvider::isIndexValid()
     return lineCount > 0 && !entryIndex.empty();
 }
 
+std::string ModuleOutputContentProvider::getStatusText()
+{
+    int numDiscarded = logBuffer->getNumEntriesDiscarded();
+    std::string status;
+
+    if (!excludedModuleIds.empty())
+        status += "Filtering by modules active. ";
+
+    if (numDiscarded > 0)
+        status += std::string("Truncated due to history limit. ");
+
+    return status;
+}
+
 int ModuleOutputContentProvider::getLineCount()
 {
     if (!isIndexValid())
         rebuildIndex();
-    return adjustLineIndexForPrefaceOut(lineCount);
+    return lineCount;
 }
 
 std::string ModuleOutputContentProvider::getLineText(int lineIndex)
 {
     if (!isIndexValid())
         rebuildIndex();
-
-    // see also: isPrefacePresent(), adjustLineIndexForPrefaceIn(), and adjustLineIndexForPrefaceOut()
-    int numDiscarded = logBuffer->getNumEntriesDiscarded();
-    if (numDiscarded > 0) {
-        if (lineIndex == 0)
-            return std::string(SGR(FG_RED) "[Partial history, ") + std::to_string(numDiscarded)
-                + std::string(" earlier entries already discarded]" SGR(RESET));
-        --lineIndex;
-    }
 
     Q_ASSERT(lineIndex >= 0 && lineIndex < lineCount);
     if (lineIndex == lineCount-1)  // empty last line
@@ -284,7 +290,6 @@ QStringList ModuleOutputContentProvider::getHeaders()
 
 void *ModuleOutputContentProvider::getUserData(int lineIndex)
 {
-    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
     if (lineIndex < 0)
         return nullptr;
 
@@ -302,7 +307,6 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
 
 eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
 {
-    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
     if (lineIndex < 0)
         return -1;
 
@@ -320,12 +324,11 @@ int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
         rebuildIndex();
     if (entryIdx < 0 || entryIdx >= (int)entryIndex.size())
         return -1;
-    return adjustLineIndexForPrefaceOut(entryIndex.get(entryIdx));
+    return entryIndex.get(entryIdx);
 }
 
 simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
 {
-    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
     if (lineIndex < 0)
         return -1;
 
@@ -343,7 +346,7 @@ int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
         rebuildIndex();
     if (entryIdx < 0 || entryIdx >= (int)entryIndex.size())
         return -1;
-    return adjustLineIndexForPrefaceOut(entryIndex.get(entryIdx));
+    return entryIndex.get(entryIdx);
 }
 
 using Bookmark = ModuleOutputContentProvider::Bookmark;
@@ -366,8 +369,6 @@ void ModuleOutputContentProvider::bookmarkLine(int lineIndex)
 
 Bookmark ModuleOutputContentProvider::createBookmarkForLine(int lineIndex)
 {
-    int origLineIndex = lineIndex;
-    lineIndex = adjustLineIndexForPrefaceIn(lineIndex);
     if (lineIndex < 0)
         return Bookmark();
 
@@ -377,10 +378,8 @@ Bookmark ModuleOutputContentProvider::createBookmarkForLine(int lineIndex)
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
 
     eventnumber_t eventNumber = eventEntry->eventNumber;
-    // This is adjusted for the preface, so we would need to adjust it back to
-    // subtract from lineIndex, instead, we just use the original lineIndex.
     int eventStartLine = getLineAtEvent(eventNumber);
-    int textLine = linesProvider->textLineToBufferIndex(eventEntry, origLineIndex - eventStartLine);
+    int textLine = linesProvider->textLineToBufferIndex(eventEntry, lineIndex - eventStartLine);
 
     return { eventNumber, mode, textLine };
 }

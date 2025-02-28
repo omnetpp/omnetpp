@@ -18,6 +18,7 @@
 #define __OMNETPP_QTENV_TEXTVIEWERWIDGET_H
 
 #include <QtWidgets/QAbstractScrollArea>
+#include <QtWidgets/QLabel>
 #include <QtCore/QElapsedTimer>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHeaderView>
@@ -70,11 +71,12 @@ protected:
         SCROLL_RIGHT
     };
 
-    // these 4 are all owned
+    // these 5 are all owned
     TextViewerContentProvider *content = nullptr;
     QToolBar *toolBar;
     QStandardItemModel *headerModel;
     QHeaderView *header;
+    QLabel *status;
 
     QFont font;
     QColor backgroundColor;
@@ -187,6 +189,7 @@ public Q_SLOTS:
     // performance reasons, see handleContentChange().
     void onContentChanged();
     void onLinesDiscarded(int numLinesDiscarded);
+    void onStatusTextChanged();
 
     void scrolledHorizontally(int value);
     void scrolledVertically(int value);
