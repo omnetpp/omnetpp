@@ -58,7 +58,7 @@ public:
      *  content.
      * @return the line text without delimiters
      */
-    virtual std::string getLineText(int lineIndex) = 0;
+    virtual const char *getLineText(int lineIndex) = 0;
 
     virtual bool showHeaders() = 0;
     virtual QStringList getHeaders() = 0;
@@ -141,7 +141,7 @@ public:
     bool showHeaders() override { return sourceModel->showHeaders(); }
     QStringList getHeaders() override { return sourceModel->getHeaders(); }
     std::string getStatusText() override;
-    std::string getLineText(int lineIndex) override;
+    const char *getLineText(int lineIndex) override;
 
     virtual void *getUserData(int lineIndex) override;
     virtual eventnumber_t getEventNumberAtLine(int lineIndex) override;
@@ -170,7 +170,7 @@ public:
     StringTextViewerContentProvider(std::string text);
 
     int getLineCount() override;
-    std::string getLineText(int lineIndex) override;
+    const char *getLineText(int lineIndex) override;
     bool showHeaders() override;
     QStringList getHeaders() override;
 };
@@ -380,7 +380,7 @@ public:
 
     std::string getStatusText() override;
     int getLineCount() override;
-    std::string getLineText(int lineIndex) override;
+    const char *getLineText(int lineIndex) override;
     bool showHeaders() override;
     QStringList getHeaders() override;
     void *getUserData(int lineIndex) override;

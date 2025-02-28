@@ -213,7 +213,7 @@ Pos TextViewerWidget::getCaretPosition()
 {
     if (contentChangedFlag)
         handleContentChange();
-    int clippedCaretColumn = clip(0, content->getLineText(caretLineIndex).length(), caretColumn);
+    int clippedCaretColumn = clip(0, strlen(content->getLineText(caretLineIndex)), caretColumn);
     return Pos(caretLineIndex, clippedCaretColumn);
 }
 
@@ -232,7 +232,7 @@ Pos TextViewerWidget::getSelectionAnchor()
 {
     if (contentChangedFlag)
         handleContentChange();
-    int clippedSelectionAnchorColumn = clip(0, content->getLineText(selectionAnchorLineIndex).length(), selectionAnchorColumn);
+    int clippedSelectionAnchorColumn = clip(0, strlen(content->getLineText(selectionAnchorLineIndex)), selectionAnchorColumn);
     return Pos(selectionAnchorLineIndex, clippedSelectionAnchorColumn);
 }
 
@@ -269,7 +269,7 @@ void TextViewerWidget::find(const std::string& text, SearchFlags flags)
     int lineNumberIncrement = (backwards ? -1 : 1);
 
     int offset = backwards ? getSelectionEnd().column : getSelectionStart().column;
-    offset = mapColumnToFormatted(content->getLineText(line).c_str(), offset);
+    offset = mapColumnToFormatted(content->getLineText(line), offset);
     offset = backwards ? offset - 1 : offset + 1;
 
 
@@ -355,8 +355,8 @@ int TextViewerWidget::getLineColumnOffset(const QFontMetrics& metrics, int lineI
 {
     auto line = content->getLineText(lineIndex);
 
-    const char *const textStart = line.c_str();
-    const char *textPointer = line.c_str();
+    const char *const textStart = line;
+    const char *textPointer = line;
 
     int inTableColumn = 0;
     int x = horizontalMargin;
@@ -424,8 +424,8 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
     auto line = content->getLineText(lineIndex);
     auto metrics = QFontMetrics(font, viewport());
 
-    const char *const textStart = line.c_str();
-    const char *textPointer = line.c_str();
+    const char *const textStart = line;
+    const char *textPointer = line;
     int curX = horizontalMargin - horizontalScrollOffset + metrics.averageCharWidth()/2;
 
     int inColumn = 0;
@@ -478,7 +478,7 @@ Pos TextViewerWidget::getColumnInLineAt(int x, int lineIndex)
     }
 
     if (result == Pos(-1, -1))
-        result = Pos(lineIndex, line.length());
+        result = Pos(lineIndex, strlen(line));
     return result;
 }
 
@@ -582,12 +582,12 @@ void TextViewerWidget::doCursorPrevious(bool select)
 {
     auto text = content->getLineText(caretLineIndex);
 
-    caretColumn = std::min(caretColumn, (int)text.length());
+    caretColumn = std::min(caretColumn, (int)strlen(text));
     if (caretColumn > 0)
-         caretColumn = mapColumnToUnformatted(text.c_str(), mapColumnToFormatted(text.c_str(), caretColumn)-1);
+         caretColumn = mapColumnToUnformatted(text, mapColumnToFormatted(text, caretColumn)-1);
     else if (caretLineIndex > 0) {
         caretLineIndex--;
-        caretColumn = text.length();
+        caretColumn = strlen(text);
     }
     if (!select)
         clearSelection();
@@ -598,8 +598,8 @@ void TextViewerWidget::doCursorNext(bool select)
 {
     auto text = content->getLineText(caretLineIndex);
 
-    if (caretColumn < text.length())
-         caretColumn = mapColumnToUnformatted(text.c_str(), mapColumnToFormatted(text.c_str(), caretColumn)+1);
+    if (caretColumn < strlen(text))
+         caretColumn = mapColumnToUnformatted(text, mapColumnToFormatted(text, caretColumn)+1);
     else if (caretLineIndex < content->getLineCount()-1) {
         caretLineIndex++;
         caretColumn = 0;
@@ -645,7 +645,7 @@ void TextViewerWidget::doLineStart(bool select)
 
 void TextViewerWidget::doLineEnd(bool select)
 {
-    caretColumn = content->getLineText(caretLineIndex).length();
+    caretColumn = strlen(content->getLineText(caretLineIndex));
     if (!select)
         clearSelection();
     Q_EMIT caretMoved(caretLineIndex, caretColumn);
@@ -653,13 +653,13 @@ void TextViewerWidget::doLineEnd(bool select)
 
 void TextViewerWidget::doWordPrevious(bool select)
 {
-    std::string line = content->getLineText(caretLineIndex);
-    int pos = mapColumnToFormatted(line.c_str(), caretColumn);
+    const char *line = content->getLineText(caretLineIndex);
+    int pos = mapColumnToFormatted(line, caretColumn);
     if (pos == 0) {
         // go to end of previous line
         if (caretLineIndex > 0) {
             caretLineIndex--;
-            caretColumn = content->getLineText(caretLineIndex).length();
+            caretColumn = strlen(content->getLineText(caretLineIndex));
         }
     }
     else {
@@ -670,7 +670,7 @@ void TextViewerWidget::doWordPrevious(bool select)
             pos--;
         while (pos > 0 && isWordChar(unformattedLine.at(pos-1)))
             pos--;
-        caretColumn = mapColumnToUnformatted(line.c_str(), pos);
+        caretColumn = mapColumnToUnformatted(line, pos);
     }
     if (!select)
         clearSelection();
@@ -712,7 +712,7 @@ void TextViewerWidget::doPageStart(bool select)
 void TextViewerWidget::doPageEnd(bool select)
 {
     caretLineIndex = std::min(content->getLineCount()-1, getTopLineIndex() + getNumVisibleLines());
-    caretColumn = content->getLineText(caretLineIndex).length();
+    caretColumn = strlen(content->getLineText(caretLineIndex));
     if (!select)
         clearSelection();
     Q_EMIT caretMoved(caretLineIndex, caretColumn);
@@ -731,7 +731,7 @@ void TextViewerWidget::doContentStart(bool select)
 void TextViewerWidget::doContentEnd(bool select)
 {
     caretLineIndex = content->getLineCount()-1;
-    caretColumn = content->getLineText(caretLineIndex).length();
+    caretColumn = strlen(content->getLineText(caretLineIndex));
     followContentEnd = true;
     if (!select)
         clearSelection();
@@ -743,7 +743,7 @@ void TextViewerWidget::selectAll()
     selectionAnchorLineIndex = 0;
     selectionAnchorColumn = 0;
     caretLineIndex = content->getLineCount()-1;
-    caretColumn = content->getLineText(caretLineIndex).length();
+    caretColumn = strlen(content->getLineText(caretLineIndex));
     Q_EMIT caretMoved(caretLineIndex, caretColumn);
 }
 
@@ -761,14 +761,14 @@ std::string TextViewerWidget::getSelectedText()
     if (start.line == end.line) {
         if (start.column == end.column)
             return std::string();
-        return content->getLineText(start.line).substr(start.column, end.column - start.column);
+        return std::string(content->getLineText(start.line) + start.column, end.column - start.column);
     }
     else {
         std::ostringstream ss;
-        ss << content->getLineText(start.line).substr(start.column) << "\n";
+        ss << std::string(content->getLineText(start.line) + start.column) << "\n";
         for (int l = start.line + 1; l < end.line; ++l)
             ss << content->getLineText(l) << "\n";
-        ss << content->getLineText(end.line).substr(0, end.column);
+        ss << std::string(content->getLineText(end.line), end.column);
         return ss.str();
     }
 }
@@ -781,14 +781,14 @@ std::string TextViewerWidget::getSelectedTextUnformatted()
     if (start.line == end.line) {
         if (start.column == end.column)
             return std::string();
-        return stripFormattingAndRemoveTrailingNewLine(content->getLineText(start.line).substr(start.column, end.column - start.column));
+        return stripFormattingAndRemoveTrailingNewLine(std::string(content->getLineText(start.line) + start.column, end.column - start.column));
     }
     else {
         std::ostringstream ss;
-        ss << stripFormattingAndRemoveTrailingNewLine(content->getLineText(start.line).substr(start.column)) << "\n";
+        ss << stripFormattingAndRemoveTrailingNewLine(content->getLineText(start.line) + start.column) << "\n";
         for (int l = start.line + 1; l < end.line; ++l)
             ss << stripFormattingAndRemoveTrailingNewLine(content->getLineText(l)) << "\n";
-        ss << stripFormattingAndRemoveTrailingNewLine(content->getLineText(end.line).substr(0, end.column));
+        ss << stripFormattingAndRemoveTrailingNewLine(std::string(content->getLineText(end.line), end.column));
         return ss.str();
     }
 }
@@ -1267,7 +1267,7 @@ void TextViewerWidget::mouseMoveEvent(QMouseEvent *event)
     if (clickCount > 0) {
         Pos lineColumn = getLineColumnAt(event->x(), event->y());
         caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
-        caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
+        caretColumn = clip(0, strlen(content->getLineText(caretLineIndex)), lineColumn.column);
         viewport()->update();
         doAutoScroll(event);  // start/stop autoscrolling as needed
         Q_EMIT caretMoved(caretLineIndex, caretColumn);
@@ -1303,7 +1303,7 @@ void TextViewerWidget::mousePressEvent(QMouseEvent *event)
     }
 
     caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
-    caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
+    caretColumn = clip(0, strlen(content->getLineText(caretLineIndex)), lineColumn.column);
     clickCount = 1;
 
     bool select = event->modifiers() & Qt::ShiftModifier;
@@ -1323,7 +1323,7 @@ void TextViewerWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Pos lineColumn = getLineColumnAt(event->x(), event->y());
     caretLineIndex = clip(0, content->getLineCount()-1, lineColumn.line);
-    caretColumn = clip(0, content->getLineText(caretLineIndex).length(), lineColumn.column);
+    caretColumn = clip(0, strlen(content->getLineText(caretLineIndex)), lineColumn.column);
 
     // double click - select word
     doWordPrevious(false);

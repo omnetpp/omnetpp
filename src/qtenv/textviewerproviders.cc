@@ -241,7 +241,7 @@ int ModuleOutputContentProvider::getLineCount()
     return lineCount;
 }
 
-std::string ModuleOutputContentProvider::getLineText(int lineIndex)
+const char *ModuleOutputContentProvider::getLineText(int lineIndex)
 {
     if (!isIndexValid())
         rebuildIndex();
@@ -256,9 +256,9 @@ std::string ModuleOutputContentProvider::getLineText(int lineIndex)
 
     int entryIdx = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIdx];
-    auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryIndex.get(entryIdx));
+    std::string lineText = linesProvider->getLineText(eventEntry, lineIndex - entryIndex.get(entryIdx));
     lineCache.put(lineIndex, lineText);
-    return lineText;
+    return lineCache.find(lineIndex);
 }
 
 bool ModuleOutputContentProvider::showHeaders()
@@ -495,9 +495,9 @@ int StringTextViewerContentProvider::getLineCount()
     return lines.size();
 }
 
-std::string StringTextViewerContentProvider::getLineText(int lineIndex)
+const char *StringTextViewerContentProvider::getLineText(int lineIndex)
 {
-    return lines[lineIndex];
+    return lines[lineIndex].c_str();
 }
 
 bool StringTextViewerContentProvider::showHeaders()
@@ -1140,7 +1140,7 @@ std::string LineFilteringContentProvider::getStatusText()
     return status;
 }
 
-std::string LineFilteringContentProvider::getLineText(int lineIndex)
+const char *LineFilteringContentProvider::getLineText(int lineIndex)
 {
     if (lineIndex == indexMapping.size()) // the last, empty line
         return "";
@@ -1208,4 +1208,3 @@ void LineFilteringContentProvider::setFiltering(const std::string& filter, bool 
 
 }  // namespace qtenv
 }  // namespace omnetpp
-
