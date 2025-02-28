@@ -148,9 +148,9 @@ class QTENV_API LogBuffer : public QObject
     void dump() const;
 
 Q_SIGNALS:
-    void logEntryAdded();
-    void logLineAdded();
-    void messageSendAdded();
+    void logEntryAdded(LogBuffer::Entry *entry);
+    void logLineAdded(LogBuffer::Entry *entry);
+    void messageSendAdded(LogBuffer::Entry *entry);
 
     // When this signal is fired, the entry in the parameter is
     // no longer in the buffer, but is not deleted yet.

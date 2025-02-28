@@ -490,6 +490,7 @@ void TextViewerWidget::setContentProvider(TextViewerContentProvider *newContent)
 
     if (content) {
         connect(content, SIGNAL(textChanged()), this, SLOT(onContentChanged()));
+        connect(content, SIGNAL(linesAdded()), this, SLOT(onContentChanged()));
         connect(content, SIGNAL(linesDiscarded(int)), this, SLOT(onLinesDiscarded(int)));
         connect(content, SIGNAL(statusTextChanged()), this, SLOT(onStatusTextChanged()));
     }

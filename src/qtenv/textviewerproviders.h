@@ -89,6 +89,7 @@ Q_SIGNALS:
     // so the content will not "slide up underneath them"
     // when lines are disappearing from the top.
     void linesDiscarded(int numDiscardedLines);
+    void linesAdded(); // TODO - maybe numAddedLines as a parameter?
     void statusTextChanged(); // TODO - maybe newStatusText as a parameter?
 };
 
@@ -351,8 +352,10 @@ protected:
     void rebuildIndex();
 
 protected Q_SLOTS:
-    void onContentAdded();
-    void onEntryDiscarded(LogBuffer::Entry *discardedEntry);
+    void onLogEntryAdded(LogBuffer::Entry *entry);
+    void onLogLineAdded(LogBuffer::Entry *entry);
+    void onMessageSendAdded(LogBuffer::Entry *entry);
+    void onEntryDiscarded(LogBuffer::Entry *discardedEntry); // TODO (rename to onFirstEntryDiscarded to convey implicit contract about which entry it is?)
 };
 
 }  // namespace qtenv

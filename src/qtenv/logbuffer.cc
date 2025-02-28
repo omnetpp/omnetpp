@@ -77,18 +77,18 @@ void LogBuffer::addEvent(eventnumber_t e, simtime_t t, cModule *mod, const char 
 {
     Entry *entry = new Entry(Entry::Kind::PROCESSED_EVENT, e, t, mod, banner);
     entries.push_back(entry);
-    discardEventsIfLimitExceeded();
+    Q_EMIT logEntryAdded(entry);
 
-    Q_EMIT logEntryAdded();
+    discardEventsIfLimitExceeded();
 }
 
 void LogBuffer::addInitialize(cComponent *component, const char *banner)
 {
     Entry *entry = new Entry(Entry::Kind::COMPONENT_INIT_STAGE, 0, simTime(), component, banner);
     entries.push_back(entry);
-    discardEventsIfLimitExceeded();
+    Q_EMIT logEntryAdded(entry);
 
-    Q_EMIT logEntryAdded();
+    discardEventsIfLimitExceeded();
 }
 
 void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *text, int len)
@@ -102,7 +102,7 @@ void LogBuffer::addLogLine(LogLevel logLevel, const char *prefix, const char *te
     int contextComponentId = contextComponent ? contextComponent->getId() : 0;
     entry->lines.push_back(Line(contextComponentId, logLevel, opp_strdup(prefix), text, len));
 
-    Q_EMIT logLineAdded();
+    Q_EMIT logLineAdded(entry);
 }
 
 void LogBuffer::addInfo(const char *text, int len)
@@ -110,9 +110,9 @@ void LogBuffer::addInfo(const char *text, int len)
     // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry(Entry::Kind::SYSTEM_MESSAGE, 0, simTime(), nullptr, text, len);
     entries.push_back(entry);
-    discardEventsIfLimitExceeded();
+    Q_EMIT logEntryAdded(entry);
 
-    Q_EMIT logEntryAdded();
+    discardEventsIfLimitExceeded();
 }
 
 void LogBuffer::addScheduler(const char *text, int len)
@@ -120,9 +120,9 @@ void LogBuffer::addScheduler(const char *text, int len)
     // TODO ha inline info (contextmodule!=nullptr), sima logline-kent adjuk hozza!!!!
     Entry *entry = new Entry(Entry::Kind::SCHEDULER, 0, simTime(), nullptr, text, len);
     entries.push_back(entry);
-    discardEventsIfLimitExceeded();
+    Q_EMIT logEntryAdded(entry);
 
-    Q_EMIT logEntryAdded();
+    discardEventsIfLimitExceeded();
 }
 
 void LogBuffer::beginSend(cMessage *msg, const SendOptions& options)
@@ -195,7 +195,7 @@ void LogBuffer::endSend(cMessage *msg)
     // storing the copy for animation
     messageDups.insert({msg, msgsend.msg});
 
-    Q_EMIT messageSendAdded();
+    Q_EMIT messageSendAdded(entry);
 }
 
 void LogBuffer::delivery(cMessage *msg)
@@ -234,7 +234,9 @@ void LogBuffer::clear()
     messageDups.clear();
 
     // just so log lines can be put somewhere even before initialization
-    entries.push_back(new Entry(Entry::Kind::GENESIS, 0, SimTime::ZERO, nullptr, nullptr));
+    Entry *genesisEntry = new Entry(Entry::Kind::GENESIS, 0, SimTime::ZERO, nullptr, nullptr);
+    entries.push_back(genesisEntry);
+    Q_EMIT logEntryAdded(genesisEntry);
 }
 
 int LogBuffer::findEntryByEventNumber(eventnumber_t eventNumber)

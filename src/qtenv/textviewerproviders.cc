@@ -180,9 +180,9 @@ ModuleOutputContentProvider::ModuleOutputContentProvider(Qtenv *qtenv, cComponen
     else
         linesProvider = new EventEntryLinesProvider(componentId, excludedModuleIds, componentHistory);
 
-    connect(logBuffer, SIGNAL(logEntryAdded()), this, SLOT(onContentAdded()));
-    connect(logBuffer, SIGNAL(logLineAdded()), this, SLOT(onContentAdded()));
-    connect(logBuffer, SIGNAL(messageSendAdded()), this, SLOT(onContentAdded()));
+    connect(logBuffer, SIGNAL(logEntryAdded(LogBuffer::Entry *)), this, SLOT(onLogEntryAdded(LogBuffer::Entry *)));
+    connect(logBuffer, SIGNAL(logLineAdded(LogBuffer::Entry *)), this, SLOT(onLogLineAdded(LogBuffer::Entry *)));
+    connect(logBuffer, SIGNAL(messageSendAdded(LogBuffer::Entry *)), this, SLOT(onMessageSendAdded(LogBuffer::Entry *)));
     connect(logBuffer, SIGNAL(entryDiscarded(LogBuffer::Entry *)), this, SLOT(onEntryDiscarded(LogBuffer::Entry *)));
 }
 
@@ -256,7 +256,6 @@ std::string ModuleOutputContentProvider::getLineText(int lineIndex)
 
     int entryIdx = getIndexOfEntryAt(lineIndex);
     LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIdx];
-
     auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryIndex.get(entryIdx));
     lineCache.put(lineIndex, lineText);
     return lineText;
@@ -413,18 +412,71 @@ void ModuleOutputContentProvider::rebuildIndex()
     lineCount = entryIndex.rebuild(logBuffer, linesProvider) + 1;  // note: +1 is for empty last line (content cannot be zero lines!)
 }
 
-// Merged the 3 on*Added handlers into this, since they were all the same.
-void ModuleOutputContentProvider::onContentAdded()
+void ModuleOutputContentProvider::onLogEntryAdded(LogBuffer::Entry *entry)
 {
-    invalidateIndex();
-    Q_EMIT textChanged();
+    if (isIndexValid()) {
+        entryIndex.push(lineCount-1); // correction for last empty line
+        int numLines = linesProvider->getNumLines(entry);
+        if (numLines > 0) {
+            lineCount += numLines;
+            Q_EMIT linesAdded();
+        }
+    }
+}
+
+void ModuleOutputContentProvider::onLogLineAdded(LogBuffer::Entry *entry)
+{
+    if (mode == LogInspector::LOG) {
+        if (isIndexValid()) {
+            int newLineCount = entryIndex.last() + linesProvider->getNumLines(entry);
+            int properOldLineCount = lineCount - 1; // exclude the empty last line
+            ASSERT(newLineCount == properOldLineCount || newLineCount == properOldLineCount + 1);
+            if (newLineCount > properOldLineCount) {
+                lineCount = newLineCount + 1; // empty last line
+                Q_EMIT linesAdded();
+            }
+        }
+    }
+}
+
+void ModuleOutputContentProvider::onMessageSendAdded(LogBuffer::Entry *entry)
+{
+    if (mode == LogInspector::MESSAGES) {
+        if (isIndexValid()) {
+            int newLineCount = entryIndex.last() + linesProvider->getNumLines(entry);
+            int properOldLineCount = lineCount - 1; // exclude the empty last line
+            ASSERT(newLineCount == properOldLineCount || newLineCount == properOldLineCount + 1);
+            if (newLineCount > properOldLineCount) {
+                lineCount = newLineCount + 1; // empty last line
+                Q_EMIT linesAdded();
+            }
+        }
+    }
 }
 
 void ModuleOutputContentProvider::onEntryDiscarded(LogBuffer::Entry *entry)
 {
-    invalidateIndex();
-    Q_EMIT linesDiscarded(linesProvider->getNumLines(entry));
-    Q_EMIT textChanged();
+    // (implicitly known) It's always the first entry, so we can use entryStartLineNumbers[1], but sanity-check nevertheless
+    int numDiscardedLines;
+    if (isIndexValid() && entryIndex.size() > 1) {
+        numDiscardedLines = entryIndex.get(1);
+        ASSERT(numDiscardedLines == linesProvider->getNumLines(entry));
+    }
+    else
+        numDiscardedLines = linesProvider->getNumLines(entry);
+
+    if (isIndexValid()) {
+        entryIndex.discardFirst();
+        lineCount -= numDiscardedLines;
+        ASSERT(lineCount > 0); // the empty line must remain
+    }
+
+    if (numDiscardedLines > 0) {
+        lineCache.drop(numDiscardedLines);
+        Q_EMIT linesDiscarded(numDiscardedLines);
+    }
+
+    Q_EMIT statusTextChanged();
 }
 
 StringTextViewerContentProvider::StringTextViewerContentProvider(std::string text)
