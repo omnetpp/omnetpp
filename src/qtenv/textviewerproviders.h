@@ -167,7 +167,7 @@ class QTENV_API StringTextViewerContentProvider: public TextViewerContentProvide
     std::vector<std::string> lines;  // text, split to lines
 
 public:
-    StringTextViewerContentProvider(std::string text);
+    StringTextViewerContentProvider(const std::string& text);
 
     int getLineCount() override;
     const char *getLineText(int lineIndex) override;

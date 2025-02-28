@@ -479,15 +479,13 @@ void ModuleOutputContentProvider::onEntryDiscarded(LogBuffer::Entry *entry)
     Q_EMIT statusTextChanged();
 }
 
-StringTextViewerContentProvider::StringTextViewerContentProvider(std::string text)
+StringTextViewerContentProvider::StringTextViewerContentProvider(const std::string& text)
 {
     std::istringstream f(text);
     std::string temp;
     while (std::getline(f, temp))
         lines.push_back(temp);
-
-    if (lines.empty())
-        lines.push_back("");
+    lines.push_back("");
 }
 
 int StringTextViewerContentProvider::getLineCount()
