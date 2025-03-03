@@ -786,14 +786,17 @@ public class ImageFactory {
     /**
      * Clear everything from the cache of the specified {@code project} and referencing
      * projects recursively. If {@code project} is {@code null}, then it clears
-     * the global cache.
+     * the cache for all projects and the global cache as well.
      */
     private static void invalidateCache(IProject project) {
         if (project != null) {
-            if (projectFactories.remove(project) != null)
-                Debug.println("ImageFactory: invalidated image cache of "+project);;
-            for (IProject dependentProject : project.getReferencingProjects())
-                invalidateCache(dependentProject);
+            try {
+                for (IProject p : ProjectUtils.getAllReferencingProjects(project, true))
+                    if (projectFactories.remove(p) != null)
+                        Debug.println("ImageFactory: invalidated image cache of " + p);
+            } catch (CoreException e) {
+                Debug.println("ImageFactory: Exception while invalidating image cache of " + project + ": " + e.getMessage());
+            }
         }
         else {
             globalFactory.clearCache();
