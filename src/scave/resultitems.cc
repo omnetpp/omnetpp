@@ -23,7 +23,8 @@ using namespace omnetpp::common;
 namespace omnetpp {
 namespace scave {
 
-const SCAVE_API std::string NULLSTRING = "";
+// The value initialization makes it a definition, not just a declaration.
+extern const SCAVE_API std::string NULLSTRING = "";
 
 ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const std::string& name, const StringMap& attrs):
     fileRunRef(fileRun)
