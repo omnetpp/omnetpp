@@ -9,7 +9,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <eclipse-repo.url>https://download.eclipse.org/releases/2024-12</eclipse-repo.url>
       <justj-repo.url>https://download.eclipse.org/justj/jres/21/updates/release/</justj-repo.url>
-      <pydev-repo.url>http://pydev.sourceforge.net/pydev_update_site/12.2.0</pydev-repo.url>
+      <pydev-repo.url>https://github.com/fabioz/Pydev/releases/download/pydev_13_0_2/</pydev-repo.url>
    </properties>
 
    <repositories>
