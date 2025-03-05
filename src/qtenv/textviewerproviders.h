@@ -326,6 +326,7 @@ public:
  * The status text contains a message about the number of discarded entries
  * and whether module filtering is active.
  */
+// FIXME: The "last empty line must always exist" being an implicit part of the API contract sucks...
 class QTENV_API ModuleOutputContentProvider: public TextViewerContentProvider {
     Q_OBJECT
 
