@@ -70,6 +70,73 @@ const char *const LineCache::find(int index) const
     return cachedLines[index];
 }
 
+void EntryIndex::normalize()
+{
+    int numDiscardedLines = entryStartLineNumbers.front();
+    for (int i = 0; i < entryStartLineNumbers.size(); i++)
+        entryStartLineNumbers[i] -= numDiscardedLines;
+    ASSERT(entryStartLineNumbers[0] == 0);
+}
+
+int EntryIndex::rebuild(LogBuffer *logBuffer, AbstractEventEntryLinesProvider *linesProvider)
+{
+    int n = logBuffer->getNumEntries();
+    int *buf = entryStartLineNumbers.prepare_fill(n);
+
+    int currentLineNumber = 0;
+    for (int i = 0; i < n; i++) {
+        *buf++ = currentLineNumber;
+        LogBuffer::Entry *entry = logBuffer->getEntries()[i];
+        currentLineNumber += linesProvider->getNumLines(entry);
+    }
+
+    return currentLineNumber;
+}
+
+int EntryIndex::lookupLine(int lineIndex)
+{
+    // Adjust lineIndex to internal coordinates
+    lineIndex += entryStartLineNumbers.front();
+
+    // this is a proper index into the internal vector
+    int index = std::upper_bound(
+        entryStartLineNumbers.begin(),
+        entryStartLineNumbers.end(),
+        lineIndex) - entryStartLineNumbers.begin() - 1;
+
+    // Handle zero-line entries by finding the last slot with same line number
+    int baseLineNumber = entryStartLineNumbers[index];
+    while (index+1 < (int)entryStartLineNumbers.size() && entryStartLineNumbers[index+1] == baseLineNumber)
+        index++;
+
+    return index;
+}
+
+void EntryIndex::discardFirst()
+{
+    ASSERT(entryStartLineNumbers.size() > 1);
+    entryStartLineNumbers.pop_front();
+    // This looks strange, but if we just discarded the last entry
+    // (which is unlikely, but still) we can drop everything internally.
+    if (empty())
+        clear();
+    else
+        // just to avoid any numerical overflow mishaps
+        if (entryStartLineNumbers.front() > 1'000'000'000)
+            normalize();
+}
+
+void EntryIndex::push(int startLine)
+{
+    if (entryStartLineNumbers.empty())
+        ASSERT(startLine == 0);
+    else {
+        startLine += entryStartLineNumbers.front();
+        ASSERT(startLine >= entryStartLineNumbers.back());
+    }
+    entryStartLineNumbers.push_back(startLine);
+}
+
 QStringList ModuleOutputContentProvider::gatherEnabledColumnNames()
 {
     // TODO: only collect headers from message printers actually in use
@@ -144,12 +211,12 @@ void ModuleOutputContentProvider::invalidateIndex()
 {
     lineCache.clear();
     lineCount = -1;
-    entryStartLineNumbers.clear();
+    entryIndex.clear();
 }
 
 bool ModuleOutputContentProvider::isIndexValid()
 {
-    return lineCount > 0 && !entryStartLineNumbers.empty();
+    return lineCount > 0 && !entryIndex.empty();
 }
 
 int ModuleOutputContentProvider::getLineCount()
@@ -181,10 +248,10 @@ std::string ModuleOutputContentProvider::getLineText(int lineIndex)
     if (found)
         return found;
 
-    int entryIndex = getIndexOfEntryAt(lineIndex);
-    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
+    int entryIdx = getIndexOfEntryAt(lineIndex);
+    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIdx];
 
-    auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
+    auto lineText = linesProvider->getLineText(eventEntry, lineIndex - entryIndex.get(entryIdx));
     lineCache.put(lineIndex, lineText);
     return lineText;
 }
@@ -228,9 +295,9 @@ void *ModuleOutputContentProvider::getUserData(int lineIndex)
     if (lineIndex == lineCount-1)  // empty last line
         return nullptr;
 
-    int entryIndex = getIndexOfEntryAt(lineIndex);
-    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIndex];
-    return linesProvider->getMessageForLine(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
+    int entryIdx = getIndexOfEntryAt(lineIndex);
+    LogBuffer::Entry *eventEntry = logBuffer->getEntries()[entryIdx];
+    return linesProvider->getMessageForLine(eventEntry, lineIndex - entryIndex.get(entryIdx));
 }
 
 eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
@@ -248,12 +315,12 @@ eventnumber_t ModuleOutputContentProvider::getEventNumberAtLine(int lineIndex)
 
 int ModuleOutputContentProvider::getLineAtEvent(eventnumber_t eventNumber)
 {
-    int entryIndex = logBuffer->findEntryByEventNumber(eventNumber);
+    int entryIdx = logBuffer->findEntryByEventNumber(eventNumber);
     if (!isIndexValid())
         rebuildIndex();
-    if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
+    if (entryIdx < 0 || entryIdx >= (int)entryIndex.size())
         return -1;
-    return adjustLineIndexForPrefaceOut(entryStartLineNumbers[entryIndex]);
+    return adjustLineIndexForPrefaceOut(entryIndex.get(entryIdx));
 }
 
 simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
@@ -271,12 +338,12 @@ simtime_t ModuleOutputContentProvider::getSimTimeAtLine(int lineIndex)
 
 int ModuleOutputContentProvider::getLineAtSimTime(simtime_t simTime)
 {
-    int entryIndex = logBuffer->findEntryBySimTime(simTime);
+    int entryIdx = logBuffer->findEntryBySimTime(simTime);
     if (!isIndexValid())
         rebuildIndex();
-    if (entryIndex < 0 || entryIndex >= (int)entryStartLineNumbers.size())
+    if (entryIdx < 0 || entryIdx >= (int)entryIndex.size())
         return -1;
-    return adjustLineIndexForPrefaceOut(entryStartLineNumbers[entryIndex]);
+    return adjustLineIndexForPrefaceOut(entryIndex.get(entryIdx));
 }
 
 using Bookmark = ModuleOutputContentProvider::Bookmark;
@@ -339,36 +406,12 @@ int ModuleOutputContentProvider::getIndexOfEntryAt(int lineIndex)
     if (!isIndexValid())
         rebuildIndex();
 
-    int entryIndex = std::upper_bound(
-                entryStartLineNumbers.begin(),
-                entryStartLineNumbers.end(),
-                lineIndex) - entryStartLineNumbers.begin() - 1;
-
-    // entryStartLineNumber[] contains one slot for ALL event entries, even those that
-    // contribute zero lines, so we have to find the LAST slot with the same line number,
-    // and that will be the matching entry
-    int baseLineNumber = entryStartLineNumbers[entryIndex];
-    while (entryIndex+1 < (int)entryStartLineNumbers.size() && entryStartLineNumbers[entryIndex+1] == baseLineNumber)
-        entryIndex++;
-
-    return entryIndex;
+    return entryIndex.lookupLine(lineIndex);
 }
 
 void ModuleOutputContentProvider::rebuildIndex()
 {
-    // recompute line numbers. note: entryStartLineNumber[] contains one slot
-    // for ALL event entries, even those that contribute zero lines!
-    int n = logBuffer->getNumEntries();
-    entryStartLineNumbers.resize(n);
-
-    int currentLineNumber = 0;
-    for (int i = 0; i < n; i++) {
-        entryStartLineNumbers[i] = currentLineNumber;
-        LogBuffer::Entry *entry = logBuffer->getEntries()[i];
-        currentLineNumber += linesProvider->getNumLines(entry);
-    }
-
-    lineCount = currentLineNumber + 1;  // note: +1 is for empty last line (content cannot be zero lines!)
+    lineCount = entryIndex.rebuild(logBuffer, linesProvider) + 1;  // note: +1 is for empty last line (content cannot be zero lines!)
 }
 
 // Merged the 3 on*Added handlers into this, since they were all the same.

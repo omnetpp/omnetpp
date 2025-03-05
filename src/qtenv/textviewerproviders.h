@@ -212,6 +212,41 @@ public:
 };
 
 /**
+ * A data structure that efficiently maps between LogBuffer entries and their
+ * corresponding line numbers in the text display. It maintains an index of
+ * starting line numbers for each entry in the LogBuffer, calculated using
+ * an AbstractEventEntryLinesProvider to determine how many lines each entry occupies.
+ * The implementation uses a circular buffer for efficient removal of entries from
+ * the beginning without requiring a complete rebuild of the index.
+ */
+class EntryIndex {
+    // This buffer stores the starting line number for each entry in the LogBuffer.
+    // To allow efficient removal of entries from the beginning, we use a relative
+    // indexing approach: all stored values are offset by the value of the first element.
+    // When the first entry is removed, we don't need to adjust all remaining values -
+    // we just remove the first value from the buffer, and the offset is implicitly updated.
+    // This means externally, the first entry always appears to start at line 0,
+    // regardless of its actual internal value.
+    circular_buffer<int> entryStartLineNumbers;
+
+    // Adjusts all stored internal values to zero out the implicit offset.
+    // Should have no observable effect.
+    void normalize();
+
+public:
+    bool empty() { return entryStartLineNumbers.empty(); }
+    int size() { return entryStartLineNumbers.size(); }
+    int get(int i) { return entryStartLineNumbers[i] - entryStartLineNumbers.front(); }
+    int last() { return entryStartLineNumbers.back() - entryStartLineNumbers.front(); }
+    void clear() { entryStartLineNumbers.clear(); }
+    int rebuild(LogBuffer *logBuffer, AbstractEventEntryLinesProvider *linesProvider);
+    // Approximately the inverse of `get`. Returns the index of the entry that contains the given line.
+    int lookupLine(int lineIndex);
+    void discardFirst();
+    void push(int startLine);
+};
+
+/**
  * The main content provider for LogInspector that displays either textual log,
  * or the sent messages, which are relevant for a given component.
  *
@@ -268,7 +303,7 @@ private:
     // Cached data - NOTE that NONE of these include the line index offset caused by the preface, if present!
     // Use adjustLineIndexForPrefaceIn() and adjustLineIndexForPrefaceOut() to correct for this!
     int lineCount = 1; // for the last empty line
-    std::vector<int> entryStartLineNumbers; // indexed by the entry's index in logBuffer
+    EntryIndex entryIndex;
     LineCache lineCache;
 
 public:
