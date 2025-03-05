@@ -18,7 +18,6 @@
 #define __OMNETPP_QTENV_FILEEDITOR_H
 
 #include <QtWidgets/QDialog>
-#include <QtCore/QFile>
 #include "qtenvdefs.h"
 
 namespace Ui {
@@ -30,8 +29,6 @@ class QMenu;
 namespace omnetpp {
 namespace qtenv {
 
-class TextViewerWidget;
-
 class QTENV_API FileEditor : public QDialog
 {
     Q_OBJECT
@@ -42,18 +39,28 @@ private Q_SLOTS:
     void onCustomContextMenuRequested(const QPoint &pos);
     void wrapLines();
     void findNext();
+    void updateFont();
 
 public:
     explicit FileEditor(QWidget *parent = nullptr);
     ~FileEditor();
 
-    void setFile(QString fileName);
+    void setFile(const QString &fileName);
+    void setContent(const QString &content);
+    void setTitle(const QString &title) { setWindowTitle(title); }
+    void setDisplayFilename(const QString &title);
+    void setReadOnly(bool readOnly) { this->readOnly = readOnly; updateSaveActionState(); }
+
+    bool readFile();
     void show();
     void reject() override;
 
 private:
     Ui::fileEditor *ui;
-    QFile file;
+    QString fileName;  // Store file name instead of QFile
+    bool readOnly = false;  // Track read-only status
+    bool hasFile = false;   // Track if a file is associated
+
     QMenu *contextMenu = nullptr;
 
     QAction *wrapLinesAction;
@@ -66,6 +73,7 @@ private:
     int findOptions = 0;
 
     void addToolBar();
+    void updateSaveActionState();  // Helper to update Save action state
 };
 
 }  // namespace qtenv

@@ -20,6 +20,8 @@
 #include <QtWidgets/QBoxLayout>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QMenu>
+#include <QtCore/QFile>
+#include <QtCore/QTextStream>
 #include "textviewerwidget.h"
 #include "textviewerproviders.h"
 #include "logfinddialog.h"
@@ -36,6 +38,13 @@ FileEditor::FileEditor(QWidget *parent) : QDialog(parent), ui(new Ui::fileEditor
 
     ui->plainTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->plainTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+
+    // Configure the filename edit to look like a label but allow selection
+    ui->filenameEdit->setReadOnly(true);
+    ui->filenameEdit->setFrame(false);
+    ui->filenameEdit->setCursor(Qt::IBeamCursor); // Text cursor for selection
+
+    connect(getQtenv(), SIGNAL(fontChanged()), this, SLOT(updateFont()));
 
     connect(ui->plainTextEdit, SIGNAL(customContextMenuRequested(const QPoint &)),
             this, SLOT(onCustomContextMenuRequested(const QPoint &)));
@@ -65,6 +74,7 @@ FileEditor::FileEditor(QWidget *parent) : QDialog(parent), ui(new Ui::fileEditor
     addAction(saveAction);
 
     addToolBar();
+    updateSaveActionState();
 }
 
 FileEditor::~FileEditor()
@@ -104,6 +114,13 @@ void FileEditor::addToolBar()
 
     // Insert toolbar to first place in vertical layout.
     static_cast<QBoxLayout *>(this->layout())->insertWidget(0, toolbar);
+}
+
+void FileEditor::updateFont()
+{
+    QFont logFont = getQtenv()->getLogFont();
+    // ui->plainTextEdit->setFont(logFont); -- takes no effect
+    ui->plainTextEdit->document()->setDefaultFont(logFont);
 }
 
 void FileEditor::findNext()
@@ -174,37 +191,86 @@ void FileEditor::find()
 
 void FileEditor::save()
 {
-    file.resize(0);
+    if (!hasFile || readOnly)
+        return;
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QMessageBox::critical(this, "Error", "Could not save the file.", QMessageBox::Ok);
+        return;
+    }
+
     QTextStream out(&file);
     out << ui->plainTextEdit->toPlainText();
+    file.close();
 }
 
-void FileEditor::setFile(QString fileName)
+void FileEditor::setFile(const QString &fileName)
 {
+    this->fileName = fileName;
+    this->hasFile = !fileName.isEmpty();
+    ui->filenameEdit->setText(fileName);
+
+    // actual file reading deferred to show()
+
+    updateSaveActionState();
+}
+
+void FileEditor::setContent(const QString &content)
+{
+    ui->plainTextEdit->setPlainText(content);
+
+    // No file associated with this content
+    fileName = "";
+    hasFile = false;
+
+    updateSaveActionState();
+}
+
+void FileEditor::setDisplayFilename(const QString &title)
+{
+    ui->filenameEdit->setText(title);
+}
+
+void FileEditor::updateSaveActionState()
+{
+    saveAction->setEnabled(hasFile && !readOnly);
+    ui->plainTextEdit->setReadOnly(readOnly);
+}
+
+bool FileEditor::readFile()
+{
+    QFile file(fileName);
+    QIODevice::OpenMode mode = readOnly ? QIODevice::ReadOnly : QIODevice::ReadWrite;
+
+    if (!file.open(mode | QIODevice::Text)) {
+        QMessageBox::critical(this, "Error", "The file could not be opened.", QMessageBox::Ok);
+        return false;
+    }
+
+    ui->plainTextEdit->setPlainText(QString(file.readAll()));
     file.close();
-    file.setFileName(fileName);
+
+    return true;
 }
 
 void FileEditor::show()
 {
-    file.open(QIODevice::ReadWrite | QIODevice::Text);
-    if (file.error() != QFile::NoError) {
-        QMessageBox::critical(this, "Error", "The file could not be opened.", QMessageBox::Ok);
-        file.close();
-        return;
+    if (hasFile) {
+        bool success = readFile();
+        if (!success)
+            return;
     }
 
-    ui->plainTextEdit->setPlainText(QString(file.readAll()));
-    setWindowTitle(file.fileName());
     QDialog::show();
+
+    updateFont(); // apparently this only takes effect if it is issued after show()
 }
 
 void FileEditor::reject()
 {
-    file.close();
     QDialog::reject();
 }
 
 }  // namespace qtenv
 }  // namespace omnetpp
-

@@ -37,6 +37,7 @@
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cscheduler.h"
 #include "common/stringutil.h"
+#include "common/fileutil.h"
 #include "common/ver.h"
 
 #include "runselectiondialog.h"
@@ -1212,14 +1213,17 @@ void MainWindow::on_actionLoadNedFile_triggered()
 
 void MainWindow::on_actionOpenPrimaryIniFile_triggered()
 {
-    QString fileName = getQtenv()->getIniFileName();
+    QString fileName = toAbsolutePath(getQtenv()->getIniFileName()).c_str();
     if (fileName.isEmpty()) {
         QMessageBox::critical(this, "Error", "The current configuration manager doesn't use file input.",
                 QMessageBox::Ok);
         return;
     }
 
+    fileEditor->setTitle("Primary Ini File");
     fileEditor->setFile(fileName);
+    fileEditor->setDisplayFilename(fileName);
+    fileEditor->setReadOnly(false);
     fileEditor->show();
 }
 
