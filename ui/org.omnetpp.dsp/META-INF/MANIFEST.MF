@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Debugger Integration Plug-in
 Bundle-SymbolicName: org.omnetpp.dsp;singleton:=true
-Bundle-Version: 6.1.0.qualifier
+Bundle-Version: 6.2.0.qualifier
 Bundle-Activator: org.omnetpp.dsp.Activator
 Bundle-Vendor: OpenSim Ltd.
 Bundle-RequiredExecutionEnvironment: JavaSE-21
