@@ -156,6 +156,8 @@ void ConnectionItem::updateArrowItem()
     arrowItem->setEndPoints(src, dest);
     arrowItem->setSizeForPenWidth(lineWidth);
     arrowItem->setLineWidth(lineWidth);
+    arrowItem->setData(ITEMDATA_COBJECT, data(ITEMDATA_COBJECT));
+    arrowItem->setData(ITEMDATA_TOOLTIP, data(ITEMDATA_TOOLTIP));
 }
 
 ConnectionItem::ConnectionItem(QGraphicsItem *parent) :
