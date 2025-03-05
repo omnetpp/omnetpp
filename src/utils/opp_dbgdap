@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# A wrapper script to start 'lldbm-dap' from the IDE nativelibs plugin (or fall back to system lldb-dap) 
+#
+# You can directly specify the 'lldb-dap' executable to be used with the 'lldbdap' envvar, overriding the
+# version present in the IDE nativelibs folder (for development purposes). 
+
+uname=$(uname)
+_ide_root=$(cd $(dirname "$0")/../ide; pwd)
+if [ ! -d "$_ide_root" ]; then
+  echo "IDE is not available. Debugging is not supported." >&2
+  exit 1
+fi
+
+# NOTE: the () around the glob patterns below are IMPORTANT to expand them
+# so the lldbdap variable will contain the expanded filename and not the pattern itself
+if [ -z "$lldbdap" ]; then # if lldbdap is not specified in envvar then try to find it in the ide nativelibs plugin
+  if [ "$uname" = "Linux" ]; then
+    lldbdap=$(eval echo "${_ide_root}/plugins/org.omnetpp.ide.nativelibs.linux.*/lldb-dap")
+  elif [ "$uname" = "Darwin" ]; then
+    lldbdap=$(eval echo "${_ide_root}/opp_ide.app/Contents/Eclipse/plugins/org.omnetpp.ide.nativelibs.macosx_*/lldb-dap")
+  else # assuming we are on  Windows
+    lldbdap=$(eval echo "${_ide_root}/plugins/org.omnetpp.ide.nativelibs.win32.*/lldb-dap.exe")
+  fi
+fi
+
+# not found in the IDE native lib plugin so try to get it from the PATH
+if [ ! -x "$lldbdap" ]; then
+  lldbdap=$(command -v lldb-dap)
+fi
+
+# not found on PATH with the default name, try with versioned names
+# this will fail if multiple versions are installed
+if [ ! -x "$lldbdap" ]; then
+  for f in /usr/bin/lldb-dap-*; do
+    if [ -x "$f" ]; then
+      lldbdap="$f"
+      break
+    fi
+  done
+fi
+
+if [ ! -x "$lldbdap" ]; then
+  echo "'lldb-dap' or 'lldb-dap-*' was not found on the system path. Debugging is not supported." >&2
+  exit 1
+fi
+
+exec "$lldbdap" "$@"

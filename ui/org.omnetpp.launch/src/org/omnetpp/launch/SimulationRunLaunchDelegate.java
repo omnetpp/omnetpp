@@ -195,6 +195,8 @@ public class SimulationRunLaunchDelegate extends LaunchConfigurationDelegate {
 
     @Override
     protected IProject[] getProjectsForProblemSearch(ILaunchConfiguration configuration, String mode) throws CoreException {
+        if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_IGNORE_PROBLEMS_ON_LAUNCH, false))
+            return null;
         // NOTE: we need to do this twice: here and in launch() which is kind of superfluous
         //       but it is unclear whether those two incoming configurations are the same or not
         configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode, true);

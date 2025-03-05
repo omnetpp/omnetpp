@@ -7,15 +7,19 @@
 
 package org.omnetpp.launch;
 
+import java.util.List;
+
 /**
  * Constants for OMNeT++ launch configurations.
  */
 public interface IOmnetppLaunchConstants {
     public static final String SIMULATION_LAUNCH_CONFIGURATION_TYPE = "org.omnetpp.launch.simulationLaunchConfigurationType";
+    // the below IDs are copied from the CDT or LSP4E plugins
     public static final String CDT_LAUNCH_ID = "org.eclipse.cdt.launch";
     public static final String CDT_DEBUG_CORE_ID ="org.eclipse.cdt.debug.mi.core";
     public static final String CDT_DSF_GDB_ID ="org.eclipse.cdt.dsf.gdb";
     public static final String OMNETPP_LAUNCH_ID = "org.omnetpp.launch";
+	public static final String ID_DSP_DEBUG_MODEL = "org.eclipse.lsp4e.debug.model";
 
     /**
      * Launch configuration attribute key. The value is a name of a C/C++
@@ -36,6 +40,11 @@ public interface IOmnetppLaunchConstants {
      */
     public static final String ATTR_PROGRAM_ARGUMENTS = CDT_LAUNCH_ID + ".PROGRAM_ARGUMENTS";
 
+	/**
+	 * Attribute used to store the launched process' environment variables
+	 */
+	public static final String ATTR_PROGRAM_ENVIRONMENT_MAP = "org.eclipse.debug.core.environmentVariables";
+
     /**
      * Launch configuration attribute key. The value is a string specifying a
      * path to the working directory to use when launching the application.
@@ -50,11 +59,18 @@ public interface IOmnetppLaunchConstants {
      * CDT debugger specific
      */
     public static final String ATTR_DEBUGGER_ID = CDT_LAUNCH_ID + ".DEBUGGER_ID";
+    public static final String ATTR_DEBUGGER_START_MODE = CDT_LAUNCH_ID + ".DEBUGGER_START_MODE";
     public static final String ATTR_DEBUGGER_STOP_AT_MAIN = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN";
     public static final String ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL = CDT_LAUNCH_ID + ".DEBUGGER_STOP_AT_MAIN_SYMBOL";
     public static final String ATTR_DEBUG_NAME = CDT_DSF_GDB_ID + ".DEBUG_NAME";
     public static final String ATTR_GDB_INIT = CDT_DSF_GDB_ID + ".GDB_INIT";
-
+    
+    /**
+     * DAP debugger specific
+     */
+    public static final String ATTR_DSP_CMD = ID_DSP_DEBUG_MODEL + ".ATTR_DSP_CMD";
+    public static final String ATTR_DSP_ARGS = ID_DSP_DEBUG_MODEL + ".ATTR_DSP_ARGS";
+ 
     // ========================================================================================
 
     /**
@@ -193,6 +209,11 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_ADDITIONAL_ARGS = OMNETPP_LAUNCH_ID + ".ADDITIONAL_ARG";
 
     /**
+     * Check or ignore problems on launch
+     */
+    public static final String OPP_IGNORE_PROBLEMS_ON_LAUNCH = OMNETPP_LAUNCH_ID + ".IGNORE_PROBLEMS_ON_LAUNCH";
+
+    /**
      * Whether to build before launch (0 = Project + dependencies, 1 = project only, 2 = Never build (nothing))
      */
     public static final String OPP_BUILD_BEFORE_LAUNCH = OMNETPP_LAUNCH_ID + ".BUILD_BEFORE_LAUNCH";
@@ -213,6 +234,26 @@ public interface IOmnetppLaunchConstants {
      */
     public static final String OPP_GDB_INIT_FILE = "${opp_root}/misc/gdb/gdbinit.py";
 
+    /**
+     * Attribute name used to store the list of .lldbinit files
+     */
+	public static final String OPP_LLDB_INIT_FILES = OMNETPP_LAUNCH_ID + ".OPP_LLDB_INIT_FILES";;
+
+    /**
+     * The default value for starting gdb command (with arguments) 
+     */
+    public static final String OPP_DEFAULT_GDB_CMD = "sh ${opp_root}/bin/opp_dbgmi";
+    
+    /*
+     * The default value for starting the lldb-dap debugger (without arguments)
+     */
+    public static final String OPP_DEFAULT_DSP_CMD_NAME = "sh";
+    
+    /*
+     * The default value for arguments when starting the lldb-dap debugger
+     */
+    public static final List<String> OPP_DEFAULT_DSP_CMD_ARGS = List.of("${opp_root}/bin/opp_dbgdap");
+    
     /**
      * Value for OPP_USER_INTERFACE: launch the simulation program without explicit -u option
      */

@@ -184,6 +184,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.omnetpp.dsp"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="org.omnetpp.doc"
          download-size="0"
          install-size="0"

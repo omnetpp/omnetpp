@@ -96,9 +96,9 @@
 #endif
 
 #ifdef _WIN32
-#define DEFAULT_DEBUGGER_COMMAND    "bash -c \"opp_ide omnetpp://cdt/debugger/attach?pid=%u\""
+#define DEFAULT_DEBUGGER_COMMAND    "bash -c \"opp_ide omnetpp://dsp/debugger/attach?pid=%u\""
 #else
-#define DEFAULT_DEBUGGER_COMMAND    "opp_ide omnetpp://cdt/debugger/attach?pid=%u"
+#define DEFAULT_DEBUGGER_COMMAND    "opp_ide omnetpp://dsp/debugger/attach?pid=%u"
 #endif
 
 #ifdef NDEBUG

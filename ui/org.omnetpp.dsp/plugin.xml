@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            id="org.omnetpp.dsp.hiddenSimulationLaunchConfigurationType"
+            public="false"
+            delegateName="OMNeT++ Simulation Non-interactive Launches"
+            delegateDescription="Launch an OMNeT++ simulation non-interactively using debug server protocol"
+            name="OMNeT++ Simulation - hidden"
+            sourceLocatorId="org.eclipse.lsp4e.debug.sourceLocator"
+            sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchDelegates">
+      <launchDelegate
+            delegate="org.omnetpp.dsp.launch.NonInteractiveDSPLaunchDelegate"
+            delegateDescription="Allows debugging an OMNeT++ simulation with the LLDB-DAP debugger without UI"
+            id="org.omnetpp.dsp.nonInteractiveDSPLaunchDelegate"
+            modes="run,debug"
+            name="OMNeT++ Simulation LLDB-DAP Debugger started non-interactively"
+            sourceLocatorId="org.eclipse.lsp4e.debug.sourceLocator"
+            sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer"
+            type="org.omnetpp.dsp.hiddenSimulationLaunchConfigurationType">
+      </launchDelegate>
+   </extension>
+   <extension
+         point="org.eclipse.urischeme.uriSchemeHandlers">
+      <uriSchemeHandler
+            class="org.omnetpp.dsp.DSPUriSchemeHandler"
+            uriScheme="omnetpp"
+            uriSchemeDescription="OMNeT++ DSP specific URI handler">
+      </uriSchemeHandler>
+   </extension>
+</plugin>

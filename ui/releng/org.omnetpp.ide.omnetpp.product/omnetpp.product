@@ -52,7 +52,6 @@
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.linuxtools.valgrind"/>
       <feature id="org.eclipse.wst.xml_ui.feature"/>
-      <feature id="org.eclipse.lsp4j.sdk"/>
       <feature id="org.eclipse.tm.terminal.feature"/>
       <feature id="org.eclipse.tips.feature"/>
       <feature id="org.eclipse.epp.mpc"/>

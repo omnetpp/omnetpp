@@ -636,7 +636,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         wc.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, exeFile==null ? "" : exeFile.getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, iniFile.getParent().getFullPath().toString());
         wc.setAttribute(IOmnetppLaunchConstants.OPP_INI_FILES, iniFile.getName());
-        wc.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, "sh ${opp_root}/bin/opp_dbgmi");
+        wc.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, IOmnetppLaunchConstants.OPP_DEFAULT_GDB_CMD);
+        wc.setAttribute(IOmnetppLaunchConstants.ATTR_DSP_CMD, IOmnetppLaunchConstants.OPP_DEFAULT_DSP_CMD_NAME);
+        wc.setAttribute(IOmnetppLaunchConstants.ATTR_DSP_ARGS, IOmnetppLaunchConstants.OPP_DEFAULT_DSP_CMD_ARGS);
 
         wc.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
 

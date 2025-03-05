@@ -1,0 +1,27 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Debugger Integration Plug-in
+Bundle-SymbolicName: org.omnetpp.dsp;singleton:=true
+Bundle-Version: 6.1.0.qualifier
+Bundle-Activator: org.omnetpp.dsp.Activator
+Bundle-Vendor: OpenSim Ltd.
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.variables,
+ org.omnetpp.common,
+ org.omnetpp.launch,
+ org.eclipse.ui,
+ org.eclipse.ui.console,
+ org.eclipse.urischeme,
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
+ org.eclipse.cdt.debug.core,
+ org.eclipse.lsp4e.debug,
+ org.eclipse.lsp4j.debug,
+ com.google.gson
+Export-Package: org.omnetpp.dsp,
+ org.omnetpp.dsp.debug.console,
+ org.omnetpp.dsp.debug.debugmodel,
+ org.omnetpp.dsp.launch
+Automatic-Module-Name: org.omnetpp.dsp

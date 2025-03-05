@@ -56,6 +56,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.Launch;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
@@ -297,7 +298,7 @@ public class OmnetppLaunchUtils {
 
     /**
      * Fill a launch config working copy with default values, based on the given resource (which will
-     * usually come from the workbench selection). Also sets the launch attributes required by CDT for debugging.
+     * usually come from the workbench selection). Also sets the launch attributes required by CDT and DSP adapter for debugging.
      */
     public static void setLaunchConfigDefaults(ILaunchConfigurationWorkingCopy configuration, IResource selectedResource) {
         String workingDir = "";
@@ -345,9 +346,12 @@ public class OmnetppLaunchUtils {
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_ID, "gdb");
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN, false);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUGGER_STOP_AT_MAIN_SYMBOL, "main");
-        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, "sh ${opp_root}/bin/opp_dbgmi");
-
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DEBUG_NAME, IOmnetppLaunchConstants.OPP_DEFAULT_GDB_CMD);
         configuration.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, IOmnetppLaunchConstants.OPP_GDB_INIT_FILE);
+
+        // minimal LLDB-DAP specific attributes required to start without errors
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DSP_CMD, IOmnetppLaunchConstants.OPP_DEFAULT_DSP_CMD_NAME);        
+        configuration.setAttribute(IOmnetppLaunchConstants.ATTR_DSP_ARGS, IOmnetppLaunchConstants.OPP_DEFAULT_DSP_CMD_ARGS);        
     }
 
     protected static String getDefaultExeName(String workingDir) {
@@ -467,11 +471,15 @@ public class OmnetppLaunchUtils {
                 args.add("-r");
                 args.add(runFilter);
             }
-            // expand the GDB init file path so we can use also variables there (if needed)
+            // GDB specific - expand the GDB init file path so we can use also variables there (if needed)
             String expandedGdbInitFile = StringUtils.substituteVariables(config.getAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, ""));
             newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_GDB_INIT, expandedGdbInitFile);
 
             createGDBInitTmpFile(project);
+            
+            // LLDB specific - collect and store the .lldbinit files so the SimulationDSPLaunchDelegate can use them
+            // to build the iniCommands parameter
+            newCfg.setAttribute(IOmnetppLaunchConstants.OPP_LLDB_INIT_FILES, collectLldbInitFiles(project));
         }
 
         String pathSep = System.getProperty("path.separator");
@@ -549,21 +557,21 @@ public class OmnetppLaunchUtils {
         for (String arg : StringUtils.split(additionalArgs))
             args.add(arg);
 
-        // set the program arguments
+        // set the program arguments for a GDB debug delegate (the same as above
+        // but CDT requires the arguments to be a single string)
         StringBuilder argsBuilder = new StringBuilder();
         for (String arg : args)
             argsBuilder.append(" " + quoteArg(arg));
         newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, argsBuilder.toString());
 
         // handle environment: add OMNETPP_BIN and (DY)LD_LIBRARY_PATH
-        Map<String, String> envir = newCfg.getAttribute("org.eclipse.debug.core.environmentVariables", new HashMap<String, String>());
+        Map<String, String> envir = newCfg.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ENVIRONMENT_MAP, new HashMap<String, String>());
         String path = envir.get(ENV_PATH);
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(path)) {
             String win32LdLibPath = Platform.getOS().equals(Platform.OS_WIN32) ? $(VAR_LD_LIBRARY_PATH+_LOC,workingdirStr) + pathSep : "";
             path = win32LdLibPath + $(VAR_OMNETPP_BIN_DIR) + pathSep + $(VAR_ADDITIONAL_PATH) + pathSep + $(VAR_ENVVAR,ENV_PATH);
             envir.put(ENV_PATH, StringUtils.substituteVariables(path));
-
         }
 
         if (!Platform.getOS().equals(Platform.OS_WIN32)) {
@@ -594,7 +602,7 @@ public class OmnetppLaunchUtils {
             }
         }
 
-        newCfg.setAttribute("org.eclipse.debug.core.environmentVariables", envir);
+        newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ENVIRONMENT_MAP, envir);
         // do we need this ??? : configuration.setAttribute("org.eclipse.debug.core.appendEnvironmentVariables", true);
 
         return newCfg;
@@ -646,6 +654,34 @@ public class OmnetppLaunchUtils {
         } catch (IOException e) {
             LaunchPlugin.logError(e);
         }
+    }
+
+    /**
+     * Collect all the existing .lldbinit files from the omnetpp root and all dependent projects
+     * including the project itself. These files can be sourced when starting lldb
+     */
+    private static List<String> collectLldbInitFiles(IProject project) {
+    	List<String> lldbInitFiles = new ArrayList<>();
+
+    	// add the file from the omnetpp root if it exists
+    	var oppLldbInit = OmnetppDirs.getOmnetppRootDir() + "/.lldbinit";
+    	if (new File(oppLldbInit).isFile())
+    		lldbInitFiles.add(oppLldbInit);
+    	
+        try {
+            // add the files from the referencing projects
+            IProject[] projects = ProjectUtils.getAllReferencedProjects(project, false, true);
+            for (IProject p : projects) {
+                String lldbInit = p.getLocation().addTrailingSeparator().append(".lldbinit").toString();
+                if (new File(lldbInit).isFile())
+                    lldbInitFiles.add(lldbInit);
+            }
+            return lldbInitFiles;
+        } catch (CoreException e) {
+            LaunchPlugin.logError(e);
+        }
+        
+		return lldbInitFiles;
     }
 
     /**

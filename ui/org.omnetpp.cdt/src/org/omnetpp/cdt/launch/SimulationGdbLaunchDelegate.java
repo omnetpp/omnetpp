@@ -35,7 +35,7 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 /**
  * A proxy launch delegate for debugging simulations.
  */
-public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
+public class SimulationGdbLaunchDelegate extends GdbLaunchDelegate {
     private static final String PREF_DONT_OFFER_CONFIG_UPGRADE = "org.omnetpp.cdt.launch.DoNotOfferUpgradingConfig";
 
     public static class DsfSimulationProcess extends AbstractSimulationProcess {

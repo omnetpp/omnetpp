@@ -8,7 +8,9 @@
             delegateName="OMNeT++ Simulation Launches"
             id="org.omnetpp.launch.simulationLaunchConfigurationType"
             name="OMNeT++ Simulation"
-            public="true">
+            public="true"
+            sourceLocatorId="org.eclipse.lsp4e.debug.sourceLocator"
+            sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer">
       </launchConfigurationType>
    </extension>
    <extension

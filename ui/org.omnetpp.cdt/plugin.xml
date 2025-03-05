@@ -176,25 +176,51 @@
       </super>
    </extension>
    <extension
-         point="org.eclipse.urischeme.uriSchemeHandlers">
-      <uriSchemeHandler
-            class="org.omnetpp.cdt.handlers.CDTUriSchemeHandler"
-            uriScheme="omnetpp"
-            uriSchemeDescription="OMNeT++ CDT specific URI handler">
-      </uriSchemeHandler>
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            id="org.omnetpp.dsp.hiddenSimulationLaunchConfigurationType"
+            public="false"
+            delegateName="OMNeT++ Simulation Non-interactive Launches"
+            delegateDescription="Launch an OMNeT++ simulation non-interactively using debug server protocol"
+            name="OMNeT++ Simulation - hidden"
+            sourceLocatorId="org.eclipse.lsp4e.debug.sourceLocator"
+            sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer">
+      </launchConfigurationType>
    </extension>
    <extension
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
-            delegate="org.omnetpp.cdt.launch.SimulationDebugLaunchDelegate"
-            delegateDescription="Allows debugging an OMNeT++ simulation with CDT"
-            id="org.omnetpp.launch.simulationDebugDelegate"
+            delegate="org.omnetpp.dsp.launch.NonInteractiveDSPLaunchDelegate"
+            delegateDescription="Allows debugging an OMNeT++ simulation with the LLDB-DAP debugger without UI"
+            id="org.omnetpp.dsp.nonInteractiveDSPLaunchDelegate"
+            modes="run,debug"
+            name="OMNeT++ Simulation LLDB-DAP Debugger started non-interactively"
+            sourceLocatorId="org.eclipse.lsp4e.debug.sourceLocator"
+            sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer"
+            type="org.omnetpp.dsp.hiddenSimulationLaunchConfigurationType">
+      </launchDelegate>
+      <launchDelegate
+            delegate="org.omnetpp.dsp.launch.SimulationDSPLaunchDelegate"
+            delegateDescription="Allows debugging an OMNeT++ simulation with the LLDB-DAP debugger"
+            id="org.omnetpp.launch.simulationDSPDelegate"
             modes="debug"
-            name="OMNeT++ Simulation Debugger"
+            name="OMNeT++ Simulation LLDB-DAP Debugger"
+            sourceLocatorId="org.eclipse.lsp4e.debug.sourceLocator"
+            sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer"
+            type="org.omnetpp.launch.simulationLaunchConfigurationType">
+      </launchDelegate>
+<!--
+      <launchDelegate
+            delegate="org.omnetpp.cdt.launch.SimulationGdbLaunchDelegate"
+            delegateDescription="Allows debugging an OMNeT++ simulation with the GDB debugger"
+            id="org.omnetpp.launch.simulationGdbDelegate"
+            modes="debug"
+            name="OMNeT++ Simulation Gdb Debugger"
             sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
             sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
             type="org.omnetpp.launch.simulationLaunchConfigurationType">
       </launchDelegate>
+-->      
       <launchDelegate
             delegate="org.omnetpp.cdt.launch.SimulationValgrindProfileLaunchDelegate"
             delegateDescription="Allows profiling an OMNeT++ simulation with Valgrind"
@@ -218,7 +244,10 @@
                after="org.eclipse.debug.ui.environmentTab">
          </placement>
          <associatedDelegate
-               delegate="org.omnetpp.launch.simulationDebugDelegate">
+               delegate="org.omnetpp.launch.simulationGdbDelegate">
+         </associatedDelegate>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationDSPDelegate">
          </associatedDelegate>
          <associatedDelegate
                delegate="org.omnetpp.launch.simulationValgrindProfileDelegate">
@@ -233,7 +262,19 @@
                after="org.eclipse.debug.ui.environmentTab">
          </placement>
          <associatedDelegate
-               delegate="org.omnetpp.launch.simulationDebugDelegate">
+               delegate="org.omnetpp.launch.simulationGdbDelegate">
+         </associatedDelegate>
+      </tab>
+      <tab
+            class="org.omnetpp.dsp.launch.SimulationDSPMainTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.dspdebugtab"
+            name="Debugger">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationDSPDelegate">
          </associatedDelegate>
       </tab>
       <tab

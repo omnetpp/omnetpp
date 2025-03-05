@@ -235,6 +235,7 @@
       <module>org.omnetpp.common</module>
       <module>org.omnetpp.common.core</module>
       <module>org.omnetpp.doc</module>
+      <module>org.omnetpp.dsp</module>
       <module>org.omnetpp.eventlogtable</module>
       <module>org.omnetpp.figures</module>
       <module>org.omnetpp.ide.nativelibs</module>
