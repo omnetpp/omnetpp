@@ -991,6 +991,221 @@ void EventEntryMessageLinesProvider::setReferenceTime(SimTime rt)
     getQtenv()->refreshInspectors();
 }
 
+int LineIndexMapping::discardSourceLines(int numDiscardedLines)
+{
+    int discardedNow = 0;
+    for (size_t i = 0; i < filteredLineIndices.size(); ++i) {
+        int effectiveValue = filteredLineIndices[i] - numDiscardedSourceLines - numDiscardedLines;
+        if (effectiveValue < 0)
+            ++discardedNow;
+        else
+            break;
+    }
+
+    numDiscardedSourceLines += numDiscardedLines;
+    filteredLineIndices.pop_front(discardedNow);
+
+    // just to avoid any numerical overflow mishaps
+    if (numDiscardedSourceLines > 1'000'000'000)
+        normalize();
+
+    return discardedNow;
+}
+
+void LineIndexMapping::normalize()
+{
+    for (size_t i = 0; i < filteredLineIndices.size(); ++i)
+        filteredLineIndices[i] -= numDiscardedSourceLines;
+    numDiscardedSourceLines = 0;
+}
+
+void LineIndexMapping::clear()
+{
+    filteredLineIndices.clear();
+    numDiscardedSourceLines = 0;
+}
+
+int LineIndexMapping::lookup(int sourceLineIndex)
+{
+    sourceLineIndex += numDiscardedSourceLines;
+
+    auto foundIter = std::lower_bound(filteredLineIndices.begin(), filteredLineIndices.end(), sourceLineIndex);
+    // if the source line is filtered out, we may not get an exact match
+    //assert(foundIter != filteredLineIndices.end());
+    //assert(*foundIter == sourceLineIndex);
+    return foundIter - filteredLineIndices.begin();
+}
+
+void LineIndexMapping::push(int sourceLineIndex)
+{
+    filteredLineIndices.push_back(sourceLineIndex + numDiscardedSourceLines);
+}
+
+// ---- LineFilteringContentProvider implementation ----
+
+bool LineFilteringContentProvider::matchesFilter(const std::string& line, std::string& buffer, QString& qbuffer)
+{
+    const std::string& stripped = stripFormatting(line, buffer);
+
+    if (regex) {
+        // TODO in Qt6 - QLatin1StringView instead of copying into qbuffer?
+        qbuffer = stripped.c_str();
+        return re.match(qbuffer).hasMatch();
+    }
+    else
+        return caseSensitive
+            ? strstr(stripped.c_str(), filter.c_str())
+            : strcasestr(stripped.c_str(), filter.c_str());
+}
+
+void LineFilteringContentProvider::updateLineIndices()
+{
+    std::string buffer;
+    QString qbuffer;
+    indexMapping.clear();
+    int sourceLineCount = sourceModel->getLineCount();
+    // the -1 is to not look at the last empy line (we supply our own)
+    for (int i = 0; i < sourceLineCount-1; i++)
+        if (matchesFilter(sourceModel->getLineText(i), buffer, qbuffer))
+            indexMapping.push(i);
+    lastMatchedSourceLineIndex = sourceLineCount - 2;
+}
+
+int LineFilteringContentProvider::appendLineIndices()
+{
+    std::string buffer;
+    QString qbuffer;
+
+    int sourceLineCount = sourceModel->getLineCount();
+    int addedFilteredLines = 0;
+    // +1 is to not re-add the currently added last matching line, -1 is the last empty line (we supply out own)
+    for (int i = lastMatchedSourceLineIndex + 1; i < sourceLineCount-1; i++) {
+        if (matchesFilter(sourceModel->getLineText(i), buffer, qbuffer)) {
+            ASSERT(indexMapping.empty() || i > indexMapping.last());
+            indexMapping.push(i);
+            ++addedFilteredLines;
+        }
+    }
+    lastMatchedSourceLineIndex = sourceLineCount - 2;
+    return addedFilteredLines;
+}
+
+int LineFilteringContentProvider::findOutputLineForSourceLine(int sourceLineIndex)
+{
+    if (sourceLineIndex < 0)
+        return -1;
+    assert(sourceLineIndex < sourceModel->getLineCount());
+    return indexMapping.lookup(sourceLineIndex);
+}
+
+LineFilteringContentProvider::LineFilteringContentProvider(TextViewerContentProvider *sourceModel, const std::string& filter, bool regex, bool caseSensitive):
+    sourceModel(sourceModel), filter(filter), regex(regex), caseSensitive(caseSensitive)
+{
+    assert(sourceModel);
+
+    connect(sourceModel, &TextViewerContentProvider::statusTextChanged, [this] {
+        Q_EMIT statusTextChanged();
+    });
+
+    connect(sourceModel, &TextViewerContentProvider::textChanged, [this] {
+        updateLineIndices();
+        Q_EMIT textChanged();
+    });
+
+    connect(sourceModel, &TextViewerContentProvider::linesDiscarded, [this](int numDiscardedLines) {
+        int numDiscardedFilteredLines = indexMapping.discardSourceLines(numDiscardedLines);
+        if (numDiscardedFilteredLines > 0)
+            Q_EMIT linesDiscarded(numDiscardedFilteredLines);
+    });
+
+    connect(sourceModel, &TextViewerContentProvider::linesAdded, [this]() {
+        int numAddedFilteredLines = appendLineIndices();
+        if (numAddedFilteredLines > 0)
+            Q_EMIT linesAdded();
+    });
+
+    // this compiles the regex (if in use)
+    setFiltering(filter, regex, caseSensitive);
+}
+
+std::string LineFilteringContentProvider::getStatusText()
+{
+    std::string status;
+
+    if (!filter.empty())
+        status += "Line filter: \"" + filter + "\". ";
+
+    status += sourceModel->getStatusText();
+
+    return status;
+}
+
+std::string LineFilteringContentProvider::getLineText(int lineIndex)
+{
+    if (lineIndex == indexMapping.size()) // the last, empty line
+        return "";
+    return sourceModel->getLineText(indexMapping.get(lineIndex));
+}
+
+void *LineFilteringContentProvider::getUserData(int lineIndex)
+{
+    if (lineIndex == indexMapping.size()) // the last, empty line
+        return nullptr;
+    return sourceModel->getUserData(indexMapping.get(lineIndex));
+}
+
+eventnumber_t LineFilteringContentProvider::getEventNumberAtLine(int lineIndex)
+{
+    if (lineIndex == indexMapping.size()) // the last, empty line
+        return -1;
+    return sourceModel->getEventNumberAtLine(indexMapping.get(lineIndex));
+}
+
+int LineFilteringContentProvider::getLineAtEvent(eventnumber_t eventNumber)
+{
+    return findOutputLineForSourceLine(sourceModel->getLineAtEvent(eventNumber));
+}
+
+simtime_t LineFilteringContentProvider::getSimTimeAtLine(int lineIndex)
+{
+    if (lineIndex == indexMapping.size()) // the last, empty line
+        return -1;
+    return sourceModel->getSimTimeAtLine(indexMapping.get(lineIndex));
+}
+
+int LineFilteringContentProvider::getLineAtSimTime(simtime_t simTime)
+{
+    return findOutputLineForSourceLine(sourceModel->getLineAtSimTime(simTime));
+}
+
+int LineFilteringContentProvider::getBookmarkedLineIndex()
+{
+    return findOutputLineForSourceLine(sourceModel->getBookmarkedLineIndex());
+}
+
+void LineFilteringContentProvider::bookmarkLine(int lineIndex)
+{
+    if (lineIndex == indexMapping.size()) // the last, empty line
+        return; // no-op
+    sourceModel->bookmarkLine(indexMapping.get(lineIndex));
+}
+
+void LineFilteringContentProvider::setFiltering(const std::string& filter, bool regex, bool caseSensitive)
+{
+    ASSERT(!filter.empty());
+    this->filter = filter;
+    this->regex = regex;
+    this->caseSensitive = caseSensitive;
+    if (regex) {
+        re = QRegularExpression(QString::fromStdString(filter),
+            caseSensitive ? QRegularExpression::NoPatternOption : QRegularExpression::CaseInsensitiveOption);
+        re.optimize();
+    }
+    updateLineIndices();
+    Q_EMIT textChanged();
+    Q_EMIT statusTextChanged();
+}
+
 }  // namespace qtenv
 }  // namespace omnetpp
 

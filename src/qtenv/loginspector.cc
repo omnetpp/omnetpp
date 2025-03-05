@@ -22,6 +22,8 @@
 #include <fstream>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QAction>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QMessageBox>
 #include <QtWidgets/QInputDialog>
@@ -100,10 +102,19 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     saveAction = new QAction(QIcon(":/tools/save"), "&Save Window Contents...", this);
     connect(saveAction, SIGNAL(triggered()), this, SLOT(saveContent()));
 
-    filterAction = new QAction(QIcon(":/tools/filter"), "Filter by &Module...", this);
-    filterAction->setToolTip("Filter window contents by module (Ctrl+H)");
+    filterAction = new QAction(QIcon(":/tools/filter"), "Filter...", this);
+    filterAction->setToolTip("Filter window contents (Ctrl+H)");
     filterAction->setShortcut(Qt::ControlModifier + Qt::Key_H);
     connect(filterAction, SIGNAL(triggered()), this, SLOT(onFilterButton()));
+
+    clearFilterAction = new QAction(QIcon(":/tools/filter_off"), "Clear Filter", this);
+    clearFilterAction->setToolTip("Clear content filter");
+    //filterAction->setShortcut(Qt::ControlModifier + Qt::Key_H);
+    connect(clearFilterAction, SIGNAL(triggered()), this, SLOT(onClearFilterButton()));
+
+    QMenu *fMenu = new QMenu(this);
+    fMenu->addAction(clearFilterAction);
+
 
     configureMessagePrinterAction = new QAction(QIcon(":/tools/winconfig"), "C&onfigure Columns and More...", this);
     connect(configureMessagePrinterAction, SIGNAL(triggered()), this, SLOT(onMessagePrinterTagsButton()));
@@ -182,6 +193,8 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     mode = LOG;  // as setMode() *reads* it too
     setMode((Mode)getPref(PREF_MODE, QVariant::fromValue(0), false).toInt());
+
+    updateFilterActionIcon();
 }
 
 LogInspector::~LogInspector()
@@ -198,6 +211,9 @@ void LogInspector::onFontChanged()
 const QString LogInspector::PREF_COLUMNWIDTHS = "columnwidths";
 const QString LogInspector::PREF_MODE = "mode";
 const QString LogInspector::PREF_EXCLUDED_MODULES = "excluded-modules";
+const QString LogInspector::PREF_LINE_FILTER_STRING = "line-filter-string";
+const QString LogInspector::PREF_LINE_FILTER_IS_REGEX = "line-filter-is-regex";
+const QString LogInspector::PREF_LINE_FILTER_IS_CASE_SENSITIVE = "line-filter-is-case-sensitive";
 const QString LogInspector::PREF_SAVE_FILENAME = "savefilename";
 const QString LogInspector::PREF_MESSAGEPRINTER_TAGS = "messageprinter-tags";
 
@@ -245,7 +261,12 @@ void LogInspector::addOwnActions(QToolBar *toolBar)
     toolBar->addAction(findAction);
     if (isTopLevel()) // looks like we don't need this in embedded mode, for whatever reason...
         toolBar->addAction(saveAction);
+
     toolBar->addAction(filterAction);
+    if (QToolButton *filtButt = dynamic_cast<QToolButton*>(toolBar->widgetForAction(filterAction))) {
+        filtButt->addAction(clearFilterAction);
+        filtButt->setPopupMode(QToolButton::DelayedPopup);
+    }
     toolBar->addAction(configureMessagePrinterAction);
     toolBar->addSeparator();
 
@@ -253,6 +274,18 @@ void LogInspector::addOwnActions(QToolBar *toolBar)
     toolBar->addAction(toLogModeAction);
 }
 
+void LogInspector::updateFilterActionIcon()
+{
+    bool isFilterActive = !excludedModuleIds.empty() || !lineFilterString.empty();
+    filterAction->setIcon(QIcon(isFilterActive ? ":/tools/filter_active" : ":/tools/filter"));
+    clearFilterAction->setEnabled(isFilterActive);
+}
+
+/**
+ * Returns all tags supported by the message printers associated with
+ * this log inspector, as a sorted list of strings. The list is sorted
+ * alphabetically.
+ */
 QStringList LogInspector::gatherAllMessagePrinterTags()
 {
     std::set<std::string> allTags;
@@ -289,17 +322,10 @@ void LogInspector::setMode(Mode mode)
     toLogModeAction->setChecked(mode == LOG);
     toMessagesModeAction->setChecked(mode == MESSAGES);
 
-    ModuleOutputContentProvider::Bookmark bookmark;
-    if (contentProvider)
-        bookmark = contentProvider->getBookmark();
-    contentProvider = new ModuleOutputContentProvider(getQtenv(), dynamic_cast<cComponent *>(object), mode, &messagePrinterOptions);
-    contentProvider->setExcludedModuleIds(excludedModuleIds);
-    if (bookmark.isValid())
-        contentProvider->setBookmark(bookmark);
-
-    textWidget->setContentProvider(contentProvider);
-
     this->mode = mode;
+
+    recreateProviders();
+
 
     if (mode == MESSAGES)
         restoreColumnWidths();
@@ -312,7 +338,7 @@ void LogInspector::setMode(Mode mode)
         textWidget->followOutput();
     else {
         if (caretAtEvent >= 0) {
-            int lineNumber = contentProvider->getLineAtEvent(caretAtEvent);
+            int lineNumber = textWidget->getContentProvider()->getLineAtEvent(caretAtEvent);
             if (lineNumber >= 0)
                 textWidget->setCaretPosition(lineNumber, 0);
         }
@@ -325,7 +351,7 @@ void LogInspector::doSetObject(cObject *obj)
     Inspector::doSetObject(obj);
     excludedModuleIds.clear();
     setMode(mode); // this is to rebuild the model
-    restoreExcludedModules();
+    restoreFilterSettings();
     restoreMessagePrinterOptions();
 }
 
@@ -348,7 +374,6 @@ void LogInspector::fastRunUntil()
 void LogInspector::refresh()
 {
     Inspector::refresh();
-    contentProvider->refresh();
     textWidget->update();
     textWidget->viewport()->update();
 }
@@ -370,13 +395,28 @@ void LogInspector::onFindButton()
 void LogInspector::onFilterButton()
 {
     if (cModule *module = dynamic_cast<cModule *>(object)) {
-        LogFilterDialog dialog(this, module, excludedModuleIds);
+        LogFilterDialog dialog(this, module, excludedModuleIds, lineFilterString, lineFilterIsRegex, lineFilterIsCaseSensitive);
         if (dialog.exec() == QDialog::Accepted) {
             excludedModuleIds = dialog.getExcludedModuleIds();
-            contentProvider->setExcludedModuleIds(excludedModuleIds);
-            saveExcludedModules();
+            sourceContentProvider->setExcludedModuleIds(excludedModuleIds);
+            lineFilterString = dialog.getLineFilterString();
+            lineFilterIsRegex = dialog.isLineFilterRegExp();
+            lineFilterIsCaseSensitive = dialog.isLineFilterCaseSensitive();
+            recreateProviders();
+            updateFilterActionIcon();
+            saveFilterSettings();
         }
     }
+}
+
+void LogInspector::onClearFilterButton()
+{
+    excludedModuleIds = {};
+    sourceContentProvider->setExcludedModuleIds(excludedModuleIds);
+    lineFilterString = "";
+    recreateProviders();
+    updateFilterActionIcon();
+    saveFilterSettings();
 }
 
 void LogInspector::onMessagePrinterTagsButton()
@@ -384,7 +424,7 @@ void LogInspector::onMessagePrinterTagsButton()
     MessagePrinterTagsDialog dialog(this, gatherAllMessagePrinterTags(), &messagePrinterOptions);
     if (dialog.exec() == QDialog::Accepted) {
         messagePrinterOptions.enabledTags = dialog.getEnabledTags();
-        contentProvider->refresh();
+        sourceContentProvider->refresh();
         saveMessagePrinterOptions();
     }
 }
@@ -398,7 +438,7 @@ void LogInspector::onGoToSimTimeAction()
     dialog.setInputMode(QInputDialog::TextInput);
 
     int line = textWidget->getCaretPosition().line;
-    SimTime t = contentProvider->getSimTimeAtLine(line);
+    SimTime t = textWidget->getContentProvider()->getSimTimeAtLine(line);
 
     if (t >= 0)
         dialog.setTextValue(t.ustr().c_str());
@@ -431,7 +471,7 @@ void LogInspector::onGoToEventAction()
     dialog.setInputMode(QInputDialog::IntInput);
 
     int line = textWidget->getCaretPosition().line;
-    eventnumber_t e = contentProvider->getEventNumberAtLine(line);
+    eventnumber_t e = textWidget->getContentProvider()->getEventNumberAtLine(line);
 
     dialog.setIntMinimum(0);
     dialog.setIntMaximum(getSimulation()->getEventNumber());
@@ -446,12 +486,12 @@ void LogInspector::onGoToEventAction()
 void LogInspector::onSetBookmarkAction()
 {
     int lineIndex = textWidget->getCaretPosition().line;
-    contentProvider->bookmarkLine(lineIndex);
+    textWidget->getContentProvider()->bookmarkLine(lineIndex);
 }
 
 void LogInspector::onGoToBookmarkAction()
 {
-    int markedLine = contentProvider->getBookmarkedLineIndex();
+    int markedLine = textWidget->getContentProvider()->getBookmarkedLineIndex();
 
     if (markedLine >= 0) {
         Pos pos = textWidget->getCaretPosition();
@@ -517,11 +557,11 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 
     menu->addSeparator();
 
-    int bookmarkedLine = contentProvider->getBookmarkedLineIndex();
+    int bookmarkedLine = textWidget->getContentProvider()->getBookmarkedLineIndex();
 
     if (lineIndex == bookmarkedLine) {
         menu->addAction(QIcon(":/tools/bookmark_remove"), "C&lear Bookmark", [=] {
-            contentProvider->bookmarkLine(-1);
+            textWidget->getContentProvider()->bookmarkLine(-1);
         });
     }
     else {
@@ -542,6 +582,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
     if (mode == MESSAGES)
         menu->addAction(configureMessagePrinterAction);
     menu->addAction(filterAction);
+    menu->addAction(clearFilterAction);
     menu->addAction(saveAction);
 
     menu->exec(globalPos);
@@ -562,7 +603,7 @@ void LogInspector::findAgainReverse()
 void LogInspector::goToSimTime(SimTime t)
 {
     Pos pos = textWidget->getCaretPosition();
-    pos.line = contentProvider->getLineAtSimTime(t);
+    pos.line = textWidget->getContentProvider()->getLineAtSimTime(t);
     textWidget->setCaretPosition(pos.line, pos.column);
     int horizontalMargin = textWidget->viewport()->width() / 5;
     int verticalMargin = textWidget->viewport()->height() / 5;
@@ -573,7 +614,7 @@ void LogInspector::goToSimTime(SimTime t)
 void LogInspector::goToEvent(eventnumber_t e)
 {
     Pos pos = textWidget->getCaretPosition();
-    pos.line = contentProvider->getLineAtEvent(e);
+    pos.line = textWidget->getContentProvider()->getLineAtEvent(e);
     textWidget->setCaretPosition(pos.line, pos.column);
     int horizontalMargin = textWidget->viewport()->width() / 5;
     int verticalMargin = textWidget->viewport()->height() / 5;
@@ -605,21 +646,31 @@ void LogInspector::restoreColumnWidths()
     textWidget->setColumnWidths(getPref(PREF_COLUMNWIDTHS, QList<QVariant>()).toList());
 }
 
-void LogInspector::saveExcludedModules()
+void LogInspector::saveFilterSettings()
 {
     QStringList excludedModules;
     for (auto id : excludedModuleIds)
         excludedModules.append(getQtenv()->getComponentHistory()->getComponentFullPath(id).c_str());
     setPref(PREF_EXCLUDED_MODULES, excludedModules);
+    setPref(PREF_LINE_FILTER_STRING, QString::fromStdString(lineFilterString));
+    setPref(PREF_LINE_FILTER_IS_REGEX, lineFilterIsRegex);
+    setPref(PREF_LINE_FILTER_IS_CASE_SENSITIVE, lineFilterIsCaseSensitive);
 }
 
-void LogInspector::restoreExcludedModules()
+void LogInspector::restoreFilterSettings()
 {
     QStringList excludedModules = getPref(PREF_EXCLUDED_MODULES, QStringList()).toStringList();
     for (auto path : excludedModules)
         if (auto mod = getSimulation()->findModuleByPath(path.toUtf8()))
             excludedModuleIds.insert(mod->getId());
-    contentProvider->setExcludedModuleIds(excludedModuleIds);
+    sourceContentProvider->setExcludedModuleIds(excludedModuleIds);
+    lineFilterString = getPref(PREF_LINE_FILTER_STRING, "").toString().toStdString();
+    lineFilterIsRegex = getPref(PREF_LINE_FILTER_IS_REGEX, false).toBool();
+    lineFilterIsCaseSensitive = getPref(PREF_LINE_FILTER_IS_CASE_SENSITIVE, false).toBool();
+
+    recreateProviders();
+
+    updateFilterActionIcon();
 }
 
 void LogInspector::saveMessagePrinterOptions()
@@ -653,6 +704,27 @@ void LogInspector::restoreMessagePrinterOptions()
     }
 }
 
+void LogInspector::recreateProviders()
+{
+    ModuleOutputContentProvider::Bookmark bookmark;
+    if (sourceContentProvider)
+        bookmark = sourceContentProvider->getBookmark();
+    sourceContentProvider = new ModuleOutputContentProvider(getQtenv(), dynamic_cast<cComponent *>(object), mode, &messagePrinterOptions);
+    sourceContentProvider->setExcludedModuleIds(excludedModuleIds);
+    updateFilterActionIcon();
+    if (bookmark.isValid())
+        sourceContentProvider->setBookmark(bookmark);
+
+    if (lineFilterString.empty()) {
+        filteringContentProvider = nullptr;
+        textWidget->setContentProvider(sourceContentProvider);
+    }
+    else {
+        filteringContentProvider = new LineFilteringContentProvider(sourceContentProvider, lineFilterString, lineFilterIsRegex, lineFilterIsCaseSensitive);
+        textWidget->setContentProvider(filteringContentProvider);
+    }
+}
+
 void LogInspector::saveContent()
 {
     QString fileName = getPref(PREF_SAVE_FILENAME, "omnetpp.out").toString();
@@ -663,9 +735,9 @@ void LogInspector::saveContent()
     if (!fs)
         return;
 
-    int lineNumber = contentProvider->getLineCount();
+    int lineNumber = textWidget->getContentProvider()->getLineCount();
     for (int i = 0; i < lineNumber; ++i)
-        fs << stripFormattingAndRemoveTrailingNewLine(contentProvider->getLineText(i)) << '\n';
+        fs << stripFormattingAndRemoveTrailingNewLine(textWidget->getContentProvider()->getLineText(i)) << '\n';
 
     setPref(PREF_SAVE_FILENAME, fileName.split(QDir::separator()).last());
 }

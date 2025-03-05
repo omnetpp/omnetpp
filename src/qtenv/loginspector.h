@@ -28,6 +28,7 @@ namespace omnetpp {
 namespace qtenv {
 
 class ModuleOutputContentProvider;
+class LineFilteringContentProvider;
 
 class QTENV_API LogInspector : public Inspector
 {
@@ -42,6 +43,7 @@ class QTENV_API LogInspector : public Inspector
       QAction *findAction;
       QAction *saveAction;
       QAction *filterAction;
+      QAction *clearFilterAction;
 
       QAction *findAgainAction;
       QAction *findAgainReverseAction;
@@ -58,6 +60,7 @@ class QTENV_API LogInspector : public Inspector
 
       QToolBar *createToolbar(bool isTopLevel);
       void addOwnActions(QToolBar *toolBar);
+      void updateFilterActionIcon();
 
       QStringList gatherAllMessagePrinterTags();
 
@@ -73,15 +76,30 @@ class QTENV_API LogInspector : public Inspector
       static const QString PREF_COLUMNWIDTHS;
       static const QString PREF_MODE;
       static const QString PREF_EXCLUDED_MODULES;
+      static const QString PREF_LINE_FILTER_STRING;
+      static const QString PREF_LINE_FILTER_IS_REGEX;
+      static const QString PREF_LINE_FILTER_IS_CASE_SENSITIVE;
       static const QString PREF_SAVE_FILENAME;
       static const QString PREF_MESSAGEPRINTER_TAGS;
 
       LogBuffer *logBuffer; // not owned
       ComponentHistory *componentHistory; // not owned
-      TextViewerWidget *textWidget;
-      ModuleOutputContentProvider *contentProvider = nullptr; // owned by textWidget
+      TextViewerWidget *textWidget; // owned
+
+      // If there is no line filtering active (`lineFilterString` is empty),
+      // this is nullptr; otherwise, this is the direct content provider
+      // for the text viewer widget, and owns `sourceContentProvider`.
+      LineFilteringContentProvider *filteringContentProvider = nullptr;
+      // If there is no line filtering active (`lineFilterString` is empty),
+      // this is the direct content provider for the text viewer widget;
+      // otherwise, this is owned by `filteringContentProvider`.
+      ModuleOutputContentProvider *sourceContentProvider = nullptr;
 
       std::set<int> excludedModuleIds;
+      std::string lineFilterString; // no line filtering if empty
+      bool lineFilterIsRegex = false;
+      bool lineFilterIsCaseSensitive = false;
+
       cMessagePrinter::Options messagePrinterOptions;
       Mode mode;
 
@@ -111,6 +129,7 @@ Q_SIGNALS:
       void goToEvent(eventnumber_t e);
 
       void onFilterButton();
+      void onClearFilterButton();
       void onMessagePrinterTagsButton();
 
       // displays the selected message in the object inspector if in messages mode
@@ -123,11 +142,13 @@ Q_SIGNALS:
       void saveColumnWidths();
       void restoreColumnWidths();
 
-      void saveExcludedModules();
-      void restoreExcludedModules();
+      void saveFilterSettings();
+      void restoreFilterSettings();
 
       void saveMessagePrinterOptions();
       void restoreMessagePrinterOptions();
+
+      void recreateProviders();
 
       void saveContent();
 

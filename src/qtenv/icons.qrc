@@ -43,6 +43,8 @@
         <file alias="fast">icons/tools/fast.svg</file>
         <file alias="fes">icons/tools/fes.svg</file>
         <file alias="filter">icons/tools/filter.svg</file>
+        <file alias="filter_active">icons/tools/filter_active.svg</file>
+        <file alias="filter_off">icons/tools/filter_off.svg</file>
         <file alias="find">icons/tools/find.svg</file>
         <file alias="findobj">icons/tools/findobj.svg</file>
         <file alias="finish">icons/tools/finish.svg</file>

@@ -93,8 +93,68 @@ Q_SIGNALS:
     void statusTextChanged(); // TODO - maybe newStatusText as a parameter?
 };
 
+class LineIndexMapping {
+    // Indexed by the output line index, values are the source line indices.
+    // The last (empty) line must _not_ be added here, to allow quick appending!
+    circular_buffer<int> filteredLineIndices;
+    // Every value in filteredLineIndices is this much bigger
+    // in the internal buffer than shown to the outside.
+    // This is to allow apparently decreasing all the values at once
+    // without actually iterating through them, which would take longer.
+    int numDiscardedSourceLines = 0;
 
+public:
+    bool empty() { return filteredLineIndices.empty(); }
+    int last() { return filteredLineIndices.back() - numDiscardedSourceLines; }
+    int get(int index) { return filteredLineIndices[index] - numDiscardedSourceLines;}
 
+    int discardSourceLines(int numDiscardedLines);
+    void normalize();
+    void clear();
+    void push(int sourceLineIndex);
+    int lookup(int sourceLineIndex);
+    int size() { return filteredLineIndices.size(); }
+};
+
+class QTENV_API LineFilteringContentProvider : public TextViewerContentProvider {
+    Q_OBJECT
+
+    TextViewerContentProvider *sourceModel;
+    std::string filter;
+    bool regex;
+    LineIndexMapping indexMapping;
+    int lastMatchedSourceLineIndex = -1;
+    bool caseSensitive;
+    QRegularExpression re;
+
+    bool matchesFilter(const std::string& line, std::string& buffer, QString& qbuffer);
+    void updateLineIndices();
+    int appendLineIndices();
+    int findOutputLineForSourceLine(int sourceLineIndex);
+
+public:
+    // sourceModel is taken, filter is copied
+    LineFilteringContentProvider(TextViewerContentProvider *sourceModel, const std::string& filter, bool regex, bool caseSensitive);
+    ~LineFilteringContentProvider() { delete sourceModel; }
+
+    int getLineCount() override { return indexMapping.size() + 1; } // +1 is the last, empty line
+    bool showHeaders() override { return sourceModel->showHeaders(); }
+    QStringList getHeaders() override { return sourceModel->getHeaders(); }
+    std::string getStatusText() override;
+    std::string getLineText(int lineIndex) override;
+
+    virtual void *getUserData(int lineIndex) override;
+    virtual eventnumber_t getEventNumberAtLine(int lineIndex) override;
+    virtual int getLineAtEvent(eventnumber_t eventNumber) override;
+    virtual simtime_t getSimTimeAtLine(int lineIndex) override;
+    virtual int getLineAtSimTime(simtime_t simTime) override;
+
+    virtual void clearBookmark() { sourceModel->clearBookmark(); }
+    virtual int getBookmarkedLineIndex() override;
+    virtual void bookmarkLine(int lineIndex) override;
+
+    void setFiltering(const std::string& filter, bool regex, bool caseSensitive);
+};
 
 /**
  * An implementation of ITextViewerContent that uses a string as input.

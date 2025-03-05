@@ -18,6 +18,8 @@
 #include "ui_logfilterdialog.h"
 #include "qtenv.h"
 #include "qtutil.h"
+#include <QtWidgets/QPushButton>
+#include <QtCore/QRegularExpression>
 
 namespace omnetpp {
 namespace qtenv {
@@ -50,7 +52,15 @@ void LogFilterDialog::onItemChanged(QTreeWidgetItem *item, int column)
     }
 }
 
-LogFilterDialog::LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int>& excludedModuleIds) :
+void LogFilterDialog::updateRegexValidation()
+{
+    QRegularExpression regexp;
+    bool isValid = !ui->checkBox->isChecked() || (regexp = QRegularExpression(ui->lineEdit->text())).isValid();
+    ui->regexErrorLabel->setText(isValid ? "" : regexp.errorString());
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(isValid);
+}
+
+LogFilterDialog::LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int>& excludedModuleIds, const std::string& lineFilterString, bool isLineFilterRegExp, bool isLineFilterCaseSensitive) :
     QDialog(parent),
     ui(new Ui::logfilterdialog)
 {
@@ -69,6 +79,15 @@ LogFilterDialog::LogFilterDialog(QWidget *parent, cModule *rootModule, const std
     connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem *, int)), this, SLOT(onItemChanged(QTreeWidgetItem *, int)));
 
     ui->treeWidget->expandItem(item);
+
+    ui->lineEdit->setText(QString::fromStdString(lineFilterString));
+    ui->checkBox->setChecked(isLineFilterRegExp);
+    ui->checkBox_2->setChecked(isLineFilterCaseSensitive);
+
+    connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(updateRegexValidation()));
+    connect(ui->checkBox, SIGNAL(toggled(bool)), this, SLOT(updateRegexValidation()));
+
+    updateRegexValidation();
 }
 
 LogFilterDialog::~LogFilterDialog()
@@ -88,6 +107,21 @@ std::set<int> LogFilterDialog::getExcludedModuleIds()
     }
 
     return result;
+}
+
+std::string LogFilterDialog::getLineFilterString()
+{
+    return ui->lineEdit->text().toStdString();
+}
+
+bool LogFilterDialog::isLineFilterRegExp()
+{
+    return ui->checkBox->isChecked();
+}
+
+bool LogFilterDialog::isLineFilterCaseSensitive()
+{
+    return ui->checkBox_2->isChecked();
 }
 
 }  // namespace qtenv

@@ -43,12 +43,18 @@ class QTENV_API LogFilterDialog : public QDialog
 
 private Q_SLOTS:
     void onItemChanged(QTreeWidgetItem *item, int column);
+    void updateRegexValidation();
 
 public:
-    explicit LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int>& excludedModuleIds);
+    explicit LogFilterDialog(QWidget *parent, cModule *rootModule, const std::set<int>& excludedModuleIds,
+                           const std::string& lineFilterString, bool isLineFilterRegExp, bool isLineFilterCaseSensitive);
     ~LogFilterDialog();
 
     std::set<int> getExcludedModuleIds();
+    std::string getLineFilterString();
+    bool isLineFilterRegExp();
+    bool isLineFilterCaseSensitive();
+
 };
 
 }  // namespace qtenv
