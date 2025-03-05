@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ NED Documatation Generator
 Bundle-SymbolicName: org.omnetpp.neddoc; singleton:=true
 Bundle-Version: 6.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.omnetpp.neddoc.NeddocPlugin
 Bundle-Vendor: OpenSim Ltd.

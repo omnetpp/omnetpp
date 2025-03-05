@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Native library plug-in
 Bundle-SymbolicName: org.omnetpp.ide.nativelibs
 Bundle-Version: 6.1.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
 Eclipse-BundleShape: dir
