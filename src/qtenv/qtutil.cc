@@ -471,10 +471,12 @@ QString makeObjectTooltip(cObject *obj, bool verboseTooltip)
     }
 
     // if none of the above applies, showing some generic info
-    QString tooltip = QString("(") + getObjectShortTypeName(obj) + ") " + obj->getFullName();
+    QString tooltip = obj->getFullName() + QString(" (") + getObjectShortTypeName(obj) + ")";
     std::string objStr = obj->str();
-    if (!objStr.empty())
-        tooltip += QString(", ") + objStr.c_str();
+    if (!objStr.empty()) {
+        QString linkColor = QToolTip::palette().link().color().name();
+        tooltip += QString(", ") + "<font color='" + linkColor + "'>" + objStr.c_str() + "</font>";
+    }
 
     // for components, add NED docs, if enabled
     bool showNedDoc = getQtenv()->getPref("ned-doc-tooltips", true).toBool();
