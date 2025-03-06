@@ -904,14 +904,10 @@ SYS_LIBS=""
 #---------------------------------
 
 if test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes"; then
-  AC_PATH_PROGS(PYTHON_CONFIG, python3-config python-config, nope)
-
   # the full --cflags output is full of compiler flags we don't want nor need
-  PYTHON_CFLAGS=$($PYTHON_CONFIG --includes)
+  PYTHON_CFLAGS=$($PYTHON3 -c 'import sysconfig; print(f"-I{sysconfig.get_path("include")} -I{sysconfig.get_path("platinclude")}")')
 
-  # --libs is a subset of --ldflags, it seems, and --embed
-  # is needed to actually get the flag to link to libpython
-  PYTHON_LDFLAGS=$($PYTHON_CONFIG --ldflags --embed)
+  PYTHON_LDFLAGS=$($PYTHON3 -c 'import sysconfig; print(f"-L{sysconfig.get_config_var("LIBPL")} -L{sysconfig.get_config_var("LIBDIR")} {sysconfig.get_config_var("BLDLIBRARY")} {sysconfig.get_config_var("LIBS")}  {sysconfig.get_config_var("LIBM")} ")')
 
   OPP_CHECK_LIB(python3-dev, Python.h, Py_Initialize(), $PYTHON_CFLAGS, $PYTHON_LDFLAGS, python3_found)
 
@@ -919,7 +915,7 @@ if test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes"; then
     AC_MSG_ERROR([Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes), but the Python 3 development package was not found.])
   fi
 
-  PYTHON_EXT_SUFFIX=$($PYTHON_CONFIG --extension-suffix)
+  PYTHON_EXT_SUFFIX=$($PYTHON3 -c 'import sysconfig; print(sysconfig.get_config_var("EXT_SUFFIX"))')
 fi
 
 #----------------------
