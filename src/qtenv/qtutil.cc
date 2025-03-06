@@ -26,6 +26,7 @@
 #include <QtGui/QPainter>
 #include <QtWidgets/QGraphicsView>
 #include <QtWidgets/QGraphicsEffect>
+#include <QtWidgets/QToolTip>
 #include <QtCore/QDebug>
 
 #include "common/stringutil.h"
@@ -474,7 +475,40 @@ QString makeObjectTooltip(cObject *obj, bool verboseTooltip)
     std::string objStr = obj->str();
     if (!objStr.empty())
         tooltip += QString(", ") + objStr.c_str();
+
+    // for components, add NED docs, if enabled
+    bool showNedDoc = getQtenv()->getPref("ned-doc-tooltips", true).toBool();
+    if (verboseTooltip && showNedDoc) {
+        if (cComponent *component = dynamic_cast<cComponent *>(obj)) {
+            QString nedComment = getComponentDocumentationFortooltip(component).c_str();
+            if (!nedComment.isEmpty())
+                tooltip += QString("\n\n") + component->getComponentType()->getName() + ": " + nedComment + "\n";
+        }
+    }
+
     return tooltip;
+}
+
+std::string getComponentDocumentationFortooltip(cComponent *comp)
+{
+    std::string doc = comp->getComponentType()->getDocumentation();
+
+    std::vector<std::string> lines;
+
+    for (std::string& line : opp_split(opp_trim(doc), "\n")) {
+        if (opp_isblank(line.c_str()))  // end if first para
+            break;
+        if (line[0] == '#')
+            continue; // skip private comment
+        if (lines.size() >= 5) {  // max 5 lines
+            lines.push_back("...");
+            break;
+        }
+        lines.push_back(line);
+    }
+
+    doc = opp_join(lines, " ");
+    return doc;
 }
 
 LogInspector *isLogInspectorFor(cModule *mod, Inspector *insp)

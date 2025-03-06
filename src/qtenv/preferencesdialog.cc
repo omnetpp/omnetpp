@@ -49,6 +49,8 @@ void PreferencesDialog::init()
     // General tab
     QVariant variant = getQtenv()->getPref("confirm-exit");
     ui->confirmExit->setChecked(variant.isValid() ? variant.value<bool>() : true);
+    variant = getQtenv()->getPref("ned-doc-tooltips");
+    ui->nedDocTooltips->setChecked(variant.isValid() ? variant.value<bool>() : true);
     ui->express->setText(QString::number(getQtenv()->opt->updateFreqExpress));
 
     // XXX This conversion is fragile, it depends on the order of
@@ -192,6 +194,7 @@ void PreferencesDialog::accept()
     getQtenv()->opt->arrangeVectorConnections = ui->arrange->isChecked();
     getQtenv()->opt->showBubbles = ui->showBubbles->isChecked();
     getQtenv()->setPref("confirm-exit", ui->confirmExit->isChecked());
+    getQtenv()->setPref("ned-doc-tooltips", ui->nedDocTooltips->isChecked());
 
     // TODO: this conversion is fragile, it depends on the order of the enum which might change
     getQtenv()->opt->stripNamespace = StripNamespace(ui->hideNameSpace->currentIndex());

@@ -109,6 +109,7 @@ const QString &getObjectShortTypeName(cObject *object, StripNamespace stripMode)
 const char *getObjectFullTypeName(cObject *object);
 
 QTENV_API QString makeObjectTooltip(cObject *obj, bool verboseTooltip);
+QTENV_API std::string getComponentDocumentationFortooltip(cComponent *comp);
 
 const std::string& stripFormatting(const std::string& input, std::string& buffer);
 
