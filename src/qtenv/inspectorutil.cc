@@ -97,6 +97,12 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
         action->setData(QVariant::fromValue(InspectActionData{object, type}));
     }
 
+    cComponent *comp = dynamic_cast<cComponent *>(object);
+    if (comp) {
+        QAction *action = menu->addAction(QString("View NED Type's Source for '") + name + "'", getQtenv(), SLOT(viewNedSource()));
+        action->setData(QVariant::fromValue(object));
+    }
+
     // add "run until" menu items
     if (dynamic_cast<cSimpleModule *>(object) || dynamic_cast<cModule *>(object)) {
         menu->addSeparator();
@@ -123,7 +129,6 @@ void InspectorUtil::fillInspectorContextMenu(QMenu *menu, cObject *object, Inspe
         action->setData(QVariant::fromValue(object));
     }
 
-    cComponent *comp = dynamic_cast<cComponent *>(object);
     if (comp) {
         menu->addSeparator();
         QMenu *subMenu = menu->addMenu(QString("Set Log Level for '") + name + "' and children...");

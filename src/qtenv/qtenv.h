@@ -311,6 +311,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       void runUntilMessage();
       void excludeMessage();
       void utilitiesSubMenu();
+      void viewNedSource();
 
       void updateStoredInspector(cObject *newObject, cObject *oldObject); // Inspector* is the sender
 

@@ -67,6 +67,7 @@
 #include "loginspector.h"
 #include "genericobjectinspector.h"
 #include "figurerenderers.h"
+#include "fileeditor.h"
 #include "watchinspector.h"
 #include "mainwindow.h"
 #include "timelineinspector.h"
@@ -2627,6 +2628,29 @@ void Qtenv::utilitiesSubMenu()
             InspectorUtil::copyToClipboard(static_cast<cMessage *>(data.object), data.copy);
         }
     }
+}
+
+void Qtenv::viewNedSource()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (!action)
+        return;
+
+    cComponent *component = dynamic_cast<cComponent *>(action->data().value<cObject *>());
+    if (!component)
+        return;
+
+    cComponentType *componentType = component->getComponentType();
+    std::string documentation = componentType->getNedSource();
+    QString title = QString("NED Source: ") + componentType->getName();
+
+    FileEditor *editor = new FileEditor(getMainWindow());
+    editor->setContent(QString::fromStdString(documentation));
+    editor->setWindowTitle(title);
+    editor->setDisplayFilename(QString("From ") + componentType->getSourceFileName());
+    editor->setReadOnly(true);
+    editor->setAttribute(Qt::WA_DeleteOnClose);
+    editor->show();
 }
 
 void Qtenv::setComponentLogLevel()

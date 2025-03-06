@@ -57,9 +57,9 @@ public:
 
 private:
     Ui::fileEditor *ui;
-    QString fileName;  // Store file name instead of QFile
-    bool readOnly = false;  // Track read-only status
-    bool hasFile = false;   // Track if a file is associated
+    QString fileName;
+    bool readOnly = false;
+    bool hasFile = false;
 
     QMenu *contextMenu = nullptr;
 
