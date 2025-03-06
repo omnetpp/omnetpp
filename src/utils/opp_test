@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+#
+# opp_test: regression testing tool for OMNeT++/OMNEST
+#
+# Copyright (C) 2017 OpenSim Ltd.
+# Author: Zoltan Bojthe
+#
+
+from omnetpp.test import *
+
+tool = OppTest()
+exitcode = tool.run()
+sys.exit(exitcode)
+
