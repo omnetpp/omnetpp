@@ -40,7 +40,7 @@ jobs:
         save: ${{ github.event_name != 'pull_request' }}
 
     - name: Install Python dependencies
-      uses: getsentry/action-setup-venv@v2.1.0
+      uses: getsentry/action-setup-venv@v2.1.1
       with:
         python-version: 3.12.6
         cache-dependency-path: python/requirements.txt
