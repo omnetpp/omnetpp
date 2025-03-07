@@ -873,7 +873,7 @@ exit(check_dependencies())
 EOT
 )
 
-if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
+if output=$($PYTHON3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     AC_MSG_RESULT(yes)
 else
     AC_MSG_RESULT(no)
@@ -904,18 +904,31 @@ SYS_LIBS=""
 #---------------------------------
 
 if test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes"; then
-  # the full --cflags output is full of compiler flags we don't want nor need
-  PYTHON_CFLAGS=$($PYTHON3 -c 'import sysconfig; print(f"-I{sysconfig.get_path("include")} -I{sysconfig.get_path("platinclude")}")')
+  # ensure that the python-config version is matcing the main python's version number
+  PYTHONXY_CONFIG=python$($PYTHON3 -c 'import sysconfig; print(sysconfig.get_config_var("py_version_short"))')-config
+  AC_PATH_PROGS(PYTHON_CONFIG, $PYTHONXY_CONFIG python3-config python-config, nope)
 
-  PYTHON_LDFLAGS=$($PYTHON3 -c 'import sysconfig; print(f"-L{sysconfig.get_config_var("LIBPL")} -L{sysconfig.get_config_var("LIBDIR")} {sysconfig.get_config_var("BLDLIBRARY")} {sysconfig.get_config_var("LIBS")}  {sysconfig.get_config_var("LIBM")} ")')
+  # get extension suffix
+  PYTHON_EXT_SUFFIX=$($PYTHON_CONFIG --extension-suffix)
+
+  # Check if the extension suffix from python-config matches the one from sysconfig
+  PYTHON_SYSCONFIG_EXT_SUFFIX=$($PYTHON3 -c 'import sysconfig; print(sysconfig.get_config_var("EXT_SUFFIX"))')
+  if test "$PYTHON_EXT_SUFFIX" != "$PYTHON_SYSCONFIG_EXT_SUFFIX"; then
+    AC_MSG_ERROR([Python extension suffix mismatch: $PYTHON_CONFIG reports '$PYTHON_EXT_SUFFIX', but $PYTHON3's sysconfig module reports '$PYTHON_SYSCONFIG_EXT_SUFFIX'. Please ensure that $PYTHON_CONFIG and $PYTHON3 are from the same Python installation.])
+  fi
+
+  # the full --cflags output is full of compiler flags we don't want nor need
+  PYTHON_CFLAGS=$($PYTHON_CONFIG --includes)
+
+  # --libs is a subset of --ldflags, it seems, and --embed
+  # is needed to actually get the flag to link to libpython
+  PYTHON_LDFLAGS=$($PYTHON_CONFIG --ldflags --embed)
 
   OPP_CHECK_LIB(python3-dev, Python.h, Py_Initialize(), $PYTHON_CFLAGS, $PYTHON_LDFLAGS, python3_found)
 
   if test $python3_found != yes; then
     AC_MSG_ERROR([Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes), but the Python 3 development package was not found.])
   fi
-
-  PYTHON_EXT_SUFFIX=$($PYTHON3 -c 'import sysconfig; print(sysconfig.get_config_var("EXT_SUFFIX"))')
 fi
 
 #----------------------

@@ -700,6 +700,7 @@ RCC
 UIC
 MOC
 QMAKE
+PYTHON_CONFIG
 PYTHON3
 SWIG
 PERL
@@ -5679,7 +5680,7 @@ exit(check_dependencies())
 EOT
 )
 
-if output=$(python3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
+if output=$($PYTHON3 -c "$PYTHON_PACKAGE_CHECK_CODE") ; then
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 else
@@ -5719,10 +5720,76 @@ SYS_LIBS=""
 #---------------------------------
 
 if test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes"; then
-  # the full --cflags output is full of compiler flags we don't want nor need
-  PYTHON_CFLAGS=$($PYTHON3 -c 'import sysconfig; print(f"-I{sysconfig.get_path("include")} -I{sysconfig.get_path("platinclude")}")')
+  # ensure that the python-config version is matcing the main python's version number
+  PYTHONXY_CONFIG=python$($PYTHON3 -c 'import sysconfig; print(sysconfig.get_config_var("py_version_short"))')-config
+  for ac_prog in $PYTHONXY_CONFIG python3-config python-config
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_PYTHON_CONFIG+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) case $PYTHON_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PYTHON_CONFIG="$PYTHON_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_PYTHON_CONFIG="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
 
-  PYTHON_LDFLAGS=$($PYTHON3 -c 'import sysconfig; print(f"-L{sysconfig.get_config_var("LIBPL")} -L{sysconfig.get_config_var("LIBDIR")} {sysconfig.get_config_var("BLDLIBRARY")} {sysconfig.get_config_var("LIBS")}  {sysconfig.get_config_var("LIBM")} ")')
+  ;;
+esac ;;
+esac
+fi
+PYTHON_CONFIG=$ac_cv_path_PYTHON_CONFIG
+if test -n "$PYTHON_CONFIG"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $PYTHON_CONFIG" >&5
+printf "%s\n" "$PYTHON_CONFIG" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+  test -n "$PYTHON_CONFIG" && break
+done
+test -n "$PYTHON_CONFIG" || PYTHON_CONFIG="nope"
+
+
+  # get extension suffix
+  PYTHON_EXT_SUFFIX=$($PYTHON_CONFIG --extension-suffix)
+
+  # Check if the extension suffix from python-config matches the one from sysconfig
+  PYTHON_SYSCONFIG_EXT_SUFFIX=$($PYTHON3 -c 'import sysconfig; print(sysconfig.get_config_var("EXT_SUFFIX"))')
+  if test "$PYTHON_EXT_SUFFIX" != "$PYTHON_SYSCONFIG_EXT_SUFFIX"; then
+    as_fn_error $? "Python extension suffix mismatch: $PYTHON_CONFIG reports '$PYTHON_EXT_SUFFIX', but $PYTHON3's sysconfig module reports '$PYTHON_SYSCONFIG_EXT_SUFFIX'. Please ensure that $PYTHON_CONFIG and $PYTHON3 are from the same Python installation." "$LINENO" 5
+  fi
+
+  # the full --cflags output is full of compiler flags we don't want nor need
+  PYTHON_CFLAGS=$($PYTHON_CONFIG --includes)
+
+  # --libs is a subset of --ldflags, it seems, and --embed
+  # is needed to actually get the flag to link to libpython
+  PYTHON_LDFLAGS=$($PYTHON_CONFIG --ldflags --embed)
 
 
    save_CXXFLAGS=$CXXFLAGS
@@ -5764,8 +5831,6 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
   if test $python3_found != yes; then
     as_fn_error $? "Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes), but the Python 3 development package was not found." "$LINENO" 5
   fi
-
-  PYTHON_EXT_SUFFIX=$($PYTHON3 -c 'import sysconfig; print(sysconfig.get_config_var("EXT_SUFFIX"))')
 fi
 
 #----------------------
