@@ -28,6 +28,7 @@ all: $(CONFIGFILE)
 	$(Q)cp opp_ide $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_dbgmi $(OMNETPP_BIN_DIR)
 	$(Q)cp opp_dbgdap $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_python_repl $(OMNETPP_BIN_DIR)
 	$(Q)cp omnetpp $(OMNETPP_BIN_DIR)
 	$(Q)cp omnest $(OMNETPP_BIN_DIR)
 	$(Q)chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test $(OMNETPP_BIN_DIR)/opp_fingerprinttest $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/opp_neddoc $(OMNETPP_BIN_DIR)/opp_ide $(OMNETPP_BIN_DIR)/opp_dbgdap $(OMNETPP_BIN_DIR)/opp_dbgmi $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
