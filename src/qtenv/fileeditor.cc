@@ -262,6 +262,11 @@ void FileEditor::show()
             return;
     }
 
+    // Restore window geometry if available
+    QByteArray geometry = getQtenv()->getPref("fileeditor-geom").toByteArray();
+    if (!geometry.isEmpty())
+        restoreGeometry(geometry);
+
     QDialog::show();
 
     updateFont(); // apparently this only takes effect if it is issued after show()
@@ -269,6 +274,8 @@ void FileEditor::show()
 
 void FileEditor::reject()
 {
+    // Save window geometry when closing
+    getQtenv()->setPref("fileeditor-geom", saveGeometry());
     QDialog::reject();
 }
 
