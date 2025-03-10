@@ -418,22 +418,6 @@ Run Until Next Event
 It is also possible to run until an event occurs in a specified module. Browse for the module and choose :guilabel:`Run
 until next event in this module.` Simulation will stop once an event occurs in the selected module.
 
-Debug Next Event
-^^^^^^^^^^^^^^^^
-
-This function is useful when you are running the simulation under a C++ source-level debugger. :guilabel:`Debug Next
-Event` will perform one simulation event just like :guilabel:`Step`, but executes a software debugger breakpoint
-(``int3`` or ``SIGTRAP``) just before entering the module's event handling code (``handleMessage()`` or ``activity()``).
-This will cause the debugger to stop the program there, allowing you to examine state variables, single-step, etc. When you
-resume execution, Qtenv will regain control and become responsive again.
-
-Debug On Errors
-^^^^^^^^^^^^^^^
-
-This menu item allows you to change the value of the ``debug-on-errors`` configuration variable on the fly. This is
-useful if you forgot to set this option before starting the simulation, but would like to debug a runtime error. The
-state of this menu item is reset to the value of ``debug-on-errors`` every time Qtenv is started.
-
 Recording an Event Log
 ^^^^^^^^^^^^^^^^^^^^^^
 
@@ -646,20 +630,61 @@ Examples:
 Using Qtenv with a Debugger
 ---------------------------
 
-You can use Qtenv in combination with a C++ debugger, which is mainly useful when developing new models. When doing so,
-there are a few things you need to know.
+You can use Qtenv in combination with a C++ debugger, which is mainly useful when developing new models.
+Qtenv can assist the user in debugging in various ways:
 
-Qtenv is a library that runs as part of the simulation program. This has several implications, the most apparent being
-that when the simulation crashes (due to a bug in the model's C++ code), it will bring down the whole OS process,
-including the Qtenv GUI.
+- By triggering a debug trap (a.k.a. debug breakpoint) at strategic places, allowing the user to
+  debug a certain event or error condition.
 
-The second consequence is that suspending the simulation program in a debugger will also freeze the GUI until it is
-resumed. Also, Qtenv is single-threaded and runs in the same thread as the simulation program, so even if you only
-suspend the simulation's thread in the debugger, the UI will freeze.
+- By launching an external debugger and attaching it to the simulation process before a debug trap is executed. Qtenv
+  detects if a debugger is already attached, and if not, it offers to launch and attach one.
 
-The Qtenv UI deals with ``cObject``\ s (the C++ methods that the GUI relies on are defined on ``cObject``). All other data
-such as primitive variables, non-``cObject`` classes and structs, STL containers, etc., are hidden from Qtenv. You may wrap
-objects into ``cObject``\ s to make them visible for Qtenv; that's what the ``WATCH`` macros do as well.
+- By displaying memory addresses of inspected objects, to facilitate examining those objects in a debugger.
+
+What is a debug trap? A debug trap is a mechanism used to pause the execution of a program at a specific point,
+allowing developers to inspect the current state of the program, including variables, memory, and control flow. When a
+debug trap is triggered, it causes the debugger to halt the program, providing an opportunity to perform detailed
+analysis and debugging tasks. This is particularly useful for identifying and resolving issues such as runtime errors,
+unexpected behavior, or logic flaws in the code. Debug traps can be implemented using various techniques, such as
+inserting specific instructions like ``int3`` or ``SIGTRAP`` in the code, which are recognized by the debugger as
+breakpoints. When no debugger is attached, a debug trap usually causes the program to abort.
+
+.. note::
+
+   Qtenv is a library that runs as part of the simulation program.  Therefore, suspending the simulation program in a
+   debugger will also freeze the GUI until it is resumed. Also, if the simulation crashes, it will bring down the whole
+   process including the Qtenv GUI.
+
+The debugger command line to be run by Qtenv can be specified in one of two ways:
+
+- The ``OMNETPP_DEBUGGER_COMMAND`` environment variable.
+- The ``debugger-attach-command`` configuration option.
+
+The value of these options is a string that must contain exactly one ``%u`` string that will be
+replaced by Qtenv with the process ID of the simulation.
+
+Qtenv offers the following debugging-related actions:
+
+Debug On Errors
+^^^^^^^^^^^^^^^
+
+This menu item toggles the flag that controls whether a debug breakpoint is executed when the simulation encounters a
+runtime error. This option corresponds to the ``debug-on-errors`` configuration option. The state of this menu item is
+reset to the value of ``debug-on-errors`` every time a new simulation is started.
+
+Debug Next Event
+^^^^^^^^^^^^^^^^
+
+Performs one simulation event just like :guilabel:`Step`, but executes a debugger trap just before entering the module's
+event handling code (``handleMessage()`` or ``activity()``). This will cause the debugger to stop the program there,
+allowing you to examine state variables, single-step, etc. When you resume execution, Qtenv will regain control and
+become responsive again.
+
+Debug Now
+^^^^^^^^^
+
+Triggers a debug trap immediately.
+
 
 The Preferences Dialog
 ----------------------
@@ -804,7 +829,7 @@ Inspectors
 Inspectors display the hierarchical name (i.e., full path) and class name of the inspected object in the title using the
 ``getFullPath()`` and ``getClassName()`` member functions of ``cObject``. The :guilabel:`Go to parent` feature in
 inspectors uses the ``getOwner()`` method of ``cObject``.
-less
+
 The :guilabel:`Object Navigator` displays the full name and class name of each object (``getFullName()`` and
 ``getClassName()``), and also the ID for classes that have one (``getId()`` on ``cMessage`` and ``cModule``). When you
 hover with the mouse, the tooltip displays the info string (``str()`` method). The roots of the tree are the network
@@ -863,11 +888,13 @@ enabled. The frame rate during smooth simulation is adaptive. Certain properties
 settings in the :guilabel:`Animation Parameters` dialog. To learn more about smooth animation, see the section of
 similar title in the Simulation Manual.
 
-Debugging
-~~~~~~~~~
+Extending Qtenv
+~~~~~~~~~~~~~~~
 
-The :guilabel:`Debug Next Event` menu item issues the ``int3`` x86 assembly instruction on Windows and raises a
-``SIGTRAP`` signal on other systems.
+It is possible for the user to contribute new inspector types without modifying Qtenv code. For this, the inspector C++
+code needs to include Qtenv header files and link with the Qtenv library. One caveat is that the Qtenv headers are not
+public API and thus subject to change in a new version of |omnet++|.
+
 
 
 Command-line and Configuration Options
