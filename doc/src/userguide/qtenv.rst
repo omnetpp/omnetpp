@@ -258,37 +258,42 @@ There are several ways to zoom the canvas, both using the mouse and the keyboard
 The Log Viewer
 ~~~~~~~~~~~~~~
 
-When you run the simulation, Qtenv will remember the output from logging statements (``EV << "Hello World\n";``) and the
-messages sent between modules, and can present it to you in a meaningful manner. Only the output from the last N events
-is preserved (N being configurable in the :guilabel:`Preferences` dialog), and only in Step, Run, and Fast Run modes.
-(Express mode can be so fast because such overhead is turned off while it's active.)
+When you run the simulation, the :guilabel:`Log Viewer` lets you review the log and message traffic from the simulation.
 
-The :guilabel:`Log Viewer` shows log related to one compound module and its subtree. It has two modes:
-:guilabel:`Messages` and :guilabel:`Log` mode, with :guilabel:`Messages` being the default. You can switch between the
-two modes using tool icons on the inspector's local toolbar.
+The :guilabel:`Log Viewer` has two modes that you can toggle using the inspector's local toolbar:
+:guilabel:`Messages` and :guilabel:`Log` mode.
 
-In :guilabel:`Messages` mode, the window displays messages sent between the (immediate) submodules of the inspected
-compound module, and messages sent out of or into the compound module. The embedded :guilabel:`Log Viewer` shows
-content related to the module inspected in the :guilabel:`Network Display` above it at any time. You can view details
-about any message in the :guilabel:`Object Inspector` by clicking on it, and access additional functions in its context
-menu.
+- In :guilabel:`Messages` mode, the window displays messages/packets sent locally in a tabular format. Only messages
+  sent among the submodules of the inspected module and messages sent out of/into the module are shown. You can view
+  details about any message in the :guilabel:`Object Inspector` by clicking on it, and access additional functions in
+  its context menu. Columns can be contributed by the simulation model via defining message printers (see C++ section in
+  this chapter).
 
-The :guilabel:`Log Viewer` offers useful tools like the :guilabel:`Set Sending Time as Reference`, which makes it
-possible to set a reference time, and display all other times as a delta compared to it.
+- In :guilabel:`Log` mode, the window displays log lines that belong to any module in the submodule tree of the
+  inspected compound module. Log is written by simulation modules using ``EV``, ``EV_INFO``, ``EV_DETAIL``, and other
+  logging macros. Formatting via ANSI escape sequences is supported. The log prefix can be configured using the
+  :guilabel:`Preferences` dialog.
 
-.. note::
+The embedded :guilabel:`Log Viewer` follows the selection of module inspected in the :guilabel:`Network Display`.
 
-   In :guilabel:`Messages` mode, the :guilabel:`Info` column can be customized by writing and registering a custom
-   ``cMessagePrinter`` class. This string is split at the tab characters (``'\t'``) into parts that are aligned in
-   additional columns.
+The :guilabel:`Log Viewer` offers useful tools like bookmarking, textual line filtering, and the :guilabel:`Set Sending
+Time as Reference` option that makes it possible to set a reference time, and display all other times as a delta
+compared to it.
+
+Log is recorded only in Step, Run, and Fast Run modes. (Express mode can be so fast because such overhead is turned off
+while it's active.)
+
+Only the output from the last N events is preserved (N being configurable in the :guilabel:`Preferences` dialog), i.e.
+after a while, information from older events is being discarded.
+
+Note that it is also possible to open further :guilabel:`Log Viewers` as floating windows, allowing you to see the logs
+of several modules at the same time.  To open a log window, find the module in the module tree or the network display,
+right-click it, and choose :guilabel:`Open Component Log` from the context menu.
 
 .. figure:: pictures/Qtenv-log-msgs.png
    :width: 80%
 
    The log viewer showing message traffic
-
-In :guilabel:`Log` mode, the window displays log lines that belong to submodules under the inspected compound module
-(i.e., the whole module subtree).
 
 .. figure:: pictures/Qtenv-log-textual.png
    :width: 80%
@@ -305,10 +310,6 @@ menu and select :guilabel:`Filter Window Contents`.
 
 General logging behavior, such as the prefix format, can be controlled in the :guilabel:`Preferences` dialog. The log
 level of each module (and its descendants) can be set in its context menu.
-
-It is also possible to open separate log windows for individual modules. A log window for a compound module displays the
-log from all of its submodule tree. To open a log window, find the module in the module tree or the network display,
-right-click it, and choose :guilabel:`Open Component Log` from the context menu.
 
 
 Using Qtenv
