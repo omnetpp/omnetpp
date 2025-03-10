@@ -36,7 +36,7 @@ if [ "$BUILD_MACOS_X86_64_DISTRO" = "true" -o "$BUILD_MACOS_AARCH64_DISTRO" = "t
   echo Building 64-bit macOS binaries using a cross compiler
   cp releng/ide/native/Makefile.inc.macos Makefile.inc
   touch include/omnetpp/platdep/config.h # an empty config header is fine here
-  export MACOSX_DEPLOYMENT_TARGET=10.10
+  export MACOSX_DEPLOYMENT_TARGET=10.14
   make cleanall || { echo --- error during cleaning native macOS IDE parts ---; exit 1;}
   make SHARED_LIBS=no MODE=release ui -j$(nproc) || { echo --- error during compiling native macOS IDE parts ---; exit 1;}
  else
