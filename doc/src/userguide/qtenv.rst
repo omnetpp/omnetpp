@@ -264,14 +264,17 @@ is preserved (N being configurable in the :guilabel:`Preferences` dialog), and o
 (Express mode can be so fast because such overhead is turned off while it's active.)
 
 The :guilabel:`Log Viewer` shows log related to one compound module and its subtree. It has two modes:
-:guilabel:`Messages` and :guilabel:`Log` mode, with :guilabel:`Messages` being the default. You can switch between the two
-modes using tool icons on the inspector's local toolbar.
+:guilabel:`Messages` and :guilabel:`Log` mode, with :guilabel:`Messages` being the default. You can switch between the
+two modes using tool icons on the inspector's local toolbar.
 
 In :guilabel:`Messages` mode, the window displays messages sent between the (immediate) submodules of the inspected
 compound module, and messages sent out of or into the compound module. The embedded :guilabel:`Log Viewer` shows
 content related to the module inspected in the :guilabel:`Network Display` above it at any time. You can view details
 about any message in the :guilabel:`Object Inspector` by clicking on it, and access additional functions in its context
 menu.
+
+The :guilabel:`Log Viewer` offers useful tools like the :guilabel:`Set Sending Time as Reference`, which makes it
+possible to set a reference time, and display all other times as a delta compared to it.
 
 .. note::
 
@@ -306,6 +309,7 @@ level of each module (and its descendants) can be set in its context menu.
 It is also possible to open separate log windows for individual modules. A log window for a compound module displays the
 log from all of its submodule tree. To open a log window, find the module in the module tree or the network display,
 right-click it, and choose :guilabel:`Open Component Log` from the context menu.
+
 
 Using Qtenv
 -----------
