@@ -461,6 +461,9 @@ Rebuilds the simulation by deleting the current network and setting it up again.
 crash when :guilabel:`Rebuild Network` is invoked, usually due to incorrectly written destructors in module
 classes.
 
+Inspecting Objects
+------------------
+
 Inspecting Simulation Objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -474,13 +477,15 @@ given object. Such UI parts are called :guilabel:`inspectors` in Qtenv.
 The three inspectors mentioned above are built into the main window, but you can open additional ones at any time.
 The new inspectors will open in floating windows above the main window, and you can have any number of them open.
 
-.. figure:: pictures/Qtenv-floating-inspector.png
-   :width: 40%
-
-   A floating inspector window
-
 Inspectors come in many flavors. They can be graphical like the network view, textual like the log viewer, tree-based
 like the object inspector, or something entirely different.
+
+The screenshot below shows Qtenv with several inspectors open.
+
+.. figure:: pictures/Qtenv-with-inspectors.png
+   :width: 80%
+
+   Qtenv with several floating inspectors open
 
 .. note::
 
@@ -496,16 +501,19 @@ Opening Inspectors
 
 Inspectors can be opened in various ways: by double-clicking an item in the :guilabel:`Object Navigator` or in other
 inspectors; by choosing one of the :guilabel:`Open` menu items from the context menu of an object displayed on the
-UI; via the :guilabel:`Find/Inspect Objects` dialog (see later); or even by directly entering the C++ pointer of an
-object as a hex value. Inspector-related menu items are in the :guilabel:`Inspect` menu.
+UI; via the :guilabel:`Find/Inspect Objects` dialog (see later). Inspector-related menu items are in the :guilabel:`Inspect` menu.
 
 .. figure:: pictures/Qtenv-inspect-menu.png
    :width: 50%
 
    The Inspect menu
 
-History
-^^^^^^^
+There is also an :guilabel:`Inspect by pointer` menu item, which allows you to directly enter the C++ pointer of an
+object as a hexadecimal value.  Beware that entering an invalid pointer will crash the simulation. Object addresses can
+be obtained e.g. by using a debugger.
+
+Navigation History
+^^^^^^^^^^^^^^^^^^
 
 Inspectors always show some aspect of one simulation object, but they can change objects. For example, in the
 :guilabel:`Network View`, when you double-click a submodule that is itself a compound module, the view will switch to
@@ -517,33 +525,13 @@ disappear from the history.
 Restoring Inspectors
 ^^^^^^^^^^^^^^^^^^^^
 
-When you exit and then restart a simulation program, Qtenv tries to restore the open inspector windows. However, as
-object identity is not preserved across different runs of the same program, Qtenv uses the object full path, class name,
-and object ID (where exists) to find and identify the object to be inspected.
+When you exit and then restart a simulation program, Qtenv attempts to reopen the inspector windows that were open
+before. However, because object identity is not preserved across different runs of the same program, Qtenv relies on
+the object's full path, class name, and object ID (if available) to locate and identify the object to be inspected. This
+method can occasionally result in misidentification of objects.
 
 Preferences such as zoom level or open/closed state of a tree node are usually maintained per object type (i.e. tied to
 the C++ class of the inspected object).
-
-Extending Qtenv
-^^^^^^^^^^^^^^^
-
-It is possible for the user to contribute new inspector types without modifying Qtenv code. For this, the inspector C++
-code needs to include Qtenv header files and link with the Qtenv library. One caveat is that the Qtenv headers are not
-public API and thus subject to change in a new version of |omnet++|.
-
-Inspecting Objects
-------------------
-
-Object Inspectors
-~~~~~~~~~~~~~~~~~
-
-In addition to the inspectors embedded in the main window, Qtenv lets you open floating inspector windows for individual
-objects. The screenshot below shows Qtenv with several inspectors open.
-
-.. figure:: pictures/Qtenv-with-inspectors.png
-   :width: 80%
-
-   Qtenv with several floating inspectors open
 
 Browsing the Registered Components
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -561,9 +549,10 @@ Querying Objects
 ~~~~~~~~~~~~~~~~
 
 The :guilabel:`Find/Inspect Objects` dialog allows you to search the simulation for objects that meet certain criteria.
-The criteria can be the object name, class name, the value of a field of the object, or a combination of those. The
-results are presented in a table that can be sorted by columns, and items in the table can be double-clicked to inspect
-them.
+The criteria can be the object name, class name, the value of a field of the object, or a combination of those. Class
+names must be fully qualified (i.e. they should contain the namespace(s) they are in), regardless of the related setting
+in the :guilabel:`Preferences dialog`. The results are presented in a table that can be sorted by columns, and items in
+the table can be double-clicked to inspect them.
 
 Some possible use cases:
 
@@ -610,22 +599,6 @@ Examples:
 - ``NOT className =~ omnetpp::cMessage AND byteLength =~ {1500..}``: Matches messages whose class is not cMessage and byteLength is at least 1500 (only messages have a ``"byteLength"`` attribute).
 - ``"TCP packet" OR "*.packet(15)"``: Quotation marks are needed when the pattern is a reserved word or contains whitespace or special characters.
 
-.. note::
-
-   Qtenv uses the ``cObject::forEachChild`` method to recursively collect all objects from a tree. If you have your own
-   objects derived from ``cObject``, you should redefine the ``cObject::forEachChild`` method to ensure correct object
-   search functionality.
-
-.. note::
-
-   The class names must be fully qualified, meaning they should contain the namespace(s) they are in, regardless of the
-   related setting in the :guilabel:`Preferences dialog`.
-
-.. note::
-
-   If you are debugging the simulation with a source level debugger, you can also use the :guilabel:`Inspect by pointer`
-   menu item. Let the debugger display the address of the object you want to inspect, and paste it into the dialog.
-   Please note that entering an invalid pointer will crash the simulation.
 
 Using Qtenv with a Debugger
 ---------------------------
