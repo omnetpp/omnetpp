@@ -69,268 +69,10 @@ The central area of the main window is divided into the following regions:
 
 Additionally, you can open inspector windows that float on top of the main window.
 
-Using Qtenv
------------
-
-Starting Qtenv
-~~~~~~~~~~~~~~
-
-When you launch a simulation from the IDE, it will be started with Qtenv by default. When it does not, you can
-explicitly select Qtenv in the :guilabel:`Run` or :guilabel:`Debug` dialog.
-
-Qtenv is also the default when you start the simulation from the command line. When necessary, you can force Qtenv by
-adding the ``-u Qtenv`` switch to the command line.
-
-The complete list of command-line options, related environment variables, and configuration options can be found at the
-end of this chapter.
-
-Setting Up and Running the Simulation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-On startup, Qtenv reads the ini file(s) specified on the command line (or ``omnetpp.ini`` if none is specified), and
-automatically sets up the simulation described in them. If they contain several simulation configurations, Qtenv will
-ask you which one you want to set up.
-
-.. figure:: pictures/Qtenv-setup-dialog.png
-   :width: 60%
-
-   Setting Up a New Simulation
-
-Once a simulation has been set up (modules have been created and initialized), you can run it in various modes and
-examine its state. You can restart the simulation at any time, or set up another simulation. If you choose to quit Qtenv
-before the simulation finishes (or try to restart the simulation), Qtenv will ask you whether to finalize the
-simulation, which usually translates to saving summary statistics.
-
-Functions related to setting up a simulation are in the :guilabel:`File` and :guilabel:`Simulate` menus,
-and the most important ones are accessible via toolbar icons and keyboard shortcuts.
-
-Some of these functions are:
-
-.. figure:: pictures/Qtenv-file-menu.png
-   :width: 50%
-
-   The File menu
-
-Set up a Configuration
-^^^^^^^^^^^^^^^^^^^^^^
-
-This function lets you choose a configuration and run number from the ini file.
-
-Open Primary Ini File
-^^^^^^^^^^^^^^^^^^^^^
-
-Opens the first ini file in a text window for viewing.
-
-.. figure:: pictures/Qtenv-simulate-menu.png
-   :width: 50%
-
-   The Simulate menu
-
-Step
-^^^^
-
-:guilabel:`Step` lets you execute one simulation event, which is at the front of the FES. The next event is always shown on
-the status bar. The module where the next event will be delivered is highlighted with a red rectangle on the graphical
-display.
-
-Run (or Normal Run)
-^^^^^^^^^^^^^^^^^^^
-
-In :guilabel:`Run` mode, the simulation runs with all tracing aids on. Message animation is active, and the simulation time is
-interpolated if the model requested a non-zero animation speed. Inspector windows are constantly updated. Output
-messages are displayed in the main window and module output windows. You can stop the simulation with the
-:guilabel:`Stop` button on the toolbar. You can fully interact with the user interface while the simulation is running,
-such as opening inspectors.
-
-.. note::
-
-   If you find this mode too slow or distracting, you may switch off animation features in the :guilabel:`Preferences`
-   dialog.
-
-Fast Run
-^^^^^^^^
-
-In :guilabel:`Fast` mode, message animation is turned off. The inspectors are updated much less often. Fast mode is
-several times faster than the Run mode; the speed can increase by up to 10 times (or up to the configured event count).
-
-Express Run
-^^^^^^^^^^^
-
-In :guilabel:`Express` mode, the simulation runs at about the same speed as with Cmdenv, with all tracing disabled. Module
-log is not recorded. The simulation can only be interacted with once in a while, so the run-time overhead of the user
-interface is minimal. UI updates can even be disabled completely, in which case you have to explicitly click the
-:guilabel:`Update now` button to refresh the inspectors.
-
-Run Until
-^^^^^^^^^
-
-You can run the simulation until a specified simulation time, event number, or until a specific message has been
-delivered or canceled. This is a valuable tool during debugging sessions.
-It is also possible to right-click on an event in the simulation timeline and choose the :guilabel:`Run until this
-event` menu item.
-
-.. figure:: pictures/Qtenv-rununtil.png
-   :width: 60%
-
-   The Run Until dialog
-
-Run Until Next Event
-^^^^^^^^^^^^^^^^^^^^
-
-It is also possible to run until an event occurs in a specified module. Browse for the module and choose :guilabel:`Run
-until next event in this module.` Simulation will stop once an event occurs in the selected module.
-
-Debug Next Event
-^^^^^^^^^^^^^^^^
-
-This function is useful when you are running the simulation under a C++ source-level debugger. :guilabel:`Debug Next
-Event` will perform one simulation event just like :guilabel:`Step`, but executes a software debugger breakpoint
-(``int3`` or ``SIGTRAP``) just before entering the module's event handling code (``handleMessage()`` or ``activity()``).
-This will cause the debugger to stop the program there, allowing you to examine state variables, single-step, etc. When you
-resume execution, Qtenv will regain control and become responsive again.
-
-Debug On Errors
-^^^^^^^^^^^^^^^
-
-This menu item allows you to change the value of the ``debug-on-errors`` configuration variable on the fly. This is
-useful if you forgot to set this option before starting the simulation, but would like to debug a runtime error. The
-state of this menu item is reset to the value of ``debug-on-errors`` every time Qtenv is started.
-
-Recording an Event Log
-^^^^^^^^^^^^^^^^^^^^^^
-
-The |omnet++| simulation kernel allows you to record event-related information into a file, which can later be used to
-analyze the simulation run using the :guilabel:`Sequence Chart` tool in the IDE. Eventlog recording can be turned on
-with the ``record-eventlog=true`` ini file option, but also interactively, via the respective item in the
-:guilabel:`Simulate` menu, or using a toolbar button.
-
-Note that starting Qtenv with ``record-eventlog=true`` and turning on recording later does not result in exactly the
-same eventlog file. In the former case, all steps of setting up the network, such as module creations, are recorded as
-they happen; while for the latter, Qtenv has to "fake" a chain of steps that would result in the current state of the
-simulation.
-
-Capturing a Video
-^^^^^^^^^^^^^^^^^
-
-When active, this feature will save the contents of the main window into a subfolder named ``frames`` in the working
-directory with a regular frequency (in animation time). Each frame is a PNG image, with a sequence number in its file
-name. Currently, the user has to convert (encode) these images into a video file after the fact by using an external tool
-(such as ``ffmpeg``, ``avconv``, or ``vlc``). When the recording is started, an info dialog pops up, showing further
-details on the output, and an example command for encoding in high quality using ``ffmpeg``. The resulting video is also
-affected by the speed slider on the toolbar.
-
-.. note::
-
-   This built-in recording feature is able to produce a smooth video, in contrast to external screen-capture utilities.
-   This is possible because it has access to more information and has more control over the process than external
-   tools.
-
-Conclude Simulation
-^^^^^^^^^^^^^^^^^^^
-
-This function finalizes the simulation by invoking the user-supplied ``finish()`` member functions on all module and
-channel objects in the simulation. The customary implementation of ``finish()`` is to record summary statistics. The
-simulation cannot be continued afterwards.
-
-Rebuild Network
-^^^^^^^^^^^^^^^
-
-Rebuilds the simulation by deleting the current network and setting it up again. Improperly written simulations often
-crash when :guilabel:`Rebuild Network` is invoked, usually due to incorrectly written destructors in module
-classes.
-
-Inspecting Simulation Objects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Inspectors
-^^^^^^^^^^
-
-The :guilabel:`Network Display`, the :guilabel:`Log Viewer`, and the :guilabel:`Object Inspector` in the main window
-share some common properties: they display various aspects (graphical view / log messages / fields or contents) of a
-given object. Such UI parts are called :guilabel:`inspectors` in Qtenv.
-
-The three inspectors mentioned above are built into the main window, but you can open additional ones at any time.
-The new inspectors will open in floating windows above the main window, and you can have any number of them open.
-
-.. figure:: pictures/Qtenv-floating-inspector.png
-   :width: 40%
-
-   A floating inspector window
-
-Inspectors come in many flavors. They can be graphical like the network view, textual like the log viewer, tree-based
-like the object inspector, or something entirely different.
-
-.. note::
-
-   Some window managers might disable/hide the close button of floating inspectors. If this happens, you can still close
-   them with a keyboard shortcut (most commonly
-   Alt
-   +
-   F4
-   ), or by right-clicking on the title bar, and choosing the Close option in the appearing menu.
-
-Opening Inspectors
-^^^^^^^^^^^^^^^^^^
-
-Inspectors can be opened in various ways: by double-clicking an item in the :guilabel:`Object Navigator` or in other
-inspectors; by choosing one of the :guilabel:`Open` menu items from the context menu of an object displayed on the
-UI; via the :guilabel:`Find/Inspect Objects` dialog (see later); or even by directly entering the C++ pointer of an
-object as a hex value. Inspector-related menu items are in the :guilabel:`Inspect` menu.
-
-.. figure:: pictures/Qtenv-inspect-menu.png
-   :width: 50%
-
-   The Inspect menu
-
-History
-^^^^^^^
-
-Inspectors always show some aspect of one simulation object, but they can change objects. For example, in the
-:guilabel:`Network View`, when you double-click a submodule that is itself a compound module, the view will switch to
-showing the internals of that module; or, the :guilabel:`Object Inspector` will always show information about the object
-last clicked in the UI. Inspectors maintain a navigable history: the :guilabel:`Back`/:guilabel:`Forward` functions go
-to the object inspected before/after the currently displayed object. Objects that are deleted during simulation also
-disappear from the history.
-
-Restoring Inspectors
-^^^^^^^^^^^^^^^^^^^^
-
-When you exit and then restart a simulation program, Qtenv tries to restore the open inspector windows. However, as
-object identity is not preserved across different runs of the same program, Qtenv uses the object full path, class name,
-and object ID (where exists) to find and identify the object to be inspected.
-
-Preferences such as zoom level or open/closed state of a tree node are usually maintained per object type (i.e. tied to
-the C++ class of the inspected object).
-
-Extending Qtenv
-^^^^^^^^^^^^^^^
-
-It is possible for the user to contribute new inspector types without modifying Qtenv code. For this, the inspector C++
-code needs to include Qtenv header files and link with the Qtenv library. One caveat is that the Qtenv headers are not
-public API and thus subject to change in a new version of |omnet++|.
-
-Using Qtenv with a Debugger
----------------------------
-
-You can use Qtenv in combination with a C++ debugger, which is mainly useful when developing new models. When doing so,
-there are a few things you need to know.
-
-Qtenv is a library that runs as part of the simulation program. This has several implications, the most apparent being
-that when the simulation crashes (due to a bug in the model's C++ code), it will bring down the whole OS process,
-including the Qtenv GUI.
-
-The second consequence is that suspending the simulation program in a debugger will also freeze the GUI until it is
-resumed. Also, Qtenv is single-threaded and runs in the same thread as the simulation program, so even if you only
-suspend the simulation's thread in the debugger, the UI will freeze.
-
-The Qtenv UI deals with ``cObject``\ s (the C++ methods that the GUI relies on are defined on ``cObject``). All other data
-such as primitive variables, non-``cObject`` classes and structs, STL containers, etc., are hidden from Qtenv. You may wrap
-objects into ``cObject``\ s to make them visible for Qtenv; that's what the ``WATCH`` macros do as well.
-
-The following sections go into detail about various parts and functions of the Qtenv UI.
-
 Parts of the Qtenv UI
 ---------------------
+
+This section describes in detail the various parts of the Qtenv UI and how they function.
 
 The Status Bars
 ~~~~~~~~~~~~~~~
@@ -584,6 +326,246 @@ It is also possible to open separate log windows for individual modules. A log w
 log from all of its submodule tree. To open a log window, find the module in the module tree or the network display,
 right-click it, and choose :guilabel:`Open Component Log` from the context menu.
 
+Using Qtenv
+-----------
+
+Starting Qtenv
+~~~~~~~~~~~~~~
+
+When you launch a simulation from the IDE, it will be started with Qtenv by default. When it does not, you can
+explicitly select Qtenv in the :guilabel:`Run` or :guilabel:`Debug` dialog.
+
+Qtenv is also the default when you start the simulation from the command line. When necessary, you can force Qtenv by
+adding the ``-u Qtenv`` switch to the command line.
+
+The complete list of command-line options, related environment variables, and configuration options can be found at the
+end of this chapter.
+
+Setting Up and Running the Simulation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On startup, Qtenv reads the ini file(s) specified on the command line (or ``omnetpp.ini`` if none is specified), and
+automatically sets up the simulation described in them. If they contain several simulation configurations, Qtenv will
+ask you which one you want to set up.
+
+.. figure:: pictures/Qtenv-setup-dialog.png
+   :width: 60%
+
+   Setting Up a New Simulation
+
+Once a simulation has been set up (modules have been created and initialized), you can run it in various modes and
+examine its state. You can restart the simulation at any time, or set up another simulation. If you choose to quit Qtenv
+before the simulation finishes (or try to restart the simulation), Qtenv will ask you whether to finalize the
+simulation, which usually translates to saving summary statistics.
+
+Functions related to setting up a simulation are in the :guilabel:`File` and :guilabel:`Simulate` menus,
+and the most important ones are accessible via toolbar icons and keyboard shortcuts.
+
+Some of these functions are:
+
+.. figure:: pictures/Qtenv-file-menu.png
+   :width: 50%
+
+   The File menu
+
+Set up a Configuration
+^^^^^^^^^^^^^^^^^^^^^^
+
+This function lets you choose a configuration and run number from the ini file.
+
+Open Primary Ini File
+^^^^^^^^^^^^^^^^^^^^^
+
+Opens the first ini file in a text window for viewing.
+
+.. figure:: pictures/Qtenv-simulate-menu.png
+   :width: 50%
+
+   The Simulate menu
+
+Step
+^^^^
+
+:guilabel:`Step` lets you execute one simulation event, which is at the front of the FES. The next event is always shown on
+the status bar. The module where the next event will be delivered is highlighted with a red rectangle on the graphical
+display.
+
+Run (or Normal Run)
+^^^^^^^^^^^^^^^^^^^
+
+In :guilabel:`Run` mode, the simulation runs with all tracing aids on. Message animation is active, and the simulation time is
+interpolated if the model requested a non-zero animation speed. Inspector windows are constantly updated. Output
+messages are displayed in the main window and module output windows. You can stop the simulation with the
+:guilabel:`Stop` button on the toolbar. You can fully interact with the user interface while the simulation is running,
+such as opening inspectors.
+
+.. note::
+
+   If you find this mode too slow or distracting, you may switch off animation features in the :guilabel:`Preferences`
+   dialog.
+
+Fast Run
+^^^^^^^^
+
+In :guilabel:`Fast` mode, message animation is turned off. The inspectors are updated much less often. Fast mode is
+several times faster than the Run mode; the speed can increase by up to 10 times (or up to the configured event count).
+
+Express Run
+^^^^^^^^^^^
+
+In :guilabel:`Express` mode, the simulation runs at about the same speed as with Cmdenv, with all tracing disabled. Module
+log is not recorded. The simulation can only be interacted with once in a while, so the run-time overhead of the user
+interface is minimal. UI updates can even be disabled completely, in which case you have to explicitly click the
+:guilabel:`Update now` button to refresh the inspectors.
+
+Run Until
+^^^^^^^^^
+
+You can run the simulation until a specified simulation time, event number, or until a specific message has been
+delivered or canceled. This is a valuable tool during debugging sessions.
+It is also possible to right-click on an event in the simulation timeline and choose the :guilabel:`Run until this
+event` menu item.
+
+.. figure:: pictures/Qtenv-rununtil.png
+   :width: 60%
+
+   The Run Until dialog
+
+Run Until Next Event
+^^^^^^^^^^^^^^^^^^^^
+
+It is also possible to run until an event occurs in a specified module. Browse for the module and choose :guilabel:`Run
+until next event in this module.` Simulation will stop once an event occurs in the selected module.
+
+Debug Next Event
+^^^^^^^^^^^^^^^^
+
+This function is useful when you are running the simulation under a C++ source-level debugger. :guilabel:`Debug Next
+Event` will perform one simulation event just like :guilabel:`Step`, but executes a software debugger breakpoint
+(``int3`` or ``SIGTRAP``) just before entering the module's event handling code (``handleMessage()`` or ``activity()``).
+This will cause the debugger to stop the program there, allowing you to examine state variables, single-step, etc. When you
+resume execution, Qtenv will regain control and become responsive again.
+
+Debug On Errors
+^^^^^^^^^^^^^^^
+
+This menu item allows you to change the value of the ``debug-on-errors`` configuration variable on the fly. This is
+useful if you forgot to set this option before starting the simulation, but would like to debug a runtime error. The
+state of this menu item is reset to the value of ``debug-on-errors`` every time Qtenv is started.
+
+Recording an Event Log
+^^^^^^^^^^^^^^^^^^^^^^
+
+The |omnet++| simulation kernel allows you to record event-related information into a file, which can later be used to
+analyze the simulation run using the :guilabel:`Sequence Chart` tool in the IDE. Eventlog recording can be turned on
+with the ``record-eventlog=true`` ini file option, but also interactively, via the respective item in the
+:guilabel:`Simulate` menu, or using a toolbar button.
+
+Note that starting Qtenv with ``record-eventlog=true`` and turning on recording later does not result in exactly the
+same eventlog file. In the former case, all steps of setting up the network, such as module creations, are recorded as
+they happen; while for the latter, Qtenv has to "fake" a chain of steps that would result in the current state of the
+simulation.
+
+Capturing a Video
+^^^^^^^^^^^^^^^^^
+
+When active, this feature will save the contents of the main window into a subfolder named ``frames`` in the working
+directory with a regular frequency (in animation time). Each frame is a PNG image, with a sequence number in its file
+name. Currently, the user has to convert (encode) these images into a video file after the fact by using an external tool
+(such as ``ffmpeg``, ``avconv``, or ``vlc``). When the recording is started, an info dialog pops up, showing further
+details on the output, and an example command for encoding in high quality using ``ffmpeg``. The resulting video is also
+affected by the speed slider on the toolbar.
+
+.. note::
+
+   This built-in recording feature is able to produce a smooth video, in contrast to external screen-capture utilities.
+   This is possible because it has access to more information and has more control over the process than external
+   tools.
+
+Conclude Simulation
+^^^^^^^^^^^^^^^^^^^
+
+This function finalizes the simulation by invoking the user-supplied ``finish()`` member functions on all module and
+channel objects in the simulation. The customary implementation of ``finish()`` is to record summary statistics. The
+simulation cannot be continued afterwards.
+
+Rebuild Network
+^^^^^^^^^^^^^^^
+
+Rebuilds the simulation by deleting the current network and setting it up again. Improperly written simulations often
+crash when :guilabel:`Rebuild Network` is invoked, usually due to incorrectly written destructors in module
+classes.
+
+Inspecting Simulation Objects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Inspectors
+^^^^^^^^^^
+
+The :guilabel:`Network Display`, the :guilabel:`Log Viewer`, and the :guilabel:`Object Inspector` in the main window
+share some common properties: they display various aspects (graphical view / log messages / fields or contents) of a
+given object. Such UI parts are called :guilabel:`inspectors` in Qtenv.
+
+The three inspectors mentioned above are built into the main window, but you can open additional ones at any time.
+The new inspectors will open in floating windows above the main window, and you can have any number of them open.
+
+.. figure:: pictures/Qtenv-floating-inspector.png
+   :width: 40%
+
+   A floating inspector window
+
+Inspectors come in many flavors. They can be graphical like the network view, textual like the log viewer, tree-based
+like the object inspector, or something entirely different.
+
+.. note::
+
+   Some window managers might disable/hide the close button of floating inspectors. If this happens, you can still close
+   them with a keyboard shortcut (most commonly
+   Alt
+   +
+   F4
+   ), or by right-clicking on the title bar, and choosing the Close option in the appearing menu.
+
+Opening Inspectors
+^^^^^^^^^^^^^^^^^^
+
+Inspectors can be opened in various ways: by double-clicking an item in the :guilabel:`Object Navigator` or in other
+inspectors; by choosing one of the :guilabel:`Open` menu items from the context menu of an object displayed on the
+UI; via the :guilabel:`Find/Inspect Objects` dialog (see later); or even by directly entering the C++ pointer of an
+object as a hex value. Inspector-related menu items are in the :guilabel:`Inspect` menu.
+
+.. figure:: pictures/Qtenv-inspect-menu.png
+   :width: 50%
+
+   The Inspect menu
+
+History
+^^^^^^^
+
+Inspectors always show some aspect of one simulation object, but they can change objects. For example, in the
+:guilabel:`Network View`, when you double-click a submodule that is itself a compound module, the view will switch to
+showing the internals of that module; or, the :guilabel:`Object Inspector` will always show information about the object
+last clicked in the UI. Inspectors maintain a navigable history: the :guilabel:`Back`/:guilabel:`Forward` functions go
+to the object inspected before/after the currently displayed object. Objects that are deleted during simulation also
+disappear from the history.
+
+Restoring Inspectors
+^^^^^^^^^^^^^^^^^^^^
+
+When you exit and then restart a simulation program, Qtenv tries to restore the open inspector windows. However, as
+object identity is not preserved across different runs of the same program, Qtenv uses the object full path, class name,
+and object ID (where exists) to find and identify the object to be inspected.
+
+Preferences such as zoom level or open/closed state of a tree node are usually maintained per object type (i.e. tied to
+the C++ class of the inspected object).
+
+Extending Qtenv
+^^^^^^^^^^^^^^^
+
+It is possible for the user to contribute new inspector types without modifying Qtenv code. For this, the inspector C++
+code needs to include Qtenv header files and link with the Qtenv library. One caveat is that the Qtenv headers are not
+public API and thus subject to change in a new version of |omnet++|.
+
 Inspecting Objects
 ------------------
 
@@ -679,6 +661,24 @@ Examples:
    If you are debugging the simulation with a source level debugger, you can also use the :guilabel:`Inspect by pointer`
    menu item. Let the debugger display the address of the object you want to inspect, and paste it into the dialog.
    Please note that entering an invalid pointer will crash the simulation.
+
+Using Qtenv with a Debugger
+---------------------------
+
+You can use Qtenv in combination with a C++ debugger, which is mainly useful when developing new models. When doing so,
+there are a few things you need to know.
+
+Qtenv is a library that runs as part of the simulation program. This has several implications, the most apparent being
+that when the simulation crashes (due to a bug in the model's C++ code), it will bring down the whole OS process,
+including the Qtenv GUI.
+
+The second consequence is that suspending the simulation program in a debugger will also freeze the GUI until it is
+resumed. Also, Qtenv is single-threaded and runs in the same thread as the simulation program, so even if you only
+suspend the simulation's thread in the debugger, the UI will freeze.
+
+The Qtenv UI deals with ``cObject``\ s (the C++ methods that the GUI relies on are defined on ``cObject``). All other data
+such as primitive variables, non-``cObject`` classes and structs, STL containers, etc., are hidden from Qtenv. You may wrap
+objects into ``cObject``\ s to make them visible for Qtenv; that's what the ``WATCH`` macros do as well.
 
 The Preferences Dialog
 ----------------------
