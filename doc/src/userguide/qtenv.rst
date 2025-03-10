@@ -418,35 +418,6 @@ Run Until Next Event
 It is also possible to run until an event occurs in a specified module. Browse for the module and choose :guilabel:`Run
 until next event in this module.` Simulation will stop once an event occurs in the selected module.
 
-Recording an Event Log
-^^^^^^^^^^^^^^^^^^^^^^
-
-The |omnet++| simulation kernel allows you to record event-related information into a file, which can later be used to
-analyze the simulation run using the :guilabel:`Sequence Chart` tool in the IDE. Eventlog recording can be turned on
-with the ``record-eventlog=true`` ini file option, but also interactively, via the respective item in the
-:guilabel:`Simulate` menu, or using a toolbar button.
-
-Note that starting Qtenv with ``record-eventlog=true`` and turning on recording later does not result in exactly the
-same eventlog file. In the former case, all steps of setting up the network, such as module creations, are recorded as
-they happen; while for the latter, Qtenv has to "fake" a chain of steps that would result in the current state of the
-simulation.
-
-Capturing a Video
-^^^^^^^^^^^^^^^^^
-
-When active, this feature will save the contents of the main window into a subfolder named ``frames`` in the working
-directory with a regular frequency (in animation time). Each frame is a PNG image, with a sequence number in its file
-name. Currently, the user has to convert (encode) these images into a video file after the fact by using an external tool
-(such as ``ffmpeg``, ``avconv``, or ``vlc``). When the recording is started, an info dialog pops up, showing further
-details on the output, and an example command for encoding in high quality using ``ffmpeg``. The resulting video is also
-affected by the speed slider on the toolbar.
-
-.. note::
-
-   This built-in recording feature is able to produce a smooth video, in contrast to external screen-capture utilities.
-   This is possible because it has access to more information and has more control over the process than external
-   tools.
-
 Conclude Simulation
 ^^^^^^^^^^^^^^^^^^^
 
@@ -639,14 +610,14 @@ replaced by Qtenv with the process ID of the simulation.
 Qtenv offers the following debugging-related actions:
 
 Debug On Errors
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 This menu item toggles the flag that controls whether a debug breakpoint is executed when the simulation encounters a
 runtime error. This option corresponds to the ``debug-on-errors`` configuration option. The state of this menu item is
 reset to the value of ``debug-on-errors`` every time a new simulation is started.
 
 Debug Next Event
-^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~
 
 Performs one simulation event just like :guilabel:`Step`, but executes a debugger trap just before entering the module's
 event handling code (``handleMessage()`` or ``activity()``). This will cause the debugger to stop the program there,
@@ -654,10 +625,42 @@ allowing you to examine state variables, single-step, etc. When you resume execu
 become responsive again.
 
 Debug Now
-^^^^^^^^^
+~~~~~~~~~
 
 Triggers a debug trap immediately.
 
+
+Recording the Simulation
+------------------------
+
+Recording an Event Log
+~~~~~~~~~~~~~~~~~~~~~~
+
+The |omnet++| simulation kernel allows you to record event-related information into a file, which can later be used to
+analyze the simulation run using the :guilabel:`Sequence Chart` tool in the IDE. Eventlog recording can be turned on
+with the ``record-eventlog=true`` ini file option, but also interactively, via the respective item in the
+:guilabel:`Simulate` menu, or using a toolbar button.
+
+Note that starting Qtenv with ``record-eventlog=true`` and turning on recording later does not result in exactly the
+same eventlog file. In the former case, all steps of setting up the network, such as module creations, are recorded as
+they happen; while for the latter, Qtenv has to "fake" a chain of steps that would result in the current state of the
+simulation.
+
+Capturing a Video
+~~~~~~~~~~~~~~~~~~
+
+When active, this feature will save the contents of the main window into a subfolder named ``frames`` in the working
+directory with a regular frequency (in animation time). Each frame is a PNG image, with a sequence number in its file
+name. Currently, the user has to convert (encode) these images into a video file after the fact by using an external tool
+(such as ``ffmpeg``, ``avconv``, or ``vlc``). When the recording is started, an info dialog pops up, showing further
+details on the output, and an example command for encoding in high quality using ``ffmpeg``. The resulting video is also
+affected by the speed slider on the toolbar.
+
+.. note::
+
+   This built-in recording feature is able to produce a smooth video, in contrast to external screen-capture utilities.
+   This is possible because it has access to more information and has more control over the process than external
+   tools.
 
 The Preferences Dialog
 ----------------------
