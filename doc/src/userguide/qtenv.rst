@@ -1,30 +1,10 @@
 The Qtenv Graphical Runtime Environment
 =======================================
 
-Features
---------
-
-Qtenv is a graphical runtime interface for simulations. Qtenv supports interactive simulation execution, animation,
+Qtenv is a graphical runtime interface for simulations. It supports interactive simulation execution, animation,
 inspection, tracing, and debugging. In addition to model development and verification, Qtenv is also useful for
-presentation and educational purposes, as it allows the user to get a detailed picture of the state and history of
-the simulation at any point of its execution.
-
-When used together with a C++ source-level debugger, Qtenv can significantly speed up model development.
-
-Its most important features are:
-
--  network visualization
--  message flow animation
--  various run modes: event-by-event, normal, fast, express
--  run until (a scheduled event, any event in a module, or given simulation time)
--  simulation can be restarted
--  a different configuration/run or network can be set up
--  log of message flow
--  display of textual module logs
--  inspectors for viewing contents of objects and variables in the model
--  eventlog recording for later analysis
--  capturing a video of the main window
--  snapshots (detailed report about the model: objects, variables, etc.)
+presentation and educational purposes, as it allows the user to get a detailed picture of the state and history of the
+simulation at any point of its execution.
 
 Overview of the User Interface
 ------------------------------
@@ -33,13 +13,6 @@ Overview of the User Interface
    :width: 80%
 
    The main window of Qtenv
-
-.. note::
-
-   If you are experiencing graphics glitches, unreadable text, or the desktop color scheme you have set up is not
-   suitable for Qtenv, you can disable the platform integration style plugins of Qt by setting the ``QT_STYLE_OVERRIDE``
-   environment variable to ``fusion``. This will make the widgets appear in a platform-independent manner, as shown
-   above.
 
 The top of the window contains the following elements below the menu bar:
 
@@ -68,6 +41,14 @@ The central area of the main window is divided into the following regions:
    modules during simulation.
 
 Additionally, you can open inspector windows that float on top of the main window.
+
+.. note::
+
+   If you experience visual issues such as colors that hinder using Qtenv, you can disable the platform integration style
+   plugins of Qt by setting the ``QT_STYLE_OVERRIDE`` environment variable to ``fusion``. This will make the widgets appear in a
+   platform-independent manner. For example, on Linux systems with some desktop environments, you might experience a
+   white-on-white color scheme; setting ``QT_STYLE_OVERRIDE`` to ``fusion`` will make the colors default to a light gray
+   background with dark gray text.
 
 Parts of the Qtenv UI
 ---------------------
@@ -823,7 +804,7 @@ Inspectors
 Inspectors display the hierarchical name (i.e., full path) and class name of the inspected object in the title using the
 ``getFullPath()`` and ``getClassName()`` member functions of ``cObject``. The :guilabel:`Go to parent` feature in
 inspectors uses the ``getOwner()`` method of ``cObject``.
-
+less
 The :guilabel:`Object Navigator` displays the full name and class name of each object (``getFullName()`` and
 ``getClassName()``), and also the ID for classes that have one (``getId()`` on ``cMessage`` and ``cModule``). When you
 hover with the mouse, the tooltip displays the info string (``str()`` method). The roots of the tree are the network
@@ -852,6 +833,7 @@ module` function uses ``getParentModule()``. Background and submodule rendering 
 (``getDisplayString()`` method of ``cComponent``).
 
 The module log page of :guilabel:`Log Viewer` displays the output to ``EV`` streams from modules and channels.
+Note that the log viewer supports basic formatting (colors) via ANSI escape sequences.
 
 The message/packet traffic page of :guilabel:`Log Viewer` shows information based on stored copies of sent messages (the
 copy is created using ``dup()``) and stored sendhop information. The :guilabel:`Name` column displays the message name
@@ -868,11 +850,28 @@ root module; the same happens when you select the :guilabel:`Conclude Simulation
 ``callFinish()`` is to record summary statistics at the end of a successful simulation run, so it will be skipped if an
 error occurs during simulation. On exit, and before a new network is set up, ``simulation.deleteNetwork()`` is called.
 
+Animation
+~~~~~~~~~
+
+To refresh the visual representation of the simulation, Qtenv regularly invokes ``simulation.callRefreshDisplay()``,
+which in turn invokes the ``refreshDisplay()`` methods of modules and figures. The ``refreshDisplay()`` methods are
+defined as parts of the simulation model, and they normally update display strings, and/or move, update, create or
+delete figures on module canvases.
+
+``refreshDisplay()`` is invoked after each simulation event, or with a certain frame rate when smooth animation is
+enabled. The frame rate during smooth simulation is adaptive. Certain properties of the animation can be controlled via
+settings in the :guilabel:`Animation Parameters` dialog. To learn more about smooth animation, see the section of
+similar title in the Simulation Manual.
+
+Debugging
+~~~~~~~~~
+
 The :guilabel:`Debug Next Event` menu item issues the ``int3`` x86 assembly instruction on Windows and raises a
 ``SIGTRAP`` signal on other systems.
 
-Reference
----------
+
+Command-line and Configuration Options
+--------------------------------------
 
 Command-Line Options
 ~~~~~~~~~~~~~~~~~~~~
@@ -926,5 +925,4 @@ Qtenv accepts the following configuration options in the INI file.
 - ``qtenv-default-run``: Specifies which run of the selected configuration Qtenv should set up after startup. If there
   is no such option, Qtenv will ask.
 
-All other Qtenv settings can be changed via the GUI and are saved into the ``.qtenvrc`` file in the user's home
-directory or in the current directory.
+All other settings can be changed via the GUI and are saved into ``.qtenvrc`` files.
