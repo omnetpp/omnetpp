@@ -830,6 +830,9 @@ The :guilabel:`Network Display` uses ``cSubmoduleIterator`` to enumerate submodu
 module` function uses ``getParentModule()``. Background and submodule rendering is based on display strings
 (``getDisplayString()`` method of ``cComponent``).
 
+Log Viewer
+~~~~~~~~~~
+
 The module log page of :guilabel:`Log Viewer` displays the output to ``EV`` streams from modules and channels.
 Note that the log viewer supports basic formatting (colors) via ANSI escape sequences.
 
