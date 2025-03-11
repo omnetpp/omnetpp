@@ -19,11 +19,31 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.lsp4e.debug.DSPPlugin;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.dsp.debug.debugmodel.SimulationDSPDebugTarget;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 
 public class DSPUtils {
+
+	public static void switchToDebugPerspective() {
+        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (window != null) {
+            IWorkbenchPage page = window.getActivePage();
+            if (page != null) {
+                IPerspectiveDescriptor descriptor = PlatformUI.getWorkbench()
+                        .getPerspectiveRegistry()
+                        .findPerspectiveWithId("org.eclipse.debug.ui.DebugPerspective");
+                if (descriptor != null) {
+                    page.setPerspective(descriptor);
+                }
+            }
+        }
+    }
+
     /**
      * Attach the debugger to the provided PID
      * @param pid
@@ -35,6 +55,7 @@ public class DSPUtils {
             if (config != null)
                 Display.getDefault().syncExec(() -> {
                     try {
+                        switchToDebugPerspective();
                         config.launch(ILaunchManager.DEBUG_MODE, null, false);
                     }
                     catch (CoreException e) {
@@ -100,6 +121,8 @@ public class DSPUtils {
 
     public static LaunchResult debugConfiguration(ILaunchConfiguration config, boolean removeLaunch) {
         try {
+            switchToDebugPerspective();
+
             LaunchResult launchResult = new LaunchResult();
             StringBuffer stdout = new StringBuffer();
             StringBuffer stderr = new StringBuffer();
