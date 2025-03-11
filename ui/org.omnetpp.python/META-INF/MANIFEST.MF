@@ -4,7 +4,7 @@ Bundle-Name: OMNeT++ Python helper
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-SymbolicName: org.omnetpp.python;singleton:=true
 Bundle-Vendor: OpenSim Ltd.
-Bundle-Version: 6.1.0.qualifier
+Bundle-Version: 6.2.0.qualifier
 Bundle-Activator: org.omnetpp.python.Activator
 Require-Bundle: org.omnetpp.dsp,
  org.omnetpp.scave.pychart,
