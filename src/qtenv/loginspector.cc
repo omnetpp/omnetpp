@@ -715,6 +715,8 @@ void LogInspector::recreateProviders()
     if (bookmark.isValid())
         sourceContentProvider->setBookmark(bookmark);
 
+    auto columnWidths = textWidget->getColumnWidths();
+
     if (lineFilterString.empty()) {
         filteringContentProvider = nullptr;
         textWidget->setContentProvider(sourceContentProvider);
@@ -723,6 +725,8 @@ void LogInspector::recreateProviders()
         filteringContentProvider = new LineFilteringContentProvider(sourceContentProvider, lineFilterString, lineFilterIsRegex, lineFilterIsCaseSensitive);
         textWidget->setContentProvider(filteringContentProvider);
     }
+
+    textWidget->setColumnWidths(columnWidths);
 }
 
 void LogInspector::saveContent()
