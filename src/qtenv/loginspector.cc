@@ -195,6 +195,11 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     setMode((Mode)getPref(PREF_MODE, QVariant::fromValue(0), false).toInt());
 
     updateFilterActionIcon();
+
+    // every inspector (including the embedded one) connect these signals back and forth with the embedded one
+    LogInspector *embeddedInspector = isTopLevel ? getQtenv()->getMainLogInspector() : this;
+    connect(this, SIGNAL(globalMessageFormatChanged()), embeddedInspector, SLOT(onGlobalMessageFormatChanged()));
+    connect(embeddedInspector, SIGNAL(globalMessageFormatChangedBroadcast()), this, SLOT(onGlobalMessageFormatChangedBroadcast()));
 }
 
 LogInspector::~LogInspector()
@@ -206,6 +211,24 @@ LogInspector::~LogInspector()
 void LogInspector::onFontChanged()
 {
     textWidget->setFont(getQtenv()->getLogFont());
+}
+
+void LogInspector::onGlobalMessageFormatChanged()
+{
+    // only the embedded inspector should handle this
+    ASSERT(!isTopLevel());
+
+    // by notifying every inspector, including itself, of the change
+    Q_EMIT globalMessageFormatChangedBroadcast();
+}
+
+void LogInspector::onGlobalMessageFormatChangedBroadcast()
+{
+    // reacting to the change locally if needed
+    if (mode == MESSAGES) {
+        sourceContentProvider->refresh();
+        refresh();
+    }
 }
 
 const QString LogInspector::PREF_COLUMNWIDTHS = "columnwidths";
@@ -523,21 +546,24 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
 
         QAction *reverseHopsAction = menu->addAction("Allow Backward &Arrows for Hops", [=](bool checked) {
             getQtenv()->opt->allowBackwardArrowsForHops = checked;
-            getQtenv()->refreshInspectors();
+            Q_EMIT globalMessageFormatChanged();
         });
         reverseHopsAction->setCheckable(true);
         reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
 
         QAction *groupDigitsAction = menu->addAction("Digit &Grouping for Simulation Time", [=](bool checked) {
             getQtenv()->opt->messageLogDigitGrouping = checked;
-            getQtenv()->refreshInspectors();
+            Q_EMIT globalMessageFormatChanged();
         });
         groupDigitsAction->setCheckable(true);
         groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
 
         menu->addSeparator();
         menu->addAction(QIcon(":/tools/label"), "Set Sending Time as &Reference", [=]() {
-            EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
+            if (EventEntryMessageLinesProvider::getReferenceTime() != msg->getSendingTime()) {
+                EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
+                Q_EMIT globalMessageFormatChanged();
+            }
         });
 
         SimTime refTime = EventEntryMessageLinesProvider::getReferenceTime();
@@ -545,7 +571,10 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
             std::string refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'");
             refTimeStr = stripSuffixes(refTimeStr, "'000");
             menu->addAction(QIcon(":/tools/label_off"), "Clear Time Reference (=" + QString::fromStdString(refTimeStr) + ")", [=]() {
-                EventEntryMessageLinesProvider::setReferenceTime(0);
+                if (EventEntryMessageLinesProvider::getReferenceTime() != 0) {
+                    EventEntryMessageLinesProvider::setReferenceTime(0);
+                    Q_EMIT globalMessageFormatChanged();
+                }
             });
         }
 

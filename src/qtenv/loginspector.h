@@ -69,6 +69,9 @@ class QTENV_API LogInspector : public Inspector
       void fastRunUntil();
       void onFontChanged();
 
+      void onGlobalMessageFormatChanged();
+      void onGlobalMessageFormatChangedBroadcast();
+
    public:
       enum Mode {LOG, MESSAGES};
 
@@ -111,8 +114,17 @@ class QTENV_API LogInspector : public Inspector
 
       QSize sizeHint() const override { return QSize(700, 300); }
 
-Q_SIGNALS:
+  Q_SIGNALS:
       void selectionChanged(cObject*);
+
+      // Emitted by any log inspector, whenever any of the options
+      // that globally affect how messages are printed (digit grouping,
+      // backward arrows, reference time) are changed in it by the user,
+      // and handled by the embedded inspector.
+      void globalMessageFormatChanged();
+      // Emitted by the embedded log inspector, to notify every open inspector
+      // (including itself) to refresh the text if it's in messages mode.
+      void globalMessageFormatChangedBroadcast();
 
    protected Q_SLOTS:
       void onFindButton(); // opens a dialog

@@ -986,7 +986,6 @@ cMessage *EventEntryMessageLinesProvider::getMessageForLine(LogBuffer::Entry *en
 void EventEntryMessageLinesProvider::setReferenceTime(SimTime rt)
 {
     referenceTime = rt;
-    getQtenv()->refreshInspectors();
 }
 
 int LineIndexMapping::discardSourceLines(int numDiscardedLines)
