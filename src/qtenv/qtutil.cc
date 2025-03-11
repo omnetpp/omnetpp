@@ -482,16 +482,16 @@ QString makeObjectTooltip(cObject *obj, bool verboseTooltip)
     bool showNedDoc = getQtenv()->getPref("ned-doc-tooltips", true).toBool();
     if (verboseTooltip && showNedDoc) {
         if (cComponent *component = dynamic_cast<cComponent *>(obj)) {
-            QString nedComment = getComponentDocumentationFortooltip(component).c_str();
+            QString nedComment = getComponentDocumentationForTooltip(component).c_str();
             if (!nedComment.isEmpty())
-                tooltip += QString("\n\n") + component->getComponentType()->getName() + ": " + nedComment + "\n";
+                tooltip += QString("\n\n") + component->getComponentType()->getName() + ": " + nedComment;
         }
     }
 
     return tooltip;
 }
 
-std::string getComponentDocumentationFortooltip(cComponent *comp)
+std::string getComponentDocumentationForTooltip(cComponent *comp)
 {
     std::string doc = comp->getComponentType()->getDocumentation();
 
