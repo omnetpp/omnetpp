@@ -1067,6 +1067,7 @@ void LineFilteringContentProvider::updateLineIndices()
         if (matchesFilter(sourceModel->getLineText(i), buffer, qbuffer))
             indexMapping.push(i);
     lastMatchedSourceLineIndex = sourceLineCount - 2;
+    ASSERT(lastMatchedSourceLineIndex >= -1);
 }
 
 int LineFilteringContentProvider::appendLineIndices()
@@ -1076,7 +1077,7 @@ int LineFilteringContentProvider::appendLineIndices()
 
     int sourceLineCount = sourceModel->getLineCount();
     int addedFilteredLines = 0;
-    // +1 is to not re-add the currently added last matching line, -1 is the last empty line (we supply out own)
+    // +1 is to not re-add the currently added last matching line, -1 is the last empty line (we supply our own)
     for (int i = lastMatchedSourceLineIndex + 1; i < sourceLineCount-1; i++) {
         if (matchesFilter(sourceModel->getLineText(i), buffer, qbuffer)) {
             ASSERT(indexMapping.empty() || i > indexMapping.last());
@@ -1085,6 +1086,7 @@ int LineFilteringContentProvider::appendLineIndices()
         }
     }
     lastMatchedSourceLineIndex = sourceLineCount - 2;
+    ASSERT(lastMatchedSourceLineIndex >= -1);
     return addedFilteredLines;
 }
 
@@ -1114,6 +1116,9 @@ LineFilteringContentProvider::LineFilteringContentProvider(TextViewerContentProv
         int numDiscardedFilteredLines = indexMapping.discardSourceLines(numDiscardedLines);
         if (numDiscardedFilteredLines > 0)
             Q_EMIT linesDiscarded(numDiscardedFilteredLines);
+        lastMatchedSourceLineIndex -= numDiscardedLines;
+        ASSERT(lastMatchedSourceLineIndex >= -1);
+        ASSERT(lastMatchedSourceLineIndex < this->sourceModel->getLineCount() - 1);
     });
 
     connect(sourceModel, &TextViewerContentProvider::linesAdded, [this]() {
