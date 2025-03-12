@@ -29,6 +29,11 @@ if [ ! -x "$lldbdap" ]; then
   lldbdap=$(command -v lldb-dap)
 fi
 
+# not found on PATH so check on macOS in CommandLineTools
+if [ ! -x "$lldbdap" -a "$uname" = "Darwin" ]; then
+  lldbdap=$(command -v /Library/Developer/CommandLineTools/usr/bin/lldb-dap)
+fi
+
 # not found on PATH with the default name, try with versioned names
 # this will fail if multiple versions are installed
 if [ ! -x "$lldbdap" ]; then
