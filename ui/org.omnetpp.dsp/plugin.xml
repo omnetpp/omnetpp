@@ -25,6 +25,43 @@
             sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer"
             type="org.omnetpp.dsp.hiddenSimulationLaunchConfigurationType">
       </launchDelegate>
+      <launchDelegate
+            delegate="org.omnetpp.dsp.launch.SimulationDSPLaunchDelegate"
+            delegateDescription="Allows debugging an OMNeT++ simulation with the LLDB-DAP debugger"
+            id="org.omnetpp.launch.simulationDSPDelegate"
+            modes="debug"
+            name="OMNeT++ Simulation LLDB-DAP Debugger"
+            sourceLocatorId="org.eclipse.lsp4e.debug.sourceLocator"
+            sourcePathComputerId="org.eclipse.lsp4e.debug.sourcePathComputer"
+            type="org.omnetpp.launch.simulationLaunchConfigurationType">
+      </launchDelegate>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabs">
+      <tab
+            class="org.eclipse.debug.ui.sourcelookup.SourceLookupTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.csourcetab"
+            name="Source">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationDSPDelegate">
+         </associatedDelegate>
+      </tab>
+      <tab
+            class="org.omnetpp.dsp.launch.SimulationDSPMainTab"
+            group="org.omnetpp.launch.simulationLaunchConfigurationTabGroup"
+            id="org.omnetpp.cdt.dspdebugtab"
+            name="Debugger">
+         <placement
+               after="org.eclipse.debug.ui.environmentTab">
+         </placement>
+         <associatedDelegate
+               delegate="org.omnetpp.launch.simulationDSPDelegate">
+         </associatedDelegate>
+      </tab>
    </extension>
    <extension
          point="org.eclipse.urischeme.uriSchemeHandlers">
