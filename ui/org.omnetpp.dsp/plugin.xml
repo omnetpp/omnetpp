@@ -14,6 +14,15 @@
       </launchConfigurationType>
    </extension>
    <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class=""
+            id="org.omnetpp.dsp.launchConfigurationTabGroup1"
+            type="org.omnetpp.dsp.hiddenSimulationLaunchConfigurationType">
+            <launchMode mode="debug" perspective="org.eclipse.debug.ui.DebugPerspective"/>
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
          point="org.eclipse.debug.core.launchDelegates">
       <launchDelegate
             delegate="org.omnetpp.dsp.launch.NonInteractiveDSPLaunchDelegate"

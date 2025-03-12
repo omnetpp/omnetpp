@@ -17,6 +17,8 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
+import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.lsp4e.debug.DSPPlugin;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPerspectiveDescriptor;
@@ -28,34 +30,17 @@ import org.omnetpp.dsp.debug.debugmodel.SimulationDSPDebugTarget;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 
 public class DSPUtils {
-
-	public static void switchToDebugPerspective() {
-        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        if (window != null) {
-            IWorkbenchPage page = window.getActivePage();
-            if (page != null) {
-                IPerspectiveDescriptor descriptor = PlatformUI.getWorkbench()
-                        .getPerspectiveRegistry()
-                        .findPerspectiveWithId("org.eclipse.debug.ui.DebugPerspective");
-                if (descriptor != null) {
-                    page.setPerspective(descriptor);
-                }
-            }
-        }
-    }
-
     /**
      * Attach the debugger to the provided PID
      * @param pid
      */
     public static void attach(String pid) {
-
         try {
             var config = createAttachedConfigurationForPid(pid);
             if (config != null)
                 Display.getDefault().syncExec(() -> {
                     try {
-                        switchToDebugPerspective();
+                        switchToAssociatedPerspective(config.getType(), ILaunchManager.DEBUG_MODE);
                         config.launch(ILaunchManager.DEBUG_MODE, null, false);
                     }
                     catch (CoreException e) {
@@ -77,6 +62,7 @@ public class DSPUtils {
 
     public static LaunchResult runConfiguration(ILaunchConfiguration config, boolean removeLaunch) {
         try {
+            switchToAssociatedPerspective(config.getType(), ILaunchManager.RUN_MODE);
             LaunchResult launchResult = new LaunchResult();
             StringBuffer stdout = new StringBuffer();
             StringBuffer stderr = new StringBuffer();
@@ -121,8 +107,7 @@ public class DSPUtils {
 
     public static LaunchResult debugConfiguration(ILaunchConfiguration config, boolean removeLaunch) {
         try {
-            switchToDebugPerspective();
-
+            switchToAssociatedPerspective(config.getType(), ILaunchManager.DEBUG_MODE);
             LaunchResult launchResult = new LaunchResult();
             StringBuffer stdout = new StringBuffer();
             StringBuffer stderr = new StringBuffer();
@@ -260,5 +245,19 @@ public class DSPUtils {
             Activator.logError(e);
         }
         return config;
+    }
+
+    public static void switchToAssociatedPerspective(ILaunchConfigurationType configurationType, String mode) {
+        try {
+            String perspectiveId = DebugUITools.getLaunchPerspective(configurationType, mode);
+            if (perspectiveId != null && !perspectiveId.trim().isEmpty()) {
+                IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                if (window != null)
+                    PlatformUI.getWorkbench().showPerspective(perspectiveId, window);
+            }
+        }
+        catch (CoreException e) {
+            e.printStackTrace();
+        }
     }
 }
