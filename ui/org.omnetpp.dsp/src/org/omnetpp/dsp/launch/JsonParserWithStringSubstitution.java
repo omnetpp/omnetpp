@@ -61,7 +61,7 @@ public class JsonParserWithStringSubstitution {
 
     private Object handleJsonPrimitive(JsonPrimitive primitive) throws CoreException {
         if (primitive.isString())
-            return stringVariableManager.performStringSubstitution(primitive.getAsString());
+            return stringVariableManager.performStringSubstitution(primitive.getAsString(), false);
         return primitive;
     }
 
