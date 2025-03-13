@@ -15,7 +15,6 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.lsp4e.debug.DSPPlugin;
-import org.eclipse.lsp4e.debug.debugmodel.JsonParserWithStringSubstitution;
 import org.eclipse.lsp4e.debug.debugmodel.TransportStreams;
 import org.eclipse.lsp4e.debug.launcher.DSPLaunchDelegate;
 import org.omnetpp.dsp.debug.debugmodel.SimulationDSPDebugTarget;
