@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.apache.commons.lang3.text.translate.UnicodeEscaper;
 import org.eclipse.cdt.debug.core.ICDTLaunchConfigurationConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -18,11 +20,8 @@ import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.ui.DebugUITools;
-import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.lsp4e.debug.DSPPlugin;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.util.StringUtils;
@@ -30,6 +29,12 @@ import org.omnetpp.dsp.debug.debugmodel.SimulationDSPDebugTarget;
 import org.omnetpp.launch.IOmnetppLaunchConstants;
 
 public class DSPUtils {
+    public static final CharSequenceTranslator ESCAPE_JSON =
+            new LookupTranslator(
+                new String[][] {
+                    {"\"", "\\\""},
+                    {"\\", "\\\\"}}).with(UnicodeEscaper.outsideOf(32, 0x7f));
+
     /**
      * Attach the debugger to the provided PID
      * @param pid
@@ -160,7 +165,7 @@ public class DSPUtils {
         try {
             StringJoiner argsJoiner = new StringJoiner(" ", "", "");
             for (String s : args)
-                argsJoiner.add("\"" + StringEscapeUtils.escapeJava(s) + "\"");
+                argsJoiner.add("\"" + ESCAPE_JSON.translate(s) + "\"");
             ILaunchConfigurationType configType = getLaunchManager().getLaunchConfigurationType(ICDTLaunchConfigurationConstants.ID_LAUNCH_C_APP); // "org.eclipse.cdt.launch.applicationLaunchType");
             ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateLaunchConfigurationName(name));
             wc.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, program);
@@ -212,17 +217,17 @@ public class DSPUtils {
         try {
             StringJoiner argsJoiner = new StringJoiner(", ", "[", "]");
             for (String s : args)
-                argsJoiner.add("\"" + StringEscapeUtils.escapeJava(s) + "\"");
+                argsJoiner.add("\"" + ESCAPE_JSON.translate(s) + "\"");
             StringJoiner debuggerInitCommandsJoiner = new StringJoiner(", ", "[", "]");
             for (String s : debuggerInitCommands)
-                debuggerInitCommandsJoiner.add("\"" + StringEscapeUtils.escapeJava(s) + "\"");
+                debuggerInitCommandsJoiner.add("\"" + ESCAPE_JSON.translate(s) + "\"");
             String dspParam = """
                 {"type": "lldb-dap",
                  "request": "launch",
                  "name": "Debug",
-                 "initCommands": """ + debuggerInitCommandsJoiner.toString() + "," + """
-                 "cwd": """ + "\"" + StringEscapeUtils.escapeJava(workingDirectory) + "\"," + """
-                 "program": """ + "\"" + StringEscapeUtils.escapeJava(program) + "\"," + """
+                 "initCommands": """ + debuggerInitCommandsJoiner.toString() + ",\n " + """
+                 "cwd": """ + "\"" + ESCAPE_JSON.translate(workingDirectory) + "\",\n " + """
+                 "program": """ + "\"" + ESCAPE_JSON.translate(program) + "\",\n " + """
                  "args": """ + argsJoiner.toString() + "}";
             ILaunchConfigurationType configType = getLaunchManager().getLaunchConfigurationType(IDSPConstants.ID_DSP_HIDDEN_SIMULATION_CONFIG_TYPE);
             ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateLaunchConfigurationName(name));
