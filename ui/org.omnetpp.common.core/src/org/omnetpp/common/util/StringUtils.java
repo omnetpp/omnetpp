@@ -878,6 +878,13 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
+     * Performs Eclipse variable substitution on the string.
+     */
+    public static String substituteVariables(String string, boolean reportUndefinedVariables) throws CoreException {
+        return VariablesPlugin.getDefault().getStringVariableManager().performStringSubstitution(string, reportUndefinedVariables);
+    }
+
+    /**
      * The returned list always begins with the text before the first separator
      * (may be empty string), then goes on with (separator, text) pairs until it
      * reaches the end of the text. The length of the output is always an odd number,

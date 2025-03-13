@@ -893,7 +893,7 @@ public class OmnetppLaunchUtils {
         String argAttr = configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, "");
         String expandedProj = StringUtils.substituteVariables(projAttr);
         String expandedProg = StringUtils.substituteVariables(progAttr);
-        String expandedArg = StringUtils.substituteVariables(argAttr);
+        String expandedArg = StringUtils.substituteVariables(argAttr, false);
         IPath progPath = new Path(expandedProg);
         // put the additional arguments at the beginning so they override the other arguments
         expandedArg = additionalArgs + " " + expandedArg;
