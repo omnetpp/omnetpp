@@ -33,6 +33,7 @@
 #include <QtWidgets/QToolButton>
 
 #include "omnetpp/csimplemodule.h"
+#include "randomicongen.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cfutureeventset.h"
 #include "omnetpp/cscheduler.h"
@@ -141,6 +142,15 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     labelsLayout->addWidget(simTimeLabel);
     simTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
 
+    // add random icon button at the end of the toolbar
+    identiconButton = new QToolButton();
+    identiconButton->setToolTip("Simulation Identification Icon");
+    identiconButton->setIconSize(QSize(20, 20));
+    identiconButton->setIcon(QIcon());
+    identiconButton->setAutoRaise(true);
+    labelsLayout->addWidget(identiconButton);
+    connect(identiconButton, &QToolButton::clicked, this, &MainWindow::showSimulationInfo);
+
     toolBarLayout->addStretch(1);
     toolBarLayout->addWidget(labelsContainer);
 
@@ -159,6 +169,20 @@ MainWindow::~MainWindow()
     delete stopDialog;
     delete simTimeLabel;
     delete eventNumLabel;
+    delete identiconButton;
+}
+
+void MainWindow::updateSimulationIdenticon(const QString &tooltip, const QString &seed)
+{
+    if (seed.isEmpty()) {
+        identiconButton->setIcon(QIcon());
+        identiconButton->setToolTip("Simulation Identification Icon");
+        return;
+    }
+
+    QIcon icon = RandomIconGenerator::generateIcon(seed, 20);
+    identiconButton->setIcon(icon);
+    identiconButton->setToolTip("Simulation Identification Icon\n" + tooltip);
 }
 
 void MainWindow::onSimTimeLabelGroupingTriggered()
@@ -1430,6 +1454,24 @@ void MainWindow::on_actionShowAnimationParams_toggled(bool checked)
         duc->hideDialog();
     setFocus();
     QApplication::processEvents();
+}
+
+void MainWindow::showSimulationInfo()
+{
+    if (getSimulation()->getSystemModule() == nullptr) {
+        QMessageBox::information(this, "Info", "No network has been set up yet.", QMessageBox::Ok);
+        return;
+    }
+
+    std::string info = getQtenv()->getSimulationInfo();
+
+    // Show the info
+    FileEditor *editor = new FileEditor(this);
+    editor->setContent(QString::fromStdString(info));
+    editor->setWindowTitle("Simulation Information");
+    editor->setReadOnly(true);
+    editor->setAttribute(Qt::WA_DeleteOnClose);
+    editor->show();
 }
 
 }  // namespace qtenv

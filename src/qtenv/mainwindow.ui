@@ -351,6 +351,8 @@ Total number of messages created since start of the simulation</string>
     <addaction name="separator"/>
     <addaction name="actionFindInspectObjects"/>
     <addaction name="actionInspectByPointer"/>
+    <addaction name="separator"/>
+    <addaction name="actionSimulationInfo"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -884,6 +886,14 @@ Total number of messages created since start of the simulation</string>
   <action name="actionDebugNow">
    <property name="text">
     <string>Debug Now</string>
+   </property>
+  </action>
+  <action name="actionSimulationInfo">
+   <property name="text">
+    <string>&amp;Show Simulation Info</string>
+   </property>
+   <property name="toolTip">
+    <string>Show information about the current simulation</string>
    </property>
   </action>
  </widget>

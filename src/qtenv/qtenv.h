@@ -272,6 +272,9 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
       bool isPaused() { return pauseEventLoop->isRunning(); }
       int getPausePointNumber() { return pausePointNumber; }
 
+      QString computeSimulationHash();
+      std::string getSimulationInfo();
+
       bool ensureDebugger(cRuntimeError *error = nullptr) override;
 
       // with Qtenv, activity() modules need extra stack

@@ -23,6 +23,7 @@
 #include <csignal>
 #include <cstdio>
 #include <string>
+#include <regex>
 
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QProxyStyle>
@@ -46,10 +47,13 @@
 #include "envir/appreg.h"
 #include "envir/speedometer.h"
 #include "envir/matchableobject.h"
+#include "envir/fsutils.h"
+#include "omnetpp/platdep/platmisc.h" //getpid
 #include "omnetpp/csimplemodule.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cscheduler.h"
 #include "omnetpp/ccomponenttype.h"
+#include "omnetpp/chasher.h"
 #include "omnetpp/csimulation.h"
 #include "omnetpp/cconfigoption.h"
 #include "omnetpp/regmacros.h"
@@ -1312,12 +1316,260 @@ void Qtenv::setupNetwork(cModuleType *network)
 {
     EnvirBase::setupNetwork(network);
 
+    // Set identicon
+    QString configName = getConfigEx()->getActiveConfigName();
+    int runNumber = getConfigEx()->getActiveRunNumber();
+    QString label = configName + " #" + QString::number(runNumber);
+
+    QString seed = computeSimulationHash();
+    mainWindow->updateSimulationIdenticon(label, seed);
+
     // collapsing all nodes in the object tree, because even if a new network is
     // loaded, there is a chance that some objects will be on the same place
     // (have the same pointer) as some of the old ones, so random nodes may
     // be expanded in the new tree depending on what was expanded before
     // TODO this should be done in the tree view inspector
     // mainwindow->getObjectTree()->collapseAll();
+}
+
+QString Qtenv::computeSimulationHash()
+{
+    cHasher hasher;
+
+    // omnetpp version
+    hasher.add(OMNETPP_VERSION_STR);
+    hasher.add(OMNETPP_BUILDID);
+    hasher.add(OMNETPP_EDITION);
+
+    // basics: working dir, primary inifile, config name, run number
+    cConfigurationEx *cfg = getConfigEx();
+    hasher.add(getWorkingDir().c_str());
+    hasher.add(cfg->getFileName());
+    hasher.add(cfg->getActiveConfigName());
+    hasher.add(cfg->getActiveRunNumber());
+    hasher.add(getParsimProcId());
+    hasher.add(getParsimNumPartitions());
+
+    // loaded libs
+    for (const std::string& lib : getLoadedExtensionLibraries())
+        hasher.add(lib.c_str());
+
+    // itervars
+    std::vector<const char *> itervars = cfg->getIterationVariableNames();
+    for (const char *itervar : itervars) {
+        hasher.add(itervar);
+        hasher.add(cfg->getVariable(itervar));
+    }
+
+    // configuration contents
+    std::vector<const char *> keysValues = cfg->getKeyValuePairs(cConfigurationEx::FILT_ALL);
+    for (int i = 0; i < (int)keysValues.size(); i += 2) {
+        const char *key = keysValues[i];
+        const char *value = keysValues[i+1];
+        hasher.add(key);
+        hasher.add(value); // should call removeOptionalQuotes() on value, see resultfileutils.cc
+    }
+
+    // rngs
+    for (int i = 0; i < getNumRNGs(); i++) {
+        cRNG *rng = getRNG(i);
+        hasher.add(rng->getClassName());
+        hasher.add(rng->str());
+    }
+
+    // name, types, parameters and gates of components
+    cSimulation *sim = getSimulation();
+    int lastId = sim->getLastComponentId();
+    for (int id = 0; id <= lastId; ++id) {
+        cComponent *component = sim->getComponent(id);
+        if (component != nullptr) {
+            hasher.add(component->getFullPath().c_str());
+            hasher.add(component->getNedTypeName());
+            hasher.add(component->getClassName());
+
+            int numParams = component->getNumParams();
+            for (int i = 0; i < numParams; ++i) {
+                cPar& par = component->par(i);
+                hasher.add(par.getName());
+                hasher.add(par.str().c_str());
+            }
+
+            cModule *module = dynamic_cast<cModule *>(component);
+            if (module) {
+                for (cModule::GateIterator gi(module); !gi.end(); gi++) {
+                    cGate *gate = *gi;
+                    hasher.add(gate->getFullName());
+                    cGate *nextGate = gate->getNextGate();
+                    int nextId = (nextGate != nullptr) ? nextGate->getOwnerModule()->getId() : -1;
+                    hasher.add(nextId);
+                }
+            }
+        }
+    }
+
+    uint64_t hashValue = hasher.getHash();
+    return QString::number(hashValue);
+}
+
+static void printConfig(std::ostream& out, const std::string& title, cConfigurationEx *cfg, int filterFlag, bool sort)
+{
+    std::vector<const char *> keysValues = cfg->getKeyValuePairs(filterFlag);
+    if (!keysValues.empty()) {
+        out << title << ":\n";
+        if (sort) {
+            std::map<std::string, std::string> map;
+            for (int i = 0; i < (int)keysValues.size(); i += 2) {
+                const char *key = keysValues[i];
+                const char *value = keysValues[i + 1];
+                if (!containsKey(map, std::string(key)))  // first occurrence should win
+                    map[key] = value;
+            }
+            for (auto& kv : map) {
+                out << "  " << kv.first << " = " << kv.second << "\n";
+            }
+        }
+        else {
+            for (int i = 0; i < (int)keysValues.size(); i += 2) {
+                const char *key = keysValues[i];
+                const char *value = keysValues[i + 1];
+                out << "  " << key << " = " << value << "\n";
+            }
+        }
+        out << "\n";
+    }
+}
+
+std::string Qtenv::getSimulationInfo()
+{
+    std::stringstream out;
+
+    // command line
+    int argc = getArgCount();
+    char **argv = getArgVector();
+    std::string cmdline;
+    for (int i=0; i<argc; i++) {
+        if (i > 0) cmdline += " ";
+        cmdline += argv[i];
+    }
+
+    cConfigurationEx *cfg = getConfigEx();
+    int numRunsInConfig = cfg->getNumRunsInConfig(cfg->getActiveConfigName());
+
+    // Basics: working dir, primary inifile, config name, run number, etc
+    out << "Command line: " << cmdline << "\n";
+    out << "Working dir: " << getWorkingDir().c_str() << "\n";
+    out << "Process ID: " << getpid() << "\n";
+    out << "\n";
+
+    // env vars
+    std::regex envvarRegex("^(PATH|LD_LIBRARY_PATH|DYLD_LIBRARY_PATH|LD_PRELOAD|HOME|USER|HOST|HOSTNAME|COMPUTERNAME|NEDPATH|IMAGE_PATH|OMNETPP_.*|INET_.*|VEINS_.*|SIMULTE_.*|SIMU5G_.*|.*4CORE.*)$");
+    std::vector<std::string> envvars;
+    for (char **envp = environ; *envp != nullptr; ++envp) {
+        std::string envvar = opp_substringbefore(*envp, "=");
+        if (std::regex_match(envvar, envvarRegex))
+            envvars.push_back(envvar);
+    }
+    std::sort(envvars.begin(), envvars.end());
+    out << "Selected environment variables:\n";
+    for (const std::string& envvar : envvars)
+        out << "  " << envvar << "=" << opp_nulltoempty(getenv(envvar.c_str())) << "\n";
+    out << "\n";
+
+    out << "Primary inifile: " << cfg->getFileName() << "\n";
+    out << "Config name: " << cfg->getActiveConfigName() << "\n";
+    if (numRunsInConfig == 1)
+        out << "Run number: #" << cfg->getActiveRunNumber() << "\n";
+    else
+        out << "Run number: #" << cfg->getActiveRunNumber() << " (of " << numRunsInConfig << ")\n";
+    out << "\n";
+
+    // parallel simulation info
+    if (getParsimNumPartitions() > 1)
+        out << "Parallel simulation: partition " << getParsimProcId() << " of " << getParsimNumPartitions() << "\n\n";
+
+    auto loadedExtensionLibraries = getLoadedExtensionLibraries();
+    if (!loadedExtensionLibraries.empty()) {
+        out << "Loaded extension libraries:\n";
+        for (const std::string& lib : loadedExtensionLibraries)
+        out << "  " << lib << "\n";
+        out << "\n";
+    }
+
+    out << "OMNeT++ version: " OMNETPP_VERSION_STR << "\n";
+    out << "OMNeT++ build: " OMNETPP_BUILDID << "\n";
+    out << "OMNeT++ edition: " OMNETPP_EDITION << "\n";
+    out << "\n";
+
+    // config variables
+    out << "Configuration variables:\n";
+    std::vector<const char *> vars = cfg->getPredefinedVariableNames();
+    for (const char *var : vars)
+        out << "  " << var << " = " << cfg->getVariable(var) << "\n";
+    out << "\n";
+
+    // iteration variables
+    out << "Iteration variables:\n";
+    std::vector<const char *> itervars = cfg->getIterationVariableNames();
+    if (itervars.empty())
+        out << "  none\n";
+    else
+        for (const char *itervar : itervars)
+            out << "  " << itervar << " = " << cfg->getVariable(itervar) << "\n";
+    out << "\n";
+
+    // config options
+    printConfig(out, "Configuration options", cfg, cConfigurationEx::FILT_GLOBAL_CONFIG, true);
+    printConfig(out, "Per-object configuration options", cfg, cConfigurationEx::FILT_PER_OBJECT_CONFIG, false);
+    printConfig(out, "Parameter configuration", cfg, cConfigurationEx::FILT_PARAM, false);
+
+    // RNGs, FES, etc.
+    out << "RNGs:\n";
+    for (int i=0; i<getNumRNGs(); i++) {
+        cRNG *rng = getRNG(i);
+        out << "  rng[" << i << "]: " << rng->getClassName() << ", " << rng->str() << "\n";
+    }
+    out << "\n";
+
+    // FES, scheduler, result managers, etc
+    cSimulation *sim = getSimulation();
+    out << "Scheduler, result recording, etc.:\n";
+    out << "  FES: " << sim->getFES()->getClassName() << ", " << sim->getFES()->str() << "\n";
+    out << "  scheduler: " << sim->getScheduler()->getClassName() << " " << sim->getScheduler()->str() << "\n";
+    if (outScalarManager)
+        out << "  output scalar manager: " << outScalarManager->getClassName() << "\n";
+    if (outvectorManager)
+        out << "  output vector manager: " << outvectorManager->getClassName() << "\n";
+    if (eventlogManager)
+        out << "  eventlog manager: " << eventlogManager->getClassName() << "\n";
+    if (snapshotManager)
+        out << "  snapshot manager: " << snapshotManager->getClassName() << "\n";
+    out << "\n";
+
+    // name, types, parameters and gates of components
+    int lastId = sim->getLastComponentId();
+    for (int id = 0; id <= lastId; ++id) {
+        cComponent *component = sim->getComponent(id);
+        if (component != nullptr) {
+            out << (component->isModule() ? "module " : "channel ") << component->getFullPath();
+            out << " (" << component->getNedTypeName() << ", " << component->getClassName() << "): " << component->str() << "\n";
+            int numParams = component->getNumParams();
+            for (int i = 0; i < numParams; ++i) {
+                cPar& par = component->par(i);
+                out << "  " << par.getName() << " = " << par.str() << "\n";
+            }
+
+            cModule *module = dynamic_cast<cModule *>(component);
+            if (module) {
+                for (cModule::GateIterator gi(module); !gi.end(); gi++) {
+                    cGate *gate = *gi;
+                    out << "  " << gate->getFullName() << ": " << gate->str() << "\n";
+                }
+            }
+            out << "\n";
+        }
+    }
+
+    return out.str();
 }
 
 Inspector *Qtenv::inspect(cObject *obj, InspectorType type, bool ignoreEmbedded)

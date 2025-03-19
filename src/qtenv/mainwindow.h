@@ -31,6 +31,7 @@ class QWidget;
 class QSlider;
 class QSplitter;
 class QLabel;
+class QToolButton;
 
 namespace omnetpp {
 
@@ -62,6 +63,7 @@ public:
     void updateSimtimeDisplay();
     void updateStatusDisplay();
     void updateNetworkRunDisplay();
+    void updateSimulationIdenticon(const QString &tooltip, const QString &seed);
 
     QWidget *getMainInspectorArea() { return ui->mainArea; }
     QWidget *getObjectTreeArea() { return ui->treeView; }
@@ -166,6 +168,8 @@ private Q_SLOTS:
     void on_actionInspectByPointer_triggered();
     void on_actionRecordVideo_toggled(bool checked);
     void on_actionShowAnimationParams_toggled(bool checked);
+    void on_actionSimulationInfo_triggered() { showSimulationInfo(); }
+    void showSimulationInfo();
 
 Q_SIGNALS:
     void setNewNetwork();
@@ -183,6 +187,7 @@ private:
     FileEditor *fileEditor;
     QLabel *simTimeLabel = nullptr;
     QLabel *eventNumLabel = nullptr;
+    QToolButton *identiconButton = nullptr;
     bool simTimeUnits;
 
     enum DigitGrouping
