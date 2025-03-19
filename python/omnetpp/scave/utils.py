@@ -1587,9 +1587,6 @@ def export_data_if_needed(df, props, **kwargs):
     def get_prop(k):
         return props[k] if k in props else None
 
-    def printer(arr):
-        return np.array_str(arr)
-
     if _parse_optional_bool(get_prop("export_data")):
         format = get_prop("data_export_format") or "csv"
         filepath = get_data_export_filepath(props)
@@ -1600,7 +1597,6 @@ def export_data_if_needed(df, props, **kwargs):
         old_opts = np.get_printoptions()
         try:
             np.set_printoptions(threshold=np.inf, linewidth=np.inf)
-            np.set_string_function(printer, False)
             pd.set_option('display.max_columns', None)
             pd.set_option('display.max_colwidth', None)
             _export_df_as(df, format, filepath, **kwargs)
@@ -1608,7 +1604,6 @@ def export_data_if_needed(df, props, **kwargs):
             if verbose_export:
                 print(f'Exported data to: "{filepath}" as {format}')
         finally:
-            np.set_string_function(None, False)
             np.set_printoptions(**old_opts)
 
 def get_data_export_filepath(props):
