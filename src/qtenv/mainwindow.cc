@@ -141,9 +141,6 @@ MainWindow::MainWindow(Qtenv *env, QWidget *parent) :
     labelsLayout->addWidget(simTimeLabel);
     simTimeLabel->setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Minimum));
 
-    auto margin = centralWidget()->layout()->contentsMargins().right();
-    labelsContainer->setContentsMargins(0, margin, 0, 0);
-
     toolBarLayout->addStretch(1);
     toolBarLayout->addWidget(labelsContainer);
 
