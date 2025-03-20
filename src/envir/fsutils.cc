@@ -42,14 +42,14 @@ static std::string makeLibFileName(const char *libName, const char *namePrefix, 
     return libFileName;
 }
 
-static bool opp_loadlibrary(const char *libName)
+std::string opp_loadlibrary(const char *libName)
 {
     const char *nameSuffix = LIBSUFFIX;
 #if HAVE_DLOPEN
     std::string libFileName = makeLibFileName(libName, "lib", nameSuffix, SHARED_LIB_SUFFIX);
     if (!dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL))
         throw std::runtime_error(std::string("Cannot load library '") + libFileName + "': " + dlerror());
-    return true;
+    return libFileName;
 
 #elif defined(_WIN32)
 # ifdef __GNUC__
@@ -59,22 +59,30 @@ static bool opp_loadlibrary(const char *libName)
 # endif
     if (!LoadLibrary((char *)libFileName.c_str()))
         throw std::runtime_error(std::string("Cannot load library '") + libFileName + "': " + opp_getWindowsError(GetLastError()));
-    return true;
+    return libFileName;
 
 #else
     throw std::runtime_error(std::string("Cannot load library '") + libName + "': dlopen() syscall not available");
 #endif
 }
 
+static std::vector<std::string> loadedExtensionLibraries;
+
 void loadExtensionLibrary(const char *lib)
 {
     try {
-        opp_loadlibrary(lib);
+        std::string libFileName = opp_loadlibrary(lib);
         CodeFragments::executeAll(CodeFragments::STARTUP);
+        loadedExtensionLibraries.push_back(libFileName);
     }
     catch (std::runtime_error& e) {
         throw cRuntimeError("%s", e.what());
     }
+}
+
+std::vector<std::string> getLoadedExtensionLibraries()
+{
+    return loadedExtensionLibraries;
 }
 
 }  // namespace envir

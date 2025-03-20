@@ -16,6 +16,8 @@
 #ifndef __OMNETPP_ENVIR_FSUTILS_H
 #define __OMNETPP_ENVIR_FSUTILS_H
 
+#include <vector>
+#include <string>
 #include "omnetpp/simutil.h"
 #include "envirdefs.h"
 
@@ -31,6 +33,11 @@ namespace envir {
  * On failure, cRuntimeError will be thrown.
  */
 ENVIR_API void loadExtensionLibrary(const char *lib);
+
+/**
+ * Returns the list of file names of the loaded extension libraries.
+ */
+ENVIR_API std::vector<std::string> getLoadedExtensionLibraries();
 
 }  // namespace envir
 }  // namespace omnetpp
