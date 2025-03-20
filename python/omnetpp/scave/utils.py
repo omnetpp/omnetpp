@@ -1594,17 +1594,13 @@ def export_data_if_needed(df, props, **kwargs):
         logger.info(f"exporting data to: '{filepath}' as {format}")
         os.makedirs(os.path.dirname(filepath) or ".", exist_ok=True)
 
-        old_opts = np.get_printoptions()
-        try:
-            np.set_printoptions(threshold=np.inf, linewidth=np.inf)
-            pd.set_option('display.max_columns', None)
-            pd.set_option('display.max_colwidth', None)
+        with np.printoptions(threshold=sys.maxsize, linewidth=sys.maxsize), \
+                pd.option_context('display.max_columns', None,
+                                  'display.max_colwidth', None):
             _export_df_as(df, format, filepath, **kwargs)
             global verbose_export
             if verbose_export:
                 print(f'Exported data to: "{filepath}" as {format}')
-        finally:
-            np.set_printoptions(**old_opts)
 
 def get_data_export_filepath(props):
     """
