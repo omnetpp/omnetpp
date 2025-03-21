@@ -47,6 +47,8 @@ class SIM_API cMersenneTwister : public cRNG
     cMersenneTwister() {}
     virtual ~cMersenneTwister() {}
 
+    virtual std::string str() const override;
+
     /** Sets up the RNG. */
     virtual void initialize(int seedSet, int rngId, int numRngs,
                             int parsimProcId, int parsimNumPartitions,

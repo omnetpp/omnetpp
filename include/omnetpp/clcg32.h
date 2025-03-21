@@ -54,6 +54,8 @@ class SIM_API cLCG32 : public cRNG
     cLCG32() {}
     virtual ~cLCG32() {}
 
+    virtual std::string str() const override;
+
     /** Sets up the RNG. */
     virtual void initialize(int seedSet, int rngId, int numRngs,
                             int parsimProcId, int parsimNumPartitions,

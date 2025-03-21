@@ -58,6 +58,11 @@ void cLCG32::initialize(int seedSet, int rngId, int numRngs,
     }
 }
 
+std::string cLCG32::str() const
+{
+    return "seed=" + std::to_string(seed) + ", numDrawn=" + std::to_string(numDrawn);
+}
+
 void cLCG32::selfTest()
 {
     seed = 1;

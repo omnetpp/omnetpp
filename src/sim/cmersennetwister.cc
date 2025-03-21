@@ -20,6 +20,7 @@
 #include "omnetpp/cenvir.h"
 #include "omnetpp/simutil.h"
 #include "omnetpp/cexception.h"
+#include "omnetpp/chasher.h"
 #include "omnetpp/cmersennetwister.h"
 #include "omnetpp/cmessage.h"
 #include "omnetpp/cconfigoption.h"
@@ -66,6 +67,19 @@ void cMersenneTwister::initialize(int seedSet, int rngId, int numRngs,
     // are well apart in the 2^19937-long sequence (it should hold if
     // someone did the work of testing the initialization routine).
     rng.seed(seed);
+}
+
+std::string cMersenneTwister::str() const
+{
+    MTRand::uint32 save[MTRand::SAVE];
+    rng.save(save);
+    cHasher hasher;
+    for (int i = 0; i < MTRand::SAVE; i++)
+        hasher.add(save[i]);
+
+    std::stringstream ss;
+    ss << "stateHash=0x" << std::hex << hasher.getHash() << ", numDrawn=" << std::dec << numDrawn;
+    return ss.str();
 }
 
 void cMersenneTwister::selfTest()
