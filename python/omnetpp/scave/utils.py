@@ -24,7 +24,7 @@ import pandas as pd
 import itertools as it
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from omnetpp.scave import chart, ideplot, vectorops
+from omnetpp.scave import chart, ideplot, vectorops, delta_measurement
 from matplotlib.colors import ListedColormap, BoundaryNorm
 
 logger = logging.getLogger(__name__)
@@ -628,6 +628,9 @@ def plot_vectors(df, props, legend_func=make_legend_label, sort=True):
         ylabel += f" [{unit}]"
     p.ylabel(ylabel)
 
+    if not ideplot.is_native_plot():
+        plt.gca().delta_measurement = delta_measurement.DeltaMeasurement(plt.gcf(), plt.gca())
+
 
 def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
     """
@@ -652,6 +655,8 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
     if xmax_prop:
         endtime = max(endtime, float(xmax_prop))
 
+    fig = plt.gcf()
+
     ax = None
     for i, t in enumerate(df.itertuples(index=False)):
         style = _make_line_args(props, t, df)
@@ -663,8 +668,10 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
 
         if hasattr(t, "enum") and isinstance(t.enum, str) and t.enum and props.get("enum_as_strip") == "true":
             _plot_enum(t.vectime, t.vecvalue, endtime, _parse_enum_spec(t.enum, True), label=legend_func(legend_cols, t, props), draw_edges=get_prop("enum_strip_edges") == "true")
+            ax.delta_measurement = delta_measurement.DeltaMeasurement(fig, ax, t.vectime)
         else:
             plt.plot(t.vectime, t.vecvalue, label=legend_func(legend_cols, t, props), **style)
+            ax.delta_measurement = delta_measurement.DeltaMeasurement(fig, ax)
 
     # " means inches, % means percentage of total size
     # horizontal left/right space around the whole plot: 0.08"+0%
@@ -672,8 +679,7 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
     # horizontal space between subplots: 0"+0%
     # vertical space between subplots:   0.01"+5% divided between the subplots
     # increasing h_pad from 0.01" would unnecessarily increase the distance between subplots
-    if ax is not None:
-        ax.get_figure().set_constrained_layout_pads(w_pad=0.08, h_pad=0.01, wspace=0, hspace=0.05, rect=(0, 0.01, 1, 0.98))
+    fig.set_constrained_layout_pads(w_pad=0.08, h_pad=0.01, wspace=0, hspace=0.05, rect=(0, 0.01, 1, 0.98))
 
     plt.subplot(df.shape[0], 1, 1)
 
@@ -681,6 +687,7 @@ def plot_vectors_separate(df, props, legend_func=make_legend_label, sort=True):
     set_plot_title(title)
 
     plt.xlabel("Simulation Time [s]")
+
 
 def _parse_enum_spec(enum_spec, reverse_mapping=False):
     # "A, B, C" -> {'A': 0, 'B': 1, 'C': 2}
