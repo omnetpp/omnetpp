@@ -6,7 +6,8 @@ Bundle-SymbolicName: org.omnetpp.python;singleton:=true
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Version: 6.2.0.qualifier
 Bundle-Activator: org.omnetpp.python.Activator
-Require-Bundle: org.omnetpp.dsp,
+Require-Bundle: org.omnetpp.common,
+ org.omnetpp.dsp,
  org.omnetpp.scave.pychart,
  org.eclipse.ui,
  org.eclipse.ui.editors,
