@@ -413,6 +413,7 @@ protected:
     void rebuildIndex();
 
 protected Q_SLOTS:
+    // See corresponding `LogBuffer` signals for details.
     void onLogEntryAdded(LogBuffer::Entry *entry);
     void onLogLineAdded(LogBuffer::Entry *entry);
     void onMessageSendAdded(LogBuffer::Entry *entry);

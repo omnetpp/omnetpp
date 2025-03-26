@@ -430,7 +430,16 @@ void ModuleOutputContentProvider::onLogLineAdded(LogBuffer::Entry *entry)
         if (isIndexValid()) {
             int newLineCount = entryIndex.last() + linesProvider->getNumLines(entry);
             int properOldLineCount = lineCount - 1; // exclude the empty last line
-            ASSERT(newLineCount == properOldLineCount || newLineCount == properOldLineCount + 1);
+            // Either:
+            //  - The newly added line is filtered out (by component, not text),
+            //    so the linecount stays the same.
+            //  - The newly added line matches the component filter, so linecount
+            //    increases by one.
+            //  - On top of the previous, this could be the first line that is not
+            //    filtered out by component, so it could also make the entry banner
+            //    become visible at the same time, adding two lines to the content.
+            ASSERT(newLineCount >= properOldLineCount);
+            ASSERT(newLineCount <= properOldLineCount + 2);
             if (newLineCount > properOldLineCount) {
                 lineCount = newLineCount + 1; // empty last line
                 Q_EMIT linesAdded();

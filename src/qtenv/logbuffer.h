@@ -148,10 +148,12 @@ class QTENV_API LogBuffer : public QObject
     void dump() const;
 
 Q_SIGNALS:
+    // `entry` is the last entry already in the LogBuffer, that just got added
     void logEntryAdded(LogBuffer::Entry *entry);
+    // `entry` is the last, already existing entry, with a newly added line in it
     void logLineAdded(LogBuffer::Entry *entry);
+    // `entry` is the last, already existing entry, with a newly added msgsend in it
     void messageSendAdded(LogBuffer::Entry *entry);
-
     // When this signal is fired, the entry in the parameter is
     // no longer in the buffer, but is not deleted yet.
     void entryDiscarded(LogBuffer::Entry *discardedEntry);
