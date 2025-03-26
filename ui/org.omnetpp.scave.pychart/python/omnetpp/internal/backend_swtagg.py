@@ -261,11 +261,8 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
 
     def getAxisLimits(self):
         limits = list()
-
         for ax in self.figure.axes:
-            if ax.lines or ax.collections or ax.patches: # skip "empty" axes
-                limits += [*ax.get_xlim(), *ax.get_ylim()]
-
+            limits += [*ax.get_xlim(), *ax.get_ylim()]
         # we may get `np.float64` values, and `ListConverter` can't handle those
         limits = [float(x) for x in limits]
         java_list = ListConverter().convert(limits, Gateway.gateway._gateway_client)
