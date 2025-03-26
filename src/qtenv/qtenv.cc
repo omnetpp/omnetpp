@@ -2036,6 +2036,9 @@ bool Qtenv::idle()
 
 void Qtenv::pausePoint()
 {
+    if (getSimulation()->getSimulationStage() != CTX_EVENT)
+        return;
+
     ASSERT(!pauseEventLoop->isRunning());
     ++pausePointNumber;
 
