@@ -263,12 +263,18 @@ public class LargeTable extends Composite
 
     protected void initColors() {
         Display display = Display.getCurrent();
-        setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        Color bg = display.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+        setBackground(bg);
         setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+
         selectionBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
         selectionForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
         unfocusedSelectionBackground = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND); // ?
         unfocusedSelectionForeground = display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
+
+        // Resolve potentially transparent background colors by blending them onto the list background
+        selectionBackground = ColorFactory.blendOver(selectionBackground, bg);
+        unfocusedSelectionBackground = ColorFactory.blendOver(unfocusedSelectionBackground, bg);
     }
 
     /**

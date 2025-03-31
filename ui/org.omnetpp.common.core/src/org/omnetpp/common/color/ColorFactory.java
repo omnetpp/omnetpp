@@ -875,6 +875,26 @@ public class ColorFactory {
     }
 
     /**
+     * Returns a new, opaque color that is the result of blending the given
+     * color, with its alpha value, over a background color. The alpha value
+     * of the background color is ignored, colors are assumed to be not
+     * alpha-premultiplied, and no gamma-correction is done.
+     */
+    public static Color blendOver(Color color, Color background) {
+        int alpha = color.getAlpha();
+
+        if (alpha == 255)
+            return color; // Already opaque
+
+        int r = (color.getRed() * alpha + background.getRed() * (255 - alpha)) / 255;
+        int g = (color.getGreen() * alpha + background.getGreen() * (255 - alpha)) / 255;
+        int b = (color.getBlue() * alpha + background.getBlue() * (255 - alpha)) / 255;
+
+        // Create a new opaque color
+        return new Color(color.getDevice(), r, g, b);
+    }
+
+    /**
      * Returns all registered color names.
      */
     public static String[] getColorNames() {
