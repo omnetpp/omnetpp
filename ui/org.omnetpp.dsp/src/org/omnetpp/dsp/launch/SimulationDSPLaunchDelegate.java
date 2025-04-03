@@ -111,7 +111,7 @@ public class SimulationDSPLaunchDelegate extends SimulationRunLaunchDelegate {
 				.equals(wcfg.getAttribute(DSPPlugin.ATTR_DSP_MODE, DSPPlugin.DSP_MODE_LAUNCH));
 		dspConfig.debugCmd = StringUtils.substituteVariables(wcfg.getAttribute(IOmnetppLaunchConstants.ATTR_DSP_CMD, IOmnetppLaunchConstants.OPP_DEFAULT_DSP_CMD_NAME));
 
-        List<String> dspargs = wcfg.getAttribute(IOmnetppLaunchConstants.ATTR_DSP_ARGS, IOmnetppLaunchConstants.OPP_DEFAULT_DSP_CMD_ARGS);
+        List<String> dspargs = new ArrayList<String>(wcfg.getAttribute(IOmnetppLaunchConstants.ATTR_DSP_ARGS, IOmnetppLaunchConstants.OPP_DEFAULT_DSP_CMD_ARGS));
         dspargs.replaceAll(arg -> {
 			try {
 				return StringUtils.substituteVariables(arg);
