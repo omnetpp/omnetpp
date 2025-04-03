@@ -83,6 +83,10 @@
 #include "messageanimator.h"
 #include "runselectiondialog.h"
 
+// Not declared even in unistd.h on macOS, and produces
+// warnings without the OPP_DLLIMPORT on Windows.
+OPP_DLLIMPORT extern char **environ;
+
 using namespace omnetpp::common;
 using namespace omnetpp::envir;
 using namespace omnetpp::internal;
