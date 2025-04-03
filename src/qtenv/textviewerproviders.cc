@@ -590,11 +590,26 @@ bool EventEntryLinesProvider::shouldShowBanner(LogBuffer::Entry *entry, bool sho
 
 bool EventEntryLinesProvider::shouldShowLine(LogBuffer::Entry *entry, size_t lineIndex)
 {
-    LogBuffer::Line &line = entry->lines[lineIndex];
-    return !contains(excludedComponents, line.contextComponentId)
-        && (entry->isSystemMessage() || line.contextComponentId <= 0 ||
-            isAncestorModule(line.contextComponentId, inspectedComponentId)
-            || isAncestorModule(entry->componentId, inspectedComponentId));
+    // system messages are always shown
+    if (entry->isSystemMessage())
+        return true;
+
+    const LogBuffer::Line& line = entry->lines[lineIndex];
+
+    // if the context component is excluded, don't show the line
+    if (contains(excludedComponents, line.contextComponentId))
+        return false;
+
+    // only show lines without a context component at the network module
+    if (line.contextComponentId <= 0)
+        return componentHistory->getParentModuleId(inspectedComponentId) < 0;
+
+    // otherwise, show lines with context components in the subtree of the inspected component,
+    // and all lines printed during events being processed anywhere in said subtree
+    if (line.contextComponentId == inspectedComponentId || entry->componentId == inspectedComponentId)
+        return true; // (this is just a fast path for the trivial case of the check below)
+    return isAncestorModule(line.contextComponentId, inspectedComponentId)
+            || isAncestorModule(entry->componentId, inspectedComponentId);
 }
 
 bool EventEntryLinesProvider::shouldShowAnyLine(LogBuffer::Entry *entry)
