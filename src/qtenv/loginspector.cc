@@ -168,6 +168,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     goToEventAction = new QAction("Go to &Event...");
     connect(goToEventAction, SIGNAL(triggered()), this, SLOT(onGoToEventAction()));
     goToEventAction->setShortcut(Qt::CTRL + Qt::Key_E);
+    goToEventAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(goToEventAction);
 
     setBookmarkAction = new QAction(QIcon(":/tools/bookmark_add"), "Set Boo&kmark");

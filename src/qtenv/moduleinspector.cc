@@ -97,6 +97,7 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
     showMethodCallsAction = new QAction("Show Method Calls", this);
     connect(showMethodCallsAction, SIGNAL(triggered(bool)), this, SLOT(showMethodCalls(bool)));
     showMethodCallsAction->setShortcut(Qt::CTRL | Qt::Key_E);
+    showMethodCallsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     showMethodCallsAction->setCheckable(true);
     addAction(showMethodCallsAction);
 
