@@ -169,13 +169,13 @@ class NEDXML_API MsgTypeTable
         std::string extendsName;       // base type's name from MSG
         bool customize;                // from @customize
         bool omitGetVerb;              // from @omitGetVerb
-        bool isClass;                  // true=class, false=struct
+        bool isEnum = false;           // whether this is an enum (note that EnumInfo also exists)
+        bool isClass;                  // if isEnum==false: whether this is a class or a struct
         bool isPolymorphic;            // whether the type is polymorphic (has virtual member functions)
         bool iscObject;                // whether type is subclassed from cObject
         bool iscNamedObject;           // whether type is subclassed from cNamedObject
         bool iscOwnedObject;           // whether type is subclassed from cOwnedObject
         bool isAbstract;               // whether class can be instantiated (base class not abstract, and has no abstract fields)
-        bool isEnum = false;
         bool isImported;               // whether this type imported from an another msg file
         bool subclassable;             // whether this type can be subclasses (e.g. "int" or final classes cannot)
         bool supportsPtr;              // whether type supports creating a pointer (or pointer array) from it
