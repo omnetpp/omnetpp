@@ -126,7 +126,7 @@ MsgAnalyzer::Properties MsgAnalyzer::extractProperties(ASTNode *node)
     const char *usage;
     switch (node->getTagCode()) {
         case MSG_FIELD: usage = "field"; break;
-        case MSG_ENUM: usage = "enum"; break;
+        case MSG_ENUM_DECL: case MSG_ENUM: usage = "enum"; break;
         case MSG_CLASS: case MSG_STRUCT: case MSG_MESSAGE: case MSG_PACKET: usage = "class"; break;
         case MSG_MSG_FILE: usage = "file"; break;
         default: throw opp_runtime_error("unexpected tag code %d", node->getTagCode());
@@ -685,26 +685,17 @@ void MsgAnalyzer::analyzeInheritedField(ClassInfo& classInfo, FieldInfo *field)
     }
 }
 
-MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumDecl(EnumDeclElement *enumElem, const std::string& namespaceName)
+MsgAnalyzer::ClassInfo MsgAnalyzer::extractEnumInfo(ASTNode *enumElem, const std::string& namespaceName)
 {
-    EnumInfo enumInfo;
+    ClassInfo enumInfo;
     enumInfo.astNode = enumElem;
-    enumInfo.enumName = enumElem->getName();
-    enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
-    enumInfo.isDeclaration = true;
-    return enumInfo;
-}
-
-MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const std::string& namespaceName)
-{
-    EnumInfo enumInfo;
-    enumInfo.astNode = enumElem;
-    enumInfo.enumName = enumElem->getName();
-    enumInfo.enumQName = prefixWithNamespace(enumInfo.enumName, namespaceName);
-    enumInfo.isDeclaration = false;
+    enumInfo.isEnum = true;
+    enumInfo.isDeclaration = (enumElem->getTagCode() == MSG_ENUM_DECL);
+    enumInfo.name = enumElem->getAttribute(ATT_NAME);
+    enumInfo.qname = prefixWithNamespace(enumInfo.name, namespaceName);
     enumInfo.props = extractProperties(enumElem);
     enumInfo.isEnumClass = getPropertyAsBool(enumInfo.props, PROP_CLASS, false);
-    enumInfo.baseType = getProperty(enumInfo.props, PROP_BASETYPE, enumInfo.baseType);
+    enumInfo.enumBaseType = getProperty(enumInfo.props, PROP_BASETYPE, enumInfo.enumBaseType);
 
     // prepare enum items
     for (EnumFieldElement *fieldElem = check_and_cast_nullable<EnumFieldElement *>(enumElem->getFirstChildWithTag(MSG_ENUM_FIELD)); fieldElem; fieldElem = fieldElem->getNextEnumFieldSibling()) {
@@ -712,75 +703,60 @@ MsgAnalyzer::EnumInfo MsgAnalyzer::extractEnumInfo(EnumElement *enumElem, const 
         item.astNode = fieldElem;
         item.name = fieldElem->getName();
         item.value = fieldElem->getValue();
-        enumInfo.fieldList.push_back(item);
+        enumInfo.enumItems.push_back(item);
     }
-    return enumInfo;
-}
 
-MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumElem, const std::string& namespaceName, bool isImported)
-{
-    ClassInfo classInfo = extractClassInfo(enumElem, namespaceName, isImported);
-/*
-    @primitive;
-    @descriptor(false);
-    @fromString((namespaceName::typeName)string2enum($, "namespaceName::typeName"));
-    @toString(enum2string($, "namespaceName::typeName"));
-    @defaultValue(static_cast<namespaceName::typeName>(-1));
- */
-    classInfo.dataTypeBase = classInfo.qname;
-    classInfo.fromString = str("(") + classInfo.qname + ")string2enum($, \"" + classInfo.qname + "\")";
-    classInfo.toString = str("enum2string($, \"") + classInfo.qname + "\")";
-    classInfo.defaultValue = str("static_cast<") + classInfo.qname + ">(-1)";
-    classInfo.toValue = "static_cast<int>($)";
-    classInfo.fromValue = str("static_cast<") + classInfo.qname + ">($.intValue())";
+    enumInfo.dataTypeBase = enumInfo.qname;
+    enumInfo.fromString = str("(") + enumInfo.qname + ")string2enum($, \"" + enumInfo.qname + "\")";
+    enumInfo.toString = str("enum2string($, \"") + enumInfo.qname + "\")";
+    enumInfo.defaultValue = str("static_cast<") + enumInfo.qname + ">(-1)";
+    enumInfo.toValue = "static_cast<int>($)";
+    enumInfo.fromValue = str("static_cast<") + enumInfo.qname + ">($.intValue())";
 
     // determine base class
-    if (classInfo.extendsName != "")
-        errors->addError(classInfo.astNode, "'%s': type '%s' cannot be used as base class of enum", classInfo.name.c_str(), classInfo.extendsName.c_str());
+    if (enumInfo.extendsName != "")
+        errors->addError(enumInfo.astNode, "'%s': type '%s' cannot be used as base class of enum", enumInfo.name.c_str(), enumInfo.extendsName.c_str());
 
-    classInfo.extendsQName = "";
+    enumInfo.extendsQName = "";
 
     // determine class kind
-    classInfo.isClass = false;
-    classInfo.iscObject = false;
-    classInfo.iscOwnedObject = false;
-    classInfo.iscNamedObject = false;
-    classInfo.isEnum = true;
-
+    enumInfo.isEnum = true;
+    enumInfo.isClass = false;
+    enumInfo.iscObject = false;
+    enumInfo.iscOwnedObject = false;
+    enumInfo.iscNamedObject = false;
 
     // isOpaque, byValue, data types, etc.
-    classInfo.isOpaque = true;
-    classInfo.byValue = true;
-    classInfo.subclassable = false;
-    classInfo.supportsPtr = false;
+    enumInfo.isOpaque = true;
+    enumInfo.byValue = true;
+    enumInfo.subclassable = false;
+    enumInfo.supportsPtr = false;
 
-    classInfo.dataTypeBase = classInfo.qname;
-    classInfo.argTypeBase = classInfo.qname;
-    classInfo.returnTypeBase  = classInfo.qname;
+    enumInfo.dataTypeBase = enumInfo.qname;
+    enumInfo.argTypeBase = enumInfo.qname;
+    enumInfo.returnTypeBase  = enumInfo.qname;
 
-    classInfo.getterConversion  = "$";
+    enumInfo.getterConversion  = "$";
 
-    //
-    // produce all sorts of derived names
-    //
-    classInfo.generateTypeDefinition = false;
-    classInfo.generateDescriptor = false;
-    classInfo.generateSettersInDescriptor = false;
+    enumInfo.generateTypeDefinition = false;
+    enumInfo.generateDescriptor = false;
+    enumInfo.generateSettersInDescriptor = false;
+    enumInfo.generateCastFunction = !enumInfo.isDeclaration;
 
-    classInfo.customize = false;
+    enumInfo.customize = false;
 
-    classInfo.className = classInfo.name;
-    classInfo.realClass = classInfo.name;
-    classInfo.descriptorClass = makeIdentifier(classInfo.className) + "Descriptor";
+    enumInfo.className = enumInfo.name;
+    enumInfo.realClass = enumInfo.name;
+    enumInfo.descriptorClass = makeIdentifier(enumInfo.className) + "Descriptor";
 
-    classInfo.baseClass = classInfo.extendsQName;
+    enumInfo.baseClass = enumInfo.extendsQName;
 
-    classInfo.omitGetVerb = false;
-    classInfo.fieldNameSuffix = "";
+    enumInfo.omitGetVerb = false;
+    enumInfo.fieldNameSuffix = "";
 
-    classInfo.classInfoComplete = true;
+    enumInfo.classInfoComplete = true;
 
-    return classInfo;
+    return enumInfo;
 }
 
 std::string MsgAnalyzer::prefixWithNamespace(const std::string& name, const std::string& namespaceName)

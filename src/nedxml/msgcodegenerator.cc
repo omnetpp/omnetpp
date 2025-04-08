@@ -1660,29 +1660,30 @@ void MsgCodeGenerator::generateDelegationForBaseClassFields(const std::string& c
     CC << "    }\n";
 }
 
-void MsgCodeGenerator::generateEnum(const EnumInfo& enumInfo)
+void MsgCodeGenerator::generateEnum(const ClassInfo& enumInfo)
 {
+    Assert(enumInfo.isEnum);
     H << "/**\n";
     H << " * Enum generated from <tt>" << enumInfo.astNode->getSourceLocation().str() << "</tt> by " PROGRAM ".\n";
     H << generatePreComment(enumInfo.astNode);
     H << " */\n";
 
-    H << "enum " << (enumInfo.isEnumClass ? "class " : "") << enumInfo.enumName << (enumInfo.baseType.empty() ? "" : (" : " + enumInfo.baseType)) << " {\n";
-    for (EnumInfo::FieldList::const_iterator it = enumInfo.fieldList.begin(); it != enumInfo.fieldList.end(); ) {
+    H << "enum " << (enumInfo.isEnumClass ? "class " : "") << enumInfo.name << (enumInfo.enumBaseType.empty() ? "" : (" : " + enumInfo.enumBaseType)) << " {\n";
+    for (auto it = enumInfo.enumItems.begin(); it != enumInfo.enumItems.end(); ) {
         H << "    " << it->name << " = " << it->value;
-        if (++it != enumInfo.fieldList.end())
+        if (++it != enumInfo.enumItems.end())
             H << ",";
         H << "\n";
     }
     H << "};\n\n";
 
-    H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << enumInfo.enumName << "& e) { b->pack(static_cast<int>(e)); }\n";
-    H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << enumInfo.enumName << "& e) { int n; b->unpack(n); e = static_cast<" << enumInfo.enumName << ">(n); }\n\n";
+    H << "inline void doParsimPacking(omnetpp::cCommBuffer *b, const " << enumInfo.name << "& e) { b->pack(static_cast<int>(e)); }\n";
+    H << "inline void doParsimUnpacking(omnetpp::cCommBuffer *b, " << enumInfo.name << "& e) { int n; b->unpack(n); e = static_cast<" << enumInfo.name << ">(n); }\n\n";
 
-    CC << "Register_Enum(" << enumInfo.enumQName << ", (";
+    CC << "Register_Enum(" << enumInfo.qname << ", (";
     bool first = true;
-    for (const auto& enumItem : enumInfo.fieldList)
-        CC << (first ? (first=false,"") : ", ") << enumInfo.enumQName << "::" << enumItem.name;
+    for (const auto& enumItem : enumInfo.enumItems)
+        CC << (first ? (first=false,"") : ", ") << enumInfo.qname << "::" << enumItem.name;
     CC << "));\n\n";
 }
 

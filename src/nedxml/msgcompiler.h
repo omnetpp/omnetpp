@@ -51,7 +51,6 @@ class NEDXML_API MsgCompiler
     typedef MsgTypeTable::FieldInfo FieldInfo;
     typedef MsgTypeTable::ClassInfo ClassInfo;
     typedef MsgTypeTable::EnumItem EnumItem;
-    typedef MsgTypeTable::EnumInfo EnumInfo;
 
   protected:
     MsgCompilerOptions opts;

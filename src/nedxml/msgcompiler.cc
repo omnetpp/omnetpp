@@ -243,26 +243,20 @@ void MsgCompiler::collectTypes(MsgFileElement *fileElement, bool isImported)
                 errors->addError(child, "Type declarations are not needed with imports, try invoking the message compiler in legacy (4.x) mode using the --msg4 option");
                 break;
 
-            case MSG_ENUM_DECL: { // for enums already defined and registered in C++
-                EnumDeclElement *enumDeclElem = check_and_cast<EnumDeclElement *>(child);
-                EnumInfo enumInfo = analyzer.extractEnumDecl(enumDeclElem, currentNamespace);
-                if (!typeTable.isEnumDefined(enumInfo.enumQName))
-                    typeTable.addEnum(enumInfo);
-                break;
-            }
-
+            case MSG_ENUM_DECL:
             case MSG_ENUM: {
-                EnumElement *enumElem = check_and_cast<EnumElement *>(child);
-                EnumInfo enumInfo = analyzer.extractEnumInfo(enumElem, currentNamespace);
-                if (isQualified(enumInfo.enumName))
-                    errors->addError(enumInfo.astNode, "type name may not be qualified: '%s'", enumInfo.enumName.c_str()); //TODO into some validator class
-                if (typeTable.isEnumDefined(enumInfo.enumQName))
-                    errors->addError(enumInfo.astNode, "attempt to redefine '%s'", enumInfo.enumName.c_str());
-                typeTable.addEnum(enumInfo);
-                ClassInfo classInfo = analyzer.extractClassInfoFromEnum(check_and_cast<EnumElement *>(child), currentNamespace, isImported);
-                if (typeTable.isClassDefined(classInfo.qname))
-                    errors->addError(classInfo.astNode, "attempt to redefine '%s'", classInfo.name.c_str());
-                typeTable.addClass(classInfo);
+                ClassInfo enumInfo = analyzer.extractEnumInfo(child, currentNamespace);
+                if (enumInfo.isDeclaration) {
+                    if (!typeTable.isClassDefined(enumInfo.qname))
+                        typeTable.addClass(enumInfo);
+                }
+                else {
+                    if (isQualified(enumInfo.name))
+                        errors->addError(enumInfo.astNode, "type name may not be qualified: '%s'", enumInfo.name.c_str()); //TODO into some validator class
+                    if (typeTable.isClassDefined(enumInfo.qname))
+                        errors->addError(enumInfo.astNode, "attempt to redefine '%s'", enumInfo.qname.c_str());
+                    typeTable.addClass(enumInfo);
+                }
                 break;
             }
 
@@ -404,8 +398,8 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
             case MSG_ENUM: {
                 EnumElement *enumElem = check_and_cast<EnumElement *>(child);
                 std::string qname = prefixWithNamespace(enumElem->getName(), currentNamespace);
-                const EnumInfo& enumInfo = typeTable.getEnumInfo(qname);
-                codegen.generateEnum(enumInfo);
+                const ClassInfo& classInfo = typeTable.getClassInfo(qname);
+                codegen.generateEnum(classInfo);
                 break;
             }
 

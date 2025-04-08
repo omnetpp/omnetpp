@@ -45,7 +45,6 @@ class NEDXML_API MsgCodeGenerator
     typedef MsgTypeTable::FieldInfo FieldInfo;
     typedef MsgTypeTable::ClassInfo ClassInfo;
     typedef MsgTypeTable::EnumItem EnumItem;
-    typedef MsgTypeTable::EnumInfo EnumInfo;
 
   protected:
     std::string hFilename;
@@ -81,7 +80,7 @@ class NEDXML_API MsgCodeGenerator
     void generateToAnyPtr(const ClassInfo& a);
     void generateFromAnyPtr(const ClassInfo& a, const std::string& exportDef);
     void generateDescriptorClass(const ClassInfo& a);
-    void generateEnum(const EnumInfo& enumInfo);
+    void generateEnum(const ClassInfo& enumInfo);
     void generateImport(const std::string& importName);
     void generateNamespaceBegin(const std::string& namespaceName, bool intoCcFile=true);
     void generateNamespaceEnd(const std::string& namespaceName, bool intoCcFile=true);

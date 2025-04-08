@@ -35,6 +35,7 @@ void MsgTypeTable::initDescriptors()
 {
 }
 
+//FIXME this is a general type lookup?? not specific to enums.. willing to return non-enum items!!!!
 MsgTypeTable::StringVector MsgTypeTable::lookupExistingEnumName(const std::string& name, const std::string& contextNamespace)
 {
     StringVector ret;
@@ -46,21 +47,21 @@ MsgTypeTable::StringVector MsgTypeTable::lookupExistingEnumName(const std::strin
     // if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
     if (name.find("::") != name.npos) {
         std::string qname = name.substr(0, 2) == "::" ? name.substr(2) : name;  // remove leading "::"
-        if (containsKey(definedEnums, qname)) {
+        if (containsKey(definedClasses, qname)) {
             ret.push_back(qname);
             return ret;
         }
     }
     else {
         std::string qname = prefixWithNamespace(contextNamespace, name);  // prefer name from local namespace
-        if (containsKey(definedEnums, qname)) {
+        if (containsKey(definedClasses, qname)) {
             ret.push_back(qname);
             return ret;
         }
     }
 
     std::string doubleColonPlusName = std::string("::") + name;
-    for (auto enumQName : keys(definedEnums)) {
+    for (auto enumQName : keys(definedClasses)) {
         if (enumQName == name || opp_stringendswith(enumQName.c_str(), doubleColonPlusName.c_str()))
             ret.push_back(enumQName);
     }
@@ -81,13 +82,6 @@ MsgTypeTable::ClassInfo& MsgTypeTable::getClassInfo(const std::string& qname)
     Assert(it != definedClasses.end());
     ClassInfo& classInfo = it->second;
     return classInfo;
-}
-
-const MsgTypeTable::EnumInfo& MsgTypeTable::getEnumInfo(const std::string& qname)
-{
-    auto it = definedEnums.find(qname);
-    Assert(it != definedEnums.end());
-    return it->second;
 }
 
 std::string MsgTypeTable::Property::getIndexedName() const

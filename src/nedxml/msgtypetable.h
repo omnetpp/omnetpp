@@ -150,6 +150,15 @@ class NEDXML_API MsgTypeTable
         bool isResizable;       // @resizable(true): field is an array whose size can be set via the descriptor's setFieldArraySize() method
     };
 
+    class EnumItem
+    {
+      public:
+        ASTNode *astNode;
+        std::string name;
+        std::string value;
+        std::string comment;
+    };
+
     class ClassInfo {
       public:
         typedef std::vector<FieldInfo> Fieldlist;
@@ -165,11 +174,16 @@ class NEDXML_API MsgTypeTable
         bool fieldsComplete = false;   // whether fieldList and baseclassFieldlist are filled in
         bool fieldsBeingAnalyzed = false;
 
+        bool isEnumClass = false;     // if enum: whether this is to be defined as "enum class" in C++
+        std::string enumBaseType;     // if enum: underlying data type, e.g. "uint8_t"
+        bool isDeclaration = false;   // if enum:  i.e. not a definition
+        std::vector<EnumItem> enumItems;  // if enum: list of enum fields
+
         std::string extendsQName;      // fully qualified name of base type
         std::string extendsName;       // base type's name from MSG
         bool customize;                // from @customize
         bool omitGetVerb;              // from @omitGetVerb
-        bool isEnum = false;           // whether this is an enum (note that EnumInfo also exists)
+        bool isEnum = false;           // whether this is an enum
         bool isClass;                  // if isEnum==false: whether this is a class or a struct
         bool isPolymorphic;            // whether the type is polymorphic (has virtual member functions)
         bool iscObject;                // whether type is subclassed from cObject
@@ -220,33 +234,9 @@ class NEDXML_API MsgTypeTable
         std::string getterConversion;  // @getterConversion; conversion from storage type to return type in getters
     };
 
-    class EnumItem
-    {
-      public:
-        ASTNode *astNode;
-        std::string name;
-        std::string value;
-        std::string comment;
-    };
-
-    class EnumInfo
-    {
-      public:
-        ASTNode *astNode;
-        std::string enumName;         // name from MSG file
-        std::string enumQName;        // qualified name from MSG (namespace :: name)
-        Properties props;             // class properties
-        bool isEnumClass = false;     // whether this is an enum class
-        std::string baseType;         // underlying data type, e.g. "uint8_t"
-        typedef std::vector<EnumItem> FieldList;
-        bool isDeclaration = false;   // i.e. not a definition
-        FieldList fieldList;          // list of fields
-    };
-
   private:
     Properties globalProperties;
     std::map<std::string,ClassInfo> definedClasses;
-    std::map<std::string,EnumInfo> definedEnums;
     std::vector<ASTNode*> importedMsgFiles;
 
   protected:
@@ -260,15 +250,12 @@ class NEDXML_API MsgTypeTable
     ~MsgTypeTable();
     StringVector lookupExistingEnumName(const std::string& name, const std::string& contextNamespace);
     bool isClassDefined(const std::string& classqname) { return definedClasses.find(classqname) != definedClasses.end(); }
-    bool isEnumDefined(const std::string& enumqname) { return definedEnums.find(enumqname) != definedEnums.end(); }
     ClassInfo *findClassInfo(const std::string& classqname);
     ClassInfo& getClassInfo(const std::string& classqname);
-    const EnumInfo& getEnumInfo(const std::string& qname);
     const Properties& getGlobalProperties() const {return globalProperties;}
     void storeMsgFile(ASTNode *tree) {importedMsgFiles.push_back(tree);}
     void addGlobalProperty(const Property& p) {globalProperties.add(p);}
     void addClass(const ClassInfo& classInfo) {definedClasses[classInfo.qname] = classInfo;} // TODO assert not already there
-    void addEnum(const EnumInfo& enumInfo) {definedEnums[enumInfo.enumQName] = enumInfo;}  //TODO assert not already there
 };
 
 }  // namespace nedxml

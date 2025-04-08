@@ -33,7 +33,7 @@ namespace omnetpp {
 namespace nedxml {
 
 /**
- * @brief Part of the message compiler. Produces ClassInfo/EnumInfo objects from the ASTNode tree.
+ * @brief Part of the message compiler. Produces ClassInfo objects from the ASTNode tree.
  * Assumes object tree has already passed all validation stages (DTD, syntax, semantic).
  *
  * @ingroup CppGenerator
@@ -48,7 +48,6 @@ class NEDXML_API MsgAnalyzer
     typedef MsgTypeTable::FieldInfo FieldInfo;
     typedef MsgTypeTable::ClassInfo ClassInfo;
     typedef MsgTypeTable::EnumItem EnumItem;
-    typedef MsgTypeTable::EnumInfo EnumInfo;
 
   public:
     static const StringSet RESERVED_WORDS;
@@ -84,9 +83,7 @@ class NEDXML_API MsgAnalyzer
     ClassInfo extractClassInfo(ASTNode *node, const std::string& namespaceName, bool isImported); // accepts StructElement, ClassElement, MessageElement, PacketElement
     void ensureAnalyzed(ClassInfo& classInfo);
     void ensureFieldsAnalyzed(ClassInfo& classInfo);
-    EnumInfo extractEnumDecl(EnumDeclElement *node, const std::string& namespaceName);
-    EnumInfo extractEnumInfo(EnumElement *node, const std::string& namespaceName);
-    ClassInfo extractClassInfoFromEnum(EnumElement *node, const std::string& namespaceName, bool isImported);
+    ClassInfo extractEnumInfo(ASTNode *node, const std::string& namespaceName);
     Property extractProperty(PropertyElement *propertyElem);
     void validateFileProperty(const Property& property);
     void analyzeCplusplusBlockTarget(CplusplusElement *cppElem, const std::string& currentNamespace);
