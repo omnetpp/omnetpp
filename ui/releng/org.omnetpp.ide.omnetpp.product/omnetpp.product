@@ -18,8 +18,11 @@
 &quot;OMNeT++ IDE&quot;
 --launcher.appendVmargs
       </programArgs>
+      <!-- The last arg is to avoid printing a message on every start:
+      https://github.com/eclipse-jdt/eclipse.jdt.core/issues/3312 -->
       <vmArgs>--add-modules=ALL-SYSTEM
 -Xmx1024m
+-XX:CompileCommand=quiet
       </vmArgs>
    </launcherArgs>
 
