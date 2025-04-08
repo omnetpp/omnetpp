@@ -1,0 +1,22 @@
+%description:
+Check enum declarations
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{
+enum FooEnum { FOO,BAR, BAZ };
+}}
+
+enum FooEnum;  // announce enum declared in C++
+
+class A {
+  FooEnum foo;  // should be accepted
+}
+
+%includes:
+#include "test_m.h"
+
+%activity:
+A a;
