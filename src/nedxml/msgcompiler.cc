@@ -352,7 +352,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 std::string qname = prefixWithNamespace(child->getAttribute(ATT_NAME), currentNamespace);
                 ClassInfo& classInfo = typeTable.getClassInfo(qname);
                 analyzer.ensureAnalyzed(classInfo);
-                if (classInfo.generateClass)
+                if (classInfo.generateTypeDefinition)
                     codegen.generateTypeAnnouncement(classInfo);
                 break;
             }
@@ -420,7 +420,7 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                 analyzer.ensureFieldsAnalyzed(classInfo);
                 if (errors->containsError())
                     break; // prevent asserts/errors from firing during code generation
-                if (classInfo.generateClass) {
+                if (classInfo.generateTypeDefinition) {
                     if (isQualified(classInfo.className))
                         errors->addError(classInfo.astNode, "type name may only be qualified when generating descriptor for an existing class: '%s'", classInfo.className.c_str());
                     if (child->getTagCode() == MSG_STRUCT)

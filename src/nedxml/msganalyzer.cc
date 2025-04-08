@@ -315,7 +315,7 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
 
     // generation gap
     bool existingClass = getPropertyAsBool(classInfo.props, PROP_EXISTINGCLASS, false);
-    classInfo.generateClass = opts.generateClasses && !existingClass;
+    classInfo.generateTypeDefinition = opts.generateClasses && !existingClass;
 
     std::string descProp = getProperty(classInfo.props, PROP_DESCRIPTOR, "true");
     if (descProp != "true" && descProp != "false" && descProp != "readonly")
@@ -440,7 +440,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
     field->iscNamedObject = fieldClassInfo.iscNamedObject;
     field->iscOwnedObject = fieldClassInfo.iscOwnedObject;
 
-    if (classInfo.generateClass)
+    if (classInfo.generateTypeDefinition)
         if (field->iscOwnedObject && !classInfo.iscObject)
             errors->addError(field->astNode, "cannot use cOwnedObject field '%s %s' in struct or non-cObject class '%s'", field->type.c_str(), field->name.c_str(), classInfo.name.c_str());
 
@@ -544,7 +544,7 @@ void MsgAnalyzer::analyzeField(ClassInfo& classInfo, FieldInfo *field, const std
         field->allowReplace = getPropertyAsBool(field->props, PROP_ALLOWREPLACE, false);
 
         // allow customization of names
-        bool existingClass = !classInfo.generateClass;
+        bool existingClass = !classInfo.generateTypeDefinition;
         if (getProperty(field->props, PROP_SETTER) != "")
             field->setter = getMethodProperty(field->props, PROP_SETTER, existingClass);
         if (getProperty(field->props, PROP_GETTER) != "")
@@ -763,7 +763,7 @@ MsgAnalyzer::ClassInfo MsgAnalyzer::extractClassInfoFromEnum(EnumElement *enumEl
     //
     // produce all sorts of derived names
     //
-    classInfo.generateClass = false;
+    classInfo.generateTypeDefinition = false;
     classInfo.generateDescriptor = false;
     classInfo.generateSettersInDescriptor = false;
 
@@ -963,7 +963,7 @@ void MsgAnalyzer::analyzeCplusplusBlockTarget(CplusplusElement *cppElem, const s
         errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is an enum", qname.c_str());
     else if (classInfo->isImported)
         errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is imported", qname.c_str());
-    else if (!classInfo->generateClass)
+    else if (!classInfo->generateTypeDefinition)
         errors->addError(cppElem, "invalid target for cplusplus block: type '%s' is not generated", qname.c_str());
     else if (method == "" && classInfo->classExtraCode != "")
         errors->addError(cppElem, "invalid target for cplusplus block: duplicate block for type '%s'", qname.c_str());

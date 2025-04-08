@@ -190,7 +190,7 @@ class NEDXML_API MsgTypeTable
         Fieldlist fieldList;           // list of fields
         Fieldlist baseclassFieldlist;  // assignments to fields declared in super classes
 
-        bool generateClass = true;
+        bool generateTypeDefinition = true; // whether the code for this class/struct/enum should be generated
         bool generateDescriptor = true;
         bool generateSettersInDescriptor = true;
         bool generateCastFunction = false;
