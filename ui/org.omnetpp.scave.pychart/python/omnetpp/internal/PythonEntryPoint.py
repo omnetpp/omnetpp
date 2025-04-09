@@ -149,7 +149,7 @@ class PythonEntryPoint(object):
             try:
                 ops.append(Gateway.gateway.jvm.org.omnetpp.scave.editors.VectorOperations.VectorOp(*o))
             except Exception as E:
-                print("Exception while processing vector operation:", o[4])
+                print(f"Exception while processing vector operation '{o[4]}': {E}")
 
         return ListConverter().convert(ops, Gateway.gateway._gateway_client)
 
