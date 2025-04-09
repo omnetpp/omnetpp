@@ -727,6 +727,15 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label, draw_edges):
     ax.grid(alpha=0)
     ax.tick_params(axis='both', which='both', labelleft=False, bottom=True, left=False)
 
+    # HACK: Adding this member causes the built-in "zoom" tool to leave the Y axis unaffected.
+    # See: https://github.com/matplotlib/matplotlib/blob/v3.10.1/lib/matplotlib/backend_bases.py#L3107-L3140
+    from dataclasses import dataclass
+    @dataclass
+    class FakeCbar:
+        orientation: str = "horizontal"
+    ax._colorbar = FakeCbar()
+    # ----
+
     legend_handles, legend_labels = ax.get_legend_handles_labels()
     legend_handles.append(plt.Rectangle((0, 0), 1, 1, color=(0.5, 0.5, 0.5, 0.5)))
     legend_labels.append(label)
