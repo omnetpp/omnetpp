@@ -216,7 +216,8 @@ ModuleLayouter::Constraint ModuleLayouter::getSubmoduleCoords(cModule *submod, d
             y += ry - ry * cos(index * 2 * M_PI / groupSize);
         }
         else {
-            throw cRuntimeError("Invalid layout '%s' in 'p' tag of display string \"%s\"", layout, ds.str());
+            throw cRuntimeError("Invalid layout '%s' in 'p' tag of display string \"%s\" of module \"%s\"",
+                                layout, ds.str(), submod->getFullPath().c_str());
         }
     }
 
