@@ -736,6 +736,19 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label, draw_edges):
     ax._colorbar = FakeCbar()
     # ----
 
+    # HACK: This causes the built-in "pan" tool to leave the Y axis unaffected.
+    # See: https://github.com/matplotlib/matplotlib/blob/v3.10.1/lib/matplotlib/colorbar.py#L415-L419
+    # and https://github.com/matplotlib/matplotlib/blob/v3.10.1/lib/matplotlib/colorbar.py#L1325-L1332
+    # and https://github.com/matplotlib/matplotlib/blob/v3.10.1/lib/matplotlib/axes/_base.py#L4415-L4435
+    def drag_pan(ax, button, key, x, y):
+        points = ax._get_pan_points(button, key, x, y)
+        if points is not None:
+            ax.set_xlim(points[:, 0])
+            ax.set_ylim(0, 1)
+    import types
+    ax.drag_pan = types.MethodType(drag_pan, ax)
+    # ----
+
     legend_handles, legend_labels = ax.get_legend_handles_labels()
     legend_handles.append(plt.Rectangle((0, 0), 1, 1, color=(0.5, 0.5, 0.5, 0.5)))
     legend_labels.append(label)
