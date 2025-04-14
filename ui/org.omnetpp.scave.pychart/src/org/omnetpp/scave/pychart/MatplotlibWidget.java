@@ -262,8 +262,8 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
         // forward mouse move events to Python, in an "event stream"
         addMouseMoveListener(e -> {
-            int sy = getSize().y;
             if (pythonProcess != null && pythonProcess.isAlive()) {
+                int sy = getSize().y;
                 pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseMoveEvent(e.x, sy - e.y),
                         figureNumber * 100 + EVENTSTREAM_MOUSEMOVE);
             }
@@ -321,7 +321,8 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
             @Override
             public void mouseEnter(MouseEvent e) {
                 if (pythonProcess != null && pythonProcess.isAlive()) {
-                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().enterEvent(e.x, e.y));
+                    int sy = getSize().y;
+                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().enterEvent(e.x, sy - e.y));
                     mouseIsOverMe = true;
                     redraw();
                 }
