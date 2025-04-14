@@ -95,4 +95,9 @@ public class LinearLinePlotter extends LinePlotter {
         int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
         return plotSymbols(plot, series, graphics, mapping, symbol, remainingTime);
     }
+
+    @Override
+    public double[] getSegmentPoints(double x1, double y1, double x2, double y2) {
+        return new double[] { x1, y1, x2, y2 };
+    }
 }

@@ -105,4 +105,9 @@ public class PinsLinePlotter extends LinePlotter {
         int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
         return plotSymbols(plot, series, graphics, mapping, symbol, remainingTime);
     }
+
+    public double[] getSegmentPoints(double x1, double y1, double x2, double y2) {
+        // Pins line plotter does not draw segments
+        return new double[0];
+    }
 }

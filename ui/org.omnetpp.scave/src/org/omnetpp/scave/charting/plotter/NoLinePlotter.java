@@ -21,4 +21,8 @@ public class NoLinePlotter extends LinePlotter {
     public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis) {
         return plotSymbols(plot, series, graphics, mapping, symbol, timeLimitMillis);
     }
+
+    public double[] getSegmentPoints(double x1, double y1, double x2, double y2) {
+        return new double[0]; // no line segments
+    }
 }

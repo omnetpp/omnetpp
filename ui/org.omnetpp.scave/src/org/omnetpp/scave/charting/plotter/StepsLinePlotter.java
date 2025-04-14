@@ -174,4 +174,17 @@ public class StepsLinePlotter extends LinePlotter {
         int remainingTime = Math.max(0, timeLimitMillis - (int)(System.currentTimeMillis()-startTime));
         return plotSymbols(plot, series, graphics, mapping, symbol, remainingTime);
     }
+
+    @Override
+    public double[] getSegmentPoints(double x1, double y1, double x2, double y2) {
+        switch (mode) {
+            case POST: // sample-hold
+                return new double[] { x1, y1, x2, y1, x2, y2 };
+            case PRE: // backward-sample-hold
+                return new double[] { x1, y1, x1, y2, x2, y2 };
+            case MID: // TODO implement?
+            default:
+                return new double[0]; // No line segments for MID or unknown modes
+        }
+    }
 }

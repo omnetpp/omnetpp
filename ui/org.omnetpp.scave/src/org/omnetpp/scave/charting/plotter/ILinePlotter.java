@@ -24,4 +24,12 @@ public interface ILinePlotter {
      * @return true if OK, false if the drawing is incomplete due to timeout
      */
     public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IPlotSymbol symbol, int timeLimitMillis);
+
+    /**
+     * Calculates the sequence of vertices (in data coordinates) that form the visible
+     * line segments between two consecutive data points (x1, y1) and (x2, y2),
+     * based on the plotter's specific drawing style. Returns an array of doubles
+     * representing the vertex coordinates [x1, y1, x2, y2, ...] (can be empty).
+     */
+    public double[] getSegmentPoints(double x1, double y1, double x2, double y2);
 }
