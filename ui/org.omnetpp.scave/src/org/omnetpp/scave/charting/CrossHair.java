@@ -65,6 +65,8 @@ class CrossHair {
     private int canvasX = Integer.MAX_VALUE;
     private int canvasY = Integer.MAX_VALUE;
 
+    private DeltaMeasurement deltaMeasurement;
+
     public CrossHair(LinePlot parent) {
         this.parent = parent;
 
@@ -76,6 +78,14 @@ class CrossHair {
             public void keyPressed(KeyEvent e) {
                 if (finalParent.getCursor() == null)
                     finalParent.setCursor(CROSS_CURSOR);
+
+                // Handle delta measurement key events
+                if (plotArea != null && plotArea.contains(canvasX, canvasY)) {
+                    char key = e.character;
+                    if (deltaMeasurement.handleKeyPress(key, canvasX, canvasY, finalParent.getOptimizedCoordinateMapper())) {
+                        finalParent.redraw();
+                    }
+                }
             }
             @Override
             public void keyReleased(KeyEvent e) {
@@ -150,6 +160,8 @@ class CrossHair {
                 return new HtmlHoverInfo(getHoverText(x, y, finalParent.getOptimizedCoordinateMapper()), (imageName) -> SymbolImageFactory.getImage(imageName));
             }
         });
+
+        deltaMeasurement = new DeltaMeasurement(parent);
     }
 
     private void invalidatePosition() {
@@ -193,6 +205,10 @@ class CrossHair {
 
             // draw tooltip
             drawTooltip(graphics, dataPoints, totalFound, coordsMapping);
+
+            // draw delta measurement markers and information
+            deltaMeasurement.draw(graphics, coordsMapping);
+
             graphics.popState();
         }
     }
