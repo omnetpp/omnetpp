@@ -212,6 +212,15 @@ public class LinePlot extends PlotBase {
             this.series = series;
             this.index = index;
         }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof DataPoint) {
+                DataPoint other = (DataPoint)obj;
+                return series == other.series && index == other.index;
+            }
+            return false;
+        }
     }
 
     public LinePlot(Composite parent, int style) {
