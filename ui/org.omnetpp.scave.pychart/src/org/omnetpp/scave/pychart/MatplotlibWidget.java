@@ -283,17 +283,23 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
             @Override
             public void keyPressed(KeyEvent e) {
+                // SWT doesn't give us mouse coordinates for key events, so we have to get it separately
+                Point loc = toControl(e.display.getCursorLocation());
                 String key = getKeyFromEvent(e);
                 if (key != null && pythonProcess != null && pythonProcess.isAlive()) {
-                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().keyPressEvent(key));
+                    int sy = getSize().y;
+                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().keyPressEvent(key, loc.x, sy - loc.y));
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+                // SWT doesn't give us mouse coordinates for key events, so we have to get it separately
+                Point loc = toControl(e.display.getCursorLocation());
                 String key = getKeyFromEvent(e);
                 if (key != null && pythonProcess != null && pythonProcess.isAlive()) {
-                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().keyReleaseEvent(key));
+                    int sy = getSize().y;
+                    pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().keyReleaseEvent(key, loc.x, sy - loc.y));
                 }
             }
         });

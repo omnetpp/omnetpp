@@ -170,12 +170,12 @@ class FigureCanvasSWT(FigureCanvasBase):
         event = MouseEvent('button_release_event', self, x, y, button)
         self.callbacks.process(event.name, event)
 
-    def keyPressEvent(self, key):
-        event = KeyEvent('key_press_event', self, key)
+    def keyPressEvent(self, key, x, y):
+        event = KeyEvent('key_press_event', self, key, x, y)
         self.callbacks.process(event.name, event)
 
-    def keyReleaseEvent(self, key):
-        event = KeyEvent('key_release_event', self, key)
+    def keyReleaseEvent(self, key, x, y):
+        event = KeyEvent('key_release_event', self, key, x, y)
         self.callbacks.process(event.name, event)
 
     def _resize(self, width, height):

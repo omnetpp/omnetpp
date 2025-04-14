@@ -67,13 +67,13 @@ public interface IMatplotlibFigureCanvas {
      * The key can be a single case sensitive Unicode character ("g", "G", "#", etc.),
      * a special key ("control", "shift", "f1", "up", etc.) or a combination of
      * the above (e.g., "ctrl+alt+g", "ctrl+alt+G"). */
-    void keyPressEvent(String key);
+    void keyPressEvent(String key, int x, int y);
 
     /** Notifies matplotlib that the given key was released inside the canvas area.
      * The key can be a single case sensitive Unicode character ("g", "G", "#", etc.),
      * a special key ("control", "shift", "f1", "up", etc.) or a combination of
      * the above (e.g., "ctrl+alt+g", "ctrl+alt+G"). */
-    void keyReleaseEvent(String key);
+    void keyReleaseEvent(String key, int x, int y);
 
     /** Notifies matplotlib that the canvas was resized to the given size. */
     void resizeEvent(int width, int height);
