@@ -195,6 +195,53 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
     }
 
     /**
+     * Splits input on whitespace, removes surrounding quotes, unescapes \" and \\ inside quoted tokens.
+     */
+    public static ArrayList<String> tokenize(String input) {
+        ArrayList<String> tokens = new ArrayList<String>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (inQuotes) {
+                if (c == '\\' && i + 1 < input.length()) {
+                    char next = input.charAt(i + 1);
+                    if (next == '"' || next == '\\') {
+                        current.append(next);
+                        i++;
+                    }
+                    else
+                        current.append(c);
+                }
+                else if (c == '"') {
+                    inQuotes = false;
+                    tokens.add(current.toString());
+                    current.setLength(0);
+                }
+                else
+                    current.append(c);
+            }
+            else {
+                if (Character.isWhitespace(c)) {
+                    if (current.length() > 0) {
+                        tokens.add(current.toString());
+                        current.setLength(0);
+                    }
+                }
+                else if (c == '"')
+                    inQuotes = true;
+                else
+                    current.append(c);
+            }
+        }
+        if (inQuotes)
+            throw new IllegalArgumentException("Unmatched quote in input");
+        if (current.length() > 0)
+            tokens.add(current.toString());
+        return tokens;
+    }
+
+    /**
      * Inserts newlines into the string, performing rudimentary
      * line breaking. Good enough for long tooltip texts etc.
      */
