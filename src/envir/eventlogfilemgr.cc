@@ -133,12 +133,6 @@ void EventlogFileManager::clearInternalState()
     isEventRecordingEnabled = true;
     isIntervalFilterRecordingEnabled = true;
     isModuleFilterRecordingEnabled = true;
-    isTextRecordingEnabled = true;
-    isMessageRecordingEnabled = true;
-    isModuleRecordingEnabled = true;
-    isMethodCallRecordingEnabled = true;
-    isDisplayStringRecordingEnabled = true;
-    isCustomRecordingEnabled = true;
     isRecordingEnabled = recordEventLog;
     eventNumberToSnapshotEventLogEntryRanges.clear();
     eventNumberToAddedIndexEventLogEntryRanges.clear();
@@ -149,6 +143,7 @@ void EventlogFileManager::clearInternalState()
     channelToConnectionDisplayStringChangedEntryReferenceMap.clear();
     gateToGateCreatedEntryReferenceMap.clear();
     messageToEntryReferenceMap.clear();
+    configureRecordingOptions();
 }
 
 void EventlogFileManager::configure()
@@ -162,22 +157,7 @@ void EventlogFileManager::configure()
     if (eventLogMessageDetailPattern)
         messageDetailPrinter = new ObjectPrinter(recurseIntoMessageFields, eventLogMessageDetailPattern, 3);
 
-    // setup eventlog options
-    const char *eventLogOptions = envir->getConfig()->getAsCustom(CFGID_EVENTLOG_OPTIONS);
-    if (eventLogOptions) {
-        isTextRecordingEnabled = isMessageRecordingEnabled = isModuleRecordingEnabled = isMethodCallRecordingEnabled = isDisplayStringRecordingEnabled = isCustomRecordingEnabled = false;
-        common::StringTokenizer tokenizer(eventLogOptions, ", ");
-        while (tokenizer.hasMoreTokens()) {
-            const char *token = tokenizer.nextToken();
-            if (!strcmp(token, "text")) isTextRecordingEnabled = true;
-            else if (!strcmp(token, "message")) isMessageRecordingEnabled = true;
-            else if (!strcmp(token, "module")) isModuleRecordingEnabled = true;
-            else if (!strcmp(token, "methodcall")) isMethodCallRecordingEnabled = true;
-            else if (!strcmp(token, "displaystring")) isDisplayStringRecordingEnabled = true;
-            else if (!strcmp(token, "custom")) isCustomRecordingEnabled = true;
-            else throw opp_runtime_error("Unknown eventlog-options parameter value `%s", token);
-        }
-    }
+    configureRecordingOptions();
 
     // set up recording intervals
     delete recordingIntervals;
@@ -195,6 +175,33 @@ void EventlogFileManager::configure()
     minTruncatedSize = envir->getConfig()->getAsDouble(CFGID_EVENTLOG_MIN_TRUNCATED_SIZE);
     snapshotFrequency = envir->getConfig()->getAsDouble(CFGID_EVENTLOG_SNAPSHOT_FREQUENCY);
     indexFrequency = envir->getConfig()->getAsDouble(CFGID_EVENTLOG_INDEX_FREQUENCY);
+}
+
+void EventlogFileManager::configureRecordingOptions()
+{
+    const char *eventLogOptions = envir->getConfig()->getAsCustom(CFGID_EVENTLOG_OPTIONS);
+    if (eventLogOptions) {
+        isTextRecordingEnabled = isMessageRecordingEnabled = isModuleRecordingEnabled = isMethodCallRecordingEnabled = isDisplayStringRecordingEnabled = isCustomRecordingEnabled = false;
+        common::StringTokenizer tokenizer(eventLogOptions, ", ");
+        while (tokenizer.hasMoreTokens()) {
+            const char *token = tokenizer.nextToken();
+            if (!strcmp(token, "text")) isTextRecordingEnabled = true;
+            else if (!strcmp(token, "message")) isMessageRecordingEnabled = true;
+            else if (!strcmp(token, "module")) isModuleRecordingEnabled = true;
+            else if (!strcmp(token, "methodcall")) isMethodCallRecordingEnabled = true;
+            else if (!strcmp(token, "displaystring")) isDisplayStringRecordingEnabled = true;
+            else if (!strcmp(token, "custom")) isCustomRecordingEnabled = true;
+            else throw opp_runtime_error("Unknown eventlog-options parameter value `%s", token);
+        }
+    }
+    else {
+        isTextRecordingEnabled = true;
+        isMessageRecordingEnabled = true;
+        isModuleRecordingEnabled = true;
+        isMethodCallRecordingEnabled = true;
+        isDisplayStringRecordingEnabled = true;
+        isCustomRecordingEnabled = true;
+    }
 }
 
 void EventlogFileManager::lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details)

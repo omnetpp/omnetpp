@@ -191,6 +191,11 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
     virtual void configure();
 
     /**
+     * Initializes options enabling/disabling various parts of eventlog recording.
+     */
+    virtual void configureRecordingOptions();
+
+    /**
      * Returns true if the file is open.
      */
     virtual bool isOpen() { return feventlog != nullptr; }
