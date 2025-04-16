@@ -125,7 +125,7 @@ install_deps() {
 
         elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora
             # dnf is used on fedora
-            packages="make ccache clang lld gdb libstdc++-static bison flex perl python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz xdg-utils libdwarf-devel"
+            packages="make ccache clang awk lld gdb libstdc++-static bison flex perl python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz xdg-utils libdwarf-devel"
 
             if ! $no_gui; then
                 packages="$packages qt5-qtbase-devel qt5-qtsvg webkit2gtk4.1"
