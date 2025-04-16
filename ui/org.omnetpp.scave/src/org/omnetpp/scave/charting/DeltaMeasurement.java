@@ -120,18 +120,25 @@ public class DeltaMeasurement {
             return true;
         }
         case 's':
-        case 'S':
-            // any    S    near unmarked segment    mark new begin/end points    segment
-            // segment    S    near marked segment    clear    no
+        case 'S': {
             DeltaEndpoint[] segment = findNearestSegment(x, y, coordsMapping);
 
-            if (segment != null) {
-                endpointA = segment[0];
-                endpointB = segment[1];
+            if (segment == null || segment.length < 2)
+                return false;
+
+            // segment    S    near marked segment    clear    no
+            if (segment[0].equals(endpointA) && segment[1].equals(endpointB)) {
+                endpointA = null;
+                endpointB = null;
                 return true;
             }
 
-            return false;
+            // any    S    near unmarked segment    mark new begin/end points    segment
+            endpointA = segment[0];
+            endpointB = segment[1];
+
+            return true;
+        }
         case 'd':
         case 'D': {
             DeltaEndpoint nearest = findNearestPoint(x, y, coordsMapping);

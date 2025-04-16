@@ -415,40 +415,33 @@ class DeltaMeasurement:
                 return  # Do nothing if no point is near
 
             if self.endpoint_a is None:
-                # no -> A near point -> mark A -> A
                 self.endpoint_a = nearest
                 self._draw_marker_a()
             elif nearest == self.endpoint_a:
-                # A -> A near A -> clear A -> no
-                # AB -> A near A -> clear A -> B (state B handled implicitly by clearing A)
                 self._clear_marker_a()
                 self.endpoint_a = None
             elif self.endpoint_b is not None and nearest == self.endpoint_b:
-                # AB -> A near B -> mark new A, unmark B -> A
                 self._clear_marker_b()
                 self.endpoint_b = None
                 self.endpoint_a = nearest
                 self._draw_marker_a()
             else:
-                # A -> A near non-A -> mark new A -> A
-                # AB -> A near non-A, non-B -> mark new A -> AB
                 self.endpoint_a = nearest
                 self._draw_marker_a()
 
-            self._display_delta()  # Update delta display based on new state
-
+            self._display_delta()
         elif key == 's':
             segment = self._find_nearest_segment(event)
+
             if segment is not None:
-                # any -> S near segment -> mark A, B -> AB
-                # AB -> S near segment -> mark new A, B -> AB (overwrite)
-                self._clear_measurement()  # Clear previous state first
-                self.endpoint_a = segment[0]
-                self.endpoint_b = segment[1]
-                self._draw_marker_a()
-                self._draw_marker_b()
-                self._display_delta()
-            # else: any -> S not near segment -> nothing -> any (no change)
+                if segment[0] == self.endpoint_a and segment[1] == self.endpoint_b:
+                    self._clear_measurement()
+                else:
+                    self.endpoint_a = segment[0]
+                    self.endpoint_b = segment[1]
+                    self._draw_marker_a()
+                    self._draw_marker_b()
+                    self._display_delta()
 
         elif key == 'd':
             nearest = self._find_nearest_point(event)
