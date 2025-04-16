@@ -84,6 +84,9 @@ bool ExprNodeFactory::supportsStdMathFunction(const char *name)
     return contains(names, std::string(name));
 }
 
+// disambiguate between two- and three-arg overloads
+static double _wrap_hypot(double x, double y) {return hypot(x,y);}
+
 ExprNode *ExprNodeFactory::createStdMathFunction(const char *name_)
 {
     std::string name = name_;
@@ -101,7 +104,7 @@ ExprNode *ExprNodeFactory::createStdMathFunction(const char *name_)
     if (name == "sqrt") return createMathFunction("sqrt", sqrt);
     if (name == "fabs") return createMathFunction("fabs", fabs);
     if (name == "fmod") return createMathFunction("fmod", fmod);
-    if (name == "hypot") return createMathFunction("hypot", hypot);
+    if (name == "hypot") return createMathFunction("hypot", _wrap_hypot);
     if (name == "log") return createMathFunction("log", log);
     if (name == "log10") return createMathFunction("log10", log10);
     throw opp_runtime_error("Not a standard <cmath> function: '%s'", name_);
