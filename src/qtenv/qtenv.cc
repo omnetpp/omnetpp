@@ -134,6 +134,7 @@ extern "C" QTENV_API void _qtenv_lib() {}
 Register_GlobalConfigOptionU(CFGID_QTENV_EXTRA_STACK, "qtenv-extra-stack", "B", "80KiB", "Specifies the extra amount of stack that is reserved for each `activity()` simple module when the simulation is run under Qtenv.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_CONFIG, "qtenv-default-config", CFG_STRING, nullptr, "Specifies which config Qtenv should set up automatically on startup. The default is to ask the user.");
 Register_GlobalConfigOption(CFGID_QTENV_DEFAULT_RUN, "qtenv-default-run", CFG_STRING, nullptr, "Specifies which run (of the default config, see `qtenv-default-config`) Qtenv should set up automatically on startup. A run filter is also accepted. The default is to ask the user.");
+Register_PerRunConfigOption(CFGID_QTENV_IDENTICON_SEED, "qtenv-identicon-seed", CFG_STRING, nullptr, "Overrides the default (computed) identicon seed for the current run. The identicon is a small image that is shown in the upper left corner of the Qtenv main window, and its purpose is help the user visually identify the window if there are multiple Qtenv simulations running at the same time. The image is generated from a seed. By default, the seed is computed from various properties of the simulation (config name, run number, configuration contents, etc) that ensures that different simulations result in different images, but multiple launches of the same simulation result in the same identicon. This configuration option allows the user to override this default behavior and force a specific seed.");
 
 
 // According to: https://doc.qt.io/qt-5/qproxystyle.html#details
@@ -1325,7 +1326,8 @@ void Qtenv::setupNetwork(cModuleType *network)
     int runNumber = getConfigEx()->getActiveRunNumber();
     QString label = configName + " #" + QString::number(runNumber);
 
-    QString seed = computeSimulationHash();
+    std::string configuredSeed = getConfigEx()->getAsString(CFGID_QTENV_IDENTICON_SEED);
+    QString seed = configuredSeed.empty() ? computeSimulationHash() : configuredSeed.c_str();
     mainWindow->updateSimulationIdenticon(label, seed);
 
     // collapsing all nodes in the object tree, because even if a new network is
