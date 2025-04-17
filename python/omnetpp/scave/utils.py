@@ -2424,18 +2424,23 @@ def _make_scroll_navigable(figure):
         ydata = event.ydata
         direction = np.sign(event.step)
 
-        if event.key is None: # vertical pan
-            delta = cur_yrange * direction * PANNING_FACTOR
-            ax.set_ylim([cur_ylim[0] + delta, cur_ylim[1] + delta])
-        elif event.key == "shift": # horizontal pan
-            delta = cur_xrange * -direction * PANNING_FACTOR
-            ax.set_xlim([cur_xlim[0] + delta, cur_xlim[1] + delta])
-        elif event.key == "control": # zoom
+        # We add this to enum strip axes, see the HACK in _plot_enum.
+        is_enum_strip = hasattr(ax, "_colorbar")
+
+        if event.key == "control":  # zoom
             scale = math.pow(SCALING_FACTOR, direction)
             ax.set_xlim([xdata - (xdata-cur_xlim[0]) / scale,
                         xdata + (cur_xlim[1]-xdata) / scale])
-            ax.set_ylim([ydata - (ydata-cur_ylim[0]) / scale,
-                        ydata + (cur_ylim[1]-ydata) / scale])
+            if not is_enum_strip:
+                ax.set_ylim([ydata - (ydata-cur_ylim[0]) / scale,
+                            ydata + (cur_ylim[1]-ydata) / scale])
+        else:  # pan
+            if event.key == "shift" or is_enum_strip:  # horizontal pan
+                delta = cur_xrange * -direction * PANNING_FACTOR
+                ax.set_xlim([cur_xlim[0] + delta, cur_xlim[1] + delta])
+            else:  # vertical pan
+                delta = cur_yrange * direction * PANNING_FACTOR
+                ax.set_ylim([cur_ylim[0] + delta, cur_ylim[1] + delta])
 
         figure.canvas.draw_idle()
 
