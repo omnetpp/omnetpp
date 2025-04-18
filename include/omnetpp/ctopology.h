@@ -412,6 +412,11 @@ class SIM_API cTopology : public cOwnedObject
     virtual void extractFromNetwork(Predicate *predicate);
 
     /**
+     * The version of extractFromNetwork() that accepts the predicate as a lambda function.
+     */
+    virtual void extractFromNetwork(std::function<bool(cModule *)> predicate);
+
+    /**
      * Extracts model topology by module full path. All modules whole getFullPath()
      * matches one of the patterns in given string vector will get included.
      * The patterns may contain wilcards in the same syntax as in ini files.

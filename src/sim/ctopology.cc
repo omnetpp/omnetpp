@@ -24,6 +24,7 @@
 #include <list>
 #include <algorithm>
 #include <sstream>
+#include <functional>
 #include "common/patternmatcher.h"
 #include "common/stringutil.h"
 #include "omnetpp/ctopology.h"
@@ -161,6 +162,22 @@ void cTopology::extractByParameter(const char *paramName, const char *paramValue
 }
 
 //---
+
+class LambdaPredicate : public cTopology::Predicate
+{
+  private:
+    std::function<bool(cModule *)> func;
+  public:
+    LambdaPredicate(std::function<bool(cModule *)> func) : func(func) {}
+    virtual bool matches(cModule *module) override { return func(module); }
+
+};
+
+void cTopology::extractFromNetwork(std::function<bool(cModule *)> predicate)
+{
+    LambdaPredicate wrappedLambda(predicate);
+    extractFromNetwork(&wrappedLambda);
+}
 
 static bool selectByPredicate(cModule *mod, void *data)
 {
