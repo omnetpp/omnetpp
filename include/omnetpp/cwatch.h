@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <functional>
 #include "cownedobject.h"
 #include "cclassdescriptor.h"
 
@@ -243,6 +244,22 @@ class SIM_API cWatch_cObjectPtr : public cWatchBase
     cObject *getObjectPtr() const {return rp;}
 };
 
+/**
+ * @brief Watch class for computed expressions. The watch will display the result of
+ * calling an encapsulated function.
+ * @ingroup Internals
+ */
+template<typename T>
+class cComputedExpressionWatch : public cWatchBase
+{
+  private:
+    std::function<T()> f;
+  public:
+    cComputedExpressionWatch(const char *name, std::function<T()> f) : cWatchBase(name), f(f) {}
+    virtual const char *getClassName() const override {return omnetpp::opp_typename(typeid(T));}
+    virtual bool supportsAssignment() const override {return false;}
+    virtual std::string str() const override { std::stringstream out; out << f(); return out.str(); }
+};
 
 inline cWatchBase *createWatch(const char *varname, short& d) {
     return new cGenericAssignableWatch<short>(varname, d);
@@ -313,6 +330,11 @@ inline cWatchBase *createWatch_cObject(const char *varname, const char *typeName
     return new cWatch_cObject(varname, typeName, obj);
 }
 
+template<typename T>
+inline cWatchBase *createComputedExpressionWatch(const char *name, std::function<T()> f) {
+    return new cComputedExpressionWatch<T>(name, f);
+}
+
 // for pointers to objects.
 // NOTE: this is a bit tricky. C++ thinks that (cObject*&) and
 // (SomeDerivedType*&) are unrelated, so we have to force the cast
@@ -363,6 +385,34 @@ inline cWatchBase *createWatch_cObjectPtr(const char *varname, const char *typeN
  * @hideinitializer
  */
 #define WATCH_PTR(variable)  omnetpp::createWatch_cObjectPtr(#variable, omnetpp::opp_typename(typeid(variable)), (cObject*&)(variable),(variable))
+
+/**
+ * @brief Makes the result of a formula or calculation inspectable in Qtenv
+ * without requiring a separate variable. The expression is evaluated as often
+ * as needed, providing real-time monitoring of derived metrics. Unlike WATCH
+ * which monitors single variables, WATCH_EXPR can display the result of
+ * operations combining multiple variables, function calls, or any valid
+ * expression.
+ *
+ * The macro works by creating a lambda function. Note that local variables will
+ * be captured by value (i.e. their current values will be used.) See also
+ * WATCH_LAMBDA() which gives you more flexibility.
+ *
+ * Example: WATCH_EXPR("totalPks", numTransmitted + queue.length() + numDropped)
+ *
+ * @hideinitializer
+ */
+#define WATCH_EXPR(name, expression)  omnetpp::createComputedExpressionWatch(name, std::function([=]() {return (expression);}))
+
+/**
+ * @brief Makes the result of a lambda function inspectable in Qtenv. This is a
+ * more flexible (but also more verbose) version of WATCH_EXPR().
+ *
+ * Example: WATCH_LAMBDA("totalPks", [this]() { return numTransmitted + queue.length() + numDropped; })
+ *
+ * @hideinitializer
+ */
+#define WATCH_LAMBDA(name, lambdaFunction)  omnetpp::createComputedExpressionWatch(name, std::function(lambdaFunction))
 
 /** @} */
 
