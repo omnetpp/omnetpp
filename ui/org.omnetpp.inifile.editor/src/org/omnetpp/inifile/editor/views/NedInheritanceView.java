@@ -8,6 +8,7 @@
 package org.omnetpp.inifile.editor.views;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -189,24 +191,26 @@ public class NedInheritanceView extends AbstractModuleView {
             return;
         }
 
-        // build tree
-        final GenericTreeNode root = new GenericTreeNode("root");
-
+        // build tree: first the inheritance chain, then the subtype hierarchy
+        final GenericTreeNode rootNode = new GenericTreeNode("root");
+        GenericTreeNode currentNode = rootNode;
         List<INedTypeInfo> extendsChain = inputNedType.getInheritanceChain();
-        INedTypeInfo rootType = extendsChain.get(extendsChain.size()-1);
-        buildInheritanceTreeOf(rootType, root, new HashSet<INedTypeInfo>());
+        for (INedTypeInfo nedType : extendsChain.reversed()) {
+            if (nedType != inputNedType) {
+                GenericTreeNode newNode = new GenericTreeNode(nedType.getNedElement());
+                currentNode.addChild(newNode);
+                currentNode = newNode;
+            }
+        }
+        GenericTreeNode inputNedTypeNode = buildInheritanceTreeOf(inputNedType, currentNode, new HashSet<INedTypeInfo>());
 
         // prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
-        if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
-            treeViewer.setInput(root);
-
-            // open root node (useful in case preserving the selection fails)
-            treeViewer.expandToLevel(2);
-
-            // try to preserve selection
-            ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
-            if (oldSelection != null)
-                treeViewer.setSelection(oldSelection, true);
+        if (!GenericTreeUtils.treeEquals(rootNode, (GenericTreeNode)treeViewer.getInput())) {
+            treeViewer.setInput(rootNode);
+            treeViewer.reveal(rootNode);
+            treeViewer.reveal(inputNedTypeNode);
+            treeViewer.setSelection(new StructuredSelection(inputNedTypeNode));
+            treeViewer.setExpandedState(inputNedTypeNode, true);
         }
 
         // refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
@@ -219,15 +223,18 @@ public class NedInheritanceView extends AbstractModuleView {
         setContentDescription(text);
     }
 
-    private void buildInheritanceTreeOf(INedTypeInfo typeInfo, GenericTreeNode parentNode, Set<INedTypeInfo> visited) {
+    private GenericTreeNode buildInheritanceTreeOf(INedTypeInfo typeInfo, GenericTreeNode parentNode, Set<INedTypeInfo> visited) {
         GenericTreeNode node = new GenericTreeNode(typeInfo.getNedElement());
         parentNode.addChild(node);
 
         if (!visited.contains(typeInfo)) {  // cycle detection
             visited.add(typeInfo);
-            for (INedTypeInfo type : getSubtypesOf(typeInfo))
+            List<INedTypeInfo> subtypes = getSubtypesOf(typeInfo);
+            subtypes.sort(Comparator.comparing(INedTypeInfo::getName));
+            for (INedTypeInfo type : subtypes)
                 buildInheritanceTreeOf(type, node, visited);
         }
+        return node;
     }
 
     private List<INedTypeInfo> getSubtypesOf(INedTypeInfo inputType) {
