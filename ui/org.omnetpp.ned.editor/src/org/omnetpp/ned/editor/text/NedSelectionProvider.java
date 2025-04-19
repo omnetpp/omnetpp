@@ -57,6 +57,13 @@ public class NedSelectionProvider implements IPostSelectionProvider {
             int line = fNedTextEditor.getDocument().getLineOfOffset(offset);
             int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
             IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
+
+            // Prevent "File is not a NED file, or not parsed yet" exception thrown from 
+            // NedTypeResolver.getNedFileElement() in case the file was deleted in the meantime.
+            // (Note that this function is often invoked after a delay)  
+            if (!NedResourcesPlugin.getNedResources().containsNedFileElement(file))
+                return StructuredSelection.EMPTY;
+
             INedElement selectedElement = NedResourcesPlugin.getNedResources().getNedElementAt(file, line+1, column);
             if (selectedElement instanceof NedFileElementEx) {
                 // To improve the usability of NED views that follows selection (e.g. NED inheritance), we advertise

@@ -85,6 +85,11 @@ public class NedTextUtils {
             int column = region.getOffset() - doc.getLineOffset(line);
 
             INedTypeResolver res = NedResourcesPlugin.getNedResources();
+
+            // prevent exception thrown from getNedElementAt() on next line
+            if (!NedResourcesPlugin.getNedResources().containsNedFileElement(file))
+                return null;
+
             INedElement element = res.getNedElementAt(file, line+1, column);
             if (element == null)
                 return null; // we don't know what's there
