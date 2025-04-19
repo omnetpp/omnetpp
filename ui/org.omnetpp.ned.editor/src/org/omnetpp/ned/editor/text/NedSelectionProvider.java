@@ -16,6 +16,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -49,11 +50,10 @@ public class NedSelectionProvider implements IPostSelectionProvider {
      * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
      */
     public ISelection getSelection() {
-        ISelection selection = fNedTextEditor.getSelectionProvider().getSelection();
-
-        // calculate the ned element under the current position
-        int offset = ((ITextSelection)selection).getOffset();
         try {
+            // calculate the NED element under the current position
+            ITextSelection textSelection = (ITextSelection)fNedTextEditor.getSelectionProvider().getSelection();
+            int offset = textSelection.getOffset();
             int line = fNedTextEditor.getDocument().getLineOfOffset(offset);
             int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
             IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
@@ -65,12 +65,14 @@ public class NedSelectionProvider implements IPostSelectionProvider {
                 // not known.
                 selectedElement = findNedTypeElementAfterLine((NedFileElementEx)selectedElement, line);
             }
-            selection = (selectedElement != null) ? new StructuredSelection(selectedElement) : StructuredSelection.EMPTY;
+            return (selectedElement != null) ? new StructuredSelection(selectedElement) : StructuredSelection.EMPTY;
         }
         catch (BadLocationException e) {
         }
-
-        return selection;
+        catch (Exception e) {
+            NedEditorPlugin.logError("Error producing NED selection", e);
+        }
+        return StructuredSelection.EMPTY;
     }
 
     private INedElement findNedTypeElementAfterLine(NedFileElementEx nedFileElement, int line) {
