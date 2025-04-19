@@ -28,6 +28,7 @@ import org.omnetpp.ned.model.NedSourceRegion;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
@@ -37,6 +38,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
+import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.ImportElement;
@@ -157,6 +159,23 @@ public class NedTextUtils {
                 return null;
 
             }
+
+            // If we are here, the selected word likely occurs within a comment (e.g. the type's NEDDOC comment)
+
+            // Try to resolve as type name using the file's imports etc.
+            INedTypeLookupContext context = element instanceof NedFileElementEx ? (NedFileElementEx)element : element.getEnclosingLookupContext();
+            INedElement typeElement = lookupTypeElement(dottedWord, context);
+            if (typeElement != null)
+                return createInfo(element, dottedWordRegion, typeElement);
+
+            // Try to resolve as toplevel NED type, assuming dottedWord is its fully qualified type name
+            INedTypeInfo typeInfo = res.getToplevelNedType(dottedWord, file.getProject());
+            if (typeInfo != null)
+                return createInfo(element, dottedWordRegion, typeInfo.getNedElement());
+
+            // Try to resolve by simple name (without package); If there are multiple matches, return the first one
+            for (INedTypeInfo info : res.getToplevelNedTypesBySimpleName(word, file.getProject()))
+                return createInfo(element, wordRegion, info.getNedElement());
 
             return null; // nothing
         }
