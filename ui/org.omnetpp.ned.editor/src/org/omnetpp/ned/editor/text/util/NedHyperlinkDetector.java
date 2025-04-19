@@ -30,12 +30,8 @@ public class NedHyperlinkDetector implements IHyperlinkDetector {
 
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
         Info info = NedTextUtils.getNedReferenceFromSource((ITextEditor)editor, textViewer, region);
-        if (info == null)
-            return null;
-
-        if (info.referredElement != null)
+        if (info != null && info.referredElement != null)
             return new IHyperlink[] {new NedHyperlink(info.regionToHighlight, info.referredElement)};
-
         return null;
     }
 
