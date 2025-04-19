@@ -17,6 +17,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * A selection provider that attaches to a NED text editor's viewer and delegates
@@ -51,18 +53,32 @@ public class NedSelectionProvider implements IPostSelectionProvider {
 
         // calculate the ned element under the current position
         int offset = ((ITextSelection)selection).getOffset();
-        int line;
         try {
-            line = fNedTextEditor.getDocument().getLineOfOffset(offset);
+            int line = fNedTextEditor.getDocument().getLineOfOffset(offset);
             int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
             IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
             INedElement selectedElement = NedResourcesPlugin.getNedResources().getNedElementAt(file, line+1, column);
-            // create a structured selection
+            if (selectedElement instanceof NedFileElementEx) {
+                // To improve the usability of NED views that follows selection (e.g. NED inheritance), we advertise
+                // the next type element after the cursor as selected. Otherwise, right after opening a NED file
+                // the view would be empty, even if there is only one NED type in that file. Adverse side effects are
+                // not known.
+                selectedElement = findNedTypeElementAfterLine((NedFileElementEx)selectedElement, line);
+            }
             selection = (selectedElement != null) ? new StructuredSelection(selectedElement) : StructuredSelection.EMPTY;
-        } catch (BadLocationException e) {
+        }
+        catch (BadLocationException e) {
         }
 
         return selection;
+    }
+
+    private INedElement findNedTypeElementAfterLine(NedFileElementEx nedFileElement, int line) {
+        for (INedElement child : nedFileElement)
+            if (child instanceof INedTypeElement)
+                if (child.getSourceLineNumber() >= line)
+                    return child;
+        return null;
     }
 
     /*
