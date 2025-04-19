@@ -243,7 +243,8 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public synchronized NedFileElementEx getNedFileElement(IFile file) {
-        Assert.isTrue(nedFiles.containsKey(file), "file is not a NED file, or not parsed yet");
+        if (!nedFiles.containsKey(file))
+            throw new IllegalArgumentException("File " + file.getFullPath() + " is not a NED file, or not parsed yet");
         return nedFiles.get(file);
     }
 
