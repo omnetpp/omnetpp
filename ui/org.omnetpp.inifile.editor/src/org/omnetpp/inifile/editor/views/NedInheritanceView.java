@@ -215,12 +215,7 @@ public class NedInheritanceView extends AbstractModuleView {
 
         // refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
         treeViewer.refresh();
-
-        // update label
-        String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNedElement().getReadableTagName());
-        if (getPinnedToEditor() != null)
-            text += ", in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
-        setContentDescription(text);
+        setContentDescription("");
     }
 
     private GenericTreeNode buildInheritanceTreeOf(INedTypeInfo typeInfo, GenericTreeNode parentNode, Set<INedTypeInfo> visited) {
