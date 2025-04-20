@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.Collections;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -66,33 +67,33 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     // local members
     protected boolean needsRefreshLocal;
     protected INedTypeElement extendsType;
-    protected Set<INedTypeElement> localInterfaces = new HashSet<INedTypeElement>();
-    protected Map<String, Map<String, PropertyElementEx>> localProperties = new LinkedHashMap<String, Map<String, PropertyElementEx>>();
-    protected Map<String, ParamElementEx> localParams = new LinkedHashMap<String, ParamElementEx>();
-    protected Map<String, ParamElementEx> localParamDecls = new LinkedHashMap<String, ParamElementEx>();
-    protected Map<String, ParamElementEx> localParamValues = new LinkedHashMap<String, ParamElementEx>();
-    protected Map<String, GateElementEx> localGateDecls = new LinkedHashMap<String, GateElementEx>();
-    protected Map<String, GateElementEx> localGateSizes = new LinkedHashMap<String, GateElementEx>();
-    protected Map<String, INedTypeElement> localInnerTypes = new LinkedHashMap<String, INedTypeElement>();
-    protected Map<String, SubmoduleElementEx> localSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
-    protected Map<String, ConnectionElementEx> localNamedConnections = new LinkedHashMap<String, ConnectionElementEx>();
-    protected HashSet<INedTypeElement> localUsedTypes;
+    protected Set<INedTypeElement> localInterfaces;
+    protected Map<String, Map<String, PropertyElementEx>> localProperties;
+    protected Map<String, ParamElementEx> localParams;
+    protected Map<String, ParamElementEx> localParamDecls;
+    protected Map<String, ParamElementEx> localParamValues;
+    protected Map<String, GateElementEx> localGateDecls;
+    protected Map<String, GateElementEx> localGateSizes;
+    protected Map<String, INedTypeElement> localInnerTypes;
+    protected Map<String, SubmoduleElementEx> localSubmodules;
+    protected Map<String, ConnectionElementEx> localNamedConnections;
+    protected Set<INedTypeElement> localUsedTypes;
 
     // sum of all "local" stuff
-    protected Map<String, INedElement> localMembers = new LinkedHashMap<String, INedElement>();
+    protected Map<String, INedElement> localMembers;
 
     // local plus inherited
     protected boolean needsRefreshInherited; //XXX may be replaced with inheritedRefreshSerial, see INedTypeResolver.getLastChangeSerial()
-    protected List<INedTypeInfo> extendsChain = null;
-    protected Set<INedTypeElement> allInterfaces = new HashSet<INedTypeElement>();
-    protected Map<String, Map<String, PropertyElementEx>> allProperties = new LinkedHashMap<String, Map<String, PropertyElementEx>>();
-    protected Map<String, ParamElementEx> allParamDecls = new LinkedHashMap<String, ParamElementEx>();
-    protected Map<String, ParamElementEx> allParamValues = new LinkedHashMap<String, ParamElementEx>();
-    protected Map<String, GateElementEx> allGates = new LinkedHashMap<String, GateElementEx>();
-    protected Map<String, GateElementEx> allGateSizes = new LinkedHashMap<String, GateElementEx>();
-    protected Map<String, INedTypeElement> allInnerTypes = new LinkedHashMap<String, INedTypeElement>();
-    protected Map<String, SubmoduleElementEx> allSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
-    protected Map<String, ConnectionElementEx> allNamedConnections = new LinkedHashMap<String, ConnectionElementEx>();
+    protected List<INedTypeInfo> extendsChain;
+    protected Set<INedTypeElement> allInterfaces;
+    protected Map<String, Map<String, PropertyElementEx>> allProperties;
+    protected Map<String, ParamElementEx> allParamDecls;
+    protected Map<String, ParamElementEx> allParamValues;
+    protected Map<String, GateElementEx> allGates;
+    protected Map<String, GateElementEx> allGateSizes;
+    protected Map<String, INedTypeElement> allInnerTypes;
+    protected Map<String, SubmoduleElementEx> allSubmodules;
+    protected Map<String, ConnectionElementEx> allNamedConnections;
     protected HashSet<INedTypeElement> allUsedTypes;
 
     // sum of all local+inherited stuff
@@ -219,7 +220,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
                 (tagCode1 == NED_COMPOUND_MODULE && tagCode2 == NED_SIMPLE_MODULE);
     }
 
-    protected Set<INedTypeElement> resolveInterfaces() {
+    protected Set<INedTypeElement> resolveInterfaces(List<INedTypeInfo> extendsChain) {
         Set<INedTypeElement> interfaceElements = new HashSet<INedTypeElement>();
         Stack<INedTypeElement> remainingElements = new Stack<INedTypeElement>();
         for (INedTypeInfo typeInfo : extendsChain)
@@ -250,18 +251,18 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         ++debugRefreshLocalCount;
         // Debug.println("NedTypeInfo for "+getName()+" localRefresh: " + refreshLocalCount);
 
-        // clear tables before collecting members
-        localInterfaces.clear();
-        localProperties.clear();
-        localParams.clear();
-        localParamDecls.clear();
-        localParamValues.clear();
-        localGateDecls.clear();
-        localGateSizes.clear();
-        localSubmodules.clear();
-        localNamedConnections.clear();
-        localInnerTypes.clear();
-        localMembers.clear();
+        // Create temporary collections to avoid modifying the original ones while user iterates on them (ConcurrentModificationException)
+        Set<INedTypeElement> newLocalInterfaces = new HashSet<INedTypeElement>();
+        Map<String, Map<String, PropertyElementEx>> newLocalProperties = new LinkedHashMap<String, Map<String, PropertyElementEx>>();
+        Map<String, ParamElementEx> newLocalParams = new LinkedHashMap<String, ParamElementEx>();
+        Map<String, ParamElementEx> newLocalParamDecls = new LinkedHashMap<String, ParamElementEx>();
+        Map<String, ParamElementEx> newLocalParamValues = new LinkedHashMap<String, ParamElementEx>();
+        Map<String, GateElementEx> newLocalGateDecls = new LinkedHashMap<String, GateElementEx>();
+        Map<String, GateElementEx> newLocalGateSizes = new LinkedHashMap<String, GateElementEx>();
+        Map<String, SubmoduleElementEx> newLocalSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
+        Map<String, ConnectionElementEx> newLocalNamedConnections = new LinkedHashMap<String, ConnectionElementEx>();
+        Map<String, INedTypeElement> newLocalInnerTypes = new LinkedHashMap<String, INedTypeElement>();
+        Map<String, INedElement> newLocalMembers = new LinkedHashMap<String, INedElement>();
 
         INedTypeLookupContext parentContext = getNedElement().getParentLookupContext();
 
@@ -273,7 +274,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
                     String extendsName = ((ExtendsElement)child).getName();
                     INedTypeInfo extendsTypeInfo = getResolver().lookupNedType(extendsName, parentContext);
                     if (extendsTypeInfo != null)
-                        localInterfaces.add(extendsTypeInfo.getNedElement());
+                        newLocalInterfaces.add(extendsTypeInfo.getNedElement());
                     else
                         Debug.println("WARNING: NedTypeInfo: Cannot resolve base type " + extendsName + " for " + getName() + " at " + child.getSourceLocation());
                 }
@@ -286,7 +287,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
                     String interfaceName = ((InterfaceNameElement)child).getName();
                     INedTypeInfo interfaceTypeInfo = getResolver().lookupNedType(interfaceName, parentContext);
                     if (interfaceTypeInfo != null)
-                        localInterfaces.add(interfaceTypeInfo.getNedElement());
+                        newLocalInterfaces.add(interfaceTypeInfo.getNedElement());
                     else
                         Debug.println("WARNING: NedTypeInfo: Cannot resolve interface name " + interfaceName + " for " + getName() + " at " + child.getSourceLocation());
                 }
@@ -294,47 +295,64 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         }
 
         // collect members from component declaration
-        NedElementUtilEx.collectProperties(componentNode, localProperties);
-        collect(localParams, NED_PARAMETERS, new IPredicate() {
+        NedElementUtilEx.collectProperties(componentNode, newLocalProperties);
+        collect(newLocalParams, NED_PARAMETERS, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_PARAM;
             }});
-        collect(localParamDecls, NED_PARAMETERS, new IPredicate() {
+        collect(newLocalParamDecls, NED_PARAMETERS, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_PARAM && ((ParamElementEx)node).getType() != NED_PARTYPE_NONE;
             }});
-        collect(localParamValues, NED_PARAMETERS, new IPredicate() {
+        collect(newLocalParamValues, NED_PARAMETERS, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_PARAM && StringUtils.isNotEmpty(((ParamElementEx)node).getValue());
             }});
-        collect(localGateDecls, NED_GATES, new IPredicate() {
+        collect(newLocalGateDecls, NED_GATES, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_GATE && ((GateElementEx)node).getType() != NED_GATETYPE_NONE;
             }});
-        collect(localGateSizes, NED_GATES, new IPredicate() {
+        collect(newLocalGateSizes, NED_GATES, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_GATE && StringUtils.isNotEmpty(((GateElementEx)node).getVectorSize());
             }});
-        collect(localInnerTypes, NED_TYPES, new IPredicate() {
+        collect(newLocalInnerTypes, NED_TYPES, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node instanceof INedTypeElement;
             }});
-        collect(localSubmodules, NED_SUBMODULES, new IPredicate() {
+        collect(newLocalSubmodules, NED_SUBMODULES, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_SUBMODULE;
             }});
-        collect(localNamedConnections, NED_CONNECTIONS, new IPredicate() {
+        collect(newLocalNamedConnections, NED_CONNECTIONS, new IPredicate() {
             public boolean matches(IHasName node) {
                 return node.getTagCode()==NED_CONNECTION && !StringUtils.isEmpty(node.getName());
             }});
 
         // collect them in one common hash table as well (we assume there's no name clash --
         // that should be checked beforehand by validation!)
-        localMembers.putAll(localParamDecls);
-        localMembers.putAll(localGateDecls);
-        localMembers.putAll(localSubmodules);
-        localMembers.putAll(localNamedConnections);
-        localMembers.putAll(localInnerTypes);
+        newLocalMembers.putAll(newLocalParamDecls);
+        newLocalMembers.putAll(newLocalGateDecls);
+        newLocalMembers.putAll(newLocalSubmodules);
+        newLocalMembers.putAll(newLocalNamedConnections);
+        newLocalMembers.putAll(newLocalInnerTypes);
+
+        // Now that all collections are built, install them. the instance variables.
+        // Use unmodifiable collections to prevent modification by users, AND also
+        // eliminate the slightest chance of ConcurrentModificationException
+        // (i.e. when a user iterates over collection, and there is an accidental
+        // refreshInheritedMembersIfNeeded() call inside the body).
+        localInterfaces = Collections.unmodifiableSet(newLocalInterfaces);
+        localProperties = Collections.unmodifiableMap(newLocalProperties);
+        localParams = Collections.unmodifiableMap(newLocalParams);
+        localParamDecls = Collections.unmodifiableMap(newLocalParamDecls);
+        localParamValues = Collections.unmodifiableMap(newLocalParamValues);
+        localGateDecls = Collections.unmodifiableMap(newLocalGateDecls);
+        localGateSizes = Collections.unmodifiableMap(newLocalGateSizes);
+        localSubmodules = Collections.unmodifiableMap(newLocalSubmodules);
+        localNamedConnections = Collections.unmodifiableMap(newLocalNamedConnections);
+        localInnerTypes = Collections.unmodifiableMap(newLocalInnerTypes);
+        localMembers = Collections.unmodifiableMap(newLocalMembers);
 
         needsRefreshLocal = false;
 
@@ -360,50 +378,69 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         if (needsRefreshLocal)
             refreshLocalMembersIfNeeded();
 
-        // determine extends chain
-        extendsChain = resolveExtendsChain();
-        extendsType = extendsChain.size() >= 2 ? extendsChain.get(1).getNedElement() : null;
-
-        allInterfaces = resolveInterfaces();
+        // extends chain, interfaces
+        List<INedTypeInfo> newExtendsChain = resolveExtendsChain();
+        INedTypeElement newExtendsType = newExtendsChain.size() >= 2 ? newExtendsChain.get(1).getNedElement() : null;
+        Set<INedTypeElement> newAllInterfaces = resolveInterfaces(newExtendsChain);
+        
         if (debug)
-            Debug.println("NedTypeInfo for " + getName() + ": has the following interfaces: " + allInterfaces + " and extends chain: " + extendsChain);
+            Debug.println("NedTypeInfo for " + getName() + ": has the following interfaces: " + newAllInterfaces + " and extends chain: " + newExtendsChain);
 
-        allProperties.clear();
-        allParamDecls.clear();
-        allParamValues.clear();
-        allGates.clear();
-        allGateSizes.clear();
-        allInnerTypes.clear();
-        allSubmodules.clear();
-        allNamedConnections.clear();
-        allMembers.clear();
+        // create temporary collections to avoid modifying the original ones while user iterates on them (ConcurrentModificationException)
+        Map<String, Map<String, PropertyElementEx>> newAllProperties = new LinkedHashMap<String, Map<String, PropertyElementEx>>();
+        Map<String, ParamElementEx> newAllParamDecls = new LinkedHashMap<String, ParamElementEx>();
+        Map<String, ParamElementEx> newAllParamValues = new LinkedHashMap<String, ParamElementEx>();
+        Map<String, GateElementEx> newAllGates = new LinkedHashMap<String, GateElementEx>();
+        Map<String, GateElementEx> newAllGateSizes = new LinkedHashMap<String, GateElementEx>();
+        Map<String, INedTypeElement> newAllInnerTypes = new LinkedHashMap<String, INedTypeElement>();
+        Map<String, SubmoduleElementEx> newAllSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
+        Map<String, ConnectionElementEx> newAllNamedConnections = new LinkedHashMap<String, ConnectionElementEx>();
+        Map<String, INedElement> newAllMembers = new LinkedHashMap<String, INedElement>();
 
         // collect all inherited members (from the extends chain; or for interfaces, from all base interfaces)
         INedTypeInfo[] ancestors;
         if (componentNode instanceof IInterfaceTypeElement) {
-            ancestors = new INedTypeInfo[allInterfaces.size()];
+            ancestors = new INedTypeInfo[newAllInterfaces.size()];
             int i = 0;
-            for (INedTypeElement element : allInterfaces)
+            for (INedTypeElement element : newAllInterfaces)
                 ancestors[i++] = element.getNedTypeInfo();
         }
         else {
-            ancestors = extendsChain.toArray(new INedTypeInfo[]{});
+            ancestors = newExtendsChain.toArray(new INedTypeInfo[]{});
             ArrayUtils.reverse(ancestors);  // we want to start from the root, so for allParamValues and allGateSizes we end up with the *latest* assignments
         }
 
         for (INedTypeInfo typeInfo : ancestors) {
             Assert.isTrue(typeInfo instanceof NedTypeInfo);
             NedTypeInfo component = (NedTypeInfo)typeInfo;
-            allProperties.putAll(component.getLocalProperties());
-            allParamDecls.putAll(component.getLocalParamDeclarations());
-            allParamValues.putAll(component.getLocalParamAssignments());
-            allGates.putAll(component.getLocalGateDeclarations());
-            allGateSizes.putAll(component.getLocalGateSizes());
-            allInnerTypes.putAll(component.getLocalInnerTypes());
-            allSubmodules.putAll(component.getLocalSubmodules());
-            allNamedConnections.putAll(component.getLocalNamedConnections());
-            allMembers.putAll(component.getLocalMembers());
+            newAllProperties.putAll(component.getLocalProperties());
+            newAllParamDecls.putAll(component.getLocalParamDeclarations());
+            newAllParamValues.putAll(component.getLocalParamAssignments());
+            newAllGates.putAll(component.getLocalGateDeclarations());
+            newAllGateSizes.putAll(component.getLocalGateSizes());
+            newAllInnerTypes.putAll(component.getLocalInnerTypes());
+            newAllSubmodules.putAll(component.getLocalSubmodules());
+            newAllNamedConnections.putAll(component.getLocalNamedConnections());
+            newAllMembers.putAll(component.getLocalMembers());
         }
+
+        // Now that all collections are built, install them. the instance variables.
+        // Use unmodifiable collections to prevent modification by users, AND also
+        // eliminate the slightest chance of ConcurrentModificationException
+        // (i.e. when a user iterates over collection, and there is an accidental
+        // refreshInheritedMembersIfNeeded() call inside the body).
+        extendsChain = Collections.unmodifiableList(newExtendsChain);
+        extendsType = newExtendsType;
+        allInterfaces = Collections.unmodifiableSet(newAllInterfaces);
+        allProperties = Collections.unmodifiableMap(newAllProperties);
+        allParamDecls = Collections.unmodifiableMap(newAllParamDecls);
+        allParamValues = Collections.unmodifiableMap(newAllParamValues);
+        allGates = Collections.unmodifiableMap(newAllGates);
+        allGateSizes = Collections.unmodifiableMap(newAllGateSizes);
+        allInnerTypes = Collections.unmodifiableMap(newAllInnerTypes);
+        allSubmodules = Collections.unmodifiableMap(newAllSubmodules);
+        allNamedConnections = Collections.unmodifiableMap(newAllNamedConnections);
+        allMembers = Collections.unmodifiableMap(newAllMembers);
 
         if (debug)
             Debug.println("typeInfo " + getName() + " refreshInherited(): " + (System.currentTimeMillis() - startMillis) + "ms");
@@ -579,6 +616,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
             localUsedTypes = new HashSet<INedTypeElement>();
             refreshLocalMembersIfNeeded();
             collectTypesInCompoundModule(localUsedTypes);
+            localUsedTypes = Collections.unmodifiableSet(localUsedTypes);
         }
 
         return localUsedTypes;
