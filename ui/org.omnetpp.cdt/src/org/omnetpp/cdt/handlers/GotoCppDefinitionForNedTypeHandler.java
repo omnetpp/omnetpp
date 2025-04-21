@@ -51,7 +51,8 @@ import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**
- * Goes to a C++ definition of a NED simple module or channel.
+ * Goes to a C++ definition of a NED type (simple module, compound module, or channel)
+ * that has an associated C++ class (implicitly, or via the @class property).
  *
  * @author Levy, andras, rhornig
  */
@@ -88,12 +89,17 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                                              || nedElement instanceof NedFileElementEx))
                     nedElement = nedElement.getParent();
 
-                // if the whole file is selected find the first simple module element that may
-                // have C++ implementation. Or try a Channel if no simple module exist in the file
+                // if the whole file is selected find the first module or channel element that may
+                // have C++ implementation
                 if (nedElement instanceof NedFileElementEx) {
-                    INedElement implicitSelection = ((NedFileElementEx)nedElement).getFirstSimpleModuleChild();
+                    NedFileElementEx fileElement = (NedFileElementEx)nedElement;
+                    INedElement implicitSelection = fileElement.getFirstSimpleModuleChild();
+
                     if (implicitSelection == null)
-                        implicitSelection = ((NedFileElementEx)nedElement).getFirstChannelChild();
+                        implicitSelection = fileElement.getFirstCompoundModuleChild();
+
+                    if (implicitSelection == null)
+                        implicitSelection = fileElement.getFirstChannelChild();
 
                     if (implicitSelection != null)
                         nedElement = implicitSelection;
@@ -102,7 +108,7 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                 if (nedElement instanceof ISubmoduleOrConnection)
                     nedElement = ((ISubmoduleOrConnection)nedElement).getTypeOrLikeTypeRef();
 
-                if (nedElement instanceof SimpleModuleElement || nedElement instanceof ChannelElement) {
+                if (nedElement instanceof INedTypeElement) {
                     INedTypeElement nedTypeElement = (INedTypeElement)nedElement;
                     if (nedTypeElement.getNedTypeInfo().getProject() != null) // not a built-in type
                         return nedTypeElement;
@@ -119,6 +125,9 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
 
         if (page != null && nedTypeElement != null) {
             String className = nedTypeElement.getNedTypeInfo().getFullyQualifiedCppClassName();
+            if (className == null || className.startsWith("omnetpp::"))
+                return null;
+
             IProject project = nedTypeElement.getNedTypeInfo().getProject();
             Assert.isNotNull(project);
 

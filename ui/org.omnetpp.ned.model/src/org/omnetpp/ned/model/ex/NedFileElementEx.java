@@ -21,10 +21,14 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelEvent;
+import org.omnetpp.ned.model.ex.NedModelReadOnlyEvent;
 import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 import org.omnetpp.ned.model.pojo.PackageElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
+import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.pojo.ChannelElement;
 
 /**
  * Represents a NED file
@@ -198,4 +202,33 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
         return super.toString() + getFilename();
     }
 
+    /**
+     * Returns the first simple module child in this NED file, or null
+     */
+    public SimpleModuleElement getFirstSimpleModuleChild() {
+        for (INedElement element : this)
+            if (element instanceof SimpleModuleElement)
+                return (SimpleModuleElement)element;
+        return null;
+    }
+
+    /**
+     * Returns the first compound module child in this NED file, or null
+     */
+    public CompoundModuleElement getFirstCompoundModuleChild() {
+        for (INedElement element : this)
+            if (element instanceof CompoundModuleElement)
+                return (CompoundModuleElement)element;
+        return null;
+    }
+
+    /**
+     * Returns the first channel child in this NED file, or null
+     */
+    public ChannelElement getFirstChannelChild() {
+        for (INedElement element : this)
+            if (element instanceof ChannelElement)
+                return (ChannelElement)element;
+        return null;
+    }
 }

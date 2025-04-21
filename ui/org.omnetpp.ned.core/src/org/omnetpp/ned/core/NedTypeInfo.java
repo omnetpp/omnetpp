@@ -513,29 +513,45 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     }
 
     public String getFullyQualifiedCppClassName() {
-        String className = null;
-        List<INedTypeInfo> extendsChain = getInheritanceChain();
+        // If it has a class property, use that with the namespace
+        PropertyElementEx classProperty = getLocalProperty("class", null);
+        if (classProperty != null) {
+            String className = classProperty.getSimpleValue();
+            NedFileElementEx fileElement = componentNode.getContainingNedFileElement();
+            String namespace = getResolver().getSimplePropertyFor(fileElement, INedTypeResolver.NAMESPACE_PROPERTY);
 
-        // find the first type in the extends chain that have @class attribute and return that class name
-        for (INedTypeInfo typeInfo : extendsChain) {
-            PropertyElementEx property = typeInfo.getProperty("class", null);
-            if (property != null) {
-                className = property.getSimpleValue();
-                break;
-            }
+            return (namespace == null) ? className : namespace + "::" + className;
         }
 
-        // if none of them has, return the last class in the chain
-        if (className == null)
-            className = extendsChain.get(extendsChain.size()-1).getName();
+        // Otherwise, invoke recursively for the base type if it has one
+        INedTypeElement baseType = getSuperType();
+        if (baseType != null) {
+            return baseType.getNedTypeInfo().getFullyQualifiedCppClassName();
+        }
 
-        NedFileElementEx fileElement = componentNode.getContainingNedFileElement();
-        String namespace = getResolver().getSimplePropertyFor(fileElement, INedTypeResolver.NAMESPACE_PROPERTY);
+        // If we get here, there's no class property and no base type.
+        // Handle different module types with appropriate defaults
+        int tagCode = getNedElement().getTagCode();
 
-        if (namespace == null)
-            return className;
-        else
-            return namespace + "::" + className;
+        if (tagCode == NED_SIMPLE_MODULE) {
+            // For simple modules, the default class name is the NED type name + the namespace
+            String className = getName();
+            NedFileElementEx fileElement = componentNode.getContainingNedFileElement();
+            String namespace = getResolver().getSimplePropertyFor(fileElement, INedTypeResolver.NAMESPACE_PROPERTY);
+
+            return (namespace == null) ? className : namespace + "::" + className;
+        }
+        else if (tagCode == NED_COMPOUND_MODULE) {
+            // For compound modules, it is "omnetpp::cModule"
+            return "omnetpp::cModule";
+        }
+        else if (tagCode == NED_CHANNEL) {
+            // For channels, it would be "omnetpp::cChannel" (but in practice it never gets there)
+            return "omnetpp::cChannel";
+        }
+
+        // For other types (interfaces, etc.), return null
+        return null;
     }
 
     public INedTypeElement getSuperType() {
