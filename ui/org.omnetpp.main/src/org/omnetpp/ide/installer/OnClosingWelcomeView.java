@@ -4,7 +4,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.internal.SWTEventListener;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
@@ -134,7 +133,7 @@ public class OnClosingWelcomeView implements IPageListener, IPartListener {
         for (Listener listener : control.getListeners(SWT.Resize)) {
             if (listener instanceof TypedListener) {
                 TypedListener typedListener = (TypedListener)listener;
-                SWTEventListener eventListener = typedListener.getEventListener();
+                var eventListener = typedListener.getEventListener();
                 if (eventListener instanceof ControlListener)
                     control.removeControlListener((ControlListener)eventListener);
             }

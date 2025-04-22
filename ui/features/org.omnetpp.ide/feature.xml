@@ -11,7 +11,7 @@
    <requires>
       <import feature="org.eclipse.platform"/>
       <import feature="org.eclipse.cdt"/>
-      <import feature="org.eclipse.gef" version="3.22" match="equivalent"/>
+      <import feature="org.eclipse.gef"/>
       <import feature="org.eclipse.gmf.runtime.thirdparty"/>
       <import feature="org.python.pydev.feature"/>
    </requires>
