@@ -509,4 +509,12 @@
               />
      </objectContribution>
    </extension>
+   <extension point="org.eclipse.ui.editors">
+     <editor
+        id="org.eclipse.ui.DefaultTextEditor"
+        name="Text Editor"
+        class="org.eclipse.ui.editors.text.TextEditor"
+        extensions="d">
+     </editor>
+   </extension>
 </plugin>
