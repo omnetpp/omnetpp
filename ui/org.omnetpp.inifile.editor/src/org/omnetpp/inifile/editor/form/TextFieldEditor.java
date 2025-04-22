@@ -30,8 +30,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SWTFactory;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
@@ -86,7 +86,7 @@ public class TextFieldEditor extends FieldEditor {
             public void modifyText(ModifyEvent e) {
                 if (!isEdited) {
                     isEdited = true;
-                    textField.setForeground(null);
+                    setGrayed(false);
                     resetButton.setEnabled(true);
                 }
             }
@@ -108,6 +108,10 @@ public class TextFieldEditor extends FieldEditor {
 
         // when the background gets clicked, transfer focus to the text widget
         addFocusTransfer(this, textField);
+    }
+
+    protected void setGrayed(boolean grayed) {
+        UIUtils.setWidgetClassName(textField, grayed ? "grayed" : "");
     }
 
     protected Text createContentAssistField() {
@@ -134,14 +138,13 @@ public class TextFieldEditor extends FieldEditor {
             String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
             if (!contents.equals(defaultValue))
                 textField.setText(defaultValue);
-            //textField.setForeground(ColorFactory.asColor("darkGreen"));
-            textField.setForeground(ColorFactory.GREY50);
+            setGrayed(true);
             resetButton.setEnabled(false);
         }
         else {
             if (!contents.equals(value))
                 textField.setText(value);
-            textField.setForeground(null);
+            setGrayed(false);
             resetButton.setEnabled(true);
         }
         isEdited = false;

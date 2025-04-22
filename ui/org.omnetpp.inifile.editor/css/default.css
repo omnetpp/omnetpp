@@ -1,0 +1,9 @@
+/* used in TextFieldEditor */
+Text.grayed {
+  color: #808080;
+}
+
+/* used in ComboFieldEditor */
+Combo.grayed {
+  color: #808080;
+}

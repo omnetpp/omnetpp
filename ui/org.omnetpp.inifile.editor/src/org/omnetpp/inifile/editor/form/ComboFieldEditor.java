@@ -24,8 +24,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolItem;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SWTFactory;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -41,7 +41,6 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
  *
  * @author Andras
  */
-//FIXME this is unfinished code.
 //XXX disable Combo when value is not editable (comes from included file)?
 //XXX set up content assist (like in TextFieldEditor)
 public class ComboFieldEditor extends FieldEditor {
@@ -81,7 +80,7 @@ public class ComboFieldEditor extends FieldEditor {
             public void modifyText(ModifyEvent e) {
                 if (!isEdited) {
                     isEdited = true;
-                    combo.setForeground(null);
+                    setGrayed(false);
                     resetButton.setEnabled(true);
                 }
             }
@@ -101,6 +100,10 @@ public class ComboFieldEditor extends FieldEditor {
 
     }
 
+    protected void setGrayed(boolean grayed) {
+        UIUtils.setWidgetClassName(combo, grayed ? "grayed" : "");
+    }
+
     protected Combo createCombo() {
         Combo combo = new Combo(this, SWT.SINGLE | SWT.BORDER | SWT.DROP_DOWN | (enableTypein ? SWT.NONE : SWT.READ_ONLY));
         return combo;
@@ -114,13 +117,12 @@ public class ComboFieldEditor extends FieldEditor {
         if (value==null) {
             String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
             combo.setText(defaultValue);
-            //textField.setForeground(ColorFactory.asColor("darkGreen"));
-            combo.setForeground(ColorFactory.GREY50);
+            setGrayed(true);
             resetButton.setEnabled(false);
         }
         else {
             combo.setText(value);
-            combo.setForeground(null);
+            setGrayed(false);
             resetButton.setEnabled(true);
         }
         isEdited = false;

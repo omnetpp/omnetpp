@@ -151,5 +151,7 @@
            name="Ini File Editor">
      </page>
   </extension>
-
+  <extension point="org.eclipse.e4.ui.css.swt.theme">
+     <stylesheet uri="css/default.css"/>
+  </extension>
 </plugin>
