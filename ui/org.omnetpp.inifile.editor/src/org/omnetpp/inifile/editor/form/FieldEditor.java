@@ -72,7 +72,7 @@ public abstract class FieldEditor extends Composite {
         this.inifile = inifile;
         this.formPage = formPage;
         this.hints = hints;
-        setBackground(parent.getBackground());
+        setBackgroundMode(SWT.INHERIT_DEFAULT);
     }
 
     protected String getValueFromFile(String section, String key) {
