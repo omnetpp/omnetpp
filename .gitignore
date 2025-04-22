@@ -35,7 +35,7 @@
 .ccls-cache
 .clangd
 .cproject
-.metadata
+.metadata*
 .project
 .pydevproject
 .venv
