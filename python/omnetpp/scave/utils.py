@@ -762,9 +762,9 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label, draw_edges):
     endtime = max(endtime, vectime[-1])
     vectime = np.append(vectime, endtime)
     if draw_edges:
-        cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1)
+        cex = ax.pcolormesh(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm, shading='flat', edgecolors=(0, 0, 0, .1), linewidth=0.1, mouseover=False)
     else:
-        ax.pcolorfast(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm)
+        ax.pcolorfast(vectime, [0, 1], np.array([vecvalue]), cmap=cmap, norm=norm, mouseover=False)
 
     def compute_conversion_factor(ax):
         return ax.transData.get_matrix()[0, 0]
