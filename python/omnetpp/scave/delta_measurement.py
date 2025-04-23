@@ -333,7 +333,7 @@ class DeltaMeasurement:
             self.marker_b = None
             self.fig.canvas.draw_idle()
 
-    def _clear_measurement(self):
+    def _clear_measurement(self, x, y):
         """Clears the current measurement and removes all markers."""
         self._clear_marker_a()
         self._clear_marker_b()
@@ -341,9 +341,9 @@ class DeltaMeasurement:
         self.endpoint_a = None
         self.endpoint_b = None
 
-        self._restore_format_coord()
+        self._restore_format_coord(x, y)
 
-    def _restore_format_coord(self):
+    def _restore_format_coord(self, x, y):
         """Restore the original format_coord method."""
         if self.original_format_coord is not None:
             try:
@@ -358,11 +358,14 @@ class DeltaMeasurement:
         try:
             toolbar = self.fig.canvas.toolbar
             if toolbar is not None and hasattr(toolbar, 'set_message'):
-                toolbar.set_message("")
+                if x is not None and y is not None:
+                    toolbar.set_message(self.axes.format_coord(x, y))
+                else:
+                    toolbar.set_message("")
         except Exception:
             pass  # Ignore if toolbar is gone
 
-    def _display_delta(self):
+    def _display_delta(self, x, y):
         """
         Display the delta or single point values using the format_coord method.
         Updates the status bar message directly.
@@ -402,7 +405,7 @@ class DeltaMeasurement:
             message = f"X: {xB:.6g}\nY: {yB:.6g}"
         else:
             # No points selected, restore original behavior
-            self._restore_format_coord()
+            self._restore_format_coord(x, y)
 
         # Create a custom format_coord function
         # Need to capture the original method in the closure
@@ -423,16 +426,16 @@ class DeltaMeasurement:
             if self.axes and hasattr(self.axes, 'format_coord'):
                 self.axes.format_coord = custom_format_coord
             else:
-                self._restore_format_coord()  # Restore if axes became invalid
+                self._restore_format_coord(x, y)  # Restore if axes became invalid
         except Exception:
-            self._restore_format_coord()  # Restore on error
+            self._restore_format_coord(x, y)  # Restore on error
 
         # Immediately update the navigation toolbar message with the calculated message
         try:
             toolbar = self.fig.canvas.toolbar
             if toolbar is not None and hasattr(toolbar, 'set_message'):
                 # Use the pre-calculated message directly
-                toolbar.set_message(message)
+                toolbar.set_message(custom_format_coord(x, y))
         except Exception:
             pass  # Ignore if figure/axes/toolbar are gone
 
@@ -462,19 +465,19 @@ class DeltaMeasurement:
                 self.endpoint_a = nearest
                 self._draw_marker_a()
 
-            self._display_delta()
+            self._display_delta(event.xdata, event.ydata)
         elif key == 's':
             segment = self._find_nearest_segment(event)
 
             if segment is not None:
                 if segment[0] == self.endpoint_a and segment[1] == self.endpoint_b:
-                    self._clear_measurement()
+                    self._clear_measurement(event.xdata, event.ydata)
                 else:
                     self.endpoint_a = segment[0]
                     self.endpoint_b = segment[1]
                     self._draw_marker_a()
                     self._draw_marker_b()
-                    self._display_delta()
+                    self._display_delta(event.xdata, event.ydata)
 
         elif key == 'd':
             nearest = self._find_nearest_point(event)
@@ -503,7 +506,7 @@ class DeltaMeasurement:
                 self.endpoint_b = nearest
                 self._draw_marker_b()
 
-            self._display_delta()
+            self._display_delta(event.xdata, event.ydata)
 
         elif key == 'x':
 
@@ -514,7 +517,7 @@ class DeltaMeasurement:
 
                 if self.endpoint_a is not None or self.endpoint_b is not None:
                     # any -> X -> clear -> no
-                    self._clear_measurement()
+                    self._clear_measurement(event.xdata, event.ydata)
 
         return False
 
@@ -523,7 +526,7 @@ class DeltaMeasurement:
         if self.cid is not None:
             self.fig.canvas.mpl_disconnect(self.cid)
             self.cid = None
-        self._restore_format_coord()  # Clean up format_coord on disconnect
+        self._restore_format_coord(None, None)  # Clean up format_coord on disconnect
 
     def __del__(self):
         # Ensure disconnection and cleanup when the object is deleted
