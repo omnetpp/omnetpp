@@ -41,6 +41,8 @@ class DeltaMeasurement:
     and handle key events ('a', 's', 'd', 'x').
     """
 
+    PICKING_THRESHOLD_PX = 10
+
     def __init__(self, fig, axes, xdata=None):
         self.fig = fig
         self.axes = axes
@@ -66,13 +68,13 @@ class DeltaMeasurement:
         - event: The matplotlib event containing x, y coordinates
 
         Returns:
-        - A tuple (x, y) or None if no point is found within 10 pixels
+        - A tuple (x, y) or None if no point is found within PICKING_THRESHOLD_PX pixels
         """
         if not event.inaxes == self.axes:
             return None
 
         ax = self.axes
-        min_dist_sq = 10 ** 2  # Search radius of 10 pixels, squared
+        min_dist_sq = self.PICKING_THRESHOLD_PX ** 2  # Search radius squared
         nearest_point = None
 
         if self.xdata is not None:
@@ -81,8 +83,13 @@ class DeltaMeasurement:
             if len(self.xdata) < 1:
                 return None
 
-            # Iterate through data points
-            for i in range(len(self.xdata)):
+            invTransData = ax.transData.inverted()
+
+            i1 = np.searchsorted(self.xdata, invTransData.transform((event.x - self.PICKING_THRESHOLD_PX, 0.5))[0], "left")
+            i2 = np.searchsorted(self.xdata, invTransData.transform((event.x + self.PICKING_THRESHOLD_PX, 0.5))[0], "right")
+
+            # Iterate through data points near cursor
+            for i in range(i1, i2):
                 x = self.xdata[i]
 
                 # Skip NaN values
@@ -126,8 +133,13 @@ class DeltaMeasurement:
                         return True
                     return False
 
-                # Iterate through data points
-                for i in range(len(xdata)):
+                invTransData = ax.transData.inverted()
+
+                i1 = np.searchsorted(xdata, invTransData.transform((event.x - self.PICKING_THRESHOLD_PX, 0.5))[0], "left")
+                i2 = np.searchsorted(xdata, invTransData.transform((event.x + self.PICKING_THRESHOLD_PX, 0.5))[0], "right")
+
+                # Iterate through data points near cursor
+                for i in range(i1, i2):
                     x = xdata[i]
                     y = ydata[i]
 
@@ -171,7 +183,7 @@ class DeltaMeasurement:
             return None
 
         ax = self.axes
-        min_dist_sq = 10 ** 2  # Search radius of 10 pixels, squared
+        min_dist_sq = self.PICKING_THRESHOLD_PX ** 2  # Search radius squared
         closest_segment = None
 
         # Get event position in display coordinates
@@ -179,8 +191,16 @@ class DeltaMeasurement:
 
         if self.xdata is not None:
             n = len(self.xdata)
+            invTransData = ax.transData.inverted()
 
-            for i in range(n - 1):
+            i1 = np.searchsorted(self.xdata, invTransData.transform((event.x - self.PICKING_THRESHOLD_PX, 0.5))[0], "left")
+            i2 = np.searchsorted(self.xdata, invTransData.transform((event.x + self.PICKING_THRESHOLD_PX, 0.5))[0], "right")
+
+            i1 = min(n-1, max(0, i1-1))
+            i2 = min(n-1, max(0, i2+1))
+
+            # Iterate through data points near cursor
+            for i in range(i1, i2):
                 x1_data = self.xdata[i]
                 x2_data = self.xdata[i+1]
 
@@ -220,7 +240,16 @@ class DeltaMeasurement:
                         or linestyle in [None, 'None', 'none', ' ']:
                     continue
 
-                for i in range(n - 1):
+                invTransData = ax.transData.inverted()
+
+                i1 = np.searchsorted(xdata, invTransData.transform((event.x - self.PICKING_THRESHOLD_PX, 0.5))[0], "left")
+                i2 = np.searchsorted(xdata, invTransData.transform((event.x + self.PICKING_THRESHOLD_PX, 0.5))[0], "right")
+
+                i1 = min(n-1, max(0, i1-1))
+                i2 = min(n-1, max(0, i2+1))
+
+                # Iterate through data points near cursor
+                for i in range(i1, i2):
                     x1_data, y1_data = xdata[i], ydata[i]
                     x2_data, y2_data = xdata[i+1], ydata[i+1]
 
