@@ -265,12 +265,15 @@ class DeltaMeasurement:
         # Remove existing marker if it exists
         if marker:
             marker.remove()
+            self.fig.canvas.draw_idle()
 
         # Draw new marker if the point is set
         if point:
-            return self.axes.plot(point[0], point[1], marker=symbol, color='red',
+            line = self.axes.plot(point[0], point[1], marker=symbol, color='red',
                                   ms=8, mfc='none', mew=2, zorder=10,
                                   scalex=False, scaley=False)[0]
+            self.fig.canvas.draw_idle()
+            return line
 
     def _draw_marker_a(self):
         """Draw the marker for endpoint A."""
@@ -292,12 +295,14 @@ class DeltaMeasurement:
         if self.marker_a is not None:
             self.marker_a.remove()
             self.marker_a = None
+            self.fig.canvas.draw_idle()
 
     def _clear_marker_b(self):
         """Clear the marker for endpoint B."""
         if self.marker_b is not None:
             self.marker_b.remove()
             self.marker_b = None
+            self.fig.canvas.draw_idle()
 
     def _clear_measurement(self):
         """Clears the current measurement and removes all markers."""
@@ -325,7 +330,6 @@ class DeltaMeasurement:
             toolbar = self.fig.canvas.toolbar
             if toolbar is not None and hasattr(toolbar, 'set_message'):
                 toolbar.set_message("")
-            # self.fig.canvas.draw_idle()  # Ensure redraw happens
         except Exception:
             pass  # Ignore if toolbar is gone
 
@@ -400,7 +404,6 @@ class DeltaMeasurement:
             if toolbar is not None and hasattr(toolbar, 'set_message'):
                 # Use the pre-calculated message directly
                 toolbar.set_message(message)
-            self.fig.canvas.draw_idle()
         except Exception:
             pass  # Ignore if figure/axes/toolbar are gone
 
