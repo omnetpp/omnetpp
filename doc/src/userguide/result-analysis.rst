@@ -502,6 +502,40 @@ Additional toolbar buttons are available to:
    - Forward to next view
 
 
+Delta Measurement
+^^^^^^^^^^^^^^^^^
+
+Both native and Matplotlib line plots support delta measurement, allowing you to
+measure the horizontal and vertical distance between two points on a plot.
+This feature is activated using keyboard shortcuts when the mouse cursor is over
+the plot area.
+
+- **Setting the Start Point:**
+   - Press :kbd:`A` near a data point or line segment vertex to set it as the start point (marked with a solid circle).
+   - Pressing :kbd:`A` again near the same point clears the start point.
+   - Pressing :kbd:`A` near a different point moves the start marker there.
+
+- **Setting the End Point:**
+   - Press :kbd:`D` near a data point or line segment vertex to set it as the end point (marked with a dotted circle).
+   - Pressing :kbd:`D` again near the same point clears the end point.
+   - Pressing :kbd:`D` near a different point moves the end marker there.
+
+- **Selecting a Segment:**
+   - Press :kbd:`S` near a line segment to set its endpoints as the start and end points simultaneously.
+   - Pressing :kbd:`S` again near the same segment clears both points.
+
+- **Clearing Measurement:**
+   - Press :kbd:`X` to clear both the start and end points and remove the markers.
+
+When one or both points are selected, markers appear on the plot.
+If only one point is selected, its coordinates are displayed.
+If both points are selected, their coordinates and the delta
+values (ΔX, ΔY) between them are displayed.
+The selection mechanism finds the nearest point or segment within a small
+threshold (around 10 pixels). For plots with step interpolation, the corners
+of the steps are also considered valid points for selection.
+
+
 The Chart Properties Dialog
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
