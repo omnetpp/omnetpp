@@ -1194,7 +1194,7 @@ def customized_box_plot(percentiles, labels=None, axes=None, redraw=True, *args,
 
     # If redraw is set to true, the canvas is updated.
     if redraw:
-        axes.figure.canvas.draw()
+        axes.figure.canvas.draw_idle()
 
 
 def preconfigure_plot(props):
@@ -2437,7 +2437,7 @@ def _make_scroll_navigable(figure):
             ax.set_ylim([ydata - (ydata-cur_ylim[0]) / scale,
                         ydata + (cur_ylim[1]-ydata) / scale])
 
-        plt.draw()
+        figure.canvas.draw_idle()
 
     figure.canvas.mpl_connect('scroll_event', zoom_fun)
 
