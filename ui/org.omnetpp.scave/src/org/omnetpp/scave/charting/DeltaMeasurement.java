@@ -34,6 +34,7 @@ public class DeltaMeasurement {
     // How close the mouse must be to a point or line segment to be
     // considered "near", in pixels.
     private static final double PICKING_THRESHOLD = 10.0;
+    private static final int TEXT_MARGIN = 2;
 
     // Delta measurement endpoints
     private DeltaEndpoint endpointA = null;
@@ -510,13 +511,6 @@ public class DeltaMeasurement {
             deltaInfo = String.format("X1: %.6g, Y1: %.6g\nX2: %.6g, Y2: %.6g\nΔX: %.6g, ΔY: %.6g", xA, yA, xB, yB, deltaX, deltaY);
         }
 
-        // Calculate position for the delta information
-        double xMid = (parent.transformX(xA) + parent.transformX(xB)) / 2;
-        double yMid = (parent.transformY(yA) + parent.transformY(yB)) / 2;
-
-        int canvasMidX = (int)coordsMapping.toCanvasX(xMid);
-        int canvasMidY = (int)coordsMapping.toCanvasY(yMid);
-
         graphics.pushState();
 
         // Draw the delta information
@@ -524,26 +518,35 @@ public class DeltaMeasurement {
         graphics.setBackgroundColor(CrossHair.TOOLTIP_COLOR);
 
         Point textExtent = GraphicsUtils.getTextExtent(graphics, deltaInfo);
-        int textX = canvasMidX - textExtent.x / 2;
-        int textY = canvasMidY - textExtent.y - 5;
 
-        Rectangle plotArea = parent.getPlotRectangle();
+        double screenXA = coordsMapping.toCanvasX(xA);
+        double screenXB = coordsMapping.toCanvasX(xB);
+        double screenYA = coordsMapping.toCanvasY(yA);
+        double screenYB = coordsMapping.toCanvasY(yB);
 
-        // Ensure the text is within the plot area
-        if (textX < plotArea.x) {
-            textX = plotArea.x + 5;
-        }
-        else if (textX + textExtent.x > plotArea.x + plotArea.width) {
-            textX = plotArea.x + plotArea.width - textExtent.x - 5;
-        }
+        double xDist = Math.abs(screenXA - screenXB);
+        double yDist = Math.abs(screenYA - screenYB);
 
-        if (textY < plotArea.y) {
-            textY = canvasMidY + 5;
+        // Calculate position for the delta information
+        double xMid = (screenXA + screenXB) / 2;
+        double yMid = (screenYA + screenYB) / 2;
+
+        int textX = (int)xMid - textExtent.x / 2;
+        int textY = (int)yMid - textExtent.y / 2;
+
+        // if the text doesn't fit between the two markers, move it out to the top or to the right
+        if ((textExtent.x + TEXT_MARGIN * 2 >= xDist - MARKER_RADIUS * 2)
+                && (textExtent.y + TEXT_MARGIN * 2 >= yDist - MARKER_RADIUS * 2)) {
+            // moving in the dimension where the distance between markers is smaller
+            if (xDist > yDist)
+               textY = (int)Math.min(screenYA, screenYB) - textExtent.y - TEXT_MARGIN * 2 - MARKER_RADIUS * 2;
+            else
+               textX = (int)Math.max(screenXA, screenXB) + + TEXT_MARGIN * 2 + MARKER_RADIUS * 2;
         }
 
         // Draw background and text
-        graphics.fillRectangle(textX - 2, textY - 2, textExtent.x + 4, textExtent.y + 4);
-        graphics.drawRectangle(textX - 2, textY - 2, textExtent.x + 4, textExtent.y + 4);
+        graphics.fillRectangle(textX - TEXT_MARGIN, textY - TEXT_MARGIN, textExtent.x + TEXT_MARGIN * 2, textExtent.y + TEXT_MARGIN * 2);
+        graphics.drawRectangle(textX - TEXT_MARGIN, textY - TEXT_MARGIN, textExtent.x + TEXT_MARGIN * 2, textExtent.y + TEXT_MARGIN * 2);
         graphics.drawText(deltaInfo, textX, textY);
 
         graphics.popState();
