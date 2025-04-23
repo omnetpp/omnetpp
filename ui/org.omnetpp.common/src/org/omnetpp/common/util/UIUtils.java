@@ -10,6 +10,7 @@ package org.omnetpp.common.util;
 import java.util.Arrays;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.e4.ui.services.IStylingEngine;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -29,6 +30,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.CommonPlugin;
@@ -102,6 +104,12 @@ public class UIUtils {
         Menu menu = contextMenu.createContextMenu(control);
         control.setMenu(menu);
         // Note: don't register the context menu with the editor site, or "Run As", "Debug As", "Team", and other irrelevant menu items appear...
+    }
+
+    private static IStylingEngine stylingEngine = PlatformUI.getWorkbench().getService(IStylingEngine.class);
+
+    public static void setWidgetClassName(Widget widget, String className) {
+        stylingEngine.setClassname(widget, className);
     }
 
     public static void dumpWidgetHierarchy(Control control) {
