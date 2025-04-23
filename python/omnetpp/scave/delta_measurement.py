@@ -269,7 +269,8 @@ class DeltaMeasurement:
         # Draw new marker if the point is set
         if point:
             return self.axes.plot(point[0], point[1], marker=symbol, color='red',
-                                  ms=8, mfc='none', mew=2, zorder=10)[0]
+                                  ms=8, mfc='none', mew=2, zorder=10,
+                                  scalex=False, scaley=False)[0]
 
     def _draw_marker_a(self):
         """Draw the marker for endpoint A."""
