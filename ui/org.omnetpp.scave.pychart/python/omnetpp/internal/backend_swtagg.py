@@ -346,6 +346,9 @@ class FigureCanvasSWTAgg(FigureCanvasSWT, FigureCanvasAgg):
         else:
             self.widget.setPixels(buffer, w, h)
 
+    def draw_idle(self):
+        self.widget.drawIdle()
+
 
 FigureCanvas = FigureCanvasSWTAgg
 FigureManager = FigureManagerSWT

@@ -93,6 +93,9 @@ public interface IMatplotlibFigureCanvas {
      * extension in the filename. */
     void exportFigure(String filename);
 
+    /** This is the built-in matplotlib function to draw the figure. */
+    void draw();
+
     /**
      * Returns a map with Matplotlib's supported graphical image format,
      * with descriptions as keys, and the list of file extensions as values.

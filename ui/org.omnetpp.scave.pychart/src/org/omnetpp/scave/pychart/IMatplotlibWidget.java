@@ -41,6 +41,11 @@ public interface IMatplotlibWidget {
     void setPixelsShared(int w, int h);
 
     /**
+     * Schedules a call back to Python draw() once idle.
+     */
+    void drawIdle();
+
+    /**
      * This is used for updating the canvas partially.
      * It paints on top of (replacing) the already existing canvas contents.
      * Might be used by custom MPL cursors, and animations.

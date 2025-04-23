@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
@@ -134,8 +135,16 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
      */
     private boolean mouseIsOverMe;
 
-
     private boolean isRefreshing = false;
+    private boolean drawIdleScheduled = false;
+
+    /**
+     * The delay in milliseconds to wait after drawIdle() is called,
+     * before calling back the draw() method in Python.
+     * This is used to "debounce" repeated calls to drawIdle() from
+     * the Python side, hoping that it becomes idle after this time.
+     */
+    private static final int DRAW_IDLE_DELAY_MS = 100;
 
     /**
      * Stores the last received message (intended for the user).
@@ -494,6 +503,31 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
 
         redraw();
         update();
+    }
+
+    @Override
+    public void drawIdle() {
+        if (drawIdleScheduled)
+            return;
+
+        drawIdleScheduled = true;
+        // Display.timerExec can only be called from the Display thread.
+        Display.getDefault().asyncExec(() -> {
+            // The delay is there to "debounce" repeated calls to drawIdle()
+            // as interactive Python code (event handlers) is running.
+            // Ideally, the Python side would notify the Java side
+            // immediately upon becoming idle (being done with running
+            // the event handlers); eliminating this delay and potential
+            // repeated redraws - but this is not the case at the moment.
+            Display.getDefault().timerExec(DRAW_IDLE_DELAY_MS, () -> {
+                if (!isDisposed()) {
+                    Assert.isTrue(drawIdleScheduled);
+                    drawIdleScheduled = false;
+                    if (pythonProcess != null && pythonProcess.isAlive())
+                        pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().draw());
+                }
+            });
+        });
     }
 
     @Override
