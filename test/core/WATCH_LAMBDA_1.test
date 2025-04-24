@@ -1,0 +1,47 @@
+%description:
+Test WATCH_LAMBDA()
+
+
+%module: Module
+
+class Module : public cSimpleModule
+{
+  private:
+    int intMember = 0;
+    std::string stringMember;
+
+  public:
+    Module() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+#define PRINT_WATCH_AFTER(stmt)   stmt; EV << #stmt << " --> " << watch->getName() << "=" << watch->str() << std::endl;
+
+Define_Module(Module);
+
+void Module::activity()
+{
+    cObject *watch;
+    int localInt = 10;
+
+    watch = WATCH_EXPR("expr", intMember + localInt);
+
+    PRINT_WATCH_AFTER(intMember = 1;)
+    PRINT_WATCH_AFTER(intMember = 2;)
+    PRINT_WATCH_AFTER(localInt = 333;)  // should be ineffective
+
+    watch = WATCH_LAMBDA("lambda", [&]() {return intMember + localInt;});
+
+    PRINT_WATCH_AFTER(intMember = 1;localInt = 100;)
+    PRINT_WATCH_AFTER(intMember = 5;localInt = 300;)
+
+    EV << ".\n";
+}
+
+%contains: stdout
+intMember = 1; --> expr=11
+intMember = 2; --> expr=12
+localInt = 333; --> expr=12
+intMember = 1;localInt = 100; --> lambda=101
+intMember = 5;localInt = 300; --> lambda=305
+.
