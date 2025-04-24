@@ -609,20 +609,11 @@ root directory where the following files are present:
                     fail(f"Feature '{feature.id}' requires or recommends undefined feature '{r}' in '{FEATURESFILE}'")
 
         # check feature dependencies:
-        dependencyErrorOccurred = False
-        featureOnList = set()
         for fid, feature in self.sortedFeatures:
             if self.featurestate[fid].enabled:
                 for r in feature.requires:
                     if not self.featurestate[r].enabled:
-                        warn(f"Feature '{r}' is required for '{fid}' but it is disabled, fixing by enabling it")
-                        featureOnList.add(r)
-                        dependencyErrorOccurred = True
-        if len(featureOnList):
-            requirements = self.collectRequiredFeatures(featureOnList)
-            if len(requirements):
-                warn("The following features are also required, enabling them:  " + ", ".join(sorted(requirements)))
-            featureOnList.update(requirements)
+                        fail(f"Feature '{r}' is required for '{fid}' but it is disabled")
 
         # check NED folder exclusions:
         nedfolderErrorOccurred = False
@@ -636,12 +627,6 @@ root directory where the following files are present:
                     if not np in self.nedExclusions:
                         warn(f"NED package '{np}' is part of the disabled feature '{fid}', but it is not excluded in '{NEDEXCLUSIONSFILE}', fixing")
                         nedfolderErrorOccurred = True
-
-        # enable missing features
-        if dependencyErrorOccurred:
-            for key in featureOnList:
-                self.featurestate[key].enabled = True
-            self.featurestatesChanged = True
 
         # featurestates and nedexclusions will be regenerated on the way out from main()
         if nedfolderErrorOccurred:
