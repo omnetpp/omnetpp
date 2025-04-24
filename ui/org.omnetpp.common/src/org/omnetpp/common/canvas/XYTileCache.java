@@ -10,6 +10,7 @@ package org.omnetpp.common.canvas;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.batik.util.Platform;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -64,9 +65,13 @@ public class XYTileCache implements ITileCache {
                         gc.drawText("tile ("+x+","+y+")", (int)(x - rect.x)+10, (int)(y - rect.y)+5);
                     }
                     Image tileImage = new Image(null, TILE_WIDTH, TILE_HEIGHT);
-                    GC tileGC = new GC(tileImage);
-                    tileGC.drawImage(image, (int)(x - rect.x), (int)(y - rect.y), TILE_WIDTH, TILE_HEIGHT, 0, 0, TILE_WIDTH, TILE_HEIGHT);
-                    tileGC.dispose();
+                    if (Platform.isOSX) {
+                        GC tileGC = new GC(tileImage);
+                        tileGC.drawImage(image, (int)(x - rect.x), (int)(y - rect.y), TILE_WIDTH, TILE_HEIGHT, 0, 0, TILE_WIDTH, TILE_HEIGHT);
+                        tileGC.dispose();
+                    }
+                    else
+                        gc.copyArea(tileImage, (int)(x - rect.x), (int)(y - rect.y));
                     Tile tile = new Tile(new LargeRect(x, y, TILE_WIDTH, TILE_HEIGHT), tileImage);
                     cache.put(key, tile);
                     memoryUsage += TILE_SIZE_BYTES;
