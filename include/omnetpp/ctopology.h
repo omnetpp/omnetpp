@@ -18,6 +18,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 #include "cownedobject.h"
 #include "csimulation.h"
 #include "cmodule.h"
