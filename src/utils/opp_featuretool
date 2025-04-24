@@ -261,9 +261,15 @@ root directory where the following files are present:
         for featureDom in featurelistDom:
             feature = Feature(featureDom, ord)
             if feature.id in self.features:
-                warn("Duplicate feature '%s' in '%s'" % (feature.id, FEATURESFILE))
+                fail(f"Duplicate feature '{feature.id}'", prefix=f"Error in '{FEATURESFILE}'")
             self.features[feature.id] = feature
             ord += 1
+
+        # treat dangling feature references as hard errors (to prevent later errors)
+        for fid, feature in self.features.items():
+            for r in feature.requires + feature.recommended:
+                if not r in self.features:
+                    fail(f"Feature '{feature.id}' requires or recommends undefined feature '{r}'", prefix=f"Error in '{FEATURESFILE}'")
 
         self.sortedFeatures = sorted(self.features.items(), key=lambda x:x[1].ord)
 
@@ -604,19 +610,17 @@ root directory where the following files are present:
             if not isdir(nedFolder.path):
                 errorList.append(f"NED source folder '{nedFolder.path}' listed in '{NEDFOLDERSFILE}' does not exist")
 
-        # make sure that the "requires" lists of features don't reference undefined features
-        undefinedFeatures = []
+        # fail fast if an undefined feature is referenced (already checked on feature file loading, but do it anyway again)
         for fid, feature in self.sortedFeatures:
             for r in feature.requires + feature.recommended:
                 if not r in self.features:
-                    undefinedFeatures.append(r)
-                    errorList.append(f"Feature '{feature.id}' requires or recommends undefined feature '{r}' in '{FEATURESFILE}'")
+                    fail(f"Feature '{feature.id}' requires or recommends undefined feature '{r}' in '{FEATURESFILE}'")
 
-        # check feature dependencies:
+        # check that required features are enabled)
         for fid, feature in self.sortedFeatures:
             if self.featurestate[fid].enabled:
                 for r in feature.requires:
-                    if r not in undefinedFeatures and not self.featurestate[r].enabled:
+                    if not self.featurestate[r].enabled:
                         errorList.append(f"Feature '{fid}' requires '{r}', but it is disabled")
         for e in errorList:
             error(e, prefix="Consistency check failed")
