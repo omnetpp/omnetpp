@@ -8,6 +8,7 @@ import org.omnetpp.common.engine.LineTokenizer;
 import org.omnetpp.common.engine.PStringVector;
 import org.omnetpp.common.engineext.IMatchableObject;
 import org.omnetpp.common.util.BigDecimal;
+import org.omnetpp.common.util.StringUtils;
 
 /**
  * Base class for all kind of eventlog entries.
@@ -102,14 +103,8 @@ public abstract class EventLogEntry implements IMatchableObject
                 return eventLogMessage;
             }
             else {
-                Assert.isTrue(entryIndex >= 0);
-                LineTokenizer tokenizer = new LineTokenizer();
-                tokenizer.tokenize(line, length);
-                PStringVector tokensVector = tokenizer.tokensVector();
-                String[] tokens = new String[tokenizer.numTokens()];
-                for (int i = 0; i < tokenizer.numTokens(); i++)
-                    tokens[i] = tokensVector.get(i);
-                EventLogEntry eventLogEntry = EventLogEntryFactory.parseEntry(chunk, entryIndex, tokens, tokenizer.numTokens());
+                String[] tokens = StringUtils.tokenize(line.substring(0, length)).toArray(new String[0]);
+                EventLogEntry eventLogEntry = EventLogEntryFactory.parseEntry(chunk, entryIndex, tokens, tokens.length);
                 if (eventLogEntry != null)
                     eventLogEntry.offset = offset;
                 return eventLogEntry;

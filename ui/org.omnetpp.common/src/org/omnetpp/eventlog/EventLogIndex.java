@@ -1,11 +1,11 @@
 package org.omnetpp.eventlog;
 
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 import org.eclipse.core.runtime.Assert;
-import org.omnetpp.common.engine.LineTokenizer;
-import org.omnetpp.common.engine.PStringVector;
 import org.omnetpp.common.util.BigDecimal;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.eventlog.engine.FileReader;
 
 /**
@@ -16,7 +16,6 @@ import org.omnetpp.eventlog.engine.FileReader;
 public abstract class EventLogIndex extends EventLogBase
 {
     protected FileReader reader;
-    protected LineTokenizer tokenizer;
 
     protected long firstEventOffset = -1;
     protected long lastEventOffset = -1;
@@ -49,7 +48,6 @@ public abstract class EventLogIndex extends EventLogBase
     public EventLogIndex(FileReader reader)
     {
         this.reader = reader;
-        this.tokenizer = new LineTokenizer((int)reader.getMaxLineSize() + 1);
     }
 
     public void cacheEntry(long eventNumber, BigDecimal simulationTime, long beginOffset, long endOffset) {
@@ -549,13 +547,10 @@ public abstract class EventLogIndex extends EventLogBase
             if (line.charAt(0) == 'E' && line.charAt(1) == ' ')
                 break;
         }
-        // find event number and simulation time in line ("# 12345 t 1.2345")
-        tokenizer.tokenize(line, (int)reader.getCurrentLineLength());
         result.lineBeginOffset = reader.getCurrentLineStartOffset();
         result.lineEndOffset = reader.getCurrentLineEndOffset();
-        int numTokens = tokenizer.numTokens();
-        PStringVector tokens = tokenizer.tokensVector();
-        for (int i = 1; i < numTokens - 1; i += 2) {
+        ArrayList<String> tokens = StringUtils.tokenize(line.substring(0, (int)reader.getCurrentLineLength()));
+        for (int i = 1; i < tokens.size() - 1; i += 2) {
             String token = tokens.get(i);
             if (token.length() != 1)
                 continue;
