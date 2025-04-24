@@ -13,5 +13,5 @@ opp_featuretool list
 %exitcode: 1
 
 %contains: stderr
-opp_featuretool: Error: C++ source folder 'bogus' defined in '.oppfeatures' does not exist
+opp_featuretool: Consistency check failed: C++ source folder 'bogus' defined in '.oppfeatures' does not exist
 

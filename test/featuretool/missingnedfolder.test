@@ -17,5 +17,5 @@ opp_featuretool list
 %exitcode: 1
 
 %contains: stderr
-opp_featuretool: Error: NED source folder 'bogus' listed in '.nedfolders' does not exist
+opp_featuretool: Consistency check failed: NED source folder 'bogus' listed in '.nedfolders' does not exist
 

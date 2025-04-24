@@ -13,10 +13,8 @@ opp_featuretool list
 
 %testprog: sh ./testscript.sh
 
-%contains: stdout
-    + A
+%exitcode: 1
 
 %contains: stderr
-opp_featuretool: Warning: Duplicate feature 'A' in '.oppfeatures'
-opp_featuretool: Warning: Duplicate feature 'A' in '.oppfeatures'
+opp_featuretool: Error in '.oppfeatures': Duplicate feature 'A'
 

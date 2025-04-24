@@ -1,0 +1,18 @@
+%description:
+Check that inconsistent default enablements in ".oppfeatures" file are reported
+but the subcommand still does its job before that.
+
+%file: .oppfeatures
+<features>
+    <feature id="A" initiallyEnabled = "false"/>
+    <feature id="B" initiallyEnabled = "false"/>
+    <feature id="C" initiallyEnabled = "true"/>
+    <feature id="D" requires="A B C"/>
+</features>
+
+%file: testscript.sh
+opp_featuretool disable D
+
+%testprog: sh ./testscript.sh
+
+%exitcode: 0

@@ -1,0 +1,28 @@
+%description:
+Check that inconsistent default enablements in ".oppfeatures" file are reported
+but the subcommand still does its job before that.
+
+%file: .oppfeatures
+<features>
+    <feature id="A" initiallyEnabled = "false"/>
+    <feature id="B" initiallyEnabled = "false"/>
+    <feature id="C" initiallyEnabled = "true"/>
+    <feature id="D" requires="A B C"/>
+</features>
+
+%file: testscript.sh
+opp_featuretool list
+
+%testprog: sh ./testscript.sh
+
+%exitcode: 1
+
+%contains: stdout
+    - A
+    - B
+    + C
+    + D
+
+%contains: stderr
+opp_featuretool: Consistency check failed: Feature 'D' requires 'A', but it is disabled
+opp_featuretool: Consistency check failed: Feature 'D' requires 'B', but it is disabled
