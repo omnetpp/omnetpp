@@ -21,11 +21,14 @@ FEATURESTATEFILE = ".oppfeaturestate"
 NEDFOLDERSFILE = ".nedfolders"
 NEDEXCLUSIONSFILE = ".nedexclusions"
 
-def fail(msg, repairHint=None):
-    print("opp_featuretool: Error: " + msg, file=sys.stderr)
+def fail(msg, repairHint=None, prefix=None):
+    error(msg, repairHint, prefix)
+    sys.exit(1)
+
+def error(msg, repairHint=None, prefix=None):
+    print(f"opp_featuretool: {prefix or 'Error'}: {msg}", file=sys.stderr)
     if repairHint:
         print("Hint: " + repairHint, file=sys.stderr)
-    sys.exit(1)
 
 def warn(msg, repairHint=None):
     print("opp_featuretool: Warning: " + msg, file=sys.stderr)
@@ -445,7 +448,6 @@ root directory where the following files are present:
     ############################
     def doListCommand(self):
         self.readAllConfigFiles()
-        self.validateAndRepair()
 
         if self.args.enabled:
             categ = "enabled "
@@ -498,7 +500,6 @@ root directory where the following files are present:
     ############################
     def doEnableCommand(self):
         self.readAllConfigFiles()
-        self.validateAndRepair()
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
@@ -558,7 +559,6 @@ root directory where the following files are present:
     ############################
     def doDisableCommand(self):
         self.readAllConfigFiles()
-        self.validateAndRepair()
 
         if 'all' in self.args.features:
             if len(self.args.features) > 1:
@@ -592,28 +592,34 @@ root directory where the following files are present:
 
     ############################
     def validateAndRepair(self):
+        errorList = []
+
         # check C++ source folders
         for cppSourceRoot in self.cppSourceRoots:
             if not isdir(cppSourceRoot):
-                fail(f"C++ source folder '{cppSourceRoot}' defined in '{FEATURESFILE}' does not exist")
+                errorList.append(f"C++ source folder '{cppSourceRoot}' defined in '{FEATURESFILE}' does not exist")
 
         # check NED folders
         for nedFolder in self.nedfolders:
             if not isdir(nedFolder.path):
-                fail(f"NED source folder '{nedFolder.path}' listed in '{NEDFOLDERSFILE}' does not exist")
+                errorList.append(f"NED source folder '{nedFolder.path}' listed in '{NEDFOLDERSFILE}' does not exist")
 
         # make sure that the "requires" lists of features don't reference undefined features
+        undefinedFeatures = []
         for fid, feature in self.sortedFeatures:
             for r in feature.requires + feature.recommended:
                 if not r in self.features:
-                    fail(f"Feature '{feature.id}' requires or recommends undefined feature '{r}' in '{FEATURESFILE}'")
+                    undefinedFeatures.append(r)
+                    errorList.append(f"Feature '{feature.id}' requires or recommends undefined feature '{r}' in '{FEATURESFILE}'")
 
         # check feature dependencies:
         for fid, feature in self.sortedFeatures:
             if self.featurestate[fid].enabled:
                 for r in feature.requires:
-                    if not self.featurestate[r].enabled:
-                        fail(f"Feature '{r}' is required for '{fid}' but it is disabled")
+                    if r not in undefinedFeatures and not self.featurestate[r].enabled:
+                        errorList.append(f"Feature '{fid}' requires '{r}', but it is disabled")
+        for e in errorList:
+            error(e, prefix="Consistency check failed")
 
         # check NED folder exclusions:
         nedfolderErrorOccurred = False
@@ -632,11 +638,12 @@ root directory where the following files are present:
         if nedfolderErrorOccurred:
             self.featurestatesChanged = True  # FIXME ?????
 
+        if errorList:
+            sys.exit(1)
 
     ############################
     def doOptionsCommand(self):
         self.readAllConfigFiles()
-        self.validateAndRepair()
 
         if self.args.srcpath == None:
             self.args.srcpath = self.cppSourceRoots[0]
@@ -683,7 +690,6 @@ root directory where the following files are present:
     ############################
     def doDefinesCommand(self):
         self.readAllConfigFiles()
-        self.validateAndRepair()
 
         print("//")
         print("// Generated file, do not edit!")
@@ -714,7 +720,6 @@ root directory where the following files are present:
     ############################
     def doIsEnabledCommand(self):
         self.readAllConfigFiles()
-        self.validateAndRepair()
 
         featureOffList = set()
         featureUnknownList = set()
@@ -728,8 +733,9 @@ root directory where the following files are present:
         if len(featureOffList) > 0:
             self.printIfVerbose(1, "Disabled feature(s): {}".format((", ".join(sorted(featureOffList)))))
             return 1
-        self.printIfVerbose(1, "Feature(s) {} are enabled".format((", ".join(self.args.features))))
-        return 0
+        else:
+            self.printIfVerbose(1, "Feature(s) {} are enabled".format((", ".join(self.args.features))))
+            return 0
 
     ############################
     def readAllConfigFiles(self):
@@ -778,6 +784,9 @@ root directory where the following files are present:
         if self.nedExclusionsChanged:
             self.writeNedExclusionsFile()
             self.printIfVerbose(1, f"opp_featuretool: '{NEDEXCLUSIONSFILE}' updated")
+
+        if self.args.command:  # i.e. not Help
+            self.validateAndRepair()
 
         sys.exit(exitcode)
 
