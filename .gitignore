@@ -10,6 +10,7 @@
 *.gdb_history
 *.idb
 *.ilk
+*.jfr
 *.jnilib
 *.last-copts
 *.lex.cc
