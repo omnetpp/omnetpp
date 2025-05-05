@@ -45,7 +45,7 @@ class SIM_API cKSplit : public cPrecollectionBasedDensityEst
 {
   public:
     // K is the grid size of the algorithm. It must be 2, or a >=3 odd number.
-    enum { K = 2 };
+    static const int K = 2;
 
     /**
      * @brief Supporting struct for cKSplit. Represents one grid in the k-split
