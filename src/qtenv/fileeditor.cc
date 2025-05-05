@@ -52,24 +52,24 @@ FileEditor::FileEditor(QWidget *parent) : QDialog(parent), ui(new Ui::fileEditor
     copySelectionAction = new QAction(QIcon(":/tools/copy"), "&Copy", this);
     copySelectionAction->setToolTip("Copy selected text to clipboard");
     // we do this opposite of the usual: Hold shift to copy _formatted_ text
-    copySelectionAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+    copySelectionAction->setShortcut(QKeySequence((int)Qt::CTRL | (int)Qt::SHIFT | Qt::Key_C));
     connect(copySelectionAction, SIGNAL(triggered(bool)), ui->plainTextEdit, SLOT(copy()));
     addAction(copySelectionAction);
 
     findAction = new QAction(QIcon(":/tools/find"), "&Find...", this);
     findAction->setToolTip("Find string in window");
-    findAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+    findAction->setShortcut(QKeySequence((int)Qt::CTRL | Qt::Key_F));
     connect(findAction, SIGNAL(triggered(bool)), this, SLOT(find()));
     addAction(findAction);
 
     findNextAction = new QAction("Find &Next", this);
-    findNextAction->setShortcut(QKeySequence(Qt::Key_F3));
+    findNextAction->setShortcut(QKeySequence((int)Qt::Key_F3));
     connect(findNextAction, SIGNAL(triggered(bool)), this, SLOT(findNext()));
     addAction(findNextAction);
 
     saveAction = new QAction(QIcon(":/tools/save"), "&Save", this);
     saveAction->setToolTip("Save window contents to file");
-    saveAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+    saveAction->setShortcut(QKeySequence((int)Qt::CTRL | Qt::Key_S));
     connect(saveAction, SIGNAL(triggered(bool)), this, SLOT(save()));
     addAction(saveAction);
 
@@ -97,7 +97,7 @@ void FileEditor::onCustomContextMenuRequested(const QPoint& pos)
         wrapLinesAction->setCheckable(true);
         contextMenu->addSeparator();
 
-        contextMenu->addAction("&Select All", ui->plainTextEdit, SLOT(selectAll()))->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
+        contextMenu->addAction("&Select All", ui->plainTextEdit, SLOT(selectAll()))->setShortcut(QKeySequence((int)Qt::CTRL | Qt::Key_A));
     }
 
     contextMenu->exec(mapToGlobal(pos) + ui->plainTextEdit->pos());

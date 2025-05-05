@@ -96,7 +96,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     findAction = new QAction(QIcon(":/tools/find"), "&Find...", this);
     findAction->setToolTip("Find text in window (Ctrl+F)\nUse F3 to find next, Shift+F3 to find previous");
-    findAction->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    findAction->setShortcut((int)Qt::ControlModifier | Qt::Key_F);
     connect(findAction, SIGNAL(triggered()), this, SLOT(onFindButton()));
 
     saveAction = new QAction(QIcon(":/tools/save"), "&Save Window Contents...", this);
@@ -104,7 +104,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
 
     filterAction = new QAction(QIcon(":/tools/filter"), "Filter...", this);
     filterAction->setToolTip("Filter window contents (Ctrl+H)");
-    filterAction->setShortcut(Qt::ControlModifier + Qt::Key_H);
+    filterAction->setShortcut((int)Qt::ControlModifier | Qt::Key_H);
     connect(filterAction, SIGNAL(triggered()), this, SLOT(onFilterButton()));
 
     clearFilterAction = new QAction(QIcon(":/tools/filter_off"), "Clear Filter", this);
@@ -133,13 +133,13 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     */
 
     findAgainAction = new QAction("Find &Next", this);
-    findAgainAction->setShortcut(Qt::Key_F3);
+    findAgainAction->setShortcut((int)Qt::Key_F3);
     findAgainAction->setEnabled(false);
     connect(findAgainAction, SIGNAL(triggered()), this, SLOT(findAgain()));
     addAction(findAgainAction);
 
     findAgainReverseAction = new QAction("Find &Previous", this);
-    findAgainReverseAction->setShortcut(Qt::ShiftModifier + Qt::Key_F3);
+    findAgainReverseAction->setShortcut((int)Qt::ShiftModifier | Qt::Key_F3);
     findAgainReverseAction->setEnabled(false);
     connect(findAgainReverseAction, SIGNAL(triggered()), this, SLOT(findAgainReverse()));
     addAction(findAgainReverseAction);
@@ -148,7 +148,7 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     copySelectionAction = new QAction(QIcon(":/tools/copy"), "&Copy", this);
     connect(copySelectionAction, SIGNAL(triggered()), textWidget, SLOT(copySelectionUnformatted()));
     copySelectionAction->setToolTip("Copy selected text to clipboard\nUse Ctrl+Shift+C to include formatting");
-    copySelectionAction->setShortcuts({Qt::ControlModifier + Qt::Key_C, Qt::ControlModifier + Qt::Key_Insert});
+    copySelectionAction->setShortcuts({(int)Qt::ControlModifier | Qt::Key_C, (int)Qt::ControlModifier | Qt::Key_Insert});
     copySelectionAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(copySelectionAction);
 
@@ -156,29 +156,29 @@ LogInspector::LogInspector(QWidget *parent, bool isTopLevel, InspectorFactory *f
     connect(copySelectionWithFormattingAction, SIGNAL(triggered()), textWidget, SLOT(copySelection()));
     // we do this opposite of the usual: Hold shift to copy _formatted_ text
     // (because it's not a proper rich-text MIME content, only ANSI control sequences inline plain text)
-    copySelectionWithFormattingAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_C);
+    copySelectionWithFormattingAction->setShortcut((int)Qt::ControlModifier | Qt::ShiftModifier | Qt::Key_C);
     copySelectionWithFormattingAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(copySelectionWithFormattingAction);
 
     goToSimTimeAction = new QAction("Go to Simulation &Time...");
     connect(goToSimTimeAction, SIGNAL(triggered()), this, SLOT(onGoToSimTimeAction()));
-    goToSimTimeAction->setShortcut(Qt::CTRL + Qt::Key_T);
+    goToSimTimeAction->setShortcut((int)Qt::CTRL | Qt::Key_T);
     addAction(goToSimTimeAction);
 
     goToEventAction = new QAction("Go to &Event...");
     connect(goToEventAction, SIGNAL(triggered()), this, SLOT(onGoToEventAction()));
-    goToEventAction->setShortcut(Qt::CTRL + Qt::Key_E);
+    goToEventAction->setShortcut((int)Qt::CTRL | Qt::Key_E);
     goToEventAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     addAction(goToEventAction);
 
     setBookmarkAction = new QAction(QIcon(":/tools/bookmark_add"), "Set Boo&kmark");
     connect(setBookmarkAction, SIGNAL(triggered()), this, SLOT(onSetBookmarkAction()));
-    setBookmarkAction->setShortcut(Qt::CTRL + Qt::Key_M);
+    setBookmarkAction->setShortcut((int)Qt::CTRL | Qt::Key_M);
     addAction(setBookmarkAction);
 
     goToBookmarkAction = new QAction(QIcon(":/tools/bookmark"), "Go to &Bookmark");
     connect(goToBookmarkAction, SIGNAL(triggered()), this, SLOT(onGoToBookmarkAction()));
-    goToBookmarkAction->setShortcut(Qt::CTRL + Qt::Key_B);
+    goToBookmarkAction->setShortcut((int)Qt::CTRL | Qt::Key_B);
     addAction(goToBookmarkAction);
 
     QToolBar *toolBar = createToolbar(isTopLevel);
@@ -260,7 +260,7 @@ QToolBar *LogInspector::createToolbar(bool isTopLevel)
         fastRunUntilAction = toolBar->addAction(QIcon(":/tools/mfast"), "Fast run until next event in this module (Ctrl+F4)",
                                                 this, SLOT(fastRunUntil()));
         fastRunUntilAction->setCheckable(true);
-        fastRunUntilAction->setShortcut(Qt::CTRL + Qt::Key_F4);
+        fastRunUntilAction->setShortcut((int)Qt::CTRL | Qt::Key_F4);
 
         toolBar->addAction(getQtenv()->getMainWindow()->getStopAction());
 
@@ -545,14 +545,14 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
     if (mode == LogInspector::MESSAGES) {
         menu->addSeparator();
 
-        QAction *reverseHopsAction = menu->addAction("Allow Backward &Arrows for Hops", [=](bool checked) {
+        QAction *reverseHopsAction = menu->addAction("Allow Backward &Arrows for Hops", [this](bool checked) {
             getQtenv()->opt->allowBackwardArrowsForHops = checked;
             Q_EMIT globalMessageFormatChanged();
         });
         reverseHopsAction->setCheckable(true);
         reverseHopsAction->setChecked(getQtenv()->opt->allowBackwardArrowsForHops);
 
-        QAction *groupDigitsAction = menu->addAction("Digit &Grouping for Simulation Time", [=](bool checked) {
+        QAction *groupDigitsAction = menu->addAction("Digit &Grouping for Simulation Time", [this](bool checked) {
             getQtenv()->opt->messageLogDigitGrouping = checked;
             Q_EMIT globalMessageFormatChanged();
         });
@@ -560,7 +560,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
         groupDigitsAction->setChecked(getQtenv()->opt->messageLogDigitGrouping);
 
         menu->addSeparator();
-        menu->addAction(QIcon(":/tools/label"), "Set Sending Time as &Reference", [=]() {
+        menu->addAction(QIcon(":/tools/label"), "Set Sending Time as &Reference", [msg, this]() {
             if (EventEntryMessageLinesProvider::getReferenceTime() != msg->getSendingTime()) {
                 EventEntryMessageLinesProvider::setReferenceTime(msg->getSendingTime());
                 Q_EMIT globalMessageFormatChanged();
@@ -571,7 +571,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
         if (refTime > 0) {
             std::string refTimeStr = refTime.format(SimTime::getScaleExp(), ".", "'");
             refTimeStr = stripSuffixes(refTimeStr, "'000");
-            menu->addAction(QIcon(":/tools/label_off"), "Clear Time Reference (=" + QString::fromStdString(refTimeStr) + ")", [=]() {
+            menu->addAction(QIcon(":/tools/label_off"), "Clear Time Reference (=" + QString::fromStdString(refTimeStr) + ")", [this]() {
                 if (EventEntryMessageLinesProvider::getReferenceTime() != 0) {
                     EventEntryMessageLinesProvider::setReferenceTime(0);
                     Q_EMIT globalMessageFormatChanged();
@@ -590,7 +590,7 @@ void LogInspector::onRightClicked(QPoint globalPos, int lineIndex, int column)
     int bookmarkedLine = textWidget->getContentProvider()->getBookmarkedLineIndex();
 
     if (lineIndex == bookmarkedLine) {
-        menu->addAction(QIcon(":/tools/bookmark_remove"), "C&lear Bookmark", [=] {
+        menu->addAction(QIcon(":/tools/bookmark_remove"), "C&lear Bookmark", [this] {
             textWidget->getContentProvider()->bookmarkLine(-1);
         });
     }

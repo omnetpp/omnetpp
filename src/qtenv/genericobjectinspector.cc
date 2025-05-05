@@ -156,14 +156,14 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     addAction(copyLineAction);
 
     copyLineHighlightedAction = new QAction("&Copy Value", this);
-    copyLineHighlightedAction->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_C);
+    copyLineHighlightedAction->setShortcut((int)Qt::CTRL | (int)Qt::SHIFT | Qt::Key_C);
     copyLineHighlightedAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     // lambda because it is easier than binding the parameter value
     connect(copyLineHighlightedAction, &QAction::triggered, [this]() { copySelectedLineToClipboard(true); });
     addAction(copyLineHighlightedAction);
 
     QAction *cycleSubtreeModeAction = new QAction("Cycle Subtree Mode", this);
-    cycleSubtreeModeAction->setShortcut(Qt::CTRL + Qt::Key_B);
+    cycleSubtreeModeAction->setShortcut((int)Qt::CTRL | Qt::Key_B);
     cycleSubtreeModeAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     connect(cycleSubtreeModeAction, &QAction::triggered, this, &GenericObjectInspector::cycleSelectedSubtreeMode);
     addAction(cycleSubtreeModeAction);

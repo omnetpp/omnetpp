@@ -109,7 +109,7 @@ Inspector::Inspector(QWidget *parent, bool isTopLevel, InspectorFactory *f)
         setAttribute(Qt::WA_DeleteOnClose);
 
         QAction *closeAction = new QAction("Close Inspector", this);
-        closeAction->setShortcut(Qt::CTRL + Qt::Key_W);
+        closeAction->setShortcut((int)Qt::CTRL | Qt::Key_W);
         connect(closeAction, &QAction::triggered, this, &QWidget::close);
         addAction(closeAction);
     }
@@ -441,7 +441,7 @@ void Inspector::addTopLevelToolBarActions(QToolBar *toolbar)
     toolButton->setPopupMode(QToolButton::InstantPopup);
 
     toolbar->addAction(QIcon(":/tools/findobj"), "Find/inspect objects", this, SLOT(findObjectsWithin()))
-            ->setShortcut(Qt::CTRL | Qt::Key_S);
+            ->setShortcut((int)Qt::CTRL | Qt::Key_S);
 }
 
 }  // namespace qtenv

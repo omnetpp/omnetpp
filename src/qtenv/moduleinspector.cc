@@ -96,30 +96,30 @@ ModuleInspector::ModuleInspector(QWidget *parent, bool isTopLevel, InspectorFact
 
     showMethodCallsAction = new QAction("Show Method Calls", this);
     connect(showMethodCallsAction, SIGNAL(triggered(bool)), this, SLOT(showMethodCalls(bool)));
-    showMethodCallsAction->setShortcut(Qt::CTRL | Qt::Key_E);
+    showMethodCallsAction->setShortcut((int)Qt::CTRL | Qt::Key_E);
     showMethodCallsAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     showMethodCallsAction->setCheckable(true);
     addAction(showMethodCallsAction);
 
     showModuleNamesAction = new QAction("Show Module Names", this);
     connect(showModuleNamesAction, SIGNAL(triggered(bool)), this, SLOT(showLabels(bool)));
-    showModuleNamesAction->setShortcut(Qt::CTRL | Qt::Key_L);
+    showModuleNamesAction->setShortcut((int)Qt::CTRL | Qt::Key_L);
     showModuleNamesAction->setCheckable(true);
     addAction(showModuleNamesAction);
 
     showArrowheadsAction = new QAction("Show Arrowheads", this);
     connect(showArrowheadsAction, SIGNAL(triggered(bool)), this, SLOT(showArrowheads(bool)));
-    showArrowheadsAction->setShortcut(Qt::CTRL | Qt::Key_A);
+    showArrowheadsAction->setShortcut((int)Qt::CTRL | Qt::Key_A);
     showArrowheadsAction->setCheckable(true);
     addAction(showArrowheadsAction);
 
     increaseIconSizeAction = new QAction("Increase Icon Size", this);
-    increaseIconSizeAction->setShortcut(Qt::CTRL | Qt::Key_I);
+    increaseIconSizeAction->setShortcut((int)Qt::CTRL | Qt::Key_I);
     connect(increaseIconSizeAction, SIGNAL(triggered(bool)), this, SLOT(increaseIconSize()));
     addAction(increaseIconSizeAction);
 
     decreaseIconSizeAction = new QAction("Decrease Icon Size", this);
-    decreaseIconSizeAction->setShortcut(Qt::CTRL | Qt::Key_O);
+    decreaseIconSizeAction->setShortcut((int)Qt::CTRL | Qt::Key_O);
     connect(decreaseIconSizeAction, SIGNAL(triggered(bool)), this, SLOT(decreaseIconSize()));
     addAction(decreaseIconSizeAction);
 
@@ -195,19 +195,19 @@ QToolBar *ModuleInspector::createToolbar(bool isTopLevel)
 
     toolbar->addAction(QIcon(":/tools/mrun"), "Run until next event in this module", this, SLOT(runUntil()));
     QAction *action = toolbar->addAction(QIcon(":/tools/mfast"), "Fast run until next event in this module (Ctrl+F4)", this, SLOT(fastRunUntil()));
-    action->setShortcut(Qt::CTRL | Qt::Key_F4);
+    action->setShortcut((int)Qt::CTRL | Qt::Key_F4);
     toolbar->addAction(getQtenv()->getMainWindow()->getStopAction());
     toolbar->addSeparator();
 
     // canvas-specfic
     action = toolbar->addAction(QIcon(":/tools/redraw"), "Re-layout", this, SLOT(relayout()));
-    action->setShortcut(Qt::CTRL | Qt::Key_R);
+    action->setShortcut((int)Qt::CTRL | Qt::Key_R);
     canvasRelayoutAction = action;
     action = toolbar->addAction(QIcon(":/tools/zoomin"), "Zoom in", this, SLOT(zoomIn()));
-    action->setShortcut(Qt::CTRL | Qt::Key_Plus);
+    action->setShortcut((int)Qt::CTRL | Qt::Key_Plus);
     canvasZoomInAction = action;
     action = toolbar->addAction(QIcon(":/tools/zoomout"), "Zoom out", this, SLOT(zoomOut()));
-    action->setShortcut(Qt::CTRL + Qt::Key_Minus);
+    action->setShortcut((int)Qt::CTRL | Qt::Key_Minus);
     canvasZoomOutAction = action;
     action = toolbar->addAction(QIcon(":/tools/layers"), "Show/Hide Canvas Layers...", this, SLOT(showCanvasLayersDialog()));
     canvasLayersAction = action;
@@ -738,7 +738,7 @@ void ModuleInspector::createContextMenu(const std::vector<cObject *>& objects, c
 
 void ModuleInspector::addNameFormatItem(SubmoduleNameFormat format, QString label, QActionGroup *actionGroup, QMenu *subMenu)
 {
-    QAction *action = subMenu->addAction(label, [=] {setSubmoduleNameFormat(format);});
+    QAction *action = subMenu->addAction(label, [this, format] {setSubmoduleNameFormat(format);});
     action->setCheckable(true);
     action->setChecked(canvasViewer->getSubmoduleNameFormat() == format);
     action->setActionGroup(actionGroup);
