@@ -90,7 +90,7 @@ struct sig {
 struct is_getter { };
 
 NAMESPACE_BEGIN(literals)
-constexpr arg operator"" _a(const char *name, size_t) { return arg(name); }
+constexpr arg operator""_a(const char *name, size_t) { return arg(name); }
 NAMESPACE_END(literals)
 
 NAMESPACE_BEGIN(detail)
