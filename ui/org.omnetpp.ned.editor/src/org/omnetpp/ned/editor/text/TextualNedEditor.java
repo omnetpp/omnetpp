@@ -13,11 +13,13 @@ import java.util.ResourceBundle;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension4;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -71,9 +73,9 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
 
 
 /**
- * TODO add documentation
+ * Textual editor for NED files.
  *
- * @author rhornig
+ * @author rhornig, avarga, levy
  */
 public class TextualNedEditor extends TextEditor implements INedChangeListener, ISelectionListener {
 
@@ -337,6 +339,43 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
     public void setAction(String actionID, IAction action) {
         if (!actionID.equals(ITextEditorActionConstants.SAVE))
             super.setAction(actionID, action);
+    }
+
+    @Override
+    public void doSave(IProgressMonitor progressMonitor) {
+        removeTrailingSpaces();
+        super.doSave(progressMonitor);
+    }
+
+    protected void removeTrailingSpaces() {
+        IDocument document = getDocument();
+        if (document == null)
+            return;
+
+        try {
+            int numLines = document.getNumberOfLines();
+            for (int i = 0; i < numLines; i++) {
+                IRegion lineInfo = document.getLineInformation(i);
+                int lineLength = lineInfo.getLength();
+                int lineOffset = lineInfo.getOffset();
+
+                String line = document.get(lineOffset, lineLength);
+
+                // Find the index where trailing spaces begin
+                int lastNonSpaceIndex = line.length() - 1;
+                while (lastNonSpaceIndex >= 0 && line.charAt(lastNonSpaceIndex) == ' ')
+                    lastNonSpaceIndex--;
+
+                // If there are trailing spaces, remove them
+                if (lastNonSpaceIndex < line.length() - 1) {
+                    int spacesOffset = lineOffset + lastNonSpaceIndex + 1;
+                    int numSpaces = lineLength - (lastNonSpaceIndex + 1);
+                    document.replace(spacesOffset, numSpaces, "");
+                }
+            }
+        } catch (BadLocationException e) {
+            NedEditorPlugin.logError(e);
+        }
     }
 
     /**
