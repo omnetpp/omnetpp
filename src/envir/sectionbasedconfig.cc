@@ -590,10 +590,10 @@ void SectionBasedConfiguration::parseVariable(const char *txt, std::string& outV
     const char *s = txt+2;
     while (opp_isspace(*s))
         s++;
-    if (opp_isalphaext(*s)) {
+    if (opp_isalphaext(*s) || *s == '_') {
         // must be a variable or a variable reference
         varNameBegin = varNameEnd = s;
-        while (opp_isalnumext(*varNameEnd))
+        while (opp_isalnumext(*varNameEnd) || *varNameEnd == '_')
             varNameEnd++;
         s = varNameEnd;
         while (opp_isspace(*s))
