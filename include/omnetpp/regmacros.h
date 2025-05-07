@@ -109,7 +109,7 @@ namespace omnetpp {
  * @brief Register class. This defines a factory object which makes it possible
  * to create an object by the passing class name to the createOne() function.
  * The class must be a subclass of cObject, otherwise a compile-time error
- * will occur: <i>"cannot convert..."</i>
+ * will occur: *"cannot convert..."*
  *
  * @see cObjectFactory, cObjectFactory::createOne(), cObjectFactory::isInstance()
  * @hideinitializer
@@ -120,7 +120,7 @@ namespace omnetpp {
  * @brief Register an abstract class. Registration makes it possible to dynamically test
  * whether an object is a subclass of the registered class (see cObjectFactory::isInstance()).
  * The class must be a subclass of cObject, otherwise a compile-time error
- * will occur: <i>"cannot convert..."</i>
+ * will occur: *"cannot convert..."*
  *
  * @see cObjectFactory, cObjectFactory::isInstance()
  * @hideinitializer

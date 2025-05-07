@@ -665,7 +665,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * in a large number of iterations.
      *
      * The mean and stddev parameters serve as parameters to the normal
-     * distribution <i>before</i> truncation. The actual random variate returned
+     * distribution *before* truncation. The actual random variate returned
      * will have a different mean and standard deviation.
      *
      * @param mean mean of the normal distribution

@@ -81,8 +81,8 @@ namespace internal { class Void; }
  *    - the same mechanism can ensure that when a self-message is currently
  *      scheduled (owner is the scheduled-events list) or sent to another module
  *      (owner is the other module) you cannot send or schedule it, or
- *      insert it into a queue. <i>In short: the ownership mechanism is good to your
- *      health.</i>
+ *      insert it into a queue. 
+ *      *In short: the ownership mechanism is good to your health.*
  *
  *    - when the queue is deleted, it also deletes all objects it contains.
  *      (The cQueue always owns all objects inserted into it -- no exception).

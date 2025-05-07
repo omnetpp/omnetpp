@@ -36,7 +36,7 @@ class cAutoRangeHistogramStrategy;
  *
  * Bins can be set up directly using methods such as setBinEdges() or
  * createUniformBins(), but it is often more practical to automate it by letting
- * a <i>histogram strategy</i> do it. Histogram strategies are objects that
+ * a *histogram strategy* do it. Histogram strategies are objects that
  * encapsulate the job of setting up and managing histogram bins. For example,
  * histogram strategies may employ a precollection phase to get an estimate of
  * the distribution for laying out the bins. Strategies are also capable of

@@ -37,7 +37,7 @@ class  cXMLElement;
  *
  * <b>Note2:</b> This is an obsolete class, retained to support legacy code.
  * The preferred way of adding data to cMessages since the 2.3 version is
- * via subclassing, using `.msg` files and the <i>opp_msgc</i> tool.
+ * via subclassing, using `.msg` files and the *opp_msgc* tool.
  *
  * cMsgPar supports several data types. Data types are identified by type
  * characters. The current data type is returned by getType().

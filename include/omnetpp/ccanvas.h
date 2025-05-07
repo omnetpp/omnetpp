@@ -1156,7 +1156,7 @@ class SIM_API cLineFigure : public cAbstractLineFigure
  * the counter-clockwise direction. Values outside the (0,2*PI) interval are
  * accepted for both angles.
  *
- * The arc is drawn from the start angle to the end angle in <i>counter-clockwise</i>
+ * The arc is drawn from the start angle to the end angle in *counter-clockwise*
  * direction. In non-edge cases, the end angle should be in the (startAngle,
  * startAngle + 2*PI) interval. If the end angle equals or is less than the
  * start angle, nothing is drawn. If the end angle equals startAngle+2*PI
@@ -1242,7 +1242,7 @@ class SIM_API cArcFigure : public cAbstractLineFigure
  * straight line segments or of a single smooth curve.
  *
  * The class stores geometry information as a sequence of points. The line
- * may be <i>smoothed</i>. A smoothed line is drawn as a series of Bezier
+ * may be *smoothed*. A smoothed line is drawn as a series of Bezier
  * curves, which touch the start point of the first line segment, the
  * end point of the last line segment, and the midpoints of intermediate
  * line segments, while intermediate points serve as control points.
@@ -1769,8 +1769,8 @@ class SIM_API cRingFigure : public cAbstractShapeFigure
  * optional. Line and fill color, and several other properties are inherited
  * from cAbstractShapeFigure.
  *
- * The pie slice is drawn from the start angle to the end angle in <i>counter-
- * clockwise</i> direction. In non-degenerate cases, the end angle should be
+ * The pie slice is drawn from the start angle to the end angle in *counter-clockwise*
+ * direction. In non-degenerate cases, the end angle should be
  * in the (startAngle, startAngle + 2*PI) interval. If the end angle equals to
  * or is less than the start angle, only a straight line is drawn from the
  * center to the circumference. If the end angle equals startAngle+2*PI
@@ -1855,11 +1855,11 @@ class SIM_API cPieSliceFigure : public cAbstractShapeFigure
 /**
  * @brief A figure that displays a (closed) polygon, determined by a sequence of points.
  *
- * The polygon may be <i>smoothed</i>. A smoothed polygon is drawn as a series
+ * The polygon may be *smoothed*. A smoothed polygon is drawn as a series
  * of cubic Bezier curves, where the curves touch the midpoints of the sides,
  * and vertices serve as control points. As with all shape figures, drawing of
  * both the outline and the fill are optional. The drawing of filled self-
- * intersecting polygons is controlled by the <i>fill rule</i> property.
+ * intersecting polygons is controlled by the *fill rule* property.
  * Line and fill color, and several other properties are inherited from
  * cAbstractShapeFigure.
  *
@@ -1999,7 +1999,7 @@ class SIM_API cPolygonFigure : public cAbstractShapeFigure
  * A path is may consist of any number of straight line segments, Bezier curves
  * and arcs. The path can be disjoint as well. Closed paths may be filled.
  * The drawing of filled self-intersecting polygons is controlled by the
- * <i>fill rule</i> property. Line and fill color, and several other properties
+ * *fill rule* property. Line and fill color, and several other properties
  * are inherited from cAbstractShapeFigure.
  *
  * The path may be specified with a string similar to an SVG path, or assembled
@@ -2368,7 +2368,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
  * @brief Abstract base class for figures that display text. Text may be multi-line.
  *
  * The location of the text on the canvas is determined jointly by the
- * <i>position</i> and <i>anchor</i> properties. The anchor tells how to
+ * *position* and *anchor* properties. The anchor tells how to
  * position the text relative to the positioning point. For example,
  * if anchor is ANCHOR_CENTER then the text is centered on the point;
  * if anchor is ANCHOR_N then the text will be drawn so that its top center
@@ -2657,7 +2657,7 @@ class SIM_API cLabelFigure : public cAbstractTextFigure
  * @brief Abstract base class for figures that display an image.
  *
  * The location of the image on the canvas is determined jointly by the
- * <i>position</i> and <i>anchor</i> properties. The anchor tells how to
+ * *position* and *anchor* properties. The anchor tells how to
  * position the image relative to the positioning point. For example,
  * if anchor is ANCHOR_CENTER then the image is centered on the point;
  * if anchor is ANCHOR_N then the image will be drawn so that its top center

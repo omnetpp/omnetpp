@@ -30,7 +30,7 @@ namespace omnetpp {
  * automatic range determination.
  *
  * Automatic range estimation works in the following way:
- *  1. The first <I>numPrecollect</I> observations are stored.
+ *  1. The first *numPrecollect* observations are stored.
  *  2. After having collected a given number of observations, the actual
  *     histogram is set up. The range (min, max) of the  initial values
  *     is expanded rangeExtensionFactoror times, and the result will become

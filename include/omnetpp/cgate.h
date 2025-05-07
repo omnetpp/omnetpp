@@ -404,14 +404,14 @@ class SIM_API cGate : public cObject, noncopyable
     /** @name Transmission state. */
     //@{
     /**
-     * Typically invoked on an output gate, this method returns <i>the</i>
+     * Typically invoked on an output gate, this method returns *the*
      * channel in the connection path that supports datarate (as determined
      * by cChannel::isTransmissionChannel(); it is guaranteed that there can be
      * at most one such channel per path). If there is no such channel,
      * an error is thrown.
      *
      * This method only checks the segment of the connection path that
-     * <i>starts</i> at this gate, so, for example, it is an error to invoke
+     * *starts* at this gate, so, for example, it is an error to invoke
      * it on a simple module input gate.
      *
      * Note: this method searches the connection path linearly, so at
