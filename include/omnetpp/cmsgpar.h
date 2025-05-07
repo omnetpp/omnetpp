@@ -29,23 +29,23 @@ class  cXMLElement;
  * @brief Allows a value (string, bool, double, etc) to be attached to
  * a cMessage object.
  *
- * <b>Note:</b> Before version 3.0, the cPar class was used for both
+ * **Note:** Before version 3.0, the cPar class was used for both
  * message parameters and module parameters. As of 4.0, cPar only
  * serves as module/channel parameter, and other uses of cPar in
  * existing 3.x code should be either eliminated (see next note),
  * or changed to cMsgPar.
  *
- * <b>Note2:</b> This is an obsolete class, retained to support legacy code.
+ * **Note2:** This is an obsolete class, retained to support legacy code.
  * The preferred way of adding data to cMessages since the 2.3 version is
  * via subclassing, using `.msg` files and the *opp_msgc* tool.
  *
  * cMsgPar supports several data types. Data types are identified by type
  * characters. The current data type is returned by getType().
- *     - basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
- *     - <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
- *     - <b>T</b> a statistic object (subclassed from cStatistic)
- *     - <b>P</b> pointer to cOwnedObject,
- *     - <b>M</b> XML element (pointer to a cXMLElement)
+ *     - basic types: **S** string, **B** bool, **L** long, **D** double
+ *     - **F** math function (MathFuncNoArgs,MathFunc1Args,etc),
+ *     - **T** a statistic object (subclassed from cStatistic)
+ *     - **P** pointer to cOwnedObject,
+ *     - **M** XML element (pointer to a cXMLElement)
  *
  * @ingroup Misc
  */
@@ -148,7 +148,7 @@ class SIM_API cMsgPar : public cOwnedObject
      *
      * The behavior with redirected cMsgPar objects is the following. This function
      * copies the contents of the other object (whether it is redirected or not)
-     * into this object, <b>or,</b> if this object is redirected, into the object
+     * into this object, **or,** if this object is redirected, into the object
      * this object refers to. This means that if you want to overwrite this
      * very object (and not the one it points to), you have to use
      * cancelRedirection() first.
@@ -283,7 +283,7 @@ class SIM_API cMsgPar : public cOwnedObject
      *
      * <TABLE BORDER=1>
      *   <TR>
-     *     <TD><b>delfunc</b></TD><TD><b>dupfunc.</b></TD><TD><b>itemsize</b></TD><TD><b>behavior</b></TD>
+     *     <TD>**delfunc**</TD><TD>**dupfunc.**</TD><TD>**itemsize**</TD><TD>**behavior**</TD>
      *   </TR>
      *   <TR>
      *     <TD>nullptr</TD><TD>nullptr</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>

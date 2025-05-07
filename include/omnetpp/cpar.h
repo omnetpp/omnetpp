@@ -50,11 +50,11 @@ namespace internal { class cParImpl; }
  * changed; one has to override cComponent::handleParameterChange()
  * for that.
  *
- * <b>Note:</b> In earlier versions of \opp, cPar could be used as a
+ * **Note:** In earlier versions of \opp, cPar could be used as a
  * general value storage object, and attached to cMessages as well.
  * From the 4.0 version, simulation models should use cMsgPar for that.
  *
- * <b>Implementation note:</b> from the 4.0 version, almost all methods
+ * **Implementation note:** from the 4.0 version, almost all methods
  * of cPar delegate to an internal cParImpl object, which actually stores
  * the value, and generally does the real job. This was done to allow
  * sharing parameter objects which have the same name, same value, etc.

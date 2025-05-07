@@ -35,7 +35,7 @@ class cDynamicExpression;
  *
  * See notes below.
  *
- * <b>Pointer values</b>
+ * **Pointer values**
  *
  * With type==POINTER, cValue only stored the pointer, and does nothing extra
  * on top of that. If the pointer points to an object, the object's ownership
