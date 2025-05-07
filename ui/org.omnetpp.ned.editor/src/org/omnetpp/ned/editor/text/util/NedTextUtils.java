@@ -86,43 +86,39 @@ public class NedTextUtils {
 
             INedTypeResolver res = NedResourcesPlugin.getNedResources();
 
-            // prevent exception thrown from getNedElementAt() on next line
+            // Prevent exception thrown from getNedElementAt() on next line
             if (!NedResourcesPlugin.getNedResources().containsNedFileElement(file))
                 return null;
 
+            // First, try to interpret the word in the context of the containing AST element
             INedElement element = res.getNedElementAt(file, line+1, column);
-            if (element == null)
-                return null; // we don't know what's there
-
             if (element instanceof ImportElement) {
                 INedElement declElement = lookupTypeElement(dottedWord, element.getContainingNedFileElement());
                 return createInfo(element, dottedWordRegion, declElement);
             }
-            if (element instanceof INedTypeElement) {
+            else if (element instanceof INedTypeElement) {
                 if (word.equals(((INedTypeElement)element).getName()))
                     return createInfo(element, wordRegion, element);
             }
-            if (element instanceof ExtendsElement || element instanceof InterfaceNameElement) {
+            else if (element instanceof ExtendsElement || element instanceof InterfaceNameElement) {
                 INedElement declElement = lookupTypeElement(dottedWord, element.getParent().getEnclosingLookupContext());
                 return createInfo(element, dottedWordRegion, declElement);
             }
-            if (element instanceof SubmoduleElementEx) {
+            else if (element instanceof SubmoduleElementEx) {
                 if (dottedWord.equals(((SubmoduleElementEx)element).getTypeOrLikeType())) {
                     INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
                     return createInfo(element, dottedWordRegion, declElement);
                 }
                 if (dottedWord.equals(((SubmoduleElementEx)element).getName()))
                     return createInfo(element, dottedWordRegion, element);
-                return null;
             }
-            if (element instanceof ParamElement) {
+            else if (element instanceof ParamElement) {
                 String paramName = ((ParamElement)element).getName();
                 if (word.equals(paramName)) {
                     IHasParameters hasParameters = (IHasParameters) findParentWithClass(element, IHasParameters.class);
                     ParamElementEx declElement = hasParameters.getParamDeclarations().get(paramName);
                     return createInfo(element, wordRegion, declElement);
                 }
-                return null;
             }
             else if (element instanceof GateElement) {
                 String gateName = ((GateElement)element).getName();
@@ -131,9 +127,8 @@ public class NedTextUtils {
                     GateElementEx declElement = hasGates.getGateDeclarations().get(gateName);
                     return createInfo(element, wordRegion, declElement);
                 }
-                return null;
             }
-            if (element instanceof ConnectionElementEx) {
+            else if (element instanceof ConnectionElementEx) {
                 ConnectionElementEx conn = (ConnectionElementEx)element;
                 CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)element.getEnclosingTypeElement();
 
@@ -161,11 +156,10 @@ public class NedTextUtils {
                     INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
                     return createInfo(element, dottedWordRegion, declElement);
                 }
-                return null;
-
             }
 
-            // If we are here, the selected word likely occurs within a comment (e.g. the type's NEDDOC comment)
+            // Try to look up the word, independent of the context. If we are here,
+            // the selected word likely occurs within a comment or string literal
 
             // Try to resolve as type name using the file's imports etc.
             INedTypeLookupContext context = element instanceof NedFileElementEx ? (NedFileElementEx)element : element.getEnclosingLookupContext();
