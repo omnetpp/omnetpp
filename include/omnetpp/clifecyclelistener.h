@@ -170,7 +170,7 @@ enum SimulationLifecycleEventType
  * cSimulation::getActiveSimulation()).
  *
  * For standalone listeners that have no other way to be invoked, one can
- * use the <tt>EXECUTE_ON_STARTUP(code)</tt> macro to automatically add a
+ * use the `EXECUTE_ON_STARTUP(code)` macro to automatically add a
  * listener when the program starts:
  *
  * ```
@@ -178,7 +178,7 @@ enum SimulationLifecycleEventType
  * ```
  *
  * Note that listeners will not be deleted automatically when the program
- * exits. To delete a listener on shutdown, add <tt>delete this;</tt>
+ * exits. To delete a listener on shutdown, add `delete this;`
  * into the listenerRemoved() method.
  *
  * @ingroup Misc
@@ -204,7 +204,7 @@ class SIM_API cISimulationLifecycleListener
     /**
      * Fired after this listener was removed from cEnvir, via removeLifecycleListener().
      * It is OK for the listener to delete itself in the body of this method
-     * (<tt>delete this</tt>).
+     * (`delete this`).
      */
     virtual void listenerRemoved() {}
 

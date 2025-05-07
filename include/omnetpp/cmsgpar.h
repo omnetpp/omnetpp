@@ -37,7 +37,7 @@ class  cXMLElement;
  *
  * <b>Note2:</b> This is an obsolete class, retained to support legacy code.
  * The preferred way of adding data to cMessages since the 2.3 version is
- * via subclassing, using <tt>.msg</tt> files and the <i>opp_msgc</i> tool.
+ * via subclassing, using `.msg` files and the <i>opp_msgc</i> tool.
  *
  * cMsgPar supports several data types. Data types are identified by type
  * characters. The current data type is returned by getType().
@@ -384,7 +384,7 @@ class SIM_API cMsgPar : public cOwnedObject
     //@{
     /**
      * Replaces the object value with its evaluation (a double).
-     * Equivalent to <tt>setValue('D', this->doubleValue())</tt>.
+     * Equivalent to `setValue('D', this->doubleValue())`.
      */
     void convertToConst();
 

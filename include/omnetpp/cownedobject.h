@@ -161,11 +161,11 @@ class SIM_API cOwnedObject : public cNamedObject
 
     /**
      * The assignment operator. Derived classes should contain similar
-     * methods (<tt>cClassName& cClassName::operator=(cClassName&)</tt>).
+     * methods (`cClassName& cClassName::operator=(cClassName&)`).
      *
      * Assignment copies the contents of the object EXCEPT for the name string.
      * If you want to copy the name string, you can do it by hand:
-     * <tt>setName(o.getName()</tt>).
+     * `setName(o.getName()`).
      *
      * Ownership of the object is not affected by assignments.
      */
@@ -210,7 +210,7 @@ class SIM_API cOwnedObject : public cNamedObject
     /**
      * Returns the total number of objects created since the start of the program
      * (or since the last reset). The counter is incremented by cOwnedObject constructor.
-     * Counter is <tt>signed</tt> to make it easier to detect if it overflows
+     * Counter is `signed` to make it easier to detect if it overflows
      * during very long simulation runs.
      * May be useful for profiling or debugging memory leaks.
      */

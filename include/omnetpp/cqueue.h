@@ -87,7 +87,7 @@ class SIM_API cQueue : public cOwnedObject
         /**
          * Constructor. Iterator will walk on the queue passed as argument.
          * The iterator can be initialized for forward (front-to-back, using
-         * <tt>++</tt>) or reverse (back-to-front, using <tt>--</tt>) iteration.
+         * `++`) or reverse (back-to-front, using `--`) iteration.
          */
         Iterator(const cQueue& q, bool reverse=false) { init(q, reverse);}
 

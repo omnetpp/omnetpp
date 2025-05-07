@@ -248,7 +248,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * hence a special case). The initialization process is performed
      * on a module like this. First, the number of necessary initialization
      * stages is determined by calling numInitStages(), then initialize(stage)
-     * is called with <tt>0,1,...numstages-1</tt> as argument. The default
+     * is called with `0,1,...numstages-1` as argument. The default
      * implementation of numInitStages() and initialize(stage) provided here
      * defaults to single-stage initialization, that is, numInitStages()
      * returns 1 and initialize(stage) simply calls initialize() if stage is 0.
@@ -357,7 +357,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * Constructor. Note that module and channel objects should not be created
      * directly, via their cComponentType objects. cComponentType::create()
      * will do all housekeeping associated with creating the module (assigning
-     * an ID to the module, inserting it into the <tt>simulation</tt> object,
+     * an ID to the module, inserting it into the `simulation` object,
      * etc.).
      */
     cComponent(const char *name = nullptr);
@@ -437,7 +437,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
      * simple name prefixed with the package name and any existing enclosing
      * NED type names).
      *
-     * This method is a shortcut to <tt>getComponentType()->getFullName()</tt>.
+     * This method is a shortcut to `getComponentType()->getFullName()`.
      */
     virtual const char *getNedTypeName() const;
 
@@ -537,7 +537,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
 
     /**
      * Interface for calling initialize() from outside. It does a single stage
-     * of initialization, and returns <tt>true</tt> if more stages are required.
+     * of initialization, and returns `true` if more stages are required.
      */
     virtual bool callInitialize(int stage) = 0;
 
@@ -1081,7 +1081,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
 
     /**
      * Convenience method; it is equivalent to
-     * <tt>subscribe(registerSignal(signalName), listener)</tt>.
+     * `subscribe(registerSignal(signalName), listener)`.
      */
     virtual void subscribe(const char *signalName, cIListener *listener);
 
@@ -1093,7 +1093,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
 
     /**
      * Convenience method; it is equivalent to
-     * <tt>unsubscribe(registerSignal(signalName), listener)</tt>.
+     * `unsubscribe(registerSignal(signalName), listener)`.
      */
     virtual void unsubscribe(const char *signalName, cIListener *listener);
 
@@ -1106,7 +1106,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
 
     /**
      * Convenience method; it is equivalent to
-     * <tt>isSubscribed(registerSignal(signalName), listener)</tt>.
+     * `isSubscribed(registerSignal(signalName), listener)`.
      */
     virtual bool isSubscribed(const char *signalName, cIListener *listener) const;
 
@@ -1141,7 +1141,7 @@ class SIM_API cComponent : public cSoftOwner //implies noncopyable
     virtual cDisplayString& getDisplayString() const;
 
     /**
-     * Shortcut to <tt>getDisplayString().set(dispstr)</tt>.
+     * Shortcut to `getDisplayString().set(dispstr)`.
      */
     virtual void setDisplayString(const char *dispstr);
 

@@ -27,14 +27,14 @@ class cConfiguration;
 /**
  * @brief Abstract interface for random number generator classes.
  *
- * Some known implementations are <tt>cMersenneTwister</tt>,
- * <tt>cLCG32</tt> and <tt>cAkaroaRNG</tt>. The actual RNG class
+ * Some known implementations are `cMersenneTwister`,
+ * `cLCG32` and `cAkaroaRNG`. The actual RNG class
  * to be used in simulations can be configured (a feature of the
  * Envir library).
  *
  * To switch to your own RNG, subclass cRNG, register your new class
  * with the Register_Class() macro, then select it
- * by adding the following to <tt>omnetpp.ini</tt>:
+ * by adding the following to `omnetpp.ini`:
  *
  * ```
  * [General]

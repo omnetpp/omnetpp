@@ -115,14 +115,14 @@ class SIM_API cPatternMatcher
      * conditions hold, it returns the rest of the pattern. The returned
      * pointer is valid until the next call to this method.
      *
-     * This method is used by cIniFile's <tt>getEntriesWithPrefix()</tt>, used
+     * This method is used by cIniFile's `getEntriesWithPrefix()`, used
      * e.g. to find RNG mapping entries for a module. For that, we have to find
-     * all ini file entries (keys) like <tt>"net.host1.gen.rng-NN"</tt>
+     * all ini file entries (keys) like `"net.host1.gen.rng-NN"`
      * where NN=0,1,2,... In cIniFile, every entry  is a pattern
-     * (<tt>"**.host*.gen.rng-1"</tt>, <tt>"**.*.gen.rng-0"</tt>, etc.).
-     * So we'd invoke <tt>patternPrefixMatches("net.host1.gen.rng-", 13)</tt>
+     * (`"**.host*.gen.rng-1"`, `"**.*.gen.rng-0"`, etc.).
+     * So we'd invoke `patternPrefixMatches("net.host1.gen.rng-", 13)`
      * (i.e. suffix=".rng-") to find those entries (patterns) which can expand to
-     * <tt>"net.host1.gen.rng-0"</tt>, <tt>"net.host1.gen.rng-1"</tt>, etc.
+     * `"net.host1.gen.rng-0"`, `"net.host1.gen.rng-1"`, etc.
      *
      * See matches().
      */

@@ -156,11 +156,11 @@ class SIM_API cIListener
 
     /**
      * Called when this object was removed from the given component's listener
-     * list for the given signal. (It won't be called from unsubscribe() if this
+     * list for the given signal. (It won't be called from `unsubscribe()` if this
      * listener was already unsubscribed.)
      *
-     * It is OK for the listener to delete itself in this method (<tt>delete
-     * this</tt>). However, in that case, since this method is called more than once
+     * It is OK for the listener to delete itself in this method (`delete this`).
+     * However, in that case, since this method is called more than once
      * if the listener is subscribed multiple times, one must be
      * careful to prevent double deletion.
      *

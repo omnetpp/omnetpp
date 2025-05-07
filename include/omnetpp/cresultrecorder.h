@@ -32,9 +32,9 @@ class cProperty;
  *
  * The class must be a subclass of cResultRecorder.
  *
- * Registered result recorders can be used in the <tt>record=</tt> attributes
- * of <tt>@statistic</tt> properties in NED files, and with the
- * <tt>**.result-recording-modes=</tt> configuration option.
+ * Registered result recorders can be used in the `record=` attributes
+ * of `@statistic` properties in NED files, and with the
+ * `**.result-recording-modes=` configuration option.
  *
  * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros
@@ -48,9 +48,9 @@ class cProperty;
  *
  * The class must be a subclass of cResultRecorder.
  *
- * Registered result recorders can be used in the <tt>record=</tt> attributes
- * of <tt>@statistic</tt> properties in NED files, and with the
- * <tt>**.result-recording-modes=</tt> configuration option.
+ * Registered result recorders can be used in the `record=` attributes
+ * of `@statistic` properties in NED files, and with the
+ * `**.result-recording-modes=` configuration option.
  *
  * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros

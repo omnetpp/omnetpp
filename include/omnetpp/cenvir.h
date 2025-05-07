@@ -68,7 +68,7 @@ using std::endl;
  * The default implementation of cEnvir can be extended by subclassing
  * the classes declared in the envirext.h header (e.g. cConfiguration,
  * cRNG, cIOutputVectorManager, cIOutputScalarManager), and selecting the
- * new classes in <tt>omnetpp.ini</tt>.
+ * new classes in `omnetpp.ini`.
  *
  * @ingroup EnvirAndExtensions
  */

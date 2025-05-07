@@ -47,7 +47,7 @@ struct ChannelResult;
  *
  * To change the way output vectors are written, subclass cIOutputVectorManager,
  * register your new class with the Register_Class() macro, then select it
- * by adding the following to <tt>omnetpp.ini</tt>:
+ * by adding the following to `omnetpp.ini`:
  *
  * ```
  * [General]
@@ -146,7 +146,7 @@ class SIM_API cIOutputVectorManager : public cObject, public cISimulationLifecyc
  *
  * To change the way scalar results are recorded, subclass cIOutputScalarManager,
  * register your new class with the Register_Class() macro, then select it
- * by adding the following to <tt>omnetpp.ini</tt>:
+ * by adding the following to `omnetpp.ini`:
  *
  * ```
  * [General]
@@ -246,7 +246,7 @@ class SIM_API cIOutputScalarManager : public cObject, public cISimulationLifecyc
  *
  * To create your own snaphot manager class, subclass cISnapshotManager,
  * register your new class with the Register_Class() macro, then select it
- * by adding the following to <tt>omnetpp.ini</tt>:
+ * by adding the following to `omnetpp.ini`:
  *
  * ```
  * [General]
@@ -325,7 +325,7 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifecycleLi
  *
  * To change the way event logs are written, subclass cIEventlogManager,
  * register your new class with the Register_Class() macro, then select it
- * by adding the following to <tt>omnetpp.ini</tt>:
+ * by adding the following to `omnetpp.ini`:
  *
  * ```
  * [General]

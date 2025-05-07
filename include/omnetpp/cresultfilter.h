@@ -31,9 +31,9 @@ class cProperty;
  * @brief Registers a result filter.
  *
  * The class must be a subclass of cResultFilter. Registered result filters
- * can be used in the <tt>source=</tt> and <tt>record=</tt> attributes of
- * <tt>@statistic</tt> properties in NED files, and with the
- * <tt>**.result-recording-modes=</tt> configuration option.
+ * can be used in the `source=` and `record=` attributes of
+ * `@statistic` properties in NED files, and with the
+ * `**.result-recording-modes=` configuration option.
  *
  * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros
@@ -47,9 +47,9 @@ class cProperty;
  * @brief Registers a result filter with a description string
  *
  * The class must be a subclass of cResultFilter. Registered result filters
- * can be used in the <tt>source=</tt> and <tt>record=</tt> attributes of
- * <tt>@statistic</tt> properties in NED files, and with the
- * <tt>**.result-recording-modes=</tt> configuration option.
+ * can be used in the `source=` and `record=` attributes of
+ * `@statistic` properties in NED files, and with the
+ * `**.result-recording-modes=` configuration option.
  *
  * @see @ref ResultFiltersRecorders
  * @ingroup RegMacros

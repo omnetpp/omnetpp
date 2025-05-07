@@ -35,7 +35,7 @@ class cSimulation;
  * distributed (federated) simulation, parallel distributed simulation),
  * subclass cScheduler, register your new class with
  * the Register_Class() macro, then add the following to
- * <tt>omnetpp.ini</tt>:
+ * `omnetpp.ini`:
  *
  * ```
  * [General]

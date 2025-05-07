@@ -54,7 +54,7 @@ class SIM_API WarmupPeriodFilter : public cResultFilter
 /**
  * @brief Result filter that demultiplexes its input to several outputs. The
  * selector (a.ka. demux label) is the name string of the details object emitted
- * with the value, <tt>details->getFullName()</tt>. Results recorded on the various
+ * with the value, `details->getFullName()`. Results recorded on the various
  * outputs are tagged with the demux label (i.e. the demux label appears as part
  * of their names).
  *

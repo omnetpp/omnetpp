@@ -111,7 +111,7 @@ class SIM_API cObjectFactory : public cNoncopyableOwnedObject
      *
      * Example:
      *
-     * <tt>cMessage *msg = cObjectFactory::createOne("INET::EthernetFrame");</tt>
+     * `cMessage *msg = cObjectFactory::createOne("INET::EthernetFrame");`
      *
      * createOne() is used e.g. in parallel simulation, when an object is received
      * from another partition in serialized form and has to be demarshalled.

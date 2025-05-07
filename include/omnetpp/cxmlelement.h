@@ -360,19 +360,19 @@ class SIM_API cXMLElement : public cOwnedObject
      * expect them to: current element, parent element, element with any tag name.
      *
      * Examples:
-     *  - <tt>.</tt> -- this element
-     *  - <tt>./foo</tt> -- first "foo" child of this element
-     *  - <tt>foo</tt> -- same as <tt>./foo</tt> (initial <tt>./</tt> can be omitted)
-     *  - <tt>./foo</tt> -- first "foo" child of this element
-     *  - <tt>./foo/bar</tt> -- first "bar" child of first "foo" child of this element
-     *  - <tt>.//bar</tt> -- first "bar" anywhere under this element (depth-first search!)
-     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this element (remove the spaces!)
-     *  - <tt>./foo[0]</tt> -- first "foo" child of this element
-     *  - <tt>./foo[1]</tt> -- second "foo" child of this element
-     *  - <tt>./foo[@color='green']</tt> -- first "foo" child which has attribute "color" with value "green"
-     *  - <tt>.//bar[1]</tt> -- a "bar" anywhere under this element which is the second "bar" among its siblings
-     *  - <tt>.// * [@color='yellow']</tt> -- an element anywhere under this element with attribute color="yellow" (remove the spaces!)
-     *  - <tt>.// * [@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" element (remove the spaces!)
+     *  - `.` -- this element
+     *  - `./foo` -- first "foo" child of this element
+     *  - `foo` -- same as `./foo` (initial `./` can be omitted)
+     *  - `./foo` -- first "foo" child of this element
+     *  - `./foo/bar` -- first "bar" child of first "foo" child of this element
+     *  - `.//bar` -- first "bar" anywhere under this element (depth-first search!)
+     *  - `./ * /bar` -- first "bar" child two levels below this element (remove the spaces!)
+     *  - `./foo[0]` -- first "foo" child of this element
+     *  - `./foo[1]` -- second "foo" child of this element
+     *  - `./foo[@color='green']` -- first "foo" child which has attribute "color" with value "green"
+     *  - `.//bar[1]` -- a "bar" anywhere under this element which is the second "bar" among its siblings
+     *  - `.// * [@color='yellow']` -- an element anywhere under this element with attribute color="yellow" (remove the spaces!)
+     *  - `.// * [@color='yellow']/foo/bar` -- first "bar" child of first "foo" child of a "yellow-colored" element (remove the spaces!)
      *
      * The method throws an exception if the path expression is invalid,
      * and returns nullptr if the element is not found.

@@ -125,7 +125,7 @@ class SIM_API cProperties : public cObject
     /**
      * Returns the given property, or nullptr if it does not exist.
      * Name and index correspond to the the NED syntax
-     * <tt>@propertyname[index](keys-and-values)</tt>, where "[index]"
+     * `@propertyname[index](keys-and-values)`, where "[index]"
      * is optional.
      */
     virtual cProperty *get(const char *name, const char *index=nullptr) const;
@@ -138,19 +138,19 @@ class SIM_API cProperties : public cObject
      * returns true.
      *
      * Examples:
-     * <tt>@foo</tt>: true,
-     * <tt>@foo()</tt>: true,
-     * <tt>@foo(false)</tt>: false,
-     * <tt>@foo(true)</tt>: true,
-     * <tt>@foo(any)</tt>: true,
-     * <tt>@foo(a=x,b=y,c=z)</tt>: true;
-     * <tt>@foo(somekey=false)</tt>: true (!)
+     * `@foo`: true,
+     * `@foo()`: true,
+     * `@foo(false)`: false,
+     * `@foo(true)`: true,
+     * `@foo(any)`: true,
+     * `@foo(a=x,b=y,c=z)`: true;
+     * `@foo(somekey=false)`: true (!)
      */
     virtual bool getAsBool(const char *name, const char *index=nullptr) const;
 
     /**
      * Returns unique indices for a property. Name and index correspond to the
-     * NED syntax <tt>@propertyname[index](keys-and-values)</tt>.
+     * NED syntax `@propertyname[index](keys-and-values)`.
      * The strings in the returned array do not need to be deallocated and
      * must not be modified.
      */

@@ -61,7 +61,7 @@ inline int opp_strlen(const char *s)
 }
 
 /**
- * @brief Duplicates the string, using <tt>new char[]</tt>. For nullptr and empty
+ * @brief Duplicates the string, using `new char[]`. For nullptr and empty
  * strings it returns nullptr.
  */
 inline char *opp_strdup(const char *s)
@@ -100,8 +100,8 @@ SIM_API std::string opp_trim(const std::string& text);
 
 /**
  * @brief Copies src string into dest, and if its length would exceed maxlen,
- * it is truncated with an ellipsis. For example, <tt>opp_strprettytrunc(buf,
- * "long-long",6)</tt> yields <tt>"lon..."</tt>.
+ * it is truncated with an ellipsis. For example, `opp_strprettytrunc(buf,"long-long",6)`
+ * yields `"lon..."`.
  */
 SIM_API char *opp_strprettytrunc(char *dest, const char *src, unsigned maxlen);
 

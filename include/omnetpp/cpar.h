@@ -426,7 +426,7 @@ class SIM_API cPar : public cObject
      * If the parameter contains an expression, this method returns the
      * module or channel in the context of which the expression will be
      * evaluated. (The context affects the resolution of parameter
-     * references, and NED operators like <tt>index</tt> or <tt>sizeof()</tt>.)
+     * references, and NED operators like `index` or `sizeof()`.)
      * If the parameter does not contain an expression, the return value is
      * undefined.
      *

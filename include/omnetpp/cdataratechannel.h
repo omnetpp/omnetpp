@@ -160,7 +160,7 @@ class SIM_API cDatarateChannel : public cChannel //implies noncopyable
 
     /**
      * Utility function for dynamic channel creation. Equivalent to
-     * <tt>cChannelType::getDatarateChannelType()->create(name)</tt>.
+     * `cChannelType::getDatarateChannelType()->create(name)`.
      */
     static cDatarateChannel *create(const char *name);
     //@}

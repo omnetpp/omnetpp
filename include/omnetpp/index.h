@@ -202,7 +202,7 @@ namespace omnetpp {
  * @brief Classes for declarative result collection.
  *
  * Result filters and recorders are objects that participate in declarative
- * statistics recording via <tt>@statistic</tt> properties in NED files.
+ * statistics recording via `@statistic` properties in NED files.
  *
  * Central classes:
  *    - cResultFilter is the base class for result filters
@@ -211,7 +211,7 @@ namespace omnetpp {
  * New result filter/recorder classes need to be registered with the
  * Register_ResultFilter() / Register_ResultFilter2() and
  * Register_ResultRecorder() / Register_ResultRecorder2() macros
- * to be accessible from <tt>@statistic</tt>.
+ * to be accessible from `@statistic`.
  */
 
 /**
@@ -383,7 +383,7 @@ namespace omnetpp {
  *
  * @brief Classes in this group belong to the parallel simulation feature.
  * For more information, please see the separate Parallel Simulation API
- * which is generated from the source files in the <tt>src/sim/parsim</tt>
+ * which is generated from the source files in the `src/sim/parsim`
  * directory.
  */
 

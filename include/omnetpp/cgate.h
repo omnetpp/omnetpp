@@ -301,7 +301,7 @@ class SIM_API cGate : public cObject, noncopyable
     /**
      * Returns the gate ID, which uniquely identifies the gate within the
      * module. IDs are guaranteed to be contiguous within a gate vector:
-     * <tt>module->gate(id+index) == module->gate(id)+index</tt>.
+     * `module->gate(id+index) == module->gate(id)+index`.
      *
      * Gate IDs are stable: they are guaranteed not to change during
      * simulation. (This is a new feature of \opp 4.0. In earlier releases,
@@ -533,7 +533,7 @@ class SIM_API cGate : public cObject, noncopyable
     cDisplayString& getDisplayString();
 
     /**
-     * Shortcut to <tt>getDisplayString().set(dispstr)</tt>.
+     * Shortcut to `getDisplayString().set(dispstr)`.
      */
     void setDisplayString(const char *dispstr);
     //@}

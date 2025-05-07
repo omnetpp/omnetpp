@@ -417,7 +417,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. cModuleType::create() will do
      * all housekeeping tasks associated with module creation (assigning
-     * an ID to the module, inserting it into the global <tt>simulation</tt>
+     * an ID to the module, inserting it into the global `simulation`
      * object (see cSimulation), etc.).
      */
     cModule();
@@ -455,7 +455,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     virtual const char *getFullName() const override;
 
     /**
-     * Returns the full path name of the module. Example: <tt>"net.node[12].gen"</tt>.
+     * Returns the full path name of the module. Example: `"net.node[12].gen"`.
      * The original getFullPath() was redefined in order to hide the global cSimulation
      * instance from the path name.
      */
@@ -570,11 +570,11 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Returns true if the C++ class of this module is a subclass of cSimpleModule,
-     * and false otherwise, i.e. it is equivalent to a <tt>dynamic_cast</tt>.
+     * and false otherwise, i.e. it is equivalent to a `dynamic_cast`.
      *
      * In contrast, to check whether this module is a NED compound or simple module
      * (i.e. whether it was declared with the "module" or with the "simple" keyword in NED),
-     * use <tt>cModuleType::isSimple()</tt>: <tt>getModuleType()->isSimple()</tt>.
+     * use `cModuleType::isSimple()`: `getModuleType()->isSimple()`.
      */
     virtual bool isSimple() const;
 
@@ -874,8 +874,8 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * For compound modules, it checks if all gates are connected inside
-     * the module (it returns <tt>true</tt> if they are OK); for simple
-     * modules, it returns <tt>true</tt>. This function is called during
+     * the module (it returns `true` if they are OK); for simple
+     * modules, it returns `true`. This function is called during
      * network setup.
      */
     virtual bool checkInternalConnections() const;
@@ -939,7 +939,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     /**
      * Interface for calling initialize() from outside. It does a single stage
-     * of initialization, and returns <tt>true</tt> if more stages are required.
+     * of initialization, and returns `true` if more stages are required.
      */
     virtual bool callInitialize(int stage) override;
 

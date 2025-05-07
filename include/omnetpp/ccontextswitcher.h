@@ -40,9 +40,9 @@ enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_SCHEDULER,
 /**
  * @brief Denotes module class member function as callable from other modules.
  *
- * Usage: <tt>Enter_Method(fmt, arg1, arg2...);</tt>
+ * Usage: `Enter_Method(fmt, arg1, arg2...);`
  *
- * Example: <tt>Enter_Method("requestPacket(%d)",n);</tt>
+ * Example: `Enter_Method("requestPacket(%d)",n);`
  *
  * The macro should be put at the top of every module member function
  * that may be called from other modules. This macro arranges to
@@ -52,7 +52,7 @@ enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_SCHEDULER,
  *
  * The argument(s) should specify the method name (and parameters) --
  * it will be used for the animation. The argument list works as in
- * <tt>printf()</tt>, so it is easy to include the actual parameter values.
+ * `printf()`, so it is easy to include the actual parameter values.
  *
  * @see Enter_Method_Silent() macro
  * @ingroup Misc
@@ -71,9 +71,9 @@ enum ContextType {CTX_NONE, CTX_BUILD, CTX_INITIALIZE, CTX_EVENT, CTX_SCHEDULER,
  * into it; the resulting string should contain the method name and the actual
  * arguments.
  *
- * Usage: <tt>Enter_Method_Silent();</tt>, <tt>Enter_Method_Silent(fmt, arg1, arg2...);</tt>
+ * Usage: `Enter_Method_Silent();`, `Enter_Method_Silent(fmt, arg1, arg2...);`
  *
- * Example: <tt>Enter_Method_Silent("getRouteFor(address=%d)",address);</tt>
+ * Example: `Enter_Method_Silent("getRouteFor(address=%d)",address);`
  *
  * @see Enter_Method() macro
  * @ingroup Misc

@@ -80,7 +80,7 @@ namespace omnetpp {
  * ```
  *
  * SIGNATURE is a string with the following syntax:
- * <tt>returntype functionname(argtype1 argname1, ...)</tt>, where a type
+ * `returntype functionname(argtype1 argname1, ...)`, where a type
  * can be one of 'bool', 'int', 'double', 'quantity' ('double' with measurement
  * unit), 'string', 'xml' and 'any'. Optional arguments are denoted by
  * appending a '?' to their names. To let the function accept any number of

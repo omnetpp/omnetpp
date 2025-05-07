@@ -70,7 +70,7 @@ class SIM_API cDelayChannel : public cChannel //implies noncopyable
 
     /**
      * Utility function for dynamic channel creation. Equivalent to
-     * <tt>cChannelType::getDelayChannelType()->create(name)</tt>.
+     * `cChannelType::getDelayChannelType()->create(name)`.
      */
     static cDelayChannel *create(const char *name);
     //@}

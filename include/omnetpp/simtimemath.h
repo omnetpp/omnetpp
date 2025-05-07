@@ -110,7 +110,7 @@ inline int64_t div(const SimTime& x, const SimTime& y)
  * If both operands are nonnegative then the remainder is nonnegative;
  * if not, the sign of the remainder is implementation-defined. However,
  * the following is always true (substitute div() for / and fmod() for %):
- * <tt>(x/y) * y + x%y == x</tt>
+ * `(x/y) * y + x%y == x`
  *
  * The handling of division by zero (i.e. when y==0) is platform dependent;
  * on most platforms it causes a runtime error of some sort.

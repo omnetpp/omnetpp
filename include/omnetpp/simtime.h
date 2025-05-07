@@ -56,7 +56,7 @@ enum SimTimeUnit
  * conversion from double uses the scale stored as double, and conversion from
  * integer types uses the scale stored as int64_t; the former eliminates an
  * int64_t-to-double conversion, and the latter allows the compiler
- * to optimize expressions like <tt>if (time>0)</tt> to a trivial integer
+ * to optimize expressions like `if (time>0)` to a trivial integer
  * operation, without floating-point or int64_t multiplication.
  *
  * The underlying raw 64-bit integer is also made accessible.
@@ -162,8 +162,8 @@ class SIM_API SimTime
     /**
      * Initialize simulation time from a double-precision number. The value is
      * understood in seconds. This constructor is recommended if the value is
-     * the result of some computation done in <tt>double</tt>. See also the
-     * <tt>SimTime(double x, int exponent)</tt> constructor.
+     * the result of some computation done in `double`. See also the
+     * `SimTime(double x, int exponent)` constructor.
      */
     SimTime(double d) {operator=(d);}
 
@@ -191,7 +191,7 @@ class SIM_API SimTime
     /**
      * Initialize simulation time from a value specified in the given unit.
      * This constructor allows one to specify non-integer constants more
-     * conveniently and possibly more precisely than the plain <tt>double</tt>
+     * conveniently and possibly more precisely than the plain `double`
      * constructor. By default, i.e. when invoked with allowRounding=false, an
      * effort is made to ensure that the simulation time precisely represents
      * the given value. (If it cannot, an exception will be thrown.) With
@@ -379,7 +379,7 @@ class SIM_API SimTime
     /**
      * Convenience method: splits the simulation time into a whole and a
      * fractional part with regard to a time unit.
-     * <tt>t.split(exponent, outValue, outRemainder)</tt> is equivalent to:
+     * `t.split(exponent, outValue, outRemainder)` is equivalent to:
      *
      * ```
      * outValue = t.inUnit(unit);

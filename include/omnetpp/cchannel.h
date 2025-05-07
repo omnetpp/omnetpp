@@ -159,7 +159,7 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
     /**
      * Interface for calling initialize() from outside. It does a single stage
-     * of initialization, and returns <tt>true</tt> if more stages are required.
+     * of initialization, and returns `true` if more stages are required.
      */
     virtual bool callInitialize(int stage) override;
 
@@ -222,9 +222,9 @@ class SIM_API cChannel : public cComponent //implies noncopyable
      * Transmission duration and bit error modeling only applies to packets
      * (i.e. to instances of cPacket, where cMessage's isPacket() returns true),
      * it should be skipped for non-packet messages. The method does not need
-     * to call the <tt>setDuration(duration)</tt> method on the packet; this is
+     * to call the `setDuration(duration)` method on the packet; this is
      * done by the simulation kernel. However, the method should call
-     * <tt>setBitError(true)</tt> on the packet if error modeling results
+     * `setBitError(true)` on the packet if error modeling results
      * in bit errors.
      *
      * If the method sets the discard flag in the result object, it means
@@ -340,7 +340,7 @@ class SIM_API cIdealChannel : public cChannel //implies noncopyable
 
     /**
      * Utility function for dynamic channel creation. Equivalent to
-     * <tt>cChannelType::getIdealChannelType()->create(name)</tt>.
+     * `cChannelType::getIdealChannelType()->create(name)`.
      */
     static cIdealChannel *create(const char *name);
     //@}

@@ -424,7 +424,7 @@ class SIM_API cTopology : public cOwnedObject
      *
      * An example:
      *
-     * <tt>topo.extractByModulePath(cStringTokenizer("**.host[*] **.router*").asVector());</tt>
+     * `topo.extractByModulePath(cStringTokenizer("**.host[*] **.router*").asVector());`
      */
     virtual void extractByModulePath(const std::vector<std::string>& fullPathPatterns);
 
@@ -436,7 +436,7 @@ class SIM_API cTopology : public cOwnedObject
      * Note: If you have all class names as a single, space-separated string,
      * you can use cStringTokenizer to turn it into a string vector:
      *
-     * <tt>topo.extractByNedTypeName(cStringTokenizer("some.package.Host other.package.Router").asVector());</tt>
+     * `topo.extractByNedTypeName(cStringTokenizer("some.package.Host other.package.Router").asVector());`
      */
     virtual void extractByNedTypeName(const std::vector<std::string>& nedTypeNames);
 
@@ -447,8 +447,8 @@ class SIM_API cTopology : public cOwnedObject
      * value). If value is nullptr, the property's value may be anything except
      * "false" (i.e. the first value of the default key may not be "false").
      *
-     * For example, <tt>topo.extractByProperty("node");</tt> would extract
-     * all modules that contain the <tt>@node</tt> property, like the following
+     * For example, `topo.extractByProperty("node");` would extract
+     * all modules that contain the `@node` property, like the following
      * one:
      *
      * ```

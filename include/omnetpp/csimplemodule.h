@@ -510,10 +510,10 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * be cancelled via cancelEvent() (See below.)
      *
      * When the message is delivered at the module, you can call
-     * <tt>msg->isSelfMessage()</tt> to tell it apart from messages arriving
-     * from other modules. <tt>msg->getKind()</tt> can be used to further
+     * `msg->isSelfMessage()` to tell it apart from messages arriving
+     * from other modules. `msg->getKind()` can be used to further
      * classify it, or of you need to manage an unbounded number of timers,
-     * you can set <tt>msg->getContextPointer()</tt> before scheduling to
+     * you can set `msg->getContextPointer()` before scheduling to
      * point to the data structure the message belongs to -- this way
      * you can avoid having to search through lists or other data structures
      * to find out where a just-arrived self-message belongs.
@@ -523,7 +523,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
      * (before timeout), the scheduled self-message can be cancelled.
      *
      * Given a cMessage pointer, you can check whether it is currently
-     * scheduled by calling <tt>msg->isScheduled()</tt>. If it is scheduled,
+     * scheduled by calling `msg->isScheduled()`. If it is scheduled,
      * you cannot schedule it again without calling cancelEvent() first.
      * However, after the message was delivered to the module or cancelled,
      * you can schedule it again -- so you can reuse the same message
@@ -643,7 +643,7 @@ class SIM_API cSimpleModule : public cModule //implies noncopyable
     virtual void halt();
 
     /**
-     * Equivalent to <tt>throw cRuntimeError(<i>same argument list</i>)</tt>.
+     * Equivalent to `throw cRuntimeError(<i>same argument list</i>)`.
      */
     _OPP_GNU_ATTRIBUTE(format(printf, 2, 3))
     virtual void error(const char *format,...) const;

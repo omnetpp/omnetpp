@@ -2154,7 +2154,7 @@ class SIM_API cPathFigure : public cAbstractShapeFigure
         /**
          * Returns the kth path item. The returned item may be cast to the
          * appropriate subtype (MoveTo, MoveRel, etc.) after examining
-         * its <tt>code</tt> field.
+         * its `code` field.
          */
         virtual const PathItem *getPathItem(int k) const {return path[k];}
 
@@ -3259,8 +3259,8 @@ class SIM_API cCanvas : public cOwnedObject
          * request. A hold request cannot be cancelled or shrunk.
          *
          * When rendering (i.e. inside refreshDisplay()), use
-         * <tt>getEnvir()->getRemainingAnimationHoldTime()</tt> or
-         * <tt>getEnvir()->getAnimationTime()</tt> to query the
+         * `getEnvir()->getRemainingAnimationHoldTime()` or
+         * `getEnvir()->getAnimationTime()` to query the
          * progress of the animation.
          *
          * @see cEnvir::getRemainingAnimationHoldTime(), cEnvir::getAnimationTime()
