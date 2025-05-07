@@ -158,10 +158,10 @@ void DtdValidationUtils::checkNameAttribute(ASTNode *node, const char *attr)
     assert(s);
     if (!*s)
         return;
-    if (!opp_isalphaext(*s) && *s != '_')
+    if (!opp_isalphaext(*s))
         errors->addError(node, "DTD validation error: attribute %s='%s' starts with invalid character (valid NED identifier expected)", attr, node->getAttribute(attr));
     while (*++s)
-        if (!opp_isalnumext(*s) && *s != '_') {
+        if (!opp_isalnumext(*s)) {
             errors->addError(node, "DTD validation error: attribute %s='%s' contains invalid character (valid NED identifier expected)", attr, node->getAttribute(attr));
             return;
         }

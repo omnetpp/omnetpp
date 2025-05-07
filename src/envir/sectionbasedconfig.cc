@@ -590,10 +590,10 @@ void SectionBasedConfiguration::parseVariable(const char *txt, std::string& outV
     const char *s = txt+2;
     while (opp_isspace(*s))
         s++;
-    if (opp_isalphaext(*s) || *s == '_') {
+    if (opp_isalphaext(*s)) {
         // must be a variable or a variable reference
         varNameBegin = varNameEnd = s;
-        while (opp_isalnumext(*varNameEnd) || *varNameEnd == '_')
+        while (opp_isalnumext(*varNameEnd))
             varNameEnd++;
         s = varNameEnd;
         while (opp_isspace(*s))
@@ -1094,10 +1094,10 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
         if (configName) {
             if (strchr(configName, ' ') != nullptr)
                 throw cRuntimeError("Invalid section name [%s]: It may not contain spaces", configName);
-            if (!opp_isalphaext(*configName) && *configName != '_')
+            if (!opp_isalphaext(*configName))
                 throw cRuntimeError("Invalid section name [%s]: Must begin with a letter or underscore", configName);
             for (const char *s = configName; *s; s++)
-                if (!opp_isalnumext(*s) && strchr("-_@", *s) == nullptr)
+                if (!opp_isalnumext(*s) && strchr("-@", *s) == nullptr)
                     throw cRuntimeError("Invalid section name [%s]: Contains illegal character '%c'", configName, *s);
             if (configNames.find(configName) != configNames.end())
                 throw cRuntimeError("Duplicate section [%s]", configName);

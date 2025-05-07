@@ -51,8 +51,8 @@ inline bool opp_iscntrl(unsigned char c)  {return iscntrl(c);}
 inline char opp_tolower(unsigned char c)  {return tolower(c);}
 inline char opp_toupper(unsigned char c)  {return toupper(c);}
 inline bool opp_isext(unsigned char c)    {return c>=128;}  //new
-inline bool opp_isalphaext(unsigned char c) {return opp_isalpha(c) || opp_isext(c);}  //new
-inline bool opp_isalnumext(unsigned char c) {return opp_isalnum(c) || opp_isext(c);}  //new
+inline bool opp_isalphaext(unsigned char c) {return opp_isalpha(c) || opp_isext(c) || c == '_';}  //new
+inline bool opp_isalnumext(unsigned char c) {return opp_isalnum(c) || opp_isext(c) || c == '_';}  //new
 /** @} */
 
 #endif

@@ -53,10 +53,10 @@ std::string opp_trim(const std::string& text)
 
 bool opp_isvalididentifier(const char *s)
 {
-    if (!opp_isalphaext(s[0]) && s[0] != '_')
+    if (!opp_isalphaext(s[0]))
         return false;
     while (*++s)
-        if (!opp_isalnumext(*s) && s[0] != '_')
+        if (!opp_isalnumext(*s))
             return false;
     return true;
 }

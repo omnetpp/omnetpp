@@ -62,7 +62,7 @@ void NedSyntaxValidator::checkDottedNameAttribute(ASTNode *node, const char *att
     if (!*s)
         return;
     for ( ; *s; s++)
-        if (!opp_isalnumext(*s) && *s != '_' && *s != '.' && (wildcardsAllowed ? *s != '*' : true)) {
+        if (!opp_isalnumext(*s) && *s != '.' && (wildcardsAllowed ? *s != '*' : true)) {
             errors->addError(node, "Illegal character in %s '%s'", attr, node->getAttribute(attr));
             return;
         }
@@ -75,7 +75,7 @@ void NedSyntaxValidator::checkPropertyNameAttribute(ASTNode *node, const char *a
     if (!*s)
         return;
     for ( ; *s; s++)
-        if (!opp_isalnumext(*s) && strchr("_-:.", *s) == nullptr) {  // note: same rule as for XML attribute names
+        if (!opp_isalnumext(*s) && strchr("-:.", *s) == nullptr) {  // note: same rule as for XML attribute names
             errors->addError(node, "Illegal character in %s '%s'", attr, node->getAttribute(attr));
             return;
         }
@@ -88,7 +88,7 @@ void NedSyntaxValidator::checkPropertyIndexAttribute(ASTNode *node, const char *
     if (!*s)
         return;
     for ( ; *s; s++)
-        if (!opp_isalnumext(*s) && strchr("*?{}_-:.", *s) == nullptr) {  // note: same rule as for XML attribute names, plus wildcards
+        if (!opp_isalnumext(*s) && strchr("*?{}-:.", *s) == nullptr) {  // note: same rule as for XML attribute names, plus wildcards
             errors->addError(node, "Illegal character in %s '%s'", attr, node->getAttribute(attr));
             return;
         }

@@ -284,10 +284,10 @@ const char *DisplayStringAccess::substituteParamRefs(const char *src, std::strin
             buffer += *s++;
         else {
             s++;  // skip '$'
-            if (opp_isalphaext(*s) || *s == '_') {
+            if (opp_isalphaext(*s)) {
                 // $parname
                 std::string name;
-                while (opp_isalnumext(*s) || *s == '_')
+                while (opp_isalnumext(*s))
                     name += *s++;
                 // append its value
                 cPar *par = lookupPar(name.c_str());
