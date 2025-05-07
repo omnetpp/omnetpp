@@ -1,0 +1,14 @@
+%description:
+Verify that underscore is accepted in itervar names.
+
+%file: test.ned
+network Test
+{
+    bool foo;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+Test.foo = ${foo_par=true,false}
