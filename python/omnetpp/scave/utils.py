@@ -784,13 +784,13 @@ def _plot_enum(vectime, vecvalue, endtime, labels_map, label, draw_edges):
         start_idx = np.searchsorted(vectime, x_min) - 1
         end_idx = np.searchsorted(vectime, x_max)
         start_idx = max(start_idx, 0)
-        end_idx = min(end_idx, len(vectime))
+        end_idx = min(end_idx, len(vectime)-1)
 
-        visible_widths = np.diff(vectime[start_idx:end_idx]) * compute_conversion_factor(ax)
+        visible_widths = np.diff(vectime[start_idx:end_idx+1]) * compute_conversion_factor(ax)
 
         textwidths = {}
 
-        for i in range(start_idx, end_idx-1):
+        for i in range(start_idx, end_idx):
             width = visible_widths[i - start_idx]
             if width > 10:
                 x = (vectime[i] + vectime[i+1]) / 2
