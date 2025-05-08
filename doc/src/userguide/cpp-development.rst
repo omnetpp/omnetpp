@@ -692,7 +692,7 @@ modified:
    Feature enablements are saved to the :file:`.oppfeaturestate` file in the project root.
 
 Using Features from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :guilabel:`Project Features` can be easily configured from the IDE, but command line tools (:command:`opp_makemake`, etc.) can
 also use them with the help of the :command:`opp_featuretool` command.
