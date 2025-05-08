@@ -281,20 +281,11 @@ class SIM_API cMsgPar : public cOwnedObject
      * Configures memory management for the void* pointer ('P') type.
      * Similar to cLinkedList::configPointer().
      *
-     * <TABLE BORDER=1>
-     *   <TR>
-     *     <TD>**delfunc**</TD><TD>**dupfunc.**</TD><TD>**itemsize**</TD><TD>**behavior**</TD>
-     *   </TR>
-     *   <TR>
-     *     <TD>nullptr</TD><TD>nullptr</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>
-     *   </TR>
-     *   <TR>
-     *     <TD>nullptr</TD><TD>nullptr</TD><TD>!=0</TD><TD>Plain memory management. Duplication is done with new char[size]+memcpy(), and deletion is done via delete.</TD>
-     *   </TR>
-     *   <TR>
-     *     <TD>nullptr or user's delete func.</TD><TD>user's dupfunc.</TD><TD>indifferent</TD><TD WIDTH=317>Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.</TD>
-     *   </TR>
-     * </TABLE>
+     * | **delfunc** | **dupfunc** | **itemsize** | **behavior** |
+     * | --- | --- | --- | --- |
+     * | `nullptr` | `nullptr` | 0 | Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.|
+     * | `nullptr` | `nullptr` | !=0 | Plain memory management. Duplication is done with new char\[size]+memcpy(), and deletion is done via delete.|
+     * | `nullptr` or user's delete func. | user's dupfunc. | indifferent | Sophisticated memory management. Duplication is done by calling the user-supplied duplication function, which should do the allocation and the appropriate copying. Deletion is done by calling the user-supplied delete function, or the delete operator if it is not supplied.|
      */
     void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
 
