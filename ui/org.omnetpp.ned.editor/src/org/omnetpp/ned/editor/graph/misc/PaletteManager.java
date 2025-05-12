@@ -242,24 +242,19 @@ public class PaletteManager {
     }
 
     protected Map<String, PaletteEntry> createPaletteModel() {
-        Map<String, PaletteEntry> result = new LinkedHashMap<String, PaletteEntry>();
+        Map<String, PaletteEntry> result = new LinkedHashMap<>();
 
         IEditorInput input = hostingEditor.getEditorInput();
         if (!(input instanceof IFileEditorInput))
             return result; // sorry
+
         IFile file = ((IFileEditorInput)input).getFile();
         IProject contextProject = file.getProject();
 
         // connection and type creation tools
         result.putAll(createConnectionTools());
-        Map<String, PaletteEntry> innerChannelTypes = createInnerChannelPaletteEntries(file);
-        if (innerChannelTypes.size() > 0) {
-            result.putAll(innerChannelTypes);
-        }
-        Map<String, PaletteEntry> channelsStackEntries = createChannelPaletteEntries(contextProject);
-        if (channelsStackEntries.size() > 0) {
-            result.putAll(channelsStackEntries);
-        }
+        result.putAll(createInnerChannelPaletteEntries(file));
+        result.putAll(createChannelPaletteEntries(contextProject));
 
         // type elements (simple/compound module/interfaces)
         result.putAll(createTypeCreationPaletteEntries());
