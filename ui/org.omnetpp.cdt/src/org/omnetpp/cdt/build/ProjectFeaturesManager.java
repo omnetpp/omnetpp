@@ -582,7 +582,7 @@ public class ProjectFeaturesManager {
         // update defines file -- do this quickly (i.e. first) in order to reduce interference with ongoing command-line builds
         if (definesFile != null)
             saveDefinesFile(enabledFeatures);
-
+       
         // update NED exclusions and CDT configuration, too
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
         boolean nedChange = adjustExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
@@ -607,7 +607,7 @@ public class ProjectFeaturesManager {
             if (!enabledFeatures.contains(feature))
                 tmp.addAll(feature.getNedPackages());
         String[] excludedPackages = tmp.toArray(new String[]{});
-        boolean changed = Arrays.equals(nedSourceFoldersConfig.getExcludedPackages(), excludedPackages);
+        boolean changed = !Arrays.equals(nedSourceFoldersConfig.getExcludedPackages(), excludedPackages);
         nedSourceFoldersConfig.setExcludedPackages(excludedPackages);
         return changed;
     }
