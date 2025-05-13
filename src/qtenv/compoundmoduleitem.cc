@@ -386,8 +386,13 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     cmi->setGridMinorNum(dsa.getTagArgAsLong("bgg", 1));
     cmi->setGridColor(parseColor(dsa.getTagArg("bgg", 2, buffer), colors::GREY));
 
-    // the text in the top left corner
-    cmi->setModulePath(mod->getFullPath().c_str());
+    // name label in the top left corner
+    std::string fullPath = mod->getFullPath().c_str();
+    std::string typeName = mod->getModuleType()->getName();
+    std::string text = fullPath;
+    if (fullPath != typeName)  // practically, is not the toplevel module
+        text +=  " (" + typeName + ")";
+    cmi->setModulePath(text.c_str());
 
     // background texts
     int textIndex = 0;
@@ -419,4 +424,3 @@ void CompoundModuleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
 
 }  // namespace qtenv
 }  // namespace omnetpp
-
