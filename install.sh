@@ -167,7 +167,7 @@ install_deps() {
 
         elif [[ "$(command -v pacman)" != "" ]]; then
             # pacman is used on Arch Linux
-            packages="make ccache clang pkgconf lld gdb bison gawk flex perl python python-pip libxml2 zlib doxygen graphviz xdg-utils libdwarf"
+            packages="make diffutils ccache clang lldb pkgconf lld gdb bison gawk flex perl python python-pip libxml2 zlib doxygen graphviz xdg-utils libdwarf"
 
             if ! $no_gui; then
                 packages="$packages qt5-base qt5-svg qt5-wayland webkit2gtk"
@@ -177,7 +177,7 @@ install_deps() {
                 packages="$packages openscenegraph"
             fi
 
-            echo_root_run "pacman -S --needed --noconfirm $packages ; pacman -Scc --noconfirm"
+            echo_root_run "pacman -Sy --needed --noconfirm $packages ; pacman -Scc --noconfirm"
 
         else
             echo -e "${RED}Package manager (apt, dnf, zypper, pacman) not detected.\nSee 'doc/InstallGuide.pdf' and install the required packages manually.${RESET}"
