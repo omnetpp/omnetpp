@@ -31,9 +31,9 @@ namespace qtenv {
 
 void CompoundModuleItem::updateRectangle()
 {
-    rectangle->setRect(area.adjusted(-outlineWidth / 2, -outlineWidth / 2, outlineWidth / 2, outlineWidth / 2));
-    rectangle->setBrush(backgroundColor);
-    rectangle->setPen(QPen(outlineColor, outlineWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
+    moduleRectangleItem->setRect(area.adjusted(-outlineWidth / 2, -outlineWidth / 2, outlineWidth / 2, outlineWidth / 2));
+    moduleRectangleItem->setBrush(backgroundColor);
+    moduleRectangleItem->setPen(QPen(outlineColor, outlineWidth, Qt::SolidLine, Qt::FlatCap, Qt::MiterJoin));
 }
 
 void CompoundModuleItem::updateImage()
@@ -168,8 +168,8 @@ void CompoundModuleItem::updateGrid()
 CompoundModuleItem::CompoundModuleItem(QGraphicsItem *parent) :
     QGraphicsObject(parent)
 {
-    rectangle = new QGraphicsRectItem(this);
-    rectangle->setZValue(-2);
+    moduleRectangleItem = new QGraphicsRectItem(this);
+    moduleRectangleItem->setZValue(-2);
 
     imageContainer = new QGraphicsRectItem(this);
     imageContainer->setZValue(-1);
@@ -180,10 +180,10 @@ CompoundModuleItem::CompoundModuleItem(QGraphicsItem *parent) :
 
     // grid lines will be at Z = 0
 
-    modulePath = new OutlinedTextItem(this);
+    nameLabelItem = new OutlinedTextItem(this);
     // just moving it off the left border outline
-    modulePath->setPos(area.topLeft() + QPointF(2, 2));
-    modulePath->setZValue(1);
+    nameLabelItem->setPos(area.topLeft() + QPointF(2, 2));
+    nameLabelItem->setZValue(1);
 
     // text items will be at Z = 2
 }
@@ -192,10 +192,10 @@ CompoundModuleItem::~CompoundModuleItem()
 {
     for (auto l : gridLines)
         delete l;
-    delete rectangle;
+    delete moduleRectangleItem;
     delete imageItem;
     delete imageContainer;
-    delete modulePath;
+    delete nameLabelItem;
 }
 
 void CompoundModuleItem::setZoomFactor(double zoom)
@@ -215,7 +215,7 @@ void CompoundModuleItem::setArea(QRectF area)
         updateRectangle();
         updateImage();
         updateGrid();
-        modulePath->setPos(area.topLeft() + QPointF(2, 2));
+        nameLabelItem->setPos(area.topLeft() + QPointF(2, 2));
     }
 }
 
@@ -288,14 +288,14 @@ void CompoundModuleItem::setGridColor(const QColor& color)
     }
 }
 
-void CompoundModuleItem::setModulePath(const QString& path)
+void CompoundModuleItem::setNameLabel(const QString& text)
 {
-    modulePath->setText(path);
+    nameLabelItem->setText(text);
 }
 
 void CompoundModuleItem::setNameLabelTooltip(const QString &text)
 {
-    modulePath->setToolTip(text);
+    nameLabelItem->setToolTip(text);
 }
 
 int CompoundModuleItem::addText(const CompoundModuleItem::TextData& data)
@@ -397,7 +397,7 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     std::string text = fullPath;
     if (fullPath != typeName)  // practically, is not the toplevel module
         text +=  " (" + typeName + ")";
-    cmi->setModulePath(text.c_str());
+    cmi->setNameLabel(text.c_str());
 
     // tooltip for the label in the top left corner
     std::string tooltip;

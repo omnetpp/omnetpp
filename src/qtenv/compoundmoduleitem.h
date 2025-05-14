@@ -68,7 +68,7 @@ protected:
     int gridMinorNum = 0;
     QColor gridColor = colors::GREY;
 
-    QGraphicsRectItem *rectangle; // That big grey thing in the back with black sides.
+    QGraphicsRectItem *moduleRectangleItem; // That big grey thing in the back with black sides.
     QGraphicsPixmapItem *imageItem = nullptr; // not used in tiling mode
     // This rectangle is an intermediate item, it's only visible
     // in tiling mode, otherwise it's used to clip the pixmap item
@@ -76,10 +76,9 @@ protected:
     QGraphicsRectItem *imageContainer;
     QList<QGraphicsLineItem *> gridLines;
 
-    OutlinedTextItem *modulePath;
+    OutlinedTextItem *nameLabelItem;
 
     QList<TextData> texts;
-    // XXX I guess these should follow the zoom, but in Tkenv they don't
     QList<OutlinedTextItem *> textItems;
 
     void updateRectangle();
@@ -109,7 +108,7 @@ public:
     void setGridMinorNum(int minorNum);
     void setGridColor(const QColor &color);
 
-    void setModulePath(const QString &path);
+    void setNameLabel(const QString &text);
     void setNameLabelTooltip(const QString &text);
 
     // these return the newly added item index for possible future reference
