@@ -1,3 +1,5 @@
+2024-10-08  ------ omnetpp-6.1.0 released ------
+
 2024-10-02  Rudolf Hornig
 
 	* Inifile Editor, NED editor: fix editor foreground color on Windows in dark mode

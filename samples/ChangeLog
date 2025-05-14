@@ -1,3 +1,5 @@
+2024-10-08  ------ omnetpp-6.1.0 released ------
+
 2024-08-27  Attila Torok
 
 	* aloha: fix: Don't leave deleted messages as associated objects on figures.

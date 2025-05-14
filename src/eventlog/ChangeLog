@@ -1,3 +1,5 @@
+2024-10-08  ------ omnetpp-6.1.0 released ------
+
 2022-05-16  Attila Torok
 
 	* Use C++ headers instead of C ones, e.g. <cstdlib> instead of <stdlib.h>

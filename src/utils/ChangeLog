@@ -1,3 +1,5 @@
+2024-10-08  ------ omnetpp-6.1.0 released ------
+
 2024-09-20  Attila Torok
 
 	* opp_fingerprinttest: Mark a regex literal as such. Until now, it was an
