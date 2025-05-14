@@ -1,3 +1,54 @@
+2024-04-24  Rudolf Hornig
+
+	* Recent Doxygen versions support Markdown input, so start migrating comments
+	towards Markdown syntax. Replaced <pre>, <tt> and \code with backtick notation,
+	etc.
+
+2025-05-05  Andras Varga
+
+	* Fix enum-related warnings for c++23 (using enum constants in expressions
+	is now frowned upon).
+
+2025-04-18  Andras Varga
+
+	* Added WATCH_EXPR() and WATCH_LAMBDA(), to allow watching the values of expressions.
+
+2025-04-18  Andras Varga
+
+	* cTopology: added an overload of extractFromNetwork() that takes std::function,
+	i.e. can be used with lambda functions.
+
+2025-03-21  Andras Varga
+
+	* Added str() to RNG classes (cLCG32, cMersenneTwister) to make seed/state
+	visible at runtime.
+
+2025-02-28  Attila Torok
+
+	* cComponentType: added getDocumentation().
+
+2025-02-21  Levente Meszaros
+
+	* Added getTerminationExceptionTypeInfoPointer() global function.
+
+	The debugger needs to check if the exception that is being thrown is a
+	termination exception or not, because the user mostly doesn't want to
+	break into the debugger when the simulation terminates. Unfortunately,
+	the std::type_info structure can't easily be used in the breakpoint
+	conditional expression.
+
+2025-01-14  Attila Torok
+
+	* cAbstractTextFigure:Add getTextExtent() and getFontAscent().
+
+	These are small wrappers around the same internal method as getBounds(),
+	so they can be considered covered by the same visual test in
+	test/anim/canvas (the `text` and `label` submodules).
+
+2025-01-17  Andras Varga
+
+	* cEnum: Added resolveName() and getNameForValue() convenience functions.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-09-10  Andras Varga

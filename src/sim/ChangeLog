@@ -1,3 +1,62 @@
+2025-04-18  Andras Varga
+
+	* cTopology: implemented extractFromNetwork() overload taking an std::function.
+
+2025-03-21  Andras Varga
+
+	* cLCG32, cMersenneTwister: implemented str() to make seed/state visible at runtime.
+
+2025-02-24  Levente Meszaros
+
+	* Added separate catch case for cTerminationException in order to
+	allow the debugger determining the type_info of the exception.
+	This is needed to allow lldb to skip the C++ throw exception breakpoint.
+
+2025-02-21  Levente Meszaros
+
+	* Implemented getTerminationExceptionTypeInfoPointer().
+
+2025-02-19  Andras Varga
+
+	* cArray: Fixed #1313 "cArray::addAt() throws segmentation fault when
+	using cArray::setCapacity()"
+
+2025-02-10  Andras Varga
+
+	* Fixed #1308 "Error at network deletion after simulation finished"
+
+	<!> (omnetpp::cChannel)channel: Fatal: Direct deletion of a channel
+	object is illegal, use cGate's disconnect() or reconnectWith() instead;
+	ABORTING -- during network cleanup
+
+	This was due to cGate::getDisplayString() accidentally creating a
+	dangling channel object (for a gate that's not connected as a source
+	gate).
+
+2025-01-14  Attila Torok
+
+	* cAbstractTextFigure: implemented getTextExtent() and getFontAscent().
+
+2025-01-09 Attila Torok
+
+	* cLabelFigure: Make getBounds() take angle into account.
+
+2024-12-10  Andras Varga
+
+	* Fix duplicated call to channels' preDelete() method during network
+	teardown.
+
+2024-12-10  Andras Varga
+
+	* cModule: fix preDelete() being called multiple times during deleting
+	a network or compound module.
+
+2024-12-13  Andras Varga
+
+	* cConfiguration: Fix crash caused by reading a config option before
+	having a cSimulation installed (i.e. when getSimulation()==nullptr).
+	Fixes #1271.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-09-27  Attila Torok

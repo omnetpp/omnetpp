@@ -1,3 +1,106 @@
+2025-05-07  Levente Meszaros
+
+	* omnetpp.scave: Fixed disappearing labels on enum strips in Matplotlib charts.
+
+	The label was not visible when the right side of the box was outside the
+	visible area.
+
+2025-04-11  Attila Torok
+
+	* omnetpp.scave: Make the pan tool affect only the X axis on enum strips
+
+2025-03-24  Attila Torok
+
+	* omnetpp.scave: Add delta measurement feature to Matplotlib line charts
+
+2025-03-19  Attila Torok
+
+	* requirements.txt: Accept NumPy 2.x as well as 1.x as dependency
+
+2025-03-19  Attila Torok
+
+	* omnetpp.scave: Drop usage of `np.set_string_function()`, which was
+	removed in NumPy 2.0.
+
+	Based on https://github.com/omnetpp/omnetpp/pull/1273 by @a-andre.
+
+	It seems that the recommendation of passing an (element-wise) formatter
+	callable as printoption is not needed - the default
+	`str` implementation for arrays looks just like how we want it.
+
+2025-03-07  Rudolf Hornig
+
+	* requirements.txt: Added IPython as a dependency (as the IDE now has an
+	IPython console).
+
+2025-03-07  Levente Meszaros
+
+	* Added the omnetpp.repl package which starts an interactive IPython
+	interpreter with the omnetpp packages loaded.
+
+2025-03-06  Levente Meszaros
+
+	* Added the omnetpp.test package that contains the functionality of the
+	opp_test tool. This allows using the test code both as a python library
+	and as a standalone script.
+
+2025-01-29  Levente Meszaros
+
+	* omnetpp.lldb.formatters.omnetpp: Enhanced omnetpp specific lldb formatters.
+
+	Added a space between value and unit in quantities. Changed module
+	formatting to be similar to Qtenv.
+
+2025-02-10  Attila Torok
+
+	* omnetpp.scave: Fix spurious warning about failed chart image/data export.
+
+	If the chart had the target export filename set on itself as a property,
+	it was not considered by opp_charttool when checking afterwards whether
+	the file actually got created. Instead, the chart name was always used to
+	construct the expected file name for this check.
+
+2025-02-10  Attila Torok
+
+	* omnetpp.scave: Fix missing file extension on image/data exported from
+	charts.
+
+	When the provided export filename (or the chart name, as a fallback)
+	"looked like" it already ended in a file extension (e.g. "Delay in client[3].app"),
+	the extension for the selected file format was not appended to the file name.
+	This resulted in either the data or the image file overwriting the other,
+	without an appropriate file extension.
+
+2025-01-31  Attila Torok
+
+	* omnetpp.scave: Dispatch based on is_native_chart() in utils.plot_bars
+	instead of is_native_plot().
+
+	The other two plotter functions already do this, and it makes a
+	difference when exporting native (bar) charts using Matplotlib emulation.
+	(To be more concrete, this now makes the switching to the compressed
+	layout engine take place for native bar charts too upon export.)
+
+2025-01-29  Gyorgy Szaszko
+
+	* omnetpp.scave: Set compressed layout engine when exporting native charts.
+
+2024-12-18  Levente Meszaros
+
+	* omnetpp.scave: Replaced tight layout in Matplotlib charts with compressed layout.
+
+	The reason is that with tight layout, multiple renderings of the same chart
+	may produce slightly different outputs. This is likely due to the layout code
+	having some internal state that is preserved across runs.
+
+2025-01-10  Attila Torok
+
+	* omnetpp.scave: Change the default chart export DPI from 96 to 300.
+
+2024-09-20  Attila Torok
+
+	* omnetpp.scave: Silence warning from utils.to_numeric.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-09-27  Attila Torok

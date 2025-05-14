@@ -1,3 +1,56 @@
+2025-05-07  Andras Varga
+
+	* core: added test for #1369 "Inifile iteration variable does not accept underscore": inifile_iteration_4.test
+
+2025-04-24  Andras Varga
+
+	* core: added test for WATCH_EXPR() and WATCH_LAMBDA(): WATCH_LAMBDA_1.test
+
+2025-04-24  Andras Varga
+
+	* featuretool: update existing tests, added new ones (oppfeatures_inconsistency_*.test, etc.)
+
+2025-04-08  Andras Varga
+
+	* core: added msg_enum_decl_1.test, a test for enum decls in msg files
+
+2025-02-10  Andras Varga
+
+	* core: added test for #1308 "Error at network deletion after simulation finished": cGate_getDisplayString_n1.test
+
+2025-01-21  Andras Varga
+
+	* core: added test for cEnum::resolveName<>() and cEnum::getNameForValue(): cEnum_access_1.test
+
+2024-12-10  Andras Varga
+
+	* core: added cModule_preDelete_1.test
+
+test/core/cModule_preDelete_1.test
+
+2024-11-27  Andras Varga
+
+	* core: update test cases that broke when logging during cleanup was turned off by default
+
+2024-11-26  Andras Varga
+
+	* core: added tests for the recently-added boolean config options and command-line switches (-S):
+	cmdenv-log-initialization, cmdenv-log-simulation, cmdenv-log-finalization,
+	cmdenv-log-cleanup, cmdenv-progress-updates, record-scalar-results, record-vector-results.
+
+	Test files: cmdenv_nonverbose_1.test cmdenv_nonverbose_2.test cmdenv_nonverbose_3.test
+	cmdenv_nonverbose_4.test cmdenv_nonverbose_5.test cmdenv_silent_1.test cmdenv_silent_2.test
+	cmdenv_silent_3.test cmdenv_silent_4.test cmdenv_silent_5.test scalar_recording_1.test
+	vector_recording_1.test
+
+2024-11-26  Andras Varga
+
+	* core: inifile_vector_1.test -> vector_recording_interval_1.test
+
+2024-09-25  Attila Torok
+
+ 	* build/test-builds: Skip build test with osgEarth if it's not installed
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-05-28  Andras Varga

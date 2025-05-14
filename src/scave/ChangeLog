@@ -1,3 +1,11 @@
+2025-05-05  Andras Varga
+
+	* python: fix c++23 compile warning in embedded nanobind code
+
+2025-03-03  Attila Torok
+
+	* Fix issue #1249, linker error when compiling to Windows (MinGW).
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-07-11  Rudolf Hornig

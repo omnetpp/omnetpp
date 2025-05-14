@@ -1,3 +1,47 @@
+2025-04-15  Levente Meszaros
+
+	* Fixed eventlog recording enabling/disabling flags: Settings in the
+	`eventlog-options` configuration option did not take place.
+
+2025-05-07  Andras Varga
+
+	* Fix #1369 "Inifile iteration variable does not accept underscore"
+
+2025-03-20  Andras Varga
+
+	* fsutils.cc: Added getLoadedExtensionLibraries(), which returns the list of
+	shared libraries loaded by the simulation program.
+
+2025-03-05  Rudolf Hornig
+
+	* Updated the default value of the `debugger-attach-command` config option
+	to use the new LSP4E DAP debugger in the IDE.
+
+2024-11-22  Andras Varga
+
+	* Print fewer newlines before error messages.
+
+	Note: We output a line feed to ensure the error message begins on the start
+	of the line; however we only need this for stdout, but not on stderr where
+	we don't output much.
+
+2024-11-22  Andras Varga
+
+	* Added `-S` option that suppresses all stdout output ("really silent").
+
+	Note: The existing `-s` was actually a "--no-verbose" option, it is also
+	clarified now in the help.
+
+2024-11-20  Andras Varga
+
+	* Added `record-vector-results`, `record-scalar-results` options. They disable
+	writing a scalar/vector file.
+
+	Note: previously it was not possible, because even after disabling the
+	recording of scalar/statistic/vector items using per-object options,
+	empty files (just with the run header and vector declarations) were still
+	created.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-09-27  Attila Torok

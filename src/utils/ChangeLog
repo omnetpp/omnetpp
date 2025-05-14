@@ -1,3 +1,94 @@
+2025-04-24  Andras Varga
+
+	* opp_featuretool: Better validation of the `.oppfeatures` file: Fail fast
+	if a feature references an undefined feature, and for duplicate features too.
+
+2025-04-24  Andras Varga
+
+	* opp_featuretool: Make enablement inconsistencies to ALWAYS cause an error.
+
+	All subcommands, including "list" etc, now run the validation check AFTER
+	they did their jobs. This allows e.g. repairing  enablement
+	inconsistencies with opp_featuretool enable/disable, but errors do not go
+	undetected.
+
+2025-04-24  Andras Varga
+
+	* opp_featuretool: make inconsistent enablements a hard error (do no repair
+	automatically). It caused errors, i.e. enablement inconsistencies after reset,
+	i.e. problems in .oppfeatures could go unnoticed for a long time.
+
+2025-03-07  Levente Meszaros
+
+	* Added an opp_python_repl script which starts the IPython repl by
+	loading the repl package. This script is also used by the IDE Terminal View
+	if the INET script is not available.
+
+2025-03-06  Levente Meszaros
+
+	* opp_test: Factored out opp_test code into a library in the python folder.
+
+2025-02-24  Levente Meszaros
+
+	* opp_test: Refactoring: extracted run_tests() method from run().
+	This allows reusing the run_tests() method from interactive and automated
+	python testing.
+
+2025-02-24  Levente Meszaros
+
+	* opp_test: Replace all print(...) statements with lprint(0, ...).
+	This allows OppTest subclasses to override the print behavior and capture
+	the output. This is needed to integrate opp_test functionality into
+	interactive and automated python tools.
+
+2025-03-05  Rudolf Hornig
+
+	* Added opp_dbdap, an internal helper script that the Simulation IDE uses
+	to launch the SP4E DAP debugger.
+
+2024-11-27  Andras Varga
+
+	* opp_test: Implement %no-default-inifile. It disables adding _defaults.ini
+	to the simulation command line.
+
+2024-11-27  Andras Varga
+
+	* opp_test: Small refactoring
+
+2024-11-27  Andras Varga
+
+	* opp_test: Remove redundant parens from "if" statements.
+
+2024-11-27  Andras Varga
+
+	* opp_test: Use f-strings where possible and makes sense.
+
+2024-11-27  Andras Varga
+
+	* opp_test: Implemented %equals, %not-equals, %equals-regex, %not-equals-regex
+
+2024-11-18  Andras Varga
+
+	* opp_charttool: Minor tweak of "info" subcommand output
+
+2024-11-18  Andras Varga
+
+	* opp_charttool: Surround chart names with quotes in verbose printouts like
+	"Exporting chart <name>...". The reason is that chart names may contain spaces
+	and may be quite long, resulting in confusing output.
+
+2024-11-18  Andras Varga
+
+	* opp_charttool: Fixed "Error: 'Namespace' object has no attribute 'verbose'"
+	error in "info" subcommand.
+
+2024-10-16  Rudolf Hornig
+
+	* omnetpp, omnest, opp_ide: Changed shebang from /bin/sh to /bin/bash.
+	This is necessary because opp_ide needs to source the setenv script under
+	some circumstances, and setenv requires bash or zsh, it does not work with
+	plain sh.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-09-20  Attila Torok

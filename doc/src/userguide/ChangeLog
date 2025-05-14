@@ -1,3 +1,13 @@
+2025-03-10  Andras Varga
+
+	* Qtenv chapter significantly revised and expanded.
+
+2025-02-03  Attila Torok
+
+	* Result Analysis chapter: Expand the Plot Navigation section to include all
+	possible gestures in all the modes for both types of plots (native/matplotlib),
+	and also mention the function of the X and Y keys.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-06-21  Andras Varga

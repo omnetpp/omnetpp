@@ -1,3 +1,37 @@
+2025-02-19  Levente Meszaros
+
+	* Added Cmdenv::setMatchEventCondition(), a non-public function that
+	may be used to pause execution at programmatically selected events.
+
+	The user is expected to set a function pointer that checks for specific
+	events and set a breakpoint on the handleMatchingEvent function. This is
+	much faster than using the conditional breakpoint of the debugger,
+	because that would require a context switch at each event.
+
+2024-11-27  Andras Varga
+
+	* Turn off logging during cleanup (network deletion) by default.
+
+2024-11-21  Andras Varga
+
+	* Improved "run info" line printed when running in non-verbose mode (-s option):
+	added run ID, and "#" in front of run number.
+
+2024-11-23  Andras Varga
+
+	* Added boolean options for finer-grained control of when to log and when not:
+	cmdenv-log-initialization, cmdenv-log-simulation, cmdenv-log-finalization,
+	cmdenv-log-cleanup.
+
+2024-11-22  Andras Varga
+
+	* Follow change: implement `-S` option that suppresses all stdout output.
+
+2024-11-21  Andras Varga
+
+	* Added `cmdenv-progress-updates` option. Disables printing periodic progress
+	updates in express mode; this was not possible before.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-09-10  Andras Varga

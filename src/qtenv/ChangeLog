@@ -1,3 +1,166 @@
+2025-04-17  Andras Varga
+
+	* Implemented the "qtenv-identicon-seed" config option. It may be used
+	to force identical icons to be used for simulations that have different
+	hashes.
+
+2025-04-11  Attila Torok
+
+	* Add module path to error message about invalid layout tag in
+	display string.
+
+2025-04-04  Attila Torok
+
+	* Fix "Ctrl+E" keyboard shortcut not working because it was ambiguous.
+
+2025-03-26  Attila Torok
+
+	* Make pausePoint() calls outside of event processing contexts a
+	no-op. We are not prepared for it being called in initialize(), for example.
+
+2025-04-03  Attila Torok
+
+	* Log Inspector: Only show lines without context component at the network level.
+
+2025-03-19  Andras Varga
+
+	* Added simulation identicon and "Show Simulation Info" functionality.
+
+	The identicon appears in toolbar, and its purpose is to help the user
+	tell apart Qtenv windows when several similar simulations are run
+	concurrently (e.g. for finding the source of regressions.)
+
+	Identicon is drawn using a "simulation hash" as seed, which includes
+	omnetpp version, the config name and run number, the inifile name, the
+	working directory, the configuration contents, the RNGs, module names,
+	their NED and C++ type names, their parameter names and values, etc.
+
+	"Show Simulation Info" displays a report of all values that affect the
+	simulation hash, and much more.
+
+2025-03-11  Attila Torok
+
+	* Log Inspector: Make message printing setting changes take effect globally again.
+
+2025-03-11  Attila Torok
+
+	* Log Inspector: Preserve section widths when recreating the provider.
+
+	While they are stored into the .qtenvrc file when switching out from
+	MESSAGES Mode, and restored when changing back into it, the provider is
+	now recreated when filtering is , while staying in the same mode. This
+	meant that the section headers got reset to their default 100px width
+	when any filtering setting change.
+
+2025-03-07  Andras Varga
+
+	* File Editor: increase initial size, persist size and position.
+
+2025-03-06  Andras Varga
+
+	* Object tooltip enhancements:
+	  - display "info" string in blue (allowed by the use of HTML)
+	  - switch from "(Typename) objname" to "objname (Typename)" format
+
+2025-03-06  Andras Varga
+
+	* Module and channel tooltips now include a brief documentation of that
+	component, with the goal of facilitating understanding of the model's
+	operation for new users. The first paragraph of the component's NED comment
+	is shown. This feature can be turned off in the config dialog ("Show
+	component documentation in tooltips").
+
+2025-03-06  Andras Varga
+
+	* Added "View NED Type's Source" item to component's context menu. The
+	relevant portion of the NED file is shown in a (readonly) editor window. An
+	important point is that the displayed source includes the component's full
+	NED comment (i.e. its documentation), not just the first paragraph shown in
+	the tooltip.
+
+2025-03-05  Andras Varga
+
+	* File Editor enhancements: display file name; use monospace font.
+
+2025-03-05  Attila Torok
+
+	* Add line filtering (substring or regex) functionality to LogInspector.
+	  - Add line filtering text viewer content provider
+	  - Add line filter settings to filter dialog in LogInspector
+	  - Add new icons: "filter active" and "clear filter"
+
+2025-02-19  Attila Torok
+
+	* Minor "Run Until" dialog fixes.
+
+	Set the main window as its parent, and make the toolbar buttons reflect
+	the selected run mode even when the action was invoked while the
+	simulation was running.
+
+2025-02-13  Attila Torok
+
+	* Make "Debug Next Event" break after pausePoint(), rename it to
+	"Debug Simulation".
+
+2022-11-29  Attila Torok
+
+	* Improvement: Perform holding animations in pausePoint().
+
+	This keeps it consistent with how it behaves when Stepping through events
+	with pausePoints one by one (using F4). That means, animations for
+	messages sent in an event before a pausePoint() are neither lost, nor
+	bunched together with send animations produced after the pausePoint() (in
+	case "broadcast animation" is enabled).
+
+2025-02-14  Attila Torok
+
+	* Make "Stop" a no-op within a pausePoint, prompt the user to "Step"
+	instead where needed.
+
+	Asking the user to press "Stop" in order to "continue" processing the
+	event makes no sense; and the GUI in a pausePoint should look and behave
+	basically the same as with a stopped simulation.
+
+2025-02-17  Attila Torok
+
+	* Fix stale holding animations being played after exiting from FAST mode.
+
+	See for example, in test/anim/broadcast: Start the simulation in Fast
+	mode (F6), then after a few seconds, switch directly to Run mode (F5),
+	and observe how quite a few previously accumulated, but now obsolete
+	message send animations are playing out.
+
+2025-02-06  Attila Torok
+
+	* Fix animation of broadcast sends with broadcast animation turned off.
+
+	Previously, only the first send was properly animated, because all of the
+	holds started at the same time, therefore the rest of them already had
+	"expired" right when the second one was about to start. Decoupling
+	sequence init from begin, and not calling init() on the send animation
+	right away fixes this. The lines are immediately shown, but the holds for
+	the message animations are not all started at the same time. See
+	test/anim/broadcast and test/anim/animation2.
+
+2025-02-12  Attila Torok
+
+	* Cleanup: Adjust some info/warning/error/question dialog severities.
+
+	Key criteria:
+	- Something is an error if the operation requested by the user couldn't
+	   be completed.
+	- It's only a warning if the operation would be risky, or it had to be
+	  somewhat altered.
+	- It's a question if there are multiple choices offered, and none of them
+	  are particularly risky.
+	- It's an info otherwise: When there is nothing wrong, and no further
+	  choices are offered.
+
+2024-12-11  Attila Torok
+
+	* Make the title of error dialogs more descriptive. Also, show exceptions
+	that signal the normal termination of a simulation as INFO, not as ERROR.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-09-17  Attila Torok
@@ -194,7 +357,7 @@
 
 2022-05-22  Andras Varga
 
-	* osg.msg: fix includes
+	* Osg.msg: fix includes
 
 2022-08-02  Attila Torok
 
@@ -257,7 +420,7 @@
 
 2022-05-18  Attila Torok
 
-	* build: Disable implicit make rules by setting .SUFFIXES to empty
+	* Build: Disable implicit make rules by setting .SUFFIXES to empty
 
 2022-06-29  Attila Torok
 
@@ -268,7 +431,7 @@
 
 2022-06-29  Attila Torok
 
-	* end() MessageAnimations when their messages were rotated out of
+	* End() MessageAnimations when their messages were rotated out of
 	the LogBuffer
 
 	This fixes the ever-increasing number of "PLAYING" animations in FAST
@@ -319,7 +482,7 @@
 
 2022-05-18  Attila Torok
 
-	* build: Disable implicit make rules by setting .SUFFIXES to empty
+	* Build: Disable implicit make rules by setting .SUFFIXES to empty
 
 2022-06-29  Attila Torok
 
@@ -327,14 +490,14 @@
 	Include AnimationGroup state, fix missing newline before the first part,
 	matching parts separation and indentation, consistent variable names.
 
-	* end() MessageAnimations when their messages were rotated out of the LogBuffer.
+	* End() MessageAnimations when their messages were rotated out of the LogBuffer.
 	This fixes the ever-increasing number of "PLAYING" animations in FAST mode.
 
 	* Fix: AnimationGroup::update() never end()-ing.
 	Fixes the performance degradation over time: groups with all parts
 	finished, but themselves still "playing", were piling up endlessly.
 
-	* nit: Remove unused transmissionId variable (replaced by usage in
+	* Nit: Remove unused transmissionId variable (replaced by usage in
 	MessageSendKey::fromMessage).
 
 2022-06-23  Attila Torok
@@ -1398,7 +1561,7 @@
 
 2017-11-28  Andras Varga
 
-	* osg/osg.msg: Updated to recent message compile changes (property names
+	* Osg/osg.msg: Updated to recent message compile changes (property names
 	camelized, etc).
 
 2017-11-26  Andras Varga
@@ -1692,7 +1855,7 @@
 
 2017-03-27  Attila Torok
 
-	* macOS fixes: global menu did not appear; floating inspector windows
+	* MacOS fixes: global menu did not appear; floating inspector windows
 	could go behind the main window.
 
 2017-03-14  Attila Torok
@@ -1780,7 +1943,7 @@
 
 2017-02-01  Attila Torok
 
-	* parseColor() implementation moved to the right place.
+	* ParseColor() implementation moved to the right place.
 
 2017-02-01  Attila Torok
 
@@ -1801,7 +1964,7 @@
 
 2017-02-01  Attila Torok
 
-	* msgitem: Don't switch to "non-line" mode if too short.
+	* Msgitem: Don't switch to "non-line" mode if too short.
 	Clamp length to at least width instead.
 
 2017-01-31  Attila Torok
@@ -2100,7 +2263,7 @@
 
 2016-12-14  Attila Torok
 
-	* msgAnim shorthand added to duc
+	* MsgAnim shorthand added to duc
 
 2016-12-15  Attila Torok
 
@@ -2297,15 +2460,15 @@
 
 2016-12-08  Rudolf Hornig
 
-	* build: made the main targets depend on Makefile.inc so any change in it
+	* Build: made the main targets depend on Makefile.inc so any change in it
 	will trigger a rebuild.
 
 2016-11-30  Rudolf Hornig
 
-	* build: Makefile refactored. Added clang-c2 support and optimized
+	* Build: Makefile refactored. Added clang-c2 support and optimized
 	the build process.
 
-	* build: removed Makefile.vc, as Visual C++ builds are now handled
+	* Build: removed Makefile.vc, as Visual C++ builds are now handled
 	by the standard Makefiles.
 
 2016-11-30  Attila Torok
@@ -2396,7 +2559,7 @@
 
 2016-11-09  Attila Torok
 
-	* playbackSpeed: SpinBox in AnimCtrlDialog, Slider snaps to 1,
+	* PlaybackSpeed: SpinBox in AnimCtrlDialog, Slider snaps to 1,
 	affects recording.
 
 2016-11-07  Attila Torok
@@ -2534,7 +2697,7 @@
 
 2016-10-25  Attila Torok
 
-	* build: Preliminary support for using a Qt bundle in a custom location.
+	* Build: Preliminary support for using a Qt bundle in a custom location.
 
 2016-10-21  Attila Torok
 
@@ -2715,7 +2878,7 @@
 
 2016-08-22  Andras Varga
 
-	* qtenv-extra-stack increased to 80K. Somewhat tested with
+	* Qtenv-extra-stack increased to 80K. Somewhat tested with
 	USE_PORTABLE_COROUTINES that can display actual stack usage
 	in Qtenv (in module inspector), seems to be enough.
 
@@ -2844,7 +3007,7 @@
 
 2016-07-22  Attila Torok
 
-	* refreshDisplay() before performAnimations().
+	* RefreshDisplay() before performAnimations().
 
 2016-07-20  Attila Torok
 
@@ -2944,7 +3107,7 @@
 
 2016-07-08  Attila Torok
 
-	* putsmsg() and confirm() use printf() before Qt init.
+	* Putsmsg() and confirm() use printf() before Qt init.
 
 2016-07-08  Attila Torok
 
@@ -3001,7 +3164,7 @@
 
 2016-07-01  Attila Torok
 
-	* animate* functions and PathVec stuff moved from Qtenv to Animator.
+	* Animate* functions and PathVec stuff moved from Qtenv to Animator.
 
 2016-06-27  Attila Torok
 
@@ -3136,7 +3299,7 @@
 
 2016-04-01  Andras Varga
 
-	* osg: fix: earth scenes did not display in the osg-intro sample
+	* Osg: fix: earth scenes did not display in the osg-intro sample
 
 	Root cause: zNear/zFar was not set explicitly in these demos, so it stuck
 	with the default values in cOsgCanvas: 1 and 1000.  This caused basically
@@ -3159,7 +3322,7 @@
 
 2016-03-23  Rudolf Hornig
 
-	* osg: Following the changing osgEarth::Viewpoint API.
+	* Osg: Following the changing osgEarth::Viewpoint API.
 
 2016-03-21  Andras Varga
 
@@ -3212,12 +3375,12 @@
 	* Resolved issues with config and run selection from .ini, args and dialog.
 	* Small changes to make the code compile with Qt5.
 	* Undo wrong fix for run until message, apply correct one. Oops.
-	* osg: Switching between camera manipulators doesn't reset the viewpoint
+	* Osg: Switching between camera manipulators doesn't reset the viewpoint
 	  anymore.
 
 2016-02-10  Attila Torok
 
-	* logging: LogLevel of Components can be changed, and is saved/restored.
+	* Logging: LogLevel of Components can be changed, and is saved/restored.
 	* Also a small fix regarding switching of run modes.
 	* Separate inspector preferences for toplevel and embedded inspectors.
 	  The toplevel inspectors will default to the prefs of the embedded ones
@@ -3242,7 +3405,7 @@
 
 2016-02-03  Rudolf Hornig
 
-	* osgEarth: made it compile with osgEarth 2.7 (in Fedora 23).
+	* OsgEarth: made it compile with osgEarth 2.7 (in Fedora 23).
 
 2016-02-01  Attila Torok
 
@@ -3281,9 +3444,9 @@
 2016-01-08  Attila Torok
 
 	* Minor corrections in ConnectionItem and OutlinedTextItem.
-	* textviewerwidget: Another improvement to scrollbar handling.
-	* submoduleitem: Icons are no longer colored if the weight is an empty string.
-	* fileeditor: Changed the handling of QActions, F3 works now.
+	* Textviewerwidget: Another improvement to scrollbar handling.
+	* Submoduleitem: Icons are no longer colored if the weight is an empty string.
+	* Fileeditor: Changed the handling of QActions, F3 works now.
 	* Flip window layout action fixed.
 	* Implemented *:askyesno().
 	* Splitter ratio now correctly saved and restored in both orientations.

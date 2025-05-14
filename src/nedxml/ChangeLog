@@ -1,3 +1,22 @@
+2025-04-08  Andras Varga
+
+	* opp_msgtool: Fix #1351 enum declarations not working. Example code that
+	demonstrates the issue:
+
+	    enum Foo;  // declaration of an externally defined enum
+	    class A {
+	        Foo foo; //Error: unknown type 'Foo' for field 'foo' in 'A'
+	    }
+
+2025-04-08  Andras Varga
+
+	* opp_msgtool: Refactor: nits: move field within ClassInfo for clarity
+
+2025-02-28  Attila Torok
+
+	* NedTypeInfo: Added getDocumentation() method, to enable Qtenv display
+	documentation of modules.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2024-05-09  Levente Meszaros

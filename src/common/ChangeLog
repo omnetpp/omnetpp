@@ -1,3 +1,26 @@
+2025-05-14  Andras Varga
+
+	* UnitConversion: Removed const modifier from UnitConversion::unitTable,
+	as it is (partially) filled in at runtime, which is unforgivable according
+	clang++ in c++23 mode. This fixes #1372 "Omnet++ 6.x stopped working on Archlinux
+	with C++20/C++23 enabled".
+
+2025-05-07  Andras Varga
+
+	* opp_ctype.h: Change opp_isalphaext() and opp_isalnumext() to accept "_" too.
+	Motivation: The new operation suits nearly all use cases better.
+
+2025-04-16  TÖRÖK Attila
+
+	* exprnodes.cc: Disambiguate to 2-arg hypot overload when creating ExprNode.
+	The 3-arg overload was added in C++17. Fixes #1354.
+
+2024-12-11  Andras Varga
+
+	* MatchExpressionLexer: accept string literals delimited with
+	single quotes, too. Reason: nED also accepts string literals with
+	both single and double quotes.
+
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
 2021-03-10  Attila Torok
