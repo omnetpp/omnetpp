@@ -110,6 +110,7 @@ public:
     void setGridColor(const QColor &color);
 
     void setModulePath(const QString &path);
+    void setNameLabelTooltip(const QString &text);
 
     // these return the newly added item index for possible future reference
     int addText(const TextData &data);

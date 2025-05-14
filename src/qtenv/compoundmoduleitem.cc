@@ -293,6 +293,11 @@ void CompoundModuleItem::setModulePath(const QString& path)
     modulePath->setText(path);
 }
 
+void CompoundModuleItem::setNameLabelTooltip(const QString &text)
+{
+    modulePath->setToolTip(text);
+}
+
 int CompoundModuleItem::addText(const CompoundModuleItem::TextData& data)
 {
     auto item = new OutlinedTextItem(this);
@@ -393,6 +398,16 @@ void CompoundModuleItemUtil::setupFromDisplayString(CompoundModuleItem *cmi, cMo
     if (fullPath != typeName)  // practically, is not the toplevel module
         text +=  " (" + typeName + ")";
     cmi->setModulePath(text.c_str());
+
+    // tooltip for the label in the top left corner
+    std::string tooltip;
+    bool showNedDoc = getQtenv()->getPref("ned-doc-tooltips", true).toBool();
+    if (showNedDoc) {
+        std::string nedComment = getComponentDocumentationForTooltip(mod);
+        if (!nedComment.empty())
+            tooltip = "<i></i>" + typeName + ": " + nedComment;  // note: "<i></i>" forces HTML; we do it to enable word wrapping
+    }
+    cmi->setNameLabelTooltip(tooltip.c_str());
 
     // background texts
     int textIndex = 0;
