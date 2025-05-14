@@ -36,7 +36,7 @@ const bool debugScoring = false;
 const double K = 1024.0;
 const double K8 = 8192.0;
 
-const UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
+UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
 #define _ LINEAR
     { "d",   86400, _, "s",    "day",         "d h min s ms us ns ps fs as" },
     { "h",    3600, _, "s",    "hour",        "d h min s ms us ns ps fs as" },
@@ -260,13 +260,11 @@ inline bool isWholeNumber(double x) { return fabs(x - floor(x+0.5)) < 1e-15; }
 
 void UnitConversion::fillUnitData()
 {
-    for (const Unit *p = unitTable; p->name; p++) {
-        Unit *unit = const_cast<Unit *>(p);
-
-        unit->baseUnit = getUnit(p->baseUnitName);
+    for (Unit *unit = unitTable; unit->name; unit++) {
+        unit->baseUnit = getUnit(unit->baseUnitName);
         unit->isByteBased = strstr(unit->longName, "byte") != nullptr;
 
-        for (std::string unitName : opp_splitandtrim(opp_emptytodefault(p->bestUnitCandidatesList, p->name))) {  // at least itself is a candidate if candidates are not explicitly listed
+        for (std::string unitName : opp_splitandtrim(opp_emptytodefault(unit->bestUnitCandidatesList, unit->name))) {  // at least itself is a candidate if candidates are not explicitly listed
             unit->bestUnitCandidateNames.push_back(unitName.c_str());
             unit->bestUnitCandidates.push_back(getUnit(unitName.c_str()));
         }

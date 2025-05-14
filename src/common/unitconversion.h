@@ -47,7 +47,7 @@ class COMMON_API UnitConversion
         std::vector<const Unit*> bestUnitCandidates;
         std::vector<const Unit*> compatibleUnits;
     };
-    static const Unit unitTable[];
+    static Unit unitTable[];
 
     static const Unit *bitsUnit;
     static const Unit *bytesUnit;
