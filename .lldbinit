@@ -1,2 +1,10 @@
+# do not try to download symbol files from the network
 settings set symbols.enable-external-lookup false
+
+# if you are working in a restricted environment (like docker or WSL)
+# you may need to uncomment the following line to prevent the debugger
+# switching off address randomization (and silently failing if that call is prohibited)
+#
+# settings set target.disable-aslr false
+
 command script import omnetpp.lldb.formatters.omnetpp
