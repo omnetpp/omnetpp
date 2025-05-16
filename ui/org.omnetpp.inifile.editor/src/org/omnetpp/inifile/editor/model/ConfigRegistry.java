@@ -267,6 +267,19 @@ public class ConfigRegistry {
         "Defines what Cmdenv should do when the model contains unassigned " +
         "parameters. In interactive mode, it asks the user. In non-interactive mode " +
         "(which is more suitable for batch execution), Cmdenv stops with an error.");
+    public static final ConfigOption CFGID_CMDENV_LOG_CLEANUP = addPerRunOption(
+        "cmdenv-log-cleanup", CFG_BOOL, "false",
+        "Specifies whether to enable logging during network cleanup.");
+    public static final ConfigOption CFGID_CMDENV_LOG_FINALIZATION = addPerRunOption(
+        "cmdenv-log-finalization", CFG_BOOL, null,
+        "Specifies whether to enable logging during network finalization. The " +
+        "default depends on whether the simulation is run in express mode or not " +
+        "(see `cmdenv-express-mode`).");
+    public static final ConfigOption CFGID_CMDENV_LOG_INITIALIZATION = addPerRunOption(
+        "cmdenv-log-initialization", CFG_BOOL, null,
+        "Specifies whether to enable logging during network initialization. The " +
+        "default depends on whether the simulation is run in express mode or not " +
+        "(see `cmdenv-express-mode`).");
     public static final ConfigOption CFGID_CMDENV_LOG_LEVEL = addPerObjectOption(
         "cmdenv-log-level", KIND_MODULE, CFG_STRING, "TRACE",
         "Specifies the per-component level of detail recorded by log statements, " +
@@ -282,6 +295,11 @@ public class ConfigRegistry {
         "followed by a single format character).  For example `%l` stands for log " +
         "level, and `%J` for source component. See the manual for the list of " +
         "available format characters.");
+    public static final ConfigOption CFGID_CMDENV_LOG_SIMULATION = addPerRunOption(
+        "cmdenv-log-simulation", CFG_BOOL, null,
+        "Specifies whether to enable logging during the simulation, i.e. event " +
+        "processing. The default depends on whether the simulation is run in express " +
+        "mode or not (see `cmdenv-express-mode`).");
     public static final ConfigOption CFGID_CMDENV_OUTPUT_FILE = addPerRunOption(
         "cmdenv-output-file", CFG_FILENAME, "${resultdir}/${configname}-${iterationvarsf}#${repetition}.out",
         "When `cmdenv-record-output=true`: file name to redirect standard output to. " +
@@ -292,6 +310,10 @@ public class ConfigRegistry {
         "Turning it on results in a 3-line entry printed on each update, containing " +
         "ev/sec, simsec/sec, ev/simsec, number of messages created/still " +
         "present/currently scheduled in FES.");
+    public static final ConfigOption CFGID_CMDENV_PROGRESS_UPDATES = addPerRunOption(
+        "cmdenv-progress-updates", CFG_BOOL, "true",
+        "When `cmdenv-express-mode=true`: print a periodic status update on the " +
+        "progress of the simulation.");
     public static final ConfigOption CFGID_CMDENV_REDIRECT_OUTPUT = addPerRunOption(
         "cmdenv-redirect-output", CFG_BOOL, "false",
         "Causes Cmdenv to redirect standard output of simulation runs to a file or " +
@@ -353,7 +375,7 @@ public class ConfigRegistry {
         "The command must not block (i.e. it should end in `&` on Unix-like " +
         "systems). It will be executed by the default system shell (on Windows, " +
         "usually cmd.exe). Default on this platform: `opp_ide " +
-        "omnetpp://cdt/debugger/attach?pid=%u`. This default can be overridden with " +
+        "omnetpp://dsp/debugger/attach?pid=%u`. This default can be overridden with " +
         "the `OMNETPP_DEBUGGER_COMMAND` environment variable.");
     public static final ConfigOption CFGID_DEBUGGER_ATTACH_ON_ERROR = addGlobalOption(
         "debugger-attach-on-error", CFG_BOOL, "false",
@@ -745,6 +767,18 @@ public class ConfigRegistry {
         "qtenv-extra-stack", "B", "80KiB",
         "Specifies the extra amount of stack that is reserved for each `activity()` " +
         "simple module when the simulation is run under Qtenv.");
+    public static final ConfigOption CFGID_QTENV_IDENTICON_SEED = addPerRunOption(
+        "qtenv-identicon-seed", CFG_STRING, null,
+        "Overrides the default (computed) identicon seed for the current run. The " +
+        "identicon is a small image that is shown in the upper right corner of the " +
+        "Qtenv main window, and its purpose is help the user visually identify the " +
+        "window if there are multiple Qtenv simulations running at the same time. " +
+        "The image is generated from a seed. By default, the seed is computed from " +
+        "various properties of the simulation (config name, run number, " +
+        "configuration contents, etc) that ensures that different simulations result " +
+        "in different images, but multiple launches of the same simulation result in " +
+        "the same identicon. This configuration option allows the user to override " +
+        "this default behavior and force a specific seed.");
     public static final ConfigOption CFGID_REAL_TIME_LIMIT = addPerRunOptionU(
         "real-time-limit", "s", null,
         "Stops the simulation after the specified amount of time has elapsed. The " +
@@ -759,6 +793,14 @@ public class ConfigRegistry {
         "record-eventlog", CFG_BOOL, "false",
         "Enables recording an eventlog file, which can be later visualized on a " +
         "sequence chart. See `eventlog-file` option too.");
+    public static final ConfigOption CFGID_RECORD_SCALAR_RESULTS = addPerRunOption(
+        "record-scalar-results", CFG_BOOL, "true",
+        "Enables writing an output scalar (`.sca`) file. See the " +
+        "`output-scalar-file` option too.");
+    public static final ConfigOption CFGID_RECORD_VECTOR_RESULTS = addPerRunOption(
+        "record-vector-results", CFG_BOOL, "true",
+        "Enables writing an output vector (`.vec`) file. See the " +
+        "`output-vector-file` option too.");
     public static final ConfigOption CFGID_REPEAT = addPerRunOption(
         "repeat", CFG_INT, "1",
         "For scenarios. Specifies how many replications should be done with the same " +
