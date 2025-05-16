@@ -83,12 +83,13 @@ echo_root_run() {
 
 # set up Python virtual environment and dependencies
 install_python_deps() {
-    # Create a virtual environment
-    echo
-    echo -e "${GREEN}*** Creating a python virtual environment in '.venv' ***${RESET}"
-    echo
-    echo_run $PYTHON3 -m venv .venv --upgrade-deps --clear --prompt "$(basename $PWD)/.venv"
-
+    if [[ ! -f .venv/bin/activate ]]; then
+        # Create a virtual environment
+        echo
+        echo -e "${GREEN}*** Creating a python virtual environment in '.venv' ***${RESET}"
+        echo
+        echo_run $PYTHON3 -m venv .venv --upgrade-deps --clear --prompt "$(basename $PWD)/.venv"
+    fi
     echo -e "${GREEN}*** Activating python virtual environment ***${RESET}"
     source .venv/bin/activate
 
@@ -111,10 +112,10 @@ install_deps() {
         # detect the package manager
         if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu
             # apt-get is used on debian (i.e. Ubuntu,  etc.)
-            packages="build-essential pkg-config ccache clang lld gdb bison flex perl python3 python3-pip python3-venv python3-dev libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
+            packages="make diffutils pkg-config ccache clang lld gdb lldb bison flex perl sed gawk python3 python3-pip python3-venv python3-dev libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
 
             if ! $no_gui; then
-                packages="$packages qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools libqt5opengl5-dev libwebkit2gtk-4.1-0"
+                packages="$packages qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools qtwayland5 libqt5opengl5-dev libwebkit2gtk-4.1-0"
             fi
 
             if ! $no_3d; then
@@ -125,7 +126,7 @@ install_deps() {
 
         elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora
             # dnf is used on fedora
-            packages="make ccache clang awk lld gdb libstdc++-static bison flex perl python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz xdg-utils libdwarf-devel"
+            packages="make ccache clang awk lld lldb gdb libstdc++-static bison flex perl python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz xdg-utils libdwarf-devel"
 
             if ! $no_gui; then
                 packages="$packages qt5-qtbase-devel qt5-qtsvg webkit2gtk4.1"
@@ -138,7 +139,7 @@ install_deps() {
             echo_root_run "dnf install -y $packages ; dnf clean packages"
 
         elif [[ "$(command -v dnf)" != "" &&  ( "$ID" == "almalinux" || "$ID" == "rhel" ) ]]; then
-            packages="make clang lld gdb bison flex perl python3-devel python3-pip libxml2-devel zlib-devel graphviz xdg-utils elfutils-devel"
+            packages="make clang lld lldb gdb bison flex perl python3-devel python3-pip libxml2-devel zlib-devel graphviz xdg-utils elfutils-devel"
 
             if ! $no_gui; then
                 packages="$packages qt5-qtbase-devel qt5-qtsvg qt5-qtwayland webkit2gtk3"
@@ -153,7 +154,7 @@ install_deps() {
 
         elif [[ "$(command -v zypper)" != "" && "$ID" == "opensuse-tumbleweed" ]]; then
             # zypper is used on OpenSUSE. leap is not supported because of old (3.6) python
-            packages="make ccache clang lld gdb bison gawk flex perl python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz xdg-utils libdw-devel"
+            packages="make ccache clang lld lldb gdb bison gawk flex perl python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz xdg-utils libdw-devel"
 
             if ! $no_gui; then
                 packages="$packages libqt5-qtbase-devel libqt5-qtwayland libQt5Svg5 libwebkit2gtk-4_1-0"
@@ -167,7 +168,7 @@ install_deps() {
 
         elif [[ "$(command -v pacman)" != "" ]]; then
             # pacman is used on Arch Linux
-            packages="make diffutils ccache clang lldb pkgconf lld gdb bison gawk flex perl python python-pip libxml2 zlib doxygen graphviz xdg-utils libdwarf"
+            packages="make diffutils ccache clang pkgconf lld lldb gdb bison gawk flex perl python python-pip libxml2 zlib doxygen graphviz xdg-utils libdwarf"
 
             if ! $no_gui; then
                 packages="$packages qt5-base qt5-svg qt5-wayland webkit2gtk"
