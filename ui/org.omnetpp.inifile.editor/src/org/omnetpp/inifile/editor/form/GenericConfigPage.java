@@ -176,6 +176,8 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_RESULTRECORDING)) {
             group = createGroup(form, "General");
+            addCheckboxFieldEditor(group, CFGID_RECORD_SCALAR_RESULTS, "Write an output scalar file (holds scalars and histograms)");
+            addCheckboxFieldEditor(group, CFGID_RECORD_VECTOR_RESULTS, "Write an output vector file (holds time series data)");
             addTextFieldEditor(group, CFGID_RESULT_DIR, "Result folder", c(null, "Folder"));
             addCheckboxFieldEditor(group, CFGID_RESULTDIR_SUBDIVISION, "Create sub-folders under results folder");
             addCheckboxFieldEditor(group, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
@@ -291,8 +293,9 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(form, CFGID_CMDENV_EXPRESS_MODE, "Run in Express mode");
             addSpacer(form);
             group = createGroup(form, "Express Mode");
-            addTextFieldEditor(group, CFGID_CMDENV_STATUS_FREQUENCY, "Status update frequency");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_PROGRESS_UPDATES, "Print progress updates");  //TODO refine docu!
             addCheckboxFieldEditor(group, CFGID_CMDENV_PERFORMANCE_DISPLAY, "Print performance data");
+            addTextFieldEditor(group, CFGID_CMDENV_STATUS_FREQUENCY, "Status update frequency");
             addSpacer(form);
             group = createGroup(form, "Normal (Non-Express) Mode");
             addCheckboxFieldEditor(group, CFGID_CMDENV_EVENT_BANNERS, "Print event banners");
@@ -308,6 +311,12 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_CMDENV_REDIRECT_OUTPUT, "Redirect stdout to per-run file");
             addTextFieldEditor(group, CFGID_CMDENV_OUTPUT_FILE, "Output file name");
             addTextFieldEditor(group, CFGID_CMDENV_EXTRA_STACK, "Extra coroutine stack");
+            addSpacer(form);
+            group = createGroup(form, "Logging");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_LOG_INITIALIZATION, "Log during network initialization");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_LOG_SIMULATION, "Log during simulation");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_LOG_FINALIZATION, "Log during network finalization");
+            addCheckboxFieldEditor(group, CFGID_CMDENV_LOG_CLEANUP, "Log during network cleanup");
         }
         else if (category.equals(CAT_QTENV)) {
             group = createGroup(form, "On startup, set up the following simulation:");
@@ -316,6 +325,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Other");
             addTextFieldEditor(group, CFGID_QTENV_EXTRA_STACK, "Extra coroutine stack");
+            addTextFieldEditor(group, CFGID_QTENV_IDENTICON_SEED, "Identicon seed");
             addSpacer(form);
         }
         else if (category.equals(CAT_PARSIM)) {
