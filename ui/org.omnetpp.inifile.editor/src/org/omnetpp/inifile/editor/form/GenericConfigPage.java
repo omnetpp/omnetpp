@@ -175,16 +175,19 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
         }
         else if (category.equals(CAT_RESULTRECORDING)) {
-            group = createGroup(form, "General");
-            addCheckboxFieldEditor(group, CFGID_RECORD_SCALAR_RESULTS, "Write an output scalar file (holds scalars and histograms)");
-            addCheckboxFieldEditor(group, CFGID_RECORD_VECTOR_RESULTS, "Write an output vector file (holds time series data)");
+            group = createGroup(form, "Main Switches");
+            addCheckboxFieldEditor(group, CFGID_RECORD_SCALAR_RESULTS, "Enable writing an output scalar file (holds scalars and histograms)");
+            addCheckboxFieldEditor(group, CFGID_RECORD_VECTOR_RESULTS, "Enable writing an output vector file (holds time series data)");
+            addSpacer(form);
+            group = createGroup(form, "Result Folder, etc.");
             addTextFieldEditor(group, CFGID_RESULT_DIR, "Result folder", c(null, "Folder"));
             addCheckboxFieldEditor(group, CFGID_RESULTDIR_SUBDIVISION, "Create sub-folders under results folder");
             addCheckboxFieldEditor(group, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
             addComboboxFieldEditor(group, CFGID_CONFIG_RECORDING, "Config options to record", false);
             setCombo(CFGID_CONFIG_RECORDING, CONFIG_RECORDING_CHOICES);
             addSpacer(form);
-            group = createGroup(form, "Statistic Recording");
+            group = createGroup(form, "Declared Statistics");
+            addLabel(group, "Configuration for module (channel) statistics defined in NED files via @statistic properties.");
             addCheckboxFieldEditor(group, CFGID_STATISTIC_RECORDING, "Enable recording of @statistics", c("Statistic (module-path.statisticname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
             addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Value"));
@@ -371,6 +374,10 @@ public class GenericConfigPage extends ScrolledFormPage {
         Label label = SWTFactory.createWrapLabel(parent, text, 2);
         label.setFont(SWTFactory.getSmallFont());
         return label;
+    }
+
+    protected Label addLabel(Composite parent, String text) {
+        return SWTFactory.createWrapLabel(parent, text, 2);
     }
 
     protected Group createGroup(Composite parent, String groupLabel) {
