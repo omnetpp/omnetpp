@@ -362,6 +362,7 @@ public class SWTFactory {
         l.setText(text);
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalSpan = hspan;
+        gd.widthHint = 100; // this prevents its parent container from becoming as wide as needed to accommodate full text without line breaks; the exact number is more or less irrelevant
         l.setLayoutData(gd);
         return l;
     }

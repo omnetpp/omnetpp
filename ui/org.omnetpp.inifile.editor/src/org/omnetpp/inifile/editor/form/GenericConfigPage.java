@@ -44,7 +44,9 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_ADVANCED = "Advanced";
     public static final String CAT_SCENARIO = "Scenarios";
     public static final String CAT_RANDOMNUMBERS = "Random Numbers";
-    public static final String CAT_RESULTRECORDING = "Result Recording";
+    public static final String CAT_OUTPUTVECTORS = "Vector Results";
+    public static final String CAT_OUTPUTSCALARS = "Scalar Results";
+    public static final String CAT_STATISTICS = "Declared Statistics";
     public static final String CAT_DEBUGGING = "Debugging";
     public static final String CAT_FINGERPRINT = "Fingerprint";
     public static final String CAT_EVENTLOG = "Event Log";
@@ -61,7 +63,9 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_GENERAL,
                 CAT_SCENARIO,
                 CAT_RANDOMNUMBERS,
-                CAT_RESULTRECORDING,
+                CAT_OUTPUTSCALARS,
+                CAT_OUTPUTVECTORS,
+                CAT_STATISTICS,
                 CAT_VISUAL,
                 CAT_DEBUGGING,
                 CAT_FINGERPRINT,
@@ -98,7 +102,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
     protected void createFieldEditors(Composite form, String category) {
-        //TODO revise: per-object options should come up as table, and NOT be collapsible?
+        // Guideline: per-object options should come up as table, and NOT be collapsible?
         Group group = null;
         if (category.equals(CAT_GENERAL)) {
             group = createGroup(form, "Network");
@@ -109,15 +113,23 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_CPU_TIME_LIMIT, "CPU time limit", c(null, "Limit"));
             addTextFieldEditor(group, CFGID_REAL_TIME_LIMIT, "Real time limit", c(null, "Limit"));
             addSpacer(form);
-            group = createGroup(form, "Other");
+            group = createGroup(form, "Simulation Time Resolution");
             addComboboxFieldEditor(group, CFGID_SIMTIME_RESOLUTION, "Simulation time resolution", true);
             setCombo(CFGID_SIMTIME_RESOLUTION, SIMTIME_RESOLUTION_CHOICES);
             //TODO display extra info: "nanosecond resolution; range: +-100 days"
             addSpacer(form);
+            group = createGroup(form, "Result Folder");
+            addTextFieldEditor(group, CFGID_RESULT_DIR, "Result folder*", c(null, "Folder"));
+            addNote(group, "* Determines the value of ${resultdir}, a macro that all default result file name definitions contain");
+            addSpacer(group);
+            addCheckboxFieldEditor(group, CFGID_RESULTDIR_SUBDIVISION, "Create sub-folders under the results folder");
+            addCheckboxFieldEditor(group, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
         }
         else if (category.equals(CAT_ADVANCED)) {
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "#Decimal Places"));
+            addCheckboxFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE_APPEND, "Append to existing vector file");
+            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EMPTY, "Record empty vectors too", c("Vector (module-path.vectorname pattern)", "Value"));
             addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", "Value"));
             addTextFieldEditor(group, CFGID_VECTOR_BUFFER, "Per-vector buffer size", c("Vector (module-path.vectorname pattern)", "Size"));
             addTextFieldEditor(group, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit", c(null, "Memory Limit"));
@@ -127,7 +139,6 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_PRECISION, "Precision", c(null, "#Decimal Places"));
             addCheckboxFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");
-            addCheckboxFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE_APPEND, "Append to existing vector file");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "SQLite scalar file commit frequency");
             addComboboxFieldEditor(group, CFGID_OUTPUT_VECTOR_DB_INDEXING, "SQLite vector database indexing", true);
             addSpacer(form);
@@ -174,40 +185,59 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_ITERATION_NESTING_ORDER, "Loop nesting order", c(null, "Order"));
             addSpacer(form);
         }
-        else if (category.equals(CAT_RESULTRECORDING)) {
-            group = createGroup(form, "Main Switches");
-            addCheckboxFieldEditor(group, CFGID_RECORD_SCALAR_RESULTS, "Enable writing an output scalar file (holds scalars and histograms)");
-            addCheckboxFieldEditor(group, CFGID_RECORD_VECTOR_RESULTS, "Enable writing an output vector file (holds time series data)");
-            addSpacer(form);
-            group = createGroup(form, "Result Folder, etc.");
-            addTextFieldEditor(group, CFGID_RESULT_DIR, "Result folder", c(null, "Folder"));
-            addCheckboxFieldEditor(group, CFGID_RESULTDIR_SUBDIVISION, "Create sub-folders under results folder");
-            addCheckboxFieldEditor(group, CFGID_FNAME_APPEND_HOST, "Append host name to filenames");
+        else if (category.equals(CAT_OUTPUTSCALARS)) {
+            group = createGroup(form, "Output Scalar File");
+            addCheckboxFieldEditor(group, CFGID_RECORD_SCALAR_RESULTS, "Enable writing an output scalar file");
+            addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file*", c(null, "Filename"));
+            addNote(group, "* An output scalar (.sca) file holds scalars, histograms, and statistical summaries recorded from simulations.");
+            addNote(group, "The result directory can be configured on the " + CAT_GENERAL + " page.");
+            addSpacer(group);
             addComboboxFieldEditor(group, CFGID_CONFIG_RECORDING, "Config options to record", false);
             setCombo(CFGID_CONFIG_RECORDING, CONFIG_RECORDING_CHOICES);
             addSpacer(form);
-            group = createGroup(form, "Declared Statistics");
-            addLabel(group, "Configuration for module (channel) statistics defined in NED files via @statistic properties.");
-            addCheckboxFieldEditor(group, CFGID_STATISTIC_RECORDING, "Enable recording of @statistics", c("Statistic (module-path.statisticname pattern)", "Value"));
-            addTextFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
+            group = createGroup(form, "Fine-grained Control");
+            addCheckboxTableFieldEditor(group, CFGID_SCALAR_RECORDING, "Scalars to record (default: all)*", c("Scalar (module-path.scalarname pattern)", "Value"));
+            addNote(group, "* Applies to all item types: scalars, histograms, statistical summaries");
+            addSpacer(group);
+            addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins**", c("Scalar (module-path.scalarname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_PARAM_RECORDING, "Record parameters**", c("Parameter (module-path.paramname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars (obsolete)**", c("Parameter (module-path.paramname pattern)", "Value"));
+            addNote(group, "** Use the Expand icons on the right to specify the setting on a per-result basis");
+            addSpacer(form);
+            addLabel(form, "See the Advanced page for more settings.");
+        }
+        else if (category.equals(CAT_OUTPUTVECTORS)) {
+            group = createGroup(form, "Output Vector File");
+            addCheckboxFieldEditor(group, CFGID_RECORD_VECTOR_RESULTS, "Enable writing an output vector file");
+            addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE, "Output vector file*", c(null, "Filename"));
+            addNote(group, "* An output vector (.vec) file holds time series data (sequences of timestamped values) recorded from simulations");
+            addNote(group, "The result directory can be configured on the " + CAT_GENERAL + " page.");
+            addSpacer(form);
+            group = createGroup(form, "Fine-grained Control");
+            addTextFieldEditor(group, CFGID_VECTOR_RECORDING_INTERVALS, "Recording interval(s)*", c("Vector (module-path.vectorname pattern)", "Intervals"));
+            addNote(group, "* Use the Expand icons on the right to specify the setting on a per-vector basis");
+            addSpacer(group);
+            addCheckboxTableFieldEditor(group, CFGID_VECTOR_RECORDING, "Vectors to record (default: all)", c("Vector (module-path.vectorname pattern)", "Value"));
+            addSpacer(form);
+            addLabel(form, "See the Advanced page for more settings.");
+        }
+        else if (category.equals(CAT_STATISTICS)) {
+            group = createGroup(form, "Overview");
+            addLabel(group, 
+                    "This page allows for configuring module (channel) statistics defined in NED files via @statistic properties. "
+                    + "This functionality is a layer above output scalar and output vector recording: one @statistic may result in the recording of several scalar and vector result items. "
+                    + "For example, a\n\n    @statistic[delay](...,record=mean,histogram,vector);\n\nproperty results in the recording of the 'delay:mean', 'delay:histogram' and 'delay:vector' results, "
+                    + "which are each subject to the settings on the " + CAT_OUTPUTSCALARS + " and " + CAT_OUTPUTVECTORS + " pages. "
+                    + "The 'mean', 'histogram', 'vector' words in the example are also known as \"recording modes\".");
+            addSpacer(form);
+            group = createGroup(form, "Fine-grained Control");
+            addCheckboxTableFieldEditor(group, CFGID_STATISTIC_RECORDING, "Statistics to record*", c("Statistic (module-path.statisticname pattern)", "Value"));
+            addNote(group, "* Enables/disables the recording of all results from the matching @statistic properties as a whole");
+            addSpacer(group);
+            addTextTableFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
+            addSpacer(form);
+            group = createGroup(form, "Advanced");
             addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Value"));
-            addSpacer(form);
-            group = createGroup(form, "Output Vector Recording");
-            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORDING, "Enable recording of vectors", c("Vector (module-path.vectorname pattern)", "Value"));
-            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EMPTY, "Record empty vectors too", c("Vector (module-path.vectorname pattern)", "Value"));
-            addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE, "Output vector file", c(null, "Filename"));
-            addTextFieldEditor(group, CFGID_VECTOR_RECORDING_INTERVALS, "Recording intervals", c("Vector (module-path.vectorname pattern)", "Intervals"));
-            addSpacer(form);
-            group = createGroup(form, "Output Scalar Recording");
-            addCheckboxFieldEditor(group, CFGID_SCALAR_RECORDING, "Enable recording of scalars", c("Scalar (module-path.scalarname pattern)", "Value"));
-            addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE, "Output scalar file", c(null, "Filename"));
-            addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins", c("Scalar (module-path.scalarname pattern)", "Value"));
-            addCheckboxFieldEditor(group, CFGID_PARAM_RECORDING, "Record parameters", c("Parameter (module-path.paramname pattern)", "Value"));
-            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars (obsolete)", c("Parameter (module-path.paramname pattern)", "Value"));
-            addSpacer(form);
-            group = createGroup(form, "Snapshot Files");
-            addTextFieldEditor(group, CFGID_SNAPSHOT_FILE, "Snapshot file", c(null, "Filename"));
-            addSpacer(form);
         }
         else if (category.equals(CAT_DEBUGGING)) {
             group = createGroup(form, "General");
@@ -230,6 +260,8 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_PRINT_UNUSED_PARAMETERS, "Print names of unused parameters per NED type");
             addCheckboxFieldEditor(group, CFGID_WARNINGS, "Warnings"); //XXX
             addSpacer(form);
+            group = createGroup(form, "Snapshot Files");
+            addTextFieldEditor(group, CFGID_SNAPSHOT_FILE, "Snapshot file", c(null, "Filename"));
         }
         else if (category.equals(CAT_FINGERPRINT)) {
             group = createGroup(form, "Fingerprint");
@@ -257,6 +289,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_RECORD_EVENTLOG, "Enable eventlog recording");
             addTextFieldEditor(group, CFGID_EVENTLOG_FILE, "Eventlog file", c(null, "Filename"));
             addNote(group, "Note: Eventlog files (.elog) can be visualized in the Sequence Chart Tool.");
+            addNote(group, "The result directory can be configured on the " + CAT_GENERAL + " page.");
             addSpacer(form);
             group = createGroup(form, "Content");
             addTextFieldEditor(group, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals", c(null, "Intervals"));
@@ -309,7 +342,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addSpacer(form);
             group = createGroup(form, "Other");
             addCheckboxFieldEditor(group, CFGID_CMDENV_STOP_BATCH_ON_ERROR, "Stop batch on first error");
-            addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");  //TODO when opened (table), it should contain a 3rd, combobox-based column (true/false) instead of a checkbox
+            addCheckboxFieldEditor(group, CFGID_CMDENV_INTERACTIVE, "Allow interactivity");
             addCheckboxFieldEditor(group, CFGID_CMDENV_AUTOFLUSH, "Auto-flush output files");
             addCheckboxFieldEditor(group, CFGID_CMDENV_REDIRECT_OUTPUT, "Redirect stdout to per-run file");
             addTextFieldEditor(group, CFGID_CMDENV_OUTPUT_FILE, "Output file name");

@@ -105,7 +105,7 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 
         toggleButton = FieldEditor.createFlatImageButton(this);
         toggleButton.setImage(isExpanded ? IMAGE_COLLAPSE : IMAGE_EXPAND);
-        toggleButton.setToolTipText(isExpanded ? "Specify value globally, in the [General] section": "Specify values individually for different sections");
+        toggleButton.setToolTipText(isExpanded ? "Collapse to specify a global value in the [General] section": "Expand to table");
         toggleButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 isExpanded = !isExpanded;
