@@ -334,6 +334,9 @@ public class SectionsPage extends FormPage {
                 String description = dialog.getDescription();
                 InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);
 
+                boolean isAbstract = dialog.getIsAbstract();
+                InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_ABSTRACT.getName(), isAbstract ? "true" : null);
+
                 String baseConfigNames = StringUtils.defaultIfEmpty(dialog.getBaseConfigNames(), null);
                 InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, baseConfigNames);
 
@@ -369,6 +372,9 @@ public class SectionsPage extends FormPage {
 
                 String description = dialog.getDescription();
                 InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);
+
+                boolean isAbstract = dialog.getIsAbstract();
+                InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_ABSTRACT.getName(), isAbstract ? "true" : null);
 
                 String baseConfigNames = StringUtils.defaultIfEmpty(dialog.getBaseConfigNames(), null);
                 InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, baseConfigNames);

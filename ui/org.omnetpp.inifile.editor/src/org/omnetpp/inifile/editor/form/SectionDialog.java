@@ -27,6 +27,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,6 +43,7 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.ui.SWTFactory;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
@@ -65,6 +67,7 @@ public class SectionDialog extends TitleAreaDialog {
     // widgets
     private Text configNameText;
     private Text descriptionText;
+    private Button isAbstractCheckbox;
     private Text baseConfigsText;
     private Combo networkCombo;
     private Button okButton;
@@ -74,6 +77,7 @@ public class SectionDialog extends TitleAreaDialog {
     // initial parameters, which also double as dialog result
     private String sectionName;
     private String description;
+    private boolean isAbstract = false;
     private String baseConfigNames;
     private String networkName;
 
@@ -98,7 +102,8 @@ public class SectionDialog extends TitleAreaDialog {
                 try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
             List<String> baseConfigs = InifileUtils.sectionNamesToConfigNames(InifileUtils.resolveBaseSectionsPretendingGeneralExists(doc, sectionName));
             baseConfigNames = InifileUtils.formatExtendsList(baseConfigs);
-            networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getName());;
+            isAbstract = "true".equals(doc.getValue(sectionName, ConfigRegistry.CFGID_ABSTRACT.getName()));
+            networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getName());
         }
     }
 
@@ -137,6 +142,10 @@ public class SectionDialog extends TitleAreaDialog {
         descriptionText = new Text(group1, SWT.SINGLE | SWT.BORDER);
         descriptionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+        isAbstractCheckbox = new Button(group1, SWT.CHECK);
+        isAbstractCheckbox.setText("Abstract configuration (only serves as a base for others)");
+        isAbstractCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        ((GridData)isAbstractCheckbox.getLayoutData()).horizontalSpan = 2;
         Group group2 = createGroup(composite, "Basic configuration", 3);
 
         // "extends" section field
@@ -188,6 +197,7 @@ public class SectionDialog extends TitleAreaDialog {
             configNameText.setText(sectionName);
         if (description!=null)
             descriptionText.setText(description);
+        isAbstractCheckbox.setSelection(isAbstract);
         if (baseConfigNames!=null)
             baseConfigsText.setText(baseConfigNames);
         if (networkName!=null)
@@ -205,6 +215,7 @@ public class SectionDialog extends TitleAreaDialog {
         descriptionText.addModifyListener(listener);
         baseConfigsText.addModifyListener(listener);
         networkCombo.addModifyListener(listener);
+        isAbstractCheckbox.addSelectionListener(SelectionListener.widgetSelectedAdapter((e) -> validateDialogContents()));
 
         // note: do initial validation when OK button is already created, from createButtonsForButtonBar()
 
@@ -341,6 +352,7 @@ public class SectionDialog extends TitleAreaDialog {
         // save dialog state into variables, so that client can retrieve them after the dialog was disposed
         sectionName = configNameText.getText().trim();
         description = descriptionText.getText().trim();
+        isAbstract = isAbstractCheckbox.getSelection();
         baseConfigNames = baseConfigsText.getText().trim();
         networkName = networkCombo.isEnabled() ? networkCombo.getText().trim() : "";
         super.okPressed();
@@ -362,6 +374,14 @@ public class SectionDialog extends TitleAreaDialog {
         if (description != null)
             try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
         this.description = description;
+    }
+
+    public boolean getIsAbstract() {
+        return isAbstract;
+    }
+
+    public void setAbstract(boolean isAbstract) {
+        this.isAbstract = isAbstract;
     }
 
     /**
