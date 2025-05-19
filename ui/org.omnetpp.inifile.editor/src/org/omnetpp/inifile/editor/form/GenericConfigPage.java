@@ -128,17 +128,17 @@ public class GenericConfigPage extends ScrolledFormPage {
         else if (category.equals(CAT_ADVANCED)) {
             group = createGroup(form, "Output Vector Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_VECTOR_PRECISION, "Precision", c(null, "#Decimal Places"));
-            addCheckboxFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE_APPEND, "Append to existing vector file");
-            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EMPTY, "Record empty vectors too", c("Vector (module-path.vectorname pattern)", "Value"));
-            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("Vector (module-path.vectorname pattern)", "Value"));
-            addTextFieldEditor(group, CFGID_VECTOR_BUFFER, "Per-vector buffer size", c("Vector (module-path.vectorname pattern)", "Size"));
+            addCheckboxFieldEditor(group, CFGID_OUTPUT_VECTOR_FILE_APPEND, "Append to existing vector file", c(null, "Append?"));
+            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EMPTY, "Record empty vectors too", c("<modulepath>.<vectorname>", "Record if empty?"));
+            addCheckboxFieldEditor(group, CFGID_VECTOR_RECORD_EVENTNUMBERS, "Record event numbers", c("<modulepath>.<vectorname>", "Record event numbers?"));
+            addTextFieldEditor(group, CFGID_VECTOR_BUFFER, "Per-vector buffer size", c("<modulepath>.<vectorname>", "Buffer Size"));
             addTextFieldEditor(group, CFGID_OUTPUT_VECTORS_MEMORY_LIMIT, "Total memory limit", c(null, "Memory Limit"));
-            addCheckboxFieldEditor(group, CFGID_WITH_AKAROA, "Use vector with Akaroa*", c("Parameter (module-path.paramname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_WITH_AKAROA, "Use vector with Akaroa*", c("<modulepath>.<parametername>", "Use Akaroa?"));
             addNote(group, "* Akaroa needs to be obtained and installed separately");
             addSpacer(form);
             group = createGroup(form, "Output Scalar Recording");
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_PRECISION, "Precision", c(null, "#Decimal Places"));
-            addCheckboxFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file");
+            addCheckboxFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file", c(null, "Append?"));
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "SQLite scalar file commit frequency");
             addComboboxFieldEditor(group, CFGID_OUTPUT_VECTOR_DB_INDEXING, "SQLite vector database indexing", true);
             addSpacer(form);
@@ -170,8 +170,8 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_VISUAL)) {
             group = createGroup(form, "Visual");
-            addTextTableFieldEditor(group, CFGID_DISPLAY_NAME, "Module display name", c("Module", "Value"));
-            addTextTableFieldEditor(group, CFGID_DISPLAY_STRING, "Additional display string", c("Module", "Value"));
+            addTextTableFieldEditor(group, CFGID_DISPLAY_NAME, "Module display name", c("Module Path", "Display Name"));
+            addTextTableFieldEditor(group, CFGID_DISPLAY_STRING, "Additional display string", c("Module Path", "Display String"));
         }
         else if (category.equals(CAT_SCENARIO)) {
             group = createGroup(form, "Run Labeling");
@@ -196,12 +196,12 @@ public class GenericConfigPage extends ScrolledFormPage {
             setCombo(CFGID_CONFIG_RECORDING, CONFIG_RECORDING_CHOICES);
             addSpacer(form);
             group = createGroup(form, "Fine-grained Control");
-            addCheckboxTableFieldEditor(group, CFGID_SCALAR_RECORDING, "Scalars to record (default: all)*", c("Scalar (module-path.scalarname pattern)", "Value"));
+            addCheckboxTableFieldEditor(group, CFGID_SCALAR_RECORDING, "Scalars to record (default: all)*", c("<modulepath>.<scalarname>", "Record?"));
             addNote(group, "* Applies to all item types: scalars, histograms, statistical summaries");
             addSpacer(group);
-            addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins**", c("Scalar (module-path.scalarname pattern)", "Value"));
-            addCheckboxFieldEditor(group, CFGID_PARAM_RECORDING, "Record parameters**", c("Parameter (module-path.paramname pattern)", "Value"));
-            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars (obsolete)**", c("Parameter (module-path.paramname pattern)", "Value"));
+            addCheckboxFieldEditor(group, CFGID_BIN_RECORDING, "Record histogram bins**", c("<modulepath>.<scalarname>", "Record?"));
+            addCheckboxFieldEditor(group, CFGID_PARAM_RECORDING, "Record parameters**", c("<modulepath>.<parametername>", "Record?"));
+            addCheckboxFieldEditor(group, CFGID_PARAM_RECORD_AS_SCALAR, "Record parameters as scalars (obsolete)**", c("<modulepath>.<parametername>", "Record?"));
             addNote(group, "** Use the Expand icons on the right to specify the setting on a per-result basis");
             addSpacer(form);
             addLabel(form, "See the Advanced page for more settings.");
@@ -214,10 +214,10 @@ public class GenericConfigPage extends ScrolledFormPage {
             addNote(group, "The result directory can be configured on the " + CAT_GENERAL + " page.");
             addSpacer(form);
             group = createGroup(form, "Fine-grained Control");
-            addTextFieldEditor(group, CFGID_VECTOR_RECORDING_INTERVALS, "Recording interval(s)*", c("Vector (module-path.vectorname pattern)", "Intervals"));
+            addTextFieldEditor(group, CFGID_VECTOR_RECORDING_INTERVALS, "Recording interval(s)*", c("<modulepath>.<vectorname>", "Intervals"));
             addNote(group, "* Use the Expand icons on the right to specify the setting on a per-vector basis");
             addSpacer(group);
-            addCheckboxTableFieldEditor(group, CFGID_VECTOR_RECORDING, "Vectors to record (default: all)", c("Vector (module-path.vectorname pattern)", "Value"));
+            addCheckboxTableFieldEditor(group, CFGID_VECTOR_RECORDING, "Vectors to record (default: all)", c("<modulepath>.<vectorname>", "Record?"));
             addSpacer(form);
             addLabel(form, "See the Advanced page for more settings.");
         }
@@ -225,16 +225,18 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Overview");
             addLabel(group, 
                     "This page allows for configuring module (channel) statistics defined in NED files via @statistic properties. "
-                    + "This functionality is a layer above output scalar and output vector recording: one @statistic may result in the recording of several scalar and vector result items. "
-                    + "For example, a\n\n    @statistic[delay](...,record=mean,histogram,vector);\n\nproperty results in the recording of the 'delay:mean', 'delay:histogram' and 'delay:vector' results, "
+                    + "This functionality is a layer above output scalar and output vector recording: one @statistic may result "
+                    + "in the recording of several scalar and vector result items. For example, a\n\n"
+                    + "    @statistic[delay](...,record=mean,histogram,vector);\n\n"
+                    + "property results in the recording of the 'delay:mean', 'delay:histogram' and 'delay:vector' results, "
                     + "which are each subject to the settings on the " + CAT_OUTPUTSCALARS + " and " + CAT_OUTPUTVECTORS + " pages. "
                     + "The 'mean', 'histogram', 'vector' words in the example are also known as \"recording modes\".");
             addSpacer(form);
             group = createGroup(form, "Fine-grained Control");
-            addCheckboxTableFieldEditor(group, CFGID_STATISTIC_RECORDING, "Statistics to record*", c("Statistic (module-path.statisticname pattern)", "Value"));
+            addCheckboxTableFieldEditor(group, CFGID_STATISTIC_RECORDING, "Statistics to record*", c("<modulepath>.<statisticname>", "Record?"));
             addNote(group, "* Enables/disables the recording of all results from the matching @statistic properties as a whole");
             addSpacer(group);
-            addTextTableFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("Statistic (module-path.statisticname pattern)", "Recording Modes"));
+            addTextTableFieldEditor(group, CFGID_RESULT_RECORDING_MODES, "Result recording modes", c("<modulepath>.<statisticname>", "Recording Modes"));
             addSpacer(form);
             group = createGroup(form, "Advanced");
             addTextFieldEditor(group, CFGID_WARMUP_PERIOD, "Warm-up period", c(null, "Value"));
@@ -286,7 +288,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         }
         else if (category.equals(CAT_EVENTLOG)) {
             group = createGroup(form, "Eventlog");
-            addCheckboxFieldEditor(group, CFGID_RECORD_EVENTLOG, "Enable eventlog recording");
+            addCheckboxFieldEditor(group, CFGID_RECORD_EVENTLOG, "Enable eventlog recording", c(null, "Enable?"));
             addTextFieldEditor(group, CFGID_EVENTLOG_FILE, "Eventlog file", c(null, "Filename"));
             addNote(group, "Note: Eventlog files (.elog) can be visualized in the Sequence Chart Tool.");
             addNote(group, "The result directory can be configured on the " + CAT_GENERAL + " page.");
@@ -294,8 +296,8 @@ public class GenericConfigPage extends ScrolledFormPage {
             group = createGroup(form, "Content");
             addTextFieldEditor(group, CFGID_EVENTLOG_RECORDING_INTERVALS, "Recording intervals", c(null, "Intervals"));
             addTextFieldEditor(group, CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "Message details to record", c(null, "Pattern Expression"));
-            addCheckboxFieldEditor(group, CFGID_MODULE_EVENTLOG_RECORDING, "Modules to record", c("Module", "Value"));
-            addTextFieldEditor(group, CFGID_EVENTLOG_OPTIONS, "Eventlog options", c(null, "Value"));
+            addCheckboxTableFieldEditor(group, CFGID_MODULE_EVENTLOG_RECORDING, "Modules to record", c("Module Path", "Record?"));
+            addTextFieldEditor(group, CFGID_EVENTLOG_OPTIONS, "Eventlog options", c(null, "Options"));
             addSpacer(form);
             group = createGroup(form, "Technical");
             addTextFieldEditor(group, CFGID_EVENTLOG_SNAPSHOT_FREQUENCY, "Eventlog snapshot frequency", c(null, "Value"));
