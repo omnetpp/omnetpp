@@ -134,6 +134,19 @@ with the \fopt{-h configdetails} option.
     Defines what Cmdenv should do when the model contains unassigned
     parameters. In interactive mode, it asks the user. In non-interactive mode
     (which is more suitable for batch execution), Cmdenv stops with an error.
+\item[cmdenv-log-cleanup] = \textit{<bool>}, default: \ttt{false}\\
+    \textit{Per-simulation-run setting.}\\
+    Specifies whether to enable logging during network cleanup.
+\item[cmdenv-log-finalization] = \textit{<bool>}\\
+    \textit{Per-simulation-run setting.}\\
+    Specifies whether to enable logging during network finalization. The
+    default depends on whether the simulation is run in express mode or not
+    (see \ttt{cmdenv-{\allowbreak}express-{\allowbreak}mode}).
+\item[cmdenv-log-initialization] = \textit{<bool>}\\
+    \textit{Per-simulation-run setting.}\\
+    Specifies whether to enable logging during network initialization. The
+    default depends on whether the simulation is run in express mode or not
+    (see \ttt{cmdenv-{\allowbreak}express-{\allowbreak}mode}).
 \item[**.cmdenv-log-level] = \textit{<string>}, default: \ttt{TRACE}\\
     \textit{Per-object setting for modules.}\\
     Specifies the per-component level of detail recorded by log statements,
@@ -150,6 +163,11 @@ with the \fopt{-h configdetails} option.
     \ttt{\%} followed by a single format character).  For example \ttt{\%l}
     stands for log level, and \ttt{\%J} for source component. See the manual
     for the list of available format characters.
+\item[cmdenv-log-simulation] = \textit{<bool>}\\
+    \textit{Per-simulation-run setting.}\\
+    Specifies whether to enable logging during the simulation, i.e. event
+    processing. The default depends on whether the simulation is run in express
+    mode or not (see \ttt{cmdenv-{\allowbreak}express-{\allowbreak}mode}).
 \item[cmdenv-output-file] = \textit{<filename>}, default: \ttt{\$\{{\allowbreak}resultdir\}{\allowbreak}/{\allowbreak}\$\{{\allowbreak}configname\}{\allowbreak}-{\allowbreak}\$\{{\allowbreak}iterationvarsf\}{\allowbreak}\#\$\{{\allowbreak}repetition\}{\allowbreak}.{\allowbreak}out}\\
     \textit{Per-simulation-run setting.}\\
     When
@@ -162,6 +180,10 @@ with the \fopt{-h configdetails} option.
     print detailed performance information. Turning it on results in a 3-line
     entry printed on each update, containing ev/sec, simsec/sec, ev/simsec,
     number of messages created/still present/currently scheduled in FES.
+\item[cmdenv-progress-updates] = \textit{<bool>}, default: \ttt{true}\\
+    \textit{Per-simulation-run setting.}\\
+    When \ttt{cmdenv-{\allowbreak}express-{\allowbreak}mode={\allowbreak}true}:
+    print a periodic status update on the progress of the simulation.
 \item[cmdenv-redirect-output] = \textit{<bool>}, default: \ttt{false}\\
     \textit{Per-simulation-run setting.}\\
     Causes Cmdenv to redirect standard output of simulation runs to a file or
@@ -229,7 +251,7 @@ with the \fopt{-h configdetails} option.
     process. The command must not block (i.e. it should end in \ttt{\&} on
     Unix-like systems). It will be executed by the default system shell (on
     Windows, usually cmd.exe). Default on this platform: \ttt{opp\_ide
-    {\allowbreak}omnetpp:{\allowbreak}/{\allowbreak}/{\allowbreak}cdt/{\allowbreak}debugger/{\allowbreak}attach?pid={\allowbreak}\%u}.
+    {\allowbreak}omnetpp:{\allowbreak}/{\allowbreak}/{\allowbreak}dsp/{\allowbreak}debugger/{\allowbreak}attach?pid={\allowbreak}\%u}.
     This default can be overridden with the \ttt{OMNETPP\_DEBUGGER\_COMMAND}
     environment variable.
 \item[debugger-attach-on-error] = \textit{<bool>}, default: \ttt{false}\\
@@ -656,6 +678,18 @@ with the \fopt{-h configdetails} option.
     \textit{Global setting (applies to all simulation runs).}\\
     Specifies the extra amount of stack that is reserved for each
     \ttt{activity()} simple module when the simulation is run under Qtenv.
+\item[qtenv-identicon-seed] = \textit{<string>}\\
+    \textit{Per-simulation-run setting.}\\
+    Overrides the default (computed) identicon seed for the current run. The
+    identicon is a small image that is shown in the upper right corner of the
+    Qtenv main window, and its purpose is help the user visually identify the
+    window if there are multiple Qtenv simulations running at the same time.
+    The image is generated from a seed. By default, the seed is computed from
+    various properties of the simulation (config name, run number,
+    configuration contents, etc) that ensures that different simulations result
+    in different images, but multiple launches of the same simulation result in
+    the same identicon. This configuration option allows the user to override
+    this default behavior and force a specific seed.
 \item[real-time-limit] = \textit{<double>}, unit=\ttt{s}\\
     \textit{Per-simulation-run setting.}\\
     Stops the simulation after the specified amount of time has elapsed. The
@@ -671,6 +705,14 @@ with the \fopt{-h configdetails} option.
     \textit{Per-simulation-run setting.}\\
     Enables recording an eventlog file, which can be later visualized on a
     sequence chart. See \ttt{eventlog-{\allowbreak}file} option too.
+\item[record-scalar-results] = \textit{<bool>}, default: \ttt{true}\\
+    \textit{Per-simulation-run setting.}\\
+    Enables writing an output scalar (\ttt{.{\allowbreak}sca}) file. See the
+    \ttt{output-{\allowbreak}scalar-{\allowbreak}file} option too.
+\item[record-vector-results] = \textit{<bool>}, default: \ttt{true}\\
+    \textit{Per-simulation-run setting.}\\
+    Enables writing an output vector (\ttt{.{\allowbreak}vec}) file. See the
+    \ttt{output-{\allowbreak}vector-{\allowbreak}file} option too.
 \item[repeat] = \textit{<int>}, default: \ttt{1}\\
     \textit{Per-simulation-run setting.}\\
     For scenarios. Specifies how many replications should be done with the same

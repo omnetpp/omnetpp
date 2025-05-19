@@ -1769,7 +1769,7 @@ makes the "Export image" functionality of the IDE and \ttt{opp\_charttool} work.
     version of the chart name is used.
   \item \ttt{image\_export\_width}: Image width in inches (default: 6")
   \item \ttt{image\_export\_height}: Image height in inches (default: 4")
-  \item \ttt{image\_export\_dpi}: DPI setting, default 96. For raster image formats, the
+  \item \ttt{image\_export\_dpi}: DPI setting, default 300. For raster image formats, the
     image dimensions are produced as width (or height) times dpi.
 
 \end{itemize}
@@ -2132,7 +2132,7 @@ the function raises an error with the given message.
 \label{cha:chart-api:omnetpp.scave.utils:to-numeric}
 
 \begin{flushleft}
-\ttt{to\_numeric(df, columns=None, errors="ignore", downcast=None)}
+\ttt{to\_numeric(df, columns=[])}
 \end{flushleft}
 
 \par Convenience function. Runs \ttt{pandas.to\_numeric} on the given
@@ -2143,9 +2143,8 @@ exist, throws an error.
 
 \begin{itemize}
   \item \ttt{df} \textit{(DataFrame)}: The DataFrame to operate on
-  \item \ttt{columns} \textit{(list of strings)}: The list of column names to convert.
-    If not given, all columns will be converted.
-  \item \ttt{errors}, \ttt{downcast} \textit{(string)}: Will be passed to \ttt{pandas.to\_numeric()}
+  \item \ttt{columns} \textit{(string or list of strings)}: The column name or list of
+    column names to convert. If not given, all columns will be converted.
 
 \end{itemize}
 
@@ -2279,11 +2278,9 @@ Parameters:
 \begin{itemize}
   \item \ttt{label}: will be shown on the GUI for the user
   \item \ttt{example}: should be string, containing a valid invocation of the function
+    Alternatively, this can also be used directly as decorator (without calling it first).
 
 \end{itemize}
-
-
-\par Alternatively, this can also be used directly as decorator (without calling it first).
 
 \subsubsection{lookup\_operation()}
 \label{cha:chart-api:omnetpp.scave.vectorops:lookup-operation}
@@ -2775,7 +2772,7 @@ or implements equivalent functionality).
 \label{cha:chart-api:omnetpp.scave.analysis:Analysis:export-image}
 
 \begin{flushleft}
-\ttt{\small{Analysis.}export\_image(self, chart, wd, workspace, format="svg", target\_folder=None, filename=None, width=None, height=None, dpi=96, enforce=True, extra\_props=\{\}, suppress\_print=False)}
+\ttt{\small{Analysis.}export\_image(self, chart, wd, workspace, format="svg", target\_folder=None, filename=None, width=None, height=None, dpi=300, enforce=True, extra\_props=\{\}, suppress\_print=False)}
 \end{flushleft}
 
 \par Runs a chart script for image export. This method just calls \ttt{run\_chart()}
