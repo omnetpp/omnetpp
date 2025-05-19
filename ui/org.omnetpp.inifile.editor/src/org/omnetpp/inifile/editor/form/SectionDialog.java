@@ -149,7 +149,7 @@ public class SectionDialog extends TitleAreaDialog {
         Group group2 = createGroup(composite, "Basic configuration", 3);
 
         // "extends" section field
-        createLabel(group2, "Fall back to sections:", parent.getFont());
+        createLabel(group2, "Extends the following sections:", parent.getFont());
         baseConfigsText = new Text(group2, SWT.BORDER);
         baseConfigsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
@@ -163,7 +163,7 @@ public class SectionDialog extends TitleAreaDialog {
         });
 
         // network name field
-        createLabel(group2, "NED Network:", parent.getFont());
+        createLabel(group2, "Network to simulate:", parent.getFont());
         networkCombo = new Combo(group2, SWT.BORDER);
 
         networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
