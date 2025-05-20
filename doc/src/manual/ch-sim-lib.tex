@@ -1063,68 +1063,32 @@ a \cclass{cTopology} node and vice versa.
 \subsection{Basic Usage}
 \label{sec:sim-lib:ctopology-basic-usage}
 
-One can extract the network topology into a \cclass{cTopology}
+The network topology can be extracted into a \cclass{cTopology}
 object with a single method call. There are several ways to specify
 which modules should be included in the topology:
 
 \begin{itemize}
-  \item by module type
-  \item by a parameter's presence and value
-  \item with a user-supplied Boolean function
+  \item by NED types
+  \item by module paths or module path patterns
+  \item by a property's or parameter's presence and value
+  \item by a user-supplied predicate function
 \end{itemize}
 
-First, you can specify which node types you want to include. The
-following code extracts all modules of type \ttt{Router} or \ttt{Host}.
-(\ttt{Router} and \ttt{Host} can be either simple or compound module types.)
+The \cclass{cTopology} class has a member function for each of the above:
+\ffunc{extractByNedTypeName()}, \ffunc{extractByModulePath()},
+\ffunc{extractByModulePath()}, \ffunc{extractByProperty()},
+\ffunc{extractByParameter()}, and \ffunc{extractFromNetwork()}.
+
+The last method, the user-supplied predicate function, is the most general.
+It expects the user to supply a function that accepts a module pointer,
+and returns a boolean that indicates whether the module should be included in the topology.
+An example that selects all top-level modules:
 
 \begin{cpp}
-cTopology topo;
-topo.extractByModuleType("Router", "Host", nullptr);
-\end{cpp}
-
-Any number of module types can be supplied; the list must be terminated by \ttt{nullptr}.
-
-A dynamically assembled list of module types can be passed as a
-\ttt{nullptr}-terminated array of \ttt{const char*} pointers, or
-in an STL string vector \ttt{std::vector<std::string>}.
-An example of the former:
-
-\begin{cpp}
-cTopology topo;
-const char *typeNames[3];
-typeNames[0] = "Router";
-typeNames[1] = "Host";
-typeNames[2] = nullptr;
-topo.extractByModuleType(typeNames);
-\end{cpp}
-
-Second, you can extract all modules that have a certain parameter:
-
-\begin{cpp}
-topo.extractByParameter("ipAddress");
-\end{cpp}
-
-You can also specify that the parameter must have a certain value
-for the module to be included in the graph:
-
-\begin{cpp}
-cMsgPar yes = "yes";
-topo.extractByParameter("includeInTopo", &yes);
-\end{cpp}
-
-The third form allows you to pass a function that can determine for
-each module whether it should or should not be included. You can have
-\cclass{cTopology} pass supplemental data to the function through a
-\ttt{void*} pointer. An example that selects all top-level modules (and
-does not use the \ttt{void*} pointer):
-
-\begin{cpp}
-int selectFunction(cModule *mod, void *)
-{
-  return mod->getParentModule() == getSimulation()->getSystemModule();
-}
-
-topo.extractFromNetwork(selectFunction, nullptr);
+cModule *root = getSimulation()->getSystemModule();
+topo.extractFromNetwork([=](cModule *mod) {
+    return mod->getParentModule() == root;
+});
 \end{cpp}
 
 %
