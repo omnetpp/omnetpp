@@ -2400,6 +2400,38 @@ WATCH_PTRMAP(commandMap);
 \end{cpp}
 
 
+\subsection{Watching Expressions}
+\label{sec:sim-lib:expr-watches}
+
+The \fmac{WATCH\_EXPR()} macro makes the result of a formula or calculation
+inspectable in Qtenv without requiring a separate variable. The expression is
+evaluated as often as needed, providing real-time monitoring of derived metrics.
+Unlike other \ttt{WATCH} macros that monitor single variables, \fmac{WATCH\_EXPR()}
+can display the result of operations combining multiple variables, function
+calls, or any valid expression.
+
+Example:
+
+\begin{cpp}
+WATCH_EXPR("totalPks", numTransmitted + queue.length() + numDropped);
+\end{cpp}
+
+\fmac{WATCH\_EXPR()} operates by internally wrapping the expression into a
+lambda function. Class members will be captured by reference (via the \ttt{this}
+pointer). In contrast, local variables will be captured by value, that is, their
+current values will be used in all subsequent evaluations. If this is not
+what you need, there also is a \fmac{WATCH\_LAMBDA()} macro that explicitly takes a
+lambda function, giving you more control over the way variables are captured.
+\fmac{WATCH\_LAMBDA()} also allows for supplying a multi-statement function body
+instead of a single expression.
+
+Example:
+
+\begin{cpp}
+WATCH_LAMBDA("totalPks", [this]() {
+     return numTransmitted + queue.length() + numDropped;
+});
+\end{cpp}
 
 \subsection{Snapshots}
 \label{sec:sim-lib:snapshots}
