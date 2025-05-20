@@ -1063,95 +1063,189 @@ a \cclass{cTopology} node and vice versa.
 \subsection{Basic Usage}
 \label{sec:sim-lib:ctopology-basic-usage}
 
-The network topology can be extracted into a \cclass{cTopology}
-object with a single method call. There are several ways to specify
-which modules should be included in the topology:
+The \cclass{cTopology} class provides powerful functionality for extracting and
+analyzing network topology. It creates a graph representation where nodes
+correspond to modules (simple or compound) and edges correspond to connections
+between these modules.
+
+\subsubsection{Extracting the Topology}
+\label{sec:sim-lib:ctopology-extraction}
+
+The network topology can be extracted into a \cclass{cTopology} object with a
+single method call. There are several ways to specify which modules should be
+included in the topology:
 
 \begin{itemize}
-  \item by NED types
-  \item by module paths or module path patterns
-  \item by a property's or parameter's presence and value
-  \item by a user-supplied predicate function
+  \item \textbf{By NED types}: Include modules based on their NED type names
+  \item \textbf{By module paths}: Include modules whose paths match specified patterns
+  \item \textbf{By property}: Include modules that have a specific property
+  \item \textbf{By parameter}: Include modules with a specific parameter (optionally with a specific value)
+  \item \textbf{By predicate function}: Include modules that satisfy a custom condition
 \end{itemize}
 
-The \cclass{cTopology} class has a member function for each of the above:
-\ffunc{extractByNedTypeName()}, \ffunc{extractByModulePath()},
-\ffunc{extractByModulePath()}, \ffunc{extractByProperty()},
-\ffunc{extractByParameter()}, and \ffunc{extractFromNetwork()}.
-
-The last method, the user-supplied predicate function, is the most general.
-It expects the user to supply a function that accepts a module pointer,
-and returns a boolean that indicates whether the module should be included in the topology.
-An example that selects all top-level modules:
+The \cclass{cTopology} class provides a corresponding extraction method for each
+approach:
 
 \begin{cpp}
+// Extract by fully qualified NED type name
+std::vector<std::string> types = {"acme.Host", "acme.Router"}; // made-up names
+topo.extractByNedTypeName(types);
+
+// Extract by module path pattern
+std::vector<std::string> patterns = {"**.host[*]", "**.router*"};
+topo.extractByModulePath(patterns);
+
+// Extract by property
+topo.extractByProperty("networkNode");  // modules with @networkNode property
+
+// Extract by parameter
+topo.extractByParameter("forwarding", "true");  // modules with forwarding=true
+\end{cpp}
+
+The most flexible approach is using a predicate function with
+\ffunc{extractFromNetwork()}, which accepts a lambda function in modern C++.
+This allows for complex selection criteria:
+
+\begin{cpp}
+// Select all top-level modules of type "Node"
 cModule *root = getSimulation()->getSystemModule();
 topo.extractFromNetwork([=](cModule *mod) {
-    return mod->getParentModule() == root;
+    return mod->getParentModule() == root && mod->getNedTypeName()=="Node";
+});
+
+// Select modules that have a submodule named 'ipv4' whose
+// 'forwarding' parameter is set to true
+topo.extractFromNetwork([](cModule *mod) {
+    cModule *ipv4 = mod->getSubmodule("ipv4");
+    if (!ipv4)
+        return false;
+    return ipv4->par("forwarding").boolValue();
 });
 \end{cpp}
 
-%
-% TBD one more example which \textit{does use} the void* ptr.
-%
+\subsubsection{Exploring the Topology}
+\label{sec:sim-lib:ctopology-exploring}
 
-A \cclass{cTopology} object uses two types: \cclass{cTopology::Node} for
-nodes and \cclass{cTopology::Link} for edges. (\cclass{cTopology::LinkIn} and
-\cclass{cTopology::LinkOut} are aliases for \cclass{cTopology::Link}; we'll
-talk about them later.)
+A \cclass{cTopology} object uses the following classes to represent the graph:
+\begin{itemize}
+  \item \cclass{cTopology::Node}: Represents a module in the network
+  \item \cclass{cTopology::Link}: Base class for edges in the graph
+  \item \cclass{cTopology::LinkIn} and \cclass{cTopology::LinkOut}: Specialized
+        views of a \cclass{Link} that provide convenient access to the "local" and
+        "remote" ends of a connection
+\end{itemize}
 
-Once you have the topology extracted, you can start exploring
-it. Consider the following code (we'll explain it shortly):
+Once you have extracted the topology, you can explore it using the following methods:
 
 \begin{cpp}
-for (int i = 0; i < topo.getNumNodes(); i++) {
-  cTopology::Node *node = topo.getNode(i);
-  EV << "Node i=" << i << " is " << node->getModule()->getFullPath() << endl;
-  EV << " It has " << node->getNumOutLinks() << " conns to other nodes\n";
-  EV << " and " << node->getNumInLinks() << " conns from other nodes\n";
+// Create and extract the topology
+cTopology topo("network topology");
+topo.extractByProperty("node");  // extract all modules with @node property
 
-  EV << " Connections to other modules are:\n";
-  for (int j = 0; j < node->getNumOutLinks(); j++) {
-    cTopology::Node *neighbour = node->getLinkOut(j)->getRemoteNode();
-    cGate *gate = node->getLinkOut(j)->getLocalGate();
-    EV << " " << neighbour->getModule()->getFullPath()
-       << " through gate " << gate->getFullName() << endl;
-  }
+// Iterate through all nodes
+for (int i = 0; i < topo.getNumNodes(); i++) {
+    cTopology::Node *node = topo.getNode(i);
+
+    // Get the corresponding module
+    cModule *mod = node->getModule();
+    EV << "Node " << i << ": " << mod->getFullPath() << endl;
+
+    // Examine outgoing connections
+    EV << "  Outgoing connections: " << node->getNumOutLinks() << endl;
+    for (int j = 0; j < node->getNumOutLinks(); j++) {
+        cTopology::LinkOut *link = node->getLinkOut(j);
+
+        // Get the remote node and the connecting gates
+        cTopology::Node *neighborNode = link->getRemoteNode();
+        cModule *neighbor = neighborNode->getModule();
+        cGate *localGate = link->getLocalGate();
+        cGate *remoteGate = link->getRemoteGate();
+
+        EV << "    -> " << neighbor->getFullPath()
+           << " via " << localGate->getFullName()
+           << " -> " << remoteGate->getFullName() << endl;
+    }
+
+    // Examine incoming connections
+    EV << "  Incoming connections: " << node->getNumInLinks() << endl;
+    for (int j = 0; j < node->getNumInLinks(); j++) {
+        cTopology::LinkIn *link = node->getLinkIn(j);
+
+        // Get the remote node and the connecting gates
+        cTopology::Node *neighborNode = link->getRemoteNode();
+        cModule *neighbor = neighborNode->getModule();
+        cGate *localGate = link->getLocalGate();
+        cGate *remoteGate = link->getRemoteGate();
+
+        EV << "    <- " << neighbor->getFullPath()
+           << " via " << localGate->getFullName()
+           << " <- " << remoteGate->getFullName() << endl;
+    }
 }
 \end{cpp}
 
-The \ffunc{getNumNodes()} member function returns the number of
-nodes in the graph, and \ffunc{getNode(i)} returns a pointer to the \textit{i}th
-node, a \cclass{cTopology::Node} structure.
+Several functions used in the above code fragment will be explained in the
+next sections.
 
-The correspondence between a graph node and a module can be obtained
-by the \ffunc{getNodeFor()} method:
+\subsubsection{Finding Specific Nodes}
+\label{sec:sim-lib:ctopology-finding-nodes}
+
+You can find the topology node that corresponds to a specific module using the
+\ffunc{getNodeFor()} method:
 
 \begin{cpp}
-cTopology::Node *node = topo.getNodeFor(module);
-cModule *module = node->getModule();
+// Find a specific module in the network
+cModule *targetModule = getModuleByPath("Network.server");
+
+// Get the corresponding node in the topology
+cTopology::Node *node = topo.getNodeFor(targetModule);
+
+if (node != nullptr) {
+    // The module is part of the extracted topology
+    EV << "Found node for " << targetModule->getFullPath() << endl;
+
+    // Now we can analyze its connections
+    EV << "It has " << node->getNumOutLinks() << " outgoing connections" << endl;
+} else {
+    // The module was not included in the extracted topology
+    EV << targetModule->getFullPath() << " is not part of the topology" << endl;
+}
 \end{cpp}
 
-The \ffunc{getNodeFor()} member function returns a pointer to the graph
-node for a given module. (If the module is not in the graph, it
-returns \ttt{nullptr}). \ffunc{getNodeFor()} uses binary search within the
-\cclass{cTopology} object so it is relatively fast.
+\subsubsection{Understanding LinkIn and LinkOut}
+\label{sec:sim-lib:ctopology-link-types}
 
-\cclass{cTopology::Node}'s other member functions let you determine the
-connections of this node: \ffunc{getNumInLinks()}, \ffunc{getNumOutLinks()} return
-the number of connections, \ttt{getLinkIn(i)} and
-\ttt{getLinkOut(i)} return pointers to graph edge objects.
+The \cclass{cTopology::Link} class represents a connection in the graph, but
+it is rarely used directly. Instead, \cclass{cTopology::LinkIn} and
+\cclass{cTopology::LinkOut} provide convenient views of the same link from the
+perspective of a specific node:
 
-By calling member functions of the graph edge object, you can
-determine the modules and gates involved. The \ffunc{getRemoteNode()}
-function returns the other end of the connection, and
-\ffunc{getLocalGate()}, \ffunc{getRemoteGate()}, \ffunc{getLocalGateId()} and
-\ffunc{getRemoteGateId()} return the gate pointers and IDs of the gates
-involved. (Actually, the implementation is a bit tricky here: the same
-graph edge object \cclass{cTopology::Link} is returned either as
-\cclass{cTopology::LinkIn} or as \cclass{cTopology::LinkOut} so that ``remote''
-and ``local'' can be correctly interpreted for edges of both
-directions.)
+\begin{itemize}
+  \item \cclass{LinkOut}: Represents an outgoing connection from the current node's perspective
+  \item \cclass{LinkIn}: Represents an incoming connection from the current node's perspective
+\end{itemize}
+
+Both classes provide methods like \ffunc{getLocalNode()},
+\ffunc{getRemoteNode()}, \ffunc{getLocalGate()}, and \ffunc{getRemoteGate()}
+that return the appropriate ends of the connection relative to the current node.
+This makes traversing the graph more intuitive:
+
+\begin{cpp}
+// For an outgoing link from node A to node B:
+cTopology::LinkOut *outLink = nodeA->getLinkOut(j);
+cTopology::Node *nodeB = outLink->getRemoteNode();  // Returns node B
+cGate *localGate = outLink->getLocalGate();         // Returns gate in node A
+cGate *remoteGate = outLink->getRemoteGate();       // Returns gate in node B
+
+// For the same link, but viewed as an incoming link to node B:
+cTopology::LinkIn *inLink = nodeB->getLinkIn(k);
+cTopology::Node *nodeA = inLink->getRemoteNode();   // Returns node A
+cGate *localGate = inLink->getLocalGate();          // Returns gate in node B
+cGate *remoteGate = inLink->getRemoteGate();        // Returns gate in node A
+\end{cpp}
+
+This design makes it easy to traverse the graph in either direction while
+maintaining a consistent "local" and "remote" terminology.
 
 \subsection{Shortest Paths}
 \label{sec:sim-lib:ctopology-shortest-paths}
