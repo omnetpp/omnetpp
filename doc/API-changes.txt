@@ -21,6 +21,26 @@ Legend:
 (i)     information
 
 
+OMNeT++ 6.2
+~~~~~~~~~~~
+
+(+)     Added WATCH_EXPR() and WATCH_LAMBDA() to allow watching the values of
+        expressions.
+
+(+)     cTopology: extractFromNetwork(std::function<bool(cModule *)> predicate),
+        an extractFromNetwork() overload that allows selecting modules by use of
+        lambda functions.
+
+(+)     cComponentType: added getDocumentation().
+
+(+)     cAbstractTextFigure: Added getTextExtent() and getFontAscent().
+
+(+)     cEnum: Added resolveName() and getNameForValue() template functions
+        for convenience, with the template parameter being the enum type.
+
+(+)     Added the getTerminationExceptionTypeInfoPointer() global function.
+
+
 OMNeT++ 6.1
 ~~~~~~~~~~~
 
@@ -38,8 +58,8 @@ OMNeT++ 6.1
 
 (!)     SimTime: SimTime(cPar&) constructor was changed to SimTime(const cPar&).
 
-(-)	cComponent: getAncestorPar() deprecated. Its use, and in general,
-	accessing the containing modules' parameters, constitutes bad practice.
+(-)     cComponent: getAncestorPar() deprecated. Its use, and in general,
+        accessing the containing modules' parameters, constitutes bad practice.
 
 (!)     cConfigurationEx: Added the isAbstractConfig() pure virtual method.
         Most models are not affected; but if the model includes a custom
@@ -2552,4 +2572,3 @@ User interfaces:
 (+)     The per-module extra stack size needed by the user interface libraries
         can now be configured from the ini file: [Cmdenv]/extra-stack= and
         [Tkenv]/extra-stack= options.
-

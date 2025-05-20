@@ -47,7 +47,8 @@
 
 2025-01-17  Andras Varga
 
-	* cEnum: Added resolveName() and getNameForValue() convenience functions.
+	* cEnum: Added resolveName() and getNameForValue() template functions
+	for convenience, with the template parameter being the enum type.
 
 2024-10-08  ------ omnetpp-6.1.0 released ------
 
