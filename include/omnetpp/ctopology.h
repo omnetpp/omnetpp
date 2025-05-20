@@ -420,7 +420,7 @@ class SIM_API cTopology : public cOwnedObject
     /**
      * Extracts model topology by module full path. All modules whole getFullPath()
      * matches one of the patterns in given string vector will get included.
-     * The patterns may contain wilcards in the same syntax as in ini files.
+     * The patterns may contain wildcards in the same syntax as in ini files.
      *
      * An example:
      *
