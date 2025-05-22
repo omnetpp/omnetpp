@@ -19,9 +19,17 @@ public class Activator extends AbstractUIPlugin implements IStartup
     public String authToken = java.util.UUID.randomUUID().toString();
     public ClientServer clientServer;
 
+    // This was initially added to allow the Python REPL (in the Console view) to
+    // access the required classes for manipulating editors, sequence charts, etc.
+    // However, it broke the registration of vector operations, because this way,
+    // the VectorOp class was not accessible by chart script runner Python processes.
+    // After removing this, we haven't managed to reproduce the original problem with
+    // the Python REPL, so we are leaving it commented out for now. TODO: revisit
+    /*
     static {
         ReflectionUtil.setClassLoadingStrategy(new PluginClassLoadingStrategy());
     }
+    */
 
     public Activator() {
     }
