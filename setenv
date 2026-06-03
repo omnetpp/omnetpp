@@ -52,25 +52,6 @@ else
   quiet=false
 fi
 
-# Activate local python virtual environment if present in the root directory.
-# You can create a virtual environment with 'python3 -m venv .venv'
-# and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
-#
-# NOTE: the bin/activate script directly sets the PATH variable to a value saved during
-# an earlier run of the script to restore the PATH to that state. This may overwrite any
-# changes made to the PATH since the last run. Because of this it is EXTREMELY important
-# NOT to modify the PATH in the 'setenv' script before activating the virtual env.
-# In short, this activation MUST BE at the very beginning of the 'setenv' script.
-#
-# NOTE: On NixOS we must avoid activating a virtual environment UNLESS we are in an FHS shell
-# where all necessary libraries are mapped to their standard locations. Modules (with wheels)
-# installed by pip will not work in a standard Nix environment.
-#
-if [ -f "$__root_dir/.venv/bin/activate" ] ; then
-  [[ "$quiet" != "true" ]] && echo "Activating python virtual environment in '$__root_dir/.venv'"
-  source $__root_dir/.venv/bin/activate
-fi
-
 # Handle special cases for sourcing vs executing this script:
 # Sourcing is not allowed on NixOS, and executing ./setenv without arguments is not allowed on non-NixOS systems
 # to avoid inadvertedly calling setenv instead of sourcing it.
@@ -80,6 +61,26 @@ if [[ "$sourced" == "yes" ]]; then
     skip_setenv=true
     eval "$(nix print-dev-env --extra-experimental-features nix-command --extra-experimental-features flakes $__root_dir/.opp_shell)"
     unset skip_setenv
+  fi
+
+  # Activate local python virtual environment if present in the root directory.
+  # You can create a virtual environment with 'python3 -m venv .venv'
+  # and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
+  #
+  # NOTE: the bin/activate script directly sets the PATH variable to a value saved during
+  # an earlier run of the script to restore the PATH to that state. This may overwrite any
+  # changes made to the PATH since the last run. Because of this it is EXTREMELY important
+  # NOT to modify the PATH in the 'setenv' script before activating the virtual env.
+  # In short, this activation MUST BE at the very beginning of the 'setenv' script.
+  # NOTE: On NixOS, the Nix environment setup (via nix print-dev-env) also overwrites PATH,
+  # so the venv must be activated AFTER the Nix environment is set up.
+  # NOTE: On NixOS we must avoid activating a virtual environment UNLESS we are in an FHS shell
+  # where all necessary libraries are mapped to their standard locations. Modules (with wheels)
+  # installed by pip will not work in a standard Nix environment.
+  #
+  if [ -f "$__root_dir/.venv/bin/activate" ] ; then
+    [[ "$quiet" != "true" ]] && echo "Activating python virtual environment in '$__root_dir/.venv'"
+    source $__root_dir/.venv/bin/activate
   fi
 else
   # we have executed setenv so we need at least 1 explicit parameter as a command to be executed
