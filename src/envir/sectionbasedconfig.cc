@@ -15,6 +15,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <set>
 #include <sstream>
 #include "common/opp_ctype.h"
 #include "common/patternmatcher.h"
@@ -1307,6 +1308,7 @@ inline bool isSet(int value, int bits) {return (value & bits) == bits;}
 std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs(int flags) const
 {
     std::vector<const char *> result;
+    std::set<std::string> seenKeys;  // to suppress shadowed duplicate keys: config resolution is first-wins, so only the first occurrence of a key is effective
     for (const auto & entry : entries) {
         bool add = false;
         if (isSet(flags, FILT_ALL))
@@ -1333,7 +1335,7 @@ std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs(int flags)
             }
         }
 
-        if (add) {
+        if (add && seenKeys.insert(entry.getKey()).second) {  // keep only the first (effective) occurrence of each key
             result.push_back(entry.getKey());
             result.push_back(entry.getValue());
         }
