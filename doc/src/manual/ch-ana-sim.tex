@@ -433,7 +433,7 @@ default and may be turned off to save disk space.
 **.vector-record-eventnumbers = false
 \end{inifile}
 
-If the (default) \cclass{cIndexedFileOutputVectorManager} class is used to
+If the (default) \cclassnoapi{cIndexedFileOutputVectorManager} class is used to
 record output vectors, there are two more options to fine-tune its resource
 usage. \ttt{output-vectors-memory-limit} specifies the total memory that can be
 used for buffering output vectors. Larger values produce less-fragmented vector
@@ -572,8 +572,8 @@ Errors resulting from rounding and conversion can be eliminated by choosing an
 output vector/output scalar manager class that stores \ttt{double}s in their
 native binary form. The appropriate configuration options are
 \fconfig{outputvectormanager-class} and \fconfig{outputvectormanager-class}. For
-example, \cclass{cMySQLOutputScalarManager} and
-\cclass{cMySQLOutputScalarManager} provided in \ttt{samples/database} fulfill
+example, \cclassnoapi{cMySQLOutputScalarManager} and
+\cclassnoapi{cMySQLOutputScalarManager} provided in \ttt{samples/database} fulfill
 this requirement.
 
 However, before worrying too much about rounding and conversion errors, consider

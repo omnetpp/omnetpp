@@ -380,7 +380,7 @@ useful when implementing certain types of event schedulers.
 To see examples of scheduler classes, check the \cclass{cSequentialScheduler}
 and \cclass{cRealTimeScheduler} classes in the simulation kernel,
 \ttt{cSocketRTScheduler} which is part of the \textit{Sockets} sample
-simulation, or \cclass{cParsimSynchronizer} and its subclasses that are part of
+simulation, or \cclassnoapi{cParsimSynchronizer} and its subclasses that are part of
 the parallel simulation support of {\opp}.
 
 
@@ -415,7 +415,7 @@ The computational class for fingerprint must implement the
 
 An output scalar manager handles the recording of scalar and histogram
 output data. The default output scalar manager is
-\cclass{cFileOutputScalarManager}, which saves data into \ttt{.sca} files.
+\cclassnoapi{cFileOutputScalarManager}, which saves data into \ttt{.sca} files.
 This extension interface allows one to create additional means of saving
 scalar and histogram results, such as database or CSV output.
 
@@ -429,7 +429,7 @@ option.
 
 An output vector manager handles the recording of output vectors produced
 by objects such as \cclass{cOutVector}. The default output vector
-manager is \cclass{cIndexedFileOutputVectorManager}, which saves data into
+manager is \cclassnoapi{cIndexedFileOutputVectorManager}, which saves data into
 \ttt{.vec} files indexed in separate \ttt{.vci} files. This extension
 interface allows one to create additional means of saving vector results,
 such as database or CSV output.
@@ -444,7 +444,7 @@ configuration option.
 
 An eventlog manager handles the recording of simulation history into an
 event log (see \ref{cha:eventlog}). The default eventlog manager is
-\cclass{EventlogFileManager}, which records into a file and also allows
+\cclassnoapi{EventlogFileManager}, which records into a file and also allows
 for some filtering. By replacing the default eventlog manager class, one can
 introduce additional filtering, record into a different file format, or
 store it in different storage (e.g., a database or a remote visualizer).
@@ -459,7 +459,7 @@ option.
 
 A snapshot manager provides an output stream to which snapshots are written
 (see Section \ref{sec:sim-lib:snapshots}). The default snapshot manager
-is \cclass{cFileSnapshotManager}.
+is \cclassnoapi{cFileSnapshotManager}.
 
 The new class must implement the \cclass{cISnapshotManager} interface and
 can be activated with the \fconfig{snapshotmanager-class} configuration
@@ -485,16 +485,16 @@ simulation run, one of the \textit{named configurations} is
 activated, and from then on, all queries into the configuration
 operate on the \textit{active named configuration} only.
 
-In practice, you will probably use the \cclass{SectionBasedConfiguration}
+In practice, you will probably use the \cclassnoapi{SectionBasedConfiguration}
 class (in \ttt{src/envir}) or subclass it because it already
 implements a lot of functionality that you would otherwise have to implement.
 
-\cclass{SectionBasedConfiguration} does not assume ini files or
+\cclassnoapi{SectionBasedConfiguration} does not assume ini files or
 any other specific storage format. Instead, it accepts an object
 that implements the \cclass{cConfigurationReader}
 interface to provide the data in its raw form.
 The default implementation of \cclass{cConfigurationReader} is
-\cclass{InifileReader}.
+\cclassnoapi{InifileReader}.
 
 \subsection{The Startup Sequence}
 \label{sec:plugin-exts:configprovider-startup-sequence}
@@ -505,8 +505,8 @@ looks as follows (see \ttt{src/envir/startup.cc} in the source code):
 \begin{enumerate}
   \item First, ini files specified on the command line are read into a
      \textit{boot-time configuration object}. The boot-time configuration
-     is always a \cclass{SectionBasedConfiguration} with
-     \cclass{InifileReader}.
+     is always a \cclassnoapi{SectionBasedConfiguration} with
+     \cclassnoapi{InifileReader}.
   \item Shared libraries are loaded (see the \fopt{-l} command-line option
      and the \fconfig{load-libs} configuration option). This allows
      configuration classes to come from shared libraries.
@@ -553,9 +553,9 @@ configuration-class = CustomConfiguration
 
 As mentioned earlier, writing a configuration class from scratch can
 be a lot of work, and it may be more practical to reuse
-\cclass{SectionBasedConfiguration} with a different configuration
+\cclassnoapi{SectionBasedConfiguration} with a different configuration
 reader class. This can be done using the \fconfig{sectionbasedconfig-configreader-class}
-configuration option, which is interpreted by \cclass{SectionBasedConfiguration}.
+configuration option, which is interpreted by \cclassnoapi{SectionBasedConfiguration}.
 Specify the following in the boot-time ini file:
 
 \begin{inifile}
@@ -590,12 +590,12 @@ command-line options and configuration options.
 
 User interfaces must implement (i.e. subclass from) \cclass{cRunnableEnvir} and
 must be registered to {\opp} with the \fmac{Register\_OmnetApp()} macro. In most
-cases, you will want to subclass \cclass{EnvirBase} instead of
-\cclass{cRunnableEnvir} because \cclass{EnvirBase} already implements many
+cases, you will want to subclass \cclassnoapi{EnvirBase} instead of
+\cclass{cRunnableEnvir} because \cclassnoapi{EnvirBase} already implements many
 functionalities that you would otherwise have to implement.
 
 \begin{note}
-If you want something completely different from what \cclass{EnvirBase}
+If you want something completely different from what \cclassnoapi{EnvirBase}
 provides, such as embedding the simulation kernel into another application, then
 you should refer to section \ref{sec:embedding:embedding}, not this one.
 \end{note}
@@ -623,7 +623,7 @@ is missing, the user interface with the highest weight will be activated), and a
 description string (for help and other purposes).
 
 The C++ class should implement all methods left as pure virtual in
-\cclass{EnvirBase}, and possibly other methods if you want to customize their
+\cclassnoapi{EnvirBase}, and possibly other methods if you want to customize their
 behavior. One method that you will certainly want to re-implement is
 \ffunc{run()}, as this is where your user interface will be executed. Once this
 method exits, the simulation program will also exit.

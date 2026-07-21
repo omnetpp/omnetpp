@@ -375,18 +375,18 @@ communication between partitions. The class must implement the
 %% XXX what choices there are
 
 The \fconfig{parsim-synchronization-class} option selects the parallel
-simulation algorithm. The class must implement the \cclass{cParsimSynchronizer} interface.
+simulation algorithm. The class must implement the \cclassnoapi{cParsimSynchronizer} interface.
 
 %% XXX what choices there are
 
 The following two options configure the Null Message Algorithm, so
-they are only effective if \cclass{cNullMessageProtocol} has been selected
+they are only effective if \cclassnoapi{cNullMessageProtocol} has been selected
 as the synchronization class:
 
 \begin{itemize}
   \item \fconfig{parsim-nullmessageprotocol-lookahead-class}
     selects the lookahead class for the NMA; the class must be subclassed
-    from \cclass{cNMPLookahead}. The default class is \cclass{cLinkDelayLookahead}.
+    from \cclassnoapi{cNMPLookahead}. The default class is \cclassnoapi{cLinkDelayLookahead}.
 
   \item \fconfig{parsim-nullmessageprotocol-laziness} expects a number
     in the $(0,1)$ interval (the default is 0.5), and it controls how often

@@ -109,6 +109,7 @@ htmlfile_spec := $BASE.html
 :comm   :\new:<sup><b>[New!]</b></sup>::
 :comm   :\changed:[Changed!]::
 :{}     :\ttt:<tt>:</tt>:
+:{}     :\cclassnoapi:<tt>:</tt>:
 :{}     :\tbf:<b>:</b>:
 :{}     :\mathit:<i>:</i>:
 :{}     :\tilde:&:tilde;:

@@ -3083,7 +3083,7 @@ and a struct in which the method can return the results:
 Result processMessage(cMessage *msg, const SendOptions& options, simtime_t t);
 \end{cpp}
 
-The \cclass{Result} struct is an inner type of \cclass{cChannel}
+The \cclassnoapi{Result} struct is an inner type of \cclass{cChannel}
 and looks like this:
 
 \begin{cpp}
@@ -3161,7 +3161,7 @@ disabled; in its disabled state, messages sent through it will be discarded.
 This class still models zero transmission duration, so its
 \ffunc{isTransmissionChannel()} and \ffunc{getTransmissionFinishTime()}
 methods still return \ttt{false} and $0s$. The \ffunc{processMessage()} method
-sets the appropriate fields in the \cclass{Result} struct:
+sets the appropriate fields in the \cclassnoapi{Result} struct:
 
 
 \begin{cpp}

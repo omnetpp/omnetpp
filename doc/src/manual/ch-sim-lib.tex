@@ -1620,8 +1620,8 @@ There are several statistics and result collection classes:
 \cclass{cKSplit}. They are all derived from the abstract base class
 \cclass{cStatistic}; histogram-like classes derive from
 \cclass{cAbstractHistogram}.\footnote{Earlier versions of {\opp} had more
-statistical classes: \cclass{cWeightedStdDev}, \cclass{cLong\-Histogram},
-\cclass{cDouble\-Histogram}, \cclass{cVarHistogram}. The functionality
+statistical classes: \cclassnoapi{cWeightedStdDev}, \cclass{cLong\-Histogram},
+\cclass{cDouble\-Histogram}, \cclassnoapi{cVarHistogram}. The functionality
 of these classes has been consolidated into \cclass{cStdDev} and
 \cclass{cHistogram}.}
 
@@ -1803,7 +1803,7 @@ Four other methods, \ffunc{getUnderflowSumWeights()}, \ffunc{getOverflowSumWeigh
 \ffunc{getNumUnderflows()}, \ffunc{getNumOverflows()}, provide access to
 the outliers.
 
-These functions, being defined on \cclass{cHistogramBase}, are not only
+These functions, being defined on \cclassnoapi{cHistogramBase}, are not only
 available on \cclass{cHistogram} but also for \cclass{cPSquare} and \cclass{cKSplit}.
 
 For \cclass{cHistogram}, bin edges and bin values can also be accessed
