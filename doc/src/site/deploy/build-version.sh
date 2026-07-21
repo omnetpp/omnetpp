@@ -43,7 +43,9 @@ fi
 echo "--> checking out '$REF' into worktree $WORKTREE"
 git -C "$REPO" worktree add --detach "$WORKTREE" "$COMMIT"
 
-BUILDID="$(git -C "$WORKTREE" rev-parse --short HEAD)"
+# The commit that triggered the build (the driving checkout), not the ref that is
+# checked out into the worktree: the footer names the build, not the built version.
+BUILDID="$(git -C "$REPO" rev-parse --short HEAD)"
 DOCSRC="$WORKTREE/doc/src"
 
 if [ ! -f "$DOCSRC/site/check-conversion.py" ]; then

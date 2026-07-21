@@ -1,10 +1,12 @@
 *.pdf
 *.htm
 *.html
+!/src/_templates/**/*.html
 *.pyc
 /guides/
 /manual/
 /installguide/
+/ide-overview/
 /ide-customization-guide/
 /ide-developersguide/
 /userguide/

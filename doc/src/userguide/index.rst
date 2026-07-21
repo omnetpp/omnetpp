@@ -1,7 +1,4 @@
-.. User Guide documentation master file, created by
-   sphinx-quickstart on Wed Feb 24 10:07:41 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. _user-guide:
 
 User Guide
 ==========

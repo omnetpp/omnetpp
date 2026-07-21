@@ -1,0 +1,25 @@
+{#-
+  Overrides the sphinx-immaterial partial of the same name, to name the commit
+  that triggered the build. `buildid` comes from html_context in conf.py.
+  The {% trans %} wrappers of the original are dropped: translated strings may
+  not contain conditionals, and the site is English-only.
+-#}
+<div class="md-copyright">
+  {% if show_copyright %}
+    <div class="md-footer-copyright__highlight">
+      {%- if hasdoc('copyright') %}
+        &#169; <a href="{{ pathto('copyright') }}">Copyright</a> {{ copyright|e }}.
+      {%- else %}
+        &#169; Copyright {{ copyright|e }}.
+      {%- endif %}
+    </div>
+  {% endif %}
+  {%- if show_sphinx %}
+    Created {% if buildid %}from commit {{ buildid|e }} {% endif %}using
+    <a href="https://www.sphinx-doc.org/" target="_blank" rel="noopener">Sphinx</a>
+    {{ sphinx_version|e }}.
+    and
+    <a href="https://github.com/jbms/sphinx-immaterial/" target="_blank" rel="noopener">Sphinx-Immaterial</a>
+  {%- endif %}
+  {{ rendered_extracopyright }}
+</div>

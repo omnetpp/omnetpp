@@ -1,0 +1,160 @@
+:root {
+    --opp-cpp-hue: 220; /* blue */
+    --opp-ini-hue: 30;  /* orange */
+    --opp-ned-hue: 140; /* green */
+    --opp-msg-hue: 300; /* purple */
+}
+
+:root,[data-md-color-scheme=default] {
+    --opp-cpp-color: hsla(var(--opp-cpp-hue), 100%, 40%, 1);
+    --opp-cpp-background-color: hsla(var(--opp-cpp-hue), 100%, 95%, 1);
+    --opp-ini-color: hsla(var(--opp-ini-hue), 100%, 50%, 1);
+    --opp-ini-background-color: hsla(var(--opp-ini-hue), 100%, 95%, 1);;
+    --opp-ned-color: hsla(var(--opp-ned-hue), 100%, 30%, 1);
+    --opp-ned-background-color: hsla(var(--opp-ned-hue), 100%, 95%, 1);
+    --opp-msg-color: hsla(var(--opp-msg-hue), 100%, 30%, 1);
+    --opp-msg-background-color: hsla(var(--opp-msg-hue), 100%, 95%, 1);
+}
+
+:root,[data-md-color-scheme=slate] {
+    --opp-cpp-color: hsla(var(--opp-cpp-hue), 100%, 40%, 1);
+    --opp-cpp-background-color: hsla(var(--opp-cpp-hue), 50%, 20%, 1);
+    --opp-ini-color: hsla(var(--opp-ini-hue), 100%, 50%, 1);
+    --opp-ini-background-color: hsla(var(--opp-ini-hue), 20%, 20%, 1);;
+    --opp-ned-color: hsla(var(--opp-ned-hue), 100%, 30%, 1);
+    --opp-ned-background-color: hsla(var(--opp-ned-hue), 20%, 20%, 1);
+    --opp-msg-color: hsla(var(--opp-msg-hue), 100%, 30%, 1);
+    --opp-msg-background-color: hsla(var(--opp-msg-hue), 20%, 20%, 1);
+}
+
+/* uncomment to highlight unresolved links with red background - for development only */
+
+span.reference-unresolved, span.reference-not-well-formed {
+    font-size: 0.85em;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+    background: rgba(255, 0, 0, 0.2);
+    border-radius: 0.2rem;
+    text-decoration: none;
+    font-family: monospace;
+}
+
+/* 'literal and doxytag reference' roles */
+code.literal, .reference-class, .reference-fun, .reference-var, .reference-mac,
+.reference-ini, .reference-ned, .reference-msg {
+    font-size: 0.85em;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 2px;
+    padding-right: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 0.2rem;
+    text-decoration: none;
+    font-family: monospace;
+}
+
+/* color code inline literals */
+code.literal-cpp, .reference-class, .reference-fun,
+  .reference-var, .reference-mac { color: var(--opp-cpp-color) ! important; }
+code.literal-ini, .reference-ini { color: var(--opp-ini-color) ! important; }
+code.literal-ned, .reference-ned { color: var(--opp-ned-color) ! important; }
+code.literal-msg, .reference-msg { color: var(--opp-msg-color) ! important; }
+code.protocol { font-style: italic; }
+
+
+/* color code highlighter backgrounds */
+.highlight code { border-radius: 0.2rem; box-shadow: var(--md-shadow-z2) !important }
+.highlight-cpp code { background-color: var(--opp-cpp-background-color); border-left: 4px solid var(--opp-cpp-color) }
+.highlight-ini code { background-color: var(--opp-ini-background-color); border-left: 4px solid var(--opp-ini-color) }
+.highlight-ned code { background-color: var(--opp-ned-background-color); border-left: 4px solid var(--opp-ned-color) }
+.highlight-msg code { background-color: var(--opp-msg-background-color); border-left: 4px solid var(--opp-msg-color) }
+
+.menuselection, .guilabel { font-style: italic; font-weight: bold; }
+
+/* disable the extra bordering of compound keys */
+.kbd.compound {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    font-size: 100%;
+}
+
+/* sphinx-immaterial customizations ****************************************/
+
+figure img {
+    border-radius: 0.2rem;
+    box-shadow: var(--md-shadow-z2);
+}
+/* custom hero image */
+.md-hero__inner {
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.md-hero__inner p {
+    margin-block-end: 0;
+}
+
+.md-hero__inner::before {
+    content: ""; /* Necessary for the pseudo-element to work */
+    display: block; /* Treat the pseudo-element like a block-level element */
+    width: 400px; /* Width of the image */
+    height: 100px; /* Height of the image */
+    background-image: url('logo.png'); /* Path to your image */
+    background-size: cover; /* Ensure the image covers the pseudo-element */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    border-radius: 0.2rem;
+    box-shadow: var(--md-shadow-z3);
+}
+
+/* doxygen / doxygen-awsome customizations ********************************/
+
+/* Hide project name and document title from doxyspinx generated content. */
+div.doxygen-content div.header, div.doxygen-content div#top {
+    display: none;
+}
+
+div#doc-content {
+    /* disable height constraints for content and navigation pane preventing scrollbar appearance */
+    height: initial !important;
+}
+
+/* immaterial customizations */
+
+a.md-tabs__link {
+    margin-top: 0;
+}
+
+.md-tabs__item {
+    height: 1.4rem;
+}
+
+aside.footnote-list {
+    padding-bottom: 2rem;
+}
+
+/* Constrain the left navigation sidebar to the space between the header/tabs bar
+   and the bottom of the viewport, so that with many items it scrolls internally
+   instead of growing to full page height (which prevented scrolling and let it
+   overlap the footer). The theme normally sets this height via JS; this is a
+   CSS-only fallback that mirrors the theme's own sticky-top offsets. Desktop
+   layout only (>=76.25em); the mobile drawer is unaffected. */
+@media screen and (min-width: 76.25em) {
+    /* Let the (sticky) sidebar wrap to the scroll container's height instead of
+       the theme's JS-driven fixed height, so it never grows past the viewport. */
+    .md-sidebar--primary {
+        height: auto !important;
+    }
+    /* The scroll container: cap its height and scroll internally. */
+    .md-sidebar--primary .md-sidebar__scrollwrap {
+        max-height: calc(100vh - 2.4rem);   /* header only */
+        overflow-y: auto;
+    }
+    /* When the tabs bar is present (lifted header), account for its height too. */
+    .md-header--lifted ~ .md-container .md-sidebar--primary .md-sidebar__scrollwrap {
+        max-height: calc(100vh - 4.8rem);   /* header + tabs bar */
+    }
+}

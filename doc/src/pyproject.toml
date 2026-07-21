@@ -1,0 +1,24 @@
+# Python environment for building the OMNeT++ Sphinx documentation.
+# Managed with uv (https://docs.astral.sh/uv/): `uv sync` creates ./.venv from
+# uv.lock, `uv run <cmd>` runs a tool in it. This is a virtual project (no package
+# is built/installed - only the dependencies below).
+[project]
+name = "omnetpp-docs"
+version = "0"
+description = "Build environment for the OMNeT++ documentation site"
+requires-python = ">=3.12"
+dependencies = [
+    "sphinx",
+    "sphinx-immaterial",
+    "doxysphinx",
+    "sphinx-autobuild",
+    "sphinxcontrib-katex",
+    # Directly imported by the custom extensions in _extensions/omnetpp/sphinx
+    # (declared explicitly so they don't vanish with a transitive dependency).
+    "python-dateutil",
+    "lxml",
+    "pyparsing",
+]
+
+[tool.uv]
+package = false
