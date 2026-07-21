@@ -1,0 +1,92 @@
+# OMNeT++ documentation builder image.
+#
+# Contains the complete toolchain to build the unified Sphinx documentation site
+# (manual + guides + doxygen APIs + Python API): doxygen, graphviz, a pinned pandoc
+# for the manual LaTeX->RST conversion, and the Python Sphinx stack from the pinned
+# uv.lock. Math is rendered client-side by KaTeX, so no LaTeX/texlive is needed.
+#
+# The Python packages are installed with uv into a venv that is on PATH, so the
+# build runs WITHOUT uv inside the container:
+#     make -C doc/src ci-html PIPRUN= VENVDEP= VERSION=6.x
+#
+# Build context must be doc/src (so pyproject.toml/uv.lock are available):
+#     podman build -t ghcr.io/omnetpp/doc-builder -f site/doc-builder/Containerfile .
+# (or just use site/doc-builder/build.sh)
+#
+# Size notes (kept lean on purpose):
+#   - doxygen is the official static binary, NOT the apt package, because the
+#     latter hard-depends on libclang/LLVM (~216 MB) that our doxyfiles never use.
+#   - No LaTeX/texlive: math is rendered client-side by KaTeX (sphinxcontrib.katex).
+#
+# The platform is pinned: every tool below is fetched as an x86_64/amd64 binary,
+# so building on an arm64 host without this would produce a broken image.
+FROM --platform=linux/amd64 docker.io/library/ubuntu:26.04
+
+# org.opencontainers.image.source is what makes GHCR link the published package to
+# the repository, which in turn lets a workflow's GITHUB_TOKEN pull it. It is NOT
+# set here on purpose: it must name the repository that actually publishes the
+# image, so build.sh and doc-builder-image.yml pass it with --label at build time.
+LABEL org.opencontainers.image.description="Toolchain for building the OMNeT++ documentation site" \
+      org.opencontainers.image.licenses="LGPL-3.0-or-later"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# System toolchain. graphviz renders the manual's .dot figures to SVG.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        graphviz \
+        python3 \
+        make \
+        git \
+        curl \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/* /var/log/* /var/cache/* /usr/share/doc/* /usr/share/man/*
+
+# Doxygen: official binary release (no libclang dependency, unlike the apt package).
+# NOT the absolute latest: doxygen >=1.15 emits modern relative-color CSS
+# (hsl(from ...)) that doxysphinx's (deprecated, frozen) LibSass scoper cannot
+# parse. 1.14.0 is the newest release that works with the current doxysphinx.
+ARG DOXYGEN_VERSION=1.14.0
+RUN set -eu; \
+    tag="Release_$(echo "$DOXYGEN_VERSION" | tr . _)"; \
+    curl -fsSL -o /tmp/doxygen.tgz \
+        "https://github.com/doxygen/doxygen/releases/download/${tag}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz"; \
+    tar -xzf /tmp/doxygen.tgz -C /tmp; \
+    install -m0755 "/tmp/doxygen-${DOXYGEN_VERSION}/bin/doxygen" /usr/local/bin/doxygen; \
+    rm -rf /tmp/doxygen.tgz "/tmp/doxygen-${DOXYGEN_VERSION}"; \
+    doxygen --version   # fail the build early if the binary can't run
+
+# Pandoc: drives the manual LaTeX->RST conversion (doc/src/manual/tools/tex2rst).
+# Pinned for reproducibility (the converter is version-sensitive).
+ARG PANDOC_VERSION=3.10
+RUN curl -fsSL -o /tmp/pandoc.deb \
+        "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb" \
+    && dpkg -i /tmp/pandoc.deb \
+    && rm -f /tmp/pandoc.deb
+
+# Python Sphinx toolchain, installed with uv from the pinned uv.lock into a venv
+# that is on PATH (so the build needs neither uv nor pip at run time inside the
+# container). uv is only needed at build time, so it is fetched and removed within
+# this single layer; nothing extra persists in the image. Caches/bytecode stripped.
+# Build the venv against a uv-managed CPython 3.12 rather than the base image's
+# system Python: doxysphinx caps lxml at <=5.2.1, which has no wheel for newer
+# Python, and we don't want a C toolchain in the image to compile it. The system
+# python3 is still used for the stdlib-only helper scripts (tex2rst etc.).
+ENV UV_PROJECT_ENVIRONMENT=/opt/docvenv \
+    UV_PYTHON=3.12 \
+    UV_PYTHON_DOWNLOADS=automatic
+COPY pyproject.toml uv.lock /opt/docproj/
+ARG UV_VERSION=0.11.8
+RUN curl -fsSL -o /tmp/uv.tar.gz \
+        "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-x86_64-unknown-linux-gnu.tar.gz" \
+    && tar -xzf /tmp/uv.tar.gz -C /tmp \
+    && (cd /opt/docproj && /tmp/uv-x86_64-unknown-linux-gnu/uv sync --frozen --no-dev --no-cache) \
+    && find /opt/docvenv -type d -name '__pycache__' -prune -exec rm -rf {} + \
+    && find /opt/docvenv -type f -name '*.pyc' -delete \
+    && rm -rf /tmp/uv.tar.gz /tmp/uv-x86_64-unknown-linux-gnu /opt/docproj ~/.cache
+ENV PATH="/opt/docvenv/bin:$PATH" VIRTUAL_ENV=/opt/docvenv
+
+# git refuses to operate on repos owned by another uid (bind-mounted host repo).
+RUN git config --system --add safe.directory '*'
+
+WORKDIR /work
+CMD ["bash"]
