@@ -32,15 +32,18 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     app.add_directive('youtube', video.Youtube)
     app.add_directive('vimeo', video.Vimeo)
     app.add_directive('video', video.Video)
+    app.add_directive('video_no_loop', video.Video_noloop)
     app.add_directive('audio', audio.Audio)
 
     # highlighters
     app.add_lexer('ned', highlighters.NedLexer)
     app.add_lexer('msg', highlighters.MsgLexer)
     app.add_lexer('ini', highlighters.IniLexer)
+    app.add_lexer('fp', highlighters.FingerprintLexer)
 
     # hook up event handlers
     app.connect('source-read', preprocessor.opp_preprocess)
+    app.connect('include-read', preprocessor.opp_preprocess_include)
 
     return {
         'version': '6.0.0',

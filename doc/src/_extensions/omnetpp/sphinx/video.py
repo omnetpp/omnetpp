@@ -83,3 +83,8 @@ class Video(VideoBase):
     html = '<video autoplay loop controls onclick="this.paused ? this.play() : this.pause();" \
     src="%(video_id)s" width="%(width)s" height="%(height)s" class="align-%(align)s"></video>'
     latex = '\\vskip 0.5em \\textbf{Video -- %(caption)s} \\vskip 0.5em'
+    
+class Video_noloop(VideoBase):
+    html = '<video autoplay controls onclick="this.paused ? this.play() : this.pause();" \
+    src="%(video_id)s" width="%(width)s" height="%(height)s" class="align-%(align)s"></video>'
+    latex = '\\vskip 0.5em \\textbf{Video -- %(caption)s} \\vskip 0.5em'

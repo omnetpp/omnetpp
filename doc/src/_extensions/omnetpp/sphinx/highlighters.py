@@ -44,7 +44,7 @@ class NedLexer(RegexLexer):
              bygroups(String.Affix, String.Char, String.Char, String.Char)),
             (r'(true|false)\b', Name.Builtin),
             (r'(<-->|-->|<--|\.\.)', Keyword),
-            (r'(bool|double|int|xml)\b', Keyword.Type),
+            (r'(bool|double|int|xml|object)\b', Keyword.Type),
             (r'(inout|input|output)\b', Keyword.Type),
             (r'(\d+\.\d*|\.\d+|\d+)[eE][+-]?\d+[LlUu]*', Number.Float),
             (r'(\d+\.\d*|\.\d+|\d+[fF])[fF]?', Number.Float),
@@ -60,8 +60,8 @@ class NedLexer(RegexLexer):
             (words(("volatile", "allowunconnected", "extends", "for", "if", "import", "like", "package", "property"), suffix=r'\b'), Keyword),
             (words(("sizeof", "const", "default", "ask", "this", "index", "typename", "xmldoc"), suffix=r'\b'), Keyword),
             (words(("acos", "asin", "atan", "atan2", "bernoulli","beta", "binomial", "cauchy", "ceil", "chi_square", "cos", "erlang_k", "exp","exponential", "fabs", "floor", "fmod", "gamma_d", "genk_exponential","genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric","hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min","negbinomial", "normal", "pareto_shifted", "poisson", "pow", "simTime", "sin", "sqrt","student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xml", "xmldoc"), suffix=r'\b'), Name.Builtin),
-            ('@[a-zA-Z_]\w*', Name.Builtin),
-            ('[a-zA-Z_]\w*', Name),
+            ('@[a-zA-Z_$]\w*', Name.Builtin),
+            ('[a-zA-Z_$]\w*', Name),
         ],
         'root': [
             include('whitespace'),
@@ -133,8 +133,44 @@ class IniLexer(RegexLexer):
             (r'[;#].*$', Comment.Single),
             (r'\s+', Text),
             (r'\[.*?\]', Keyword),
+            (r'([ \t]*)include .*$', Keyword),
             (r'(.*?)([ \t]*)(=)([ \t]*)([^#\n]*(?:\n[ \t].+)*)',
              bygroups(Name.Attribute, Text, Operator, Text, String)),
+        ],
+    }
+
+    def analyse_text(text):
+        npos = text.find('\n')
+        if npos < 3:
+            return False
+        return text[0] == '[' and text[npos-1] == ']'
+
+#######################################################################
+
+from pygments.style import Style
+from pygments.token import Keyword, Name, Comment, String, Error, \
+     Number, Operator, Generic, Whitespace
+
+class FpStyle(Style):
+        default_style = "default"
+        style = {
+                Text: '#ffffff'
+}
+
+class FingerprintLexer(RegexLexer):
+    name = 'fp'
+    filenames = ['*.fp']
+    mimetypes = ['text/x-fp']
+    pygments_style = "FpStyle"
+
+    tokens = {
+        'root': [
+            #(r'.*: ', Text),
+            #(r'PASS', Keyword),
+            #(r'FAILED', String),
+            (r'(.* : )(PASS)?(FAILED)?(ERROR)?',
+             bygroups(Name.Entity, Name.Builtin, String, String)),
+            (r'.*?\n', Name.Entity),
         ],
     }
 
