@@ -1,4 +1,28 @@
-To build the documentation on Ubuntu, extra packages packages need to be installed:
+Building the OMNeT++ documentation
+==================================
 
-$ sudo apt install texlive texlive-latex-extra latexmk inkscape graphviz doxygen
-$ python3 -m pip install --user --upgrade sphinx sphinx-material
+The unified HTML site (manual, guides, tutorials, articles, C++ and Python API
+reference) is built with Sphinx:
+
+    $ make ci-html
+
+The Python toolchain is managed with uv (https://docs.astral.sh/uv/): the build
+runs `uv sync --frozen` to create ./.venv from the pinned uv.lock, so only uv
+itself has to be installed. Native tools needed for this target, on Ubuntu:
+
+    $ sudo apt install doxygen graphviz pandoc
+
+Math is rendered client-side by KaTeX, so no LaTeX is required for the site.
+
+The easiest way to reproduce the exact CI toolchain (pinned doxygen and pandoc)
+is the doc-builder container image; see site/doc-builder/README.md. The whole
+site build/deploy pipeline is documented in site/README.md.
+
+Legacy targets
+--------------
+
+The legacy html, PDF and Eclipse-help outputs (`make all`, `do-manual-pdf`, `do-guides-pdf`,
+`do-manual-html`, `do-manual-eclipse`) still go through LaTeX and need more:
+
+    $ sudo apt install texlive texlive-latex-extra latexmk librsvg2-bin \
+          libxml2-utils perl

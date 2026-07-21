@@ -1,0 +1,79 @@
+# Builds the OMNeT++ documentation site and publishes it to GitHub Pages, which
+# serves it at https://docs.omnetpp.org.
+#
+# The site is deployed straight out of this workflow run: Pages is configured with
+# "Source: GitHub Actions", so actions/deploy-pages hands the built tree to the
+# Pages service using the run's own OIDC token. There is no second repository and
+# no long-lived deployment credential.
+#
+# The build job runs inside the doc-builder image (doc/src/site/doc-builder/), which
+# carries the whole toolchain (doxygen, graphviz, pinned pandoc, KaTeX math, and
+# the Sphinx stack). All build logic lives in doc/src/site/ (versions.txt +
+# deploy/*.sh) so it can be run and tested locally with site/doc-builder/run.sh.
+#
+# Trigger: push the long-lived `doc` branch (move it forward to publish an update).
+# The versions to build are listed in doc/src/site/versions.txt; a Pages deployment
+# replaces the whole site, so every listed version is rebuilt on every run.
+#
+# Prerequisites:
+#   - Settings -> Pages -> Source = GitHub Actions.
+#   - The doc-builder image published at the reference below; build and push it
+#     with the "Build doc-builder image" workflow (doc-builder-image.yml).
+name: Deploy documentation
+
+on:
+  push:
+    branches: [doc]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: false   # never interrupt an in-flight deployment
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read          # to pull ghcr.io/omnetpp/doc-builder
+    container:
+      image: ghcr.io/omnetpp/doc-builder:latest
+      credentials:            # needed only while the package is private
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # build-version.sh needs the other refs
+
+      - name: Build documentation versions
+        # build-all.sh reads doc/src/site/versions.txt and, per version, checks the
+        # ref out into a git worktree and runs `make ci-html` (manual RST + figures +
+        # conversion audit + doxygen APIs + Sphinx site) using the image's toolchain
+        # (no uv needed). HARD conversion defects fail the build here.
+        run: doc/src/site/deploy/build-all.sh _site
+
+      - name: Assemble site root
+        run: doc/src/site/deploy/assemble-site.sh _site
+
+      # Packs _site into the 'github-pages' artifact that deploy-pages consumes.
+      # It is also downloadable from the run summary (as a .tar) for inspection.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    # A dispatch from any other branch builds and uploads the artifact, but must
+    # not replace the live site.
+    if: github.ref == 'refs/heads/doc'
+    runs-on: ubuntu-latest      # deliberately not in the container: API calls only
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

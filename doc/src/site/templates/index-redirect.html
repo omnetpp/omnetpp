@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!--
+  Site root for docs.omnetpp.org. Redirects to the default documentation version.
+  The @DEFAULT_VERSION@ token is substituted by site/deploy/assemble-site.sh with
+  the first (default) label from versions.txt.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="0; url=./@DEFAULT_VERSION@/">
+  <link rel="canonical" href="./@DEFAULT_VERSION@/">
+  <title>OMNeT++ Documentation</title>
+  <script>window.location.replace("./@DEFAULT_VERSION@/" + window.location.hash);</script>
+</head>
+<body>
+  <p>Redirecting to the <a href="./@DEFAULT_VERSION@/">OMNeT++ @DEFAULT_VERSION@ documentation</a>&hellip;</p>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# OMNeT++ documentation version manifest
+#
+# One version per line: "<label>  <git-ref>"
+#   <label>    URL path segment and display name, e.g. 6.x -> docs.omnetpp.org/6.x/
+#   <git-ref>  git branch or tag to build the documentation from
+#
+# The FIRST non-comment line is the DEFAULT version: the site root
+# (docs.omnetpp.org/) redirects to it.
+#
+# Only refs that already contain the Sphinx-based doc build system (doc/src, this
+# site/ directory) can be built. Old, LaTeX-only release tags are not supported.
+#
+# In v1 only the first line is built. Additional lines are read but not built yet;
+# uncomment/add them once multi-version publishing is enabled.
+
+# TODO restore "6.x   omnetpp-6.x" once the unified doc build system is merged
+# there; until then omnetpp-6.x still carries the old LaTeX-only doc/src and
+# build-version.sh rejects it.
+6.4   doc
+
+# 7.x   omnetpp-7.x

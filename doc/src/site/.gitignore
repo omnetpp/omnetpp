@@ -1,0 +1,3 @@
+# The repo-wide doc/.gitignore '*.html' rule would hide our HTML page templates.
+# Keep the site templates tracked.
+!templates/*.html

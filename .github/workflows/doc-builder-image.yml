@@ -1,0 +1,57 @@
+# Builds and publishes the doc-builder container image that deploy-docs.yml runs
+# in. Doing it here rather than from a workstation means the published image is
+# reproducible, is automatically linked to this repository (so the deploy job's
+# GITHUB_TOKEN may pull it), and needs no personal access token.
+#
+# Manual only: run it from the Actions tab after changing the Containerfile or the
+# pinned Python stack (doc/src/pyproject.toml, doc/src/uv.lock). Republishing the
+# image changes the toolchain under every subsequent deploy, so it is a deliberate
+# act rather than a side effect of pushing.
+#
+# Every build publishes two references:
+#   :latest       - what deploy-docs.yml pulls
+#   :<short-sha>  - immutable, for pinning a deployment to an exact toolchain
+name: Build doc-builder image
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: doc-builder-image
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Short sha
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: doc/src        # must be doc/src: the image COPYs pyproject.toml/uv.lock
+          file: doc/src/site/doc-builder/Containerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/omnetpp/doc-builder:latest
+            ghcr.io/omnetpp/doc-builder:${{ steps.sha.outputs.short }}
+          # Links the GHCR package to this repository, so deploy-docs.yml's
+          # GITHUB_TOKEN may pull it while the package is private.
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          # No build cache on purpose: this image is rebuilt only when the
+          # toolchain changes, and a mode=max export would crowd the repository's
+          # shared 10 GB Actions cache. Requires no buildx driver setup either.
