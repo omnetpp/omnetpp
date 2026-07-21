@@ -1,0 +1,437 @@
+#!/usr/bin/env python3
+"""
+tex2rst - Convert LaTeX to restructured text (RST) format
+
+It transforms LaTeX files to RST format with special handling for OMNeT++ documentation
+"""
+
+import sys
+import os
+import re
+import subprocess
+import argparse
+
+
+def preprocess(content):
+    
+    # Handle environments
+    # Special handling for Verbatim environment with commandchars
+    # The exact pattern in the LaTeX source is \begin{Verbatim}[commandchars=\\{\}]
+    verbatim_pattern = r'\\begin\{Verbatim\}\[commandchars=[^\]]*\](.*?)\\end\{Verbatim\}'
+    verbatim_blocks = re.finditer(verbatim_pattern, content, re.DOTALL)
+    
+    for match in verbatim_blocks:
+        original_block = match.group(0)
+        block_content = match.group(1)
+        
+        # Handle a literal backslash written as {\textbackslash} or \textbackslash
+        # inside a commandchars block (e.g. showing an escape sequence like \n).
+        # This must run BEFORE the \textxx{} strips below: the {...} around
+        # \textbackslash would otherwise be seen as a nested brace and break the
+        # non-nesting \textit{[^}]*} match.
+        cleaned_block = re.sub(r'\{\\textbackslash\}', r'\\', block_content)
+        cleaned_block = re.sub(r'\\textbackslash\{\}', r'\\', cleaned_block)
+        cleaned_block = re.sub(r'\\textbackslash', r'\\', cleaned_block)
+
+        # Remove LaTeX formatting commands from the block content
+        # These patterns match \tbf{} and \textbf{} formatted text
+        cleaned_block = re.sub(r'\\tbf\{([^}]*)\}', r'\1', cleaned_block)
+        cleaned_block = re.sub(r'\\textbf\{([^}]*)\}', r'\1', cleaned_block)
+        cleaned_block = re.sub(r'\\textit\{([^}]*)\}', r'\1', cleaned_block)
+        cleaned_block = re.sub(r'\\textrm\{([^}]*)\}', r'\1', cleaned_block)
+
+        # Handle escaped curly braces $ # etc. , removing the backslash
+        cleaned_block = re.sub(r'\\\{', r'{', cleaned_block)
+        cleaned_block = re.sub(r'\\\}', r'}', cleaned_block)
+        cleaned_block = re.sub(r'\\\$', r'$', cleaned_block)
+        cleaned_block = re.sub(r'\\\#', r'#', cleaned_block)
+ 
+        cleaned_block = re.sub(r'\\opp', r'|omnet++|', cleaned_block)
+        
+        # Replace the original block with the cleaned version
+        replacement = '\\begin{verbatim}###verbatim###' + cleaned_block + '\\end{verbatim}'
+        content = content.replace(original_block, replacement)
+    
+    # Handle other Verbatim environments
+    content = re.sub(r'\\begin\{Verbatim\}', r'\\begin{verbatim}###verbatim###', content)
+    content = re.sub(r'\\end\{Verbatim\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{verbatim\}', r'\\begin{verbatim}###verbatim###', content)
+    content = re.sub(r'\\end\{verbatim\}', r'\\end{verbatim}', content)
+
+    # The commandline environment (a listings env) uses the backtick as its LaTeX
+    # escape delimiter, so bits like `\opp` or `\tbf{present:\ 21}` embed real LaTeX
+    # inside otherwise-verbatim output. Evaluate those escapes here so they don't
+    # leak into the resulting code block. \opp becomes the literal "OMNeT++" because
+    # the |omnet++| substitution does not resolve inside a literal block.
+    def _clean_commandline(m):
+        body = m.group(1)
+        def _escape(e):
+            inner = e.group(1)
+            inner = re.sub(r'\\tbf\{([^}]*)\}', r'\1', inner)
+            inner = re.sub(r'\\textbf\{([^}]*)\}', r'\1', inner)
+            inner = re.sub(r'\\textit\{([^}]*)\}', r'\1', inner)
+            inner = re.sub(r'\\opp', r'OMNeT++', inner)
+            inner = re.sub(r'\\ ', r' ', inner)  # escaped space
+            return inner
+        return r'\begin{commandline}' + re.sub(r'`(.+?)`', _escape, body) + r'\end{commandline}'
+    content = re.sub(r'\\begin\{commandline\}(.*?)\\end\{commandline\}',
+                     _clean_commandline, content, flags=re.DOTALL)
+
+    content = re.sub(r'\\begin\{commandline\}', r'\\begin{verbatim}###commandline###', content)
+    content = re.sub(r'\\end\{commandline\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{filelisting\}', r'\\begin{verbatim}###verbatim###', content)
+    content = re.sub(r'\\end\{filelisting\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{ned\}', r'\\begin{verbatim}###ned###', content)
+    content = re.sub(r'\\end\{ned\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{msg\}', r'\\begin{verbatim}###msg###', content)
+    content = re.sub(r'\\end\{msg\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{cpp\}', r'\\begin{verbatim}###cpp###', content)
+    content = re.sub(r'\\end\{cpp\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{inifile\}', r'\\begin{verbatim}###ini###', content)
+    content = re.sub(r'\\end\{inifile\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{xml\}', r'\\begin{verbatim}###xml###', content)
+    content = re.sub(r'\\end\{xml\}', r'\\end{verbatim}', content)
+
+    content = re.sub(r'\\begin\{python\}', r'\\begin{verbatim}###python###', content)
+    content = re.sub(r'\\end\{python\}', r'\\end{verbatim}', content)
+    
+    content = re.sub(r'\\begin\{note\}', r'\\begin{nop}###note###\n', content)
+    content = re.sub(r'\\end\{note\}', r'\\end{nop}', content)
+    
+    content = re.sub(r'\\begin\{important\}', r'\\begin{nop}###important###\n', content)
+    content = re.sub(r'\\end\{important\}', r'\\end{nop}', content)
+    
+    content = re.sub(r'\\begin\{warning\}', r'\\begin{nop}###warning###\n', content)
+    content = re.sub(r'\\end\{warning\}', r'\\end{nop}', content)
+    
+    content = re.sub(r'\\begin\{caution\}', r'\\begin{nop}###caution###\n', content)
+    content = re.sub(r'\\end\{caution\}', r'\\end{nop}', content)
+    
+    # Handle HTML and PDF content
+    # htmlonly in graphics chapter is not needed because pdf math is rendered just fine in sphinx
+    # content will be thrown away in post processing step
+    content = re.sub(r'\\begin\{htmlonly\}', r'###htmlonly###\n', content)
+    content = re.sub(r'\\end\{htmlonly\}', r'###endhtmlonly###', content)
+    
+    # we also do not need a separate pdfonly block. just use its content always as is
+    content = re.sub(r'\\begin\{pdfonly\}', r'', content)
+    content = re.sub(r'\\end\{pdfonly\}', r'', content)
+    
+    # Handle special formatting commands
+    content = re.sub(r'\\ttt\{(.+?)\}', r'\\texttt{\1}', content)
+    content = re.sub(r'\\tbf\{(.+?)\}', r'\\textbf{\1}', content)
+    content = re.sub(r'\\cclassnoapi\{(.+?)\}', r'\\texttt{\1}', content)
+    content = re.sub(r'\\cclass\{(.+?)\}', r':class:§\1§', content)
+    content = re.sub(r'\\ffunc(\[.*?\])?\{(.+?)\}', r':fun:§\2§', content)
+    content = re.sub(r'\\fvar\{(.+?)\}', r':var:§\1§', content)
+    content = re.sub(r'\\fmac\{(.+?)\}', r':mac:§\1§', content)
+    content = re.sub(r'\\nedtype\{(.+?)\}', r':ned:§\1§', content)
+    content = re.sub(r'\\fkeyword\{(.+?)\}', r':kw:§\1§', content)
+    content = re.sub(r'\\fpar\{(.+?)\}', r':par:§\1§', content)
+    content = re.sub(r'\\fprop\{(.+?)\}', r':prop:§\1§', content)
+    content = re.sub(r'\\fgate\{(.+?)\}', r':gate:§\1§', content)
+    content = re.sub(r'\\msgtype\{(.+?)\}', r':msg:§\1§', content)
+    content = re.sub(r'\\fconfig\{(.+?)\}', r':conf:§\1§', content)
+    content = re.sub(r'\\fdef\{(.+?)\}', r':def:§\1§', content)
+    content = re.sub(r'\\fprog\{(.+?)\}', r':prog:§\1§', content)
+    content = re.sub(r'\\fopt\{(.+?)\}', r':opt:§\1§', content)
+    content = re.sub(r'\\ffilename\{(.+?)\}', r':file:§\1§', content)
+    content = re.sub(r'\\protocol\{(.+?)\}', r':protocol:§\1§', content)
+    
+    # Handle center environment
+    content = re.sub(r'\\begin\{center\}', r'', content)
+    content = re.sub(r'\\end\{center\}', r'', content)
+    
+    # Handle graphics
+    # Figures backed by a figures/*.dot source are rendered natively with the
+    # graphviz directive (see postprocess); a plain \includesvg pointing at such a
+    # figure is routed to the .dot so it renders from source instead of a stale svg.
+    def _svg_or_dot(m):
+        opts = m.group(1) or ''
+        path = m.group(2)
+        ext = '.dot' if os.path.exists(path + '.dot') else '.svg'
+        return r'\includegraphics' + opts + '{' + path + ext + '}'
+    content = re.sub(r'\\includesvg(\[.*?\])?\{(.+?)\}', _svg_or_dot, content)
+    content = re.sub(r'\\includepng(.*?)?\{(.+)\}', r'\\includegraphics\1{\2.png}', content)
+    content = re.sub(r'\\includedot(.*?)?\{(.+)\}', r'\\includegraphics\1{\2.dot}', content)
+    
+    # Handle special symbols and references
+    content = re.sub(r'\{\\opp\}', r'§omnet++§', content)
+    content = re.sub(r'\{\\omnetpp\}', r'§omnet++§', content)
+    content = re.sub(r'\\ref\{(.+?)\}', r':ref:§\1§', content)
+
+    # Handle (math-mode similar symbol) ~
+    content = re.sub(r'\\ensuremath\{\\sim\}', r'\\textasciitilde', content)
+    
+    # Handle appendix
+    content = re.sub(r'\\appendixchapter\{(.*?)\}', r'\\chapter{Appendix: \1}', content)
+    
+    return content
+
+
+def postprocess(content):
+    
+    # Remove unnecessary elements
+    content = re.sub(r'^\W*::\n', r'', content, flags=re.MULTILINE)
+    content = re.sub(r'^.. container:: nop\n', r'', content, flags=re.MULTILINE)
+    content = re.sub(r'^.. raw:: latex\n', r'', content, flags=re.MULTILINE)
+    content = re.sub(r'^ (\W*\[.*\]_)', r'\1', content, flags=re.MULTILINE)  # fix bug: footnote references incorrectly indented
+    
+    # Convert preprocessor markers to RST directives
+    content = re.sub(r'   ###verbatim###.*', r'::\n', content)
+    content = re.sub(r'   ###commandline###.*', r'::\n', content)
+    content = re.sub(r'   ###xml###', r'.. code-block:: xml\n', content)
+    content = re.sub(r'   ###python###', r'.. code-block:: python\n', content)
+    content = re.sub(r'   ###ned###', r'.. code-block:: ned\n', content)
+    content = re.sub(r'   ###msg###', r'.. code-block:: msg\n', content)
+    content = re.sub(r'   ###cpp###', r'.. code-block:: cpp\n', content)
+    content = re.sub(r'   ###ini###', r'.. code-block:: ini\n', content)
+    content = re.sub(r'   ###note###', r'.. note::', content)
+    content = re.sub(r'   ###important###', r'.. important::', content)
+    content = re.sub(r'   ###warning###', r'.. warning::', content)
+    content = re.sub(r'   ###caution###', r'.. caution::', content)
+       
+    # Convert special code markup
+    content = re.sub(r':class:§(.*?)§', r':class:`\1`', content)
+    content = re.sub(r':fun:§(.*?)§', r':fun:`\1`', content)
+    content = re.sub(r':var:§(.*?)§', r':var:`\1`', content)
+    content = re.sub(r':mac:§(.*?)§', r':mac:`\1`', content)
+    content = re.sub(r':ned:§(.*?)§', r':ned:`\1`', content)
+    content = re.sub(r':prop:§(.*?)§', r':prop:`\1`', content)
+    content = re.sub(r':par:§(.*?)§', r':par:`\1`', content)
+    content = re.sub(r':gate:§(.*?)§', r':gate:`\1`', content)
+    content = re.sub(r':msg:§(.*?)§', r':msg:`\1`', content)
+    content = re.sub(r':ref:§(.*?)§', r':ref:`\1`', content)
+    content = re.sub(r':kw:§(.*?)§', r':kw:`\1`', content)
+    content = re.sub(r':def:§(.*?)§', r':def:`\1`', content)
+    content = re.sub(r':prog:§(.*?)§', r':prog:`\1`', content)
+    content = re.sub(r':conf:§(.*?)§', r':conf:`\1`', content)
+    content = re.sub(r':opt:§(.*?)§', r':opt:`\1`', content)
+    content = re.sub(r':file:§(.*?)§', r':file:`\1`', content)
+    content = re.sub(r':protocol:§(.*?)§', r':protocol:`\1`', content)
+
+    # RST forbids inline markup directly abutting a following word character, so a
+    # source like \cclass{cGate}s (plural) yields an invalid :class:`cGate`s. Insert
+    # the RST escaped-space (a backslash followed by a space) between the closing
+    # backtick and the letter; it joins them with no visible space. This targets the
+    # roles synthesized above only -- pandoc already handles the plain ``literal``
+    # case, and the :role: prefix makes the match unambiguous (unlike bare ``...``).
+    content = re.sub(r'(:[a-z]+:`[^`]*`)(?=[A-Za-z0-9])', r'\1\\ ', content)
+    
+    # Handle code snippets
+    content = re.sub(r'\s*\\cppsnippet\{(.*?)\}\{(.*?)\}', 
+                     r'.. literalinclude:: lib/Snippets.cc\n   :language: cpp\n   :start-after: !\1\n   :end-before: !End\n   :name: \2', 
+                     content)
+    content = re.sub(r'\s*\\msgsnippet\{(.*?)\}\{(.*?)\}', 
+                     r'.. literalinclude:: lib/Snippets.msg\n   :language: msg\n   :start-after: !\1\n   :end-before: !End\n   :name: \2', 
+                     content)
+    content = re.sub(r'\s*\\nedsnippet\{(.*?)\}\{(.*?)\}', 
+                     r'.. literalinclude:: lib/Snippets.ned\n   :language: ned\n   :start-after: !\1\n   :end-before: !End\n   :name: \2', 
+                     content)
+    content = re.sub(r'\s*\\inisnippet\{(.*?)\}\{(.*?)\}', 
+                     r'.. literalinclude:: lib/Snippets.ini\n   :language: ini\n   :start-after: !\1\n   :end-before: !End\n   :name: \2', 
+                     content)
+    content = re.sub(r'\s*\\xmlsnippet\{(.*?)\}\{(.*?)\}', 
+                     r'.. literalinclude:: lib/Snippets.xml\n   :language: xml\n   :start-after: !\1\n   :end-before: !End\n   :name: \2', 
+                     content)
+    
+    # Handle special symbols
+    content = re.sub(r'§omnet\+\+§', r'|omnet++|', content)
+    
+    # Fix pandoc 3.1.12.3 bug: figure directive name attribute
+    content = re.sub(r'\.\. figure::(.*?)\n   name:', 
+                     r'.. figure::\1\n   :name:', 
+                     content)
+    content = re.sub(r'\.\. graphviz::(.*?)\n   name:', 
+                     r'.. graphviz::\1\n   :name:', 
+                     content)
+    
+    # Rearrange figure directives
+    content = re.sub(r'\.\. figure::(.*?)\.dot\n(.*?):name:(.*)\n\W*(.*?)\n', 
+                     r'.. graphviz:: \1.dot\n   :name:\3\n   :caption: \4\n', 
+                     content, flags=re.MULTILINE)
+    content = re.sub(r'\.\. figure::(.*?)\.dot\n(.*?)\n\W*(.*?)\n', 
+                     r'.. graphviz:: \1.dot\n   :caption: \3\n', 
+                     content, flags=re.MULTILINE)
+    
+    # Use numeric references for figure anchors
+    content = re.sub(r'Fig\.\s+:ref:`fig:', r':numref:`fig:', content, flags=re.MULTILINE)
+    content = re.sub(r'Figure\s+:ref:`fig:', r':numref:`fig:', content, flags=re.MULTILINE)
+    
+    # Remove HTML-only blocks (in graphics chapter). Not needed as latex based math is rendered just fine
+    content = re.sub(r'###htmlonly###.*?###endhtmlonly###', 
+                     r'', 
+                     content, flags=re.MULTILINE | re.DOTALL)
+
+    return content
+
+
+def sanitize_latex(content):
+    """Fix problematic LaTeX patterns that might cause issues with pandoc"""
+    # Fix specific error with \ensuremath{\sim} pattern} (unbalanced brace) and other common LaTeX issues
+    content = re.sub(r'\\ensuremath\{\\sim\}\s+pattern\}', r'\\ensuremath{\\sim} pattern', content)
+    
+    # Generic fix for unbalanced braces in \ensuremath expressions
+    content = re.sub(r'(\\ensuremath\{[^\}]*\})\}', r'\1', content)
+    
+    # Handle escaped tildes in math mode
+    content = re.sub(r'\\ensuremath\{\\sim\}', r'~', content)
+    
+    # Fix other common problematic patterns
+    content = re.sub(r'\\textasciitilde{}', r'~', content)
+    
+    return content
+
+
+def run_pandoc(input_text, bib_path):
+    """Run pandoc on the input text to convert from LaTeX to RST"""
+    try:
+        # Apply additional LaTeX sanitization
+        input_text = sanitize_latex(input_text)
+        
+        # Debug: Write input to temporary file
+        with open('pandoc_debug_input.tex', 'w', encoding='utf-8') as f:
+            f.write(input_text)
+            
+        # Prepare pandoc command - match exactly what the shell script does
+        cmd = [
+            'pandoc',
+            '-',                    # Read from stdin
+            '-s',                   # Standalone output
+            '--from=latex',         # Input format (matching original shell script)
+            '--to=rst-smart',       # Output format
+            '--citeproc',           # Process citations
+            f'--bibliography={bib_path}',  # Bibliography path
+            '--wrap=preserve',      # Preserve line wraps
+            '--list-tables=true'    # Use list tables
+        ]
+        
+        # Run pandoc
+        process = subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        
+        # Pass input and get output
+        stdout, stderr = process.communicate(input=input_text)
+        
+        if process.returncode != 0:
+            print(f"Pandoc conversion failed: {stderr}", file=sys.stderr)
+            sys.exit(1)
+            
+        return stdout
+    except (subprocess.SubprocessError, OSError, IOError) as e:
+        print(f"Error running pandoc: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def main():
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Convert LaTeX to RST format')
+    parser.add_argument('input_file', help='Input LaTeX file')
+    parser.add_argument('--bib', help='Path to bibliography file', 
+                        default=None)
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+    parser.add_argument('--force', action='store_true', help='Continue processing despite errors')
+    parser.add_argument('--output', '-o', help='Output filename (defaults to <input_basename>.rst)')
+    args = parser.parse_args()
+    
+    # Check if input file exists
+    if not os.path.isfile(args.input_file):
+        print(f"Input file not found: {args.input_file}", file=sys.stderr)
+        sys.exit(1)
+    
+    # Determine bibliography path
+    if args.bib:
+        bib_path = args.bib
+    else:
+        # Use the default path relative to the tool's directory
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        bib_path = os.path.join(script_dir, '..', 'usman-bibl.bib')
+    
+    # Check if bibliography file exists
+    if not os.path.isfile(bib_path):
+        print(f"Bibliography file not found: {bib_path}", file=sys.stderr)
+        sys.exit(1)
+    
+    try:
+        # Read input file
+        with open(args.input_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Preprocessing
+        processed_content = preprocess(content)
+        
+        # Run pandoc with debug information if needed
+        try:
+            rst_content = run_pandoc(processed_content, bib_path)
+        except (subprocess.SubprocessError, OSError, IOError) as e:
+            print(f"Error during pandoc conversion: {e}", file=sys.stderr)
+            print("The problematic LaTeX content has been saved to 'pandoc_debug_input.tex'")
+            
+            # If in force mode, try a fallback conversion approach
+            if args.force:
+                print("Force mode enabled, attempting fallback conversion...")
+                try:
+                    # Fallback approach: Try with different pandoc options
+                    cmd = [
+                        'pandoc',
+                        'pandoc_debug_input.tex',  # Use the debug file directly
+                        '-s',                     # Standalone output
+                        '--from=latex',           # Match original shell script
+                        '--to=rst',              # Simpler RST conversion
+                    ]
+                    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+                    rst_content = result.stdout
+                    print("Fallback conversion succeeded")
+                except Exception:
+                    print("Fallback conversion also failed, giving up", file=sys.stderr)
+                    sys.exit(1)
+            else:
+                sys.exit(1)
+        
+        # Postprocessing
+        rst_content = postprocess(rst_content)
+        
+        # Determine output filename
+        if args.output:
+            output_filename = args.output
+        else:
+            input_basename = os.path.basename(args.input_file)
+            output_filename = os.path.splitext(input_basename)[0] + '.rst'
+        
+        # Write output file
+        with open(output_filename, 'w', encoding='utf-8') as f:
+            f.write(rst_content)
+        
+        print(f"Conversion complete. Output written to {output_filename}")
+        if args.debug:
+            print("Debug files preserved: pandoc_debug_input.tex")
+        else:
+            # Clean up debug files if not in debug mode
+            if os.path.exists('pandoc_debug_input.tex'):
+                os.remove('pandoc_debug_input.tex')
+        
+    except (FileNotFoundError, PermissionError, IOError) as e:
+        print(f"File error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except ValueError as e:
+        print(f"Value error: {e}", file=sys.stderr)
+        sys.exit(1)
+    except RuntimeError as e:
+        print(f"Runtime error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

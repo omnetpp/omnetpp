@@ -23,6 +23,18 @@ Making HTML output
 ------------------
 Type "make html". It uses local perl scripts for the conversion.
 
+TeX -> RST conversion (Sphinx site)
+-----------------------------------
+The unified Sphinx documentation site converts these LaTeX sources to RST at
+build time with tools/tex2rst, which wraps "pandoc". The conversion is
+version-sensitive; the doc-builder image pins the pandoc version (see
+doc/src/site/doc-builder/Containerfile). The generated .rst files are gitignored.
+
+Conversion quality is enforced by doc/src/site/check-conversion.py: run
+"make -C doc/src ci-audit" (or "python3 doc/src/site/check-conversion.py manual"
+after "make -C doc/src/manual rst") to fail the build on leftover raw TeX,
+undefined roles, or unmapped code environments.
+
 Making PDF output
 -----------------
 Make sure that <MiKTeX>/miktex/bin is in the path, then type "make pdf".
