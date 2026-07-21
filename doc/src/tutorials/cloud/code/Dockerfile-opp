@@ -1,0 +1,23 @@
+FROM simpleworker
+
+RUN apt-get update -y && apt-get install build-essential bison flex libxml2-dev zlib1g-dev python-minimal wget -y
+
+RUN wget --progress=dot:giga https://bitbucket.org/torokati44/omnetpp-docker/raw/c3074bba928e3679210af817a4b3e9203f7af1a1/omnetpp-5.1.1-src-core.tgz
+RUN tar xf omnetpp-5.1.1-src-core.tgz && rm omnetpp-5.1.1-src-core.tgz
+
+ENV PATH /opt/omnetpp-5.1.1/bin:$PATH
+
+WORKDIR omnetpp-5.1.1
+RUN ./configure WITH_TKENV=no WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no
+RUN make MODE=release
+WORKDIR /opt/
+
+# These are here just to speed up recompiling the same model code.
+# In fact, they should be merged into the apt-get install and ENV
+# lines above to reduce image size, and avoid problems, but I think
+# it's clearer this way.
+RUN apt-get install ccache -y
+ENV PATH /usr/lib/ccache:$PATH
+
+COPY utils.py /opt/
+COPY opp_worker.py /opt/

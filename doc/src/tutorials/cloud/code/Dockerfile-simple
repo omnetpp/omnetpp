@@ -1,0 +1,16 @@
+FROM ubuntu:16.04
+
+RUN apt-get update -y && apt-get install python3-minimal python3-pip -y
+
+RUN pip3 install --upgrade pip
+RUN pip3 install rq
+
+# This is necessary to make Click in rq happy.
+# see: http://click.pocoo.org/5/python3/#python-3-surrogate-handling
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
+
+COPY simple_worker.py /opt/
+WORKDIR /opt/
+
+ENTRYPOINT ["rq", "worker"]

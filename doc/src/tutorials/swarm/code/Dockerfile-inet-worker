@@ -1,0 +1,55 @@
+FROM torokati44/distcc-server:latest
+
+RUN apt-get update -y && apt-get install -y python3-minimal python3-pip \
+      build-essential bison flex libxml2-dev zlib1g-dev python-minimal wget git
+
+RUN pip3 install --upgrade pip && pip3 install rq
+
+# These are necessary to make Click in rq happy.
+# See: http://click.pocoo.org/5/python3/#python-3-surrogate-handling
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
+
+WORKDIR /opt/
+
+RUN wget https://omnetpp.org/component/jdownloads/send/31-release-test-versions/2327-omnetpp-5-3p2-core \
+        --referer=https://omnetpp.org/omnetpp -O omnetpp-5.3p2-src-core.tgz --progress=dot:giga && \
+    tar xf omnetpp-5.3p2-src-core.tgz && rm omnetpp-5.3p2-src-core.tgz
+    
+# cloning inet here, so we can apply the patch needed for INET 4.0 (which is in the integration branch)
+RUN git clone --recursive --branch integration https://github.com/inet-framework/inet.git /opt/projects/inet-framework/inet/
+WORKDIR /opt/projects/inet-framework/inet/
+
+# needed for git so we can switch branches and stuff...
+RUN git config --global user.email "anon@example.com" && git config --global user.name "Anonymous"
+
+# creating a new branch just so we don't mess up the integration reference
+RUN git checkout -b local/work
+
+WORKDIR /opt/omnetpp-5.3p2
+
+ENV PATH /opt/omnetpp-5.3p2/bin:$PATH
+
+# removing -march=native -mtune=native from cflags
+RUN echo "CFLAGS_RELEASE='-O3 -DNDEBUG=1'" >> configure.user
+
+RUN ./configure WITH_TKENV=no WITH_QTENV=no WITH_OSG=no WITH_OSGEARTH=no
+RUN make MODE=release -j $(nproc)
+
+
+RUN apt-get install ccache -y
+ENV PATH /usr/lib/ccache:$PATH
+
+# enabling distcc
+ENV CCACHE_PREFIX distcc
+
+# putting ccache on the host
+ENV CCACHE_DIR /host-cache/inet-ccache
+
+WORKDIR /opt/
+
+RUN pip3 install pymongo flock
+
+COPY inet_worker.py /opt/
+
+ENTRYPOINT ["nice", "rq", "worker"]

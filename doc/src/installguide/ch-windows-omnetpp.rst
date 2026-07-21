@@ -1,7 +1,7 @@
 :orphan:
 
-Windows - Using WSL (RECOMMENDED)
-=================================
+Windows - Using WSL
+===================
 
 Windows Subsystem for Linux (WSL) supports running a full Linux distribution on a Windows machine.
 Running |omnet++| in WSL 2 has several advantages compared to running |omnet++| natively on Windows:
@@ -49,8 +49,8 @@ Microsoft Store or ``opp_env`` in WSL.
    https://www.microsoft.com/store/productId/9N0DX20HK701
 
 
-Installing with opp_env.wsl (RECOMMENDED)
------------------------------------------
+Installing with opp_env.wsl
+---------------------------
 
 **opp_env.wsl** is a pre-configured Linux environment that can be easily installed on Windows and contains
 the ``opp_env`` package manager, maintained by the |omnet++| team. Its main advantage is that it

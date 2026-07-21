@@ -1,3 +1,9 @@
+:hide-navigation:
+
+.. toctree::
+   :hidden:
+
+   Overview <self>
 
 .. toctree::
    :caption: Manual

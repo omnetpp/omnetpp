@@ -1,0 +1,132 @@
+version: "3.2"
+
+services:
+
+  redis:
+    image: redis
+    networks:
+      interlink:
+    ports:
+      - "6379:6379"
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.25"
+      placement:
+        constraints: [node.role == manager]
+
+
+  mongo:
+    image: mongo
+    networks:
+      interlink:
+    ports:
+      - "27017:27017"
+    deploy:
+      resources:
+        reservations:
+          cpus: "0.25"
+      placement:
+        constraints: [node.role == manager]
+
+
+  builder:
+    image: torokati44/inet-worker
+    networks:
+      interlink:
+      buildnet:
+       ipv4_address: 13.37.42.254
+    depends_on:
+      - redis
+      - mongo
+    hostname: builder-{{.Node.Hostname}}-{{.Task.Slot}} # this only works on Docker 17.10 and up
+    command: build -u redis://redis
+    environment:
+      # we use a lot of potential addresses, the offline/unavailable ones will be skipped automatically
+      # and we set 10 slots for each of them, the local servers will limit the actual number of concurrently running jobs
+      DISTCC_HOSTS: "13.37.42.1/10,lzo 13.37.42.2/10,lzo 13.37.42.3/10,lzo 13.37.42.4/10,lzo 13.37.42.5/10,lzo 13.37.42.6/10,lzo 13.37.42.7/10,lzo 13.37.42.8/10,lzo"
+    deploy:
+      placement: # always on the same node to take advantage of a persistent ccache dir on the host
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 5
+        window: 30s
+
+
+  runner:
+    image: torokati44/inet-worker
+    networks:
+      interlink:
+    depends_on:
+      - redis
+      - mongo
+    command: run -u redis://redis
+    hostname: runner-{{.Node.Hostname}}-{{.Task.Slot}} # this only works on Docker 17.10 and up
+    deploy:
+#      placement:
+#        constraints: [node.role != manager]
+      resources:
+        reservations:
+          cpus: "0.99" # keeping 1 core free on every host. Useful for the manager to run the redis/mongo servers, and the client to run the client. the workers have no issue anyway, because rq is nice-d.
+      mode: replicated
+      replicas: 100
+      restart_policy:
+        condition: on-failure
+        delay: 2s
+        max_attempts: 5
+        window: 30s
+    volumes:
+      - type: bind
+        source: /var/cache
+        target: /host-cache
+
+
+  visualizer:
+    image: dockersamples/visualizer
+    networks:
+      interlink:
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+
+  dashboard:
+    image: torokati44/rq-dashboard
+    networks:
+      interlink:
+    command: rq-dashboard -H redis
+    ports:
+      - "9181:9181"
+    depends_on:
+      - redis
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+
+  distcc:
+    image: torokati44/distcc-server
+    networks:
+      buildnet:
+    deploy:
+      mode: global
+#      placement:
+#        constraints: [node.role != manager]
+
+
+networks:
+
+  interlink:
+    attachable: true
+
+  buildnet:
+    attachable: true
+    ipam:
+      config:
+        - subnet: 13.37.42.0/24

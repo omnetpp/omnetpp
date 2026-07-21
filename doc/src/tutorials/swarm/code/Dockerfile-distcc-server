@@ -1,0 +1,18 @@
+FROM ubuntu:16.04
+
+RUN apt-get update -y && apt-get install -y git autoconf libiberty-dev build-essential python3-minimal python3-dev
+
+WORKDIR /opt/
+
+RUN git clone https://github.com/distcc/distcc.git
+
+WORKDIR distcc
+
+RUN ./autogen.sh && ./configure && make -j $(nproc) && make install
+
+WORKDIR /opt/
+
+RUN useradd -ms /bin/bash distcc
+
+# need to launch from a shell to expand $(nproc)
+ENTRYPOINT ["/bin/bash", "-c", "distccd --allow 0.0.0.0/0 --listen 0.0.0.0 -j $(nproc) --no-detach --log-level debug --log-stderr --verbose"]

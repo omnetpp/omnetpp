@@ -1,0 +1,56 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      interlink:
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  worker:
+    image: username/simpleworker
+    depends_on:
+      - redis
+    networks:
+      - interlink
+    deploy:
+      placement:
+        constraints: [node.role == worker]
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+  dashboard:
+    image: godber/rq-dashboard
+    depends_on:
+      - redis
+    networks:
+      - interlink
+    ports:
+      - "9181:9181"
+    depends_on:
+      - redis-server
+    command: rq-dashboard -u redis://redis
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  interlink:

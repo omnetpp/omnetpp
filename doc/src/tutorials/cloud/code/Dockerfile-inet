@@ -1,0 +1,11 @@
+FROM oppworker
+
+RUN apt-get update && apt-get install git -y
+
+RUN git clone --recursive https://github.com/inet-framework/inet.git
+
+WORKDIR inet
+RUN make makefiles && make MODE=release
+WORKDIR /opt/
+
+ENV PATH $PATH:/opt/inet/src/
