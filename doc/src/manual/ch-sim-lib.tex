@@ -373,7 +373,7 @@ using Qtenv.
 
 The above C++ macros work well from any C++ class, including {\opp} modules. In
 fact, they automatically capture several context-specific information such
-as the current event, current simulation time, context module, \fvar{this}
+as the current event, current simulation time, context module, \ttt{this}
 pointer, source file, and line number. The final log lines will be automatically
 extended with a prefix that is created from the captured information (see
 section \ref{sec:config-sim:logging}).
@@ -381,7 +381,7 @@ section \ref{sec:config-sim:logging}).
 In static class member functions or in non-class member functions, an extra
 \fmac{EV\_STATICCONTEXT} macro must be present to make sure that normal log
 macros compile. \footnote{This is due to the fact that in C++ it is impossible
-to determine at compile-time whether a \fvar{this} pointer is accessible.}
+to determine at compile-time whether a \ttt{this} pointer is accessible.}
 
 \begin{cpp}
 void findModule(const char *name, cModule *from)
@@ -3589,8 +3589,8 @@ cOwnedObject *cQueue::remove(cOwnedObject *obj)
 \subsubsection{Destructor}
 \label{sec:sim-lib:ownership-and-container-destructor}
 
-The concept of \ffunc{ownership} is that \textit{the owner has the
-exclusive right and duty to delete the objects it owns}.
+The concept of \ffunc{ownership} is that
+\textit{the owner has the exclusive right and duty to delete the objects it owns.}
 For example, if you delete a \cclass{cQueue} containing \cclass{cMessage}s,
 all messages it contains \textit{and} owns will also be deleted.
 

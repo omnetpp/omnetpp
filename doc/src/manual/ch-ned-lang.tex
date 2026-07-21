@@ -974,7 +974,7 @@ e.g., \ttt{100Gbps}) and JSON constructs. Compared to C, there are some
 variations on operator names: binary and logical XOR are \ttt{\#} and
 \ttt{\#\#}, while \ttt{\^} has been reassigned to \textit{power-of} instead. The
 \ttt{+} operator does string concatenation as well as numeric addition. There
-are two extra operators: \ttt{<=>} (``spaceship'') and \ttt{=\ensuremath{\sim}}
+are two extra operators: \ttt{<=>} (``spaceship'') and \ttt{=\~}
 (string match). The JSON constructs are the \textit{array} and the
 \textit{object} syntaxes, which will be covered in section
 \ref{sec:ned-lang:object-parameters}. Keyword constants include \fkeyword{true},
@@ -992,8 +992,8 @@ a negative, zero, positive or \ttt{nan} double number, respectively.
     2 <=> nan // --> nan
 \end{ned}
 
-The string match operator \ttt{=\ensuremath{\sim}} is used as \textit{string
-=\ensuremath{\sim} pattern}, and returns a boolean that indicates whether if the
+The string match operator \ttt{=\~} is used as \textit{string} \ttt{=\~} \textit{pattern},
+and returns a boolean that indicates whether if the
 second argument (the pattern) matches the first one (the string). Pattern syntax
 and rules are similar to those used in \ffilename{omnetpp.ini} files: case
 sensitive, full-string match, where an asterisk \ttt{*} matches zero or more of
@@ -1260,7 +1260,6 @@ aggregating them into a single XML file. For example, the following XML file
 contains two profiles identified with the IDs \textit{gen1} and \textit{gen2}:
 
 \begin{xml}
-<?xml>
 <root>
     <profile id="gen1">
           <param>1</param>
@@ -1525,10 +1524,10 @@ The next example is borrowed from the INET Framework, which extensively uses
 
 \begin{ned}
 expr(hasBitError)
-expr(name == 'P1')
-expr(name =~ 'P*')
+expr(name == "P1")
+expr(name =~ "P*")
 expr(totalLength == 128B)
-expr(ipv4.destAddress.str() == '10.0.0.1' && udp.destPort == 42)
+expr(ipv4.destAddress.str() == "10.0.0.1" && udp.destPort == 42)
 \end{ned}
 
 The interesting part is that the packet itself does not appear explicitly in the
@@ -1813,7 +1812,7 @@ directions.
 \subsection{Channel Specification}
 \label{sec:ned-lang:channel-specification}
 
-Channel specifications (\ttt{-{}->$channelspec$-{}->} inside a connection)
+Channel specifications (\ttt{-{}-><channelspec>-{}->} inside a connection)
 are similar to submodules in many respects. Let's see some examples!
 
 The following connections use two user-defined channel types,
@@ -1965,7 +1964,7 @@ channel Eth10G extends ned.DatarateChannel like IEth {
 \end{ned}
 
 There's a catch with \ttt{@defaultname} though: if the channel type is
-specified with a \ttt{**.$channel\-name$.liketype=} line in an ini file, then
+specified with a \ttt{**.<channel-name>.liketype=} line in an ini file, then
 the channel type's \ttt{@defaultname} cannot be used as \textit{channelname}
 in that configuration line because the channel type would only be known as a
 result of using that very configuration line. To illustrate the problem,

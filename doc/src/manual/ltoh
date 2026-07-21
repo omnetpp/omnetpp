@@ -912,6 +912,14 @@ sub do_tex_comms {
         my($today) = $qval{"today"};
         $line =~ s/\\today/$today/g;
 
+        #
+        # Hardwired.  \~ used standalone (not as an accent on a following
+        # letter, e.g. the NED \ttt{=\~} operator) --> plain tilde.
+        # (ltoh.specs :comm: rules can't reach this, since do_tex_comms only
+        # tokenizes \-followed-by-letters commands.)
+        #
+        $line =~ s/\\~(?![A-Za-z])/~/g;
+
         if ($line ne $arr->[$i]) {
             warning(8, "regex: $arr->[$i] ==> $line");
         }

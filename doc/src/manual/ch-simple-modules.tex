@@ -1060,7 +1060,7 @@ The body of the loop would then become the body of \ffunc{handleMessage()},
 state variables inside \ffunc{activity()} would become data members in
 the module class, and they would be initialized in \ffunc{initialize()}.
 
-For example, a \ffunc{Sink} implementation:
+For example, a \ttt{Sink} implementation:
 
 \begin{cpp}
 void Sink::activity()
@@ -1935,8 +1935,8 @@ as well, use \ffunc{getFullName()}. If you also want to
 include the hierarchical name of the owner module, call \ffunc{getFullPath()}.
 
 The \ffunc{getType()} method of \cclass{cGate} returns the gate type,
-either \fvar{cGate::INPUT} or \fvar{cGate::OUTPUT}. (It cannot return
-\fvar{cGate::INOUT} because an inout gate is represented by a pair
+either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}. (It cannot return
+\ttt{cGate::INOUT} because an inout gate is represented by a pair
 of \cclass{cGate}s.)
 
 If you have a gate that represents half of an inout gate (that is,
@@ -3345,7 +3345,7 @@ if (windowSize <= 0)
     throw cRuntimeError("Invalid window size %d; must be >=1", windowSize);
 \end{cpp}
 
-Do not include a newline (\ttt{{\textbackslash}n}), period, or exclamation mark
+Do not include a newline ({\textbackslash}n), period, or exclamation mark
 in the error text; it will be added by {\opp}.
 
 The same effect can be achieved by calling the \ffunc{error()} method of
@@ -3885,7 +3885,7 @@ bit about how {\opp} normally instantiates modules. Each module type
 \cclass{cModuleType}. This object is created under the hood by the
 \fmac{Define\_Module()} macro, and it has a factory
 method which can instantiate the module class (this function basically
-only consists of a \ttt{return new \textit{<moduleclass>}(...)} statement).
+only consists of a \ttt{return new <moduleclass>(...)} statement).
 
 The \cclass{cModuleType} object can be looked up by its name
 string (which is the same as the module class name). Once you have its
@@ -4959,18 +4959,18 @@ vector(8*sum)?);
 The following keys are understood in \fprop{@statistic} properties:
 
 \begin{description}
-  \item[source]: Defines the input for the recorders (see the \ttt{record=} key).
+  \item[source:] Defines the input for the recorders (see the \ttt{record=} key).
      If omitted, the statistic name is taken as the signal name.
-  \item[record]: Contains a list of recording modes, separated by commas.
+  \item[record:] Contains a list of recording modes, separated by commas.
      Recording modes define how to record the source (see the \ttt{source=} key).
-  \item[title]: A longer, descriptive name for the statistic signal. Result
+  \item[title:] A longer, descriptive name for the statistic signal. Result
       visualization tools may use it as the chart label (e.g., in the legend).
-  \item[unit]: The unit of measurement for the values. This may also appear in charts.
-  \item[interpolationmode]: Defines how to interpolate signal values where
+  \item[unit:] The unit of measurement for the values. This may also appear in charts.
+  \item[interpolationmode:] Defines how to interpolate signal values where
       needed (e.g., for drawing). Possible values are \ttt{none},
       \ttt{sample-hold}, \ttt{backward-sample-hold}, \ttt{linear}.
 %XXX clarify whether needed/used:  \item[type]: XXX int, double, enum
-  \item[enum]: Defines symbolic names for various integer signal values.
+  \item[enum:] Defines symbolic names for various integer signal values.
       The property value must be a string containing \textit{name=value} pairs
       separated by commas. For example: \ttt{"IDLE=1,BUSY=2,DOWN=3"}.
 %XXX TODO implement:  \item[enumName]: xxx
@@ -5060,7 +5060,7 @@ by executing the \ttt{opp\_run -h resultfilters} and \ttt{opp\_run
 
 The names of recorded result items are formed by concatenating the
 statistic name and the recording mode with a colon between them:
-\ttt{"\textit{<statisticName>}:\textit{<recordingMode>}"}.
+\ttt{"<statisticName>:<recordingMode>"}.
 
 Thus, the following statistics
 

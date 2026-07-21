@@ -2695,8 +2695,8 @@ properties are inherited from \cclass{cAbstractImageFigure}.
 A pixmap itself is represented by the \cclass{cFigure::Pixmap} class.
 
 The \cclass{cFigure::Pixmap} stores a rectangular array of 32-bit RGBA pixels,
-and allows pixels to be manipulated directly. The size ($width \times
-height$) as well as the default fill can be specified in the constructor.
+and allows pixels to be manipulated directly. The size ($width \times height$)
+as well as the default fill can be specified in the constructor.
 The pixmap can be resized (i.e. pixels added/removed at the right and/or bottom)
 using \ffunc{setSize()}, and it can be filled with a color using \ffunc{fill()}.
 Pixels can be directly accessed using \ffunc{pixel(x,y)}.
@@ -3757,8 +3757,8 @@ The following partial \ttt{.earth} file places a label over Los Angeles, an extr
 ellipse (a hollow cylinder) next to it, and a big red flag nearby.
 
 \begin{xml}
-<map ... >
-    ...
+<map>
+    <!-- ... -->
     <external>
         <annotations>
             <label text="Los Angeles" >
