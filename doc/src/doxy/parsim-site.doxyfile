@@ -1,0 +1,12 @@
+# Parallel Simulation API doxyfile for the Sphinx site (doxysphinx-integrated).
+#
+# Inherits all doxysphinx-integration settings (layout, header, stylesheet, etc.)
+# from site.doxyfile and only overrides the project identity, input and output.
+# Run from doc/src (like the other site doxyfiles), so paths are relative to it.
+
+@INCLUDE = doxy/site.doxyfile
+
+PROJECT_NAME           = "Parallel Simulation API"
+INPUT                  = ../../src/sim/parsim
+OUTPUT_DIRECTORY       = parsim-api
+GENERATE_TAGFILE       = parsim-api/tagfile.xml
