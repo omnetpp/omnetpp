@@ -9,13 +9,14 @@
    Simulation Manual <manual/index>
 
 .. toctree::
-   :caption: C++ API Reference
+   :caption: API Reference
    :maxdepth: 2
    :hidden:
 
    Simulation Library API <api/api-index>
    nedxml-api/nedxml-api-index
    parsim-api/parsim-api-index
+   Python API <python-api-index>
 
 .. toctree::
    :maxdepth: 2

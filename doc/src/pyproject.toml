@@ -11,6 +11,7 @@ dependencies = [
     "sphinx",
     "sphinx-immaterial",
     "doxysphinx",
+    "sphinx-autoapi",
     "sphinx-autobuild",
     "sphinxcontrib-katex",
     # Directly imported by the custom extensions in _extensions/omnetpp/sphinx

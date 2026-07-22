@@ -72,7 +72,12 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon',
+    # napoleon is intentionally NOT enabled: the omnetpp.scave docstrings are
+    # GitHub-flavored Markdown, not Google/NumPy field lists. They are converted
+    # to RST by the autodoc-process-docstring handler below (see _md_to_rst);
+    # napoleon would misparse the 'Parameters:'/'Returns:' labels and mangle them.
+    #'sphinx.ext.napoleon',
+    'autoapi.extension',
     #'sphinxcontrib.images',
     'omnetpp.sphinx.doxylink',
     'omnetpp.sphinx',
@@ -374,6 +379,32 @@ doxylink = {
 doxylink_external_namespaces = ['osg', 'osgDB', 'osgGA', 'osgViewer', 'osgUtil', 'osgEarth', 'std']
 add_function_parentheses = False
 
+# -- sphinx-autoapi (Python API reference for python/omnetpp) -----------------
+# Statically parses the sources (no import), so it needs neither the native
+# scave_bindings module nor numpy/pandas/scipy/matplotlib, and it handles the
+# PEP-420 namespace packages (omnetpp/ and scave/ have no __init__.py).
+autoapi_type = 'python'
+autoapi_dirs = ['../../python/omnetpp']  # root package 'omnetpp' -> 'omnetpp.scave.*' names
+autoapi_root = 'python-api'              # generated rst lands here (relative to doc/src)
+autoapi_python_use_implicit_namespaces = True
+autoapi_add_toctree_entry = False        # landing page python-api-index.rst wires it in
+autoapi_keep_files = False
+# Scope: omnetpp.scave only. Exclude NED tooling, internal helpers, and the backend.
+autoapi_ignore = [
+    '*/omnetpp/ned.py', '*/omnetpp/nedast.py', '*/omnetpp/nedlinter.py',
+    '*/omnetpp/repl.py', '*/omnetpp/test.py',
+    '*/llmtool/*', '*/lldb/*',
+    '*/scave/impl/*', '*/scave/_*.py',
+    '*/omnetpp/sim/*',
+]
+autoapi_options = [
+    'members', 'undoc-members', 'show-module-summary', 'special-members',
+    'imported-members',
+]
+# The scave modules import the excluded _version module; silence the resulting
+# unresolved-import notices (they don't affect the generated pages).
+suppress_warnings = ['autoapi.python_import_resolution']
+
 # -- Extension configuration -------------------------------------------------
 rst_prolog = open('_templates/prolog.inc', 'r').read()
 
@@ -394,6 +425,49 @@ inline_highlight_literals = True
 # code customizations
 from sphinx.application import Sphinx
 
+# -- Markdown docstrings -> RST ----------------------------------------------
+# The omnetpp.scave Python API is documented with GitHub-flavored Markdown
+# docstrings (fenced code blocks, `inline code`, *emphasis*, **bold**, '- '
+# bullet lists, and inline 'Parameters:'/'Returns:' labels). Feeding those to
+# Sphinx's RST parser as-is produces broken markup and warnings. Rather than
+# rewrite the shared package sources (which are also shown by help() and the
+# IDE), convert each docstring to RST at build time with pandoc - the same
+# tool the manual's tex2rst converter uses. Hooked on 'autodoc-process-docstring',
+# which sphinx-autoapi emits for every documented object.
+import subprocess
+import textwrap
+import functools
+from sphinx.util import logging as sphinx_logging
+
+_docstring_logger = sphinx_logging.getLogger(__name__)
+
+@functools.lru_cache(maxsize=None)
+def _md_to_rst(markdown: str) -> str:
+    """Convert a GitHub-flavored-Markdown docstring to reStructuredText."""
+    result = subprocess.run(
+        ['pandoc', '--from=gfm', '--to=rst', '--wrap=preserve'],
+        input=markdown, capture_output=True, text=True, check=True)
+    return result.stdout
+
+def convert_markdown_docstring(app, what, name, obj, options, lines):
+    if not lines:
+        return
+    markdown = textwrap.dedent('\n'.join(lines)).strip('\n')
+    if not markdown.strip():
+        return
+    try:
+        rst = _md_to_rst(markdown)
+    except FileNotFoundError:
+        _docstring_logger.warning(
+            "pandoc not found; leaving Markdown docstring of %s unconverted", name)
+        return
+    except subprocess.CalledProcessError as e:
+        _docstring_logger.warning(
+            "pandoc failed to convert docstring of %s: %s", name, e.stderr)
+        return
+    lines[:] = rst.splitlines()
+
 def setup(app : Sphinx):
     app.connect("autodoc-skip-member", autodoc_skip_member_callback) # Entry point to autodoc-skip-member
+    app.connect("autodoc-process-docstring", convert_markdown_docstring)
     app.add_config_value('what', 'omnetpp', 'env')
