@@ -16,6 +16,7 @@ from omnetpp.sphinx import video
 from omnetpp.sphinx import audio
 from omnetpp.sphinx import preprocessor
 from omnetpp.sphinx import highlighters
+from omnetpp.sphinx import searchfix
 
 def setup(app: Sphinx) -> Dict[str, Any]:
     # config keys
@@ -44,6 +45,7 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     # hook up event handlers
     app.connect('source-read', preprocessor.opp_preprocess)
     app.connect('include-read', preprocessor.opp_preprocess_include)
+    app.connect('build-finished', searchfix.fix_stopwords_lookup)
 
     return {
         'version': '6.0.0',
