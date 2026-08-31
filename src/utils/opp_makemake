@@ -96,7 +96,8 @@ def makemake():
     if args.is_deep:
         args.recurse = False
 
-    is_windows = bool(os.environ.get('OS')) and 'windows' in os.environ['OS'].lower()
+    # the OS variable is unset in some MSYS2 shells, do not rely on it
+    is_windows = os.name == 'nt' or sys.platform in ('win32', 'cygwin', 'msys')
 
     makecommand = os.environ.get("MAKE") or "make"
 
