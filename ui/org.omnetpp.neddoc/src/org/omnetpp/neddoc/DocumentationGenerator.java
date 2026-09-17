@@ -983,7 +983,7 @@ public class DocumentationGenerator {
                         generateOverview();
                         generateSelectedTopics();
 
-                        generateDiagrams();
+                        generateDiagramsIndex();
                         generatePackageIndex();
 
                         generateTypeIndex(1, "Networks", null, object -> {
@@ -1219,7 +1219,7 @@ public class DocumentationGenerator {
         return fileName;
     }
 
-    protected void generateDiagrams() throws Exception {
+    protected void generateDiagramsIndex() throws Exception {
         boolean found = false;
         for (ITypeElement typeElement : typeElements) {
             if (typeElement instanceof INedTypeElement || typeElement instanceof IMsgTypeElement) {
