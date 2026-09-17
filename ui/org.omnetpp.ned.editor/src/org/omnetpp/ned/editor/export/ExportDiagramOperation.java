@@ -100,7 +100,7 @@ public class ExportDiagramOperation implements IRunnableWithProgress
         }
         catch (Throwable e) {
             String msg = "Error while exporting '{0}'.";
-            addStatus(IStatus.ERROR, MessageFormat.format(msg, diagramPath.toOSString()), null);
+            addStatus(IStatus.ERROR, MessageFormat.format(msg, diagramPath.toOSString()), e); // keep the cause, otherwise the user has nothing to go by
         }
     }
 

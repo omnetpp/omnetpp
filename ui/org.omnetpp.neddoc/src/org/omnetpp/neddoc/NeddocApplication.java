@@ -1,5 +1,7 @@
 package org.omnetpp.neddoc;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -26,6 +29,36 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 public class NeddocApplication implements IApplication {
+    /**
+     * Prints an error status (its message, the causes recorded as child statuses,
+     * and the stack trace) to the standard error. Errors must never go unreported.
+     *
+     * Every printed line is prefixed with "Error:", because that is the contract
+     * with the opp_neddoc script: it uses the presence of such lines to decide its
+     * own exit code (the exit code of the application cannot be used for that, as
+     * a non-zero exit code makes the Eclipse launcher pop up a GUI dialog), and it
+     * filters out every other line of the standard error as Eclipse noise.
+     */
+    private static void printStatus(IStatus status) {
+        printError(status.getMessage());
+
+        for (IStatus child : status.getChildren())
+            printError("caused by: " + child.getMessage());
+
+        if (status.getException() != null)
+            printStackTrace(status.getException());
+    }
+
+    private static void printError(String message) {
+        for (String line : message.split("\n"))
+            System.err.println("Error: " + line);
+    }
+
+    private static void printStackTrace(Throwable exception) {
+        StringWriter buffer = new StringWriter();
+        exception.printStackTrace(new PrintWriter(buffer));
+        printError(buffer.toString().trim());
+    }
 
     @Override
     public Object start(IApplicationContext context) throws Exception {
@@ -85,12 +118,18 @@ public class NeddocApplication implements IApplication {
             }
 
             // project are now open so we can generate doc for all of them
-            for (DocumentationGenerator generator : generators)
-                generator.generate(new NullProgressMonitor());
+            for (DocumentationGenerator generator : generators) {
+                IStatus status = generator.generate(new NullProgressMonitor());
+                if (!status.isOK()) {
+                    printStatus(status);
+                    return EXIT_OK; // the caller derives the exit code from the "Error:" lines, see printStatus()
+                }
+            }
 
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            return EXIT_OK;
+            printError(e.getMessage() != null ? e.getMessage() : e.toString());
+            printStackTrace(e);
+            return EXIT_OK; // see above
         }
 
         return EXIT_OK;

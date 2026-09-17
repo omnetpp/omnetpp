@@ -36,7 +36,6 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.core.internal.preferences.Base64;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -85,7 +84,6 @@ import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
-import org.omnetpp.ned.editor.export.ExportDiagramFilesOperation;
 import org.omnetpp.ned.editor.export.NedFigureProvider;
 import org.omnetpp.ned.editor.export.SVGDiagramExporter;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
@@ -380,20 +378,21 @@ public class DocumentationGenerator {
             return Status.CANCEL_STATUS;
         }
         catch (NeddocException e) {
+            // these already carry a message that says what went wrong and what to do about it
             NeddocPlugin.logError(e);
-            return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
+            return NeddocPlugin.getErrorStatus(NeddocPlugin.extractExceptionMessage(e), e);
         }
         catch (IOException e) {
             NeddocPlugin.logError(e);
-            return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
+            return NeddocPlugin.getErrorStatus("Error during generating NED documentation: " + NeddocPlugin.extractExceptionMessage(e), e);
         }
         catch (CoreException e) {
             NeddocPlugin.logError(e);
-            return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
+            return NeddocPlugin.getErrorStatus("Error during generating NED documentation: " + NeddocPlugin.extractExceptionMessage(e), e);
         }
         catch (Exception e) {
             NeddocPlugin.logError(e);
-            return NeddocPlugin.getErrorStatus("Internal error during generating NED documentation", e);
+            return NeddocPlugin.getErrorStatus("Internal error during generating NED documentation: " + NeddocPlugin.extractExceptionMessage(e), e);
         }
         finally {
             if (verboseMode)
@@ -708,7 +707,8 @@ public class DocumentationGenerator {
     protected void generateDoxy() throws Exception {
         if (generateDoxy && isCppProject(project)) {
             if (doxyExecutablePath == null || !new File(doxyExecutablePath).exists())
-                throw new IllegalStateException("The Doxygen executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + doxyExecutablePath);
+                throw new NeddocException("Error generating C++ documentation: the Doxygen executable path is invalid, " +
+                        "set it using Window/Preferences... The currently set path is: " + doxyExecutablePath);
 
             try {
                 monitor.beginTask("Running doxygen...", IProgressMonitor.UNKNOWN);
@@ -744,7 +744,18 @@ public class DocumentationGenerator {
                         FileUtils.writeTextFile(headerTemplateFile, header, null);
 
                         FileUtils.writeTextFile(modifiedDoxyConfigFile, content, null);
-                        ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString(), monitor);
+
+                        try {
+                            ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString(), monitor);
+                        }
+                        catch (CancellationException e) {
+                            throw e;
+                        }
+                        catch (Exception e) {
+                            throw new NeddocException("Error running Doxygen on project " + project.getName() + ". " +
+                                    "If this persists, you can turn off the \"C++ documentation\" option in the " +
+                                    "documentation generation dialog.", e);
+                        }
                     }
                     finally {
                         headerTemplateFile.delete();
@@ -752,7 +763,7 @@ public class DocumentationGenerator {
                     }
                 }
                 else
-                    throw new IllegalStateException("Doxygen configuration file not found: " + absoluteDoxyConfigFilePath);
+                    throw new NeddocException("Error generating C++ documentation: Doxygen configuration file not found: " + absoluteDoxyConfigFilePath);
             }
             finally {
                 monitor.done();
@@ -1923,62 +1934,47 @@ public class DocumentationGenerator {
     }
 
     protected void generateNedTypeFigures() throws InterruptedException, CoreException {
-        if (generateNedTypeFigures) {
-            ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResolver.getNedFiles(project));
+        if (!generateNedTypeFigures)
+            return;
 
-            final ExportDiagramFilesOperation exportOperation =
-                new ExportDiagramFilesOperation(nedFiles,
-                    new SVGDiagramExporter() {
-                        @Override
-                        public String getName() {
-                            return "NED Figure Provider";
-                        }
+        ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResolver.getNedFiles(project));
+        SVGDiagramExporter exporter = new SVGDiagramExporter();
 
-                        @Override
-                        public String getDescription() {
-                            return "NED Figure Provider";
-                        }
-                }, true, null) {
+        try {
+            monitor.beginTask("Generating type diagrams...", nedFiles.size());
 
-                @Override
-                protected void refreshContainer(IContainer container, IProgressMonitor monitor) {
-                    if (monitor.isCanceled())
-                        throw new CancellationException();
-                }
-            };
-            exportOperation.setOverwriteMode(ExportDiagramFilesOperation.OverwriteMode.ALL);
-            exportOperation.run(monitor);
+            for (IFile file : nedFiles) {
+                if (monitor.isCanceled())
+                    throw new CancellationException();
 
-            try {
-                // KLUDGE: move generated images under neddocPath
-                monitor.beginTask("Moving type diagrams...", nedFiles.size());
+                if (verboseMode)
+                    System.out.append('.').flush();
+                monitor.subTask(file.getFullPath().toString());
 
-                for (IFile file : nedFiles) {
-                    if (verboseMode)
-                        System.out.append('.').flush();
-                    monitor.subTask(file.getFullPath().toString());
+                NedFileElementEx modelRoot = nedResolver.getNedFileElement(file);
+                for (Map.Entry<INedTypeElement, IFigure> entry : NedFigureProvider.getTypeFigures(modelRoot).entrySet()) {
+                    INedTypeElement typeElement = entry.getKey();
+                    File imageFile = getOutputFile(getOutputFileName(typeElement, "type", ".svg"));
 
-                    List<INedTypeElement> typeElements = nedResolver.getNedFileElement(file).getTopLevelTypeNodes();
+                    try {
+                        IFigure figure = entry.getValue();
+                        exporter.exportDiagram(Collections.singletonList(figure), imageFile, true);
 
-                    for (INedTypeElement typeElement : typeElements) {
-                        String fileName = file.getName().replaceAll(".ned", "");
-                        String imageName = NedFigureProvider.getFigureName(typeElements, typeElement, fileName);
-                        File sourceImageFile = file.getParent().getFile(new Path(imageName + ".svg")).getLocation().toFile();
-
-                        if (sourceImageFile.exists()) {
-                            IPath destinationImagePath = getFullNeddocPath().append(getOutputFileName(typeElement, "type", ".svg"));
-                            sourceImageFile.renameTo(destinationImagePath.toFile());
-                        }
-                        else
-                            throw new RuntimeException("Cannot generate image for " + typeElement.getNedTypeInfo().getFullyQualifiedName());
+                        if (!imageFile.isFile() || imageFile.length() == 0)
+                            throw new NeddocException("The exporter did not produce an image file: " + imageFile.getPath());
                     }
-
-                    monitor.worked(1);
+                    catch (Exception e) {
+                        throw new NeddocException("Error generating network graphics for type " +
+                                typeElement.getNedTypeInfo().getFullyQualifiedName() + " (" + file.getFullPath() + "). " +
+                                "If this persists, you can turn off the \"Network diagrams\" option.", e);
+                    }
                 }
+
+                monitor.worked(1);
             }
-            finally {
-                monitor.done();
-            }
+        }
+        finally {
+            monitor.done();
         }
     }
 
@@ -2202,7 +2198,7 @@ public class DocumentationGenerator {
 
             dot.append("}");
 
-            generateDotOutput(dot, getOutputFile(imageFileName), "svg");
+            generateDotOutput(dot, getOutputFile(imageFileName), "svg", "usage diagram");
 
             out(renderer.svgImage(imageFileName));
         }
@@ -2225,7 +2221,7 @@ public class DocumentationGenerator {
                     renderer.paragraph("The following diagram shows inheritance relationships for this type.\n" +
                     "Unresolved types are missing from the diagram."+fullRef));
 
-                generateDotOutput(dot, getOutputFile(imageFileName), "svg");
+                generateDotOutput(dot, getOutputFile(imageFileName), "svg", "inheritance diagram");
                 out(renderer.svgImage(imageFileName));
             }
         }
@@ -2233,7 +2229,7 @@ public class DocumentationGenerator {
 
     protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
         DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileName);
-        generateDotOutput(dot, getOutputFile(imageFileName), "svg");
+        generateDotOutput(dot, getOutputFile(imageFileName), "svg", "inheritance diagram");
         out(renderer.svgImage(imageFileName));
     }
 
@@ -2398,12 +2394,25 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void generateDotOutput(DotGraph dot, File outputFile, String format) throws IOException {
+    protected void generateDotOutput(DotGraph dot, File outputFile, String format, String what) throws IOException {
         if (dotExecutablePath == null || !new File(dotExecutablePath).exists())
-            throw new IllegalStateException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + dotExecutablePath);
+            throw new NeddocException("Error generating " + what + ": the GraphViz Dot executable path is invalid, " +
+                    "set it using Window/Preferences... The currently set path is: " + dotExecutablePath);
 
-        // dot has a width/height limit of 32768 pixels, see bug #149.
-        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10, monitor);
+        try {
+            // dot has a width/height limit of 32768 pixels, see bug #149.
+            ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10, monitor);
+
+            if (!outputFile.isFile() || outputFile.length() == 0)
+                throw new NeddocException("The GraphViz Dot tool did not produce an output file: " + outputFile.getPath());
+        }
+        catch (CancellationException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new NeddocException("Error generating " + what + " (" + outputFile.getName() + ") with the GraphViz Dot tool. " +
+                    "If this persists, you can turn off generating " + what + "s in the documentation generation options.", e);
+        }
     }
 
     protected String getParamTypeAsString(ParamElementEx param) {

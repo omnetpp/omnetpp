@@ -8,6 +8,7 @@
 package org.omnetpp.common.util;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.eclipse.e4.ui.css.swt.theme.IThemeEngine;
 import org.eclipse.e4.ui.services.IStylingEngine;
@@ -37,11 +38,65 @@ public class DisplayUtils {
             runnable.run();
     }
 
+    /**
+     * Runs the given runnable in the UI thread, and waits for it to finish. If the
+     * runnable throws an exception, it is re-thrown in the calling thread (wrapped
+     * into a RuntimeException if it is a checked exception).
+     *
+     * Re-throwing is important: exceptions thrown from a Display.syncExec() runnable
+     * do NOT necessarily reach the calling thread. Depending on how the UI thread
+     * happens to pick up the runnable (e.g. via UILockListener.doPendingWork() when
+     * it is itself blocked on a lock), the exception may escape into the SWT event
+     * loop and only end up in the error log, leaving the caller under the impression
+     * that everything went fine. Errors must never go unnoticed like that.
+     */
     public static void runNowOrSyncInUIThread(Runnable runnable) {
-        if (Display.getCurrent() == null)
-            Display.getDefault().syncExec(runnable);
-        else
+        if (Display.getCurrent() != null) {
             runnable.run();
+            return;
+        }
+
+        Throwable[] exception = new Throwable[1];
+        Display.getDefault().syncExec(() -> {
+            try {
+                runnable.run();
+            }
+            catch (Throwable e) {
+                exception[0] = e;
+            }
+        });
+
+        if (exception[0] != null)
+            throw toRuntimeException(exception[0]);
+    }
+
+    /**
+     * Runs the given callable in the UI thread, waits for it to finish, and returns
+     * its result. Exceptions are re-thrown in the calling thread, see
+     * runNowOrSyncInUIThread().
+     */
+    public static <T> T callNowOrSyncInUIThread(Callable<T> callable) {
+        Object[] result = new Object[1];
+        runNowOrSyncInUIThread(() -> {
+            try {
+                result[0] = callable.call();
+            }
+            catch (Exception e) {
+                throw toRuntimeException(e);
+            }
+        });
+
+        @SuppressWarnings("unchecked")
+        T typedResult = (T)result[0];
+        return typedResult;
+    }
+
+    private static RuntimeException toRuntimeException(Throwable e) {
+        if (e instanceof Error)
+            throw (Error)e;
+        if (e instanceof RuntimeException)
+            return (RuntimeException)e;
+        return new RuntimeException(e.getMessage(), e);
     }
 
     /**

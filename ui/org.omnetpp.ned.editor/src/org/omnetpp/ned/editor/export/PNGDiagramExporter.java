@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.figures.misc.FigureUtils;
 
 public class PNGDiagramExporter implements DiagramExporter
@@ -43,29 +44,66 @@ public class PNGDiagramExporter implements DiagramExporter
 
     public void exportDiagram(List<IFigure> figures, File file, boolean antialias)
     {
+        // Render into a temporary file, and only put it in place if rendering was
+        // successful. Otherwise a failed export would leave behind a truncated or
+        // empty image file, which the caller has no chance of telling apart from a
+        // properly exported one.
+        File tmpFile = new File(file.getPath() + ".tmp");
         try {
-            FileOutputStream outputStream = new FileOutputStream(file);
+            DisplayUtils.runNowOrSyncInUIThread(() -> renderIntoFile(figures, tmpFile, antialias));
+
+            if (tmpFile.length() == 0)
+                throw new RuntimeException("PNG export produced an empty file: " + file.getPath());
+            if (file.exists() && !file.delete())
+                throw new RuntimeException("Cannot overwrite existing file: " + file.getPath());
+            if (!tmpFile.renameTo(file))
+                throw new RuntimeException("Cannot rename '" + tmpFile.getPath() + "' to '" + file.getPath() + "'");
+        }
+        finally {
+            tmpFile.delete(); // no-op if it has been successfully renamed
+        }
+    }
+
+    /**
+     * Renders the figures into the given file. Must be called from the UI thread.
+     */
+    protected void renderIntoFile(List<IFigure> figures, File file, boolean antialias)
+    {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
             Rectangle bounds = FigureUtils.getBounds(figures);
             Image image = new Image(Display.getDefault(), bounds.width, bounds.height);
-            for (IFigure figure : figures) {
-                GC gc = new GC(image);
-                gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
-                gc.setTextAntialias(antialias ? SWT.ON : SWT.OFF);
-                Graphics graphics = new SWTGraphics(gc);
-                graphics.translate(bounds.getLocation().negate());
-                figure.paint(graphics);
-                graphics.dispose();
-                gc.dispose();
+            try {
+                for (IFigure figure : figures) {
+                    GC gc = new GC(image);
+                    try {
+                        gc.setAntialias(antialias ? SWT.ON : SWT.OFF);
+                        gc.setTextAntialias(antialias ? SWT.ON : SWT.OFF);
+                        Graphics graphics = new SWTGraphics(gc);
+                        try {
+                            graphics.translate(bounds.getLocation().negate());
+                            figure.paint(graphics);
+                        }
+                        finally {
+                            graphics.dispose();
+                        }
+                    }
+                    finally {
+                        gc.dispose();
+                    }
+                }
+
+                ImageLoader imageLoader = new ImageLoader();
+                imageLoader.data = new ImageData[] { image.getImageData() };
+                imageLoader.save(outputStream, SWT.IMAGE_PNG);
             }
-            ImageLoader imageLoader = new ImageLoader();
-            imageLoader.data = new ImageData[] { image.getImageData() };
-            imageLoader.save(outputStream, SWT.IMAGE_PNG);
-            image.dispose();
+            finally {
+                image.dispose();
+            }
+
             outputStream.flush();
-            outputStream.close();
         }
         catch (IOException e) {
-            throw new RuntimeException("Error while exporting to PNG", e);
+            throw new RuntimeException("Error while exporting to PNG: " + e.getMessage(), e);
         }
     }
 }

@@ -8,6 +8,7 @@
 package org.omnetpp.neddoc;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -106,7 +107,29 @@ public class NeddocPlugin extends AbstractUIPlugin {
         }
     }
 
+    /**
+     * Creates an error status for the given message and exception. The exception and
+     * its causes are added as child statuses, so that the whole chain shows up in the
+     * "Details" area of the standard Eclipse error dialog (and in the error log),
+     * instead of the user being left with an unexplained one-liner.
+     */
     public static IStatus getErrorStatus(String message, Throwable exception) {
-        return new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception);
+        if (exception == null)
+            return new Status(IStatus.ERROR, PLUGIN_ID, 0, message, null);
+
+        MultiStatus status = new MultiStatus(PLUGIN_ID, 0, message, exception);
+        Throwable e = exception;
+        for (int depth = 0; e != null && depth < 10; e = (e.getCause() != e ? e.getCause() : null), depth++)
+            status.add(new Status(IStatus.ERROR, PLUGIN_ID, 0, e.toString(), e));
+        return status;
+    }
+
+    /**
+     * Returns the message of the given exception, falling back to its toString()
+     * for exceptions that carry no message (e.g. NullPointerException).
+     */
+    public static String extractExceptionMessage(Throwable exception) {
+        String message = exception.getMessage();
+        return (message == null || message.isBlank()) ? exception.toString() : message;
     }
 }

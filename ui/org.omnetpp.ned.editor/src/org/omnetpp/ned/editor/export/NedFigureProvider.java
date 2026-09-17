@@ -9,6 +9,7 @@ package org.omnetpp.ned.editor.export;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +83,26 @@ public class NedFigureProvider
         rootFigure.setFont(Display.getDefault().getSystemFont());
         rootFigure.validate();
         return viewer;
+    }
+
+    /**
+     * Creates the figures of the NED types in the given NED file, keyed by the type
+     * element (in file order). The figures are created in the UI thread.
+     */
+    public static Map<INedTypeElement, IFigure> getTypeFigures(final NedFileElementEx modelRoot) {
+        return DisplayUtils.callNowOrSyncInUIThread(() -> {
+            Map<INedTypeElement, IFigure> result = new LinkedHashMap<INedTypeElement, IFigure>();
+            ScrollingGraphicalViewer viewer = createNedViewer(modelRoot);
+
+            for (INedTypeElement typeElement : modelRoot.getTopLevelTypeNodes()) {
+                NedEditPart editPart = (NedEditPart)viewer.getEditPartRegistry().get(typeElement);
+                if (editPart == null)
+                    throw new RuntimeException("No edit part was created for type " + typeElement.getName());
+                result.put(typeElement, editPart.getFigure());
+            }
+
+            return result;
+        });
     }
 
     @SuppressWarnings("unchecked")
