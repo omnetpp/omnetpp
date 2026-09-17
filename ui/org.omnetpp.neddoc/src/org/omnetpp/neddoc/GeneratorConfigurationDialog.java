@@ -68,6 +68,7 @@ public class GeneratorConfigurationDialog
     private CheckboxTableViewer selectedProjects;
 
     private Button generateNedTypeFigures;
+    private Button rasterImages;
     private Button generatePerTypeInheritanceDiagrams;
     private Button generatePerTypeUsageDiagrams;
     private Button generateFullInheritanceDiagrams;
@@ -262,6 +263,12 @@ public class GeneratorConfigurationDialog
         label1.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
         label1.setText("   Note: Options marked * require Graphviz");
 
+        rasterImages = createCheckbox(group, "Raster (PNG) images instead of SVG", configuration.rasterImages);
+        rasterImages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        Label label2 = new Label(group, SWT.NONE);
+        label2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        label2.setText("   Note: useful if the documentation is to be viewed with a browser that has no SVG support");
+
 
         enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", configuration.automaticHyperlinking);
         enableAutomaticHyperlinking.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -360,6 +367,7 @@ public class GeneratorConfigurationDialog
         generators =  new ArrayList<DocumentationGenerator>();
 
         configuration.generateNedTypeFigures = generateNedTypeFigures.getSelection();
+        configuration.rasterImages = rasterImages.getSelection();
         configuration.generatePerTypeUsageDiagrams = generatePerTypeUsageDiagrams.getSelection();
         configuration.generatePerTypeInheritanceDiagrams = generatePerTypeInheritanceDiagrams.getSelection();
         configuration.generateFullUsageDiagrams = generateFullUsageDiagrams.getSelection();
@@ -403,6 +411,7 @@ public class GeneratorConfigurationDialog
             }
 
             generator.setGenerateNedTypeFigures(configuration.generateNedTypeFigures);
+            generator.setRasterImages(configuration.rasterImages);
             generator.setGeneratePerTypeUsageDiagrams(configuration.generatePerTypeUsageDiagrams);
             generator.setGenerateFullUsageDiagrams(configuration.generateFullUsageDiagrams);
             generator.setGeneratePerTypeInheritanceDiagrams(configuration.generatePerTypeInheritanceDiagrams);

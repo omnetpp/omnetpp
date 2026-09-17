@@ -9,6 +9,8 @@ package org.omnetpp.neddoc;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -50,6 +52,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -84,7 +87,9 @@ import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.editor.export.DiagramExporter;
 import org.omnetpp.ned.editor.export.NedFigureProvider;
+import org.omnetpp.ned.editor.export.PNGDiagramExporter;
 import org.omnetpp.ned.editor.export.SVGDiagramExporter;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
@@ -154,6 +159,12 @@ import org.w3c.dom.NodeList;
  */
 @SuppressWarnings("restriction")
 public class DocumentationGenerator {
+    // Raster images are generated at this scale and displayed at their logical size,
+    // so that they stay crisp on high resolution displays.
+    protected static final double RASTER_IMAGE_SCALE = 2.0;
+
+    private static final int DOT_DEFAULT_DPI = 96; // the resolution GraphViz Dot uses for bitmap output by default
+
     private static final boolean APPLY_CC = !IConstants.IS_COMMERCIAL;
 
     private static final Pattern pageSeparatorPattern = Pattern.compile("(?m)^//[ \t]*(@page|@titlepage)(.*?)$");
@@ -182,6 +193,7 @@ public class DocumentationGenerator {
     // configuration flags
     protected boolean headless = false;
     protected boolean generateNedTypeFigures = true;
+    protected boolean rasterImages = false;
     protected boolean generatePerTypeUsageDiagrams = true;
     protected boolean generatePerTypeInheritanceDiagrams = true;
     protected boolean generateFullUsageDiagrams = false;
@@ -262,6 +274,18 @@ public class DocumentationGenerator {
 
     public void setGenerateNedTypeFigures(boolean generateNedTypeFigures) {
         this.generateNedTypeFigures = generateNedTypeFigures;
+    }
+
+    /**
+     * Selects whether the diagrams should be generated as raster (PNG) images instead of
+     * SVG. Useful for viewers that have no SVG support.
+     */
+    public void setRasterImages(boolean rasterImages) {
+        this.rasterImages = rasterImages;
+    }
+
+    protected String getImageFileExtension() {
+        return rasterImages ? ".png" : ".svg";
     }
 
     public void setGeneratePerTypeInheritanceDiagrams(boolean generatePerTypeInheritanceDiagrams) {
@@ -1933,12 +1957,54 @@ public class DocumentationGenerator {
         }
     }
 
+    /**
+     * Returns the exporter to be used for rendering the NED type figures, according to
+     * the selected image format.
+     */
+    protected DiagramExporter createDiagramExporter() {
+        if (!rasterImages)
+            return new SVGDiagramExporter();
+
+        PNGDiagramExporter exporter = new PNGDiagramExporter();
+        exporter.setScale(RASTER_IMAGE_SCALE);
+        return exporter;
+    }
+
+    /**
+     * Returns the size at which the given generated image is to be displayed in the HTML
+     * page. Raster images are generated at RASTER_IMAGE_SCALE and displayed at their
+     * logical size; SVG images carry their own size, so (0,0) is returned for them,
+     * meaning that no width/height should be written into the page.
+     */
+    protected Dimension getImageDisplaySize(File imageFile) throws IOException {
+        if (!rasterImages)
+            return new Dimension(0, 0);
+
+        Dimension size = getPngImageSize(imageFile);
+        return new Dimension((int)Math.round(size.width / RASTER_IMAGE_SCALE),
+                             (int)Math.round(size.height / RASTER_IMAGE_SCALE));
+    }
+
+    /**
+     * Returns the pixel size of a PNG file, by reading it from the file's header.
+     */
+    protected static Dimension getPngImageSize(File file) throws IOException {
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+            byte[] signature = new byte[8];
+            in.readFully(signature);
+            if (signature[0] != (byte)0x89 || signature[1] != 'P' || signature[2] != 'N' || signature[3] != 'G')
+                throw new IOException("Not a PNG file: " + file.getPath());
+            in.skipBytes(8); // the length and the type of the IHDR chunk
+            return new Dimension(in.readInt(), in.readInt());
+        }
+    }
+
     protected void generateNedTypeFigures() throws InterruptedException, CoreException {
         if (!generateNedTypeFigures)
             return;
 
         ArrayList<IFile> nedFiles = new ArrayList<IFile>(nedResolver.getNedFiles(project));
-        SVGDiagramExporter exporter = new SVGDiagramExporter();
+        DiagramExporter exporter = createDiagramExporter();
 
         try {
             monitor.beginTask("Generating type diagrams...", nedFiles.size());
@@ -1954,7 +2020,7 @@ public class DocumentationGenerator {
                 NedFileElementEx modelRoot = nedResolver.getNedFileElement(file);
                 for (Map.Entry<INedTypeElement, IFigure> entry : NedFigureProvider.getTypeFigures(modelRoot).entrySet()) {
                     INedTypeElement typeElement = entry.getKey();
-                    File imageFile = getOutputFile(getOutputFileName(typeElement, "type", ".svg"));
+                    File imageFile = getOutputFile(getOutputFileName(typeElement, "type", getImageFileExtension()));
 
                     try {
                         IFigure figure = entry.getValue();
@@ -1980,7 +2046,9 @@ public class DocumentationGenerator {
 
     protected void generateTypeDiagram(final INedTypeElement typeElement) throws IOException {
         if (generateNedTypeFigures && !nedResolver.isBuiltInDeclaration(typeElement.getNedTypeInfo())) {
-            out(renderer.typeImageTag(getOutputFileName(typeElement, "type", ".svg")));
+            String imageFileName = getOutputFileName(typeElement, "type", getImageFileExtension());
+            Dimension imageSize = getImageDisplaySize(getOutputFile(imageFileName));
+            out(renderer.typeImageTag(imageFileName, imageSize.width, imageSize.height));
             DisplayUtils.runNowOrSyncInUIThread(() -> {
                     try {
                         NedFileElementEx modelRoot = typeElement.getContainingNedFileElement();
@@ -2109,7 +2177,7 @@ public class DocumentationGenerator {
                         out(renderer.sectionHeading("Full NED Usage Diagram", "comptitle")+
                             renderer.paragraph("The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
                             "Unresolved types are missing from the diagram."));
-                        generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.svg");
+                        generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram");
                     }
                 );
                 monitor.worked(1);
@@ -2120,7 +2188,7 @@ public class DocumentationGenerator {
                         out(renderer.sectionHeading("Full NED Inheritance Diagram", "comptitle")+
                             renderer.paragraph("The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\n" +
                             "Unresolved types are missing from the diagram."));
-                        generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.svg");
+                        generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram");
                     }
                 );
                 monitor.worked(1);
@@ -2131,7 +2199,7 @@ public class DocumentationGenerator {
                         out(renderer.sectionHeading("Full MSG Usage Diagram", "comptitle")+
                             renderer.paragraph("The following diagram shows usage relationships between messages, packets, classes and structs.\n" +
                             "Unresolved types are missing from the diagram."));
-                        generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram.svg");
+                        generateUsageDiagram(msgTypeElements, "full-msg-usage-diagram");
                     }
                 );
                 monitor.worked(1);
@@ -2142,7 +2210,7 @@ public class DocumentationGenerator {
                         out(renderer.sectionHeading("Full MSG Inheritance Diagram", "comptitle")+
                             renderer.paragraph("The following diagram shows the inheritance hierarchy between messages, packets, classes and structs.\n" +
                             "Unresolved types are missing from the diagram."));
-                        generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram.svg");
+                        generateInheritanceDiagram(msgTypeElements, "full-msg-inheritance-diagram");
                     }
                 );
                 monitor.worked(1);
@@ -2166,11 +2234,11 @@ public class DocumentationGenerator {
                 renderer.paragraph("The following diagram shows usage relationships between types.\n" +
                 "Unresolved types are missing from the diagram."+fullRef));
 
-            generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".svg"));
+            generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", null));
         }
     }
 
-    protected void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
+    protected void generateUsageDiagram(List<? extends ITypeElement> typeElements, String imageFileBaseName) throws IOException {
         if (generatePerTypeUsageDiagrams || generateFullUsageDiagrams) {
             DotGraph dot = new DotGraph();
 
@@ -2198,9 +2266,7 @@ public class DocumentationGenerator {
 
             dot.append("}");
 
-            generateDotOutput(dot, getOutputFile(imageFileName), "svg", "usage diagram");
-
-            out(renderer.svgImage(imageFileName));
+            generateDiagramImage(dot, imageFileBaseName, "usage diagram");
         }
     }
 
@@ -2209,8 +2275,8 @@ public class DocumentationGenerator {
             ArrayList<ITypeElement> typeElements = new ArrayList<ITypeElement>();
             typeElements.add(typeElement);
 
-            String imageFileName = getOutputFileName(typeElement, "inheritance", ".svg");
-            DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileName);
+            String imageFileBaseName = getOutputFileName(typeElement, "inheritance", null);
+            DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileBaseName);
 
             if (dot.getNumNodes() > 1) { // has content
                 String diagramType = typeElement instanceof INedTypeElement ? "ned" : "msg";
@@ -2221,16 +2287,14 @@ public class DocumentationGenerator {
                     renderer.paragraph("The following diagram shows inheritance relationships for this type.\n" +
                     "Unresolved types are missing from the diagram."+fullRef));
 
-                generateDotOutput(dot, getOutputFile(imageFileName), "svg", "inheritance diagram");
-                out(renderer.svgImage(imageFileName));
+                generateDiagramImage(dot, imageFileBaseName, "inheritance diagram");
             }
         }
     }
 
-    protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
-        DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileName);
-        generateDotOutput(dot, getOutputFile(imageFileName), "svg", "inheritance diagram");
-        out(renderer.svgImage(imageFileName));
+    protected void generateInheritanceDiagram(List<? extends ITypeElement> typeElements, String imageFileBaseName) throws IOException {
+        DotGraph dot = generateInheritanceDotGraph(typeElements, imageFileBaseName);
+        generateDiagramImage(dot, imageFileBaseName, "inheritance diagram");
     }
 
     protected DotGraph generateInheritanceDotGraph(List<? extends ITypeElement> typeElements, String imageFileName) throws IOException {
@@ -2394,14 +2458,71 @@ public class DocumentationGenerator {
         }
     }
 
-    protected void generateDotOutput(DotGraph dot, File outputFile, String format, String what) throws IOException {
+    /**
+     * Runs dot on the given graph, and writes the resulting image into the page being
+     * generated. For raster images, the image map generated by dot is emitted next to the
+     * image as well, so that the nodes of the diagram remain clickable, just like in the
+     * hyperlinked SVG that dot produces otherwise.
+     */
+    protected void generateDiagramImage(DotGraph dot, String imageFileBaseName, String what) throws IOException {
+        String imageFileName = imageFileBaseName + getImageFileExtension();
+        File imageFile = getOutputFile(imageFileName);
+
+        if (!rasterImages) {
+            runDot(dot, new String[] {"-Tsvg", "-o", imageFile.toString()}, imageFile, what);
+            out(renderer.svgImage(imageFileName));
+        }
+        else {
+            File imageMapFile = getOutputFile(imageFileBaseName + ".map");
+            try {
+                runDot(dot, new String[] {"-Gdpi=" + Math.round(DOT_DEFAULT_DPI * RASTER_IMAGE_SCALE),
+                                          "-Tpng", "-o", imageFile.toString(),
+                                          "-Tcmapx", "-o", imageMapFile.toString()}, imageFile, what);
+
+                String mapName = imageFileBaseName.replaceAll("[^A-Za-z0-9_.-]", "-");
+                Dimension imageSize = getImageDisplaySize(imageFile);
+                out(renderer.rasterImage(imageFileName, imageSize.width, imageSize.height, mapName));
+                out(processImageMap(FileUtils.readTextFile(imageMapFile, null), mapName));
+            }
+            finally {
+                imageMapFile.delete();
+            }
+        }
+    }
+
+    /**
+     * Post-processes the HTML image map produced by dot (-Tcmapx): replaces the map name,
+     * which dot derives from the name of the graph and is therefore not unique within a
+     * page, with the given one; and scales the coordinates back from the scale the image
+     * was rendered at to the size it is displayed at.
+     */
+    protected String processImageMap(String imageMap, String mapName) {
+        imageMap = imageMap.replaceFirst("(?s)<map\\b[^>]*>",
+                Matcher.quoteReplacement("<map id=\"" + mapName + "\" name=\"" + mapName + "\">"));
+
+        Matcher matcher = Pattern.compile("coords=\"([-0-9,.\\s]*)\"").matcher(imageMap);
+        StringBuilder result = new StringBuilder();
+        while (matcher.find()) {
+            StringBuilder coords = new StringBuilder();
+            for (String coord : matcher.group(1).split(",")) {
+                if (coords.length() != 0)
+                    coords.append(",");
+                coords.append(Math.round(Double.parseDouble(coord.trim()) / RASTER_IMAGE_SCALE));
+            }
+            matcher.appendReplacement(result, Matcher.quoteReplacement("coords=\"" + coords + "\""));
+        }
+        matcher.appendTail(result);
+        return result.toString();
+    }
+
+    protected void runDot(DotGraph dot, String[] arguments, File outputFile, String what) throws IOException {
         if (dotExecutablePath == null || !new File(dotExecutablePath).exists())
             throw new NeddocException("Error generating " + what + ": the GraphViz Dot executable path is invalid, " +
                     "set it using Window/Preferences... The currently set path is: " + dotExecutablePath);
 
         try {
             // dot has a width/height limit of 32768 pixels, see bug #149.
-            ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-o", outputFile.toString()}, ".", dot.toString(), 10, monitor);
+            ProcessUtils.exec(dotExecutablePath, arguments, ".", dot.toString(), 10, monitor);
 
             if (!outputFile.isFile() || outputFile.length() == 0)
                 throw new NeddocException("The GraphViz Dot tool did not produce an output file: " + outputFile.getPath());

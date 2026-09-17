@@ -20,6 +20,7 @@ public class GeneratorConfiguration {
     private static final String GENERATE_SOURCE_LISTINGS = "GenerateSourceListings";
     private static final String GENERATE_FILE_LISTINGS = "GenerateFileListings";
     private static final String GENERATE_MSG_DEFINITIONS = "GenerateMsgDefinitions";
+    private static final String RASTER_IMAGES = "RasterImages";
     private static final String AUTOMATIC_HYPERLINKING = "AutomaticHyperlinking";
     private static final String GENERATE_EXCLUDED_DIRS = "GenerateExcludedPackages";
     private static final String GENERATE_DOXY = "GenerateDoxy";
@@ -35,6 +36,7 @@ public class GeneratorConfiguration {
     public boolean generatePerTypeInheritanceDiagrams = true;
     public boolean generateFullInheritanceDiagrams = false;
     public boolean generateMsgDefinitions = true;
+    public boolean rasterImages = false;
     public boolean generateSourceListings = true;
     public boolean generateFileListings = true;
     public boolean automaticHyperlinking = true;
@@ -55,6 +57,7 @@ public class GeneratorConfiguration {
         settings.put(GENERATE_SOURCE_LISTINGS, generateSourceListings);
         settings.put(GENERATE_FILE_LISTINGS, generateFileListings);
         settings.put(GENERATE_MSG_DEFINITIONS, generateMsgDefinitions);
+        settings.put(RASTER_IMAGES, rasterImages);
         settings.put(AUTOMATIC_HYPERLINKING, automaticHyperlinking);
         settings.put(GENERATE_EXCLUDED_DIRS, excludedDirs);
         settings.put(EXTENSION_FILE_PATH, extensionFilePath);
@@ -80,6 +83,8 @@ public class GeneratorConfiguration {
             generateSourceListings = settings.getBoolean(GENERATE_SOURCE_LISTINGS);
         if (settings.get(GENERATE_FILE_LISTINGS) != null)
             generateFileListings = settings.getBoolean(GENERATE_FILE_LISTINGS);
+        if (settings.get(RASTER_IMAGES) != null)
+            rasterImages = settings.getBoolean(RASTER_IMAGES);
         if (settings.get(GENERATE_MSG_DEFINITIONS) != null)
             generateMsgDefinitions = settings.getBoolean(GENERATE_MSG_DEFINITIONS);
         if (settings.get(AUTOMATIC_HYPERLINKING) != null)

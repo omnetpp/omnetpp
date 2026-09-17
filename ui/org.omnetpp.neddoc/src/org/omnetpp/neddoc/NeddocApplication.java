@@ -172,6 +172,11 @@ public class NeddocApplication implements IApplication {
                 "Generate full NED and MSG usage diagram pages");
         printOption("--no-full-usage-diagrams",
                 "Do not generate full NED and MSG usage diagram pages (default)");
+        printOption("--raster-images",
+                "Generate raster (PNG) images instead of SVG. Useful if the documentation is to be "
+                + "viewed with a browser that has no SVG support.");
+        printOption("--no-raster-images",
+                "Generate SVG images (default)");
         printOption("--message-definitions", 
                 "Include MSG types in the documentation (default)");
         printOption("--no-message-definitions",
@@ -223,6 +228,7 @@ public class NeddocApplication implements IApplication {
         generator.setAbsoluteDoxyConfigFilePath(project.getFile(DocumentationGeneratorPropertyPage.DEFAULT_DOXY_CONFIG_FILE_PATH).getLocation());
 
         generator.setGenerateNedTypeFigures(getBoolOption(switchOptions, "network-diagrams", true));
+        generator.setRasterImages(getBoolOption(switchOptions, "raster-images", false));
         generator.setGeneratePerTypeInheritanceDiagrams(getBoolOption(switchOptions, "inheritance-diagrams", true));
         generator.setGeneratePerTypeUsageDiagrams(getBoolOption(switchOptions, "usage-diagrams", true));
         generator.setGenerateFullInheritanceDiagrams(getBoolOption(switchOptions, "full-inheritance-diagrams", false));

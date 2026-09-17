@@ -27,6 +27,21 @@ import org.omnetpp.figures.misc.FigureUtils;
 
 public class PNGDiagramExporter implements DiagramExporter
 {
+    private double scale = 1.0;
+
+    /**
+     * Sets the rendering scale. Rendering at a scale larger than 1 produces images that
+     * are still crisp on high resolution displays, provided that they are displayed at
+     * their logical (i.e. divided by the scale) size.
+     */
+    public void setScale(double scale) {
+        this.scale = scale;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
     public String getName()
     {
         return "PNG Exporter";
@@ -71,7 +86,8 @@ public class PNGDiagramExporter implements DiagramExporter
     {
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             Rectangle bounds = FigureUtils.getBounds(figures);
-            Image image = new Image(Display.getDefault(), bounds.width, bounds.height);
+            Image image = new Image(Display.getDefault(),
+                    (int)Math.ceil(bounds.width * scale), (int)Math.ceil(bounds.height * scale));
             try {
                 for (IFigure figure : figures) {
                     GC gc = new GC(image);
@@ -80,6 +96,8 @@ public class PNGDiagramExporter implements DiagramExporter
                         gc.setTextAntialias(antialias ? SWT.ON : SWT.OFF);
                         Graphics graphics = new SWTGraphics(gc);
                         try {
+                            if (scale != 1.0)
+                                graphics.scale(scale);
                             graphics.translate(bounds.getLocation().negate());
                             figure.paint(graphics);
                         }

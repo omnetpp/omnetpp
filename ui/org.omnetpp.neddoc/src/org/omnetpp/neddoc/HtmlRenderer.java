@@ -48,8 +48,21 @@ public class HtmlRenderer implements INeddocRenderer {
         return "<object type=\"image/svg+xml\" data=\"" + imageFileName + "\"></object>\n";
     }
 
-    public String typeImageTag(String source) {
-        return "<img src=\"" + source + "\" ismap=\"yes\" usemap=\"#type-diagram\"/>";
+    public String rasterImage(String imageFileName, int width, int height, String mapName) {
+        return "<img src=\"" + imageFileName + "\"" + sizeAttributes(width, height) +
+               (mapName == null ? "" : " usemap=\"#" + mapName + "\"") + "/>\n";
+    }
+
+    public String typeImageTag(String source, int width, int height) {
+        return "<img src=\"" + source + "\"" + sizeAttributes(width, height) + " ismap=\"yes\" usemap=\"#type-diagram\"/>";
+    }
+
+    /**
+     * Returns the width/height attributes for an image, or the empty string if the image
+     * is to be displayed at its natural size (which is the case for SVG images).
+     */
+    private static String sizeAttributes(int width, int height) {
+        return (width <= 0 || height <= 0) ? "" : " width=\"" + width + "\" height=\"" + height + "\"";
     }
 
     public String typeImageMap() {

@@ -18,7 +18,8 @@ public interface INeddocRenderer {
     String defaultOverviewString();
     String copyrightNotice();
     String svgImage(String imageFileName);
-    String typeImageTag(String source);
+    String rasterImage(String imageFileName, int width, int height, String mapName);
+    String typeImageTag(String source, int width, int height);
     String typeImageMap();
     /** Specify a named rectangular linked area on an image */
     String areaRef(String text, String url, Rectangle bounds);
