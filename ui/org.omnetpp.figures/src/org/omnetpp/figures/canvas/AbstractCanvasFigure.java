@@ -113,10 +113,26 @@ public abstract class AbstractCanvasFigure extends Figure implements IComparable
         float ty = (float)f;
 
 
-        g.translate(tx, ty);
-        g.scale(sx, sy);
-        g.shear(shearx, sheary);
-        g.rotate(deg);
+        // Only call the transform methods that actually do something. Apart from being
+        // wasteful, the float variants of translate() and scale(), as well as shear() and
+        // rotate() are "advanced" Graphics methods that are not implemented by every
+        // Graphics implementation (e.g. GraphicsSVG throws an exception for all of them),
+        // and the overwhelming majority of the figures have no transform at all.
+        if (tx != 0 || ty != 0) {
+            if (tx == Math.rint(tx) && ty == Math.rint(ty))
+                g.translate((int)tx, (int)ty); // the int variant is implemented by everyone
+            else
+                g.translate(tx, ty);
+        }
+
+        if (sx != 1 || sy != 1)
+            g.scale(sx, sy);
+
+        if (shearx != 0 || sheary != 0)
+            g.shear(shearx, sheary);
+
+        if (deg != 0)
+            g.rotate(deg);
 
         if (Debug.isDebugging()) {
             // TESTING:
