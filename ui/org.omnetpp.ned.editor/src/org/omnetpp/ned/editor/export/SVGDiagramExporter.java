@@ -16,14 +16,12 @@ import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.figures.misc.FigureUtils;
 
-@SuppressWarnings("restriction")
 public class SVGDiagramExporter implements DiagramExporter
 {
     public String getName()
@@ -70,7 +68,7 @@ public class SVGDiagramExporter implements DiagramExporter
     {
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             Rectangle bounds = FigureUtils.getBounds(figures);
-            GraphicsSVG graphics = GraphicsSVG.getInstance(bounds.getTranslated(bounds.getLocation().negate()));
+            SVGGraphics graphics = SVGGraphics.getInstance(bounds.getTranslated(bounds.getLocation().negate()));
             try {
                 graphics.translate(bounds.getLocation().negate());
 
