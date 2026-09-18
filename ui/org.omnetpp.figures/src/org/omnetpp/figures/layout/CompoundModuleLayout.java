@@ -37,6 +37,13 @@ public class CompoundModuleLayout extends AbstractLayout {
     private static boolean debug = false;
 
     private static final DimensionF DEFAULT_SIZE = new DimensionF(300.0f, 200.0f);
+
+    // Spacing assumed between the items of a submodule vector or layout group when the
+    // arrangement parameters do not specify one. Note: we use a fixed spacing and NOT the
+    // shape size, because items may be of different sizes which would result in strange
+    // arrangements.
+    public static final float DEFAULT_ARRANGEMENT_SPACING = 80;
+
     protected Map<SubmoduleFigure, Integer> submoduleToId;
     protected int algSeed = 1;
     private CompoundModuleFigure compoundModuleFigure;
@@ -118,14 +125,14 @@ public class CompoundModuleLayout extends AbstractLayout {
                 // lay out this node, and store the coordinates with setCenterLocation()
                 PointF baseLoc = constraint.getBaseLocation();
                 if (baseLoc != null) {
-                    PointF offset = getArrangementOffset(constraint, 80); // handle vector layouts; note: we use fixed spacing NOT shape size, because items in a vector may be of different sizes which would result in strange arrangements
+                    PointF offset = getArrangementOffset(constraint, DEFAULT_ARRANGEMENT_SPACING); // handle vector/layout group arrangements
                     autoLayouter.addFixedNode(nodeIndex, baseLoc.x + offset.x, baseLoc.y + offset.y, shapeSize.width, shapeSize.height);
                 }
                 else if (constraint.getVectorIdentifier()==null || constraint.getVectorArrangement()==VectorArrangement.none) {
                     autoLayouter.addMovableNode(nodeIndex, shapeSize.width, shapeSize.height);
                 }
                 else {
-                    PointF offset = getArrangementOffset(constraint, 80); // handle vector layouts
+                    PointF offset = getArrangementOffset(constraint, DEFAULT_ARRANGEMENT_SPACING); // handle vector/layout group arrangements
                     autoLayouter.addAnchoredNode(nodeIndex, constraint.getVectorIdentifier().toString(), offset.x, offset.y, shapeSize.width, shapeSize.height);
                 }
             }
@@ -176,10 +183,18 @@ public class CompoundModuleLayout extends AbstractLayout {
         return layouter;
     }
 
-    protected PointF getArrangementOffset(ISubmoduleConstraint constraint, float spacing) {
+    /**
+     * Returns the offset to be added to the submodule's base location (the position in the
+     * "p" tag) due to the arrangement (row, column, matrix, ring, etc.) specified in the "p"
+     * tag, and the submodule's index within its submodule vector or layout group.
+     */
+    public static PointF getArrangementOffset(ISubmoduleConstraint constraint, float spacing) {
         float x, y;
         VectorArrangementParameters p = constraint.getVectorArrangementParameters();
-        switch (constraint.getVectorArrangement()) {
+        VectorArrangement arrangement = constraint.getVectorArrangement();
+        if (arrangement == null)
+            return new PointF(0, 0);
+        switch (arrangement) {
             case none: {
                 x = 0;
                 y = 0;
@@ -244,7 +259,7 @@ public class CompoundModuleLayout extends AbstractLayout {
                 break;
             }
             default: {
-                throw new AssertionFailedException("unhandled vector arrangement " + constraint.getVectorArrangement());
+                throw new AssertionFailedException("unhandled vector arrangement " + arrangement);
             }
         }
         return new PointF(x, y);

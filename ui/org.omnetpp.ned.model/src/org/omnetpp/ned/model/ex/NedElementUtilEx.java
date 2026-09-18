@@ -12,11 +12,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
@@ -258,6 +260,31 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
         }
         else
             element.setName(name);
+    }
+
+    /**
+     * Returns the name of the layout group the given submodule belongs to (the "g"
+     * display string tag), or null if the submodule is not part of a layout group.
+     */
+    public static String getLayoutGroup(SubmoduleElementEx submodule) {
+        String group = submodule.getDisplayString().getAsString(IDisplayString.Prop.LAYOUT_GROUP);
+        return StringUtils.isEmpty(group) ? null : group;
+    }
+
+    /**
+     * Returns the submodules of the given compound module that belong to the given layout
+     * group, in declaration order (inherited submodules first). The position of a submodule
+     * in the returned list is its index within the group, which determines where the "p" tag's
+     * arrangement (row, column, matrix, etc.) places it. Returns an empty list if the group
+     * name is empty. See also the "g" display string tag.
+     */
+    public static List<SubmoduleElementEx> getLayoutGroupMembers(CompoundModuleElementEx compoundModule, String group) {
+        List<SubmoduleElementEx> result = new ArrayList<SubmoduleElementEx>();
+        if (StringUtils.isNotEmpty(group))
+            for (SubmoduleElementEx submodule : compoundModule.getSubmodules())
+                if (group.equals(getLayoutGroup(submodule)))
+                    result.add(submodule);
+        return result;
     }
 
     /**

@@ -31,6 +31,7 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.displaymodel.PointF;
 import org.omnetpp.common.displaymodel.RectangleF;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
@@ -51,6 +52,7 @@ import org.omnetpp.ned.editor.graph.parts.canvas.AbstractCanvasFigureEditPart;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
@@ -291,9 +293,94 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
             SetConstraintCommand constraintCmd = new SetConstraintCommand(submodule, RectangleF.fromPixels(oldBounds, scale));
             RectangleF rect = RectangleF.fromPixels(modelConstraint, scale);
             snapRectangleToGrid(rect, resize);
+
+            // The position in the display string is the submodule's base location: the submodule
+            // is actually displayed at base location + arrangement offset, where the offset comes
+            // from the arrangement in the "p" tag and the submodule's index within its layout
+            // group ("g" tag). Subtract the offset, so that the submodule stays where it was
+            // dropped instead of jumping away by the offset.
+            PointF arrangementOffset = childFigure.getArrangementOffset();
+            PointF oldBaseLoc = getBaseLocation(child, arrangementOffset, scale);
+            rect.x -= arrangementOffset.x;
+            rect.y -= arrangementOffset.y;
             constraintCmd.setConstraint(rect);
+
+            // A layout group is arranged as a whole, so moving one of its members must move
+            // the whole group -- otherwise the group would fall apart. (Resizing only affects
+            // the resized submodule.)
+            if (!resize && child instanceof SubmoduleEditPart && oldBaseLoc != null) {
+                PointF delta = new PointF(rect.x - oldBaseLoc.x, rect.y - oldBaseLoc.y);
+                Command translateGroupCmd = createTranslateLayoutGroupCommand((SubmoduleEditPart)child, delta, scale);
+                if (translateGroupCmd != null) {
+                    CompoundCommand command = new CompoundCommand("Move " + submodule.getName() + " and its layout group");
+                    command.add(constraintCmd);
+                    command.add(translateGroupCmd);
+                    return command;
+                }
+            }
             return constraintCmd;
         }
+    }
+
+    /**
+     * Returns a command that translates the layout group ("g" tag) of the given submodule by
+     * the given delta, excluding the submodule itself; returns null if the submodule is not
+     * part of a layout group, or no other member of the group can be moved.
+     *
+     * The commands are computed from the pre-drag state of the model, so that dragging several
+     * members of the same group at once yields the same result as dragging a single one.
+     */
+    protected Command createTranslateLayoutGroupCommand(SubmoduleEditPart draggedPart, PointF delta, float scale) {
+        if (delta.x == 0 && delta.y == 0)
+            return null;
+        String layoutGroup = NedElementUtilEx.getLayoutGroup(draggedPart.getModel());
+        if (layoutGroup == null)
+            return null;
+
+        CompoundCommand command = new CompoundCommand();
+        for (SubmoduleElementEx member : NedElementUtilEx.getLayoutGroupMembers(getHost().getModel(), layoutGroup)) {
+            if (member == draggedPart.getModel())
+                continue;
+            SubmoduleEditPart memberPart = findSubmoduleEditPart(member);
+            if (memberPart == null || !EditPartUtil.isEditable(memberPart))
+                continue;  // e.g. an inherited submodule: its display string cannot be edited here
+            SubmoduleFigure memberFigure = (SubmoduleFigure)memberPart.getFigure();
+            PointF baseLoc = getBaseLocation(memberPart, memberFigure.getArrangementOffset(), scale);
+            if (baseLoc == null)
+                continue;  // not laid out yet
+            SetConstraintCommand memberCmd = new SetConstraintCommand(member, RectangleF.fromPixels(memberFigure.getShapeBounds(), scale));
+            memberCmd.setNewLocation(new PointF(baseLoc.x + delta.x, baseLoc.y + delta.y));
+            command.add(memberCmd);
+        }
+        return command.isEmpty() ? null : command;
+    }
+
+    /**
+     * Returns the base location (the position stored in the display string) of the given
+     * submodule, in model coordinates. If the submodule is not pinned, its current layouted
+     * position is used instead, so that it does not jump away when it gets pinned.
+     * Returns null if the submodule has not been laid out yet.
+     */
+    protected static PointF getBaseLocation(EditPart part, PointF arrangementOffset, float scale) {
+        if (!(part instanceof SubmoduleEditPart))
+            return null;
+        PointF baseLoc = ((SubmoduleEditPart)part).getModel().getDisplayString().getLocation();
+        if (baseLoc != null)
+            return baseLoc;
+        Point center = ((SubmoduleFigure)((SubmoduleEditPart)part).getFigure()).getCenterPosition();
+        if (center == null)
+            return null;
+        return new PointF(center.x / scale - arrangementOffset.x, center.y / scale - arrangementOffset.y);
+    }
+
+    /**
+     * Returns the edit part of the given submodule within the hosting compound module, or null.
+     */
+    protected SubmoduleEditPart findSubmoduleEditPart(SubmoduleElementEx submodule) {
+        for (Object child : getHost().getChildren())
+            if (child instanceof SubmoduleEditPart && ((SubmoduleEditPart)child).getModel() == submodule)
+                return (SubmoduleEditPart)child;
+        return null;
     }
 
     protected void snapRectangleToGrid(RectangleF rect, boolean includingSize) {

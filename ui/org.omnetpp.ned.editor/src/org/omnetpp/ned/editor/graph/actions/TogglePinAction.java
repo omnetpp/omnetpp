@@ -7,7 +7,6 @@
 
 package org.omnetpp.ned.editor.graph.actions;
 
-import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -119,9 +118,16 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
             SetConstraintCommand cmd = new SetConstraintCommand(submodule, null);  //FIXME gyanus!!!!
 
             if (isChecked()) {
-                // pin the module at the current temporary location if it is not fixed
-                Point loc = ((SubmoduleFigure)child.getFigure()).getCenterPosition();
-                PointF pos = PointF.fromPixels(loc, scale);
+                // pin the module at the current temporary location if it is not fixed.
+                // Note: the display string stores the base location, and the module is displayed
+                // at base location + arrangement offset (the offset comes from the arrangement in
+                // the "p" tag and the module's index within its layout group), so subtract it.
+                SubmoduleFigure figure = (SubmoduleFigure)child.getFigure();
+                PointF pos = PointF.fromPixels(figure.getCenterPosition(), scale);  // null if not laid out yet
+                if (pos != null) {
+                    PointF offset = figure.getArrangementOffset();
+                    pos = new PointF(pos.x - offset.x, pos.y - offset.y);
+                }
                 cmd.setPinLocation(pos);
             }
             else {

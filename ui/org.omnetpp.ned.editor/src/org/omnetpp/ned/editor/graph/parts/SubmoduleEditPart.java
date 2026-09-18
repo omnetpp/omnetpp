@@ -33,6 +33,10 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  * @author rhornig
  */
 public class SubmoduleEditPart extends ModuleEditPart {
+    // Prefix for the layouter's group identifier, to keep layout groups ("g" tag) in a
+    // separate namespace from submodule vector names (which may also identify a group).
+    private static final String LAYOUT_GROUP_ID_PREFIX = "g:";
+
     protected GateAnchor gateAnchor;
 
     @Override
@@ -140,6 +144,23 @@ public class SubmoduleEditPart extends ModuleEditPart {
         submoduleFigure.setDisplayString(dps, scale, iconScale, project);
 
         submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE_NAME)) ? "#" : "");
+
+        // If the submodule is part of a layout group ("g" tag), tell the layouter its index
+        // within the group and the group size, so that the arrangement given in the "p" tag
+        // (row, column, matrix, ring, etc.) can be applied to it, exactly like it is applied
+        // to the elements of a submodule vector at runtime.
+        String layoutGroup = NedElementUtilEx.getLayoutGroup(getModel());
+        if (layoutGroup == null) {
+            submoduleFigure.setSubmoduleVectorIndex(null, 0, 0);
+        }
+        else {
+            List<SubmoduleElementEx> groupMembers = NedElementUtilEx.getLayoutGroupMembers(getCompoundModulePart().getModel(), layoutGroup);
+            int index = groupMembers.indexOf(getModel());
+            if (index == -1)
+                submoduleFigure.setSubmoduleVectorIndex(null, 0, 0);  // not among our siblings (should not happen)
+            else
+                submoduleFigure.setSubmoduleVectorIndex(LAYOUT_GROUP_ID_PREFIX + layoutGroup, groupMembers.size(), index);
+        }
 
         // show/hide the pin marker
         submoduleFigure.setPinVisible(dps.getLocation() != null);

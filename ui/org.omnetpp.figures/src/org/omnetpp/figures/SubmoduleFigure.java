@@ -29,6 +29,7 @@ import org.omnetpp.common.ui.ISelectable;
 import org.omnetpp.common.util.GeomUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.anchors.IAnchorBounds;
+import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
 import org.omnetpp.figures.layout.ISubmoduleConstraint.VectorArrangement;
 import org.omnetpp.figures.layout.SubmoduleConstraint;
@@ -98,6 +99,15 @@ public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelection
 
     public Object getLayoutConstraint() {
         return constraint;
+    }
+
+    /**
+     * Returns the offset this submodule is displayed at, relative to its base location (the
+     * position in the "p" tag). The offset comes from the arrangement given in the "p" tag
+     * and from the submodule's index within its submodule vector or layout group ("g" tag).
+     */
+    public PointF getArrangementOffset() {
+        return CompoundModuleLayout.getArrangementOffset(constraint, CompoundModuleLayout.DEFAULT_ARRANGEMENT_SPACING);
     }
 
     public boolean isSelected() {
@@ -326,8 +336,12 @@ public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelection
     }
 
     public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
-        if (constraint.setSubmoduleVectorIndex(vectorIdentifier, vectorSize, vectorIndex))
+        if (constraint.setSubmoduleVectorIndex(vectorIdentifier, vectorSize, vectorIndex)) {
+            // the arrangement offset depends on the index and the group/vector size,
+            // so the cached layouted position is no longer valid
             invalidateLocation();
+            revalidate();
+        }
     }
 
     protected void setBaseLocation(PointF loc) {
@@ -345,8 +359,12 @@ public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelection
 
     protected void setVectorArrangement(VectorArrangement vectorArrangement, String par1, String par2, String par3) {
         VectorArrangementParameters pars = makeVectorArrangementParameters(vectorArrangement, par1, par2, par3);
-        if (constraint.setVectorArragement(vectorArrangement, pars))
+        if (constraint.setVectorArragement(vectorArrangement, pars)) {
+            // the arrangement offset is added to the base location, so the cached
+            // layouted position must be recomputed
+            invalidateLocation();
             revalidate();
+        }
     }
 
     protected VectorArrangementParameters makeVectorArrangementParameters(VectorArrangement vectorArrangement, String par1, String par2, String par3) {
