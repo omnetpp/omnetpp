@@ -71,6 +71,52 @@ function cachedLink()
   }
 }
 
+// The tree may contain the same page at several places (e.g. a module appears both in
+// the flat "Modules" list and under its package), but the navigation index maps a page
+// to only one of them. Without remembering which node was actually clicked, the tree
+// would jump to the page's other location after every click, making it impossible to
+// walk down a list. Session storage is per-tab and transient, which is exactly the
+// lifetime we want; if it is unavailable, we silently fall back to the index.
+
+function sessionStorageSupported()
+{
+  try {
+    return 'sessionStorage' in window && window['sessionStorage'] !== null && window.sessionStorage.getItem;
+  }
+  catch(e) {
+    return false;
+  }
+}
+
+function storeClickedNode(link,node)
+{
+  if (!sessionStorageSupported()) return;
+  // collect the child indices from the root down to the clicked node; this is the same
+  // form gotoNode() uses, i.e. including the index of the root's own child
+  var breadcrumbs = [];
+  for (var n=node; n && n.parentNode; n=n.parentNode) {
+    var i = n.parentNode.children.indexOf(n);
+    if (i<0) return; // not registered in its parent (yet): leave the index to do its job
+    breadcrumbs.unshift(i);
+  }
+  try {
+    window.sessionStorage.setItem('clickednode', JSON.stringify({url:link, breadcrumbs:breadcrumbs}));
+  }
+  catch(e) { /* private mode, quota, etc: fall back to the index */ }
+}
+
+function clickedNodeBreadcrumbs(url)
+{
+  if (!sessionStorageSupported()) return null;
+  try {
+    var stored = JSON.parse(window.sessionStorage.getItem('clickednode'));
+    return (stored && stored.url==url && stored.breadcrumbs) ? stored.breadcrumbs : null;
+  }
+  catch(e) {
+    return null;
+  }
+}
+
 function getScript(scriptName,func,show)
 {
   var head = document.getElementsByTagName("head")[0];
@@ -192,6 +238,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
       a.href = srcPage!=targetPage ? url : "javascript:void(0)";
       a.onclick = function(){
         storeLink(link);
+        storeClickedNode(link,node);
         if (!$(a).parent().parent().hasClass('selected'))
         {
           $('.item').removeClass('selected');
@@ -204,7 +251,7 @@ function newNode(o, po, text, link, childrenData, lastNode)
       };
     } else {
       a.href = url;
-      a.onclick = function() { storeLink(link); }
+      a.onclick = function() { storeLink(link); storeClickedNode(link,node); }
     }
   } else {
     if (childrenData != null)
@@ -382,15 +429,24 @@ function getNode(o, po)
 
 function gotoNode(o,subIndex,root,hash,relpath)
 {
-  var nti = navTreeSubIndices[subIndex][root+hash];
-  o.breadcrumbs = $.extend(true, [], nti ? nti : navTreeSubIndices[subIndex][root]);
-  if (!o.breadcrumbs && root!=NAVTREE[0][1]) { // fallback: show index
-    navTo(o,NAVTREE[0][1],"",relpath);
-    $('.item').removeClass('selected');
-    $('.item').removeAttr('id');
+  // note: try the plain url too, the way the index lookup below does -- hash is "#" when
+  // the location has no fragment, which would never match a stored anchorless link
+  var clicked = clickedNodeBreadcrumbs(root+hash) || clickedNodeBreadcrumbs(root);
+  if (clicked) {
+    o.breadcrumbs = clicked; // already contains the root's child index
+  }
+  else {
+    var nti = navTreeSubIndices[subIndex][root+hash];
+    o.breadcrumbs = $.extend(true, [], nti ? nti : navTreeSubIndices[subIndex][root]);
+    if (!o.breadcrumbs && root!=NAVTREE[0][1]) { // fallback: show index
+      navTo(o,NAVTREE[0][1],"",relpath);
+      $('.item').removeClass('selected');
+      $('.item').removeAttr('id');
+    }
+    if (o.breadcrumbs)
+      o.breadcrumbs.unshift(0); // add 0 for root node
   }
   if (o.breadcrumbs) {
-    o.breadcrumbs.unshift(0); // add 0 for root node
     showNode(o, o.node, 0, hash);
   }
 }
