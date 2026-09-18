@@ -232,6 +232,7 @@ public class DocumentationGenerator {
     protected Map<INedTypeElement, ArrayList<INedTypeElement>> allImplementorsMap = new LinkedHashMap<INedTypeElement, ArrayList<INedTypeElement>>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new LinkedHashMap<ITypeElement, ArrayList<ITypeElement>>();
     protected Map<String, List<ITypeElement>> typeNamesMap = new LinkedHashMap<String, List<ITypeElement>>();
+    protected Map<IProject, IPath> siblingNeddocPaths = new LinkedHashMap<IProject, IPath>();
     protected Map<String, String> doxyMap = new LinkedHashMap<String, String>();
     protected Map<INedElement, String> commentCache = new LinkedHashMap<INedElement, String>();
     protected Map<File, String> includedFileCache = new LinkedHashMap<File,String>();
@@ -2689,10 +2690,30 @@ public class DocumentationGenerator {
             IProject elementProject = file.getProject();
 
             if (!elementProject.equals(project))
-                return new Path("../").append(neddocRelativeRootPath).append(elementProject.getName()).append(rootRelativeNeddocPath);
+                return new Path("../").append(neddocRelativeRootPath).append(elementProject.getName()).append(getSiblingNeddocPath(elementProject));
         }
 
         return new Path("");
+    }
+
+    /**
+     * The documentation folder of a project documented alongside ours, relative to its project root.
+     * Note that this is THAT project's own configured neddoc path, not ours. The result is cached,
+     * so that a project whose setting cannot be read is reported once, not once per reference.
+     */
+    protected IPath getSiblingNeddocPath(IProject elementProject) {
+        if (!siblingNeddocPaths.containsKey(elementProject)) {
+            IPath path = rootRelativeNeddocPath;
+            try {
+                path = new Path(DocumentationGeneratorPropertyPage.getNeddocPath(elementProject));
+            }
+            catch (CoreException e) {
+                NeddocPlugin.logError("Could not determine the documentation folder of project " +
+                        elementProject.getName() + ", assuming '" + path + "'", e);
+            }
+            siblingNeddocPaths.put(elementProject, path);
+        }
+        return siblingNeddocPaths.get(elementProject);
     }
 
     protected String getOutputBaseNameForFile(IFile file) {
