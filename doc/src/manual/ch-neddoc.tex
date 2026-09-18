@@ -185,7 +185,9 @@ The detailed rules:
   \item Words matching a type name are \textit{not} hyperlinked automatically.
   \item A tilde immediately followed by an identifier (i.e. letter or underscore)
         will be hyperlinked, and the tilde is removed from the output. It is
-        considered an error if there is no type with that name.
+        considered an error if there is no type with that name. Types that are
+        defined in another project and not documented together with this one are
+        marked as such.
   \item A double tilde followed by an identifier produces a single tilde plus the identifier.
   \item Tildes in any other contexts are not interpreted and preserved in the output.
   \item Backslashes are not interpreted and preserved in the output.

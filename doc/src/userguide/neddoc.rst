@@ -36,6 +36,14 @@ enable doxygen to generate C++ documentation that will be cross-linked from the 
 the output into each project as configured in the project-specific settings, or into a separate directory. The latter is
 useful for exporting standalone documentation for several complex projects at once.
 
+A project can also be documented without its dependencies, for example to produce standalone documentation for a model
+framework that builds on INET, without INET itself. References to types coming from a dependency left out of the
+generation are then marked as such, instead of turning into broken links. If the documentation of those projects is
+available somewhere, its location can be given in the :guilabel:`External documentation` field, and references to their
+types will be hyperlinked to it.
+
+NED documentation can also be generated outside the IDE, using the :command:`opp_neddoc` command-line tool.
+
 .. figure:: pictures/NEDDOC-Configuration.png
    :width: 80%
 
