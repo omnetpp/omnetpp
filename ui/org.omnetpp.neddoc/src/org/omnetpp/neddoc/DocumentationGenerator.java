@@ -2355,6 +2355,10 @@ public class DocumentationGenerator {
             String typeString = tryToParseQuotedString(likeExpr);
             if (!StringUtils.isEmpty(typeString)) {
                 INedTypeElement interfaceType = submodule.getTypeOrLikeTypeRef();
+                if (interfaceType == null) {
+                    Debug.println("WARNING: DocumentationGenerator cannot resolve interface type '" + submodule.getLikeType() + "' for submodule '" + submodule.getName() + "' at " + submodule.getSourceLocation() + " -- make sure the project has no NED errors before generating documentation");
+                    return null;
+                }
                 INedTypeInfo submoduleType = nedResolver.lookupLikeType(typeString, interfaceType.getNedTypeInfo(), project);
                 if (submoduleType != null)
                     return submoduleType.getNedElement();
