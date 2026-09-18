@@ -386,6 +386,28 @@ public class GeneratorConfigurationDialog
             return;  // keep the dialog open
         }
 
+        // Documentation generated from a project with NED errors is incomplete: the types that
+        // failed to parse or validate are missing, and references to them cannot be resolved. Say
+        // so before starting, rather than letting the user wonder why types are missing later.
+        String projectsWithErrors = "";
+        for (Object element : selectedProjects.getCheckedElements()) {
+            IProject project = (IProject)element;
+            int numFilesWithErrors = DocumentationGenerator.getNedFilesWithErrors(project).size();
+            if (numFilesWithErrors > 0)
+                projectsWithErrors += "\n    " + project.getName() + " (" + numFilesWithErrors +
+                        " NED file" + (numFilesWithErrors == 1 ? "" : "s") + " with errors)";
+        }
+        if (!projectsWithErrors.isEmpty()) {
+            MessageDialog dialog = new MessageDialog(getShell(), "NED Errors", null,
+                    "The following projects contain NED errors:\n" + projectsWithErrors +
+                    "\n\nTypes that could not be parsed or validated will be missing from the generated " +
+                    "documentation, and references to them will be left unresolved. See the Problems view " +
+                    "for details.",
+                    MessageDialog.WARNING, new String[] {"Generate Anyway", "Cancel"}, 1);
+            if (dialog.open() != 0)
+                return;  // keep the dialog open
+        }
+
         generators =  new ArrayList<DocumentationGenerator>();
 
         configuration.generateNedTypeFigures = generateNedTypeFigures.getSelection();

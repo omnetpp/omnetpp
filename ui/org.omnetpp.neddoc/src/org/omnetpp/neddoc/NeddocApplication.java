@@ -117,6 +117,20 @@ public class NeddocApplication implements IApplication {
                 documentedProjects.add(project);
             }
 
+            // NED errors make the generated documentation incomplete; there is nobody to ask in
+            // headless mode, so just warn. NED consistency validation is normally kicked off by
+            // editing, which never happens here, so run it explicitly -- otherwise only syntax
+            // errors would be detected.
+            DocumentationGenerator.ensureNedFilesValidated();
+
+            for (IProject documentedProject : documentedProjects) {
+                int numFilesWithErrors = DocumentationGenerator.getNedFilesWithErrors(documentedProject).size();
+                if (numFilesWithErrors > 0)
+                    System.err.println("Warning: project " + documentedProject.getName() + " contains " +
+                            numFilesWithErrors + " NED file(s) with errors; the generated documentation " +
+                            "will be incomplete");
+            }
+
             // all projects are known now, so each generator can be told which ones are documented together with it
             for (DocumentationGenerator generator : generators)
                 generator.setDocumentedProjects(documentedProjects.toArray(new IProject[]{}));

@@ -40,6 +40,7 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.eclipse.core.internal.preferences.Base64;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -50,6 +51,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -87,6 +89,7 @@ import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResources;
+import org.omnetpp.ned.core.NedValidationJob;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.export.DiagramExporter;
 import org.omnetpp.ned.editor.export.NedFigureProvider;
@@ -1962,6 +1965,49 @@ public class DocumentationGenerator {
         externalDocBaseUrls = parseExternalDocSets(externalDocSets);
         externalDocSetCache.clear();
         siblingNeddocPaths.clear();
+    }
+
+    /**
+     * Reads and validates all NED files, so that getNedFilesWithErrors() reports consistency
+     * errors as well, not just syntax errors. In the IDE this happens on its own, as validation
+     * is kicked off whenever NED files change; in headless mode nothing triggers it. Note that
+     * the files have to be read BEFORE validation, or there would be nothing to validate.
+     */
+    public static void ensureNedFilesValidated() throws InterruptedException {
+        NedResources.getInstance().readMissingNedFiles();
+
+        // NedValidationJob abandons its work and reschedules itself if the NED trees change while
+        // it runs, and join() may return in between, so keep at it until it reports success
+        Job validationJob = new NedValidationJob();
+        for (int i = 0; i < 10; i++) {
+            validationJob.schedule();
+            validationJob.join();
+            IStatus result = validationJob.getResult();
+            if (result != null && result.isOK())
+                return;
+        }
+        // give up; the caller will simply see fewer errors than there are
+    }
+
+    /**
+     * Returns the NED files of the given project that contain errors, sorted by path. Documentation
+     * generated from a project with NED errors is incomplete or misleading, because the types that
+     * failed to parse or validate are missing, and references to them cannot be resolved.
+     *
+     * Note that NED validation runs in a background job, so this reports the errors known at the
+     * time of the call. Syntax errors are always seen (the files are parsed here if needed), while
+     * consistency errors are only seen once validation has had a chance to run.
+     */
+    public static List<IFile> getNedFilesWithErrors(IProject project) {
+        NedResources nedResources = NedResources.getInstance();
+        nedResources.readMissingNedFiles();
+
+        List<IFile> result = new ArrayList<IFile>();
+        for (IFile file : nedResources.getNedFiles(project))
+            if (nedResources.getNedFileElement(file).getMaxProblemSeverity() == IMarker.SEVERITY_ERROR)
+                result.add(file);
+        Collections.sort(result, (IFile f1, IFile f2) -> f1.getFullPath().toString().compareToIgnoreCase(f2.getFullPath().toString()));
+        return result;
     }
 
     /**
