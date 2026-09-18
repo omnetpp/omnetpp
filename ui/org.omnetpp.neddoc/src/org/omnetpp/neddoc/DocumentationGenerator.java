@@ -71,6 +71,7 @@ import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
@@ -219,6 +220,9 @@ public class DocumentationGenerator {
     protected IPath extensionFilePath;
     protected IPath customCssPath;
     protected IProject project;
+    protected Set<IProject> documentedProjects;  // projects documented in the same run; their output dirs are siblings of ours
+    protected String externalDocSets;  // raw config: "<projectName>=<baseUrl>" items, comma or whitespace separated
+    protected Map<String, String> externalDocBaseUrls = new LinkedHashMap<String, String>();  // parsed from externalDocSets
     protected INedTypeResolver nedResolver;
     protected MsgResources msgResources;
     protected IProgressMonitor monitor;
@@ -232,7 +236,10 @@ public class DocumentationGenerator {
     protected Map<INedTypeElement, ArrayList<INedTypeElement>> allImplementorsMap = new LinkedHashMap<INedTypeElement, ArrayList<INedTypeElement>>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new LinkedHashMap<ITypeElement, ArrayList<ITypeElement>>();
     protected Map<String, List<ITypeElement>> typeNamesMap = new LinkedHashMap<String, List<ITypeElement>>();
+    protected Map<String, List<ITypeElement>> externalTypeNamesMap = new LinkedHashMap<String, List<ITypeElement>>(); // types of referenced projects, i.e. ones NOT documented by us
+    protected Map<IProject, ExternalDocSet> externalDocSetCache = new LinkedHashMap<IProject, ExternalDocSet>();
     protected Map<IProject, IPath> siblingNeddocPaths = new LinkedHashMap<IProject, IPath>();
+    protected Map<String, Integer> unlinkedExternalReferences = new LinkedHashMap<String, Integer>();  // project name -> number of references left unlinked
     protected Map<String, String> doxyMap = new LinkedHashMap<String, String>();
     protected Map<INedElement, String> commentCache = new LinkedHashMap<INedElement, String>();
     protected Map<File, String> includedFileCache = new LinkedHashMap<File,String>();
@@ -254,10 +261,35 @@ public class DocumentationGenerator {
 
     public DocumentationGenerator(IProject project) {
         this.project = project;
+        this.documentedProjects = new HashSet<IProject>();
+        this.documentedProjects.add(project);
 
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();
         dotExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_GRAPHVIZ_DOT_EXECUTABLE));
         doxyExecutablePath = ProcessUtils.lookupExecutable(store.getString(IConstants.PREF_DOXYGEN_EXECUTABLE));
+    }
+
+    /**
+     * Specifies the projects that are documented in the same generation run as this one. The
+     * documentation of those projects is expected to be generated next to ours, so types in them
+     * are hyperlinked using relative paths. Types of other (referenced but not documented) projects
+     * are considered external, see setExternalDocSets(). The documented project itself is always
+     * part of this set.
+     */
+    public void setDocumentedProjects(IProject[] documentedProjects) {
+        this.documentedProjects = new HashSet<IProject>(Arrays.asList(documentedProjects));
+        this.documentedProjects.add(project);
+    }
+
+    /**
+     * Specifies where the already generated documentation of referenced projects that are NOT
+     * documented in this run can be found. The format is a comma or whitespace separated list of
+     * "&lt;projectName&gt;=&lt;baseUrl&gt;" items, e.g. "inet=https://inet.omnetpp.org/doc/neddoc".
+     * References to types of a referenced project that has no entry here are not hyperlinked at
+     * all (but are still marked as being documented elsewhere).
+     */
+    public void setExternalDocSets(String externalDocSets) {
+        this.externalDocSets = externalDocSets;
     }
 
     // specify an extension file using a full file system path to the XML doc-extension fragment file
@@ -378,6 +410,8 @@ public class DocumentationGenerator {
             DocumentationGenerator.this.monitor = monitor;
             renderer = new HtmlRenderer(documentationRootPath.append(rootRelativeNeddocPath));
 
+            parseExternalDocSets();  // note: before ensureEmptyNeddoc(), so that a malformed setting doesn't wipe the existing output
+
             ensureEmptyNeddoc();
             collectCaches();
             generateDoxy();
@@ -396,6 +430,8 @@ public class DocumentationGenerator {
             generateNedTagFile();
             if (generateMsgDefinitions)
                 generateMsgTagFile();
+
+            reportUnlinkedExternalReferences();
 
             return Status.OK_STATUS;
         }
@@ -565,31 +601,12 @@ public class DocumentationGenerator {
         this.namespaceNames = (ArrayList<String>)CollectionUtils.toSorted(new ArrayList<String>(namespaceNames));
     }
 
-    protected void collectTypeNames() {
+    protected void collectTypeNames() throws CoreException, IOException {
         monitor.subTask("Collecting type names");
-        for (ITypeElement typeElement : typeElements) {
-            if (typeElement instanceof INedTypeElement) {
-                // add simple and fully qualified NED names
-                String name = typeElement.getName();
-                String qname = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
-                addToTypeNamesMap(name, typeElement);
-                if (!qname.equals(name))
-                    addToTypeNamesMap(qname, typeElement);
-            }
+        for (ITypeElement typeElement : typeElements)
+            addTypeNamesTo(typeNamesMap, typeElement);
 
-            if (typeElement instanceof IMsgTypeElement) {
-                // add simple, fully and all partially qualified C++ names.
-                // (we want inet::foo::Foo to be found as any of: inet::foo::Foo, foo::Foo, Foo)
-                String qname = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
-                addToTypeNamesMap("::" + qname, typeElement);
-                while (qname.contains("::")) {
-                    addToTypeNamesMap(qname, typeElement);
-                    qname = StringUtils.substringAfter(qname, "::");
-                }
-                String name = typeElement.getName(); // should be same as qname remainder
-                addToTypeNamesMap(name, typeElement);
-            }
-        }
+        collectExternalTypeNames();
 
         final String QCHAR = "[a-zA-Z\\u0080-\\uffff_0-9.:]"; // char that may occur in fully qualified NED or C++ type names
         final String NCHAR = "[a-zA-Z\\u0080-\\uffff_0-9]";   // char that may occur in NED or C++ simple type names
@@ -618,7 +635,19 @@ public class DocumentationGenerator {
         else {
             // Autolinking: Match recognized names, optionally prefixed with a backslash (or more backslashes).
             // Include all preceding backslashes into the match (because a double backslash means one literal backslash in the output)
-            String typeNamesPattern = StringUtils.join(typeNamesMap.keySet(), "|").replace(".", "\\.");
+            // Include the names of the referenced projects' types as well, so that e.g. INET type names
+            // get hyperlinked in a project that builds on INET. Names of external types that cannot be
+            // linked (because no documentation URL is configured for their project) are deliberately
+            // left out: marking up such words all over the documentation would only add noise.
+            Set<String> linkableTypeNames = new LinkedHashSet<String>(typeNamesMap.keySet());
+            for (Map.Entry<String, List<ITypeElement>> entry : externalTypeNamesMap.entrySet())
+                for (ITypeElement typeElement : entry.getValue())
+                    if (isLinkable(typeElement)) {
+                        linkableTypeNames.add(entry.getKey());
+                        break;
+                    }
+
+            String typeNamesPattern = StringUtils.join(linkableTypeNames, "|").replace(".", "\\.");
 
             // we need to match this too, in order to be able to turn remove the backslash from in front of unrecognized type names ("\NoSuchType" --> "NoSuchType"):
             final String ESCAPEDNAME = "(\\\\+" + QCHAR + "+)";
@@ -629,10 +658,61 @@ public class DocumentationGenerator {
         monitor.worked(1);
     }
 
-    private void addToTypeNamesMap(String name, ITypeElement typeElement) {
-        if (!typeNamesMap.containsKey(name))
-            typeNamesMap.put(name, new ArrayList<ITypeElement>());
-        typeNamesMap.get(name).add(typeElement);
+    /**
+     * Collects the names of the types of the referenced projects, i.e. ones NOT documented by this
+     * generator. They are kept apart from typeNamesMap, because references to them must be rendered
+     * differently (see getExternalDocSet()), and because in automatic hyperlinking mode only the
+     * linkable ones take part in the matching.
+     */
+    protected void collectExternalTypeNames() throws CoreException, IOException {
+        monitor.subTask("Collecting type names of referenced projects");
+        for (IProject referencedProject : ProjectUtils.getAllReferencedOmnetppProjects(project)) {
+            if (referencedProject.equals(project))
+                continue;
+            for (IFile file : nedResolver.getNedFiles(referencedProject))
+                for (ITypeElement typeElement : nedResolver.getNedFileElement(file).getTopLevelTypeNodes())
+                    addTypeNamesTo(externalTypeNamesMap, typeElement);
+            if (generateMsgDefinitions)
+                for (IFile file : msgResources.getMsgFiles(referencedProject))
+                    for (ITypeElement typeElement : msgResources.getMsgFileElement(file).getTopLevelTypeNodes())
+                        addTypeNamesTo(externalTypeNamesMap, typeElement);
+        }
+    }
+
+    private void addTypeNamesTo(Map<String, List<ITypeElement>> map, ITypeElement typeElement) {
+        if (typeElement instanceof INedTypeElement) {
+            // add simple and fully qualified NED names
+            String name = typeElement.getName();
+            String qname = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
+            addToTypeNamesMap(map, name, typeElement);
+            if (!qname.equals(name))
+                addToTypeNamesMap(map, qname, typeElement);
+        }
+
+        if (typeElement instanceof IMsgTypeElement) {
+            // add simple, fully and all partially qualified C++ names.
+            // (we want inet::foo::Foo to be found as any of: inet::foo::Foo, foo::Foo, Foo)
+            String qname = ((IMsgTypeElement)typeElement).getMsgTypeInfo().getFullyQualifiedCppClassName();
+            addToTypeNamesMap(map, "::" + qname, typeElement);
+            while (qname.contains("::")) {
+                addToTypeNamesMap(map, qname, typeElement);
+                qname = StringUtils.substringAfter(qname, "::");
+            }
+            String name = typeElement.getName(); // should be same as qname remainder
+            addToTypeNamesMap(map, name, typeElement);
+        }
+    }
+
+    private void addToTypeNamesMap(Map<String, List<ITypeElement>> map, String name, ITypeElement typeElement) {
+        if (!map.containsKey(name))
+            map.put(name, new ArrayList<ITypeElement>());
+        map.get(name).add(typeElement);
+    }
+
+    /** Looks up a type name among the documented types, then among the referenced projects' types. */
+    private List<ITypeElement> lookupTypeName(String name) {
+        List<ITypeElement> result = typeNamesMap.get(name);
+        return result != null ? result : externalTypeNamesMap.get(name);
     }
 
     protected void collectSubtypesMap() {
@@ -881,11 +961,11 @@ public class DocumentationGenerator {
                     identifier = identifier.substring(0, len);
                 }
 
-                List<ITypeElement> typeElements = typeNamesMap.get(identifier);
+                List<ITypeElement> typeElements = lookupTypeName(identifier);
                 if (typeElements == null && identifier.contains("::")) {
                     // identifier might be an enum member, e.g. "State::IDLE" -- try again without the last segment
                     int pos = identifier.lastIndexOf("::");
-                    typeElements = typeNamesMap.get(identifier.substring(0, pos));
+                    typeElements = lookupTypeName(identifier.substring(0, pos));
                     // if successful, go with it
                     if (typeElements != null) {
                         suffix += identifier.substring(pos); // e.g. "::IDLE"
@@ -1854,8 +1934,124 @@ public class DocumentationGenerator {
     protected String typeReferenceString(ITypeElement typeElement, String label) {
         // note: label might also be "1", "2", "3",etc (for ambiguous type references), not only name/qname
         String qname = getFullyQualifiedName(typeElement);
-        String tooltip = label.equals(qname) ? null : qname;
-        return renderer.link(label, renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)), null, tooltip);
+        ExternalDocSet docSet = getExternalDocSet(typeElement);
+        String tooltip = StringUtils.trimToNull(joinNonempty(new String[] {label.equals(qname) ? null : qname, externalTypeMarker(docSet)}, " "));
+        String url = getTypeReferenceUrl(typeElement);
+
+        if (url == null)  // documented elsewhere, but we don't know where: mark it up, but don't link it
+            return renderer.styled(label, "externaltype", tooltip, null);
+        return renderer.link(label, url, docSet == null ? null : "externaltype", tooltip);
+    }
+
+    /**
+     * Describes the documentation of a project that is referenced by the documented project, but is
+     * not documented in the same generation run -- so its pages are not siblings of the ones we
+     * generate, and may not exist at all.
+     */
+    public static class ExternalDocSet {
+        public final String label;    // name of the owning project, e.g. "inet"
+        public final String baseUrl;  // base URL of its generated neddoc, or null if not configured
+
+        public ExternalDocSet(String label, String baseUrl) {
+            this.label = label;
+            this.baseUrl = baseUrl;
+        }
+    }
+
+    protected void parseExternalDocSets() {
+        externalDocBaseUrls = parseExternalDocSets(externalDocSets);
+        externalDocSetCache.clear();
+        siblingNeddocPaths.clear();
+    }
+
+    /**
+     * Parses the "external documentation" setting into a projectName-to-baseUrl map, and throws
+     * NeddocException if it is malformed. Also used by the configuration dialog, to validate the
+     * user's input up front instead of letting every scheduled generator fail on it separately.
+     */
+    public static Map<String, String> parseExternalDocSets(String externalDocSets) {
+        Map<String, String> result = new LinkedHashMap<String, String>();
+        if (StringUtils.isBlank(externalDocSets))
+            return result;
+        for (String item : externalDocSets.trim().split("[,\\s]+")) {
+            if (item.isEmpty())
+                continue;
+            int pos = item.indexOf('=');
+            if (pos <= 0 || pos == item.length()-1)
+                throw new NeddocException("Invalid external documentation entry '" + item + "': expected <projectName>=<baseUrl>, e.g. inet=https://inet.omnetpp.org/doc/neddoc");
+            result.put(item.substring(0, pos).trim(), StringUtils.removeEnd(item.substring(pos+1).trim(), "/"));
+        }
+        return result;
+    }
+
+    /**
+     * If the given type is documented outside this generation run, returns the documentation set it
+     * belongs to (whose baseUrl is null if no URL was configured for that project); returns null if
+     * the type is documented by this run, either by us or by a sibling generator.
+     */
+    protected ExternalDocSet getExternalDocSet(ITypeElement typeElement) {
+        IFile file = getNedOrMsgFile(typeElement);
+        if (file == null)
+            return null;  // built-in type: we generate a page for it ourselves
+
+        IProject elementProject = file.getProject();
+        if (documentedProjects.contains(elementProject))
+            return null;
+
+        if (!externalDocSetCache.containsKey(elementProject))
+            externalDocSetCache.put(elementProject, new ExternalDocSet(elementProject.getName(), externalDocBaseUrls.get(elementProject.getName())));
+        return externalDocSetCache.get(elementProject);
+    }
+
+    /** Whether a hyperlink can be generated for the given type, i.e. whether its documentation is available. */
+    protected boolean isLinkable(ITypeElement typeElement) {
+        ExternalDocSet docSet = getExternalDocSet(typeElement);
+        return docSet == null || docSet.baseUrl != null;
+    }
+
+    /**
+     * Returns the URL to be used in hyperlinks pointing to the page documenting the given type, or
+     * null if it must not be hyperlinked because its documentation is not available.
+     */
+    protected String getTypeReferenceUrl(ITypeElement typeElement) {
+        ExternalDocSet docSet = getExternalDocSet(typeElement);
+        if (docSet == null)
+            return renderer.appendFilenameExtension(getOutputBaseFileName(typeElement));  // ours, or a sibling's
+        if (docSet.baseUrl == null) {
+            unlinkedExternalReferences.merge(docSet.label, 1, Integer::sum);
+            return null;
+        }
+        return docSet.baseUrl + "/" + renderer.appendFilenameExtension(getOutputPageName(typeElement, null, ""));
+    }
+
+    /**
+     * Reports the type references that were left unlinked because the project defining them was
+     * neither documented in this run, nor had its documentation location configured. This is a
+     * warning only: the references are still rendered, just without a hyperlink.
+     */
+    protected void reportUnlinkedExternalReferences() {
+        for (Map.Entry<String, Integer> entry : unlinkedExternalReferences.entrySet()) {
+            String message = entry.getValue() + " reference(s) to types of project '" + entry.getKey() + "' were left unlinked " +
+                    "in the documentation of project '" + project.getName() + "', because '" + entry.getKey() + "' is neither " +
+                    "documented in the same run, nor does it have a documentation URL configured " +
+                    "(see the \"External documentation\" option in the dialog, or -l for opp_neddoc).";
+            if (verboseMode || headless)
+                System.out.println("Warning: " + message);
+            NeddocPlugin.logWarning(message);
+        }
+    }
+
+    /**
+     * A short tag for tooltips, marking a type that comes from another project (and is therefore not
+     * part of the documented one). Returns null for local types. Note that tooltips are plain text,
+     * so this must stay short, and can rely on neither markup nor color to stand out.
+     */
+    protected String externalTypeMarker(ExternalDocSet docSet) {
+        if (docSet == null)
+            return null;
+        return docSet.baseUrl != null ?
+                "[from " + docSet.label + "] \u2197" :
+                "[from " + docSet.label + " \u2014 not documented here]";
     }
 
     protected String typeTypeString(ITypeElement typeElement) {
@@ -2094,8 +2290,12 @@ public class DocumentationGenerator {
         String type2Docu = null;
         if (!submodule.isParametricType()) {
             INedTypeElement type = submodule.getTypeOrLikeTypeRef();
-            if (type != null)
+            if (type != null) {
+                // put the marker right under the declaration line, where it is the most visible:
+                // the tooltip is plain text, so placement is the only emphasis available
+                declarationLine = joinNonempty(new String[] {declarationLine, externalTypeMarker(getExternalDocSet(type))}, "\n");
                 type1Docu = getDocForTooltip(type);
+            }
         }
         else {
             INedTypeElement guessedActualType = resolveSubmoduleType(submodule);
@@ -2114,7 +2314,12 @@ public class DocumentationGenerator {
 
     private String getDocForTooltipWithPrefix(INedTypeElement type) {
         String doc = getDocForTooltip(type);
-        return doc.isEmpty() ? null : type.getName() + ": " + doc;
+        // for parametric submodules there are two types to describe, so the marker goes next to the
+        // type name it belongs to, instead of under the declaration line
+        String head = joinNonempty(new String[] {type.getName(), externalTypeMarker(getExternalDocSet(type))}, " ");
+        if (doc.isEmpty())
+            return getExternalDocSet(type) == null ? null : head;
+        return head + ": " + doc;
     }
 
     private String getDocForTooltip(INedTypeElement type) {
@@ -2661,7 +2866,9 @@ public class DocumentationGenerator {
 
     protected void outMapReference(INedTypeElement model, Rectangle bounds, String tooltip) throws IOException {
         Assert.isNotNull(model);
-        out(renderer.areaRef(tooltip, renderer.appendFilenameExtension(getOutputBaseFileName(model)), bounds));
+        // note: a null url (type documented elsewhere, but we don't know where) still yields an area,
+        // so that the tooltip saying where the type comes from remains available
+        out(renderer.areaRef(tooltip, getTypeReferenceUrl(model), getExternalDocSet(model) == null ? null : "externaltype", bounds));
     }
 
     protected Rectangle computeBounds(IFigure figure) {
@@ -2696,6 +2903,14 @@ public class DocumentationGenerator {
         return new Path("");
     }
 
+    protected String getOutputBaseNameForFile(IFile file) {
+        return getOutputFilePath(file).append(file.getProjectRelativePath().toString().replace("/", "-")).toString();
+    }
+
+    protected String getOutputBaseFileName(ITypeElement typeElement) {
+        return getOutputFileName(typeElement, null, "");
+    }
+
     /**
      * The documentation folder of a project documented alongside ours, relative to its project root.
      * Note that this is THAT project's own configured neddoc path, not ours. The result is cached,
@@ -2716,15 +2931,8 @@ public class DocumentationGenerator {
         return siblingNeddocPaths.get(elementProject);
     }
 
-    protected String getOutputBaseNameForFile(IFile file) {
-        return getOutputFilePath(file).append(file.getProjectRelativePath().toString().replace("/", "-")).toString();
-    }
-
-    protected String getOutputBaseFileName(ITypeElement typeElement) {
-        return getOutputFileName(typeElement, null, "");
-    }
-
-    protected String getOutputFileName(ITypeElement typeElement, String discriminator, String extension) {
+    /** The name (without any directory prefix) of the file that documents the given type. */
+    protected String getOutputPageName(ITypeElement typeElement, String discriminator, String extension) {
         String fileName = "";
 
         if (typeElement instanceof INedTypeElement)
@@ -2740,7 +2948,11 @@ public class DocumentationGenerator {
         if (extension != null)
             fileName += extension;
 
-        return getOutputFilePath(typeElement).append(fileName).toString();
+        return fileName;
+    }
+
+    protected String getOutputFileName(ITypeElement typeElement, String discriminator, String extension) {
+        return getOutputFilePath(typeElement).append(getOutputPageName(typeElement, discriminator, extension)).toString();
     }
 
     protected File getOutputFile(String relativePath) {
@@ -2806,7 +3018,10 @@ public class DocumentationGenerator {
                 String name = typeElement.getName();
                 append("\"" + name + "\" ");
 
-                append("[URL=\"" + renderer.appendFilenameExtension(getOutputBaseFileName(typeElement)) + "\", target=\"_parent\"");
+                String url = getTypeReferenceUrl(typeElement);
+                append("[");
+                if (url != null)
+                    append("URL=\"" + url + "\", target=\"_parent\",");
 
                 String color = "#ff0000";
                 if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
@@ -2836,7 +3051,8 @@ public class DocumentationGenerator {
                 if (typeElement instanceof IInterfaceTypeElement)
                     append("style=\"filled,dashed\",");
 
-                append("tooltip=\"" + WordUtils.capitalize(typeElement.getReadableTagName()) + " " + name + "\"]");
+                String marker = externalTypeMarker(getExternalDocSet(typeElement));
+                append("tooltip=\"" + WordUtils.capitalize(typeElement.getReadableTagName()) + " " + name + (marker == null ? "" : " " + marker) + "\"]");
                 append(";\n");
             }
         }

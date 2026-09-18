@@ -21,8 +21,8 @@ public interface INeddocRenderer {
     String rasterImage(String imageFileName, int width, int height, String mapName);
     String typeImageTag(String source, int width, int height);
     String typeImageMap();
-    /** Specify a named rectangular linked area on an image */
-    String areaRef(String text, String url, Rectangle bounds);
+    /** Specify a named rectangular linked area on an image; url==null makes the area a non-link (tooltip only) */
+    String areaRef(String text, String url, String clazz, Rectangle bounds);
     String endTypeImageMap();
     /** Display a header for a NED/MSG type */
     String typeSectionHeading(ITypeElement typeElement);
@@ -44,6 +44,7 @@ public interface INeddocRenderer {
     String bold(String text);
     String code(String text, String clazz);
     String styled(String text, String clazz, TextAttribute textAttribute);
+    String styled(String text, String clazz, String tooltip, TextAttribute textAttribute);
     /** copy all static resources to the generated doc's target dir (css, fonts, java script etc. */
     void copyStaticResources(IPath cssPath) throws Exception;
 

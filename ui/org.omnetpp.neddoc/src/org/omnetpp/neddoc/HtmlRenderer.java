@@ -69,8 +69,14 @@ public class HtmlRenderer implements INeddocRenderer {
         return "<map name=\"type-diagram\">\n";
     }
 
-    public String areaRef(String text, String url, Rectangle bounds) {
-        return "<area shape=\"rect\" href=\"" + url + "\" title=\"" + text + "\" alt=\"" + text + "\" coords=\"" + bounds.x + "," + bounds.y + "," + (bounds.x + bounds.width) + "," + (bounds.y + bounds.height) + "\">\n";
+    public String areaRef(String text, String url, String clazz, Rectangle bounds) {
+        String result = "<area shape=\"rect\"";
+        if (clazz != null)
+            result += " class=\""+clazz+"\"";
+        if (url != null)
+            result += " href=\""+url+"\"";
+        result += " title=\"" + text + "\" alt=\"" + text + "\" coords=\"" + bounds.x + "," + bounds.y + "," + (bounds.x + bounds.width) + "," + (bounds.y + bounds.height) + "\">\n";
+        return result;
     }
 
     public String endTypeImageMap() {
@@ -204,9 +210,15 @@ public class HtmlRenderer implements INeddocRenderer {
     }
 
     public String styled(String text, String clazz, TextAttribute textAttribute) {
+        return styled(text, clazz, null, textAttribute);
+    }
+
+    public String styled(String text, String clazz, String tooltip, TextAttribute textAttribute) {
         String result = "<span";
         if (clazz != null)
             result += " class=\""+clazz+"\"";
+        if (tooltip != null)
+            result += " title=\""+tooltip+"\"";
         if (textAttribute != null)
             result += " style=\""+styleString(textAttribute)+"\"";
         result += ">" + text + "</span>";

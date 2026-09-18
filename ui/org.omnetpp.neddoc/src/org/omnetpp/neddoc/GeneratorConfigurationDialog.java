@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -83,6 +84,7 @@ public class GeneratorConfigurationDialog
 
     private Text excludedDirs;
     private Text extensionFilePath;
+    private Text externalDocSets;
     private Text outputDirectoryPath;
 
     private Button browseButton;
@@ -154,6 +156,15 @@ public class GeneratorConfigurationDialog
         extensionFilePath.setMessage("example: neddoc-fragments.xml (in each project)");
         if (configuration.extensionFilePath != null)
             extensionFilePath.setText(configuration.extensionFilePath);
+
+        SWTFactory.createLabel(files, "External documentation:", 1);
+        externalDocSets = SWTFactory.createText(files, SWT.BORDER, 1);
+        externalDocSets.setMessage("example: inet=https://inet.omnetpp.org/doc/neddoc");
+        externalDocSets.setToolTipText("Where the documentation of referenced projects that are not selected above can be found.\n" +
+                "Types of such projects are otherwise not hyperlinked, only marked as documented elsewhere.\n" +
+                "Format: a comma or space separated list of <projectName>=<baseUrl> items.");
+        if (configuration.externalDocSets != null)
+            externalDocSets.setText(configuration.externalDocSets);
 
     }
 
@@ -364,6 +375,17 @@ public class GeneratorConfigurationDialog
      */
     @Override
     protected void okPressed() {
+        try {
+            DocumentationGenerator.parseExternalDocSets(externalDocSets.getText());
+        }
+        catch (NeddocException e) {
+            // validate here, so the user gets one actionable message and can fix the field right away,
+            // instead of one error dialog per selected project after the jobs have already started
+            MessageDialog.openError(getShell(), "Invalid External Documentation Setting", e.getMessage());
+            externalDocSets.setFocus();
+            return;  // keep the dialog open
+        }
+
         generators =  new ArrayList<DocumentationGenerator>();
 
         configuration.generateNedTypeFigures = generateNedTypeFigures.getSelection();
@@ -378,6 +400,7 @@ public class GeneratorConfigurationDialog
         configuration.automaticHyperlinking = enableAutomaticHyperlinking.getSelection();
         configuration.excludedDirs = excludedDirs.getText();
         configuration.extensionFilePath = extensionFilePath.getText();
+        configuration.externalDocSets = externalDocSets.getText();
 
         configuration.generateDoxy = generateDoxy.getSelection();
         configuration.cppSourceListings = doxySourceBrowser.getSelection();
@@ -423,6 +446,8 @@ public class GeneratorConfigurationDialog
             generator.setGenerateDoxy(configuration.generateDoxy);
             generator.setGenerateCppSourceListings(configuration.cppSourceListings);
             generator.setExcludedDirs(configuration.excludedDirs);
+            generator.setDocumentedProjects(configuration.projects);
+            generator.setExternalDocSets(configuration.externalDocSets);
 
             if (StringUtils.isNotBlank(configuration.extensionFilePath))
                 generator.setExtensionFilePath(new Path(configuration.extensionFilePath));

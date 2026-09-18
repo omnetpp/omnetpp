@@ -66,6 +66,12 @@ pre.dark-bg { background-color: #202020; }
 .src-number  { color:#0000c0 }
 .error       { color:red}
 
+/* references to types that are documented elsewhere (in a referenced project's own documentation), or not at all */
+a.externaltype { cursor: alias }
+a.externaltype::after { content: "\2197"; font-size: 0.75em; vertical-align: super; opacity: 0.6 }
+span.externaltype { cursor: help; border-bottom: 1px dotted #a0a0a0 }
+area.externaltype { cursor: alias }
+
 /* highlighter backgrounds */
 .highlight-cpp .highlight { background-color: #e6f3ff }
 .highlight-ini .highlight { background-color: #fef5d6 }

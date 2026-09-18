@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -88,34 +89,37 @@ public class NeddocApplication implements IApplication {
         workspace.setDescription(wd);
 
         try {
+            // import / open the referenced projects that are NOT to be documented; they are needed
+            // so that NED types of the documented projects that come from them can be resolved
+            String referencedProjectLocations = valueArgs.get("-r");
+            if (StringUtils.isNotBlank(referencedProjectLocations)) {
+                for (String projectLocation : referencedProjectLocations.split(",")) {
+                    if (StringUtils.isBlank(projectLocation))
+                        continue;
+                    if (openProject(workspace, projectLocation.trim()) == null)
+                        return EXIT_OK;
+                }
+            }
+
             // import / open all specified projects and create a doc generator for each of them
             List<DocumentationGenerator> generators = new ArrayList<DocumentationGenerator>();
+            List<IProject> documentedProjects = new ArrayList<IProject>();
             for (String projectLocation: filenameArgs) {
-                IProject project = null;
-                IProjectDescription projectDescription = null;
-
-                IPath projectFileLocation = new Path(projectLocation).append(".project");
-                if (!projectFileLocation.isAbsolute())
-                    projectFileLocation = new Path(System.getProperty("user.dir")).append(projectFileLocation);
-
-                try {
-                    projectDescription = workspace.loadProjectDescription(projectFileLocation);
-                } catch (Exception e) {
-                    System.err.println("Error: folder does not exist or does not contain a project description (.project) file: " + projectLocation);
+                IProject project = openProject(workspace, projectLocation);
+                if (project == null)
                     return EXIT_OK;
-                }
-                project = workspace.getRoot().getProject(projectDescription.getName());
-                if (project.exists())
-                    project.delete(false, true, null);
-                project.create(projectDescription, null);
-                project.open(null);
 
                 // generate documentation for the project
                 DocumentationGenerator generator = new DocumentationGenerator(project);
                 generator.setHeadless(true);
                 configureGenerator(project, generator, switchArgs, valueArgs);
                 generators.add(generator);                
+                documentedProjects.add(project);
             }
+
+            // all projects are known now, so each generator can be told which ones are documented together with it
+            for (DocumentationGenerator generator : generators)
+                generator.setDocumentedProjects(documentedProjects.toArray(new IProject[]{}));
 
             // project are now open so we can generate doc for all of them
             for (DocumentationGenerator generator : generators) {
@@ -139,6 +143,31 @@ public class NeddocApplication implements IApplication {
     public void stop() {
     }
     
+    /**
+     * Imports and opens the project at the given (absolute or CWD-relative) location.
+     * Returns null if it could not be opened; an error message is printed in that case.
+     */
+    private static IProject openProject(IWorkspace workspace, String projectLocation) throws CoreException {
+        IPath projectFileLocation = new Path(projectLocation).append(".project");
+        if (!projectFileLocation.isAbsolute())
+            projectFileLocation = new Path(System.getProperty("user.dir")).append(projectFileLocation);
+
+        IProjectDescription projectDescription = null;
+        try {
+            projectDescription = workspace.loadProjectDescription(projectFileLocation);
+        } catch (Exception e) {
+            System.err.println("Error: folder does not exist or does not contain a project description (.project) file: " + projectLocation);
+            return null;
+        }
+
+        IProject project = workspace.getRoot().getProject(projectDescription.getName());
+        if (project.exists())
+            project.delete(false, true, null);
+        project.create(projectDescription, null);
+        project.open(null);
+        return project;
+    }
+
     private static void printOption(String option, String desc) {
         System.out.println("  " + option + ":");
         System.out.println(StringUtils.indentLines(WordUtils.wrap(desc, 80), "      "));
@@ -211,6 +240,14 @@ public class NeddocApplication implements IApplication {
                 + "The documentation is created under the 'doc' folder in each project by default.");
         printOption("-f <fragment_file>",
                 "A file (with project relative path) containing document fragments to be injected into the generated documentation.");
+        printOption("-r <project_directories>",
+                "Comma separated list of projects (referenced by the documented ones) to open but NOT document. "
+                + "They are needed so that NED types coming from them can be resolved; use -l to tell where their "
+                + "own documentation can be found.");
+        printOption("-l <external_doc_sets>",
+                "Where the already generated documentation of referenced projects that are not listed on the command line can be found. "
+                + "Format: a comma or space separated list of <projectName>=<baseUrl> items, e.g. 'inet=https://inet.omnetpp.org/doc/neddoc'. "
+                + "Types of a referenced project without an entry here are not hyperlinked, only marked as being documented elsewhere.");
     }
 
     private static void configureGenerator(IProject project, DocumentationGenerator generator, Set<String> switchOptions, Map<String,String> valueOptions) {
@@ -223,6 +260,7 @@ public class NeddocApplication implements IApplication {
             generator.setExtensionFilePath(new Path(extensionFilePath));      
                 
         generator.setExcludedDirs(valueOptions.getOrDefault("-x", ""));
+        generator.setExternalDocSets(valueOptions.get("-l"));
         generator.setRootRelativeDoxyPath(new Path(DocumentationGeneratorPropertyPage.DEFAULT_DOXY_PATH));
         generator.setRootRelativeNeddocPath(new Path(DocumentationGeneratorPropertyPage.DEFAULT_NEDDOC_PATH));
         generator.setAbsoluteDoxyConfigFilePath(project.getFile(DocumentationGeneratorPropertyPage.DEFAULT_DOXY_CONFIG_FILE_PATH).getLocation());

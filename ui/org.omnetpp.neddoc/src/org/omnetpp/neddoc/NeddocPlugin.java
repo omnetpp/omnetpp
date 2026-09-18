@@ -97,6 +97,13 @@ public class NeddocPlugin extends AbstractUIPlugin {
         logError(exception.toString(), exception);
     }
 
+    public static void logWarning(String message) {
+        if (plugin != null)
+            plugin.getLog().log(new Status(IStatus.WARNING, PLUGIN_ID, 0, message, null));
+        else
+            System.err.println("Warning: " + message);
+    }
+
     public static void logError(String message, Throwable exception) {
         if (plugin != null) {
             plugin.getLog().log(getErrorStatus(message, exception));
