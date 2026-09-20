@@ -21,6 +21,7 @@ network DisplayStringTest
         displayStringOption : DisplayStringOption;
         arrangements: Arrangements;
         layoutGroup: LayoutGroup;
+        layoutGroup2: LayoutGroup2;
         iconTransform: IconTransform;
         connRoutingToParent: ConnRoutingToParent;
         connRoutingToParentBidi: ConnRoutingToParentBidi;
