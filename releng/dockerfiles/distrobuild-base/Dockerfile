@@ -1,6 +1,7 @@
 FROM ghcr.io/omnetpp/cross-compilers:ubuntu22.04-macos13.3-260504
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
+
 # install additional packages for building a complete OMNeT++ distro (with IDE and docs)
 RUN apt-get update && \
     apt-get upgrade -yy && \
@@ -14,13 +15,15 @@ RUN apt-get update && \
     apt-get autoclean && \
     python3 -m pip install --upgrade sphinx sphinx-material sphinxcontrib-images sphinxcontrib-katex sphinxcontrib-doxylink sphinx-autobuild \
                cppyy dask distributed IPython matplotlib numpy pandas scipy sqlalchemy
+# install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # install maven manually as the 3.6.3 version in the repo does not work on Java17
 RUN cd /opt && \
-    wget https://downloads.apache.org/maven/maven-3/3.9.15/binaries/apache-maven-3.9.15-bin.tar.gz && \
-    tar xzf apache-maven-3.9.15-bin.tar.gz && \
-    rm apache-maven-3.9.15-bin.tar.gz && \
-    mv apache-maven-3.9.15 apachemaven
+    wget https://downloads.apache.org/maven/maven-3/3.9.16/binaries/apache-maven-3.9.16-bin.tar.gz && \
+    tar xzf apache-maven-3.9.16-bin.tar.gz && \
+    rm apache-maven-3.9.16-bin.tar.gz && \
+    mv apache-maven-3.9.16 apachemaven
 ENV M2_HOME /opt/apachemaven
 ENV MAVEN_HOME /opt/apachemaven
 ENV PATH $M2_HOME/bin:$PATH
