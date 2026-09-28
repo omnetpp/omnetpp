@@ -12,7 +12,7 @@ RUN apt-get update && \
         docbook-xml docbook-xsl qpdf && \
     apt-get clean && \
     apt-get autoclean && \
-    python3 -m pip install --upgrade sphinx sphinx-material sphinxcontrib-images sphinxcontrib-doxylink sphinx-autobuild \
+    python3 -m pip install --upgrade sphinx sphinx-material sphinxcontrib-images sphinxcontrib-katex sphinxcontrib-doxylink sphinx-autobuild \
                cppyy dask distributed IPython matplotlib numpy pandas scipy sqlalchemy
 
 # install maven manually as the 3.6.3 version in the repo does not work on Java17

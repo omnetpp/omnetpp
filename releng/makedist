@@ -106,10 +106,10 @@ $TWEAKCONFIG set configure.user WITH_QTENV no || exit 1
 $TWEAKCONFIG set configure.user WITH_OSG no || exit 1
 
 # set vars for documentation
-$TWEAKCONFIG set doc/src/api.doxyfile    PROJECT_NUMBER $VERSION || exit 1
-$TWEAKCONFIG set doc/src/nedxml.doxyfile PROJECT_NUMBER $VERSION || exit 1
-$TWEAKCONFIG set doc/src/parsim.doxyfile PROJECT_NUMBER $VERSION || exit 1
-$TWEAKCONFIG set doc/src/scave.doxyfile  PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/doxy/api.doxyfile    PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/doxy/nedxml.doxyfile PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/doxy/parsim.doxyfile PROJECT_NUMBER $VERSION || exit 1
+$TWEAKCONFIG set doc/src/doxy/scave.doxyfile  PROJECT_NUMBER $VERSION || exit 1
 $TWEAKCONFIG set doc/src/manual/Makefile TEMPLATE $what || exit 1
 $TWEAKCONFIG set doc/src/manual/Makefile VERSION $VERSION || exit 1
 
@@ -135,6 +135,9 @@ echo
 # Generating documentation
 if [ "$BUILD_DOC" = "true" ]; then
   echo Generating documentation
+  # use the legacy build process for now (without using uv)
+  export PIPRUN=
+  export VENVDEP=
   (cd doc/src && make clean)
   make doc || { echo --- error generating documentation ---; exit 1;}
   if [ "$BUILD_IDE" = "true" ]; then

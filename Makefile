@@ -254,7 +254,7 @@ copy-ui-doc:
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/visual-changelog $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/api $(OMNETPP_UI_DIR)/org.omnetpp.doc/content
 	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/manual/eclipse $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
-	$(Q)cp -r $(OMNETPP_ROOT)/out/doc/eclipsehelp $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/guides
+	$(Q)cp -r $(OMNETPP_DOC_DIR)/src/out/eclipsehelp $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/guides
 	$(Q)echo "<html><body><pre>" >$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
 	$(Q)cat $(OMNETPP_DOC_DIR)/License >>$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
 	$(Q)echo "</pre></body></html>" >>$(OMNETPP_UI_DIR)/org.omnetpp.doc/content/License.html
