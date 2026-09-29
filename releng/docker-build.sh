@@ -16,7 +16,7 @@ docker run --name "$CONTAINER_NAME" --network none \
        -e what -e GIT_VERSION -e BUILD_DOC \
        -e BUILD_CORE_DISTRO -e BUILD_LINUX_X86_64_DISTRO -e BUILD_LINUX_AARCH64_DISTRO \
        -e BUILD_WIN32_X86_64_DISTRO -e BUILD_MACOS_X86_64_DISTRO -e BUILD_MACOS_AARCH64_DISTRO \
-       ghcr.io/omnetpp/distrobuild:eclipse26_09-tools250612-260928
+       ghcr.io/omnetpp/distrobuild:eclipse26_09-tools250612-260929
 
 EXIT_CODE=$?
 

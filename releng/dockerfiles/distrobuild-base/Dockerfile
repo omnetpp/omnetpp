@@ -12,11 +12,17 @@ RUN apt-get update && \
         txt2html ssh zip p7zip-full git wget curl \
         docbook-xml docbook-xsl qpdf && \
     apt-get clean && \
-    apt-get autoclean && \
-    python3 -m pip install --upgrade sphinx sphinx-material sphinxcontrib-images sphinxcontrib-katex sphinxcontrib-doxylink sphinx-autobuild \
-               cppyy dask distributed IPython matplotlib numpy pandas scipy sqlalchemy
-# install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+    apt-get autoclean
+
+# pandoc converts the Markdown docstrings in the Python API reference; pinned to match the doc-builder image
+ARG PANDOC_VERSION=3.10
+RUN curl -fsSL -o /tmp/pandoc.deb \
+        "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-1-amd64.deb" && \
+    dpkg -i /tmp/pandoc.deb && \
+    rm -f /tmp/pandoc.deb
+
+# uv builds the doc venv in the distrobuild image; pinned so lock handling does not change under us
+COPY --from=ghcr.io/astral-sh/uv:0.11.8 /uv /uvx /bin/
 
 # install maven manually as the 3.6.3 version in the repo does not work on Java17
 RUN cd /opt && \

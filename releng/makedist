@@ -135,11 +135,13 @@ echo
 # Generating documentation
 if [ "$BUILD_DOC" = "true" ]; then
   echo Generating documentation
-  # use the legacy build process for now (without using uv)
-  export PIPRUN=
-  export VENVDEP=
+  # the dist build has no network, so the docs use the venv baked into the distrobuild image
+  if ! cmp -s doc/src/uv.lock /opt/docvenv/uv.lock; then
+    echo "--- doc/src/uv.lock differs from the one baked into the distrobuild image; rebuild the image ---"
+    exit 1
+  fi
   (cd doc/src && make clean)
-  make doc || { echo --- error generating documentation ---; exit 1;}
+  PATH=/opt/docvenv/bin:$PATH make doc PIPRUN= VENVDEP= || { echo --- error generating documentation ---; exit 1;}
   if [ "$BUILD_IDE" = "true" ]; then
     echo --- Copying documatation to the IDE doc plugin
     make copy-ui-doc || { echo --- error copyig documentation ---; exit 1;}
