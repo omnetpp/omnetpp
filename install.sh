@@ -95,24 +95,50 @@ echo_root_run() {
     fi
 }
 
+# locate uv or install it for the current user (pipx is preferred because 'pip --user' is refused on PEP 668 distros)
+find_or_install_uv() {
+    local user_bin
+    user_bin="$($PYTHON3 -m site --user-base)/bin"
+    for UV in "$(command -v uv)" "$HOME/.local/bin/uv" "$user_bin/uv"; do
+        [[ -n "$UV" && -x "$UV" ]] && return
+    done
+
+    echo_q
+    echo_q -e "${GREEN}*** Installing uv for the current user ***${RESET}"
+    echo_q
+    if [[ "$(command -v pipx)" != "" ]]; then
+        echo_run pipx install uv
+    else
+        echo_run $PYTHON3 -m pip install --user uv
+    fi
+    for UV in "$HOME/.local/bin/uv" "$user_bin/uv"; do
+        if [[ -x "$UV" ]]; then
+            echo_q -e "${YELLOW}uv was installed as '$UV'. Add '$(dirname $UV)' to your PATH to use it from the command line.${RESET}"
+            return
+        fi
+    done
+    echo_q -e "${RED}Could not install uv. Install it manually (see https://docs.astral.sh/uv/) and re-run this script.${RESET}"
+    exit 1
+}
+
 # set up Python virtual environment and dependencies
 install_python_deps() {
+    find_or_install_uv
     if [[ ! -f .venv/bin/activate ]]; then
         # Create a virtual environment
         echo_q
         echo_q -e "${GREEN}*** Creating a python virtual environment in '.venv' ***${RESET}"
         echo_q
-        echo_run $PYTHON3 -m venv .venv --upgrade-deps --clear --prompt "$(basename $PWD)/.venv"
+        # the venv must use the same interpreter that OMNeT++ is configured with, never one downloaded by uv
+        echo_run env UV_PYTHON_DOWNLOADS=never $UV venv --python "$PYTHON3" --seed --prompt "$(basename $PWD)/.venv" .venv
     fi
     echo_q -e "${GREEN}*** Activating python virtual environment ***${RESET}"
     source .venv/bin/activate
 
-    # Upgrade and install required Python packages within the virtual environment
-    export PIP_DISABLE_PIP_VERSION_CHECK=1
     echo_q
     echo_q -e "${GREEN}*** Installing required python packages ***${RESET}"
     echo_q
-    echo_run $PYTHON3 -m pip install -r python/requirements.txt
+    echo_run $UV pip install --python .venv/bin/python -r python/requirements.txt
 }
 
 # install dependencies
@@ -126,7 +152,7 @@ install_deps() {
         # detect the package manager
         if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu (tested versions: 22.04, 24.04, 25.04)
             # apt-get is used on debian (i.e. Ubuntu,  etc.)
-            packages="make diffutils pkg-config ccache clang lld gdb lldb bison flex perl sed gawk $PYTHON3 $PYTHON3-pip $PYTHON3-venv $PYTHON3-dev libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
+            packages="make diffutils pkg-config ccache clang lld gdb lldb bison flex perl sed gawk $PYTHON3 $PYTHON3-pip $PYTHON3-venv $PYTHON3-dev pipx libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
 
             if ! $no_gui; then
                 packages="$packages qt6-base-dev qt6-base-dev-tools qmake6 libqt6svg6 qt6-wayland libwebkit2gtk-4.1-0"
@@ -140,7 +166,7 @@ install_deps() {
 
         elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora (tested versions: 42)
             # dnf is used on fedora
-            packages="make ccache clang awk lld lldb gdb bison flex perl $PYTHON3-devel $PYTHON3-pip libxml2-devel zlib-devel doxygen graphviz xdg-utils libdwarf-devel"
+            packages="make ccache clang awk lld lldb gdb bison flex perl $PYTHON3-devel $PYTHON3-pip uv libxml2-devel zlib-devel doxygen graphviz xdg-utils libdwarf-devel"
 
             if ! $no_gui; then
                 packages="$packages qt6-qttools-devel qt6-qtbase-devel qt6-qtsvg qt6-qtwayland webkit2gtk4.1"
@@ -176,6 +202,9 @@ install_deps() {
             fi
 
             packages="make ccache clang lld lldb gdb bison gawk flex perl $PYTHON3_DOTLESS-devel $PYTHON3_DOTLESS-pip doxygen graphviz xdg-utils libdw-devel"
+            if [[ "$ID" == "opensuse-tumbleweed" ]]; then
+                packages="$packages uv"
+            fi
 
             if ! $no_gui; then
                 packages="$packages qt6-base-devel qt6-wayland libQt6Svg6 libwebkit2gtk-4_1-0"
@@ -189,7 +218,7 @@ install_deps() {
 
         elif [[ "$(command -v pacman)" != "" ]]; then
             # pacman is used on Arch Linux
-            packages="make diffutils ccache clang pkgconf lld lldb gdb bison gawk flex perl python python-pip libxml2 zlib doxygen graphviz xdg-utils libdwarf"
+            packages="make diffutils ccache clang pkgconf lld lldb gdb bison gawk flex perl python python-pip uv libxml2 zlib doxygen graphviz xdg-utils libdwarf"
 
             if ! $no_gui; then
                 packages="$packages qt6-base qt6-svg qt6-wayland webkit2gtk-4.1"
@@ -219,7 +248,7 @@ install_deps() {
             exit 1
         fi
 
-        packages="bison ccache llvm flex perl python@3 make pkg-config doxygen graphviz"
+        packages="bison ccache llvm flex perl python@3 uv make pkg-config doxygen graphviz"
 
         if ! $no_gui; then
             packages="$packages qt@6 qtkeychain"

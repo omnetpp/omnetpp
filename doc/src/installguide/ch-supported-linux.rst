@@ -86,14 +86,14 @@ Setting up the Python Virtual Environment
 
 The ``install.sh`` script automates the creation and setup of this virtual environment for most Linux distributions.
 
-If you are installing manually or want to understand the process, the typical steps performed by the script (after system packages, including ``python3`` and ``python3-venv``, are installed) are:
+If you are installing manually or want to understand the process, the typical steps performed by the script (after system packages, including ``python3`` and ``uv``, are installed) are:
 
 1.  Navigate to the |omnet++| root directory (e.g., ``cd |omnetpp|-|version|``).
 2.  Create the virtual environment (this example uses ``.venv`` as the directory name):
 
     .. code:: bash
 
-       $ python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"
+       $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
 
 3.  Activate the virtual environment:
 
@@ -101,12 +101,16 @@ If you are installing manually or want to understand the process, the typical st
 
        $ source .venv/bin/activate
 
-4.  Install required Python packages using ``pip``. It's also common to upgrade ``pip`` itself:
+4.  Install required Python packages using ``uv``:
 
     .. code:: bash
 
-       $ python3 -m pip install --upgrade pip
-       $ python3 -m pip install -r python/requirements.txt
+       $ uv pip install -r python/requirements.txt
+
+If ``uv`` is not available on your system, ``install.sh`` installs it for the current user with ``pipx``
+or ``pip install --user``. You can also do without it: create the virtual environment with
+``python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+``python3 -m pip install -r python/requirements.txt``.
 
 Once the virtual environment is active, your shell prompt will usually change, and calls to ``python`` and ``pip`` will use the versions within the ``.venv`` directory.
 

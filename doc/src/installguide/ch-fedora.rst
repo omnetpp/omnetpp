@@ -21,7 +21,7 @@ First, install the core development tools and libraries:
 .. code::
 
    $ sudo dnf install -y make ccache clang awk lld lldb gdb bison flex perl \
-       python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz \
+       python3-devel python3-pip uv libxml2-devel zlib-devel doxygen graphviz \
        xdg-utils libdwarf-devel
 
 Next, install packages for the graphical environment (Qtenv and IDE). If you do not need GUI support (e.g., for a server installation), you can skip this step and later configure |omnet++| with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
@@ -43,18 +43,24 @@ After installing system packages, it's good practice to clean the local reposito
 
    $ sudo dnf clean packages
 
-Next, set up a Python virtual environment for |omnet++|. In the root directory of your |omnet++| download:
+Next, set up a Python virtual environment for |omnet++| using ``uv``. In the root directory of your |omnet++| download:
 
 .. code::
 
-   $ python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"
+   $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:
 
 .. code::
 
-   $ python3 -m pip install -r python/requirements.txt
+   $ uv pip install -r python/requirements.txt
+
+.. note::
+
+   If you prefer not to use ``uv``, create the virtual environment with
+   ``python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+   ``python3 -m pip install -r python/requirements.txt`` instead.
 
 .. note::
 

@@ -43,7 +43,7 @@ Install the core development tools and libraries using Homebrew:
 
 .. code::
 
-   $ brew install bison ccache flex perl python@3 make pkg-config doxygen graphviz
+   $ brew install bison ccache flex perl python@3 uv make pkg-config doxygen graphviz
 
 Next, install packages for the graphical environment (Qtenv and IDE). If you do not need GUI support, you can skip this step and later configure |omnet++| with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
 
@@ -57,18 +57,24 @@ For 3D visualization support in Qtenv, install the OpenSceneGraph package. If yo
 
    $ brew install openscenegraph
 
-After installing packages with Homebrew, set up a Python virtual environment for |omnet++|. In the root directory of your |omnet++| download:
+After installing packages with Homebrew, set up a Python virtual environment for |omnet++| using ``uv``. In the root directory of your |omnet++| download:
 
 .. code::
 
-   $ python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"
+   $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:
 
 .. code::
 
-   $ python3 -m pip install -r python/requirements.txt
+   $ uv pip install -r python/requirements.txt
+
+.. note::
+
+   If you prefer not to use ``uv``, create the virtual environment with
+   ``python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+   ``python3 -m pip install -r python/requirements.txt`` instead.
 
 .. note::
    Make sure you are using ``python3`` from Homebrew (check with ``which python3``). The system Python provided by macOS should generally not be used for development with |omnet++|.

@@ -49,18 +49,31 @@ with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
 
    You should configure |omnet++| with the ``WITH_OSG=no`` option. If you are using the ``install.sh`` script, it will prompt you or you can use the ``--no-3d`` flag.
 
-Next, set up a Python virtual environment for |omnet++|. In the root directory of your |omnet++| download:
+Install ``uv``, which is used to set up the Python environment. It is not packaged for this distribution, so install it
+for the current user (``uv`` will be placed in ``~/.local/bin``, make sure it is on your ``PATH``):
 
 .. code::
 
-   $ python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"
+   $ python3 -m pip install --user uv
+
+Next, set up a Python virtual environment for |omnet++| using ``uv``. In the root directory of your |omnet++| download:
+
+.. code::
+
+   $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:
 
 .. code::
 
-   $ python3 -m pip install -r python/requirements.txt
+   $ uv pip install -r python/requirements.txt
+
+.. note::
+
+   If you prefer not to use ``uv``, create the virtual environment with
+   ``python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+   ``python3 -m pip install -r python/requirements.txt`` instead.
 
 .. note::
 

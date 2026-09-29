@@ -40,12 +40,22 @@ jobs:
         key: main-tests-${{ github.base_ref || github.ref_name }}
         save: ${{ github.event_name != 'pull_request' }}
 
-    - name: Install Python dependencies
-      uses: getsentry/action-setup-venv@v3.2.0
+    - name: Set up Python
+      id: setup-python
+      uses: actions/setup-python@v5
       with:
         python-version: 3.12.13
-        cache-dependency-path: python/requirements.txt
-        install-cmd: python3 -m pip install -r python/requirements.txt
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true
+        cache-dependency-glob: python/requirements.txt
+
+    - name: Install Python dependencies
+      run: |
+        uv venv --python "${{ steps.setup-python.outputs.python-path }}" --no-python-downloads --seed .venv
+        uv pip install --python .venv -r python/requirements.txt
 
     - name: Configure
       run: |

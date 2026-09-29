@@ -103,7 +103,7 @@ def _check_version(module, required):
     if _version_less_than(module.__version__, required):
         logger.warning(f"'{module.__name__}' is too old, some analysis tool functionality may be broken. "
               f"Required: {required}, present: {module.__version__}. "
-              f"Try running `python3 -m pip install --user --upgrade {module.__name__}` to upgrade.")
+              f"Try running `uv pip install --upgrade {module.__name__}` (or `python3 -m pip install --upgrade {module.__name__}`) to upgrade.")
 
 _check_version(np, "1.18.0")  # Dec 22, 2019
 _check_version(pd, "1.0.0")  # January 29, 2020

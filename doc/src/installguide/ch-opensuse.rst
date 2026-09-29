@@ -44,18 +44,31 @@ After installing system packages, it's good practice to clean the local reposito
 
    $ sudo zypper clean
 
-Next, set up a Python virtual environment for |omnet++|. In the root directory of your |omnet++| download:
+Install ``uv``, which is used to set up the Python environment. On Tumbleweed, install the ``uv`` package with ``zypper``.
+On Leap, install it for the current user (``uv`` will be placed in ``~/.local/bin``, make sure it is on your ``PATH``):
 
 .. code::
 
-   $ python311 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"
+   $ python311 -m pip install --user uv
+
+Next, set up a Python virtual environment for |omnet++| using ``uv``. In the root directory of your |omnet++| download:
+
+.. code::
+
+   $ uv venv --python python311 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:
 
 .. code::
 
-   $ python311 -m pip install -r python/requirements.txt
+   $ uv pip install -r python/requirements.txt
+
+.. note::
+
+   If you prefer not to use ``uv``, create the virtual environment with
+   ``python311 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+   ``python311 -m pip install -r python/requirements.txt`` instead.
 
 .. note::
 

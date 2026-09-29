@@ -64,8 +64,9 @@ if [[ "$sourced" == "yes" ]]; then
   fi
 
   # Activate local python virtual environment if present in the root directory.
-  # You can create a virtual environment with 'python3 -m venv .venv'
-  # and then install all required packages with 'python3 -m pip install -r python/requirements.txt'
+  # You can create a virtual environment with 'uv venv --seed .venv' (or 'python3 -m venv .venv')
+  # and then install all required packages with 'uv pip install -r python/requirements.txt'
+  # (or 'python3 -m pip install -r python/requirements.txt')
   #
   # NOTE: the bin/activate script directly sets the PATH variable to a value saved during
   # an earlier run of the script to restore the PATH to that state. This may overwrite any

@@ -59,18 +59,33 @@ After installing system packages, it's good practice to clean the local reposito
 
    $ sudo apt clean
 
-Next, set up a Python virtual environment for |omnet++|. In the root directory of your |omnet++| download:
+Install ``uv``, which is used to set up the Python environment. It is not packaged for Ubuntu, so install it with ``pipx``
+(``uv`` will be placed in ``~/.local/bin``; ``pipx ensurepath`` adds it to your ``PATH`` in new terminals):
 
 .. code::
 
-   $ python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"
+   $ sudo apt install -y pipx
+   $ pipx install uv
+   $ pipx ensurepath
+
+Next, set up a Python virtual environment for |omnet++| using ``uv``. In the root directory of your |omnet++| download:
+
+.. code::
+
+   $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:
 
 .. code::
 
-   $ python3 -m pip install -r python/requirements.txt
+   $ uv pip install -r python/requirements.txt
+
+.. note::
+
+   If you prefer not to use ``uv``, create the virtual environment with
+   ``python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+   ``python3 -m pip install -r python/requirements.txt`` instead.
 
 .. note::
 
