@@ -51,7 +51,7 @@ fi
 
 # set the version number of the tools directory that is used in the Windows/macOS distros
 if test -z "$TOOLS_VERSION"; then
-  export TOOLS_VERSION=210713
+  export TOOLS_VERSION=250612
 fi
 
 # use the default language in perl (supresses a lot of warnings in perl calls)
@@ -135,13 +135,17 @@ echo
 # Generating documentation
 if [ "$BUILD_DOC" = "true" ]; then
   echo Generating documentation
-  # the dist build has no network, so the docs use the venv baked into the distrobuild image
-  if ! cmp -s doc/src/uv.lock /opt/docvenv/uv.lock; then
-    echo "--- doc/src/uv.lock differs from the one baked into the distrobuild image; rebuild the image ---"
-    exit 1
-  fi
   (cd doc/src && make clean)
-  PATH=/opt/docvenv/bin:$PATH make doc PIPRUN= VENVDEP= || { echo --- error generating documentation ---; exit 1;}
+  if [ -d /opt/docvenv ]; then
+    # the distrobuild image has no network, so the docs use the venv baked into the image
+    if ! cmp -s doc/src/uv.lock /opt/docvenv/uv.lock; then
+      echo "--- doc/src/uv.lock differs from the one baked into the distrobuild image; rebuild the image ---"
+      exit 1
+    fi
+    PATH=/opt/docvenv/bin:$PATH make doc PIPRUN= VENVDEP= || { echo --- error generating documentation ---; exit 1;}
+  else
+    make doc || { echo --- error generating documentation ---; exit 1;}
+  fi
   if [ "$BUILD_IDE" = "true" ]; then
     echo --- Copying documatation to the IDE doc plugin
     make copy-ui-doc || { echo --- error copyig documentation ---; exit 1;}
