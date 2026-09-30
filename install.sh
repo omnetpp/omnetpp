@@ -199,7 +199,7 @@ install_deps() {
                 packages="$packages openscenegraph"
             fi
 
-            echo_root_run "pacman -Sy --needed --noconfirm $packages ; pacman -Scc --noconfirm"
+            echo_root_run "pacman -Syu --needed --noconfirm $packages ; pacman -Scc --noconfirm"
 
         elif [[ "$ID" == "nixos" ]]; then
             echo_q -e "${YELLOW}NixOS detected, dependencies should already be installed.${RESET}"

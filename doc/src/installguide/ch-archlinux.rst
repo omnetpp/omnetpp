@@ -16,7 +16,7 @@ First, ensure your system's package database is up to date and install the core 
 
 .. code::
 
-   $ sudo pacman -Sy --needed --noconfirm make diffutils ccache clang pkgconf lld lldb gdb \
+   $ sudo pacman -Syu --needed --noconfirm make diffutils ccache clang pkgconf lld lldb gdb \
        bison gawk flex perl python python-pip libxml2 zlib doxygen graphviz \
        xdg-utils libdwarf
 
@@ -24,13 +24,13 @@ Next, install packages for the graphical environment (Qtenv and IDE). If you do 
 
 .. code::
 
-   $ sudo pacman -Sy --needed --noconfirm qt6-base qt6-svg qt6-wayland webkit2gtk-4.1
+   $ sudo pacman -S --needed --noconfirm qt6-base qt6-svg qt6-wayland webkit2gtk-4.1
 
 For 3D visualization support in Qtenv, install the OpenSceneGraph package. If you do not need 3D support, you can skip this step and later configure |omnet++| with ``WITH_OSG=no``.
 
 .. code::
 
-   $ sudo pacman -Sy --needed --noconfirm openscenegraph
+   $ sudo pacman -S --needed --noconfirm openscenegraph
 
 After installing system packages, it's good practice to clean the package cache:
 
@@ -46,6 +46,6 @@ To enable the optional parallel simulation support you will need to install an M
 
 .. code::
 
-   $ sudo pacman -Sy --needed --noconfirm openmpi
+   $ sudo pacman -S --needed --noconfirm openmpi
 
 Refer to the Arch Linux documentation for managing MPI environments if needed.
