@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Launch Plug-in
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-SymbolicName: org.omnetpp.launch;singleton:=true
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.5.0.qualifier
 Bundle-Activator: org.omnetpp.launch.LaunchPlugin
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.

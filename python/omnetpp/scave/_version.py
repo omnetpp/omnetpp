@@ -70,4 +70,4 @@ def check_dependencies():
     # we just assume success and hope for the best
     return 0
 
-__version__ = "6.4.0"
+__version__ = "6.5.0"
