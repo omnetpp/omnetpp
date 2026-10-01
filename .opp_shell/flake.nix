@@ -2,7 +2,7 @@
   description = "OMNeT++ development environment (NixOS)";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -123,7 +123,7 @@
             export name="opp_shell" # important because it is used in install.sh to skip dependency installation
 
             # Ensure project-built binaries find their runtime dependencies
-            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath (runtimeLibs)}:$LD_LIBRARY_PATH"
+            export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath (runtimeLibs)}"
 
             # Disable Nix hardening specifically for fortify to avoid the warning in debug builds (-O0)
             export NIX_HARDENING_ENABLE="stackprotector,format,relro,bindnow,pic"
