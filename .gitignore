@@ -173,3 +173,4 @@ compile_commands.json
 /Makefile.inc.last_known_good
 lex.*yy.cc
 out/
+/vscode
