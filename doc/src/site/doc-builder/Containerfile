@@ -4,14 +4,18 @@
 # (manual + guides + doxygen APIs + Python API): doxygen, graphviz, a pinned pandoc
 # for the manual LaTeX->RST conversion, and the Python Sphinx stack from the pinned
 # uv.lock. Math is rendered client-side by KaTeX, so no LaTeX/texlive is needed.
+# It also carries the OMNeT++ command-line tools (opp_docgen, opp_lint, opp_lsp,
+# opp_ide_mcp) so the image can generate NED documentation, e.g. as the base of a
+# model library's (INET's) documentation build.
 #
 # The Python packages are installed with uv into a venv that is on PATH, so the
 # build runs WITHOUT uv inside the container:
 #     make -C doc/src ci-html PIPRUN= VENVDEP= VERSION=6.x
 #
-# Build context must be doc/src (so pyproject.toml/uv.lock are available):
-#     podman build -t ghcr.io/omnetpp/doc-builder -f site/doc-builder/Containerfile .
-# (or just use site/doc-builder/build.sh)
+# Build context must be doc/src (so pyproject.toml/uv.lock are available), and
+# site/doc-builder/opp-tools.tgz must hold the opp-tools npm tarball. build.sh
+# stages that file, so use it rather than invoking podman directly:
+#     site/doc-builder/build.sh
 #
 # Size notes (kept lean on purpose):
 #   - doxygen is the official static binary, NOT the apt package, because the
@@ -34,6 +38,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # System toolchain. graphviz renders the manual's .dot figures to SVG.
 RUN apt-get update && apt-get install -y --no-install-recommends \
         graphviz \
+        nodejs \
         python3 \
         make \
         git \
@@ -84,6 +89,28 @@ RUN curl -fsSL -o /tmp/uv.tar.gz \
     && find /opt/docvenv -type f -name '*.pyc' -delete \
     && rm -rf /tmp/uv.tar.gz /tmp/uv-x86_64-unknown-linux-gnu /opt/docproj ~/.cache
 ENV PATH="/opt/docvenv/bin:$PATH" VIRTUAL_ENV=/opt/docvenv
+
+# OMNeT++ command-line tools from the @omnetpp/opp-tools npm package (built in the
+# omnetpp-vscode repo). Its bundles are self-contained, so no npm is needed: the
+# tarball is bind-mounted (leaving no layer behind), unpacked, and its bins linked
+# onto PATH. Kept late in the file because it changes more often than the layers
+# above. The smoke check fails the build if opp_docgen cannot generate output.
+RUN --mount=type=bind,source=site/doc-builder/opp-tools.tgz,target=/tmp/opp-tools.tgz \
+    set -eu; \
+    mkdir -p /opt/opp-tools; \
+    tar -xzf /tmp/opp-tools.tgz -C /opt/opp-tools --strip-components=1 --no-same-owner; \
+    for tool in opp_docgen opp_lint opp_lsp opp_ide_mcp; do \
+        chmod 0755 "/opt/opp-tools/dist/$tool.js"; \
+        ln -s "/opt/opp-tools/dist/$tool.js" "/usr/local/bin/$tool"; \
+    done; \
+    opp_docgen --version; \
+    opp_lint --version; \
+    mkdir -p /tmp/smoke/src; \
+    printf '//\n// Smoke-test module.\n//\nsimple Smoke\n{\n}\n' > /tmp/smoke/src/Smoke.ned; \
+    opp_docgen --format=rst -o /tmp/smoke/out /tmp/smoke/src; \
+    grep -rq 'Smoke-test module' /tmp/smoke/out; \
+    opp_lint /tmp/smoke/src; \
+    rm -rf /tmp/smoke
 
 # git refuses to operate on repos owned by another uid (bind-mounted host repo).
 RUN git config --system --add safe.directory '*'

@@ -6,6 +6,11 @@ documentation site (manual, guides, tutorials, articles, the doxygen APIs and th
 a version-pinned `pandoc` for the manual LaTeX→RST conversion, and the Python
 Sphinx stack from `doc/src/uv.lock`.
 
+It also carries the OMNeT++ command-line tools of the VS Code extension
+(`@omnetpp/opp-tools`: `opp_docgen`, `opp_lint`, `opp_lsp`, `opp_ide_mcp`, run by
+the distribution's `nodejs`), so it can generate NED documentation, e.g.
+`opp_docgen --format=rst -o <out> <project>`.
+
 The Python packages are installed with uv into a venv on `PATH`, so the build runs
 without uv inside the container by passing `PIPRUN=` and `VENVDEP=`.
 
@@ -23,18 +28,26 @@ so the `Containerfile` and `build.sh` pin the platform explicitly.
 
 ## Build locally
 
+`@omnetpp/opp-tools` is not published to npm yet, so the image bundles a locally
+built npm tarball. Build it first in the omnetpp-vscode checkout (hosted in-tree as
+`vscode/`):
+
 ```bash
+(cd vscode && bun run package:cli)         # -> vscode/build/omnetpp-opp-tools-<ver>.tgz
 doc/src/site/doc-builder/build.sh          # -> ghcr.io/omnetpp/doc-builder:latest
 ```
 
-Equivalent explicit form (note: build context is `doc/src`, which holds
-`pyproject.toml`/`uv.lock`):
+`build.sh` takes the single tarball in `vscode/build/` (set `OPP_TOOLS_TGZ=<path>`
+to use another one), stages it as `doc/src/site/doc-builder/opp-tools.tgz`
+(gitignored, removed afterwards) for the `Containerfile` to bind-mount, and records
+its version and the vscode commit in the image labels:
 
 ```bash
-cd doc/src
-podman build --platform linux/amd64 -t ghcr.io/omnetpp/doc-builder \
-    -f site/doc-builder/Containerfile .
+podman inspect -f '{{json .Labels}}' ghcr.io/omnetpp/doc-builder:latest
 ```
+
+The build context is `doc/src` (it holds `pyproject.toml`/`uv.lock`); building
+without `build.sh` requires staging the tarball by hand.
 
 ## Build the docs with it
 
@@ -76,8 +89,12 @@ is needed.
 
 ## Publishing
 
-Use `.github/workflows/doc-builder-image.yml`: **Actions → Build doc-builder image
-→ Run workflow**. It publishes both the `:latest` and `:<short-sha>` tags and
+**Currently from a workstation only** (see below): `doc-builder-image.yml` has no
+access to the locally built opp-tools tarball, so it deliberately fails in its
+first step until the `Containerfile` fetches a published opp-tools version.
+
+Once it is re-enabled, use `.github/workflows/doc-builder-image.yml`: **Actions →
+Build doc-builder image → Run workflow**. It publishes both the `:latest` and `:<short-sha>` tags and
 needs no personal access token. It is manual on purpose — republishing `:latest`
 changes the toolchain under every subsequent deploy — so run it after changing the
 `Containerfile`, `pyproject.toml` or `uv.lock`, and not otherwise.
@@ -105,4 +122,22 @@ is the single source of truth, nothing outside it pins these:
 | `DOXYGEN_VERSION` | 1.14.0 | newest release doxysphinx's frozen LibSass scoper can still parse |
 | `UV_VERSION` | 0.11.8 | build-time only; installs the Sphinx stack from `uv.lock` |
 
+Exception: opp-tools is whatever tarball `build.sh` bundled; its version is in the
+`org.omnetpp.opp-tools.version` (and `.commit`) image labels.
+
 Override one for a test build with `podman build --build-arg PANDOC_VERSION=…`.
+
+## Using it as a base image
+
+Model libraries (e.g. INET) can build their documentation site on top of this
+image: derive from it, add their own Python/Sphinx requirements, and generate the
+NED reference with `opp_docgen` (`--format=rst` or `markdown` to embed it in a
+Sphinx site, `html-material`/`html-readthedocs` for a standalone subtree).
+
+```dockerfile
+FROM ghcr.io/omnetpp/doc-builder:<short-sha>
+```
+
+A workflow in another repository can pull the image while the package is private
+only if the package grants that repository read access (package settings →
+Manage Actions access).

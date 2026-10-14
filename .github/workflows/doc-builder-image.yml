@@ -3,6 +3,9 @@
 # reproducible, is automatically linked to this repository (so the deploy job's
 # GITHUB_TOKEN may pull it), and needs no personal access token.
 #
+# Currently DISABLED (fails in its first step): the image bundles a locally built
+# opp-tools tarball, so it is published from a workstation with build.sh --push.
+#
 # Manual only: run it from the Actions tab after changing the Containerfile or the
 # pinned Python stack (doc/src/pyproject.toml, doc/src/uv.lock). Republishing the
 # image changes the toolchain under every subsequent deploy, so it is a deliberate
@@ -28,6 +31,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # The image bundles @omnetpp/opp-tools, which is not on npm yet and comes from
+      # a local build of the omnetpp-vscode repo that this checkout does not have.
+      # Remove this step once the Containerfile fetches a published version.
+      - name: Unavailable until opp-tools is published
+        run: |
+          echo "::error::The doc-builder image needs a locally built opp-tools tarball. Publish it from a workstation with doc/src/site/doc-builder/build.sh --push"
+          exit 1
+
       - uses: actions/checkout@v4
 
       - name: Short sha
