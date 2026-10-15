@@ -1,0 +1,24 @@
+%description:
+Test that dropAndDelete() on an object owned by a cSoftOwner (here: the module)
+removes the object from the owner's list of owned objects.
+
+dropAndDelete() used to only set the object's owner pointer to nullptr before
+deleting it, leaving a dangling pointer in the cSoftOwner's object list,
+which caused a crash when the list was traversed later.
+
+%activity:
+int n = getNumOwnedObjects();
+cMessage *msg = new cMessage("msg");
+EV << "added: " << getNumOwnedObjects() - n << endl;
+dropAndDelete(msg);
+EV << "after dropAndDelete: " << getNumOwnedObjects() - n << endl;
+
+// touch all owned objects -- this would crash on a dangling pointer
+for (int i = 0; i < getNumOwnedObjects(); i++)
+    (void)getOwnedObject(i)->getClassName();
+EV << "done\n";
+
+%contains: stdout
+added: 1
+after dropAndDelete: 0
+done

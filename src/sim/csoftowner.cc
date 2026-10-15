@@ -168,8 +168,9 @@ void cSoftOwner::take(cOwnedObject *obj)
 void cSoftOwner::drop(cOwnedObject *obj)
 {
     if (obj->owner != this)
-        throw cRuntimeError(this, "drop(): Not owner of object (%s)%s",
-                obj->getClassName(), obj->getFullPath().c_str());
+        throw cRuntimeError(this, "drop(): Not owner of object %s, owner is %s",
+                obj->getClassAndFullPath().c_str(),
+                obj->owner ? obj->owner->getClassAndFullPath().c_str() : "nullptr");
     // the following 2 lines are actually the same as owningContext->take(obj);
     yieldOwnership(obj, owningContext);
     owningContext->doInsert(obj);
