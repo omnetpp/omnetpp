@@ -19,6 +19,9 @@ dependencies = [
     "python-dateutil",
     "lxml",
     "pyparsing",
+    "sphinxcontrib-images>=1.0.1",
+    "sphinxcontrib-jquery>=4.1",
+    "ipython>=9.17.1",
 ]
 
 [tool.uv]
