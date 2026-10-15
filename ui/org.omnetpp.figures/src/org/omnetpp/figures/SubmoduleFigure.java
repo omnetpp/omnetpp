@@ -172,17 +172,22 @@ public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelection
         float sy = displayString.getAsCoordinate(IDisplayString.Prop.IMAGE_SCALE_Y);
         imageScaleX = Float.isNaN(sx) ? 1.0 : sx;
         imageScaleY = Float.isNaN(sy) ? (Float.isNaN(sx) ? 1.0 : sx) : sy;
-        Image image = ImageFactory.of(project).getImage(
-                displayString.getAsString(IDisplayString.Prop.IMAGE),
-                imageSize,
-                ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
-                displayString.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
 
         // rectangle ("b" tag)
         DimensionF size = displayString.getSize();
         String shape = displayString.getAsString(IDisplayString.Prop.SHAPE);
         if (!displayString.containsTag(IDisplayString.Tag.b))
             shape = null;
+
+        // if there is neither an icon nor a shape, use the default icon (with the requested size and colorization)
+        String imageId = displayString.getAsString(IDisplayString.Prop.IMAGE);
+        boolean useDefaultImage = StringUtils.isEmpty(imageId) && StringUtils.isEmpty(shape);
+        Image image = (useDefaultImage ? ImageFactory.global() : ImageFactory.of(project)).getImage(
+                useDefaultImage ? ImageFactory.DEFAULT : imageId,
+                imageSize,
+                ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
+                displayString.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
+
         constraint.setShapeSize(shape == null ? null : size);
         setShape(image, shape,
                 (int)(size.width * scale),
@@ -330,9 +335,6 @@ public class SubmoduleFigure extends Figure implements IAnchorBounds, ISelection
         this.shapeBorderWidth = shapeBorderWidth;
 
         this.image = image;
-
-        if (image == null && shape == SHAPE_NONE)
-            this.image = ImageFactory.global().getImage(ImageFactory.DEFAULT_KEY);
     }
 
     public void setSubmoduleVectorIndex(Object vectorIdentifier, int vectorSize, int vectorIndex) {
