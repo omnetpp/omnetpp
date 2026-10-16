@@ -51,7 +51,7 @@ COMMON_OBJS= $C/lcgrandom.o $C/filelock.o $C/filereader.o $C/linetokenizer.o \
       $C/expression.o $C/expression.lex.o $C/expression.tab.o $C/quantityformatter.o \
       $C/matchexpression.o $C/matchexpressionlexer.o $C/matchexpression.tab.o \
       $C/patternmatcher.o $C/unitconversion.o $C/fileglobber.o \
-      $C/fileutil.o $C/stringutil.o $C/commonutil.o $C/exception.o $C/bigdecimal.o \
+      $C/fileutil.o $C/stringutil.o $C/commonutil.o $C/typenameregistry.o $C/exception.o $C/bigdecimal.o \
       $C/enumstr.o $C/colorutil.o $C/statistics.o $C/sqlite3.o \
       $C/formattedprinter.o $C/csvwriter.o $C/jsonwriter.o $C/sqliteresultfileschema.o \
       $C/sqlitescalarfilewriter.o  $C/sqlitevectorfilewriter.o \

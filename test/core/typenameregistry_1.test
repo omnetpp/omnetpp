@@ -1,0 +1,97 @@
+%description:
+Test the steps of TypeNameRegistry (the implementation of opp_typename()) on
+raw demangled names, including names in the formats of libc++ (std::__1)
+and MSVC's type_info::name(), which cannot be produced on every platform.
+
+%includes:
+#include "common/typenameregistry.h"
+
+%global:
+// exposes the protected steps for testing
+struct TestableTypeNameRegistry : omnetpp::common::TypeNameRegistry {
+    using TypeNameRegistry::cleanUpMsvcName;
+    using TypeNameRegistry::normalize;
+};
+
+static void normalize(const char *demangledName)
+{
+    EV << demangledName << "\n  --> ";
+    try {
+        EV << TestableTypeNameRegistry::normalize(demangledName) << "\n";
+    }
+    catch (std::exception& e) {
+        EV << "ERROR: " << e.what() << "\n";
+    }
+}
+
+static void normalizeMsvc(const char *msvcName)
+{
+    EV << msvcName << "\n  --> " << TestableTypeNameRegistry::normalize(TestableTypeNameRegistry::cleanUpMsvcName(msvcName)) << "\n";
+}
+
+%activity:
+EV << "=== libstdc++\n";
+normalize("std::__cxx11::list<int, std::allocator<int> >");
+normalize("std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >");
+
+EV << "=== libc++\n";
+normalize("std::__1::vector<int, std::__1::allocator<int> >");
+normalize("std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >");
+normalize("std::__1::map<int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::less<int>, std::__1::allocator<std::__1::pair<int const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > >");
+
+EV << "=== MSVC\n";
+normalizeMsvc("class std::vector<int,class std::allocator<int> >");
+normalizeMsvc("class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >");
+normalizeMsvc("class std::map<int,double,struct std::less<int>,class std::allocator<struct std::pair<int const ,double> > >");
+normalizeMsvc("struct `anonymous namespace'::Foo");
+normalizeMsvc("class std::vector<struct `anonymous namespace'::Foo,class std::allocator<struct `anonymous namespace'::Foo> >");
+normalizeMsvc("class Subclass");
+normalizeMsvc("enum Color");
+
+EV << "=== errors\n";
+normalize("Foo<int");
+normalize("Foo<(int>");
+
+EV << "=== getTypeName()\n";
+omnetpp::common::TypeNameRegistry registry;
+const char *name1 = registry.getTypeName(typeid(std::map<int, std::string>));
+const char *name2 = registry.getTypeName(typeid(std::map<int, std::string>));
+EV << name1 << ", cached: " << (name1 == name2 ? "yes" : "no") << "\n";
+EV << ".\n";
+
+%contains: stdout
+=== libstdc++
+std::__cxx11::list<int, std::allocator<int> >
+  --> std::list<int>
+std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >
+  --> std::vector<std::string>
+=== libc++
+std::__1::vector<int, std::__1::allocator<int> >
+  --> std::vector<int>
+std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >
+  --> std::string
+std::__1::map<int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::less<int>, std::__1::allocator<std::__1::pair<int const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > >
+  --> std::map<int, std::string>
+=== MSVC
+class std::vector<int,class std::allocator<int> >
+  --> std::vector<int>
+class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
+  --> std::string
+class std::map<int,double,struct std::less<int>,class std::allocator<struct std::pair<int const ,double> > >
+  --> std::map<int, double>
+struct `anonymous namespace'::Foo
+  --> (anonymous namespace)::Foo
+class std::vector<struct `anonymous namespace'::Foo,class std::allocator<struct `anonymous namespace'::Foo> >
+  --> std::vector<(anonymous namespace)::Foo>
+class Subclass
+  --> Subclass
+enum Color
+  --> Color
+=== errors
+Foo<int
+  --> ERROR: Unmatched '<' at position 3 in 'Foo<int'
+Foo<(int>
+  --> ERROR: Cannot split template argument list '(int': Unclosed parenthesis '('
+=== getTypeName()
+std::map<int, std::string>, cached: yes
+.

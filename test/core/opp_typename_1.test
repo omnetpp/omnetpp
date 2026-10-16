@@ -43,15 +43,8 @@ PRINT(@TESTNAME@::Korte)
 PRINT(@TESTNAME@::Korte *)
 PRINT(const @TESTNAME@::Korte *)
 
-%subst: /char const \*/const char */
-%subst: /int const \*/const int */
-%subst: /int const \* \*/const int * */
-%subst: /int \* \* const/const int * */
-%subst: /Alma const \*/const Alma */
-%subst: /@TESTNAME@::Korte const \*/const @TESTNAME@::Korte */
-
 %contains: stdout
-void * = void *
+void * = void*
 bool = bool
 short = short
 unsigned short = unsigned short
@@ -64,15 +57,15 @@ double = double
 char = char
 signed char = signed char
 unsigned char = unsigned char
-char * = char *
-const char * = const char *
-int * = int *
-int * * = int * *
-const int * = const int *
-const int * * = const int * *
+char * = char*
+const char * = char const*
+int * = int*
+int * * = int**
+const int * = int const*
+const int * * = int const**
 Alma = Alma
-Alma * = Alma *
-const Alma * = const Alma *
+Alma * = Alma*
+const Alma * = Alma const*
 opp_typename_1::Korte = opp_typename_1::Korte
-opp_typename_1::Korte * = opp_typename_1::Korte *
-const opp_typename_1::Korte * = const opp_typename_1::Korte *
+opp_typename_1::Korte * = opp_typename_1::Korte*
+const opp_typename_1::Korte * = opp_typename_1::Korte const*

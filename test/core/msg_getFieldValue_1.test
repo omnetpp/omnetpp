@@ -135,7 +135,7 @@ isModule : bool = true
 componentType : omnetpp::cComponentType = (omnetpp::cDynamicModuleType)component types.Tester
 par[1] : omnetpp::cPar = [(omnetpp::cPar)Test.tester.bitrate]
 properties_[2] : omnetpp::cProperty = [(omnetpp::cProperty)signal[foo], (omnetpp::cProperty)statistic[foo]]
-listenedSignals[1] : omnetpp::cComponent::SignalListenerList = [(omnetpp::cComponent::SignalListenerList *)0x...]
+listenedSignals[1] : omnetpp::cComponent::SignalListenerList = [(omnetpp::cComponent::SignalListenerList*)0x...]
 results[1] : omnetpp::cResultRecorder = [(omnetpp::VectorRecorder)Test.tester.foo:vector]
 id : int = 2
 isSimple : bool = true
@@ -307,14 +307,14 @@ recordingMode : string = "vector"
 lastWriteTime : omnetpp::simtime_t = 0
 lastValue : double = nan
 
-(msg_getFieldValue_1::Pt *)0x...:
+(msg_getFieldValue_1::Pt*)0x...:
 x : double = 0
 y : double = 0
 
-(msg_getFieldValue_1::Foo *)0x...:
+(msg_getFieldValue_1::Foo*)0x...:
 id : int = 0
 label : string = ""
-position : msg_getFieldValue_1::Pt = (msg_getFieldValue_1::Pt *)0x...
+position : msg_getFieldValue_1::Pt = (msg_getFieldValue_1::Pt*)0x...
 
 .
 

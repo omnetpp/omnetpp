@@ -1,0 +1,161 @@
+%description:
+Test opp_typename() on a large number of types: full type names including
+template arguments, with default template arguments of standard library
+containers omitted, and otherwise the formatting of the demangler kept.
+
+The expected name of each type is written as C++ code, and a static_assert
+checks that it denotes the same type. So, if this test passes, the names returned
+by opp_typename() are valid C++ spellings of the types (no information lost).
+
+Note: Expected names are in the format of abi::__cxa_demangle() (gcc, clang).
+
+%includes:
+#include <vector>
+#include <list>
+#include <forward_list>
+#include <deque>
+#include <set>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <memory>
+#include <queue>
+#include <stack>
+#include <array>
+#include <functional>
+
+%global:
+
+namespace units { struct b {}; struct GHz {}; template<typename V, typename U> struct value { V v; }; }
+template<typename T, int N> struct Arr {};
+namespace { struct Anon {}; }
+struct Plain {};
+struct Deleter { void operator()(int *p) const { delete p; } };
+template<typename T> struct MyAlloc {
+    using value_type = T;
+    MyAlloc() = default;
+    template<typename U> MyAlloc(const MyAlloc<U>&) {}
+    T *allocate(size_t n) { return static_cast<T*>(::operator new(n * sizeof(T))); }
+    void deallocate(T *p, size_t) { ::operator delete(p); }
+};
+
+static int numChecked = 0, numFailed = 0;
+
+static void check(const char *actual, const char *expected, const char *what)
+{
+    numChecked++;
+    if (strcmp(actual, expected) != 0) {
+        numFailed++;
+        EV << "MISMATCH for " << what << ": got \"" << actual << "\", expected \"" << expected << "\"\n";
+    }
+}
+
+#define STR(...) STR2(__VA_ARGS__)
+#define STR2(...) #__VA_ARGS__
+
+template<typename T> struct unparen;
+template<typename T> struct unparen<void(T)> { using type = T; };
+
+// CHECK(T): the expected name is T as written
+#define CHECK(...)  check(opp_typename(typeid(__VA_ARGS__)), STR(__VA_ARGS__), STR(__VA_ARGS__));
+
+// CHECK_AS((T), E): the expected name of T is E, which must denote the same type
+#define CHECK_AS(T, ...)  static_assert(std::is_same_v<typename unparen<void T>::type, __VA_ARGS__>); \
+                          check(opp_typename(typeid(typename unparen<void T>::type)), STR(__VA_ARGS__), #T);
+
+// element types
+#define FOR_EACH_ELEMTYPE(M) \
+    M(int) M(unsigned long) M(double) M(bool) M(char const*) M(std::string) \
+    M(@TESTNAME@::Plain) M(@TESTNAME@::Plain*) M(@TESTNAME@::Plain const*) M(omnetpp::cMessage*) \
+    M(@TESTNAME@::units::value<long, @TESTNAME@::units::b>) M(std::pair<int, std::string>) \
+    M(std::vector<int>) M(std::map<std::string, int>) M(std::list<std::string>)
+
+#define FOR_EACH_HASHABLE_ELEMTYPE(M) \
+    M(int) M(unsigned long) M(std::string) M(char const*) M(@TESTNAME@::Plain*) M(omnetpp::cMessage*)
+
+#define CHECK_CONTAINERS_OF(...) \
+    CHECK(std::vector<__VA_ARGS__>) \
+    CHECK(std::list<__VA_ARGS__>) \
+    CHECK(std::forward_list<__VA_ARGS__>) \
+    CHECK(std::deque<__VA_ARGS__>) \
+    CHECK(std::set<__VA_ARGS__>) \
+    CHECK(std::multiset<__VA_ARGS__>) \
+    CHECK(std::map<__VA_ARGS__, int>) \
+    CHECK(std::map<int, __VA_ARGS__>) \
+    CHECK(std::multimap<__VA_ARGS__, std::string>) \
+    CHECK(std::unordered_map<int, __VA_ARGS__>) \
+    CHECK(std::pair<__VA_ARGS__, __VA_ARGS__>) \
+    CHECK(std::unique_ptr<__VA_ARGS__>) \
+    CHECK(std::queue<__VA_ARGS__>) \
+    CHECK(std::stack<__VA_ARGS__>) \
+    CHECK(std::priority_queue<__VA_ARGS__>) \
+    CHECK(std::vector<std::map<int, __VA_ARGS__>>) \
+    CHECK(std::map<__VA_ARGS__, std::vector<__VA_ARGS__>>)
+
+#define CHECK_HASHED_CONTAINERS_OF(...) \
+    CHECK(std::unordered_set<__VA_ARGS__>) \
+    CHECK(std::unordered_multiset<__VA_ARGS__>) \
+    CHECK(std::unordered_map<__VA_ARGS__, int>) \
+    CHECK(std::unordered_multimap<__VA_ARGS__, std::vector<__VA_ARGS__>>)
+
+%activity:
+
+// basic types and pointers
+CHECK(int)
+CHECK(unsigned long)
+CHECK(signed char)
+CHECK(@TESTNAME@::Plain)
+CHECK(omnetpp::cMessage)
+CHECK(@TESTNAME@::Plain const*)
+CHECK(@TESTNAME@::Plain**)
+CHECK(@TESTNAME@::Plain* const*)
+CHECK(char const* const*)
+CHECK(int [3])
+CHECK(void (*)(int, char const*))
+CHECK(std::function<void (int)>)
+CHECK_AS((std::nullptr_t), decltype(nullptr))
+CHECK(std::string)
+CHECK(std::ostream)
+
+// user-defined templates
+CHECK(@TESTNAME@::units::value<long, @TESTNAME@::units::b>)
+CHECK(@TESTNAME@::units::value<double, @TESTNAME@::units::GHz>)
+CHECK(@TESTNAME@::Arr<int, -3>)
+CHECK_AS((std::array<int, 5>), std::array<int, 5ul>)
+
+// default arguments written out explicitly
+CHECK_AS((std::basic_string<char, std::char_traits<char>, std::allocator<char>>), std::string)
+CHECK_AS((std::vector<int, std::allocator<int>>), std::vector<int>)
+CHECK_AS((std::set<int, std::less<int>, std::allocator<int>>), std::set<int>)
+CHECK_AS((std::map<int, std::string, std::less<int>, std::allocator<std::pair<const int, std::string>>>), std::map<int, std::string>)
+CHECK_AS((std::map<char const*, int, std::less<char const*>>), std::map<char const*, int>)
+CHECK_AS((std::unordered_map<int, int, std::hash<int>, std::equal_to<int>>), std::unordered_map<int, int>)
+CHECK_AS((std::queue<int, std::deque<int>>), std::queue<int>)
+CHECK_AS((std::priority_queue<int, std::vector<int>, std::less<int>>), std::priority_queue<int>)
+CHECK_AS((std::unique_ptr<int, std::default_delete<int>>), std::unique_ptr<int>)
+
+// non-default arguments must be kept
+CHECK(std::basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>>)
+CHECK(std::vector<int, @TESTNAME@::MyAlloc<int>>)
+CHECK(std::set<int, std::greater<int>>)
+CHECK(std::set<int, std::less<void>>)
+CHECK(std::map<int, int, std::greater<int>>)
+CHECK(std::map<int, int, std::less<int>, @TESTNAME@::MyAlloc<std::pair<int const, int>>>)
+CHECK(std::unordered_set<int, std::hash<int>, std::equal_to<void>>)
+CHECK(std::queue<int, std::list<int>>)
+CHECK(std::stack<int, std::vector<int>>)
+CHECK(std::priority_queue<int, std::deque<int>>)
+CHECK(std::priority_queue<int, std::vector<int>, std::greater<int>>)
+CHECK(std::unique_ptr<int, @TESTNAME@::Deleter>)
+
+// combinations
+FOR_EACH_ELEMTYPE(CHECK_CONTAINERS_OF)
+FOR_EACH_HASHABLE_ELEMTYPE(CHECK_HASHED_CONTAINERS_OF)
+
+// these cannot be written in C++
+check(opp_typename(typeid(Anon)), "@TESTNAME@::(anonymous namespace)::Anon", "Anon");
+
+EV << "checked: " << numChecked << ", mismatches: " << numFailed << "\n";
+
+%contains: stdout
+checked: 320, mismatches: 0

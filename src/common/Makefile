@@ -39,7 +39,7 @@ OBJS= $O/lcgrandom.o $O/filelock.o $O/filereader.o $O/linetokenizer.o \
       $O/expression.o $O/expression.lex.o $O/expression.tab.o $O/quantityformatter.o \
       $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \
       $O/patternmatcher.o $O/unitconversion.o $O/fileglobber.o \
-      $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
+      $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/typenameregistry.o $O/exception.o $O/bigdecimal.o \
       $O/enumstr.o $O/colorutil.o $O/statistics.o $O/sqlite3.o \
       $O/formattedprinter.o $O/csvwriter.o $O/jsonwriter.o $O/sqliteresultfileschema.o \
       $O/sqlitescalarfilewriter.o  $O/sqlitevectorfilewriter.o \

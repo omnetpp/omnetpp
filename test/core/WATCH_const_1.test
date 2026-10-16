@@ -84,7 +84,7 @@ std::string elements[2]:
     2 => "two"
 
 --- constPtrVector = size=2
-descriptor: std::vector<const WATCH_const_1::Pt *>
+descriptor: std::vector<WATCH_const_1::Pt const*>
 valueAsString: size=2
 WATCH_const_1::Pt elements[2]:
     [0] (1,2)
