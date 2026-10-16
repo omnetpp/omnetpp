@@ -22,6 +22,7 @@ dependencies = [
     "sphinxcontrib-images>=1.0.1",
     "sphinxcontrib-jquery>=4.1",
     "ipython>=9.17.1",
+    "sphinx-design>=0.7.0",
 ]
 
 [tool.uv]
