@@ -1,0 +1,121 @@
+%description:
+Test WATCH() of containers of pointers to a cObject subclass that has no
+msg-generated descriptor. Watching such a container used to register a
+primitive-type descriptor under the name of the class, which then broke
+inspecting all objects of that class (cObject::getDescriptor() found that
+descriptor instead of the descriptor of the nearest base class).
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "../lib/descriptortest.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Job : public cNamedObject
+{
+  private:
+    int priority;
+  public:
+    Job(const char *name, int priority) : cNamedObject(name), priority(priority) {}
+    virtual std::string str() const override { return "priority=" + std::to_string(priority); }
+};
+
+class Module : public cSimpleModule
+{
+  public:
+    Module() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Module);
+
+static void dump(cObject *watch)
+{
+    EV << "--- " << watch->getFullName() << " = " << watch->str() << "\n";
+    testlib::printDescriptor(EV, toAnyPtr(watch), watch->getDescriptor());
+}
+
+static void inspect(cObject *obj)
+{
+    cClassDescriptor *desc = obj->getDescriptor();
+    EV << "inspecting " << obj->getFullName() << ": descriptor=" << (desc ? desc->getName() : "nullptr");
+    try {
+        EV << ", value=" << desc->getValueAsString(toAnyPtr(obj)) << "\n";
+    }
+    catch (std::exception& e) {
+        EV << ", ERROR: " << e.what() << "\n";
+    }
+}
+
+void Module::activity()
+{
+    Job *job1 = new Job("job1", 5);
+    Job *job2 = new Job("job2", 7);
+
+    inspect(job1);
+
+    std::vector<Job *> jobs = {job1, job2};
+    std::list<Job *> jobList = {job2};
+    std::map<int, Job *> jobMap = {{1, job1}, {2, nullptr}};
+    std::pair<int, Job *> jobPair = {3, job2};
+    dump(WATCH(jobs));
+    dump(WATCH(jobList));
+    dump(WATCH(jobMap));
+    dump(WATCH(jobPair));
+
+    inspect(job1);
+    inspect(job2);
+
+    delete job1;
+    delete job2;
+    EV << ".\n";
+}
+
+}
+
+%file: test.ned
+
+simple Module
+{
+}
+
+network Test
+{
+    submodules:
+        mod: Module;
+}
+
+%contains: stdout
+inspecting job1: descriptor=omnetpp::cNamedObject, value=priority=5
+--- jobs = size=2
+descriptor: std::vector<WATCH_cobjectcontainer_1::Job*>
+valueAsString: size=2
+WATCH_cobjectcontainer_1::Job elements[2]:
+    [0] priority=5
+    [1] priority=7
+
+--- jobList = size=1
+descriptor: std::list<WATCH_cobjectcontainer_1::Job*>
+valueAsString: size=1
+WATCH_cobjectcontainer_1::Job elements[1]:
+    [0] priority=7
+
+--- jobMap = size=2
+descriptor: std::map<int, WATCH_cobjectcontainer_1::Job*>
+valueAsString: size=2
+WATCH_cobjectcontainer_1::Job elements[2]:
+    1 => priority=5
+    2 => nullptr
+
+--- jobPair = 3 => priority=7
+descriptor: std::pair<int, WATCH_cobjectcontainer_1::Job*>
+valueAsString: 3 => priority=7
+int first = 3
+WATCH_cobjectcontainer_1::Job second = priority=7
+
+inspecting job1: descriptor=omnetpp::cNamedObject, value=priority=5
+inspecting job2: descriptor=omnetpp::cNamedObject, value=priority=7
+.

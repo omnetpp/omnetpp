@@ -957,6 +957,11 @@ class cStdPairDescriptor : public cDynamicDescriptor
  * for string conversion. For STL containers, creates a descriptor with an
  * "elements[]" array field. For std::pair, creates a descriptor with
  * "first" and "second" fields.
+ *
+ * For cObject subclasses, no descriptor is created: if none is registered for
+ * the class, nullptr is returned. (Objects use the descriptor of their nearest
+ * base class then, see cObject::getDescriptor(); registering one under the
+ * name of the class would override that for all objects of the class.)
  */
 template<typename T>
 cClassDescriptor *ensureDescriptor()
@@ -971,7 +976,10 @@ cClassDescriptor *ensureDescriptor()
         if (desc)
             return desc;
 
-        if constexpr (internal::is_std_vector<T>::value) {
+        if constexpr (std::is_base_of_v<cObject, T>) {
+            return nullptr;
+        }
+        else if constexpr (internal::is_std_vector<T>::value) {
             using E = typename T::value_type;
             if constexpr (std::is_pointer_v<E>)
                 ensureDescriptor<std::remove_pointer_t<E>>();
