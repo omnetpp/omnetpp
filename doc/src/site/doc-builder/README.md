@@ -1,4 +1,4 @@
-# doc-builder container image
+# doc-builder container images
 
 A self-contained image with the full toolchain to build the OMNeT++ Sphinx
 documentation site (manual, guides, tutorials, articles, the doxygen APIs and the
@@ -14,14 +14,22 @@ the distribution's `nodejs`), so it can generate NED documentation, e.g.
 The Python packages are installed with uv into a venv on `PATH`, so the build runs
 without uv inside the container by passing `PIPRUN=` and `VENVDEP=`.
 
+A second, larger variant adds what the PDF documents need: TeX Live (Ubuntu's
+`texlive-latex-recommended`, `-latex-extra`, `-fonts-recommended`, `tex-gyre`,
+`latexmk`), ImageMagick (with its SVG coder) for `sphinx.ext.imgconverter`, and
+`rsvg-convert` for the manual's figures. Both are built from the one
+`Containerfile` (stages `base` and `pdf`); the HTML image stays free of TeX.
+
 ## Naming and tags
 
-There is exactly one image reference, used identically by CI and locally:
+The same references are used by CI and locally:
 
 | Reference | Meaning |
 |-----------|---------|
-| `ghcr.io/omnetpp/doc-builder:latest` | what `deploy-docs.yml` pulls; moves with each rebuild |
+| `ghcr.io/omnetpp/doc-builder:latest` | HTML toolchain; what `deploy-docs.yml` pulls; moves with each rebuild |
 | `ghcr.io/omnetpp/doc-builder:<short-sha>` | immutable; pin a deployment to an exact toolchain by editing the `image:` line |
+| `ghcr.io/omnetpp/doc-builder:latest-pdf` | the same plus the PDF toolchain |
+| `ghcr.io/omnetpp/doc-builder:<short-sha>-pdf` | immutable PDF variant, built together with `:<short-sha>` |
 
 The image is `linux/amd64` only — every tool in it is fetched as an x86_64 binary,
 so the `Containerfile` and `build.sh` pin the platform explicitly.
@@ -40,7 +48,9 @@ doc/src/site/doc-builder/build.sh          # -> ghcr.io/omnetpp/doc-builder:late
 `build.sh` takes the single tarball in `vscode/build/` (set `OPP_TOOLS_TGZ=<path>`
 to use another one), stages it as `doc/src/site/doc-builder/opp-tools.tgz`
 (gitignored, removed afterwards) for the `Containerfile` to bind-mount, and records
-its version and the vscode commit in the image labels:
+its version and the vscode commit in the image labels. It always builds both
+variants (`--target base`, then `--target pdf`, which reuses the base layers), so
+the two never drift apart:
 
 ```bash
 podman inspect -f '{{json .Labels}}' ghcr.io/omnetpp/doc-builder:latest
@@ -58,6 +68,15 @@ VERSION=6.x doc/src/site/doc-builder/run.sh
 
 `run.sh` bind-mounts the repository and runs
 `make -C doc/src ci-html PIPRUN= VENVDEP=` inside the container.
+
+PDFs need the PDF variant; pass any make target:
+
+```bash
+IMAGE=ghcr.io/omnetpp/doc-builder:latest-pdf doc/src/site/doc-builder/run.sh do-guides-pdf
+IMAGE=ghcr.io/omnetpp/doc-builder:latest-pdf doc/src/site/doc-builder/run.sh do-manual-pdf
+```
+
+They land in `doc/` (`UserGuide.pdf`, `SimulationManual.pdf`, …).
 
 ## CI usage
 
@@ -122,10 +141,17 @@ is the single source of truth, nothing outside it pins these:
 | `DOXYGEN_VERSION` | 1.14.0 | newest release doxysphinx's frozen LibSass scoper can still parse |
 | `UV_VERSION` | 0.11.8 | build-time only; installs the Sphinx stack from `uv.lock` |
 
+Override one for a test build with `podman build --build-arg PANDOC_VERSION=…`.
+
+The PDF variant's TeX Live, ImageMagick and librsvg are Ubuntu packages, fixed by
+the Ubuntu release in the `FROM` line rather than by a build arg. Its build runs a
+smoke check (the Simulation Manual's real preamble, and the tiny Sphinx project in
+`pdf-smoke/` with GIF and SVG images, with both the OMNeT++ and Sphinx's default
+fonts), so a missing LaTeX package fails the image build instead of a later PDF
+build.
+
 Exception: opp-tools is whatever tarball `build.sh` bundled; its version is in the
 `org.omnetpp.opp-tools.version` (and `.commit`) image labels.
-
-Override one for a test build with `podman build --build-arg PANDOC_VERSION=…`.
 
 ## Using it as a base image
 
@@ -135,7 +161,8 @@ NED reference with `opp_docgen` (`--format=rst` or `markdown` to embed it in a
 Sphinx site, `html-material`/`html-readthedocs` for a standalone subtree).
 
 ```dockerfile
-FROM ghcr.io/omnetpp/doc-builder:<short-sha>
+FROM ghcr.io/omnetpp/doc-builder:<short-sha>        # HTML only
+FROM ghcr.io/omnetpp/doc-builder:<short-sha>-pdf    # also Sphinx latexpdf
 ```
 
 A workflow in another repository can pull the image while the package is private

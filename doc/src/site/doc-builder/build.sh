@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-# Build (and optionally publish) the OMNeT++ documentation builder image.
+# Build (and optionally publish) the OMNeT++ documentation builder images: the
+# HTML toolchain as $IMAGE, and its PDF variant (+ TeX Live) as $IMAGE-pdf.
 #
 # Usage:  site/doc-builder/build.sh [--push]
 # Env:    IMAGE          image reference (default: ghcr.io/omnetpp/doc-builder:latest,
@@ -9,8 +10,9 @@
 #         OPP_TOOLS_TGZ  the @omnetpp/opp-tools npm tarball to bundle (default: the
 #                        one in <repo>/vscode/build/, made by `bun run package:cli`)
 #
-# --push additionally tags the image with the current commit's short sha, so a
-# deployment can be pinned to an exact toolchain instead of the moving :latest.
+# --push additionally tags the images with the current commit's short sha (:<sha>,
+# :<sha>-pdf), so a deployment can be pinned to an exact toolchain instead of the
+# moving :latest.
 # Log in first:  echo "$GHCR_TOKEN" | podman login ghcr.io -u <user> --password-stdin
 #
 set -euo pipefail
@@ -75,15 +77,23 @@ label_args=(--label "org.omnetpp.opp-tools.version=$OPP_TOOLS_VERSION")
 [ -n "$OPP_TOOLS_COMMIT" ] && label_args+=(--label "org.omnetpp.opp-tools.commit=$OPP_TOOLS_COMMIT")
 [ -n "$SOURCE" ] && label_args+=(--label "org.opencontainers.image.source=$SOURCE")
 
-echo "Building $IMAGE with $ENGINE (context: $CONTEXT, source: ${SOURCE:-unset})"
+PDF_IMAGE="$IMAGE-pdf"
+
+echo "Building $IMAGE and $PDF_IMAGE with $ENGINE (context: $CONTEXT, source: ${SOURCE:-unset})"
 echo "Bundling opp-tools $OPP_TOOLS_VERSION${OPP_TOOLS_COMMIT:+ (vscode $OPP_TOOLS_COMMIT)} from $OPP_TOOLS_TGZ"
-"$ENGINE" build --platform linux/amd64 -t "$IMAGE" "${label_args[@]}" \
-    -f "$HERE/Containerfile" "$CONTEXT"
+for target in base pdf; do
+    tag="$IMAGE"
+    [ "$target" = "pdf" ] && tag="$PDF_IMAGE"
+    "$ENGINE" build --platform linux/amd64 --target "$target" -t "$tag" "${label_args[@]}" \
+        -f "$HERE/Containerfile" "$CONTEXT"
+done
 
 if [ "$PUSH" = "1" ]; then
     SHA_TAG="${IMAGE%:*}:$(git -C "$CONTEXT" rev-parse --short HEAD)"
-    echo "Tagging $SHA_TAG; pushing both references"
+    echo "Tagging $SHA_TAG and $SHA_TAG-pdf; pushing all four references"
     "$ENGINE" tag "$IMAGE" "$SHA_TAG"
-    "$ENGINE" push "$IMAGE"
-    "$ENGINE" push "$SHA_TAG"
+    "$ENGINE" tag "$PDF_IMAGE" "$SHA_TAG-pdf"
+    for ref in "$IMAGE" "$SHA_TAG" "$PDF_IMAGE" "$SHA_TAG-pdf"; do
+        "$ENGINE" push "$ref"
+    done
 fi

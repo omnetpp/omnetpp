@@ -8,6 +8,11 @@
 # opp_ide_mcp) so the image can generate NED documentation, e.g. as the base of a
 # model library's (INET's) documentation build.
 #
+# Two images are built from this file (build.sh always passes --target):
+#   base  the HTML toolchain above            -> ghcr.io/omnetpp/doc-builder:latest
+#   pdf   base + TeX Live, ImageMagick and     -> ghcr.io/omnetpp/doc-builder:latest-pdf
+#         rsvg-convert for the PDF targets (Sphinx latexpdf, the manual's pdflatex)
+#
 # The Python packages are installed with uv into a venv that is on PATH, so the
 # build runs WITHOUT uv inside the container:
 #     make -C doc/src ci-html PIPRUN= VENVDEP= VERSION=6.x
@@ -20,11 +25,13 @@
 # Size notes (kept lean on purpose):
 #   - doxygen is the official static binary, NOT the apt package, because the
 #     latter hard-depends on libclang/LLVM (~216 MB) that our doxyfiles never use.
-#   - No LaTeX/texlive: math is rendered client-side by KaTeX (sphinxcontrib.katex).
+#   - No LaTeX/texlive in base: HTML math is rendered client-side by KaTeX
+#     (sphinxcontrib.katex). TeX Live (~0.5-1 GB) lives only in the pdf image, so
+#     HTML-only deploys do not pull it.
 #
 # The platform is pinned: every tool below is fetched as an x86_64/amd64 binary,
 # so building on an arm64 host without this would produce a broken image.
-FROM --platform=linux/amd64 docker.io/library/ubuntu:26.04
+FROM --platform=linux/amd64 docker.io/library/ubuntu:26.04 AS base
 
 # org.opencontainers.image.source is what makes GHCR link the published package to
 # the repository, which in turn lets a workflow's GITHUB_TOKEN pull it. It is NOT
@@ -77,6 +84,7 @@ RUN curl -fsSL -o /tmp/pandoc.deb \
 # Python, and we don't want a C toolchain in the image to compile it. The system
 # python3 is still used for the stdlib-only helper scripts (tex2rst etc.).
 ENV UV_PROJECT_ENVIRONMENT=/opt/docvenv \
+    UV_PYTHON_INSTALL_DIR=/opt/uv-python \
     UV_PYTHON=3.12 \
     UV_PYTHON_DOWNLOADS=automatic
 COPY pyproject.toml uv.lock /opt/docproj/
@@ -117,3 +125,53 @@ RUN git config --system --add safe.directory '*'
 
 WORKDIR /work
 CMD ["bash"]
+
+# PDF variant. TeX Live is the Ubuntu packaging (pinned by the release, docs left
+# out by --no-install-recommends): latex-extra is needed by both Sphinx latexpdf and
+# the Simulation Manual's preamble, fonts-recommended provides bookman & co.,
+# tex-gyre Sphinx's default fonts. ImageMagick is what sphinx.ext.imgconverter
+# calls (as `convert`) to turn GIF/SVG images into something pdflatex can embed;
+# its SVG coder is in the -extra package, which --no-install-recommends would skip
+# (the name carries the ABI version, so it changes with the Ubuntu base).
+# rsvg-convert renders the manual's SVG figures to PDF.
+FROM base AS pdf
+
+LABEL org.opencontainers.image.description="Toolchain for building the OMNeT++ documentation site, including the PDF documents"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        texlive-latex-recommended \
+        texlive-latex-extra \
+        texlive-fonts-recommended \
+        tex-gyre \
+        latexmk \
+        librsvg2-bin \
+        imagemagick \
+        libmagickcore-7.q16-10-extra \
+    && rm -rf /var/lib/apt/lists/* /var/log/* /var/cache/* /usr/share/doc/* /usr/share/man/*
+
+# Smoke check, failing the image build if the toolchain is incomplete:
+#   - the Simulation Manual's real preamble compiles with a one-line body;
+#   - a tiny Sphinx project (site/doc-builder/pdf-smoke) builds to PDF with -W, both
+#     with the OMNeT++ guides' fonts and with Sphinx's defaults (as INET uses), and
+#     with a GIF and an SVG image, so a missing ImageMagick or coder is an error
+#     rather than a silently dropped figure;
+#   - rsvg-convert renders an SVG to PDF.
+RUN --mount=type=bind,source=manual/usman.tex,target=/tmp/usman.tex \
+    --mount=type=bind,source=site/doc-builder/pdf-smoke,target=/tmp/pdf-smoke \
+    set -eu; \
+    mkdir -p /tmp/smoke/manual; \
+    sed '/\\begin{document}/q' /tmp/usman.tex > /tmp/smoke/manual/preamble.tex; \
+    printf 'Smoke.\n\\end{document}\n' >> /tmp/smoke/manual/preamble.tex; \
+    (cd /tmp/smoke/manual && pdflatex -halt-on-error -interaction=nonstopmode preamble.tex > /dev/null \
+        || { tail -40 preamble.log; exit 1; }); \
+    test -s /tmp/smoke/manual/preamble.pdf; \
+    for fonts in omnetpp default; do \
+        cp -r /tmp/pdf-smoke "/tmp/smoke/$fonts"; \
+        convert -size 16x16 xc:steelblue "/tmp/smoke/$fonts/smoke.gif"; \
+        SMOKE_FONTS=$fonts LATEXMKOPTS=-silent \
+            sphinx-build -M latexpdf "/tmp/smoke/$fonts" "/tmp/smoke/$fonts/_build" -W -q; \
+        test -s "/tmp/smoke/$fonts/_build/latex/smoke.pdf"; \
+    done; \
+    rsvg-convert -f pdf -o /tmp/smoke/smoke.pdf /tmp/pdf-smoke/smoke.svg; \
+    test -s /tmp/smoke/smoke.pdf; \
+    rm -rf /tmp/smoke
