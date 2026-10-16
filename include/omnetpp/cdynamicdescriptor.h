@@ -260,6 +260,13 @@ class cStdVectorDescriptor : public cDynamicDescriptor
                 }
             }
         }
+        else if constexpr (std::is_same_v<E, bool>) {
+            // elements of std::vector<bool> are not addressable, so use a copy
+            bool element = (*v)[i];
+            if (elemDesc)
+                return elemDesc->getValueAsString(any_ptr(&element));
+            return element ? "1" : "0";
+        }
         else {
             if (elemDesc)
                 return elemDesc->getValueAsString(any_ptr(&(*v)[i]));
@@ -291,6 +298,17 @@ class cStdVectorDescriptor : public cDynamicDescriptor
                 }
             }
         }
+        else if constexpr (std::is_same_v<E, bool>) {
+            // elements of std::vector<bool> are not addressable, so set a copy and write it back
+            bool element = (*v)[i];
+            if (elemDesc)
+                elemDesc->setValueAsString(any_ptr(&element), value);
+            else {
+                std::istringstream is(value);
+                is >> element;
+            }
+            (*v)[i] = element;
+        }
         else {
             if (elemDesc) {
                 elemDesc->setValueAsString(any_ptr(&(*v)[i]), value);
@@ -320,6 +338,9 @@ class cStdVectorDescriptor : public cDynamicDescriptor
                 return toAnyPtr(static_cast<const cObject*>(ptr));
             else
                 return any_ptr(ptr);
+        }
+        else if constexpr (std::is_same_v<E, bool>) {
+            return any_ptr(nullptr);  // elements of std::vector<bool> are not addressable (nor compound)
         }
         else {
             return any_ptr(&(*v)[i]);

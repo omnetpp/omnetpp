@@ -1,0 +1,82 @@
+%description:
+Test WATCH() of std::vector<bool>, whose elements are not addressable
+(operator[] returns a proxy object instead of bool&). It used not to compile.
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "../lib/descriptortest.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Module : public cSimpleModule
+{
+  public:
+    Module() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Module);
+
+static void dump(cObject *watch)
+{
+    EV << "--- " << watch->getFullName() << " = " << watch->str() << "\n";
+    testlib::printDescriptor(EV, toAnyPtr(watch), watch->getDescriptor());
+}
+
+void Module::activity()
+{
+    std::vector<bool> flags = {true, false, true};
+    cObject *watch = WATCH(flags);
+    dump(watch);
+
+    // edit elements and size via the descriptor
+    cClassDescriptor *desc = watch->getDescriptor();
+    desc->setFieldValueAsString(toAnyPtr(watch), 0, 0, "0");
+    desc->setFieldValueAsString(toAnyPtr(watch), 0, 1, "1");
+    desc->setFieldArraySize(toAnyPtr(watch), 0, 4);
+    EV << "after editing:";
+    for (bool flag : flags)
+        EV << " " << flag;
+    EV << "\n";
+    dump(watch);
+
+    EV << ".\n";
+}
+
+}
+
+%file: test.ned
+
+simple Module
+{
+}
+
+network Test
+{
+    submodules:
+        mod: Module;
+}
+
+%contains: stdout
+--- flags = size=3
+descriptor: std::vector<bool>
+valueAsString: size=3
+bool elements[3]:
+    [0] 1
+    [1] 0
+    [2] 1
+
+after editing: 0 1 1 0
+--- flags = size=4
+descriptor: std::vector<bool>
+valueAsString: size=4
+bool elements[4]:
+    [0] 0
+    [1] 1
+    [2] 1
+    [3] 0
+
+.
