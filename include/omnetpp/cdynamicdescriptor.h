@@ -63,41 +63,11 @@ template<typename K, typename V, typename H, typename E, typename A> struct is_s
 template<typename T> struct is_std_pair : std::false_type {};
 template<typename F, typename S> struct is_std_pair<std::pair<F,S>> : std::true_type {};
 
-// Returns a human-readable type name for T. For std::vector<E>, constructs
-// "std::vector<elemtype>" instead of relying on opp_typename which may lose
-// template parameters.
+// Returns the type name for T. Note: it must be unique, as descriptors are
+// registered and looked up by name.
 template<typename T>
 std::string getTypeName() {
-    if constexpr (is_std_vector<T>::value) {
-        using E = typename T::value_type;
-        return std::string("std::vector<") + getTypeName<E>() + ">";
-    }
-    else if constexpr (is_std_list<T>::value) {
-        using E = typename T::value_type;
-        return std::string("std::list<") + getTypeName<E>() + ">";
-    }
-    else if constexpr (is_std_set<T>::value) {
-        using E = typename T::value_type;
-        return std::string("std::set<") + getTypeName<E>() + ">";
-    }
-    else if constexpr (is_std_map<T>::value) {
-        using K = typename T::key_type;
-        using V = typename T::mapped_type;
-        return std::string("std::map<") + getTypeName<K>() + "," + getTypeName<V>() + ">";
-    }
-    else if constexpr (is_std_unordered_map<T>::value) {
-        using K = typename T::key_type;
-        using V = typename T::mapped_type;
-        return std::string("std::unordered_map<") + getTypeName<K>() + "," + getTypeName<V>() + ">";
-    }
-    else if constexpr (is_std_pair<T>::value) {
-        using F = typename T::first_type;
-        using S = typename T::second_type;
-        return std::string("std::pair<") + getTypeName<F>() + "," + getTypeName<S>() + ">";
-    }
-    else {
-        return opp_typename(typeid(T));
-    }
+    return opp_typename(typeid(T));
 }
 
 /**

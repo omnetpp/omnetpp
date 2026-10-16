@@ -390,7 +390,7 @@ std::string elements[3]:
     "cherry"
 
 === std::map<std::string,int> ===
-descriptor: std::map<std::string,int>
+descriptor: std::map<std::string, int>
 valueAsString: size=3
 int elements[3]:
     "one" => 1
@@ -398,20 +398,20 @@ int elements[3]:
     "two" => 2
 
 === std::map<int,std::string> ===
-descriptor: std::map<int,std::string>
+descriptor: std::map<int, std::string>
 valueAsString: size=2
 std::string elements[2]:
     1 => "one"
     2 => "two"
 
 === std::unordered_map<std::string,double> ===
-descriptor: std::unordered_map<std::string,double>
+descriptor: std::unordered_map<std::string, double>
 valueAsString: size=1
 double elements[1]:
     "pi" => 3.14
 
 === std::map<std::string,std::vector<int>> ===
-descriptor: std::map<std::string,std::vector<int>>
+descriptor: std::map<std::string, std::vector<int>>
 valueAsString: size=2
 std::vector<int> elements[2]:
     "alpha" => size=2
@@ -425,9 +425,9 @@ std::vector<int> elements[2]:
             [2] 50
 
 === std::vector<std::map<std::string,int>> ===
-descriptor: std::vector<std::map<std::string,int>>
+descriptor: std::vector<std::map<std::string, int>>
 valueAsString: size=2
-std::map<std::string,int> elements[2]:
+std::map<std::string, int> elements[2]:
     [0] size=2
         int elements[2]:
             "x" => 1
@@ -437,9 +437,9 @@ std::map<std::string,int> elements[2]:
             "z" => 3
 
 === std::map<std::string,std::map<std::string,int>> ===
-descriptor: std::map<std::string,std::map<std::string,int>>
+descriptor: std::map<std::string, std::map<std::string, int>>
 valueAsString: size=2
-std::map<std::string,int> elements[2]:
+std::map<std::string, int> elements[2]:
     "outer1" => size=2
         int elements[2]:
             "a" => 1
@@ -449,13 +449,13 @@ std::map<std::string,int> elements[2]:
             "c" => 3
 
 === std::pair<std::string,int> ===
-descriptor: std::pair<std::string,int>
+descriptor: std::pair<std::string, int>
 valueAsString: "hello" => 42
 std::string first = "hello"
 int second = 42
 
 === std::pair<int,std::vector<int>> ===
-descriptor: std::pair<int,std::vector<int>>
+descriptor: std::pair<int, std::vector<int>>
 valueAsString: 99 => size=3
 int first = 99
 std::vector<int> second = size=3
@@ -465,9 +465,9 @@ std::vector<int> second = size=3
         [2] 3
 
 === std::vector<std::pair<std::string,int>> ===
-descriptor: std::vector<std::pair<std::string,int>>
+descriptor: std::vector<std::pair<std::string, int>>
 valueAsString: size=2
-std::pair<std::string,int> elements[2]:
+std::pair<std::string, int> elements[2]:
     [0] "x" => 10
         std::string first = "x"
         int second = 10

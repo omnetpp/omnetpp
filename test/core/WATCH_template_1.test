@@ -1,0 +1,91 @@
+%description:
+Test WATCH() of different instances of the same class template. Their
+descriptors used to be registered under the same name (template arguments
+were lost), so displaying the second one failed.
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "../lib/descriptortest.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+namespace units {
+struct b {};
+struct GHz {};
+template<typename V, typename U> struct value { V v; };
+
+template<typename V, typename U>
+inline std::ostream& operator<<(std::ostream& os, const value<V,U>& x) { return os << x.v; }
+}
+
+class Module : public cSimpleModule
+{
+  public:
+    Module() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Module);
+
+static void dump(cObject *watch)
+{
+    EV << "--- " << watch->getFullName() << " = " << watch->str() << "\n";
+    testlib::printDescriptor(EV, toAnyPtr(watch), watch->getDescriptor());
+}
+
+void Module::activity()
+{
+    units::value<long, units::b> length = {1000};
+    units::value<double, units::GHz> frequency = {2.4};
+    std::vector<units::value<long, units::b>> lengths = {{1}, {2}};
+    std::vector<units::value<double, units::GHz>> frequencies = {{0.9}, {1.8}};
+
+    dump(WATCH(length));
+    dump(WATCH(frequency));
+    dump(WATCH(lengths));
+    dump(WATCH(frequencies));
+
+    EV << ".\n";
+}
+
+}
+
+%file: test.ned
+
+simple Module
+{
+}
+
+network Test
+{
+    submodules:
+        mod: Module;
+}
+
+%contains: stdout
+--- length = 1000
+descriptor: WATCH_template_1::units::value<long, WATCH_template_1::units::b>
+valueAsString: 1000
+
+--- frequency = 2.4
+descriptor: WATCH_template_1::units::value<double, WATCH_template_1::units::GHz>
+valueAsString: 2.4
+
+--- lengths = size=2
+descriptor: std::vector<WATCH_template_1::units::value<long, WATCH_template_1::units::b>>
+valueAsString: size=2
+WATCH_template_1::units::value<long, WATCH_template_1::units::b> elements[2]:
+    [0] 1
+    [1] 2
+
+--- frequencies = size=2
+descriptor: std::vector<WATCH_template_1::units::value<double, WATCH_template_1::units::GHz>>
+valueAsString: size=2
+WATCH_template_1::units::value<double, WATCH_template_1::units::GHz> elements[2]:
+    [0] 0.9
+    [1] 1.8
+
+.
