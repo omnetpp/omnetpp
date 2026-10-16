@@ -536,7 +536,7 @@ COMMON_API std::string opp_formatdouble(double value, int numSignificantDigits);
 COMMON_API std::string opp_makedatetimestring();
 
 /**
- * s should point to an open parenthesis, curly brace or square bracket.
+ * s should point to an open parenthesis, curly brace, square bracket or angle bracket.
  * The function returns the pointer to the matching close paren/brace/bracket,
  * or nullptr if not found. It does not search inside string constants
  * delimited by double quotes (") or single quotes ('); it uses opp_findmatchingquote()

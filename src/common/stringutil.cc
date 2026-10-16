@@ -1038,7 +1038,8 @@ const char *opp_findmatchingparen(const char *s)
     case '(': closeParen = ')'; break;
     case '{': closeParen = '}'; break;
     case '[': closeParen = ']'; break;
-    default: throw opp_runtime_error("String does not start with a left parenthesis, curly brace or square bracket");
+    case '<': closeParen = '>'; break;
+    default: throw opp_runtime_error("String does not start with a left parenthesis, curly brace, square bracket or angle bracket");
     }
 
     s++;
