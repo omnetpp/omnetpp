@@ -1,0 +1,391 @@
+%description:
+Test the descriptors of standard library containers created by ensureDescriptor():
+values, field metadata (flags, type and struct names), array index strings,
+struct pointers of elements, and editing (setting elements and resizing), for
+combinations of container types and element types (primitive, string, struct,
+pointers to them, cObject pointers, nullptr).
+
+%file: test.msg
+namespace @TESTNAME@;
+
+struct Point {
+    double x;
+    double y;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include <list>
+#include <set>
+#include <map>
+#include <unordered_map>
+#include "test_m.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+static std::string flagsToString(unsigned int flags)
+{
+    std::string s;
+    if (flags & cClassDescriptor::FD_ISARRAY) s += "A";
+    if (flags & cClassDescriptor::FD_ISCOMPOUND) s += "C";
+    if (flags & cClassDescriptor::FD_ISPOINTER) s += "P";
+    if (flags & cClassDescriptor::FD_ISCOBJECT) s += "O";
+    if (flags & cClassDescriptor::FD_ISEDITABLE) s += "E";
+    return s.empty() ? "-" : s;
+}
+
+template<typename T>
+static std::string tryGet(T getter)
+{
+    try {
+        return getter();
+    }
+    catch (std::exception& e) {
+        return std::string("ERROR: ") + e.what();
+    }
+}
+
+static void describeFields(any_ptr object, cClassDescriptor *desc)
+{
+    for (int f = 0; f < desc->getFieldCount(); f++) {
+        EV << "  field " << desc->getFieldName(f) << ": type=" << desc->getFieldTypeString(f)
+           << " struct=" << (desc->getFieldStructName(f) ? desc->getFieldStructName(f) : "nullptr")
+           << " flags=" << flagsToString(desc->getFieldTypeFlags(f)) << "\n";
+        bool isArray = desc->getFieldIsArray(f);
+        int n = isArray ? desc->getFieldArraySize(object, f) : 1;
+        for (int i = 0; i < n; i++) {
+            EV << "    " << (isArray ? "\"" + desc->getFieldArrayIndexString(object, f, i) + "\"" : std::string("-"))
+               << " value=" << tryGet([&]() { return desc->getFieldValueAsString(object, f, i); })
+               << " structPtr=" << tryGet([&]() { return std::string(desc->getFieldStructValuePointer(object, f, i) == nullptr ? "null" : "non-null"); })
+               << "\n";
+        }
+    }
+}
+
+// prints everything about container c, then tries to set the first element to newValue and to resize it
+template<typename C>
+static void check(const char *label, C& c, const char *newValue)
+{
+    cClassDescriptor *desc = omnetpp::ensureDescriptor<C>();
+    any_ptr object(&c);
+    EV << "=== " << label << "\n";
+    EV << "  descriptor=" << desc->getName() << " value=" << desc->getValueAsString(object) << "\n";
+    describeFields(object, desc);
+    if (newValue) {
+        try {
+            desc->setFieldValueAsString(object, 0, 0, newValue);
+            EV << "  after setting element 0 to \"" << newValue << "\": " << desc->getFieldValueAsString(object, 0, 0) << "\n";
+        }
+        catch (std::exception& e) {
+            EV << "  setting element 0: ERROR: " << e.what() << "\n";
+        }
+    }
+    if (desc->getFieldIsArray(0)) {
+        try {
+            int n = desc->getFieldArraySize(object, 0);
+            desc->setFieldArraySize(object, 0, n + 1);
+            EV << "  after resizing to " << n + 1 << ": size=" << desc->getFieldArraySize(object, 0) << "\n";
+        }
+        catch (std::exception& e) {
+            EV << "  resizing: ERROR: " << e.what() << "\n";
+        }
+    }
+}
+
+void Tester::activity()
+{
+    int i1 = 1, i2 = 2;
+    Point p1, p2;
+    p1.x = 1; p1.y = 2;
+    p2.x = 3; p2.y = 4;
+    cNamedObject *o1 = new cNamedObject("obj1");
+
+    // vector
+    { std::vector<int> c = {1, 2}; check("vector<int>", c, "5"); }
+    { std::vector<std::string> c = {"a", "b"}; check("vector<string>", c, "\"x\""); }
+    { std::vector<Point> c = {p1, p2}; check("vector<Point>", c, nullptr); }
+    { std::vector<int*> c = {&i1, nullptr}; check("vector<int*>", c, "7"); }
+    { std::vector<Point*> c = {&p1, nullptr}; check("vector<Point*>", c, nullptr); }
+    { std::vector<cNamedObject*> c = {o1, nullptr}; check("vector<cNamedObject*>", c, nullptr); }
+
+    // list
+    { std::list<int> c = {1, 2}; check("list<int>", c, "5"); }
+    { std::list<std::string> c = {"a", "b"}; check("list<string>", c, "\"x\""); }
+    { std::list<Point> c = {p1, p2}; check("list<Point>", c, nullptr); }
+    { std::list<int*> c = {&i1, nullptr}; check("list<int*>", c, "7"); }
+    { std::list<Point*> c = {&p1, nullptr}; check("list<Point*>", c, nullptr); }
+    { std::list<cNamedObject*> c = {o1, nullptr}; check("list<cNamedObject*>", c, nullptr); }
+
+    // set (pointer sets have one element only, because their order depends on addresses)
+    { std::set<int> c = {1, 2}; check("set<int>", c, "5"); }
+    { std::set<std::string> c = {"a", "b"}; check("set<string>", c, "\"x\""); }
+    { std::set<int*> c = {&i2}; check("set<int*>", c, "7"); }
+    { std::set<Point*> c = {&p2}; check("set<Point*>", c, nullptr); }
+    { std::set<cNamedObject*> c = {o1}; check("set<cNamedObject*>", c, nullptr); }
+
+    // map
+    { std::map<int,int> c = {{1, 10}, {2, 20}}; check("map<int,int>", c, "5"); }
+    { std::map<std::string,std::string> c = {{"a", "x"}, {"b", "y"}}; check("map<string,string>", c, "\"z\""); }
+    { std::map<int,Point> c = {{1, p1}, {2, p2}}; check("map<int,Point>", c, nullptr); }
+    { std::map<int,int*> c = {{1, &i1}, {2, nullptr}}; check("map<int,int*>", c, "7"); }
+    { std::map<int,Point*> c = {{1, &p1}, {2, nullptr}}; check("map<int,Point*>", c, nullptr); }
+    { std::map<int,cNamedObject*> c = {{1, o1}, {2, nullptr}}; check("map<int,cNamedObject*>", c, nullptr); }
+    { std::map<std::string,int> c = {{"k", 1}}; check("map<string,int>", c, nullptr); }
+    { std::map<int*,int> c = {{&i1, 1}}; check("map<int*,int>", c, nullptr); }
+    { std::map<Point*,int> c = {{&p1, 1}}; check("map<Point*,int>", c, nullptr); }
+    { std::map<cNamedObject*,int> c = {{o1, 1}}; check("map<cNamedObject*,int>", c, nullptr); }
+    { std::unordered_map<int,int> c = {{1, 10}}; check("unordered_map<int,int>", c, "5"); }
+
+    // special cases
+    { std::vector<int*> c = {nullptr}; check("vector<int*> with nullptr as element 0", c, "7"); }
+    { std::vector<cNamedObject> c = {cNamedObject("v1"), cNamedObject("v2")}; check("vector<cNamedObject>", c, nullptr); }
+
+    // pair
+    { std::pair<int,std::string> c = {1, "a"}; check("pair<int,string>", c, "5"); }
+    { std::pair<Point,int> c = {p1, 1}; check("pair<Point,int>", c, nullptr); }
+    { std::pair<int*,Point*> c = {&i1, nullptr}; check("pair<int*,Point*>", c, "7"); }
+    { std::pair<cNamedObject*,int*> c = {o1, nullptr}; check("pair<cNamedObject*,int*>", c, nullptr); }
+
+    delete o1;
+    EV << ".\n";
+}
+
+}
+
+%file: test.ned
+
+simple Tester
+{
+}
+
+network Test
+{
+    submodules:
+        tester: Tester;
+}
+
+%contains: stdout
+=== vector<int>
+  descriptor=std::vector<int> value=size=2
+  field elements: type=int struct=int flags=A
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=2 structPtr=non-null
+  after setting element 0 to "5": 5
+  after resizing to 3: size=3
+=== vector<string>
+  descriptor=std::vector<std::string> value=size=2
+  field elements: type=std::string struct=std::string flags=A
+    "[0] " value="a" structPtr=non-null
+    "[1] " value="b" structPtr=non-null
+  after setting element 0 to ""x"": "x"
+  after resizing to 3: size=3
+=== vector<Point>
+  descriptor=std::vector<descriptor_dynamic_2::Point> value=size=2
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=AC
+    "[0] " value=(unprintable) structPtr=non-null
+    "[1] " value=(unprintable) structPtr=non-null
+  after resizing to 3: size=3
+=== vector<int*>
+  descriptor=std::vector<int*> value=size=2
+  field elements: type=int struct=int flags=AP
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  after setting element 0 to "7": 7
+  after resizing to 3: size=3
+=== vector<Point*>
+  descriptor=std::vector<descriptor_dynamic_2::Point*> value=size=2
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
+    "[0] " value=(unprintable) structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  after resizing to 3: size=3
+=== vector<cNamedObject*>
+  descriptor=std::vector<omnetpp::cNamedObject*> value=size=2
+  field elements: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=ACPO
+    "[0] " value= structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  after resizing to 3: size=3
+=== list<int>
+  descriptor=std::list<int> value=size=2
+  field elements: type=int struct=int flags=A
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=2 structPtr=non-null
+  after setting element 0 to "5": 5
+  after resizing to 3: size=3
+=== list<string>
+  descriptor=std::list<std::string> value=size=2
+  field elements: type=std::string struct=std::string flags=A
+    "[0] " value="a" structPtr=non-null
+    "[1] " value="b" structPtr=non-null
+  after setting element 0 to ""x"": "x"
+  after resizing to 3: size=3
+=== list<Point>
+  descriptor=std::list<descriptor_dynamic_2::Point> value=size=2
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=AC
+    "[0] " value=(unprintable) structPtr=non-null
+    "[1] " value=(unprintable) structPtr=non-null
+  after resizing to 3: size=3
+=== list<int*>
+  descriptor=std::list<int*> value=size=2
+  field elements: type=int struct=int flags=AP
+    "[0] " value=7 structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  after setting element 0 to "7": 7
+  after resizing to 3: size=3
+=== list<Point*>
+  descriptor=std::list<descriptor_dynamic_2::Point*> value=size=2
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
+    "[0] " value=(unprintable) structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  after resizing to 3: size=3
+=== list<cNamedObject*>
+  descriptor=std::list<omnetpp::cNamedObject*> value=size=2
+  field elements: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=ACPO
+    "[0] " value= structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  after resizing to 3: size=3
+=== set<int>
+  descriptor=std::set<int> value=size=2
+  field elements: type=int struct=int flags=A
+    "" value=1 structPtr=non-null
+    "" value=2 structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== set<string>
+  descriptor=std::set<std::string> value=size=2
+  field elements: type=std::string struct=std::string flags=A
+    "" value="a" structPtr=non-null
+    "" value="b" structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== set<int*>
+  descriptor=std::set<int*> value=size=1
+  field elements: type=int struct=int flags=AP
+    "" value=2 structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== set<Point*>
+  descriptor=std::set<descriptor_dynamic_2::Point*> value=size=1
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
+    "" value=(unprintable) structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== set<cNamedObject*>
+  descriptor=std::set<omnetpp::cNamedObject*> value=size=1
+  field elements: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=ACPO
+    "" value= structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<int,int>
+  descriptor=std::map<int, int> value=size=2
+  field elements: type=int struct=int flags=A
+    "1 => " value=10 structPtr=non-null
+    "2 => " value=20 structPtr=non-null
+  after setting element 0 to "5": 5
+  resizing: ERROR: Cannot set array size of field 0
+=== map<string,string>
+  descriptor=std::map<std::string, std::string> value=size=2
+  field elements: type=std::string struct=std::string flags=A
+    ""a" => " value="x" structPtr=non-null
+    ""b" => " value="y" structPtr=non-null
+  after setting element 0 to ""z"": "z"
+  resizing: ERROR: Cannot set array size of field 0
+=== map<int,Point>
+  descriptor=std::map<int, descriptor_dynamic_2::Point> value=size=2
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=AC
+    "1 => " value=(unprintable) structPtr=non-null
+    "2 => " value=(unprintable) structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<int,int*>
+  descriptor=std::map<int, int*> value=size=2
+  field elements: type=int struct=int flags=AP
+    "1 => " value=7 structPtr=non-null
+    "2 => " value=nullptr structPtr=null
+  after setting element 0 to "7": 7
+  resizing: ERROR: Cannot set array size of field 0
+=== map<int,Point*>
+  descriptor=std::map<int, descriptor_dynamic_2::Point*> value=size=2
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
+    "1 => " value=(unprintable) structPtr=non-null
+    "2 => " value=nullptr structPtr=null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<int,cNamedObject*>
+  descriptor=std::map<int, omnetpp::cNamedObject*> value=size=2
+  field elements: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=ACPO
+    "1 => " value= structPtr=non-null
+    "2 => " value=nullptr structPtr=null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<string,int>
+  descriptor=std::map<std::string, int> value=size=1
+  field elements: type=int struct=int flags=A
+    ""k" => " value=1 structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<int*,int>
+  descriptor=std::map<int*, int> value=size=1
+  field elements: type=int struct=int flags=A
+    "7 => " value=1 structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<Point*,int>
+  descriptor=std::map<descriptor_dynamic_2::Point*, int> value=size=1
+  field elements: type=int struct=int flags=A
+    "(unprintable) => " value=1 structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<cNamedObject*,int>
+  descriptor=std::map<omnetpp::cNamedObject*, int> value=size=1
+  field elements: type=int struct=int flags=A
+    " => " value=1 structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== unordered_map<int,int>
+  descriptor=std::unordered_map<int, int> value=size=1
+  field elements: type=int struct=int flags=A
+    "1 => " value=10 structPtr=non-null
+  after setting element 0 to "5": 5
+  resizing: ERROR: Cannot set array size of field 0
+=== vector<int*> with nullptr as element 0
+  descriptor=std::vector<int*> value=size=1
+  field elements: type=int struct=int flags=AP
+    "[0] " value=nullptr structPtr=null
+  setting element 0: ERROR: Cannot set field 0
+  after resizing to 2: size=2
+=== vector<cNamedObject>
+  descriptor=std::vector<omnetpp::cNamedObject> value=size=2
+  field elements: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=ACO
+    "[0] " value= structPtr=non-null
+    "[1] " value= structPtr=non-null
+  after resizing to 3: size=3
+=== pair<int,string>
+  descriptor=std::pair<int, std::string> value=1 => "a"
+  field first: type=int struct=int flags=-
+    - value=1 structPtr=non-null
+  field second: type=std::string struct=std::string flags=-
+    - value="a" structPtr=non-null
+  after setting element 0 to "5": 5
+=== pair<Point,int>
+  descriptor=std::pair<descriptor_dynamic_2::Point, int> value=(unprintable) => 1
+  field first: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=C
+    - value=(unprintable) structPtr=non-null
+  field second: type=int struct=int flags=-
+    - value=1 structPtr=non-null
+=== pair<int*,Point*>
+  descriptor=std::pair<int*, descriptor_dynamic_2::Point*> value=7 => nullptr
+  field first: type=int struct=int flags=P
+    - value=7 structPtr=non-null
+  field second: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=CP
+    - value=nullptr structPtr=null
+  after setting element 0 to "7": 7
+=== pair<cNamedObject*,int*>
+  descriptor=std::pair<omnetpp::cNamedObject*, int*> value= => nullptr
+  field first: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=CPO
+    - value= structPtr=non-null
+  field second: type=int struct=int flags=P
+    - value=nullptr structPtr=null
+.

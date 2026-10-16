@@ -24,6 +24,7 @@
 #include <map>
 #include <unordered_map>
 #include <utility>
+#include <iterator>
 #include <type_traits>
 #include "cclassdescriptor.h"
 #include "simutil.h"
@@ -45,23 +46,35 @@ struct is_extractable : std::false_type {};
 template<typename T>
 struct is_extractable<T, std::void_t<decltype(std::declval<std::istream&>() >> std::declval<T&>())>> : std::true_type {};
 
-template<typename T> struct is_std_vector : std::false_type {};
-template<typename E, typename A> struct is_std_vector<std::vector<E,A>> : std::true_type {};
+// standard library containers supported by cStdContainerDescriptor
+template<typename T> struct is_std_sequence : std::false_type {};  // elements are accessed by index
+template<typename E, typename A> struct is_std_sequence<std::vector<E,A>> : std::true_type {};
+template<typename E, typename A> struct is_std_sequence<std::list<E,A>> : std::true_type {};
 
-template<typename T> struct is_std_list : std::false_type {};
-template<typename E, typename A> struct is_std_list<std::list<E,A>> : std::true_type {};
-
-template<typename T> struct is_std_set : std::false_type {};
+template<typename T> struct is_std_set : std::false_type {};  // elements are read-only
 template<typename E, typename C, typename A> struct is_std_set<std::set<E,C,A>> : std::true_type {};
 
-template<typename T> struct is_std_map : std::false_type {};
+template<typename T> struct is_std_map : std::false_type {};  // elements are the mapped values, labeled with the keys
 template<typename K, typename V, typename C, typename A> struct is_std_map<std::map<K,V,C,A>> : std::true_type {};
-
-template<typename T> struct is_std_unordered_map : std::false_type {};
-template<typename K, typename V, typename H, typename E, typename A> struct is_std_unordered_map<std::unordered_map<K,V,H,E,A>> : std::true_type {};
+template<typename K, typename V, typename H, typename E, typename A> struct is_std_map<std::unordered_map<K,V,H,E,A>> : std::true_type {};
 
 template<typename T> struct is_std_pair : std::false_type {};
 template<typename F, typename S> struct is_std_pair<std::pair<F,S>> : std::true_type {};
+
+template<typename C, bool isMap = is_std_map<C>::value>
+struct container_element { using type = typename C::value_type; };
+template<typename C>
+struct container_element<C, true> { using type = typename C::mapped_type; };
+
+template<typename C, typename = void>
+struct has_size : std::false_type {};
+template<typename C>
+struct has_size<C, std::void_t<decltype(std::declval<const C&>().size())>> : std::true_type {};
+
+template<typename C, typename = void>
+struct has_resize : std::false_type {};
+template<typename C>
+struct has_resize<C, std::void_t<decltype(std::declval<C&>().resize(0))>> : std::true_type {};
 
 // Returns the type name for T. Note: it must be unique, as descriptors are
 // registered and looked up by name.
@@ -170,574 +183,229 @@ class cPrimitiveTypeDescriptor : public cDynamicDescriptor
 };
 
 /**
- * @brief Descriptor for std::vector<E>. Pretends to have a single "elements[]"
- * array field of type E.
+ * @brief Operations on a single value of type E (a container element or a pair
+ * member) for the descriptors of standard library types. E may be a pointer;
+ * null pointers are displayed as "nullptr". cObjects are accessed via their own
+ * descriptors (cObject::getDescriptor()), other values via the descriptor registered
+ * for their type (see ensureDescriptor()), or else via operator<< and operator>>.
  *
  * @ingroup Internals
  */
 template<typename E>
-class cStdVectorDescriptor : public cDynamicDescriptor
+class ValueAccess
 {
   private:
-    std::string elemTypeName;
+    using T = std::remove_cv_t<std::remove_pointer_t<E>>;  // type of the value (the pointee for pointers)
+    static constexpr bool isCObject = std::is_base_of_v<cObject, T>;
+
+    // returns the address of the value; nullptr for null pointers
+    static T *getValuePointer(const E& e) {
+        if constexpr (std::is_pointer_v<E>)
+            return const_cast<T*>(e);
+        else
+            return const_cast<T*>(&e);
+    }
+
+    static any_ptr toAny(T *p) {
+        if constexpr (isCObject)
+            return toAnyPtr(static_cast<const cObject*>(p));
+        else
+            return any_ptr(p);
+    }
+
+    static cClassDescriptor *getDescriptor(T *p) {
+        if constexpr (isCObject)
+            return p->getDescriptor();
+        else
+            return cClassDescriptor::getDescriptorFor(getTypeName().c_str());
+    }
+
   public:
-    cStdVectorDescriptor(const char *typeName)
-        : cDynamicDescriptor(typeName), elemTypeName(internal::getTypeName<std::remove_pointer_t<E>>()) {}
-
-    virtual std::string getValueAsString(any_ptr object) const override {
-        std::vector<E> *v = object.get<std::vector<E>>();
-        if (v->empty()) return "empty";
-        std::ostringstream os;
-        os << "size=" << v->size();
-        return os.str();
+    static const std::string& getTypeName() {
+        static const std::string typeName = internal::getTypeName<T>();
+        return typeName;
     }
 
-    virtual int getFieldCount() const override { return 1; }
-
-    virtual const char *getFieldName(int field) const override {
-        return field == 0 ? "elements" : nullptr;
-    }
-
-    virtual unsigned int getFieldTypeFlags(int field) const override {
-        if (field != 0) return 0;
-        unsigned int flags = FD_ISARRAY;
-        if constexpr (std::is_pointer_v<E>) {
-            flags |= FD_ISPOINTER;
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>)
-                flags |= FD_ISCOMPOUND | FD_ISCOBJECT;
-        }
-        if (!(flags & FD_ISCOMPOUND)) {
-            cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-            if (elemDesc) {
-                flags |= FD_ISCOMPOUND;
-                if (elemDesc->extendsCObject())
-                    flags |= FD_ISCOBJECT;
-            }
+    static unsigned int getTypeFlags() {
+        unsigned int flags = 0;
+        if constexpr (std::is_pointer_v<E>)
+            flags |= cClassDescriptor::FD_ISPOINTER;
+        if constexpr (isCObject)
+            flags |= cClassDescriptor::FD_ISCOMPOUND | cClassDescriptor::FD_ISCOBJECT;
+        else {
+            cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(getTypeName().c_str());
+            if (desc && desc->getFieldCount() > 0)
+                flags |= cClassDescriptor::FD_ISCOMPOUND;
         }
         return flags;
     }
 
-    virtual const char *getFieldTypeString(int field) const override {
-        return field == 0 ? elemTypeName.c_str() : nullptr;
+    static std::string getValueAsString(const E& e) {
+        T *p = getValuePointer(e);
+        if (!p)
+            return "nullptr";
+        if (cClassDescriptor *desc = getDescriptor(p))
+            return desc->getValueAsString(toAny(p));
+        if constexpr (!isCObject && is_printable<T>::value) {
+            std::ostringstream os;
+            os << *p;
+            return os.str();
+        }
+        return cClassDescriptor::UNPRINTABLE;
     }
 
+    // returns false if not possible (no value or no way to parse it)
+    static bool setValueAsString(E& e, const char *value) {
+        T *p = getValuePointer(e);
+        if (!p)
+            return false;
+        if (cClassDescriptor *desc = getDescriptor(p)) {
+            desc->setValueAsString(toAny(p), value);
+            return true;
+        }
+        if constexpr (!isCObject && is_extractable<T>::value) {
+            std::istringstream is(value);
+            is >> *p;
+            return true;
+        }
+        return false;
+    }
+
+    static any_ptr getStructValuePointer(const E& e) {
+        T *p = getValuePointer(e);
+        return p ? toAny(p) : any_ptr(nullptr);
+    }
+};
+
+/**
+ * @brief Descriptor for standard library containers. Pretends to have a single
+ * "elements[]" array field. For maps, the elements are the mapped values, and
+ * their array index strings are the keys. Elements of sets are read-only.
+ *
+ * Elements are accessed via iterators, so accessing the ith element of a
+ * non-random-access container takes O(i) time.
+ *
+ * @ingroup Internals
+ */
+template<typename C>
+class cStdContainerDescriptor : public cDynamicDescriptor
+{
+  private:
+    static constexpr bool isMap = is_std_map<C>::value;
+    static constexpr bool isReadOnly = is_std_set<C>::value;
+    using E = typename container_element<C>::type;  // mapped_type for maps, otherwise value_type
+
+    // true for std::vector<bool>, whose elements are not addressable: operator[]
+    // and iterators return a proxy object instead of a reference
+    static constexpr bool hasProxyElements = !std::is_reference_v<typename C::reference>;
+
+    static int getSize(const C *c) {
+        if constexpr (has_size<C>::value)
+            return (int)c->size();
+        else
+            return (int)std::distance(c->begin(), c->end());  // e.g. std::forward_list
+    }
+
+    template<typename Iterator>
+    static auto& getElement(Iterator it) {
+        if constexpr (isMap)
+            return it->second;
+        else
+            return *it;
+    }
+
+    // returns the iterator to the ith element, or end() if i is out of range
+    static auto getIterator(C *c, int i) {
+        return (i >= 0 && i < getSize(c)) ? std::next(c->begin(), i) : c->end();
+    }
+
+  public:
+    cStdContainerDescriptor(const char *typeName) : cDynamicDescriptor(typeName) {}
+
+    virtual std::string getValueAsString(any_ptr object) const override {
+        C *c = object.get<C>();
+        if (c->begin() == c->end())
+            return "empty";
+        return "size=" + std::to_string(getSize(c));
+    }
+
+    virtual int getFieldCount() const override { return 1; }
+    virtual const char *getFieldName(int field) const override { return field == 0 ? "elements" : nullptr; }
+    virtual const char *getFieldTypeString(int field) const override { return field == 0 ? ValueAccess<E>::getTypeName().c_str() : nullptr; }
+    virtual const char *getFieldStructName(int field) const override { return field == 0 ? ValueAccess<E>::getTypeName().c_str() : nullptr; }
+    virtual unsigned int getFieldTypeFlags(int field) const override { return field == 0 ? FD_ISARRAY | ValueAccess<E>::getTypeFlags() : 0; }
+
     virtual int getFieldArraySize(any_ptr object, int field) const override {
-        if (field != 0) return 0;
-        std::vector<E> *v = object.get<std::vector<E>>();
-        return (int)v->size();
+        return field == 0 ? getSize(object.get<C>()) : 0;
     }
 
     virtual void setFieldArraySize(any_ptr object, int field, int size) const override {
-        if (field != 0) { cDynamicDescriptor::setFieldArraySize(object, field, size); return; }
-        if constexpr (std::is_default_constructible_v<E>) {
-            std::vector<E> *v = object.get<std::vector<E>>();
-            v->resize(size);
-        }
-        else {
-            cDynamicDescriptor::setFieldArraySize(object, field, size);
-        }
-    }
-
-    virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
-        if (field != 0) return "";
-        std::vector<E> *v = object.get<std::vector<E>>();
-        cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = (*v)[i];
-            if (!ptr) return "nullptr";
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(ptr)->getDescriptor();
-                if (desc)
-                    return desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(ptr)));
-            }
-            else {
-                if (elemDesc)
-                    return elemDesc->getValueAsString(any_ptr(ptr));
-                if constexpr (is_printable<std::remove_pointer_t<E>>::value) {
-                    std::ostringstream os;
-                    os << *ptr;
-                    return os.str();
-                }
-            }
-        }
-        else if constexpr (std::is_same_v<E, bool>) {
-            // elements of std::vector<bool> are not addressable, so use a copy
-            bool element = (*v)[i];
-            if (elemDesc)
-                return elemDesc->getValueAsString(any_ptr(&element));
-            return element ? "1" : "0";
-        }
-        else {
-            if (elemDesc)
-                return elemDesc->getValueAsString(any_ptr(&(*v)[i]));
-            if constexpr (is_printable<E>::value) {
-                std::ostringstream os;
-                os << (*v)[i];
-                return os.str();
-            }
-        }
-        return UNPRINTABLE;
-    }
-
-    virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
-        if (field != 0) { cDynamicDescriptor::setFieldValueAsString(object, field, i, value); return; }
-        std::vector<E> *v = object.get<std::vector<E>>();
-        cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = (*v)[i];
-            if (!ptr) return;
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(ptr)->getDescriptor();
-                if (desc)
-                    desc->setValueAsString(toAnyPtr(static_cast<const cObject*>(ptr)), value);
-            }
-            else {
-                if (elemDesc) {
-                    elemDesc->setValueAsString(any_ptr(ptr), value);
-                    return;
-                }
-            }
-        }
-        else if constexpr (std::is_same_v<E, bool>) {
-            // elements of std::vector<bool> are not addressable, so set a copy and write it back
-            bool element = (*v)[i];
-            if (elemDesc)
-                elemDesc->setValueAsString(any_ptr(&element), value);
-            else {
-                std::istringstream is(value);
-                is >> element;
-            }
-            (*v)[i] = element;
-        }
-        else {
-            if (elemDesc) {
-                elemDesc->setValueAsString(any_ptr(&(*v)[i]), value);
+        if constexpr (has_resize<C>::value && std::is_default_constructible_v<E>) {
+            if (field == 0) {
+                object.get<C>()->resize(size);
                 return;
             }
-            if constexpr (is_extractable<E>::value) {
-                std::istringstream is(value);
-                is >> (*v)[i];
-            }
-            else {
-                cDynamicDescriptor::setFieldValueAsString(object, field, i, value);
-            }
         }
+        cDynamicDescriptor::setFieldArraySize(object, field, size);
     }
 
-    virtual const char *getFieldStructName(int field) const override {
-        return field == 0 ? elemTypeName.c_str() : nullptr;
-    }
-
-    virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
-        if (field != 0) return any_ptr(nullptr);
-        std::vector<E> *v = object.get<std::vector<E>>();
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = (*v)[i];
-            if (!ptr) return any_ptr(nullptr);
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>)
-                return toAnyPtr(static_cast<const cObject*>(ptr));
-            else
-                return any_ptr(ptr);
+    virtual std::string getFieldArrayIndexString(any_ptr object, int field, int i) const override {
+        if constexpr (isMap) {
+            C *c = object.get<C>();
+            auto it = getIterator(c, i);
+            if (field != 0 || it == c->end())
+                return "";
+            return ValueAccess<typename C::key_type>::getValueAsString(it->first) + " => ";
         }
-        else if constexpr (std::is_same_v<E, bool>) {
-            return any_ptr(nullptr);  // elements of std::vector<bool> are not addressable (nor compound)
-        }
-        else {
-            return any_ptr(&(*v)[i]);
-        }
-    }
-};
-
-/**
- * @brief Descriptor for std::list<E>. Pretends to have a single "elements[]"
- * array field of type E. Uses iterator-based access.
- *
- * @ingroup Internals
- */
-template<typename E>
-class cStdListDescriptor : public cDynamicDescriptor
-{
-  private:
-    std::string elemTypeName;
-
-    typename std::list<E>::iterator nthIt(std::list<E> *c, int i) const {
-        auto it = c->begin();
-        for (int k = 0; k < i && it != c->end(); k++) ++it;
-        return it;
-    }
-
-  public:
-    cStdListDescriptor(const char *typeName)
-        : cDynamicDescriptor(typeName), elemTypeName(internal::getTypeName<std::remove_pointer_t<E>>()) {}
-
-    virtual std::string getValueAsString(any_ptr object) const override {
-        auto *c = object.get<std::list<E>>();
-        if (c->empty()) return "empty";
-        std::ostringstream os;
-        os << "size=" << c->size();
-        return os.str();
-    }
-
-    virtual int getFieldCount() const override { return 1; }
-    virtual const char *getFieldName(int field) const override { return field == 0 ? "elements" : nullptr; }
-    virtual const char *getFieldTypeString(int field) const override { return field == 0 ? elemTypeName.c_str() : nullptr; }
-    virtual const char *getFieldStructName(int field) const override { return field == 0 ? elemTypeName.c_str() : nullptr; }
-
-    virtual unsigned int getFieldTypeFlags(int field) const override {
-        if (field != 0) return 0;
-        unsigned int flags = FD_ISARRAY;
-        if constexpr (std::is_pointer_v<E>) {
-            flags |= FD_ISPOINTER;
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>)
-                flags |= FD_ISCOMPOUND | FD_ISCOBJECT;
-        }
-        if (!(flags & FD_ISCOMPOUND)) {
-            cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-            if (elemDesc) { flags |= FD_ISCOMPOUND; if (elemDesc->extendsCObject()) flags |= FD_ISCOBJECT; }
-        }
-        return flags;
-    }
-
-    virtual int getFieldArraySize(any_ptr object, int field) const override {
-        if (field != 0) return 0;
-        return (int)object.get<std::list<E>>()->size();
+        else if constexpr (isReadOnly)
+            return "";  // set elements have no meaningful index
+        else
+            return cDynamicDescriptor::getFieldArrayIndexString(object, field, i);
     }
 
     virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
-        if (field != 0) return "";
-        auto *c = object.get<std::list<E>>();
-        auto it = nthIt(c, i);
-        if (it == c->end()) return "";
-        cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = *it;
-            if (!ptr) return "nullptr";
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(ptr)->getDescriptor();
-                if (desc) return desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(ptr)));
-            }
-            else {
-                if (elemDesc) return elemDesc->getValueAsString(any_ptr(ptr));
-                if constexpr (is_printable<std::remove_pointer_t<E>>::value) { std::ostringstream os; os << *ptr; return os.str(); }
-            }
+        C *c = object.get<C>();
+        auto it = getIterator(c, i);
+        if (field != 0 || it == c->end())
+            return "";
+        if constexpr (hasProxyElements) {
+            E element = *it;
+            return ValueAccess<E>::getValueAsString(element);
         }
-        else {
-            if (elemDesc) return elemDesc->getValueAsString(any_ptr(&(*it)));
-            if constexpr (is_printable<E>::value) { std::ostringstream os; os << *it; return os.str(); }
-        }
-        return UNPRINTABLE;
+        else
+            return ValueAccess<E>::getValueAsString(getElement(it));
     }
 
     virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
-        if (field != 0) { cDynamicDescriptor::setFieldValueAsString(object, field, i, value); return; }
-        auto *c = object.get<std::list<E>>();
-        auto it = nthIt(c, i);
-        if (it == c->end()) return;
-        cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = *it;
-            if (!ptr) return;
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(ptr)->getDescriptor();
-                if (desc) desc->setValueAsString(toAnyPtr(static_cast<const cObject*>(ptr)), value);
-            }
-            else {
-                if (elemDesc) { elemDesc->setValueAsString(any_ptr(ptr), value); return; }
+        if constexpr (!isReadOnly) {
+            C *c = object.get<C>();
+            auto it = getIterator(c, i);
+            if (field == 0 && it != c->end()) {
+                bool done;
+                if constexpr (hasProxyElements) {
+                    E element = *it;
+                    done = ValueAccess<E>::setValueAsString(element, value);
+                    if (done)
+                        *it = element;
+                }
+                else
+                    done = ValueAccess<E>::setValueAsString(getElement(it), value);
+                if (done)
+                    return;
             }
         }
-        else {
-            if (elemDesc) { elemDesc->setValueAsString(any_ptr(&(*it)), value); return; }
-            if constexpr (is_extractable<E>::value) { std::istringstream is(value); is >> *it; }
-            else { cDynamicDescriptor::setFieldValueAsString(object, field, i, value); }
-        }
+        cDynamicDescriptor::setFieldValueAsString(object, field, i, value);
     }
 
     virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
-        if (field != 0) return any_ptr(nullptr);
-        auto *c = object.get<std::list<E>>();
-        auto it = nthIt(c, i);
-        if (it == c->end()) return any_ptr(nullptr);
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = *it;
-            if (!ptr) return any_ptr(nullptr);
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>)
-                return toAnyPtr(static_cast<const cObject*>(ptr));
-            else
-                return any_ptr(ptr);
-        }
-        else {
-            return any_ptr(&(*it));
-        }
-    }
-};
-
-/**
- * @brief Descriptor for std::set<E>. Pretends to have a single "elements[]"
- * array field of type E. Elements are read-only.
- *
- * @ingroup Internals
- */
-template<typename E>
-class cStdSetDescriptor : public cDynamicDescriptor
-{
-  private:
-    std::string elemTypeName;
-
-    typename std::set<E>::const_iterator nthIt(const std::set<E> *c, int i) const {
-        auto it = c->begin();
-        for (int k = 0; k < i && it != c->end(); k++) ++it;
-        return it;
-    }
-
-  public:
-    cStdSetDescriptor(const char *typeName)
-        : cDynamicDescriptor(typeName), elemTypeName(internal::getTypeName<std::remove_pointer_t<E>>()) {}
-
-    virtual std::string getValueAsString(any_ptr object) const override {
-        auto *c = object.get<std::set<E>>();
-        if (c->empty()) return "empty";
-        std::ostringstream os;
-        os << "size=" << c->size();
-        return os.str();
-    }
-
-    virtual int getFieldCount() const override { return 1; }
-    virtual const char *getFieldName(int field) const override { return field == 0 ? "elements" : nullptr; }
-    virtual const char *getFieldTypeString(int field) const override { return field == 0 ? elemTypeName.c_str() : nullptr; }
-    virtual const char *getFieldStructName(int field) const override { return field == 0 ? elemTypeName.c_str() : nullptr; }
-
-    virtual unsigned int getFieldTypeFlags(int field) const override {
-        if (field != 0) return 0;
-        unsigned int flags = FD_ISARRAY;
-        if constexpr (std::is_pointer_v<E>) {
-            flags |= FD_ISPOINTER;
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>)
-                flags |= FD_ISCOMPOUND | FD_ISCOBJECT;
-        }
-        if (!(flags & FD_ISCOMPOUND)) {
-            cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-            if (elemDesc) {
-                flags |= FD_ISCOMPOUND;
-                if (elemDesc->extendsCObject())
-                    flags |= FD_ISCOBJECT;
-            }
-        }
-        return flags;
-    }
-
-    virtual int getFieldArraySize(any_ptr object, int field) const override {
-        if (field != 0) return 0;
-        return (int)object.get<std::set<E>>()->size();
-    }
-
-    virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
-        if (field != 0) return "";
-        auto *c = object.get<std::set<E>>();
-        auto it = nthIt(c, i);
-        if (it == c->end()) return "";
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = *it;
-            if (!ptr) return "nullptr";
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(ptr)->getDescriptor();
-                if (desc) return desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(ptr)));
-            }
-            else {
-                cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-                if (elemDesc) return elemDesc->getValueAsString(any_ptr(ptr));
-                if constexpr (is_printable<std::remove_pointer_t<E>>::value) { std::ostringstream os; os << *ptr; return os.str(); }
-            }
-        }
-        else {
-            cClassDescriptor *elemDesc = cClassDescriptor::getDescriptorFor(elemTypeName.c_str());
-            if (elemDesc) return elemDesc->getValueAsString(any_ptr(const_cast<E*>(&(*it))));
-            if constexpr (is_printable<E>::value) { std::ostringstream os; os << *it; return os.str(); }
-        }
-        return UNPRINTABLE;
-    }
-
-    virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
-        if (field != 0) return any_ptr(nullptr);
-        auto *c = object.get<std::set<E>>();
-        auto it = nthIt(c, i);
-        if (it == c->end()) return any_ptr(nullptr);
-        if constexpr (std::is_pointer_v<E>) {
-            E ptr = *it;
-            if (!ptr) return any_ptr(nullptr);
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<E>>)
-                return toAnyPtr(static_cast<const cObject*>(ptr));
-            else
-                return any_ptr(ptr);
-        }
-        else {
-            return any_ptr(const_cast<E*>(&(*it)));
-        }
-    }
-
-    virtual std::string getFieldArrayIndexString(any_ptr object, int field, int arrayIndex) const override {
-        return "";
-    }
-};
-
-/**
- * @brief Descriptor for std::map<K,V> and std::unordered_map<K,V>.
- * Pretends to have a single "elements[]" array field of type V.
- * Element values are shown as "key => value" format.
- *
- * @ingroup Internals
- */
-template<typename MapType>
-class cStdMapDescriptor : public cDynamicDescriptor
-{
-  private:
-    using K = typename MapType::key_type;
-    using V = typename MapType::mapped_type;
-    std::string keyTypeName;
-    std::string valueTypeName;
-
-    typename MapType::iterator nthIt(MapType *m, int i) const {
-        auto it = m->begin();
-        for (int k = 0; k < i && it != m->end(); k++) ++it;
-        return it;
-    }
-
-  public:
-    cStdMapDescriptor(const char *typeName)
-        : cDynamicDescriptor(typeName),
-          keyTypeName(internal::getTypeName<std::remove_pointer_t<K>>()),
-          valueTypeName(internal::getTypeName<std::remove_pointer_t<V>>()) {}
-
-    virtual std::string getValueAsString(any_ptr object) const override {
-        auto *m = object.get<MapType>();
-        if (m->empty()) return "empty";
-        std::ostringstream os;
-        os << "size=" << m->size();
-        return os.str();
-    }
-
-    virtual int getFieldCount() const override { return 1; }
-    virtual const char *getFieldName(int field) const override { return field == 0 ? "elements" : nullptr; }
-    virtual const char *getFieldTypeString(int field) const override { return field == 0 ? valueTypeName.c_str() : nullptr; }
-    virtual const char *getFieldStructName(int field) const override { return field == 0 ? valueTypeName.c_str() : nullptr; }
-
-    virtual unsigned int getFieldTypeFlags(int field) const override {
-        if (field != 0) return 0;
-        unsigned int flags = FD_ISARRAY;
-        if constexpr (std::is_pointer_v<V>) {
-            flags |= FD_ISPOINTER;
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<V>>)
-                flags |= FD_ISCOMPOUND | FD_ISCOBJECT;
-        }
-        if (!(flags & FD_ISCOMPOUND)) {
-            cClassDescriptor *valDesc = cClassDescriptor::getDescriptorFor(valueTypeName.c_str());
-            if (valDesc) { flags |= FD_ISCOMPOUND; if (valDesc->extendsCObject()) flags |= FD_ISCOBJECT; }
-        }
-        return flags;
-    }
-
-    virtual int getFieldArraySize(any_ptr object, int field) const override {
-        if (field != 0) return 0;
-        return (int)object.get<MapType>()->size();
-    }
-
-    virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
-        if (field != 0) return "";
-        auto *m = object.get<MapType>();
-        auto it = nthIt(m, i);
-        if (it == m->end()) return "";
-        if constexpr (std::is_pointer_v<V>) {
-            V vptr = it->second;
-            if (!vptr) return "nullptr";
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<V>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(vptr)->getDescriptor();
-                if (desc) return desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(vptr)));
-            }
-            else {
-                cClassDescriptor *valDesc = cClassDescriptor::getDescriptorFor(valueTypeName.c_str());
-                if (valDesc) return valDesc->getValueAsString(any_ptr(vptr));
-                if constexpr (is_printable<std::remove_pointer_t<V>>::value) { std::ostringstream os; os << *vptr; return os.str(); }
-            }
-        }
-        else {
-            cClassDescriptor *valDesc = cClassDescriptor::getDescriptorFor(valueTypeName.c_str());
-            if (valDesc) return valDesc->getValueAsString(any_ptr(&it->second));
-            if constexpr (is_printable<V>::value) { std::ostringstream os; os << it->second; return os.str(); }
-        }
-        return UNPRINTABLE;
-    }
-
-    virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
-        if (field != 0) { cDynamicDescriptor::setFieldValueAsString(object, field, i, value); return; }
-        auto *m = object.get<MapType>();
-        auto it = nthIt(m, i);
-        if (it == m->end()) return;
-        if constexpr (std::is_pointer_v<V>) {
-            V vptr = it->second;
-            if (!vptr) return;
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<V>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(vptr)->getDescriptor();
-                if (desc) desc->setValueAsString(toAnyPtr(static_cast<const cObject*>(vptr)), value);
-            }
-            else {
-                cClassDescriptor *valDesc = cClassDescriptor::getDescriptorFor(valueTypeName.c_str());
-                if (valDesc) { valDesc->setValueAsString(any_ptr(vptr), value); return; }
-            }
-        }
-        else {
-            cClassDescriptor *valDesc = cClassDescriptor::getDescriptorFor(valueTypeName.c_str());
-            if (valDesc) { valDesc->setValueAsString(any_ptr(&it->second), value); return; }
-            if constexpr (is_extractable<V>::value) { std::istringstream is(value); is >> it->second; }
-            else { cDynamicDescriptor::setFieldValueAsString(object, field, i, value); }
-        }
-    }
-
-    virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
-        if (field != 0) return any_ptr(nullptr);
-        auto *m = object.get<MapType>();
-        auto it = nthIt(m, i);
-        if (it == m->end()) return any_ptr(nullptr);
-        if constexpr (std::is_pointer_v<V>) {
-            V vptr = it->second;
-            if (!vptr) return any_ptr(nullptr);
-            if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<V>>)
-                return toAnyPtr(static_cast<const cObject*>(vptr));
-            else
-                return any_ptr(vptr);
-        }
-        else {
-            return any_ptr(&it->second);
-        }
-    }
-
-    virtual std::string getFieldArrayIndexString(any_ptr object, int field, int arrayIndex) const override {
-        if (field != 0) return "";
-        auto *m = object.get<MapType>();
-        auto it = nthIt(m, arrayIndex);
-        if (it == m->end()) return "";
-        std::ostringstream os;
-        if constexpr (std::is_pointer_v<K>) {
-            K kptr = it->first;
-            if (!kptr) os << "nullptr";
-            else if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<K>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(kptr)->getDescriptor();
-                if (desc) os << desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(kptr)));
-                else os << UNPRINTABLE;
-            }
-            else {
-                cClassDescriptor *keyDesc = cClassDescriptor::getDescriptorFor(keyTypeName.c_str());
-                if (keyDesc) os << keyDesc->getValueAsString(any_ptr(kptr));
-                else if constexpr (is_printable<std::remove_pointer_t<K>>::value) os << *kptr;
-                else os << UNPRINTABLE;
-            }
-        }
-        else {
-            cClassDescriptor *keyDesc = cClassDescriptor::getDescriptorFor(keyTypeName.c_str());
-            if (keyDesc) os << keyDesc->getValueAsString(any_ptr(const_cast<K*>(&it->first)));
-            else if constexpr (is_printable<K>::value) os << it->first;
-            else os << UNPRINTABLE;
-        }
-        os << " => ";
-        return os.str();
+        C *c = object.get<C>();
+        auto it = getIterator(c, i);
+        if (field != 0 || it == c->end())
+            return any_ptr(nullptr);
+        if constexpr (hasProxyElements)
+            return any_ptr(nullptr);  // elements are not addressable (nor compound)
+        else
+            return ValueAccess<E>::getStructValuePointer(getElement(it));
     }
 };
 
@@ -749,63 +417,12 @@ class cStdMapDescriptor : public cDynamicDescriptor
 template<typename F, typename S>
 class cStdPairDescriptor : public cDynamicDescriptor
 {
-  private:
-    std::string firstTypeName;
-    std::string secondTypeName;
-
   public:
-    cStdPairDescriptor(const char *typeName)
-        : cDynamicDescriptor(typeName),
-          firstTypeName(internal::getTypeName<std::remove_pointer_t<F>>()),
-          secondTypeName(internal::getTypeName<std::remove_pointer_t<S>>()) {}
+    cStdPairDescriptor(const char *typeName) : cDynamicDescriptor(typeName) {}
 
     virtual std::string getValueAsString(any_ptr object) const override {
         auto *p = object.get<std::pair<F,S>>();
-        std::ostringstream os;
-        // first
-        if constexpr (std::is_pointer_v<F>) {
-            F fptr = p->first;
-            if (!fptr) os << "nullptr";
-            else if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<F>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(fptr)->getDescriptor();
-                if (desc) os << desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(fptr))); else os << UNPRINTABLE;
-            }
-            else {
-                cClassDescriptor *fDesc = cClassDescriptor::getDescriptorFor(firstTypeName.c_str());
-                if (fDesc) os << fDesc->getValueAsString(any_ptr(fptr));
-                else if constexpr (is_printable<std::remove_pointer_t<F>>::value) os << *fptr;
-                else os << UNPRINTABLE;
-            }
-        }
-        else {
-            cClassDescriptor *fDesc = cClassDescriptor::getDescriptorFor(firstTypeName.c_str());
-            if (fDesc) os << fDesc->getValueAsString(any_ptr(const_cast<F*>(&p->first)));
-            else if constexpr (is_printable<F>::value) os << p->first;
-            else os << UNPRINTABLE;
-        }
-        os << " => ";
-        // second
-        if constexpr (std::is_pointer_v<S>) {
-            S sptr = p->second;
-            if (!sptr) os << "nullptr";
-            else if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<S>>) {
-                cClassDescriptor *desc = static_cast<const cObject*>(sptr)->getDescriptor();
-                if (desc) os << desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(sptr))); else os << UNPRINTABLE;
-            }
-            else {
-                cClassDescriptor *sDesc = cClassDescriptor::getDescriptorFor(secondTypeName.c_str());
-                if (sDesc) os << sDesc->getValueAsString(any_ptr(sptr));
-                else if constexpr (is_printable<std::remove_pointer_t<S>>::value) os << *sptr;
-                else os << UNPRINTABLE;
-            }
-        }
-        else {
-            cClassDescriptor *sDesc = cClassDescriptor::getDescriptorFor(secondTypeName.c_str());
-            if (sDesc) os << sDesc->getValueAsString(any_ptr(&p->second));
-            else if constexpr (is_printable<S>::value) os << p->second;
-            else os << UNPRINTABLE;
-        }
-        return os.str();
+        return ValueAccess<F>::getValueAsString(p->first) + " => " + ValueAccess<S>::getValueAsString(p->second);
     }
 
     virtual int getFieldCount() const override { return 2; }
@@ -815,155 +432,50 @@ class cStdPairDescriptor : public cDynamicDescriptor
     }
 
     virtual const char *getFieldTypeString(int field) const override {
-        switch (field) { case 0: return firstTypeName.c_str(); case 1: return secondTypeName.c_str(); default: return nullptr; }
+        switch (field) {
+            case 0: return ValueAccess<F>::getTypeName().c_str();
+            case 1: return ValueAccess<S>::getTypeName().c_str();
+            default: return nullptr;
+        }
     }
 
-    virtual const char *getFieldStructName(int field) const override {
-        switch (field) { case 0: return firstTypeName.c_str(); case 1: return secondTypeName.c_str(); default: return nullptr; }
-    }
+    virtual const char *getFieldStructName(int field) const override { return getFieldTypeString(field); }
 
     virtual unsigned int getFieldTypeFlags(int field) const override {
-        if (field != 0 && field != 1) return 0;
-        unsigned int flags = 0;
-        if (field == 0) {
-            if constexpr (std::is_pointer_v<F>) {
-                flags |= FD_ISPOINTER;
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<F>>)
-                    flags |= FD_ISCOMPOUND | FD_ISCOBJECT;
-            }
+        switch (field) {
+            case 0: return ValueAccess<F>::getTypeFlags();
+            case 1: return ValueAccess<S>::getTypeFlags();
+            default: return 0;
         }
-        else {
-            if constexpr (std::is_pointer_v<S>) {
-                flags |= FD_ISPOINTER;
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<S>>)
-                    flags |= FD_ISCOMPOUND | FD_ISCOBJECT;
-            }
-        }
-        if (!(flags & FD_ISCOMPOUND)) {
-            const char *tn = (field == 0) ? firstTypeName.c_str() : secondTypeName.c_str();
-            cClassDescriptor *d = cClassDescriptor::getDescriptorFor(tn);
-            if (d && d->getFieldCount() > 0) { flags |= FD_ISCOMPOUND; if (d->extendsCObject()) flags |= FD_ISCOBJECT; }
-        }
-        return flags;
     }
 
     virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
         auto *p = object.get<std::pair<F,S>>();
-        if (field == 0) {
-            if constexpr (std::is_pointer_v<F>) {
-                F fptr = p->first;
-                if (!fptr) return "nullptr";
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<F>>) {
-                    cClassDescriptor *desc = static_cast<const cObject*>(fptr)->getDescriptor();
-                    if (desc) return desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(fptr)));
-                }
-                else {
-                    cClassDescriptor *d = cClassDescriptor::getDescriptorFor(firstTypeName.c_str());
-                    if (d) return d->getValueAsString(any_ptr(fptr));
-                    if constexpr (is_printable<std::remove_pointer_t<F>>::value) { std::ostringstream os; os << *fptr; return os.str(); }
-                }
-            }
-            else {
-                cClassDescriptor *d = cClassDescriptor::getDescriptorFor(firstTypeName.c_str());
-                if (d) return d->getValueAsString(any_ptr(const_cast<F*>(&p->first)));
-                if constexpr (is_printable<F>::value) { std::ostringstream os; os << p->first; return os.str(); }
-            }
+        switch (field) {
+            case 0: return ValueAccess<F>::getValueAsString(p->first);
+            case 1: return ValueAccess<S>::getValueAsString(p->second);
+            default: return "";
         }
-        else if (field == 1) {
-            if constexpr (std::is_pointer_v<S>) {
-                S sptr = p->second;
-                if (!sptr) return "nullptr";
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<S>>) {
-                    cClassDescriptor *desc = static_cast<const cObject*>(sptr)->getDescriptor();
-                    if (desc) return desc->getValueAsString(toAnyPtr(static_cast<const cObject*>(sptr)));
-                }
-                else {
-                    cClassDescriptor *d = cClassDescriptor::getDescriptorFor(secondTypeName.c_str());
-                    if (d) return d->getValueAsString(any_ptr(sptr));
-                    if constexpr (is_printable<std::remove_pointer_t<S>>::value) { std::ostringstream os; os << *sptr; return os.str(); }
-                }
-            }
-            else {
-                cClassDescriptor *d = cClassDescriptor::getDescriptorFor(secondTypeName.c_str());
-                if (d) return d->getValueAsString(any_ptr(&p->second));
-                if constexpr (is_printable<S>::value) { std::ostringstream os; os << p->second; return os.str(); }
-            }
-        }
-        return UNPRINTABLE;
     }
 
     virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
         auto *p = object.get<std::pair<F,S>>();
-        if (field == 0) {
-            if constexpr (std::is_pointer_v<F>) {
-                F fptr = p->first;
-                if (!fptr) return;
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<F>>) {
-                    cClassDescriptor *desc = static_cast<const cObject*>(fptr)->getDescriptor();
-                    if (desc) desc->setValueAsString(toAnyPtr(static_cast<const cObject*>(fptr)), value);
-                }
-                else {
-                    cClassDescriptor *d = cClassDescriptor::getDescriptorFor(firstTypeName.c_str());
-                    if (d) { d->setValueAsString(any_ptr(fptr), value); return; }
-                }
-            }
-            else {
-                cClassDescriptor *d = cClassDescriptor::getDescriptorFor(firstTypeName.c_str());
-                if (d) { d->setValueAsString(any_ptr(const_cast<F*>(&p->first)), value); return; }
-                if constexpr (is_extractable<F>::value) { std::istringstream is(value); is >> const_cast<F&>(p->first); return; }
-            }
-        }
-        else if (field == 1) {
-            if constexpr (std::is_pointer_v<S>) {
-                S sptr = p->second;
-                if (!sptr) return;
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<S>>) {
-                    cClassDescriptor *desc = static_cast<const cObject*>(sptr)->getDescriptor();
-                    if (desc) desc->setValueAsString(toAnyPtr(static_cast<const cObject*>(sptr)), value);
-                }
-                else {
-                    cClassDescriptor *d = cClassDescriptor::getDescriptorFor(secondTypeName.c_str());
-                    if (d) { d->setValueAsString(any_ptr(sptr), value); return; }
-                }
-            }
-            else {
-                cClassDescriptor *d = cClassDescriptor::getDescriptorFor(secondTypeName.c_str());
-                if (d) { d->setValueAsString(any_ptr(&p->second), value); return; }
-                if constexpr (is_extractable<S>::value) { std::istringstream is(value); is >> p->second; return; }
-            }
-        }
-        cDynamicDescriptor::setFieldValueAsString(object, field, i, value);
+        bool done = false;
+        if (field == 0)
+            done = ValueAccess<F>::setValueAsString(const_cast<F&>(p->first), value);
+        else if (field == 1)
+            done = ValueAccess<S>::setValueAsString(p->second, value);
+        if (!done)
+            cDynamicDescriptor::setFieldValueAsString(object, field, i, value);
     }
 
     virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
         auto *p = object.get<std::pair<F,S>>();
-        if (field == 0) {
-            if constexpr (std::is_pointer_v<F>) {
-                F fptr = p->first;
-                if (!fptr) return any_ptr(nullptr);
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<F>>)
-                    return toAnyPtr(static_cast<const cObject*>(fptr));
-                else
-                    return any_ptr(fptr);
-            }
-            else {
-                return any_ptr(const_cast<F*>(&p->first));
-            }
+        switch (field) {
+            case 0: return ValueAccess<F>::getStructValuePointer(p->first);
+            case 1: return ValueAccess<S>::getStructValuePointer(p->second);
+            default: return any_ptr(nullptr);
         }
-        if (field == 1) {
-            if constexpr (std::is_pointer_v<S>) {
-                S sptr = p->second;
-                if (!sptr) return any_ptr(nullptr);
-                if constexpr (std::is_base_of_v<cObject, std::remove_pointer_t<S>>)
-                    return toAnyPtr(static_cast<const cObject*>(sptr));
-                else
-                    return any_ptr(sptr);
-            }
-            else {
-                return any_ptr(&p->second);
-            }
-        }
-        return any_ptr(nullptr);
     }
 };
 
@@ -985,6 +497,20 @@ class cStdPairDescriptor : public cDynamicDescriptor
  * name of the class would override that for all objects of the class.)
  */
 template<typename T>
+cClassDescriptor *ensureDescriptor();
+
+namespace internal {
+
+// ensures the descriptor for a container element or pair member type (for pointers, the pointee type)
+template<typename E>
+void ensureValueDescriptor()
+{
+    ensureDescriptor<std::remove_pointer_t<E>>();
+}
+
+}  // namespace internal
+
+template<typename T>
 cClassDescriptor *ensureDescriptor()
 {
     // any_ptr strips const, so descriptors must be created for the unqualified type
@@ -1000,50 +526,19 @@ cClassDescriptor *ensureDescriptor()
         if constexpr (std::is_base_of_v<cObject, T>) {
             return nullptr;
         }
-        else if constexpr (internal::is_std_vector<T>::value) {
-            using E = typename T::value_type;
-            if constexpr (std::is_pointer_v<E>)
-                ensureDescriptor<std::remove_pointer_t<E>>();
-            else
-                ensureDescriptor<E>();
-            desc = new internal::cStdVectorDescriptor<E>(typeName);
-        }
-        else if constexpr (internal::is_std_list<T>::value) {
-            using E = typename T::value_type;
-            if constexpr (std::is_pointer_v<E>)
-                ensureDescriptor<std::remove_pointer_t<E>>();
-            else
-                ensureDescriptor<E>();
-            desc = new internal::cStdListDescriptor<E>(typeName);
-        }
-        else if constexpr (internal::is_std_set<T>::value) {
-            using E = typename T::value_type;
-            if constexpr (std::is_pointer_v<E>)
-                ensureDescriptor<std::remove_pointer_t<E>>();
-            else
-                ensureDescriptor<E>();
-            desc = new internal::cStdSetDescriptor<E>(typeName);
+        else if constexpr (internal::is_std_sequence<T>::value || internal::is_std_set<T>::value) {
+            internal::ensureValueDescriptor<typename T::value_type>();
+            desc = new internal::cStdContainerDescriptor<T>(typeName);
         }
         else if constexpr (internal::is_std_map<T>::value) {
-            using K = typename T::key_type;
-            using V = typename T::mapped_type;
-            if constexpr (std::is_pointer_v<K>) ensureDescriptor<std::remove_pointer_t<K>>(); else ensureDescriptor<K>();
-            if constexpr (std::is_pointer_v<V>) ensureDescriptor<std::remove_pointer_t<V>>(); else ensureDescriptor<V>();
-            desc = new internal::cStdMapDescriptor<T>(typeName);
-        }
-        else if constexpr (internal::is_std_unordered_map<T>::value) {
-            using K = typename T::key_type;
-            using V = typename T::mapped_type;
-            if constexpr (std::is_pointer_v<K>) ensureDescriptor<std::remove_pointer_t<K>>(); else ensureDescriptor<K>();
-            if constexpr (std::is_pointer_v<V>) ensureDescriptor<std::remove_pointer_t<V>>(); else ensureDescriptor<V>();
-            desc = new internal::cStdMapDescriptor<T>(typeName);
+            internal::ensureValueDescriptor<typename T::key_type>();
+            internal::ensureValueDescriptor<typename T::mapped_type>();
+            desc = new internal::cStdContainerDescriptor<T>(typeName);
         }
         else if constexpr (internal::is_std_pair<T>::value) {
-            using F = typename T::first_type;
-            using S = typename T::second_type;
-            if constexpr (std::is_pointer_v<F>) ensureDescriptor<std::remove_pointer_t<F>>(); else ensureDescriptor<F>();
-            if constexpr (std::is_pointer_v<S>) ensureDescriptor<std::remove_pointer_t<S>>(); else ensureDescriptor<S>();
-            desc = new internal::cStdPairDescriptor<F,S>(typeName);
+            internal::ensureValueDescriptor<typename T::first_type>();
+            internal::ensureValueDescriptor<typename T::second_type>();
+            desc = new internal::cStdPairDescriptor<typename T::first_type, typename T::second_type>(typeName);
         }
         else {
             desc = new internal::cPrimitiveTypeDescriptor<T>(typeName);
