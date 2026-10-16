@@ -149,7 +149,7 @@ void WatchTest::activity()
     WATCH(point_rw);
 
     Unprintable up{42};
-    // WATCH(up); // it's documented that this doesn't need to work
+    WATCH(up); // displayed as "(unprintable)", see also the Printability module
 
     //
     // Structs/classes via cObject and str(); no structdesc.
@@ -492,3 +492,69 @@ class Sub : public cSimpleModule
 };
 
 Define_Module(Sub);
+
+
+//
+// Demonstrates the string displayed for values that have no @toString or str():
+// the output of operator<< if there is one; otherwise "" for compound values
+// (that have fields, which can be displayed by expanding the value), and
+// "(unprintable)" for others.
+//
+class Printability : public cSimpleModule
+{
+  public:
+    Printability() : cSimpleModule(16384) {}
+    virtual void activity() override;
+};
+
+Define_Module(Printability);
+
+void Printability::activity()
+{
+    // via @toString in the msg file
+    GeneratedStruct withToString;
+    withToString.foo = 1;
+    WATCH(withToString);
+
+    // via operator<<: a C++ struct and a msg struct
+    Point point(2, 3);
+    PrintableStruct printable;
+    printable.a = 4;
+    WATCH(point);
+    WATCH(printable);
+
+    // compound (has fields), no operator<<: "" (expand to see the fields)
+    PlainStruct plain;
+    plain.b = 5;
+    WATCH(plain);
+
+    // not compound (no fields known), no operator<<: "(unprintable)"
+    Unprintable unprintable(6);
+    WATCH(unprintable);
+
+    // the same values as container elements, pair members and smart pointer pointees
+    std::vector<PrintableStruct> vprintable(2, printable);
+    std::vector<PlainStruct> vplain(2, plain);
+    std::vector<Unprintable> vunprintable(2, unprintable);
+    std::pair<PlainStruct, Unprintable> pplainunprintable(plain, unprintable);
+    std::unique_ptr<PlainStruct> uplain = std::make_unique<PlainStruct>(plain);
+    std::unique_ptr<Unprintable> uunprintable = std::make_unique<Unprintable>(unprintable);
+    WATCH(vprintable);
+    WATCH(vplain);
+    WATCH(vunprintable);
+    WATCH(pplainunprintable);
+    WATCH(uplain);
+    WATCH(uunprintable);
+
+    // the same as message fields: open the inspector of the message
+    PrintabilityMessage *msg = new PrintabilityMessage("printability-msg");
+    msg->setWithToString(withToString);
+    msg->setPrintable(printable);
+    msg->setPlain(plain);
+    msg->setPrintablePtr(&printable);
+    msg->setPlainPtr(&plain);
+    WATCH(msg);
+
+    for ( ; ; )
+        wait(10);
+}

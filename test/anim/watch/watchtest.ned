@@ -9,9 +9,14 @@ module WatchTest
         string str = "foo";
     submodules:
         sub : Sub;
+        printability : Printability;
 }
 
 simple Sub
 {
 
+}
+
+simple Printability
+{
 }
