@@ -1,0 +1,123 @@
+%description:
+Test the string form of values without @toString/str() in descriptors:
+operator<< is used if it exists; otherwise the string is "" for compound
+values (whose fields can be displayed), and "(unprintable)" for others.
+Checked for message fields and for the values of struct descriptors.
+
+%file: test.msg
+namespace @TESTNAME@;
+
+struct PrintableStruct {
+    int a;
+}
+
+cplusplus {{
+inline std::ostream& operator<<(std::ostream& os, const PrintableStruct& s) { return os << "a=" << s.a; }
+}}
+
+struct PlainStruct {
+    int b;
+}
+
+cplusplus {{
+struct OpaqueThing { int c = 0; };  // no operator<<
+}}
+
+class OpaqueThing {
+    @existingClass;
+    @opaque;
+}
+
+message TestMessage {
+    PrintableStruct printable;
+    PlainStruct plain;
+    OpaqueThing opaque;
+    PrintableStruct *printablePtr = nullptr;
+}
+
+%file: test.ned
+
+simple Tester
+{
+}
+
+network Test
+{
+    submodules:
+        tester: Tester;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "test_m.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+struct Leaf { int x = 0; };  // no fields known to OMNeT++, no operator<<
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+static void printFields(TestMessage *msg)
+{
+    cClassDescriptor *desc = msg->getDescriptor();
+    for (const char *name : {"printable", "plain", "opaque", "printablePtr"}) {
+        int field = desc->findField(name);
+        EV << "field " << name << ": \"" << desc->getFieldValueAsString(toAnyPtr(msg), field, 0) << "\"\n";
+    }
+}
+
+void Tester::activity()
+{
+    TestMessage *msg = new TestMessage();
+    msg->getPrintableForUpdate().a = 1;
+    msg->getPlainForUpdate().b = 2;
+
+    EV << "=== message fields\n";
+    printFields(msg);
+
+    PrintableStruct printable;
+    printable.a = 3;
+    msg->setPrintablePtr(&printable);
+    EV << "=== message fields, with non-null pointer\n";
+    printFields(msg);
+    msg->setPrintablePtr(nullptr);
+
+    EV << "=== values\n";
+    PlainStruct plain;
+    Leaf leaf;
+    EV << "PrintableStruct: \"" << ensureDescriptor<PrintableStruct>()->getValueAsString(any_ptr(&printable)) << "\"\n";
+    EV << "PlainStruct: \"" << ensureDescriptor<PlainStruct>()->getValueAsString(any_ptr(&plain)) << "\"\n";
+    EV << "Leaf: \"" << ensureDescriptor<Leaf>()->getValueAsString(any_ptr(&leaf)) << "\"\n";
+
+    delete msg;
+    EV << ".\n";
+}
+
+}
+
+%contains: stdout
+=== message fields
+field printable: "a=1"
+field plain: ""
+field opaque: "(unprintable)"
+field printablePtr: ""
+=== message fields, with non-null pointer
+field printable: "a=1"
+field plain: ""
+field opaque: "(unprintable)"
+field printablePtr: "a=3"
+=== values
+PrintableStruct: "a=3"
+PlainStruct: ""
+Leaf: "(unprintable)"
+.

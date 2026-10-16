@@ -237,8 +237,8 @@ network Test
 === vector<Point>
   descriptor=std::vector<descriptor_dynamic_2::Point> value=size=2
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=AC
-    "[0] " value=(unprintable) structPtr=non-null
-    "[1] " value=(unprintable) structPtr=non-null
+    "[0] " value= structPtr=non-null
+    "[1] " value= structPtr=non-null
   after resizing to 3: size=3
 === vector<int*>
   descriptor=std::vector<int*> value=size=2
@@ -250,7 +250,7 @@ network Test
 === vector<Point*>
   descriptor=std::vector<descriptor_dynamic_2::Point*> value=size=2
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
-    "[0] " value=(unprintable) structPtr=non-null
+    "[0] " value= structPtr=non-null
     "[1] " value=nullptr structPtr=null
   after resizing to 3: size=3
 === vector<cNamedObject*>
@@ -276,8 +276,8 @@ network Test
 === list<Point>
   descriptor=std::list<descriptor_dynamic_2::Point> value=size=2
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=AC
-    "[0] " value=(unprintable) structPtr=non-null
-    "[1] " value=(unprintable) structPtr=non-null
+    "[0] " value= structPtr=non-null
+    "[1] " value= structPtr=non-null
   after resizing to 3: size=3
 === list<int*>
   descriptor=std::list<int*> value=size=2
@@ -289,7 +289,7 @@ network Test
 === list<Point*>
   descriptor=std::list<descriptor_dynamic_2::Point*> value=size=2
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
-    "[0] " value=(unprintable) structPtr=non-null
+    "[0] " value= structPtr=non-null
     "[1] " value=nullptr structPtr=null
   after resizing to 3: size=3
 === list<cNamedObject*>
@@ -321,7 +321,7 @@ network Test
 === set<Point*>
   descriptor=std::set<descriptor_dynamic_2::Point*> value=size=1
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
-    "" value=(unprintable) structPtr=non-null
+    "" value= structPtr=non-null
   resizing: ERROR: Cannot set array size of field 0
 === set<cNamedObject*>
   descriptor=std::set<omnetpp::cNamedObject*> value=size=1
@@ -345,8 +345,8 @@ network Test
 === map<int,Point>
   descriptor=std::map<int, descriptor_dynamic_2::Point> value=size=2
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=AC
-    "1 => " value=(unprintable) structPtr=non-null
-    "2 => " value=(unprintable) structPtr=non-null
+    "1 => " value= structPtr=non-null
+    "2 => " value= structPtr=non-null
   resizing: ERROR: Cannot set array size of field 0
 === map<int,int*>
   descriptor=std::map<int, int*> value=size=2
@@ -358,7 +358,7 @@ network Test
 === map<int,Point*>
   descriptor=std::map<int, descriptor_dynamic_2::Point*> value=size=2
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
-    "1 => " value=(unprintable) structPtr=non-null
+    "1 => " value= structPtr=non-null
     "2 => " value=nullptr structPtr=null
   resizing: ERROR: Cannot set array size of field 0
 === map<int,cNamedObject*>
@@ -380,7 +380,7 @@ network Test
 === map<Point*,int>
   descriptor=std::map<descriptor_dynamic_2::Point*, int> value=size=1
   field elements: type=int struct=int flags=A
-    "(unprintable) => " value=1 structPtr=non-null
+    " => " value=1 structPtr=non-null
   resizing: ERROR: Cannot set array size of field 0
 === map<cNamedObject*,int>
   descriptor=std::map<omnetpp::cNamedObject*, int> value=size=1
@@ -403,7 +403,7 @@ network Test
 === deque<Point*>
   descriptor=std::deque<descriptor_dynamic_2::Point*> value=size=2
   field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
-    "[0] " value=(unprintable) structPtr=non-null
+    "[0] " value= structPtr=non-null
     "[1] " value=nullptr structPtr=null
   after resizing to 3: size=3
 === forward_list<int>
@@ -502,9 +502,9 @@ network Test
     - value=empty structPtr=null
   setting element 0: ERROR: Cannot set field 0
 === optional<Point>
-  descriptor=std::optional<descriptor_dynamic_2::Point> value=(unprintable)
+  descriptor=std::optional<descriptor_dynamic_2::Point> value=
   field value: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=C
-    - value=(unprintable) structPtr=non-null
+    - value= structPtr=non-null
 === unique_ptr<int>
   descriptor=std::unique_ptr<int> value=1
   field pointee: type=int struct=int flags=P
@@ -516,9 +516,9 @@ network Test
     - value=nullptr structPtr=null
   setting element 0: ERROR: Cannot set field 0
 === unique_ptr<Point>
-  descriptor=std::unique_ptr<descriptor_dynamic_2::Point> value=(unprintable)
+  descriptor=std::unique_ptr<descriptor_dynamic_2::Point> value=
   field pointee: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=CP
-    - value=(unprintable) structPtr=non-null
+    - value= structPtr=non-null
 === unique_ptr<cNamedObject>
   descriptor=std::unique_ptr<omnetpp::cNamedObject> value=
   field pointee: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=CPO
@@ -560,9 +560,9 @@ network Test
     - value="a" structPtr=non-null
   after setting element 0 to "5": 5
 === pair<Point,int>
-  descriptor=std::pair<descriptor_dynamic_2::Point, int> value=(unprintable) => 1
+  descriptor=std::pair<descriptor_dynamic_2::Point, int> value= => 1
   field first: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=C
-    - value=(unprintable) structPtr=non-null
+    - value= structPtr=non-null
   field second: type=int struct=int flags=-
     - value=1 structPtr=non-null
 === pair<int*,Point*>

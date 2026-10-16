@@ -139,7 +139,7 @@ void Tester::activity()
   elements[0] = 10
   elements[1] = 20
   elements[2] = 30
-  temp: 
+  temp: 21.5C
 === Celsius
   value: "-3.5C", fields: 0
 === NoStream

@@ -305,7 +305,6 @@ omnetpp::cGate arrivalGate =
 
 === Point ===
 descriptor: descriptor_dynamic_1::Point
-valueAsString: (unprintable)
 double x = 1.5
 double y = 2.5
 

@@ -118,9 +118,8 @@ valueAsString: nullptr
 descriptor: int
 valueAsString: 42
 
---- pointPtr = (unprintable)
+--- pointPtr = 
 descriptor: WATCH_nullptr_1::Point
-valueAsString: (unprintable)
 double x = 1.5
 double y = 2.5
 

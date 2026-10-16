@@ -2,8 +2,9 @@
 We used to have weird compilation errors when adding the "inet" namespace
 to the INET Framework, caused by the generic templated operator<<.
 
-TEST BECAME DISFUNCTIONAL IN 6.0, BECAUSE WE NO LONGER USE operator<< 
-TO GET AN OBJECT'S STRING REPRESENTATION INSIDE getFieldValueAsString().
+Also checks the field values: getFieldValueAsString() uses operator<< if there
+is one (found in the right namespace); otherwise it returns "(unprintable)"
+for opaque types, and "" for compound ones.
 
 
 %file: types.h
@@ -153,19 +154,18 @@ fullName=""
 fullPath=""
 info=""
 s="Hello"
-address=""
-opaque=""
-intvec=""
-addrvec=""
+address="<IPAddress>"
+opaque="(unprintable)"
+intvec="(unprintable)"
+addrvec="(unprintable)"
 options=""
-inetAddress=""
-inetOpaque=""
-inetIntvec=""
-inetAddrvec=""
+inetAddress="<inet::IPAddress>"
+inetOpaque="(unprintable)"
+inetIntvec="(unprintable)"
+inetAddrvec="(unprintable)"
 inetOptions=""
-foreignAddress=""
-foreignOpaque=""
-foreignIntvec=""
-foreignAddrvec=""
+foreignAddress="<foreign::IPAddress>"
+foreignOpaque="(unprintable)"
+foreignIntvec="(unprintable)"
+foreignAddrvec="(unprintable)"
 foreignOptions=""
-

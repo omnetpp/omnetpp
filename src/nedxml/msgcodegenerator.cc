@@ -298,14 +298,16 @@ void MsgCodeGenerator::generateProlog(const std::string& msgFileName, const std:
     CC << PARSIMPACK_BOILERPLATE;
 
     CC << "\n";
+    CC << "// Returns the string form of t produced by operator<<, or the given fallback string if there is no operator<<.\n";
+    CC << "// (The fallback should be \"\" for compound types, whose fields can be displayed, and \"(unprintable)\" otherwise.)\n";
     CC << "template<typename T>\n";
-    CC << "std::string toStringIfPrintable(const T& t) {\n";
+    CC << "std::string toStringIfPrintable(const T& t, const char *fallback) {\n";
     CC << "    if constexpr (omnetpp::internal::is_printable<T>::value) {\n";
     CC << "        std::ostringstream os;\n";
     CC << "        os << t;\n";
     CC << "        return os.str();\n";
     CC << "    }\n";
-    CC << "    return omnetpp::cClassDescriptor::UNPRINTABLE;\n";
+    CC << "    return fallback;\n";
     CC << "}\n";
     CC << "\n";
     CC << "template<typename T>\n";
@@ -1238,7 +1240,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         CC << "    return ((cObject*)pp)->str();\n";  // The cast is there to avoid name clash with a potential field called "str"
     }
     else {
-        CC << "    return toStringIfPrintable(*pp);\n";
+        CC << "    return toStringIfPrintable(*pp, getFieldCount() > 0 ? \"\" : omnetpp::cClassDescriptor::UNPRINTABLE);\n";
     }
     CC << "}\n";
     CC << "\n";
@@ -1505,13 +1507,15 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
         std::string value = classInfo.isClass ?
                 makeFuncall("pp", true, field.getter, field.isArray) :
                 (str("pp->") + field.var + (field.isArray ? "[i]" : ""));
+        // for values without a string form: "" if the field is compound (its contents can be displayed), "(unprintable)" otherwise
+        std::string fallback = field.isOpaque ? "omnetpp::cClassDescriptor::UNPRINTABLE" : "\"\"";
         if (!field.isPointer) {
             if (!field.toString.empty())
                 CC << "return " << makeFuncall(value, false, field.toString) << ";\n";
             else if (field.hasStrMethod)
                 CC << "return " << value << ".str();\n";
             else
-                CC << "return \"\";\n";
+                CC << "return toStringIfPrintable(" << value << ", " << fallback << ");\n";
         }
         else {
             if (!field.toString.empty())
@@ -1519,7 +1523,7 @@ void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
             else if (field.hasStrMethod)
                 CC << "{ auto obj = " << value << "; return obj == nullptr ? \"\" : obj->str(); }\n";
             else
-                CC << "return \"\";\n";
+                CC << "{ auto obj = " << value << "; return obj == nullptr ? \"\" : toStringIfPrintable(*obj, " << fallback << "); }\n";
         }
 
 
