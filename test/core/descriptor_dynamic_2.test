@@ -20,6 +20,12 @@ struct Point {
 #include <set>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
+#include <forward_list>
+#include <deque>
+#include <array>
+#include <queue>
+#include <stack>
 #include "test_m.h"
 
 using namespace omnetpp;
@@ -147,6 +153,29 @@ void Tester::activity()
     { std::map<Point*,int> c = {{&p1, 1}}; check("map<Point*,int>", c, nullptr); }
     { std::map<cNamedObject*,int> c = {{o1, 1}}; check("map<cNamedObject*,int>", c, nullptr); }
     { std::unordered_map<int,int> c = {{1, 10}}; check("unordered_map<int,int>", c, "5"); }
+
+    // other sequences
+    { std::deque<int> c = {1, 2}; check("deque<int>", c, "5"); }
+    { std::deque<Point*> c = {&p1, nullptr}; check("deque<Point*>", c, nullptr); }
+    { std::forward_list<int> c = {1, 2}; check("forward_list<int>", c, "5"); }
+    { std::array<int,2> c = {1, 2}; check("array<int,2>", c, "5"); }
+    { std::array<cNamedObject*,2> c = {o1, nullptr}; check("array<cNamedObject*,2>", c, nullptr); }
+
+    // other sets (unordered ones have equal elements only, because their order is unspecified)
+    { std::multiset<int> c = {1, 1, 2}; check("multiset<int>", c, "5"); }
+    { std::unordered_set<int> c = {1}; check("unordered_set<int>", c, "5"); }
+    { std::unordered_multiset<std::string> c = {"a", "a"}; check("unordered_multiset<string>", c, nullptr); }
+
+    // other maps
+    { std::multimap<int,std::string> c = {{1, "a"}, {1, "b"}, {2, "c"}}; check("multimap<int,string>", c, "\"x\""); }
+    { std::unordered_multimap<int,int> c = {{1, 10}}; check("unordered_multimap<int,int>", c, "5"); }
+
+    // container adaptors
+    { std::queue<int> c; c.push(1); c.push(2); check("queue<int>", c, "5"); }
+    { std::stack<std::string> c; c.push("a"); c.push("b"); check("stack<string>", c, "\"x\""); }
+    { std::priority_queue<int> c; c.push(1); c.push(2); check("priority_queue<int>", c, "5"); }
+    { std::queue<cNamedObject*> c; c.push(o1); check("queue<cNamedObject*>", c, nullptr); }
+    { std::map<int,std::queue<int>> c; c[1].push(10); c[1].push(20); check("map<int,queue<int>>", c, nullptr); }
 
     // special cases
     { std::vector<int*> c = {nullptr}; check("vector<int*> with nullptr as element 0", c, "7"); }
@@ -349,6 +378,104 @@ network Test
   field elements: type=int struct=int flags=A
     "1 => " value=10 structPtr=non-null
   after setting element 0 to "5": 5
+  resizing: ERROR: Cannot set array size of field 0
+=== deque<int>
+  descriptor=std::deque<int> value=size=2
+  field elements: type=int struct=int flags=A
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=2 structPtr=non-null
+  after setting element 0 to "5": 5
+  after resizing to 3: size=3
+=== deque<Point*>
+  descriptor=std::deque<descriptor_dynamic_2::Point*> value=size=2
+  field elements: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=ACP
+    "[0] " value=(unprintable) structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  after resizing to 3: size=3
+=== forward_list<int>
+  descriptor=std::forward_list<int> value=size=2
+  field elements: type=int struct=int flags=A
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=2 structPtr=non-null
+  after setting element 0 to "5": 5
+  after resizing to 3: size=3
+=== array<int,2>
+  descriptor=std::array<int, 2ul> value=size=2
+  field elements: type=int struct=int flags=A
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=2 structPtr=non-null
+  after setting element 0 to "5": 5
+  resizing: ERROR: Cannot set array size of field 0
+=== array<cNamedObject*,2>
+  descriptor=std::array<omnetpp::cNamedObject*, 2ul> value=size=2
+  field elements: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=ACPO
+    "[0] " value= structPtr=non-null
+    "[1] " value=nullptr structPtr=null
+  resizing: ERROR: Cannot set array size of field 0
+=== multiset<int>
+  descriptor=std::multiset<int> value=size=3
+  field elements: type=int struct=int flags=A
+    "" value=1 structPtr=non-null
+    "" value=1 structPtr=non-null
+    "" value=2 structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== unordered_set<int>
+  descriptor=std::unordered_set<int> value=size=1
+  field elements: type=int struct=int flags=A
+    "" value=1 structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== unordered_multiset<string>
+  descriptor=std::unordered_multiset<std::string> value=size=2
+  field elements: type=std::string struct=std::string flags=A
+    "" value="a" structPtr=non-null
+    "" value="a" structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== multimap<int,string>
+  descriptor=std::multimap<int, std::string> value=size=3
+  field elements: type=std::string struct=std::string flags=A
+    "1 => " value="a" structPtr=non-null
+    "1 => " value="b" structPtr=non-null
+    "2 => " value="c" structPtr=non-null
+  after setting element 0 to ""x"": "x"
+  resizing: ERROR: Cannot set array size of field 0
+=== unordered_multimap<int,int>
+  descriptor=std::unordered_multimap<int, int> value=size=1
+  field elements: type=int struct=int flags=A
+    "1 => " value=10 structPtr=non-null
+  after setting element 0 to "5": 5
+  resizing: ERROR: Cannot set array size of field 0
+=== queue<int>
+  descriptor=std::queue<int> value=size=2
+  field elements: type=int struct=int flags=A
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=2 structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== stack<string>
+  descriptor=std::stack<std::string> value=size=2
+  field elements: type=std::string struct=std::string flags=A
+    "[0] " value="a" structPtr=non-null
+    "[1] " value="b" structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== priority_queue<int>
+  descriptor=std::priority_queue<int> value=size=2
+  field elements: type=int struct=int flags=A
+    "[0] " value=2 structPtr=non-null
+    "[1] " value=1 structPtr=non-null
+  setting element 0: ERROR: Cannot set field 0
+  resizing: ERROR: Cannot set array size of field 0
+=== queue<cNamedObject*>
+  descriptor=std::queue<omnetpp::cNamedObject*> value=size=1
+  field elements: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=ACPO
+    "[0] " value= structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== map<int,queue<int>>
+  descriptor=std::map<int, std::queue<int>> value=size=1
+  field elements: type=std::queue<int> struct=std::queue<int> flags=AC
+    "1 => " value=size=2 structPtr=non-null
   resizing: ERROR: Cannot set array size of field 0
 === vector<int*> with nullptr as element 0
   descriptor=std::vector<int*> value=size=1

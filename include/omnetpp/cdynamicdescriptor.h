@@ -20,9 +20,15 @@
 #include <sstream>
 #include <vector>
 #include <list>
+#include <forward_list>
+#include <deque>
+#include <array>
 #include <set>
 #include <map>
+#include <unordered_set>
 #include <unordered_map>
+#include <queue>
+#include <stack>
 #include <utility>
 #include <iterator>
 #include <type_traits>
@@ -50,13 +56,37 @@ struct is_extractable<T, std::void_t<decltype(std::declval<std::istream&>() >> s
 template<typename T> struct is_std_sequence : std::false_type {};  // elements are accessed by index
 template<typename E, typename A> struct is_std_sequence<std::vector<E,A>> : std::true_type {};
 template<typename E, typename A> struct is_std_sequence<std::list<E,A>> : std::true_type {};
+template<typename E, typename A> struct is_std_sequence<std::forward_list<E,A>> : std::true_type {};
+template<typename E, typename A> struct is_std_sequence<std::deque<E,A>> : std::true_type {};
+template<typename E, size_t N> struct is_std_sequence<std::array<E,N>> : std::true_type {};
 
 template<typename T> struct is_std_set : std::false_type {};  // elements are read-only
 template<typename E, typename C, typename A> struct is_std_set<std::set<E,C,A>> : std::true_type {};
+template<typename E, typename C, typename A> struct is_std_set<std::multiset<E,C,A>> : std::true_type {};
+template<typename E, typename H, typename Q, typename A> struct is_std_set<std::unordered_set<E,H,Q,A>> : std::true_type {};
+template<typename E, typename H, typename Q, typename A> struct is_std_set<std::unordered_multiset<E,H,Q,A>> : std::true_type {};
 
 template<typename T> struct is_std_map : std::false_type {};  // elements are the mapped values, labeled with the keys
 template<typename K, typename V, typename C, typename A> struct is_std_map<std::map<K,V,C,A>> : std::true_type {};
-template<typename K, typename V, typename H, typename E, typename A> struct is_std_map<std::unordered_map<K,V,H,E,A>> : std::true_type {};
+template<typename K, typename V, typename C, typename A> struct is_std_map<std::multimap<K,V,C,A>> : std::true_type {};
+template<typename K, typename V, typename H, typename Q, typename A> struct is_std_map<std::unordered_map<K,V,H,Q,A>> : std::true_type {};
+template<typename K, typename V, typename H, typename Q, typename A> struct is_std_map<std::unordered_multimap<K,V,H,Q,A>> : std::true_type {};
+
+template<typename T> struct is_std_adaptor : std::false_type {};  // container adaptors: their underlying container is displayed, read-only
+template<typename E, typename C> struct is_std_adaptor<std::queue<E,C>> : std::true_type {};
+template<typename E, typename C> struct is_std_adaptor<std::stack<E,C>> : std::true_type {};
+template<typename E, typename C, typename P> struct is_std_adaptor<std::priority_queue<E,C,P>> : std::true_type {};
+
+// gives access to the underlying container (protected member "c") of a container adaptor
+template<typename A>
+struct AdaptorAccess : A {
+    static typename A::container_type *getContainer(A *adaptor) { return &(adaptor->*(&AdaptorAccess::c)); }
+};
+
+template<typename T, bool isAdaptor = is_std_adaptor<T>::value>
+struct underlying_container { using type = T; };
+template<typename T>
+struct underlying_container<T, true> { using type = typename T::container_type; };
 
 template<typename T> struct is_std_pair : std::false_type {};
 template<typename F, typename S> struct is_std_pair<std::pair<F,S>> : std::true_type {};
@@ -278,21 +308,27 @@ class ValueAccess
 };
 
 /**
- * @brief Descriptor for standard library containers. Pretends to have a single
- * "elements[]" array field. For maps, the elements are the mapped values, and
- * their array index strings are the keys. Elements of sets are read-only.
+ * @brief Descriptor for standard library containers and container adaptors.
+ * Pretends to have a single "elements[]" array field. For maps, the elements
+ * are the mapped values, and their array index strings are the keys. Elements
+ * of sets are read-only. For container adaptors (std::queue, std::stack,
+ * std::priority_queue), the elements of the underlying container are shown
+ * (read-only) in its own order: front to back for std::queue, bottom to top
+ * for std::stack, heap order for std::priority_queue.
  *
  * Elements are accessed via iterators, so accessing the ith element of a
  * non-random-access container takes O(i) time.
  *
  * @ingroup Internals
  */
-template<typename C>
+template<typename T>
 class cStdContainerDescriptor : public cDynamicDescriptor
 {
   private:
+    static constexpr bool isAdaptor = is_std_adaptor<T>::value;
+    using C = typename underlying_container<T>::type;  // the container whose elements are shown
     static constexpr bool isMap = is_std_map<C>::value;
-    static constexpr bool isReadOnly = is_std_set<C>::value;
+    static constexpr bool isReadOnly = is_std_set<C>::value || isAdaptor;
     using E = typename container_element<C>::type;  // mapped_type for maps, otherwise value_type
 
     // true for std::vector<bool>, whose elements are not addressable: operator[]
@@ -314,6 +350,13 @@ class cStdContainerDescriptor : public cDynamicDescriptor
             return *it;
     }
 
+    static C *getContainer(any_ptr object) {
+        if constexpr (isAdaptor)
+            return AdaptorAccess<T>::getContainer(object.get<T>());
+        else
+            return object.get<T>();
+    }
+
     // returns the iterator to the ith element, or end() if i is out of range
     static auto getIterator(C *c, int i) {
         return (i >= 0 && i < getSize(c)) ? std::next(c->begin(), i) : c->end();
@@ -323,7 +366,7 @@ class cStdContainerDescriptor : public cDynamicDescriptor
     cStdContainerDescriptor(const char *typeName) : cDynamicDescriptor(typeName) {}
 
     virtual std::string getValueAsString(any_ptr object) const override {
-        C *c = object.get<C>();
+        C *c = getContainer(object);
         if (c->begin() == c->end())
             return "empty";
         return "size=" + std::to_string(getSize(c));
@@ -336,13 +379,13 @@ class cStdContainerDescriptor : public cDynamicDescriptor
     virtual unsigned int getFieldTypeFlags(int field) const override { return field == 0 ? FD_ISARRAY | ValueAccess<E>::getTypeFlags() : 0; }
 
     virtual int getFieldArraySize(any_ptr object, int field) const override {
-        return field == 0 ? getSize(object.get<C>()) : 0;
+        return field == 0 ? getSize(getContainer(object)) : 0;
     }
 
     virtual void setFieldArraySize(any_ptr object, int field, int size) const override {
-        if constexpr (has_resize<C>::value && std::is_default_constructible_v<E>) {
+        if constexpr (has_resize<C>::value && std::is_default_constructible_v<E> && !isAdaptor) {
             if (field == 0) {
-                object.get<C>()->resize(size);
+                getContainer(object)->resize(size);
                 return;
             }
         }
@@ -351,20 +394,20 @@ class cStdContainerDescriptor : public cDynamicDescriptor
 
     virtual std::string getFieldArrayIndexString(any_ptr object, int field, int i) const override {
         if constexpr (isMap) {
-            C *c = object.get<C>();
+            C *c = getContainer(object);
             auto it = getIterator(c, i);
             if (field != 0 || it == c->end())
                 return "";
             return ValueAccess<typename C::key_type>::getValueAsString(it->first) + " => ";
         }
-        else if constexpr (isReadOnly)
+        else if constexpr (is_std_set<C>::value)
             return "";  // set elements have no meaningful index
         else
             return cDynamicDescriptor::getFieldArrayIndexString(object, field, i);
     }
 
     virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
-        C *c = object.get<C>();
+        C *c = getContainer(object);
         auto it = getIterator(c, i);
         if (field != 0 || it == c->end())
             return "";
@@ -378,7 +421,7 @@ class cStdContainerDescriptor : public cDynamicDescriptor
 
     virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
         if constexpr (!isReadOnly) {
-            C *c = object.get<C>();
+            C *c = getContainer(object);
             auto it = getIterator(c, i);
             if (field == 0 && it != c->end()) {
                 bool done;
@@ -398,7 +441,7 @@ class cStdContainerDescriptor : public cDynamicDescriptor
     }
 
     virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
-        C *c = object.get<C>();
+        C *c = getContainer(object);
         auto it = getIterator(c, i);
         if (field != 0 || it == c->end())
             return any_ptr(nullptr);
@@ -526,7 +569,7 @@ cClassDescriptor *ensureDescriptor()
         if constexpr (std::is_base_of_v<cObject, T>) {
             return nullptr;
         }
-        else if constexpr (internal::is_std_sequence<T>::value || internal::is_std_set<T>::value) {
+        else if constexpr (internal::is_std_sequence<T>::value || internal::is_std_set<T>::value || internal::is_std_adaptor<T>::value) {
             internal::ensureValueDescriptor<typename T::value_type>();
             desc = new internal::cStdContainerDescriptor<T>(typeName);
         }
