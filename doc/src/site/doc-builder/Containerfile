@@ -88,7 +88,7 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/docvenv \
     UV_PYTHON=3.12 \
     UV_PYTHON_DOWNLOADS=automatic
 COPY pyproject.toml uv.lock /opt/docproj/
-ARG UV_VERSION=0.11.8
+ARG UV_VERSION=0.13.1
 RUN curl -fsSL -o /tmp/uv.tar.gz \
         "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-x86_64-unknown-linux-gnu.tar.gz" \
     && tar -xzf /tmp/uv.tar.gz -C /tmp \
