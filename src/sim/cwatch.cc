@@ -23,6 +23,7 @@
 #include "omnetpp/globals.h"
 #include "omnetpp/cclassdescriptor.h"
 #include "omnetpp/cvalue.h"
+#include "omnetpp/cexception.h"
 
 using namespace omnetpp::common;
 using namespace omnetpp::internal;
@@ -72,6 +73,8 @@ std::string cWatchProxyDescriptor::getValueAsString(any_ptr object) const {
     if (!targetDesc)
         return "nullptr";
     any_ptr ptr = watch->getValuePointer();
+    if (ptr == nullptr)
+        return "nullptr";
     if (targetDesc->extendsCObject()) {
         cObject *obj = fromAnyPtr<cObject>(ptr);
         std::string s = "-> " + obj->getClassAndFullName();
@@ -83,54 +86,85 @@ std::string cWatchProxyDescriptor::getValueAsString(any_ptr object) const {
     return targetDesc->getValueAsString(ptr);
 }
 
+// Note: the watched pointer may be nullptr (WATCH of a pointer variable). The
+// methods below check for that, to avoid passing nullptr to the target descriptor.
+// Getters return an empty/default value, setters throw an error.
+
+any_ptr cWatchProxyDescriptor::getNonNullValuePointer(const char *what) const {
+    any_ptr ptr = watch->getValuePointer();
+    if (!targetDesc || ptr == nullptr)
+        throw cRuntimeError("Cannot %s via the WATCH '%s': it is a null pointer", what, watch->getFullName());
+    return ptr;
+}
+
 void cWatchProxyDescriptor::setValueAsString(any_ptr object, const char *value) const {
     ASSERT(fromAnyPtr<cObject>(object) == watch);
-    if (targetDesc) targetDesc->setValueAsString(watch->getValuePointer(), value);
+    any_ptr ptr = getNonNullValuePointer("set value");
+    targetDesc->setValueAsString(ptr, value);
 }
 
 std::string cWatchProxyDescriptor::getFieldValueAsString(any_ptr object, int field, int i) const {
     ASSERT(fromAnyPtr<cObject>(object) == watch);
-    return targetDesc ? targetDesc->getFieldValueAsString(watch->getValuePointer(), field, i) : "n/a";
+    if (!targetDesc)
+        return "n/a";
+    any_ptr ptr = watch->getValuePointer();
+    return ptr == nullptr ? "n/a" : targetDesc->getFieldValueAsString(ptr, field, i);
 }
 
 void cWatchProxyDescriptor::setFieldValueAsString(any_ptr object, int field, int i, const char *value) const {
     ASSERT(fromAnyPtr<cObject>(object) == watch);
-    if (targetDesc) targetDesc->setFieldValueAsString(watch->getValuePointer(), field, i, value);
+    any_ptr ptr = getNonNullValuePointer("set field");
+    targetDesc->setFieldValueAsString(ptr, field, i, value);
 }
 
 cValue cWatchProxyDescriptor::getFieldValue(any_ptr object, int field, int i) const {
     ASSERT(fromAnyPtr<cObject>(object) == watch);
-    return targetDesc ? targetDesc->getFieldValue(watch->getValuePointer(), field, i) : cValue();
+    if (!targetDesc)
+        return cValue();
+    any_ptr ptr = watch->getValuePointer();
+    return ptr == nullptr ? cValue() : targetDesc->getFieldValue(ptr, field, i);
 }
 
 void cWatchProxyDescriptor::setFieldValue(any_ptr object, int field, int i, const cValue& value) const {
     ASSERT(fromAnyPtr<cObject>(object) == watch);
-    if (targetDesc) targetDesc->setFieldValue(watch->getValuePointer(), field, i, value);
+    any_ptr ptr = getNonNullValuePointer("set field");
+    targetDesc->setFieldValue(ptr, field, i, value);
 }
 
 any_ptr cWatchProxyDescriptor::getFieldStructValuePointer(any_ptr object, int field, int i) const {
     ASSERT(fromAnyPtr<cObject>(object) == watch);
-    return targetDesc ? targetDesc->getFieldStructValuePointer(watch->getValuePointer(), field, i) : any_ptr(nullptr);
+    if (!targetDesc)
+        return any_ptr(nullptr);
+    any_ptr ptr = watch->getValuePointer();
+    return ptr == nullptr ? any_ptr(nullptr) : targetDesc->getFieldStructValuePointer(ptr, field, i);
 }
 
 void cWatchProxyDescriptor::setFieldStructValuePointer(any_ptr object, int field, int i, any_ptr ptr) const {
     ASSERT(fromAnyPtr<cObject>(object) == watch);
-    if (targetDesc) targetDesc->setFieldStructValuePointer(watch->getValuePointer(), field, i, ptr);
+    any_ptr valuePtr = getNonNullValuePointer("set field");
+    targetDesc->setFieldStructValuePointer(valuePtr, field, i, ptr);
 }
 
 int cWatchProxyDescriptor::getFieldArraySize(any_ptr object, int field) const {
     ASSERT(fromAnyPtr<cObject>(object) == static_cast<cObject *>(watch));
-    return targetDesc ? targetDesc->getFieldArraySize(watch->getValuePointer(), field) : 0;
+    if (!targetDesc)
+        return 0;
+    any_ptr ptr = watch->getValuePointer();
+    return ptr == nullptr ? 0 : targetDesc->getFieldArraySize(ptr, field);
 }
 
 void cWatchProxyDescriptor::setFieldArraySize(any_ptr object, int field, int size) const {
     ASSERT(fromAnyPtr<cObject>(object) == static_cast<cObject *>(watch));
-    if (targetDesc) targetDesc->setFieldArraySize(watch->getValuePointer(), field, size);
+    any_ptr ptr = getNonNullValuePointer("set array size");
+    targetDesc->setFieldArraySize(ptr, field, size);
 }
 
 std::string cWatchProxyDescriptor::getFieldArrayIndexString(any_ptr object, int field, int arrayIndex) const {
     ASSERT(fromAnyPtr<cObject>(object) == static_cast<cObject *>(watch));
-    return targetDesc ? targetDesc->getFieldArrayIndexString(watch->getValuePointer(), field, arrayIndex) : "";
+    if (!targetDesc)
+        return "";
+    any_ptr ptr = watch->getValuePointer();
+    return ptr == nullptr ? "" : targetDesc->getFieldArrayIndexString(ptr, field, arrayIndex);
 }
 
 // ----

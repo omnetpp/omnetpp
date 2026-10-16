@@ -1,0 +1,150 @@
+%description:
+Test WATCH() of pointers to non-cObject types while the pointer is nullptr.
+Rendering such a watch used to dereference the null pointer.
+
+%file: test.msg
+namespace @TESTNAME@;
+
+struct Point {
+    double x;
+    double y;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "../lib/descriptortest.h"
+#include "test_m.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Module : public cSimpleModule
+{
+  public:
+    Module() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Module);
+
+static void dump(cObject *watch)
+{
+    EV << "--- " << watch->getFullName() << " = " << watch->str() << "\n";
+    testlib::printDescriptor(EV, toAnyPtr(watch), watch->getDescriptor());
+}
+
+void Module::activity()
+{
+    int *intPtr = nullptr;
+    Point *pointPtr = nullptr;
+    std::vector<int> *vectorPtr = nullptr;
+
+    cObject *intWatch = WATCH(intPtr);
+    cObject *pointWatch = WATCH(pointPtr);
+    cObject *vectorWatch = WATCH(vectorPtr);
+
+    EV << "=== null ===\n";
+    dump(intWatch);
+    dump(pointWatch);
+    dump(vectorWatch);
+
+    int i = 42;
+    Point p;
+    p.x = 1.5;
+    p.y = 2.5;
+    std::vector<int> v = {1, 2, 3};
+    intPtr = &i;
+    pointPtr = &p;
+    vectorPtr = &v;
+
+    EV << "=== non-null ===\n";
+    dump(intWatch);
+    dump(pointWatch);
+    dump(vectorWatch);
+
+    intPtr = nullptr;
+    pointPtr = nullptr;
+    vectorPtr = nullptr;
+
+    EV << "=== null again ===\n";
+    dump(intWatch);
+    dump(pointWatch);
+    dump(vectorWatch);
+
+    EV << "=== set value via null pointer ===\n";
+    try {
+        intWatch->getDescriptor()->setValueAsString(toAnyPtr(intWatch), "5");
+        EV << "no error\n";
+    }
+    catch (std::exception& e) {
+        EV << "error: " << e.what() << "\n";
+    }
+
+    EV << ".\n";
+}
+
+}
+
+%file: test.ned
+
+simple Module
+{
+}
+
+network Test
+{
+    submodules:
+        mod: Module;
+}
+
+%contains: stdout
+=== null ===
+--- intPtr = nullptr
+descriptor: none
+valueAsString: nullptr
+
+--- pointPtr = nullptr
+descriptor: none
+valueAsString: nullptr
+
+--- vectorPtr = nullptr
+descriptor: none
+valueAsString: nullptr
+
+=== non-null ===
+--- intPtr = 42
+descriptor: int
+valueAsString: 42
+
+--- pointPtr = (unprintable)
+descriptor: WATCH_nullptr_1::Point
+valueAsString: (unprintable)
+double x = 1.5
+double y = 2.5
+
+--- vectorPtr = size=3
+descriptor: std::vector<int>
+valueAsString: size=3
+int elements[3]:
+    [0] 1
+    [1] 2
+    [2] 3
+
+=== null again ===
+--- intPtr = nullptr
+descriptor: none
+valueAsString: nullptr
+
+--- pointPtr = nullptr
+descriptor: none
+valueAsString: nullptr
+
+--- vectorPtr = nullptr
+descriptor: none
+valueAsString: nullptr
+
+=== set value via null pointer ===
+error: Cannot set value via the WATCH 'intPtr': it is a null pointer
+.

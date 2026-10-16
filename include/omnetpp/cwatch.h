@@ -38,6 +38,9 @@ class SIM_API cWatchProxyDescriptor : public cClassDescriptor {
     cWatchBase *watch;
     cClassDescriptor *targetDesc;
 
+  protected:
+    any_ptr getNonNullValuePointer(const char *what) const;
+
   public:
     cWatchProxyDescriptor(cWatchBase *watch, cClassDescriptor *targetDesc) :
       cClassDescriptor(targetDesc ? targetDesc->getName() : "none"),
@@ -178,20 +181,25 @@ class cPointerWatch : public cWatchBase
 
     virtual cClassDescriptor *getDescriptor() const override {
         if (proxyDesc == nullptr) {
-            cClassDescriptor *targetDesc;
-            if constexpr (std::is_base_of_v<cObject, std::remove_const_t<T>>)
-                targetDesc = p ? p->getDescriptor() : nullptr;
-            else
-                targetDesc = omnetpp::ensureDescriptor<std::remove_const_t<T>>();
             auto *nonconst_this = const_cast<cPointerWatch*>(this);
-            proxyDesc = new cWatchProxyDescriptor(nonconst_this, targetDesc);
+            proxyDesc = new cWatchProxyDescriptor(nonconst_this, getTargetDescriptor());
             nonconst_this->take(proxyDesc);
         }
-        else if constexpr (std::is_base_of_v<cObject, std::remove_const_t<T>>) {
-            // watched pointer may now point to a different object, update descriptor
-            proxyDesc->setTargetDescriptor(p ? p->getDescriptor() : nullptr);
+        else {
+            // watched pointer may have changed (e.g. to/from nullptr, or to an object of another class)
+            proxyDesc->setTargetDescriptor(getTargetDescriptor());
         }
         return proxyDesc;
+    }
+
+  private:
+    cClassDescriptor *getTargetDescriptor() const {
+        if (!p)
+            return nullptr;
+        if constexpr (std::is_base_of_v<cObject, std::remove_const_t<T>>)
+            return p->getDescriptor();
+        else
+            return omnetpp::ensureDescriptor<std::remove_const_t<T>>();
     }
 };
 
