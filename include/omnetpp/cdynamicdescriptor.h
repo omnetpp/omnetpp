@@ -991,62 +991,67 @@ class cStdPairDescriptor : public cDynamicDescriptor
 template<typename T>
 cClassDescriptor *ensureDescriptor()
 {
-    static std::string typeNameStr = internal::getTypeName<T>();
-    const char *typeName = typeNameStr.c_str();
-    cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(typeName);
-    if (desc)
-        return desc;
-
-    if constexpr (internal::is_std_vector<T>::value) {
-        using E = typename T::value_type;
-        if constexpr (std::is_pointer_v<E>)
-            ensureDescriptor<std::remove_pointer_t<E>>();
-        else
-            ensureDescriptor<E>();
-        desc = new internal::cStdVectorDescriptor<E>(typeName);
-    }
-    else if constexpr (internal::is_std_list<T>::value) {
-        using E = typename T::value_type;
-        if constexpr (std::is_pointer_v<E>)
-            ensureDescriptor<std::remove_pointer_t<E>>();
-        else
-            ensureDescriptor<E>();
-        desc = new internal::cStdListDescriptor<E>(typeName);
-    }
-    else if constexpr (internal::is_std_set<T>::value) {
-        using E = typename T::value_type;
-        if constexpr (std::is_pointer_v<E>)
-            ensureDescriptor<std::remove_pointer_t<E>>();
-        else
-            ensureDescriptor<E>();
-        desc = new internal::cStdSetDescriptor<E>(typeName);
-    }
-    else if constexpr (internal::is_std_map<T>::value) {
-        using K = typename T::key_type;
-        using V = typename T::mapped_type;
-        if constexpr (std::is_pointer_v<K>) ensureDescriptor<std::remove_pointer_t<K>>(); else ensureDescriptor<K>();
-        if constexpr (std::is_pointer_v<V>) ensureDescriptor<std::remove_pointer_t<V>>(); else ensureDescriptor<V>();
-        desc = new internal::cStdMapDescriptor<T>(typeName);
-    }
-    else if constexpr (internal::is_std_unordered_map<T>::value) {
-        using K = typename T::key_type;
-        using V = typename T::mapped_type;
-        if constexpr (std::is_pointer_v<K>) ensureDescriptor<std::remove_pointer_t<K>>(); else ensureDescriptor<K>();
-        if constexpr (std::is_pointer_v<V>) ensureDescriptor<std::remove_pointer_t<V>>(); else ensureDescriptor<V>();
-        desc = new internal::cStdMapDescriptor<T>(typeName);
-    }
-    else if constexpr (internal::is_std_pair<T>::value) {
-        using F = typename T::first_type;
-        using S = typename T::second_type;
-        if constexpr (std::is_pointer_v<F>) ensureDescriptor<std::remove_pointer_t<F>>(); else ensureDescriptor<F>();
-        if constexpr (std::is_pointer_v<S>) ensureDescriptor<std::remove_pointer_t<S>>(); else ensureDescriptor<S>();
-        desc = new internal::cStdPairDescriptor<F,S>(typeName);
-    }
+    // any_ptr strips const, so descriptors must be created for the unqualified type
+    if constexpr (!std::is_same_v<T, std::remove_cv_t<T>>)
+        return ensureDescriptor<std::remove_cv_t<T>>();
     else {
-        desc = new internal::cPrimitiveTypeDescriptor<T>(typeName);
+        static std::string typeNameStr = internal::getTypeName<T>();
+        const char *typeName = typeNameStr.c_str();
+        cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(typeName);
+        if (desc)
+            return desc;
+
+        if constexpr (internal::is_std_vector<T>::value) {
+            using E = typename T::value_type;
+            if constexpr (std::is_pointer_v<E>)
+                ensureDescriptor<std::remove_pointer_t<E>>();
+            else
+                ensureDescriptor<E>();
+            desc = new internal::cStdVectorDescriptor<E>(typeName);
+        }
+        else if constexpr (internal::is_std_list<T>::value) {
+            using E = typename T::value_type;
+            if constexpr (std::is_pointer_v<E>)
+                ensureDescriptor<std::remove_pointer_t<E>>();
+            else
+                ensureDescriptor<E>();
+            desc = new internal::cStdListDescriptor<E>(typeName);
+        }
+        else if constexpr (internal::is_std_set<T>::value) {
+            using E = typename T::value_type;
+            if constexpr (std::is_pointer_v<E>)
+                ensureDescriptor<std::remove_pointer_t<E>>();
+            else
+                ensureDescriptor<E>();
+            desc = new internal::cStdSetDescriptor<E>(typeName);
+        }
+        else if constexpr (internal::is_std_map<T>::value) {
+            using K = typename T::key_type;
+            using V = typename T::mapped_type;
+            if constexpr (std::is_pointer_v<K>) ensureDescriptor<std::remove_pointer_t<K>>(); else ensureDescriptor<K>();
+            if constexpr (std::is_pointer_v<V>) ensureDescriptor<std::remove_pointer_t<V>>(); else ensureDescriptor<V>();
+            desc = new internal::cStdMapDescriptor<T>(typeName);
+        }
+        else if constexpr (internal::is_std_unordered_map<T>::value) {
+            using K = typename T::key_type;
+            using V = typename T::mapped_type;
+            if constexpr (std::is_pointer_v<K>) ensureDescriptor<std::remove_pointer_t<K>>(); else ensureDescriptor<K>();
+            if constexpr (std::is_pointer_v<V>) ensureDescriptor<std::remove_pointer_t<V>>(); else ensureDescriptor<V>();
+            desc = new internal::cStdMapDescriptor<T>(typeName);
+        }
+        else if constexpr (internal::is_std_pair<T>::value) {
+            using F = typename T::first_type;
+            using S = typename T::second_type;
+            if constexpr (std::is_pointer_v<F>) ensureDescriptor<std::remove_pointer_t<F>>(); else ensureDescriptor<F>();
+            if constexpr (std::is_pointer_v<S>) ensureDescriptor<std::remove_pointer_t<S>>(); else ensureDescriptor<S>();
+            desc = new internal::cStdPairDescriptor<F,S>(typeName);
+        }
+        else {
+            desc = new internal::cPrimitiveTypeDescriptor<T>(typeName);
+        }
+        internal::classDescriptors.getInstance()->add(desc);
+        return desc;
     }
-    internal::classDescriptors.getInstance()->add(desc);
-    return desc;
 }
 
 }  // namespace omnetpp

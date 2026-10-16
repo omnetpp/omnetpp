@@ -206,7 +206,7 @@ class cPointerWatch : public cWatchBase
 
 template<typename T>
 inline cWatchBase *createWatch(const char *varname, T& d) {
-    return new cWatch<T>(varname, d);
+    return new cWatch<std::remove_cv_t<T>>(varname, d);
 }
 
 template<typename T>

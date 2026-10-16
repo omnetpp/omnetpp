@@ -1,0 +1,97 @@
+%description:
+Test WATCH() of const-qualified variables, and of containers whose element
+type is a pointer to const. These used to get a descriptor created for the
+const type, which then failed to read the (const-stripped) any_ptr.
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "../lib/descriptortest.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+struct Pt {
+    int x, y;
+};
+
+inline std::ostream& operator<<(std::ostream& os, const Pt& p) { return os << "(" << p.x << "," << p.y << ")"; }
+
+class Module : public cSimpleModule
+{
+  private:
+    std::map<int,std::string> map = {{1, "one"}, {2, "two"}};
+
+  public:
+    Module() : cSimpleModule(32768) { }
+    const std::map<int,std::string>& getMap() const { return map; }
+    virtual void activity() override;
+};
+
+Define_Module(Module);
+
+static void dump(cObject *watch)
+{
+    EV << "--- " << watch->getFullName() << " = " << watch->str() << "\n";
+    testlib::printDescriptor(EV, toAnyPtr(watch), watch->getDescriptor());
+}
+
+void Module::activity()
+{
+    const int constInt = 5;
+    dump(WATCH(constInt));
+
+    const std::map<int,std::string>& constMap = getMap();
+    dump(WATCH(constMap));
+
+    // element type is pointer-to-const; must not leave behind a descriptor
+    // for "const Pt" registered under the name of Pt
+    Pt p1 = {1, 2}, p2 = {3, 4};
+    std::vector<const Pt *> constPtrVector = {&p1, &p2};
+    dump(WATCH(constPtrVector));
+
+    Pt pt = {5, 6};
+    dump(WATCH(pt));
+
+    EV << ".\n";
+}
+
+}
+
+%file: test.ned
+
+simple Module
+{
+}
+
+network Test
+{
+    submodules:
+        mod: Module;
+}
+
+%contains: stdout
+--- constInt = 5
+descriptor: int
+valueAsString: 5
+
+--- constMap = size=2
+descriptor: std::map<int,std::string>
+valueAsString: size=2
+std::string elements[2]:
+    1 => "one"
+    2 => "two"
+
+--- constPtrVector = size=2
+descriptor: std::vector<const WATCH_const_1::Pt *>
+valueAsString: size=2
+WATCH_const_1::Pt elements[2]:
+    [0] (1,2)
+    [1] (3,4)
+
+--- pt = (5,6)
+descriptor: WATCH_const_1::Pt
+valueAsString: (5,6)
+
+.
