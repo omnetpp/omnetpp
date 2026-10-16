@@ -98,6 +98,25 @@ RUN curl -fsSL -o /tmp/uv.tar.gz \
     && rm -rf /tmp/uv.tar.gz /tmp/uv-x86_64-unknown-linux-gnu /opt/docproj ~/.cache
 ENV PATH="/opt/docvenv/bin:$PATH" VIRTUAL_ENV=/opt/docvenv
 
+# sphinx_immaterial downloads its web fonts (the Google Fonts catalogue, and Roboto
+# and Roboto Mono, whose TTF also goes to graphviz) when a build starts, unless
+# they are in its cache. Filling the cache here keeps documentation builds off the
+# network; the containers are thrown away after each build, so they would
+# otherwise download the fonts every time. The theme writes to the cache only on a
+# miss, so it can stay owned by root, but it creates the files readable by their
+# owner only, while builds also run as other users. A project that sets other
+# fonts in html_theme_options still downloads them (into a writable cache).
+ENV SPHINX_IMMATERIAL_EXTERNAL_RESOURCE_CACHE_DIR=/opt/sphinx-immaterial-cache
+RUN set -eu; \
+    mkdir -p /tmp/fonts; \
+    printf "html_theme = 'sphinx_immaterial'\nextensions = ['sphinx_immaterial']\n" > /tmp/fonts/conf.py; \
+    printf 'Fonts\n=====\n' > /tmp/fonts/index.rst; \
+    sphinx-build -b html -q /tmp/fonts /tmp/fonts/_build; \
+    test -n "$(ls -A "$SPHINX_IMMATERIAL_EXTERNAL_RESOURCE_CACHE_DIR/google_fonts")"; \
+    chmod -R a+rX "$SPHINX_IMMATERIAL_EXTERNAL_RESOURCE_CACHE_DIR"; \
+    find /opt/docvenv -type d -name '__pycache__' -prune -exec rm -rf {} +; \
+    rm -rf /tmp/fonts
+
 # OMNeT++ command-line tools from the @omnetpp/opp-tools npm package (built in the
 # omnetpp-vscode repo). Its bundles are self-contained, so no npm is needed: the
 # tarball is bind-mounted (leaving no layer behind), unpacked, and its bins linked

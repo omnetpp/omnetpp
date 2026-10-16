@@ -20,6 +20,13 @@ A second, larger variant adds what the PDF documents need: TeX Live (Ubuntu's
 `rsvg-convert` for the manual's figures. Both are built from the one
 `Containerfile` (stages `base` and `pdf`); the HTML image stays free of TeX.
 
+The web fonts that `sphinx_immaterial` would download at the start of every build
+(Roboto and Roboto Mono, its defaults) are cached in the image, in
+`/opt/sphinx-immaterial-cache` (`SPHINX_IMMATERIAL_EXTERNAL_RESOURCE_CACHE_DIR`), so
+building the documentation needs no network access. A project that sets other
+fonts in `html_theme_options` still downloads them, into a cache directory of its
+own (the image's is not writable for non-root users).
+
 ## Naming and tags
 
 The same references are used by CI and locally:
