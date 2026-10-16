@@ -29,6 +29,8 @@
 #include <unordered_map>
 #include <queue>
 #include <stack>
+#include <memory>
+#include <optional>
 #include <utility>
 #include <iterator>
 #include <type_traits>
@@ -76,6 +78,19 @@ template<typename T> struct is_std_adaptor : std::false_type {};  // container a
 template<typename E, typename C> struct is_std_adaptor<std::queue<E,C>> : std::true_type {};
 template<typename E, typename C> struct is_std_adaptor<std::stack<E,C>> : std::true_type {};
 template<typename E, typename C, typename P> struct is_std_adaptor<std::priority_queue<E,C,P>> : std::true_type {};
+
+// wrappers of a single (optional) value, supported by cStdWrapperDescriptor
+template<typename T> struct is_std_optional : std::false_type {};
+template<typename E> struct is_std_optional<std::optional<E>> : std::true_type {};
+
+template<typename T> struct is_std_smart_pointer : std::false_type {};
+template<typename E, typename D> struct is_std_smart_pointer<std::unique_ptr<E,D>> : std::true_type {};
+template<typename E> struct is_std_smart_pointer<std::shared_ptr<E>> : std::true_type {};
+
+template<typename W, bool isOptional = is_std_optional<W>::value>
+struct wrapped_type { using type = typename W::element_type; };
+template<typename W>
+struct wrapped_type<W, true> { using type = typename W::value_type; };
 
 // gives access to the underlying container (protected member "c") of a container adaptor
 template<typename A>
@@ -453,6 +468,73 @@ class cStdContainerDescriptor : public cDynamicDescriptor
 };
 
 /**
+ * @brief Descriptor for std::optional, std::unique_ptr and std::shared_ptr. Its
+ * value is the value of the contained object or pointee ("empty" or "nullptr"
+ * if there is none). It has a single field: "value" for std::optional, and
+ * "pointee" for smart pointers. The latter is a pointer field, i.e. it is
+ * displayed like a raw pointer would be.
+ *
+ * @ingroup Internals
+ */
+template<typename W>
+class cStdWrapperDescriptor : public cDynamicDescriptor
+{
+  private:
+    static constexpr bool isOptional = is_std_optional<W>::value;
+    using V = typename wrapped_type<W>::type;
+    using Access = ValueAccess<V*>;
+
+    // returns the pointer to the contained value or pointee, or nullptr if there is none
+    static V *getPointer(any_ptr object) {
+        W *w = object.get<W>();
+        if constexpr (isOptional)
+            return w->has_value() ? &**w : nullptr;
+        else
+            return w->get();
+    }
+
+    static const char *getNoneString() { return isOptional ? "empty" : "nullptr"; }
+
+  public:
+    cStdWrapperDescriptor(const char *typeName) : cDynamicDescriptor(typeName) {}
+
+    virtual std::string getValueAsString(any_ptr object) const override {
+        V *p = getPointer(object);
+        return p ? Access::getValueAsString(p) : getNoneString();
+    }
+
+    virtual int getFieldCount() const override { return 1; }
+    virtual const char *getFieldName(int field) const override { return field != 0 ? nullptr : isOptional ? "value" : "pointee"; }
+    virtual const char *getFieldTypeString(int field) const override { return field == 0 ? Access::getTypeName().c_str() : nullptr; }
+    virtual const char *getFieldStructName(int field) const override { return field == 0 ? Access::getTypeName().c_str() : nullptr; }
+
+    virtual unsigned int getFieldTypeFlags(int field) const override {
+        if (field != 0)
+            return 0;
+        unsigned int flags = Access::getTypeFlags();
+        return isOptional ? flags & ~FD_ISPOINTER : flags;
+    }
+
+    virtual std::string getFieldValueAsString(any_ptr object, int field, int i) const override {
+        if (field != 0)
+            return "";
+        V *p = getPointer(object);
+        return p ? Access::getValueAsString(p) : getNoneString();
+    }
+
+    virtual void setFieldValueAsString(any_ptr object, int field, int i, const char *value) const override {
+        V *p = field == 0 ? getPointer(object) : nullptr;
+        if (!p || !Access::setValueAsString(p, value))
+            cDynamicDescriptor::setFieldValueAsString(object, field, i, value);
+    }
+
+    virtual any_ptr getFieldStructValuePointer(any_ptr object, int field, int i) const override {
+        V *p = field == 0 ? getPointer(object) : nullptr;
+        return p ? Access::getStructValuePointer(p) : any_ptr(nullptr);
+    }
+};
+
+/**
  * @brief Descriptor for std::pair<F,S>. Has two fields: "first" and "second".
  *
  * @ingroup Internals
@@ -577,6 +659,10 @@ cClassDescriptor *ensureDescriptor()
             internal::ensureValueDescriptor<typename T::key_type>();
             internal::ensureValueDescriptor<typename T::mapped_type>();
             desc = new internal::cStdContainerDescriptor<T>(typeName);
+        }
+        else if constexpr (internal::is_std_optional<T>::value || internal::is_std_smart_pointer<T>::value) {
+            internal::ensureValueDescriptor<typename internal::wrapped_type<T>::type>();
+            desc = new internal::cStdWrapperDescriptor<T>(typeName);
         }
         else if constexpr (internal::is_std_pair<T>::value) {
             internal::ensureValueDescriptor<typename T::first_type>();

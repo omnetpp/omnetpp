@@ -26,6 +26,8 @@ struct Point {
 #include <array>
 #include <queue>
 #include <stack>
+#include <memory>
+#include <optional>
 #include "test_m.h"
 
 using namespace omnetpp;
@@ -176,6 +178,18 @@ void Tester::activity()
     { std::priority_queue<int> c; c.push(1); c.push(2); check("priority_queue<int>", c, "5"); }
     { std::queue<cNamedObject*> c; c.push(o1); check("queue<cNamedObject*>", c, nullptr); }
     { std::map<int,std::queue<int>> c; c[1].push(10); c[1].push(20); check("map<int,queue<int>>", c, nullptr); }
+
+    // optional and smart pointers
+    { std::optional<int> c = 1; check("optional<int>", c, "5"); }
+    { std::optional<int> c; check("optional<int> (empty)", c, "5"); }
+    { std::optional<Point> c = p1; check("optional<Point>", c, nullptr); }
+    { std::unique_ptr<int> c = std::make_unique<int>(1); check("unique_ptr<int>", c, "5"); }
+    { std::unique_ptr<int> c; check("unique_ptr<int> (nullptr)", c, "5"); }
+    { std::unique_ptr<Point> c = std::make_unique<Point>(p1); check("unique_ptr<Point>", c, nullptr); }
+    { std::unique_ptr<cNamedObject> c = std::make_unique<cNamedObject>("uobj"); check("unique_ptr<cNamedObject>", c, nullptr); }
+    { std::shared_ptr<std::string> c = std::make_shared<std::string>("a"); check("shared_ptr<string>", c, "\"x\""); }
+    { std::vector<std::unique_ptr<int>> c; c.push_back(std::make_unique<int>(1)); c.push_back(nullptr); check("vector<unique_ptr<int>>", c, nullptr); }
+    { std::map<int,std::optional<int>> c = {{1, 10}, {2, std::nullopt}}; check("map<int,optional<int>>", c, nullptr); }
 
     // special cases
     { std::vector<int*> c = {nullptr}; check("vector<int*> with nullptr as element 0", c, "7"); }
@@ -476,6 +490,55 @@ network Test
   descriptor=std::map<int, std::queue<int>> value=size=1
   field elements: type=std::queue<int> struct=std::queue<int> flags=AC
     "1 => " value=size=2 structPtr=non-null
+  resizing: ERROR: Cannot set array size of field 0
+=== optional<int>
+  descriptor=std::optional<int> value=1
+  field value: type=int struct=int flags=-
+    - value=1 structPtr=non-null
+  after setting element 0 to "5": 5
+=== optional<int> (empty)
+  descriptor=std::optional<int> value=empty
+  field value: type=int struct=int flags=-
+    - value=empty structPtr=null
+  setting element 0: ERROR: Cannot set field 0
+=== optional<Point>
+  descriptor=std::optional<descriptor_dynamic_2::Point> value=(unprintable)
+  field value: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=C
+    - value=(unprintable) structPtr=non-null
+=== unique_ptr<int>
+  descriptor=std::unique_ptr<int> value=1
+  field pointee: type=int struct=int flags=P
+    - value=1 structPtr=non-null
+  after setting element 0 to "5": 5
+=== unique_ptr<int> (nullptr)
+  descriptor=std::unique_ptr<int> value=nullptr
+  field pointee: type=int struct=int flags=P
+    - value=nullptr structPtr=null
+  setting element 0: ERROR: Cannot set field 0
+=== unique_ptr<Point>
+  descriptor=std::unique_ptr<descriptor_dynamic_2::Point> value=(unprintable)
+  field pointee: type=descriptor_dynamic_2::Point struct=descriptor_dynamic_2::Point flags=CP
+    - value=(unprintable) structPtr=non-null
+=== unique_ptr<cNamedObject>
+  descriptor=std::unique_ptr<omnetpp::cNamedObject> value=
+  field pointee: type=omnetpp::cNamedObject struct=omnetpp::cNamedObject flags=CPO
+    - value= structPtr=non-null
+=== shared_ptr<string>
+  descriptor=std::shared_ptr<std::string> value="a"
+  field pointee: type=std::string struct=std::string flags=P
+    - value="a" structPtr=non-null
+  after setting element 0 to ""x"": "x"
+=== vector<unique_ptr<int>>
+  descriptor=std::vector<std::unique_ptr<int>> value=size=2
+  field elements: type=std::unique_ptr<int> struct=std::unique_ptr<int> flags=AC
+    "[0] " value=1 structPtr=non-null
+    "[1] " value=nullptr structPtr=non-null
+  after resizing to 3: size=3
+=== map<int,optional<int>>
+  descriptor=std::map<int, std::optional<int>> value=size=2
+  field elements: type=std::optional<int> struct=std::optional<int> flags=AC
+    "1 => " value=10 structPtr=non-null
+    "2 => " value=empty structPtr=non-null
   resizing: ERROR: Cannot set array size of field 0
 === vector<int*> with nullptr as element 0
   descriptor=std::vector<int*> value=size=1
