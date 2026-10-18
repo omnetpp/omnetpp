@@ -143,6 +143,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_OUTPUT_SCALAR_FILE_APPEND, "Append to existing scalar file", c(null, "Append?"));
             addTextFieldEditor(group, CFGID_OUTPUT_SCALAR_DB_COMMIT_FREQ, "SQLite scalar file commit frequency");
             addComboboxFieldEditor(group, CFGID_OUTPUT_VECTOR_DB_INDEXING, "SQLite vector database indexing", true);
+            setCombo(CFGID_OUTPUT_VECTOR_DB_INDEXING, OUTPUT_VECTOR_DB_INDEXING_CHOICES);
             addSpacer(form);
             group = createGroup(form, "Limits");
             addTextFieldEditor(group, CFGID_TOTAL_STACK, "Total activity stack");
