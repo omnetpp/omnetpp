@@ -503,6 +503,83 @@ More precisely, parameter resolution takes place as follows:
 \end{enumerate}
 
 
+\subsection{Entries That Have No Effect}
+\label{sec:config-sim:unused-entries}
+
+An entry that does not match any parameter does not cause an error by
+itself, so a mistake in an entry may go unnoticed, and the simulation runs
+with a different value than intended. Common causes are:
+
+\begin{itemize}
+  \item a typo in the parameter name or in the module path;
+  \item a parameter or submodule that has been renamed, moved or removed,
+    for example in a new version of a model library;
+  \item a module type, selected for example with a \ttt{typename} entry,
+    that does not have the parameter;
+  \item an earlier entry that matches the same parameter and therefore takes
+    precedence, or a value assigned in NED, which cannot be overridden.
+\end{itemize}
+
+Therefore, the simulation reports the entries that have had no effect in
+the run, that is, that no parameter or other setting has been read from.
+By default, they are reported as a warning at the end of the run, together
+with their locations:
+
+\begin{filelisting}
+<!> Warning: 2 configuration entries have had no effect in this run (see the
+unused-entry-check option):
+  **.app[*].sendIntv = 2s  -- omnetpp.ini:42
+  **.host.mac.address = "auto"  -- omnetpp.ini:57
+\end{filelisting}
+
+The \fconfig{unused-entry-check} option controls what happens with them:
+\ttt{off}, \ttt{warning} (the default) or \ttt{error}. With \ttt{error},
+the run fails. The \fconfig{unused-entry-check-time} option controls when
+the check is done: at the \ttt{end} of the run (the default), after the
+\ffunc{finish()} methods have been called, or after network
+\ttt{initialization}, before the simulation starts. Checking early reports
+mistakes before a possibly long simulation, but it also reports entries
+meant for modules that are created later during the simulation.
+
+The check covers parameter assignments and the \ttt{typename},
+\ttt{display-string}, \ttt{display-name} and \ttt{rng-N} options. It does
+not cover result recording options such as \ttt{vector-recording}, because
+those are read only when results are recorded, or not at all if a result is
+not produced. An entry is not reported if the same key also occurs earlier
+in the configuration, as that is the normal way of overriding an entry,
+for example in a section that extends \ttt{[General]}. The check is skipped
+in parallel simulation.
+
+Some entries have no effect in a run by design, and are reported
+nevertheless:
+
+\begin{itemize}
+  \item entries in a shared section such as \ttt{[General]} that are meant
+    for another configuration's network. Move them into the configuration
+    that uses them;
+  \item entries in a parameter study that apply only to some runs, for
+    example to only one of the module types that an iteration variable
+    selects with \ttt{typename};
+  \item entries that only serve to define an iteration variable, for example
+    \ttt{**.dummy = \$\{x=1,2,3\}};
+  \item entries for optional parts of a model that are not present in the
+    current build.
+\end{itemize}
+
+In such cases, consider the entries one by one, and if needed, set
+\fconfig{unused-entry-check} to \ttt{off} for the configurations
+concerned.
+
+The check finds entries that do not reach any parameter, but it does not
+tell whether the model actually reads the parameters that the entries set.
+That is the other half of the chain from configuration entry to model
+code, and the \fconfig{print-unused-parameters} option covers it: at the
+end of the run, it prints the parameters of each NED type that no instance
+of the type has read. Whether a parameter is read often depends on the
+configuration, for example on which features of the model are enabled, so
+this list is a report for model developers rather than a warning.
+
+
 \section{Parameter Studies}
 \label{sec:config-sim:parameter-studies}
 

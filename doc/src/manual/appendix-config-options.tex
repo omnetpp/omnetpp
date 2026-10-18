@@ -881,6 +881,29 @@ with the \fopt{-h configdetails} option.
 \item[**.typename] = \textit{<string>}\\
     \textit{Per-object setting for modules and channels.}\\
     Specifies type for submodules and channels declared with 'like <>'.
+\item[unused-entry-check] = \textit{<string>}, default: \ttt{warning}\\
+    \textit{Per-simulation-run setting.}\\
+    Specifies what to do with configuration entries that have had no effect in
+    the run, i.e. that no parameter or other setting has been read from. Such
+    entries are often mistakes: typos, renamed or removed parameters or
+    submodules, a module type that lacks the parameter, or an entry hidden by
+    an earlier one or by a value fixed in NED. Values: \ttt{off},
+    \ttt{warning}, \ttt{error}. The check covers parameter assignments,
+    \ttt{typename}, \ttt{display-{\allowbreak}string},
+    \ttt{display-{\allowbreak}name} and \ttt{rng-{\allowbreak}N} entries, not
+    result recording options and other per-object options. An entry whose key
+    also occurs earlier in the configuration (i.e. it is overridden) is not
+    reported. The check is skipped in parallel simulation. See also
+    \ttt{unused-{\allowbreak}entry-{\allowbreak}check-{\allowbreak}time}.
+\item[unused-entry-check-time] = \textit{<string>}, default: \ttt{end}\\
+    \textit{Per-simulation-run setting.}\\
+    Specifies when to check for configuration entries that have had no effect
+    (see \ttt{unused-{\allowbreak}entry-{\allowbreak}check}). Values:
+    \ttt{initialization}: after network initialization, i.e. before the
+    simulation starts; \ttt{end}: after finish() has been called on all
+    modules. Checking after initialization reports problems early, but it also
+    reports entries that are meant for modules created later during the
+    simulation.
 \item[user-interface] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Selects the user interface to be started. Known good values are Cmdenv and
