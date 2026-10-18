@@ -942,6 +942,27 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_TYPENAME = addPerObjectOption(
         "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, null,
         "Specifies type for submodules and channels declared with 'like <>'.");
+    public static final ConfigOption CFGID_UNUSED_ENTRY_CHECK = addPerRunOption(
+        "unused-entry-check", CFG_STRING, "warning",
+        "Specifies what to do with configuration entries that have had no effect in " +
+        "the run, i.e. that no parameter or other setting has been read from. Such " +
+        "entries are often mistakes: typos, renamed or removed parameters or " +
+        "submodules, a module type that lacks the parameter, or an entry hidden by " +
+        "an earlier one or by a value fixed in NED. Values: `off`, `warning`, " +
+        "`error`. The check covers parameter assignments, `typename`, " +
+        "`display-string`, `display-name` and `rng-N` entries, not result recording " +
+        "options and other per-object options. An entry whose key also occurs " +
+        "earlier in the configuration (i.e. it is overridden) is not reported. The " +
+        "check is skipped in parallel simulation. See also " +
+        "`unused-entry-check-time`.");
+    public static final ConfigOption CFGID_UNUSED_ENTRY_CHECK_TIME = addPerRunOption(
+        "unused-entry-check-time", CFG_STRING, "end",
+        "Specifies when to check for configuration entries that have had no effect " +
+        "(see `unused-entry-check`). Values: `initialization`: after network " +
+        "initialization, i.e. before the simulation starts; `end`: after finish() " +
+        "has been called on all modules. Checking after initialization reports " +
+        "problems early, but it also reports entries that are meant for modules " +
+        "created later during the simulation.");
     public static final ConfigOption CFGID_USER_INTERFACE = addGlobalOption(
         "user-interface", CFG_STRING, null,
         "Selects the user interface to be started. Known good values are Cmdenv and " +
@@ -1057,6 +1078,14 @@ public class ConfigRegistry {
 
     public static final String[] OUTPUT_VECTOR_DB_INDEXING_CHOICES = new String[] {
             "skip", "ahead", "after"
+    };
+
+    public static final String[] CHECK_MODE_CHOICES = new String[] {
+            "off", "warning", "error"
+    };
+
+    public static final String[] CHECK_TIME_CHOICES = new String[] {
+            "initialization", "end"
     };
 
     private static Set<String> ignoredOptions = null; // custom config options that the user wants us to just ignore during inifile analysis

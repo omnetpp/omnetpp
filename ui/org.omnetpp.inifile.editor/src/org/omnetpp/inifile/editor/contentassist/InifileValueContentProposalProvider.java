@@ -17,8 +17,12 @@ import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_QTENV_DEFAULT_CONFIG;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_SIMTIME_RESOLUTION;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_UNUSED_ENTRY_CHECK;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_UNUSED_ENTRY_CHECK_TIME;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CHECK_MODE_CHOICES;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CHECK_TIME_CHOICES;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CONFIG_RECORDING_CHOICES;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.GENERAL;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.LOGLEVEL_CHOICES;
@@ -84,7 +88,8 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
             CFGID_EXTENDS, CFGID_NETWORK, CFGID_USER_INTERFACE, CFGID_CMDENV_CONFIG_NAME,
             CFGID_QTENV_DEFAULT_CONFIG, CFGID_CONSTRAINT,
             CFGID_SIMTIME_RESOLUTION,CFGID_SIMTIME_SCALE,
-            CFGID_CONFIG_RECORDING, CFGID_OUTPUT_VECTOR_DB_INDEXING
+            CFGID_CONFIG_RECORDING, CFGID_OUTPUT_VECTOR_DB_INDEXING,
+            CFGID_UNUSED_ENTRY_CHECK, CFGID_UNUSED_ENTRY_CHECK_TIME
     };
 
     public InifileValueContentProposalProvider(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, boolean replace) {
@@ -219,6 +224,12 @@ s    * before getting presented to the user.
         }
         else if (entry==CFGID_OUTPUT_VECTOR_DB_INDEXING) {
             p.addAll(toProposals(OUTPUT_VECTOR_DB_INDEXING_CHOICES));
+        }
+        else if (entry==CFGID_UNUSED_ENTRY_CHECK) {
+            p.addAll(toProposals(CHECK_MODE_CHOICES));
+        }
+        else if (entry==CFGID_UNUSED_ENTRY_CHECK_TIME) {
+            p.addAll(toProposals(CHECK_TIME_CHOICES));
         }
         else if (entry.getDataType()==ConfigOption.DataType.CFG_BOOL) {
             p.addAll(toProposals(new String[] {"true", "false"}));
