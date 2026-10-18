@@ -1,0 +1,38 @@
+%description:
+unused-entry-check: an entry overridden by the same key in a derived section
+is not reported, and neither are result recording options. An unused entry
+given on the command line is reported.
+
+%file: test.ned
+
+module App
+{
+    parameters:
+        double sendInterval @unit(s) = default(1s);
+        int fixedParam = 5;
+}
+
+network Test
+{
+    submodules:
+        app: App;
+}
+
+%inifile: test.ini
+[General]
+unused-entry-check = error
+**.app.sendInterval = 2s
+**.app.sendInterval.param-record-as-scalar = true
+**.app.foo.scalar-recording = false
+**.app.foo:vector.vector-recording = false
+
+[Config Derived]
+**.app.sendInterval = 3s
+
+%extraargs: -c Derived --**.app.cmdLineParam=1
+
+%exitcode: 1
+
+%contains-regex: stderr
+<!> Error: 1 configuration entry has had no effect in this run \(see the unused-entry-check option\):
+  \*\*\.app\.cmdLineParam = 1  -- <commandline>

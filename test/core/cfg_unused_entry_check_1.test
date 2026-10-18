@@ -1,0 +1,30 @@
+%description:
+unused-entry-check: by default, an entry that has no effect is reported as a
+warning at the end of the run, with its key, value and location.
+
+%file: test.ned
+
+module App
+{
+    parameters:
+        double sendInterval @unit(s) = default(1s);
+        int fixedParam = 5;
+}
+
+network Test
+{
+    submodules:
+        app: App;
+}
+
+%inifile: test.ini
+[General]
+**.app.sendInterval = 2s
+**.app.sendIntv = 3s
+
+%contains-regex: stderr
+<!> Warning: 1 configuration entry has had no effect in this run \(see the unused-entry-check option\):
+  \*\*\.app\.sendIntv = 3s  -- .*test\.ini:3
+
+%contains: stdout
+Calling finish() at end of Run #0...

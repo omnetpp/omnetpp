@@ -101,6 +101,10 @@ struct ENVIR_API EnvirOptions
 
     bool debugStatisticsRecording;
     bool checkSignals;
+
+    enum CheckMode { CHECK_OFF, CHECK_WARNING, CHECK_ERROR }; // what a sanity check does when it finds a problem
+    CheckMode unusedEntryCheck = CHECK_WARNING;
+    bool unusedEntryCheckAtEnd = true;  // false: check after network initialization
     bool fnameAppendHost;
 
     bool useStderr;
@@ -329,6 +333,15 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // Utility function: checks simulation fingerprint and displays a message accordingly
     void checkFingerprint();
+
+    // Reports the configuration entries that have had no effect in this run
+    // (see the unused-entry-check option). atEnd: whether we are called after
+    // finish() or after network initialization; the check only runs at the
+    // time configured with the unused-entry-check-time option.
+    void checkUnusedEntries(bool atEnd);
+
+    // Displays a warning message. The default implementation writes it to the output.
+    virtual void displayWarning(const char *text);
 
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);

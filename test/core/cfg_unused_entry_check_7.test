@@ -1,0 +1,38 @@
+%description:
+unused-entry-check: each run of a parameter study is checked on its own. Run 0
+uses type A and run 1 uses type B, so each run reports the other type's entry.
+
+%file: test.ned
+
+moduleinterface IApp
+{
+}
+
+module A like IApp
+{
+    parameters:
+        int a = default(0);
+}
+
+module B like IApp
+{
+    parameters:
+        int b = default(0);
+}
+
+network Test
+{
+    submodules:
+        app: <> like IApp;
+}
+
+%inifile: test.ini
+[General]
+**.app.typename = ${t="A","B"}
+**.app.a = 1
+**.app.b = 2
+
+%extraargs: -r 0..1
+
+%contains-regex: stderr
+(?s)1 configuration entry has had no effect in this run.*  \*\*\.app\.b = 2  -- .*1 configuration entry has had no effect in this run.*  \*\*\.app\.a = 1  -- 

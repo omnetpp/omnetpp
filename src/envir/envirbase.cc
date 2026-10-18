@@ -170,6 +170,8 @@ Register_PerRunConfigOption(CFGID_FINGERPRINTER_CLASS, "fingerprintcalculator-cl
 Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results", "Base value for the `${resultdir}` variable, which is used as the default directory for result files (output vector file, output scalar file, eventlog file, etc.). See also the `resultdir-subdivision` config option.");
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
 Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
+Register_PerRunConfigOption(CFGID_UNUSED_ENTRY_CHECK, "unused-entry-check", CFG_STRING, "warning", "Specifies what to do with configuration entries that have had no effect in the run, i.e. that no parameter or other setting has been read from. Such entries are often mistakes: typos, renamed or removed parameters or submodules, a module type that lacks the parameter, or an entry hidden by an earlier one or by a value fixed in NED. Values: `off`, `warning`, `error`. The check covers parameter assignments, `typename`, `display-string`, `display-name` and `rng-N` entries, not result recording options and other per-object options. An entry whose key also occurs earlier in the configuration (i.e. it is overridden) is not reported. The check is skipped in parallel simulation. See also `unused-entry-check-time`.");
+Register_PerRunConfigOption(CFGID_UNUSED_ENTRY_CHECK_TIME, "unused-entry-check-time", CFG_STRING, "end", "Specifies when to check for configuration entries that have had no effect (see `unused-entry-check`). Values: `initialization`: after network initialization, i.e. before the simulation starts; `end`: after finish() has been called on all modules. Checking after initialization reports problems early, but it also reports entries that are meant for modules created later during the simulation.");
 Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (`@signal` properties) in NED files. The default setting depends on the build type: `true` in DEBUG, and `false` in RELEASE mode.");
 
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
@@ -813,6 +815,7 @@ void EnvirBase::prepareForRun()
         getSimulation()->setSimulationTimeLimit(opt->simtimeLimit);
     getSimulation()->callInitialize();
     cLogProxy::flushLastLine();
+    checkUnusedEntries(false);
 }
 
 //-------------------------------------------------------------
@@ -1418,6 +1421,18 @@ void EnvirBase::readOptions()
     // other options are read on per-run basis
 }
 
+static EnvirOptions::CheckMode parseCheckMode(const std::string& value, cConfigOption *option)
+{
+    if (value == "off")
+        return EnvirOptions::CHECK_OFF;
+    else if (value == "warning")
+        return EnvirOptions::CHECK_WARNING;
+    else if (value == "error")
+        return EnvirOptions::CHECK_ERROR;
+    else
+        throw cRuntimeError("Invalid value '%s' for configuration option '%s', expected 'off', 'warning' or 'error'", value.c_str(), option->getName());
+}
+
 void EnvirBase::readPerRunOptions()
 {
     cConfiguration *cfg = getConfig();
@@ -1432,6 +1447,16 @@ void EnvirBase::readPerRunOptions()
     opt->warmupPeriod = cfg->getAsDouble(CFGID_WARMUP_PERIOD);
     opt->debugStatisticsRecording = cfg->getAsBool(CFGID_DEBUG_STATISTICS_RECORDING);
     opt->checkSignals = cfg->getAsBool(CFGID_CHECK_SIGNALS);
+
+    opt->unusedEntryCheck = parseCheckMode(cfg->getAsString(CFGID_UNUSED_ENTRY_CHECK), CFGID_UNUSED_ENTRY_CHECK);
+
+    std::string unusedEntryCheckTime = cfg->getAsString(CFGID_UNUSED_ENTRY_CHECK_TIME);
+    if (unusedEntryCheckTime == "initialization")
+        opt->unusedEntryCheckAtEnd = false;
+    else if (unusedEntryCheckTime == "end")
+        opt->unusedEntryCheckAtEnd = true;
+    else
+        throw cRuntimeError("Invalid value '%s' for configuration option '%s', expected 'initialization' or 'end'", unusedEntryCheckTime.c_str(), CFGID_UNUSED_ENTRY_CHECK_TIME->getName());
     opt->schedulerClass = cfg->getAsString(CFGID_SCHEDULER_CLASS);
     opt->futureeventsetClass = cfg->getAsString(CFGID_FUTUREEVENTSET_CLASS);
     opt->eventlogManagerClass = cfg->getAsString(CFGID_EVENTLOGMANAGER_CLASS);
@@ -2026,6 +2051,77 @@ void EnvirBase::stoppedWithException(std::exception& e)
         // TODO: get error code from the exception?
         eventlogManager->endRun(true, E_CUSTOM, e.what());  //FIXME this should be rather in endRun(), or? (Andras)
     }
+}
+
+// Returns the last dot-separated segment of a configuration key; dots inside [] and {} do not count
+static std::string getLastKeySegment(const char *key)
+{
+    const char *lastDot = nullptr;
+    char closer = '\0';
+    for (const char *p = key; *p; ++p) {
+        if (!closer && (*p == '[' || *p == '{'))
+            closer = *p == '[' ? ']' : '}';
+        else if (*p == closer)
+            closer = '\0';
+        else if (!closer && *p == '.')
+            lastDot = p;
+    }
+    return lastDot ? lastDot + 1 : key;
+}
+
+static bool isInUnusedEntryCheckScope(const char *key)
+{
+    // Parameter assignments (including "typename"), and the per-object options that are
+    // read while the network is set up. Result recording options are excluded, because
+    // they are read late (e.g. in finish()) or never (if the result is not produced),
+    // and so are the per-object options that are read only under certain conditions
+    // (e.g. "partition-id", "module-eventlog-recording", "cmdenv-log-level"), and the
+    // options registered by models.
+    std::string suffix = getLastKeySegment(key);
+    if (suffix.find('-') == std::string::npos)
+        return true;  // parameter assignment or typename
+    return suffix == "display-string" || suffix == "display-name" || opp_stringbeginswith(suffix.c_str(), "rng-");
+}
+
+void EnvirBase::checkUnusedEntries(bool atEnd)
+{
+    if (opt->unusedEntryCheck == EnvirOptions::CHECK_OFF || opt->unusedEntryCheckAtEnd != atEnd)
+        return;
+    if (opt->parsim)
+        return;  // entries used only on other partitions would look unused
+
+    std::vector<const cConfiguration::KeyValue *> unusedEntries;
+    for (const cConfiguration::KeyValue *entry : getConfigEx()->getUnusedEntries())
+        if (isInUnusedEntryCheckScope(entry->getKey()))
+            unusedEntries.push_back(entry);
+    if (unusedEntries.empty())
+        return;
+
+    std::stringstream os;
+    int n = unusedEntries.size();
+    os << n << " configuration " << (n == 1 ? "entry has" : "entries have") << " had no effect in this run (see the "
+       << CFGID_UNUSED_ENTRY_CHECK->getName() << " option):\n";
+    for (const cConfiguration::KeyValue *entry : unusedEntries) {
+        os << "  " << entry->getKey() << " = " << entry->getValue();
+        std::string location = entry->getSourceLocation().str();
+        if (!location.empty())
+            os << "  -- " << location;
+        os << "\n";
+    }
+    os << "Possible causes: a typo, a renamed or removed parameter or submodule, a module type that lacks the "
+          "parameter, an earlier entry or a NED assignment that takes precedence, or an entry meant for another "
+          "configuration or run";
+    if (!atEnd)
+        os << ", or for a module created later during the simulation";
+
+    if (opt->unusedEntryCheck == EnvirOptions::CHECK_ERROR)
+        throw cRuntimeError("%s", os.str().c_str());
+    displayWarning(os.str().c_str());
+}
+
+void EnvirBase::displayWarning(const char *text)
+{
+    warn() << text << endl;
 }
 
 void EnvirBase::checkFingerprint()

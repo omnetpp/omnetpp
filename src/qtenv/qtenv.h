@@ -260,6 +260,7 @@ class QTENV_API Qtenv : public QObject, public EnvirBase
 
       void log(cLogEntry *entry) override;
       void alert(const char *msg) override;
+      void displayWarning(const char *text) override;
       std::string gets(const char *prompt, const char *defaultReply = nullptr) override;
       bool askYesNo(const char *question) override;
 

@@ -1,0 +1,26 @@
+%description:
+unused-entry-check: invalid option values are rejected.
+
+%file: test.ned
+
+module App
+{
+    parameters:
+        double sendInterval @unit(s) = default(1s);
+        int fixedParam = 5;
+}
+
+network Test
+{
+    submodules:
+        app: App;
+}
+
+%inifile: test.ini
+[General]
+unused-entry-check-time = sometimes
+
+%exitcode: 1
+
+%contains: stderr
+Invalid value 'sometimes' for configuration option 'unused-entry-check-time', expected 'initialization' or 'end'

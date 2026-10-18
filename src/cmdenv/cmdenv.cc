@@ -272,6 +272,7 @@ void Cmdenv::doRun()
                 cLogProxy::flushLastLine();
 
                 checkFingerprint();
+                checkUnusedEntries(true);
 
                 notifyLifecycleListeners(LF_ON_SIMULATION_SUCCESS);
 

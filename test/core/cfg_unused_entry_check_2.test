@@ -1,0 +1,38 @@
+%description:
+unused-entry-check = error: the run fails, and all unused entries are listed
+in one message. Also checks that entries hidden by an earlier entry, entries
+for parameters with a fixed NED value, unused typename entries and unused
+display-string entries are reported.
+
+%file: test.ned
+
+module App
+{
+    parameters:
+        double sendInterval @unit(s) = default(1s);
+        int fixedParam = 5;
+}
+
+network Test
+{
+    submodules:
+        app: App;
+}
+
+%inifile: test.ini
+[General]
+unused-entry-check = error
+**.app.* = 2s
+**.app.sendInterval = 3s
+**.fixedParam = 7
+**.app.typename = "App"
+**.nonexistent.display-string = "i=block/app"
+
+%exitcode: 1
+
+%contains-regex: stderr
+<!> Error: 4 configuration entries have had no effect in this run \(see the unused-entry-check option\):
+  \*\*\.app\.sendInterval = 3s  -- .*test\.ini:4
+  \*\*\.fixedParam = 7  -- .*test\.ini:5
+  \*\*\.app\.typename = "App"  -- .*test\.ini:6
+  \*\*\.nonexistent\.display-string = "i=block/app"  -- .*test\.ini:7

@@ -1,0 +1,60 @@
+%description:
+unused-entry-check: entries for a module created during the simulation are
+reported when checking after network initialization, before the module
+is created.
+
+%file: test.ned
+
+module Dynamic
+{
+    parameters:
+        int p = default(0);
+}
+
+simple Creator
+{
+}
+
+network Test
+{
+    submodules:
+        creator: Creator;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Creator : public cSimpleModule
+{
+  protected:
+    virtual void initialize() override {
+        scheduleAt(1, new cMessage("create"));
+    }
+    virtual void handleMessage(cMessage *msg) override {
+        delete msg;
+        cModule *module = cModuleType::get("Dynamic")->createScheduleInit("dynamic", getParentModule());
+        EV << "created, p=" << module->par("p").intValue() << "\n";
+    }
+};
+
+Define_Module(Creator);
+
+}
+
+%inifile: test.ini
+[General]
+unused-entry-check = error
+unused-entry-check-time = initialization
+**.dynamic.p = 5
+
+%exitcode: 1
+
+%contains-regex: stderr
+<!> Error: 1 configuration entry has had no effect in this run .*
+  \*\*\.dynamic\.p = 5  -- .*test\.ini:4
+.*or for a module created later during the simulation

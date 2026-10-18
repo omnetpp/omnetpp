@@ -1187,6 +1187,7 @@ void Qtenv::finishSimulation()
         cLogProxy::flushLastLine();
 
         checkFingerprint();
+        checkUnusedEntries(true);
     }
     catch (std::exception& e) {
         stoppedWithException(e);
@@ -2712,6 +2713,12 @@ void Qtenv::confirm(DialogKind kind, const char *msg)
         case ERROR: QMessageBox::critical(mainWindow, "Error", msg, QMessageBox::StandardButton::Ok); break;
         }
     }
+}
+
+void Qtenv::displayWarning(const char *text)
+{
+    std::string msg = std::string("<!> Warning: ") + text + "\n";
+    logBuffer.addInfo(msg.c_str());
 }
 
 void Qtenv::alert(const char *msg)

@@ -1,0 +1,28 @@
+%description:
+unused-entry-check = off: nothing is reported.
+
+%file: test.ned
+
+module App
+{
+    parameters:
+        double sendInterval @unit(s) = default(1s);
+        int fixedParam = 5;
+}
+
+network Test
+{
+    submodules:
+        app: App;
+}
+
+%inifile: test.ini
+[General]
+unused-entry-check = off
+**.app.sendIntv = 3s
+
+%not-contains: stderr
+configuration entr
+
+%contains: stdout
+Calling finish() at end of Run #0...
