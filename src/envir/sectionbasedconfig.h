@@ -72,6 +72,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         PatternMatcher *ownerPattern = nullptr; // key without the suffix
         PatternMatcher *suffixPattern = nullptr; // only filled in when this is a wildcard bin
         PatternMatcher *fullPathPattern = nullptr; // when present, match against this instead of ownerPattern & suffixPattern
+        mutable bool used = false; // whether a lookup has returned this entry since activation; see getUnusedEntries()
 
         MatchableEntry(const Entry& e) : Entry(e) {}
         MatchableEntry(const MatchableEntry& e) = delete; // stored only once, see entries[]
@@ -232,6 +233,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual const char *getPerObjectConfigValue(const char *objectFullPath, const char *keySuffix) const override;
     virtual const KeyValue& getPerObjectConfigEntry(const char *objectFullPath, const char *keySuffix) const override;
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const override;
+    virtual std::vector<const KeyValue *> getUnusedEntries() const override;
     virtual const char *getVariable(const char *varname) const override;
     virtual std::vector<const char *> getIterationVariableNames() const override;
     virtual std::vector<const char *> getPredefinedVariableNames() const override;

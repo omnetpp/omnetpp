@@ -501,6 +501,19 @@ class SIM_API cConfigurationEx : public cConfiguration
      * getPerObjectConfigValue() to obtain the corresponding values.
      */
     virtual std::vector<const char *> getMatchingPerObjectConfigKeySuffixes(const char *objectFullPath, const char *keySuffixPattern) const = 0;
+
+    /**
+     * Returns the parameter and per-object configuration entries of the active
+     * configuration that no lookup (getParameterEntry(), getPerObjectConfigEntry(),
+     * getMatchingPerObjectConfigKeySuffixes(), etc.) has returned since the
+     * configuration was activated, i.e. that have had no effect so far.
+     * Entries whose key also occurs earlier in the active configuration
+     * (i.e. overridden entries) are not included.
+     *
+     * The returned objects remain valid until the next activateConfig() call.
+     * The default implementation returns an empty vector.
+     */
+    virtual std::vector<const KeyValue *> getUnusedEntries() const {return {};}
     //@}
 };
 

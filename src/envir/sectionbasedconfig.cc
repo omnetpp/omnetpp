@@ -1286,9 +1286,12 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
 
     // find first match in the bin
     for (const MatchableEntry *entry : bin->entries) {
-        if (entryMatches(*entry, moduleFullPath, paramName))
-            if (hasDefaultValue || entry->value != "default")
+        if (entryMatches(*entry, moduleFullPath, paramName)) {
+            if (hasDefaultValue || entry->value != "default") {
+                entry->used = true;
                 return *entry;
+            }
+        }
     }
     return nullEntry;  // not found
 }
@@ -1372,8 +1375,10 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
 
     // find first match in the bin
     for (const MatchableEntry *entry : suffixBin->entries) {
-        if (entryMatches(*entry, objectFullPath, keySuffix))
+        if (entryMatches(*entry, objectFullPath, keySuffix)) {
+            entry->used = true;
             return *entry;  // found value
+        }
     }
     return nullEntry;  // not found
 }
@@ -1406,19 +1411,35 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
             const SuffixBin& bin = suffixBin.second;
             for (const MatchableEntry *entry : bin.entries) {
                 if (entry->fullPathPattern) {
-                    if (PatternMatcher((std::string(objectFullPath)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry->key.c_str()))
+                    if (PatternMatcher((std::string(objectFullPath)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry->key.c_str())) {
+                        entry->used = true;
                         result.push_back(partAfterLastDot(entry->key.c_str()));
+                    }
                 }
                 else if ((anyObject || entry->ownerPattern->matches(objectFullPath))
                     &&
                     (entry->suffixPattern == nullptr ||
                      suffixMatcher.matches(partAfterLastDot(entry->key.c_str())) ||
-                     entry->suffixPattern->matches(keySuffixPattern)))
+                     entry->suffixPattern->matches(keySuffixPattern))) {
+                    entry->used = true;
                     result.push_back(partAfterLastDot(entry->key.c_str()));
+                }
             }
         }
     }
     //TODO remove duplicates
+    return result;
+}
+
+std::vector<const cConfiguration::KeyValue *> SectionBasedConfiguration::getUnusedEntries() const
+{
+    std::vector<const KeyValue *> result;
+    std::set<std::string> seenKeys;  // config resolution is first-wins, so a later occurrence of the same key is overridden, not unused
+    for (const MatchableEntry *entry : entries) {
+        bool isFirstOccurrence = seenKeys.insert(entry->key).second;
+        if (isFirstOccurrence && !entry->used && findLastDot(entry->key.c_str()) != nullptr)
+            result.push_back(entry);
+    }
     return result;
 }
 
