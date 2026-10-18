@@ -264,7 +264,7 @@ public class GenericConfigPage extends ScrolledFormPage {
             addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
             addCheckboxFieldEditor(group, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
             addCheckboxFieldEditor(group, CFGID_PRINT_INSTANTIATED_NED_TYPES, "Print list of instantiated NED types");
-            addCheckboxFieldEditor(group, CFGID_PRINT_UNUSED_PARAMETERS, "Print names of unused parameters per NED type");
+            addCheckboxFieldEditor(group, CFGID_PRINT_UNUSED_PARAMETERS, "Report unread parameters (per NED type)");
             addCheckboxFieldEditor(group, CFGID_WARNINGS, "Warnings"); //XXX
             addSpacer(form);
             group = createGroup(form, "Snapshot Files");
