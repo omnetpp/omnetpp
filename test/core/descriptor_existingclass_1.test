@@ -1,0 +1,150 @@
+%description:
+Test the descriptors of existing classes that are declared without fields and
+without string conversion (@toString, @fromString, @str) in a msg file: they
+use the descriptor that ensureDescriptor<T>() creates from the C++ type. For a
+typedef of a standard library container, that descriptor shows the elements,
+both in WATCHes and in message fields of that type. Other such classes use
+operator<< and operator>>, or show "(unprintable)". With @descriptor(readonly),
+a descriptor class is still generated.
+
+%file: test.msg
+namespace @TESTNAME@;
+
+cplusplus {{
+typedef std::vector<int> IntVector;
+typedef std::vector<long> LongVector;
+
+struct Celsius { double v = 0; };
+inline std::ostream& operator<<(std::ostream& os, const Celsius& c) { return os << c.v << "C"; }
+inline std::istream& operator>>(std::istream& is, Celsius& c) { return is >> c.v; }
+
+struct NoStream { int z = 0; };  // no operator<< or operator>>
+}}
+
+class IntVector { @existingClass; }
+class Celsius { @existingClass; }
+class NoStream { @existingClass; }
+class LongVector { @existingClass; @descriptor(readonly); }
+
+message TestMessage {
+    IntVector ints;
+    Celsius temp;
+}
+
+%file: test.ned
+
+simple Tester
+{
+}
+
+network Test
+{
+    submodules:
+        tester: Tester;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+#include "test_m.h"
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Tester : public cSimpleModule
+{
+  public:
+    Tester() : cSimpleModule(32768) { }
+    virtual void activity() override;
+};
+
+Define_Module(Tester);
+
+static void printDescriptor(cClassDescriptor *desc, any_ptr object)
+{
+    EV << "  value: \"" << desc->getValueAsString(object) << "\", fields: " << desc->getFieldCount() << "\n";
+    for (int f = 0; f < desc->getFieldCount(); f++) {
+        int n = desc->getFieldIsArray(f) ? desc->getFieldArraySize(object, f) : 1;
+        for (int i = 0; i < n; i++)
+            EV << "  " << desc->getFieldName(f) << "[" << i << "] = " << desc->getFieldValueAsString(object, f, i) << "\n";
+    }
+}
+
+void Tester::activity()
+{
+    IntVector ints = {10, 20, 30};
+
+    EV << "=== IntVector\n";
+    cClassDescriptor *desc = cClassDescriptor::getDescriptorFor(opp_typename(typeid(IntVector)));
+    EV << "  name: " << desc->getName() << ", same as ensureDescriptor(): " << (desc == ensureDescriptor<IntVector>()) << "\n";
+    printDescriptor(desc, any_ptr(&ints));
+
+    EV << "=== WATCH\n";
+    cWatchBase *watch = WATCH(ints);
+    EV << "  str: " << watch->str() << "\n";
+    printDescriptor(watch->getDescriptor(), toAnyPtr(watch));
+
+    EV << "=== message field\n";
+    TestMessage *msg = new TestMessage();
+    msg->setInts(ints);
+    msg->getTempForUpdate().v = 21.5;
+    cClassDescriptor *msgDesc = msg->getDescriptor();
+    int field = msgDesc->findField("ints");
+    EV << "  compound: " << msgDesc->getFieldIsCompound(field) << ", struct name: " << msgDesc->getFieldStructName(field) << "\n";
+    cClassDescriptor *fieldDesc = cClassDescriptor::getDescriptorFor(msgDesc->getFieldStructName(field));
+    printDescriptor(fieldDesc, msgDesc->getFieldStructValuePointer(toAnyPtr(msg), field, 0));
+    field = msgDesc->findField("temp");
+    EV << "  temp: " << msgDesc->getFieldValueAsString(toAnyPtr(msg), field, 0) << "\n";
+
+    EV << "=== Celsius\n";
+    Celsius c;
+    desc = cClassDescriptor::getDescriptorFor(opp_typename(typeid(Celsius)));
+    desc->setValueAsString(any_ptr(&c), "-3.5");
+    printDescriptor(desc, any_ptr(&c));
+
+    EV << "=== NoStream\n";
+    NoStream ns;
+    desc = cClassDescriptor::getDescriptorFor(opp_typename(typeid(NoStream)));
+    printDescriptor(desc, any_ptr(&ns));
+
+    EV << "=== LongVector (readonly)\n";
+    LongVector longs = {1, 2};
+    desc = cClassDescriptor::getDescriptorFor(opp_typename(typeid(LongVector)));
+    EV << "  existingClass property: " << (desc->getProperty("existingClass") != nullptr) << "\n";
+    printDescriptor(desc, any_ptr(&longs));
+
+    delete msg;
+    EV << ".\n";
+}
+
+}
+
+%contains: stdout
+=== IntVector
+  name: std::vector<int>, same as ensureDescriptor(): 1
+  value: "size=3", fields: 1
+  elements[0] = 10
+  elements[1] = 20
+  elements[2] = 30
+=== WATCH
+  str: size=3
+  value: "size=3", fields: 1
+  elements[0] = 10
+  elements[1] = 20
+  elements[2] = 30
+=== message field
+  compound: 1, struct name: std::vector<int>
+  value: "size=3", fields: 1
+  elements[0] = 10
+  elements[1] = 20
+  elements[2] = 30
+  temp: 
+=== Celsius
+  value: "-3.5C", fields: 0
+=== NoStream
+  value: "(unprintable)", fields: 0
+=== LongVector (readonly)
+  existingClass property: 1
+  value: "(unprintable)", fields: 0
+.

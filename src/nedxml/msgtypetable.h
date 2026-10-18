@@ -207,6 +207,7 @@ class NEDXML_API MsgTypeTable
         bool generateTypeDefinition = true; // whether the code for this class/struct/enum should be generated
         bool generateDescriptor = true;
         bool generateSettersInDescriptor = true;
+        bool useDynamicDescriptor = false; // if generateDescriptor: register ensureDescriptor<T>() instead of generating a descriptor class
         bool generateCastFunction = false;
 
         std::vector<std::string> rootClasses; // root(s) of its C++ class hierarchy

@@ -1121,6 +1121,12 @@ inline std::string removePointer(const std::string& type)
     return opp_trim(type.substr(0, type.size()-1));
 }
 
+void MsgCodeGenerator::generateDynamicDescriptorRegistration(const ClassInfo& classInfo)
+{
+    std::string qualifiedrealmsgclass = prefixWithNamespace(classInfo.realClass, classInfo.namespaceName);
+    CC << "EXECUTE_ON_STARTUP(omnetpp::ensureDescriptor<" << qualifiedrealmsgclass << ">());\n\n";
+}
+
 void MsgCodeGenerator::generateDescriptorClass(const ClassInfo& classInfo)
 {
     CC << "class " << classInfo.descriptorClass << " : public omnetpp::cClassDescriptor\n";

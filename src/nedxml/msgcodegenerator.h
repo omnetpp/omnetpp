@@ -80,6 +80,7 @@ class NEDXML_API MsgCodeGenerator
     void generateToAnyPtr(const ClassInfo& a);
     void generateFromAnyPtr(const ClassInfo& a, const std::string& exportDef);
     void generateDescriptorClass(const ClassInfo& a);
+    void generateDynamicDescriptorRegistration(const ClassInfo& a);
     void generateEnum(const ClassInfo& enumInfo);
     void generateImport(const std::string& importName);
     void generateNamespaceBegin(const std::string& namespaceName, bool intoCcFile=true);

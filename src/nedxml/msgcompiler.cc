@@ -422,7 +422,9 @@ void MsgCompiler::generateCode(MsgFileElement *fileElement)
                     else
                         codegen.generateClass(classInfo, opts.exportDef);
                 }
-                if (classInfo.generateDescriptor)
+                if (classInfo.generateDescriptor && classInfo.useDynamicDescriptor)
+                    codegen.generateDynamicDescriptorRegistration(classInfo);
+                else if (classInfo.generateDescriptor)
                     codegen.generateDescriptorClass(classInfo);
                 break;
             }

@@ -394,6 +394,18 @@ void MsgAnalyzer::analyzeClassOrStruct(ClassInfo& classInfo, const std::string& 
     }
 
     classInfo.generateCastFunction = getPropertyAsBool(classInfo.props, PROP_CASTFUNCTION, true);
+
+    // An existing class declared without fields and without string conversion
+    // gets the descriptor that ensureDescriptor<T>() creates from its C++ type.
+    // That is not only equivalent (operator<< and operator>> for string
+    // conversion), but also shows the elements of standard library containers,
+    // e.g. when the class is a typedef for std::vector<Ipv4Address>. (A generated
+    // descriptor would be registered under the same name, opp_typename(), and
+    // would shadow the container descriptor.)
+    classInfo.useDynamicDescriptor = existingClass && classInfo.generateSettersInDescriptor && !classInfo.iscObject &&
+            classInfo.fieldList.empty() && classInfo.baseclassFieldlist.empty() &&
+            classInfo.extendsQName.empty() && classInfo.implementsQNames.empty() &&
+            classInfo.toString.empty() && classInfo.fromString.empty() && classInfo.str.empty();
 }
 
 void MsgAnalyzer::analyzeFields(ClassInfo& classInfo, const std::string& namespaceName)
