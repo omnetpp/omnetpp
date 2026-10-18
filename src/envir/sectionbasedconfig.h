@@ -74,7 +74,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
         PatternMatcher *fullPathPattern = nullptr; // when present, match against this instead of ownerPattern & suffixPattern
 
         MatchableEntry(const Entry& e) : Entry(e) {}
-        MatchableEntry(const MatchableEntry& e);   // apparently only used for std::vector storage
+        MatchableEntry(const MatchableEntry& e) = delete; // stored only once, see entries[]
+        MatchableEntry& operator=(const MatchableEntry& e) = delete;
         ~MatchableEntry();
         std::string str() const;
     };
@@ -103,7 +104,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // against the bin which contains the keys ending in ".power" (e.g.
     // "**.server.radio.power", "**.host[0].**.power", etc).
     // If there is an entry which contains a wildcard in the parameter name part,
-    // that unfortunately has to be added to all bins.
+    // that unfortunately has to be added to all bins. Bins only hold pointers;
+    // the entries themselves are owned by entries[].
     //
     // Examples:
     // Parameter keys:
@@ -121,7 +123,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     //   **.tcp.eedVector.record-*"       ==> goes into the wildcard bin; ownerPattern="**.tcp.eedVector", suffixPattern="record-*"
     //
     struct SuffixBin {
-        std::vector<MatchableEntry> entries;
+        std::vector<const MatchableEntry *> entries; // points into SectionBasedConfiguration::entries[]
     };
 
   private:
@@ -138,7 +140,7 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     int activeRunNumber = 0;
     std::string runId;
 
-    std::vector<Entry> entries; // entries of the activated configuration, with itervars substituted
+    std::vector<MatchableEntry *> entries; // entries of the activated configuration, with itervars substituted; owned, the bins point to them
     SuffixBin config; // config entries (i.e. keys not containing a dot)
     std::map<std::string,SuffixBin> suffixBins;  // bins for each non-wildcard suffix
     SuffixBin wildcardSuffixBin; // bin for entries that contain wildcards
@@ -180,6 +182,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
 
   public:
     SectionBasedConfiguration() {}
+    SectionBasedConfiguration(const SectionBasedConfiguration&) = delete; // bins point into entries[]
+    SectionBasedConfiguration& operator=(const SectionBasedConfiguration&) = delete;
     virtual ~SectionBasedConfiguration();
 
     /**

@@ -15,6 +15,7 @@
 
 #include <cassert>
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <sstream>
 #include "common/opp_ctype.h"
@@ -86,14 +87,6 @@ static struct ConfigVarDescription { const char *name, *description; } configVar
 
 #define VARPOS_PREFIX    std::string("&")
 
-SectionBasedConfiguration::MatchableEntry::MatchableEntry(const MatchableEntry& e) :
-    Entry(e),
-    ownerPattern(e.ownerPattern ? new PatternMatcher(*e.ownerPattern) : nullptr),
-    suffixPattern(e.suffixPattern ? new PatternMatcher(*e.suffixPattern) : nullptr),
-    fullPathPattern(e.fullPathPattern ? new PatternMatcher(*e.fullPathPattern) : nullptr)
-{
-}
-
 SectionBasedConfiguration::MatchableEntry::~MatchableEntry()
 {
     delete ownerPattern;
@@ -145,10 +138,12 @@ void SectionBasedConfiguration::clear()
     // note: this gets called between activateConfig() calls, so "ini" must NOT be nullptr'ed out here
     activeConfig = "";
     activeRunNumber = 0;
-    entries.clear();
-    config.entries.clear();
+    config.entries.clear();  // clear the bins before deleting the entries they point to
     suffixBins.clear();
     wildcardSuffixBin.entries.clear();
+    for (MatchableEntry *entry : entries)
+        delete entry;
+    entries.clear();
     variables.clear();
 }
 
@@ -912,14 +907,18 @@ static const char *findLastDot(const char *key)
 
 void SectionBasedConfiguration::addEntry(const Entry& entry)
 {
-    entries.push_back(entry);
+    // Each entry is stored only once, in entries[] which owns it; the bins only
+    // point to it (an entry with a wildcard suffix may be in many bins).
+    // The entry is built in a unique_ptr until entries[] takes it over, so that
+    // it is not leaked if a PatternMatcher constructor throws (malformed pattern).
+    std::unique_ptr<MatchableEntry> tmp(new MatchableEntry(entry));
     const std::string& key = entry.key;
     const char *lastDot = findLastDot(key.c_str());
+    std::string suffix;
+    bool suffixContainsWildcards = false;
     if (!lastDot) {
-        MatchableEntry entry2(entry);
         if (PatternMatcher::containsWildcards(key.c_str()))
-            entry2.suffixPattern = new PatternMatcher(key.c_str(), true, true, true);
-        config.entries.push_back(entry2);
+            tmp->suffixPattern = new PatternMatcher(key.c_str(), true, true, true);
     }
     else {
         // key contains wildcard or dot: parameter or per-object configuration
@@ -929,42 +928,46 @@ void SectionBasedConfiguration::addEntry(const Entry& entry)
 
         // analyze key and create appropriate entry
         std::string ownerName;
-        std::string suffix;
         splitKey(key.c_str(), ownerName, suffix);
-        bool suffixContainsWildcards = PatternMatcher::containsWildcards(suffix.c_str());
+        suffixContainsWildcards = PatternMatcher::containsWildcards(suffix.c_str());
 
-        MatchableEntry entry2(entry);
         if (!ownerName.empty())
-            entry2.ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
+            tmp->ownerPattern = new PatternMatcher(ownerName.c_str(), true, true, true);
         else
-            entry2.fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
-        entry2.suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : nullptr;
+            tmp->fullPathPattern = new PatternMatcher(key.c_str(), true, true, true);
+        tmp->suffixPattern = suffixContainsWildcards ? new PatternMatcher(suffix.c_str(), true, true, true) : nullptr;
+    }
 
-        // find which bin it should go into
-        if (!suffixContainsWildcards) {
-            // no wildcard in suffix (=bin name)
-            if (suffixBins.find(suffix) == suffixBins.end()) {
-                // suffix bin not yet exists, create it
-                SuffixBin& bin = suffixBins[suffix];
+    entries.push_back(tmp.get());
+    const MatchableEntry *newEntry = tmp.release();
 
-                // initialize bin with matching wildcard keys seen so far
-                for (auto & wildcardEntry : wildcardSuffixBin.entries)
-                    if (wildcardEntry.suffixPattern->matches(suffix.c_str()))
-                        bin.entries.push_back(wildcardEntry);
-            }
-            suffixBins[suffix].entries.push_back(entry2);
+    // find which bin(s) it should go into
+    if (!lastDot) {
+        config.entries.push_back(newEntry);
+    }
+    else if (!suffixContainsWildcards) {
+        // no wildcard in suffix (=bin name)
+        if (suffixBins.find(suffix) == suffixBins.end()) {
+            // suffix bin not yet exists, create it
+            SuffixBin& bin = suffixBins[suffix];
+
+            // initialize bin with matching wildcard keys seen so far
+            for (const MatchableEntry *wildcardEntry : wildcardSuffixBin.entries)
+                if (wildcardEntry->suffixPattern->matches(suffix.c_str()))
+                    bin.entries.push_back(wildcardEntry);
         }
-        else {
-            // suffix contains wildcards: we need to add it to all existing suffix bins it matches
-            // Note: if suffix also contains a hyphen, that's actually illegal (per-object
-            // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
-            // but causes no harm, because getPerObjectConfigEntry() won't look into the
-            // wildcard bin
-            wildcardSuffixBin.entries.push_back(entry2);
-            for (auto & suffixBin : suffixBins)
-                if (entry2.suffixPattern->matches(suffixBin.first.c_str()))
-                    (suffixBin.second).entries.push_back(entry2);
-        }
+        suffixBins[suffix].entries.push_back(newEntry);
+    }
+    else {
+        // suffix contains wildcards: we need to add it to all existing suffix bins it matches
+        // Note: if suffix also contains a hyphen, that's actually illegal (per-object
+        // config entry names cannot be wildcarded, ie. "foo.bar.cmdenv-*" is illegal),
+        // but causes no harm, because getPerObjectConfigEntry() won't look into the
+        // wildcard bin
+        wildcardSuffixBin.entries.push_back(newEntry);
+        for (auto & suffixBin : suffixBins)
+            if (newEntry->suffixPattern->matches(suffixBin.first.c_str()))
+                (suffixBin.second).entries.push_back(newEntry);
     }
 }
 
@@ -1243,17 +1246,17 @@ bool SectionBasedConfiguration::isIgnorableConfigKey(const char *ignoredKeyPatte
 
 const char *SectionBasedConfiguration::getConfigValue(const char *key) const
 {
-    for (const auto & entry : config.entries)
-        if (entry.suffixPattern ? entry.suffixPattern->matches(key) : opp_streq(entry.key.c_str(), key))
-            return entry.value.c_str();
+    for (const MatchableEntry *entry : config.entries)
+        if (entry->suffixPattern ? entry->suffixPattern->matches(key) : opp_streq(entry->key.c_str(), key))
+            return entry->value.c_str();
     return nullptr;
 }
 
 const cConfiguration::KeyValue& SectionBasedConfiguration::getConfigEntry(const char *key) const
 {
-    for (const auto & entry : config.entries)
-        if (entry.suffixPattern ? entry.suffixPattern->matches(key) : opp_streq(entry.key.c_str(), key))
-            return (const KeyValue&)entry;
+    for (const MatchableEntry *entry : config.entries)
+        if (entry->suffixPattern ? entry->suffixPattern->matches(key) : opp_streq(entry->key.c_str(), key))
+            return (const KeyValue&)*entry;
     return (const KeyValue&)nullEntry;
 }
 
@@ -1262,9 +1265,9 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingConfigKeys(const
     std::vector<const char *> result;
     PatternMatcher matcher(pattern, true, true, true);
 
-    for (const auto & entry : config.entries)
-        if (matcher.matches(entry.key.c_str()))
-            result.push_back(entry.key.c_str());
+    for (const MatchableEntry *entry : config.entries)
+        if (matcher.matches(entry->key.c_str()))
+            result.push_back(entry->key.c_str());
     return result;
 }
 
@@ -1282,10 +1285,10 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getParameterEntry(con
     const SuffixBin *bin = it == suffixBins.end() ? &wildcardSuffixBin : &it->second;
 
     // find first match in the bin
-    for (const auto & entry : bin->entries) {
-        if (entryMatches(entry, moduleFullPath, paramName))
-            if (hasDefaultValue || entry.value != "default")
-                return entry;
+    for (const MatchableEntry *entry : bin->entries) {
+        if (entryMatches(*entry, moduleFullPath, paramName))
+            if (hasDefaultValue || entry->value != "default")
+                return *entry;
     }
     return nullEntry;  // not found
 }
@@ -1309,16 +1312,16 @@ std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs(int flags)
 {
     std::vector<const char *> result;
     std::set<std::string> seenKeys;  // to suppress shadowed duplicate keys: config resolution is first-wins, so only the first occurrence of a key is effective
-    for (const auto & entry : entries) {
+    for (const MatchableEntry *entry : entries) {
         bool add = false;
         if (isSet(flags, FILT_ALL))
             add = true;
         else {
-            const char *lastDotPos = strrchr(entry.getKey(), '.');
+            const char *lastDotPos = strrchr(entry->getKey(), '.');
             if (!lastDotPos) {
                 if (isSet(flags, FILT_GLOBAL_CONFIG))
                     add = true;
-                else if (isSet(flags, FILT_ESSENTIAL_CONFIG) && isEssentialOption(entry.getKey()))
+                else if (isSet(flags, FILT_ESSENTIAL_CONFIG) && isEssentialOption(entry->getKey()))
                     add = true;
             }
             else {
@@ -1335,9 +1338,9 @@ std::vector<const char *> SectionBasedConfiguration::getKeyValuePairs(int flags)
             }
         }
 
-        if (add && seenKeys.insert(entry.getKey()).second) {  // keep only the first (effective) occurrence of each key
-            result.push_back(entry.getKey());
-            result.push_back(entry.getValue());
+        if (add && seenKeys.insert(entry->getKey()).second) {  // keep only the first (effective) occurrence of each key
+            result.push_back(entry->getKey());
+            result.push_back(entry->getValue());
         }
     }
     return result;
@@ -1368,9 +1371,9 @@ const cConfiguration::KeyValue& SectionBasedConfiguration::getPerObjectConfigEnt
     const SuffixBin *suffixBin = &it->second;
 
     // find first match in the bin
-    for (const auto & entry : suffixBin->entries) {
-        if (entryMatches(entry, objectFullPath, keySuffix))
-            return entry;  // found value
+    for (const MatchableEntry *entry : suffixBin->entries) {
+        if (entryMatches(*entry, objectFullPath, keySuffix))
+            return *entry;  // found value
     }
     return nullEntry;  // not found
 }
@@ -1397,21 +1400,21 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
         const char *suffix = suffixBin.first.c_str();
         if (suffixMatcher.matches(suffix)) {
             // find all matching entries from this suffix bin.
-            // We'll have a little problem where key ends in wildcard (i.e. entry.suffixPattern!=nullptr);
+            // We'll have a little problem where key ends in wildcard (i.e. entry->suffixPattern!=nullptr);
             // there we'd have to determine whether two *patterns* match. We resolve this
             // by checking whether one pattern matches the other one as string, and vice versa.
             const SuffixBin& bin = suffixBin.second;
-            for (const auto & entry : bin.entries) {
-                if (entry.fullPathPattern) {
-                    if (PatternMatcher((std::string(objectFullPath)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry.key.c_str()))
-                        result.push_back(partAfterLastDot(entry.key.c_str()));
+            for (const MatchableEntry *entry : bin.entries) {
+                if (entry->fullPathPattern) {
+                    if (PatternMatcher((std::string(objectFullPath)+"."+keySuffixPattern).c_str(), true, true, true).matches(entry->key.c_str()))
+                        result.push_back(partAfterLastDot(entry->key.c_str()));
                 }
-                else if ((anyObject || entry.ownerPattern->matches(objectFullPath))
+                else if ((anyObject || entry->ownerPattern->matches(objectFullPath))
                     &&
-                    (entry.suffixPattern == nullptr ||
-                     suffixMatcher.matches(partAfterLastDot(entry.key.c_str())) ||
-                     entry.suffixPattern->matches(keySuffixPattern)))
-                    result.push_back(partAfterLastDot(entry.key.c_str()));
+                    (entry->suffixPattern == nullptr ||
+                     suffixMatcher.matches(partAfterLastDot(entry->key.c_str())) ||
+                     entry->suffixPattern->matches(keySuffixPattern)))
+                    result.push_back(partAfterLastDot(entry->key.c_str()));
             }
         }
     }
@@ -1422,19 +1425,19 @@ std::vector<const char *> SectionBasedConfiguration::getMatchingPerObjectConfigK
 void SectionBasedConfiguration::dump() const
 {
     printf("Config:\n");
-    for (const auto & entry : config.entries)
-        printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
+    for (const MatchableEntry *entry : config.entries)
+        printf("  %s = %s\n", entry->key.c_str(), entry->value.c_str());
 
     for (const auto & suffixBin : suffixBins) {
         const std::string& suffix = suffixBin.first;
         const SuffixBin& bin = suffixBin.second;
         printf("Suffix Bin %s:\n", suffix.c_str());
-        for (const auto & entry : bin.entries)
-            printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
+        for (const MatchableEntry *entry : bin.entries)
+            printf("  %s = %s\n", entry->key.c_str(), entry->value.c_str());
     }
     printf("Wildcard Suffix Bin:\n");
-    for (const auto & entry : wildcardSuffixBin.entries)
-        printf("  %s = %s\n", entry.key.c_str(), entry.value.c_str());
+    for (const MatchableEntry *entry : wildcardSuffixBin.entries)
+        printf("  %s = %s\n", entry->key.c_str(), entry->value.c_str());
 }
 
 }  // namespace envir
