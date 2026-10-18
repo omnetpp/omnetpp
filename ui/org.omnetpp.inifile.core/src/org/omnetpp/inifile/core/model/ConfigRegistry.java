@@ -1055,6 +1055,10 @@ public class ConfigRegistry {
             "all", "none", "config", "params", "essentials", "globalconfig"
     };
 
+    public static final String[] OUTPUT_VECTOR_DB_INDEXING_CHOICES = new String[] {
+            "skip", "ahead", "after"
+    };
+
     private static Set<String> ignoredOptions = null; // custom config options that the user wants us to just ignore during inifile analysis
 
     public static final String PREF_IGNORED_OPTIONS = "IgnoredOptions";

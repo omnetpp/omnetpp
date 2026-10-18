@@ -8,15 +8,21 @@
 package org.omnetpp.inifile.editor.contentassist;
 
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_CMDENV_CONFIG_NAME;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_CMDENV_LOG_LEVEL;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_CONFIG_RECORDING;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_CONSTRAINT;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_EXTENDS;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_NETWORK;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_OUTPUT_VECTOR_DB_INDEXING;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_QTENV_DEFAULT_CONFIG;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_SIMTIME_RESOLUTION;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_SIMTIME_SCALE;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_USER_INTERFACE;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.CFGID_VECTOR_RECORDING_INTERVALS;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.CONFIG_RECORDING_CHOICES;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.LOGLEVEL_CHOICES;
+import static org.omnetpp.inifile.core.model.ConfigRegistry.OUTPUT_VECTOR_DB_INDEXING_CHOICES;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.SIMTIME_RESOLUTION_CHOICES;
 import static org.omnetpp.inifile.core.model.ConfigRegistry.SIMTIME_SCALE_CHOICES;
 
@@ -77,7 +83,8 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
     private ConfigOption[] assistedOptions = {
             CFGID_EXTENDS, CFGID_NETWORK, CFGID_USER_INTERFACE, CFGID_CMDENV_CONFIG_NAME,
             CFGID_QTENV_DEFAULT_CONFIG, CFGID_CONSTRAINT,
-            CFGID_SIMTIME_RESOLUTION,CFGID_SIMTIME_SCALE
+            CFGID_SIMTIME_RESOLUTION,CFGID_SIMTIME_SCALE,
+            CFGID_CONFIG_RECORDING, CFGID_OUTPUT_VECTOR_DB_INDEXING
     };
 
     public InifileValueContentProposalProvider(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, boolean replace) {
@@ -207,6 +214,12 @@ s    * before getting presented to the user.
         else if (entry==CFGID_SIMTIME_SCALE) {
             p.addAll(toProposals(SIMTIME_SCALE_CHOICES));
         }
+        else if (entry==CFGID_CONFIG_RECORDING) {
+            p.addAll(toProposals(CONFIG_RECORDING_CHOICES));
+        }
+        else if (entry==CFGID_OUTPUT_VECTOR_DB_INDEXING) {
+            p.addAll(toProposals(OUTPUT_VECTOR_DB_INDEXING_CHOICES));
+        }
         else if (entry.getDataType()==ConfigOption.DataType.CFG_BOOL) {
             p.addAll(toProposals(new String[] {"true", "false"}));
         }
@@ -241,6 +254,9 @@ s    * before getting presented to the user.
 
         if (entry==CFGID_VECTOR_RECORDING_INTERVALS) {
             p.addAll(toProposals(new String[]{"$1..", "$1..$2, $3.."})); //XXX use templated proposals here!
+        }
+        if (entry==CFGID_CMDENV_LOG_LEVEL) {
+            p.addAll(toProposals(LOGLEVEL_CHOICES));
         }
         if (entry.getDataType()==ConfigOption.DataType.CFG_BOOL) {
             p.addAll(toProposals(new String[] {"true", "false"}));
