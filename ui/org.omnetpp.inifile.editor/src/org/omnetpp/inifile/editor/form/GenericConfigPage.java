@@ -48,6 +48,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     public static final String CAT_OUTPUTSCALARS = "Scalar Results";
     public static final String CAT_STATISTICS = "Declared Statistics";
     public static final String CAT_DEBUGGING = "Debugging";
+    public static final String CAT_DIAGNOSTICS = "Diagnostics";
     public static final String CAT_FINGERPRINT = "Fingerprint";
     public static final String CAT_EVENTLOG = "Event Log";
     public static final String CAT_VISUAL = "Visual";
@@ -68,6 +69,7 @@ public class GenericConfigPage extends ScrolledFormPage {
                 CAT_STATISTICS,
                 CAT_VISUAL,
                 CAT_DEBUGGING,
+                CAT_DIAGNOSTICS,
                 CAT_FINGERPRINT,
                 CAT_EVENTLOG,
                 CAT_CMDENV,
@@ -251,12 +253,15 @@ public class GenericConfigPage extends ScrolledFormPage {
             addTextFieldEditor(group, CFGID_DEBUGGER_ATTACH_COMMAND, "Debugger command");
             addTextFieldEditor(group, CFGID_DEBUGGER_ATTACH_WAIT_TIME, "Attach timeout");
             addNote(group, "Note: Using an external debugger requires extra configuration on some systems, including Ubuntu. Hint: \"ptrace_scope\".");
-            addSpacer(form);
-            group = createGroup(form, "Related Options");
-            addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
+        }
+        else if (category.equals(CAT_DIAGNOSTICS)) {
+            group = createGroup(form, "Checks");
             addCheckboxFieldEditor(group, CFGID_ALLOW_OBJECT_STEALING_ON_DELETION, "Allow object stealing on component deletion");
             addCheckboxFieldEditor(group, CFGID_PARAMETER_MUTABILITY_CHECK, "Do not allow runtime changes made to parameters not marked as @mutable");
             addCheckboxFieldEditor(group, CFGID_CHECK_SIGNALS, "Check emitted signals against @signal declarations");
+            addSpacer(form);
+            group = createGroup(form, "Diagnostic Output");
+            addCheckboxFieldEditor(group, CFGID_PRINT_UNDISPOSED, "Dump names of undisposed objects");
             addCheckboxFieldEditor(group, CFGID_DEBUG_STATISTICS_RECORDING, "Debug result recording");
             addCheckboxFieldEditor(group, CFGID_PRINT_INSTANTIATED_NED_TYPES, "Print list of instantiated NED types");
             addCheckboxFieldEditor(group, CFGID_PRINT_UNUSED_PARAMETERS, "Print names of unused parameters per NED type");
