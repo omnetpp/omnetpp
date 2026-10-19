@@ -131,6 +131,15 @@ class SCAVE_API ResultItem
     EnumType *getEnum() const;
 
     virtual double getScalarField(FieldNum fieldId) const = 0;
+
+    /**
+     * Returns the unit of the given field. The "unit" attribute of the result
+     * item is the unit of the values, and it only applies to fields that are
+     * computed from the values (sum, mean, min, etc). Counts have no unit,
+     * and the start/end times of vectors are in seconds. An empty string
+     * means no unit.
+     */
+    virtual const std::string& getScalarFieldUnit(FieldNum fieldId) const;
 };
 
 /**
@@ -223,6 +232,7 @@ class SCAVE_API StatisticsResult : public ResultItem
     virtual int getItemType() const;
     const Statistics& getStatistics() const {return stat;}
     virtual double getScalarField(FieldNum fieldId) const;
+    virtual const std::string& getScalarFieldUnit(FieldNum fieldId) const;
     static FieldNum *getAvailableFields(); // zero-terminated array
 };
 

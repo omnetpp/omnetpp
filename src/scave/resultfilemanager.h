@@ -24,6 +24,7 @@
 #include <map>
 #include <list>
 #include <unordered_set>
+#include <mutex>
 
 #include "common/exception.h"
 #include "common/commonutil.h"
@@ -153,6 +154,11 @@ class SCAVE_API ResultFileManager
 
     mutable std::unordered_map<std::pair<const std::string *, ResultItem::FieldNum>,const std::string *, common::pair_hash> namesWithSuffixCache;
 
+    // attributes of field scalars whose unit differs from that of the containing item, keyed by (containing item's attributes, unit);
+    // the mutex is needed because these are created on demand, under the read lock
+    mutable std::unordered_map<std::pair<const StringMap *, std::string>,const StringMap *, common::pair_hash> fieldAttrsCache;
+    mutable std::mutex fieldAttrsCacheMutex;
+
 #ifdef THREADED
     omnetpp::common::ReentrantReadWriteLock lock;
 #endif
@@ -211,7 +217,9 @@ class SCAVE_API ResultFileManager
     inline const HistogramResult *uncheckedGetHistogram(ID id) const;
     inline const StatisticsResult *uncheckedGetStatisticsOrHistogram(ID id) const;
 
+    const StringMap *getPooledAttributes(const StringMap& attrs);
     void fillFieldScalar(ScalarResult& scalar, ID id) const;
+    const StringMap *getFieldScalarAttributes(const ResultItem *container, FieldNum fieldId) const;
     const std::string *getPooledNameWithSuffix(const std::string *name, FieldNum fieldId) const;
     static const char *getNameSuffixForFieldScalar(FieldNum fieldId);
 

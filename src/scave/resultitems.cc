@@ -38,12 +38,7 @@ ResultItem::ResultItem(FileRun *fileRun, const std::string& moduleName, const st
 
 void ResultItem::setAttributes(const StringMap& attrs)
 {
-    ResultFileManager *resultFileManager = fileRunRef->fileRef->getResultFileManager();
-    auto it = resultFileManager->attrsPool.find(&attrs);
-    if (it != resultFileManager->attrsPool.end())
-        attributes = *it;
-    else
-        resultFileManager->attrsPool.insert(attributes = new StringMap(attrs));
+    attributes = fileRunRef->fileRef->getResultFileManager()->getPooledAttributes(attrs);
 }
 
 void ResultItem::setAttribute(const std::string& attrName, const std::string& value)
@@ -171,6 +166,33 @@ EnumType *ResultItem::getEnum() const
     return enumPtr;
 }
 
+static const std::string SECONDS = "s";
+
+const std::string& ResultItem::getScalarFieldUnit(FieldNum fieldId) const
+{
+    switch (fieldId) {
+    case FieldNum::SUM:
+    case FieldNum::MEAN:
+    case FieldNum::STDDEV:
+    case FieldNum::MIN:
+    case FieldNum::MAX:
+    case FieldNum::RANGEMIN:
+    case FieldNum::RANGEMAX: return getAttribute(Scave::UNIT);
+
+    // with unweighted observations, the weights are 1, so the sum of weights is also a count
+    case FieldNum::COUNT:
+    case FieldNum::SUMWEIGHTS:
+    case FieldNum::NUMBINS:
+    case FieldNum::UNDERFLOWS:
+    case FieldNum::OVERFLOWS: return NULLSTRING;
+
+    case FieldNum::STARTTIME:
+    case FieldNum::ENDTIME: return SECONDS;
+
+    default: throw opp_runtime_error("Invalid fieldID");
+    }
+}
+
 int ScalarResult::getItemType() const
 {
     return ResultFileManager::SCALAR;
@@ -267,6 +289,18 @@ double StatisticsResult::getScalarField(FieldNum fieldId) const
     case FieldNum::NUMBINS:  return 0;
     default: throw opp_runtime_error("Invalid fieldID");
     }
+}
+
+const std::string& StatisticsResult::getScalarFieldUnit(FieldNum fieldId) const
+{
+    bool isSumOfWeights = fieldId == FieldNum::SUMWEIGHTS || fieldId == FieldNum::UNDERFLOWS || fieldId == FieldNum::OVERFLOWS;
+    if (isSumOfWeights && stat.isWeighted()) {
+        // weights are durations if the statistic is time-weighted; otherwise their unit is unknown
+        auto it = getAttributes().find("timeWeighted");
+        bool isTimeWeighted = it != getAttributes().end() && it->second != "0" && it->second != "false"; // same as in the recorders
+        return isTimeWeighted ? SECONDS : NULLSTRING;
+    }
+    return ResultItem::getScalarFieldUnit(fieldId);
 }
 
 ResultItem::FieldNum *StatisticsResult::getAvailableFields()

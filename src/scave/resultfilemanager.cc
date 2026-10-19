@@ -103,6 +103,7 @@ void ResultFileManager::clear()
     names.clear();
     classNames.clear();
 
+    fieldAttrsCache.clear();
     for (const StringMap *attrs : attrsPool)
         delete attrs;
 }
@@ -480,9 +481,41 @@ void ResultFileManager::fillFieldScalar(ScalarResult& scalar, ID id) const
     scalar.fileRunRef = container->fileRunRef;
     scalar.moduleNameRef = container->moduleNameRef;
     scalar.nameRef = getPooledNameWithSuffix(container->nameRef,fieldId);
-    scalar.attributes = container->attributes;
+    scalar.attributes = getFieldScalarAttributes(container, fieldId);
     scalar.value = container->getScalarField(fieldId);
     scalar.ownID = id;
+}
+
+const StringMap *ResultFileManager::getPooledAttributes(const StringMap& attrs)
+{
+    auto it = attrsPool.find(&attrs);
+    if (it != attrsPool.end())
+        return *it;
+    const StringMap *pooledAttrs = new StringMap(attrs);
+    attrsPool.insert(pooledAttrs);
+    return pooledAttrs;
+}
+
+const StringMap *ResultFileManager::getFieldScalarAttributes(const ResultItem *container, FieldNum fieldId) const
+{
+    // a field scalar has the attributes of the containing item, except for the unit, which depends on the field
+    const std::string& unit = container->getScalarFieldUnit(fieldId);
+    if (unit == container->getAttribute(Scave::UNIT))
+        return container->attributes;
+
+    std::lock_guard<std::mutex> guard(fieldAttrsCacheMutex);
+    auto key = std::make_pair(container->attributes, unit);
+    auto it = fieldAttrsCache.find(key);
+    if (it != fieldAttrsCache.end())
+        return it->second;
+    StringMap attrs = *container->attributes;
+    if (unit.empty())
+        attrs.erase(Scave::UNIT);
+    else
+        attrs[Scave::UNIT] = unit;
+    const StringMap *pooledAttrs = const_cast<ResultFileManager*>(this)->getPooledAttributes(attrs);
+    fieldAttrsCache[key] = pooledAttrs;
+    return pooledAttrs;
 }
 
 const std::string *ResultFileManager::getPooledNameWithSuffix(const std::string *name, FieldNum fieldId) const
