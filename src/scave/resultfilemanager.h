@@ -202,6 +202,7 @@ class SCAVE_API ResultFileManager
     int addVector(FileRun *fileRunRef, int vectorId, const char *moduleName, const char *vectorName, const StringMap& attrs, const char *columns);
     int addStatistics(FileRun *fileRunRef, const char *moduleName, const char *statisticsName, const Statistics& stat, const StringMap& attrs);
     int addHistogram(FileRun *fileRunRef, const char *moduleName, const char *histogramName, const Statistics& stat, const Histogram& bins, const StringMap& attrs);
+    void removeUnitOfCountScalars(ResultFile *file);
 
     inline FileRun *getFileRunForID(ID id) const; // checks for nullptr
 

@@ -1,0 +1,74 @@
+%description:
+Test that the result file reader removes the unit from count and totalCount
+scalars in result files written by earlier OMNeT++ versions (which recorded the
+unit of the statistic for these recording modes), and that fields of statistics
+exported as scalars get the unit appropriate for the field.
+
+%file: test.ned
+
+network Test
+{
+}
+
+%file: legacy.sca
+version 3
+run General-0-20260101-00:00:00-1
+attr configname General
+attr network Test
+attr runnumber 0
+
+scalar Test.node pkBytes:count 3
+attr recordingmode count
+attr unit B
+scalar Test.node pkBytes:totalCount 3
+attr recordingmode totalCount
+attr unit B
+scalar Test.node pkBytes:count+10 13
+attr recordingmode count+10
+attr unit B
+scalar Test.node pkBytes:sum 60
+attr recordingmode sum
+attr unit B
+statistic Test.node pkBytes:stats
+field count 3
+field mean 20
+field stddev 10
+field min 10
+field max 30
+field sum 60
+field sqrsum 1400
+attr recordingmode stats
+attr unit B
+
+%postrun-command: opp_scavetool export -T s -w -F OmnetppScalarFile -o exported.sca legacy.sca
+
+%contains: exported.sca
+scalar Test.node pkBytes:count 3
+attr recordingmode count
+scalar Test.node pkBytes:totalCount 3
+attr recordingmode totalCount
+scalar Test.node pkBytes:count+10 13
+attr recordingmode count+10
+attr unit B
+scalar Test.node pkBytes:sum 60
+attr recordingmode sum
+attr unit B
+scalar Test.node pkBytes:stats:count 3
+attr recordingmode stats
+scalar Test.node pkBytes:stats:sumweights 3
+attr recordingmode stats
+scalar Test.node pkBytes:stats:mean 20
+attr recordingmode stats
+attr unit B
+scalar Test.node pkBytes:stats:stddev 10
+attr recordingmode stats
+attr unit B
+scalar Test.node pkBytes:stats:min 10
+attr recordingmode stats
+attr unit B
+scalar Test.node pkBytes:stats:max 30
+attr recordingmode stats
+attr unit B
+scalar Test.node pkBytes:stats:numbins 0
+attr recordingmode stats
+

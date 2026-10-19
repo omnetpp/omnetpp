@@ -1343,6 +1343,8 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
         ResultFile *file = SqliteResultFileUtils::isSqliteFile(fileSystemFileName) ?
                 SqliteResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName) :
                 OmnetppResultFileLoader(this, flags, interrupted).loadFile(displayName, fileSystemFileName);
+        if (file != nullptr)
+            removeUnitOfCountScalars(file);
         return file; // note: nullptr if file was skipped (e.g. due to missing index)
     }
     catch (InterruptedException& e) {
@@ -1351,6 +1353,24 @@ ResultFile *ResultFileManager::loadFile(const char *displayName, const char *fil
 }
 
 #undef LOG
+
+void ResultFileManager::removeUnitOfCountScalars(ResultFile *file)
+{
+    // Result files written by earlier OMNeT++ versions contain the unit of the
+    // statistic for the count and totalCount recording modes as well, although
+    // counts have no unit. Remove it, so that unit conversion does not
+    // produce bogus values.
+    for (FileRun *fileRun : file->getFileRuns()) {
+        for (ScalarResult& scalar : fileRun->scalarResults) {
+            const std::string& recordingMode = scalar.getAttribute("recordingmode");
+            if ((recordingMode == "count" || recordingMode == "totalCount") && !scalar.getAttribute(Scave::UNIT).empty()) {
+                StringMap attrs = scalar.getAttributes();
+                attrs.erase(Scave::UNIT);
+                scalar.setAttributes(attrs);
+            }
+        }
+    }
+}
 
 void ResultFileManager::setFileInput(ResultFile *file, const char *inputName)
 {
