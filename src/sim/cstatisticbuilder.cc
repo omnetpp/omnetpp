@@ -106,7 +106,7 @@ void cStatisticBuilder::doAddResultRecorders(cComponent *component, std::string&
     if (!modes.empty()) {
         TristateBool checkSignalDecl = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_CHECKSIGNALS), "checkSignals attribute");
         bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
-        TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "warmup attribute");
+        TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "autoWarmupFilter attribute");
         bool needWarmupFilter = hasWarmupPeriod && warmupAttr != TRISTATE_FALSE;
         // determine source: use either the signal from the argument list, or the source= key in the @statistic property
         SignalSource source;

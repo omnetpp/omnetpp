@@ -1,0 +1,24 @@
+%description:
+Tests that an invalid autoWarmupFilter value is reported with the name of the key.
+
+%file: test.ned
+
+module Node
+{
+    @statistic[a](record=mean;autoWarmupFilter=maybe);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+
+%exitcode: 1
+
+%contains: stderr
+Invalid value 'maybe' for autoWarmupFilter attribute, expecting 'true' or 'false'
