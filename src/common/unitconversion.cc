@@ -562,7 +562,7 @@ double UnitConversion::tryConvert(double value, const Unit *unit, const Unit *ta
     }
 
     // try converting via the target unitName's base
-    if (targetUnit->name != targetUnit->baseUnitName) {
+    if (!opp_streq(targetUnit->name, targetUnit->baseUnitName)) {
         const Unit *targetBaseUnit = targetUnit->baseUnit;
         return convertFromBase(tryConvert(value, unit, targetBaseUnit), targetUnit);
     }
