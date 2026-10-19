@@ -349,6 +349,9 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
         addMouseListener(new MouseListener() {
             @Override
             public void mouseUp(MouseEvent e) {
+                // the press opened the context menu instead, see mouseDown()
+                if (e.button == 3 && cursorType == SWT.CURSOR_ARROW)
+                    return;
                 if (pythonProcess != null && pythonProcess.isAlive()) {
                     int sy = getSize().y;
                     pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseReleaseEvent(e.x, sy - e.y, e.button));
