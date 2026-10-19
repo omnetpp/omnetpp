@@ -59,8 +59,6 @@ config result-dir "\"dir\" + \"5\""
 config description "\"Hello \" + \"world\""
 config experiment-label "\"Experiment \" + \"One\""
 config measurement-label "\"Measurement \" + \"$a=st, $i=5\""
-config network Test
-config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
 scalar Test foo 42

@@ -59,7 +59,6 @@ config Test.**.bar one
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
@@ -97,7 +96,6 @@ config Test.**.bar one
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
@@ -135,7 +133,6 @@ config Test.**.bar two
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
@@ -173,7 +170,6 @@ config Test.**.bar two
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
@@ -211,7 +207,6 @@ config Test.**.bar one
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
@@ -249,7 +244,6 @@ config Test.**.bar one
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
@@ -287,7 +281,6 @@ config Test.**.bar two
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
@@ -325,7 +318,6 @@ config Test.**.bar two
 config repeat 2
 config output-scalar-file-append true
 config output-scalar-file results/General.sca
-config network Test
 config cmdenv-express-mode false
 config cmdenv-log-prefix ""
 
