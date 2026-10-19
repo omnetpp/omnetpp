@@ -169,6 +169,14 @@ std::string VectorRecorder::str() const
 
 //---
 
+opp_string_map TotalCountRecorder::getStatisticAttributes()
+{
+    // the unit of the statistic applies to the signal values, not to their count
+    opp_string_map attributes = cResultRecorder::getStatisticAttributes();
+    attributes.erase("unit");
+    return attributes;
+}
+
 void TotalCountRecorder::finish(cResultFilter *prev)
 {
     opp_string_map attributes = getStatisticAttributes();

@@ -4966,6 +4966,8 @@ The following keys are understood in \fprop{@statistic} properties:
   \item[title:] A longer, descriptive name for the statistic signal. Result
       visualization tools may use it as the chart label (e.g., in the legend).
   \item[unit:] The unit of measurement for the values. This may also appear in charts.
+      It is not recorded for the \ttt{count} and \ttt{totalCount} recording modes,
+      because a count has no unit.
   \item[interpolationmode:] Defines how to interpolate signal values where
       needed (e.g., for drawing). Possible values are \ttt{none},
       \ttt{sample-hold}, \ttt{backward-sample-hold}, \ttt{linear}.

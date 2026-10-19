@@ -64,6 +64,7 @@ class SIM_API TotalCountRecorder : public cResultRecorder
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v, cObject *details) override {count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s, cObject *details) override {if (s) count++;}
         virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj, cObject *details) override {if (obj) count++;}
+        virtual opp_string_map getStatisticAttributes() override;
         virtual void finish(cResultFilter *prev) override;
     public:
         TotalCountRecorder() {count = 0;}

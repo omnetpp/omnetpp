@@ -1,0 +1,54 @@
+%description:
+Test that the unit of the statistic is recorded for value-based recording modes,
+but not for the count and totalCount recording modes, because a count is dimensionless.
+
+%file: test.ned
+
+simple Node
+{
+    @signal[pk](type=long);
+    @statistic[pkBytes](source=pk; record=count,totalCount,sum,mean; unit=B);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule {
+    virtual void initialize() override {
+        simsignal_t pkSignal = registerSignal("pk");
+        emit(pkSignal, 10);
+        emit(pkSignal, 20);
+        emit(pkSignal, 30);
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+%contains: results/General-#0.sca
+scalar Test.node pkBytes:count 3
+attr recordingmode count
+attr source pk
+scalar Test.node pkBytes:totalCount 3
+attr recordingmode totalCount
+attr source pk
+scalar Test.node pkBytes:sum 60
+attr recordingmode sum
+attr source pk
+attr unit B
+scalar Test.node pkBytes:mean 20
+attr recordingmode mean
+attr source pk
+attr unit B
