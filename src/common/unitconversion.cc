@@ -132,7 +132,7 @@ UnitConversion::Unit UnitConversion::unitTable[] = {  // note: imperial units (m
     { "dBmV",   20, LOG10, "mV", "decibel-millivolt",  "dBV dBmV" },
     { "dBA",    20, LOG10, "A",  "decibel-ampere",     "dBA dBmA" },
     { "dBmA",   20, LOG10, "mA", "decibel-milliampere","dBA dBmA" },
-    { "dB",     20, LOG10, "x",  "decibel" },
+    { "dB",      1, LOG10, "dB", "decibel" },  // not convertible to x: power ratio (10*log10) and amplitude ratio (20*log10) are indistinguishable
     { nullptr,  0,  _, nullptr, nullptr }
 #undef _
 };

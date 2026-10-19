@@ -350,8 +350,8 @@ W(0.15) ==> 0.15W
 W(150mW) ==> 0.15W
 W(0dBm) ==> 1mW
 dBm(10W) ==> 40dBm
-x(-10dB) ==> 0.316228x
-x(0dB) ==> 1x
+x(-10dB) ==> x: Cannot convert unit 'dB' (decibel) to 'x' (times)
+x(0dB) ==> x: Cannot convert unit 'dB' (decibel) to 'x' (times)
 milliseconds(0.5s) ==> 500milliseconds
 kilowatt_hour(1500Wh) ==> 1.5kilowatt-hour
 kilometer_per_hour(10mps) ==> 36kilometer/hour
