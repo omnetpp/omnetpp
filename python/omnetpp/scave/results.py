@@ -515,6 +515,7 @@ def get_scalars(filter_or_dataframe="", include_attrs=False, include_fields=Fals
       documentation for details.
     - `convert_to_base_unit` (bool): Optional. If `True`, the values of the
       scalars are converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
+      Quantities with logarithmic units (e.g. `dBm`) are not converted.
 
     Columns of the returned DataFrame:
 
@@ -630,6 +631,7 @@ def get_vectors(filter_or_dataframe="", include_attrs=False, include_runattrs=Fa
       right-open.
     - `convert_to_base_unit` (bool): Optional. If `True`, the values in the
       vectors are converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
+      Quantities with logarithmic units (e.g. `dBm`) are not converted.
     - `omit_empty_vectors` (bool): Optional. If `True`, empty vectors are discarded
       from the output.
 
@@ -706,6 +708,7 @@ def get_statistics(filter_or_dataframe="", include_attrs=False, include_runattrs
     - `convert_to_base_unit` (bool): Optional. If `True`, some fields of the
       statistics (in the `min`, `max`, `mean`, and `stddev` columns) are
       converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
+      Quantities with logarithmic units (e.g. `dBm`) are not converted.
 
     Columns of the returned DataFrame:
 
@@ -760,6 +763,7 @@ def get_histograms(filter_or_dataframe="", include_attrs=False, include_runattrs
     - `convert_to_base_unit` (bool): Optional. If `True`, some fields of the
       histograms (in the `min`, `max`, `mean`, `stddev`, and `binedges` columns)
       are converted to their base unit (e.g. `ms` to `s`, `mW` to `W`, etc.)
+      Quantities with logarithmic units (e.g. `dBm`) are not converted.
 
     Columns of the returned DataFrame:
 

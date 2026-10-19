@@ -218,6 +218,7 @@ def convert_to_base_unit(df, columns_to_convert=["value", "min", "max", "mean", 
     """
     Converts results with units in the passed DataFrame to their base units in-place.
     The DataFrame needs to have a "unit" column - which is updated to the base unit.
+    Results with logarithmic units (e.g. `dBm`, `dBW`) are left unchanged.
     By default, the following columns are converted:
       "value", "min", "max", "mean", "stddev", "vecvalue", "binedges"
     Every converted column must contain either all numbers or all `np.ndarray` instances.
@@ -244,6 +245,8 @@ def convert_to_base_unit(df, columns_to_convert=["value", "min", "max", "mean", 
     for index, row in df.iterrows():
         original_unit = row["unit"]
         if original_unit is None or original_unit == "" or not isinstance(original_unit, str):
+            continue
+        if not uc.isLinearUnit(original_unit):
             continue
 
         # Convert unit for the current row

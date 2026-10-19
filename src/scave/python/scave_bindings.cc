@@ -294,6 +294,7 @@ NB_MODULE(MODULENAME, m) {
 
     nb::class_<UnitConversion>(m, "UnitConversion")
         .def_static("getBaseUnit", [](const char *unitName) { auto baseUnit = UnitConversion::getBaseUnit(unitName); return opp_nulltoempty(baseUnit); })
+        .def_static("isLinearUnit", &UnitConversion::isLinearUnit)
         .def_static("getBestUnit",  nb::overload_cast<double, const char *>(&UnitConversion::getBestUnit))
         .def_static("getBestUnit",  nb::overload_cast<double, const char *, const std::vector<const char *>&, const UnitConversion::Options&>(&UnitConversion::getBestUnit))
         .def_static("parseQuantity", nb::overload_cast<const char *, const char *>(&UnitConversion::parseQuantity))

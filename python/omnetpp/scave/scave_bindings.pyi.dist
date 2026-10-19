@@ -267,6 +267,9 @@ class UnitConversion:
     def getBaseUnit(arg: str, /) -> str: ...
 
     @staticmethod
+    def isLinearUnit(arg: str, /) -> bool: ...
+
+    @staticmethod
     def getBestUnit(arg0: float, arg1: str, /) -> str: ...
 
     @overload
