@@ -19,7 +19,7 @@ import os
 import functools
 
 from matplotlib.figure import Figure
-from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, KeyEvent, LocationEvent, NavigationToolbar2, MouseEvent, ResizeEvent
+from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, KeyEvent, LocationEvent, NavigationToolbar2, MouseButton, MouseEvent, ResizeEvent
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from omnetpp.internal import Gateway
@@ -85,7 +85,7 @@ class NavigationToolbar2SWT(NavigationToolbar2):
         if hasattr(self, "_active"): # matplotlib < 3.3
             Gateway.widget_provider.updateActiveAction(self.canvas.num, self._active)
         else: # matplotlib >= 3.3
-            Gateway.widget_provider.updateActiveAction(self.canvas.num, (self.mode._navigate_mode or "").lower())
+            Gateway.widget_provider.updateActiveAction(self.canvas.num, self.mode.name.lower() if self.mode else "")
 
     def set_message(self, s):
         if self.widget is not None:
@@ -162,8 +162,10 @@ class FigureCanvasSWT(FigureCanvasBase):
         event = MouseEvent('scroll_event', self, x, y, button, key, step=count)
         self.callbacks.process(event.name, event)
 
-    def mouseMoveEvent(self, x, y):
+    def mouseMoveEvent(self, x, y, buttons):
         event = MouseEvent('motion_notify_event', self, x, y)
+        # assigned after construction, because only MPL >= 3.8 accepts a buttons= argument
+        event.buttons = frozenset(b for i, b in enumerate([MouseButton.LEFT, MouseButton.MIDDLE, MouseButton.RIGHT]) if buttons & (1 << i))
         self.callbacks.process(event.name, event)
 
     def mouseReleaseEvent(self, x, y, button):

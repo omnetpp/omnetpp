@@ -42,8 +42,9 @@ public interface IMatplotlibFigureCanvas {
     void leaveEvent();
 
     /** Notifies matplotlib that the mouse pointer moved to the given (canvas-local)
-     * coordinates (with the origin in the lower left corner) inside the canvas area. */
-    void mouseMoveEvent(int x, int y);
+     * coordinates (with the origin in the lower left corner) inside the canvas area.
+     * The buttons held down are passed as a bit mask: LEFT = 1, MIDDLE = 2, RIGHT = 4. */
+    void mouseMoveEvent(int x, int y, int buttons);
 
     /** Notifies matplotlib that the given mouse button was pressed down at the
      * given (canvas-local) coordinates (with the origin in the lower left corner)

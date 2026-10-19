@@ -273,7 +273,10 @@ public class MatplotlibWidget extends Canvas implements IMatplotlibWidget {
         addMouseMoveListener(e -> {
             if (pythonProcess != null && pythonProcess.isAlive()) {
                 int sy = getSize().y;
-                pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseMoveEvent(e.x, sy - e.y),
+                int buttons = ((e.stateMask & SWT.BUTTON1) != 0 ? 1 : 0)
+                        | ((e.stateMask & SWT.BUTTON2) != 0 ? 2 : 0)
+                        | ((e.stateMask & SWT.BUTTON3) != 0 ? 4 : 0);
+                pythonProcess.pythonCallerThread.asyncExec(() -> getCanvas().mouseMoveEvent(e.x, sy - e.y, buttons),
                         figureNumber * 100 + EVENTSTREAM_MOUSEMOVE);
                 // This can happen if the widget is created with the mouse already over it.
                 if (!mouseIsOverMe) {
