@@ -162,6 +162,8 @@ WrappedSignalSource *StatisticSourceAstTranslator::subscribeToSignal(cComponent 
         return new WrappedSignalSource(SignalSource(component, signalName));
     else {
         WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
+        cResultFilter::Context ctx {this->component, statisticProperty}; // note: not the "component" arg, which may be a submodule
+        warmupFilter->init(&ctx);
         component->subscribe(signalName, warmupFilter);
         return new WrappedSignalSource(SignalSource(warmupFilter));
     }
@@ -235,6 +237,8 @@ SignalSource StatisticSourceParser::parse(cComponent *component, cProperty *stat
             return SignalSource(component, signalName);
         else {
             WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
+            cResultFilter::Context ctx {component, statisticProperty};
+            warmupFilter->init(&ctx);
             component->subscribe(signalName, warmupFilter);
             return SignalSource(warmupFilter);
         }
