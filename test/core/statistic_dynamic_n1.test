@@ -41,4 +41,4 @@ network = Test
 %exitcode: 1
 
 %contains: stderr
-Cannot add statistic 'stat' to module Test.node (NED type: Node): Signal 'undeclared' is not declared on type 'Node'
+Cannot add statistic 'stat' to module Test.node (NED type: Node): Signal 'undeclared' is not declared on type 'Node' (you can turn off this check by adding checkSignals=false to the @statistic or @statisticTemplate property in the NED file)

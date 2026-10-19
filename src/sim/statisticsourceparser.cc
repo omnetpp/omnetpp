@@ -267,7 +267,7 @@ void StatisticSourceParser::checkSignalDeclaration(cComponent *component, const 
         omnetpp::cProperty *signalDeclaration = component->getComponentType()->getSignalDeclaration(signalName);
         if (!signalDeclaration)
             throw opp_runtime_error("Signal '%s' is not declared on type '%s' (you can turn off this check "
-                    "by adding %s=false to the @statistic property in the NED file)",
+                    "by adding %s=false to the @statistic or @statisticTemplate property in the NED file)",
                     signalName, component->getComponentType()->getFullName(), PROPKEY_STATISTIC_CHECKSIGNALS);
     }
 
