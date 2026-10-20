@@ -75,6 +75,22 @@ public:
 };
 
 
+// Clips the rendering of its child items, and mouse interaction with them, to
+// a path. It has no visual appearance of its own. Used for implementing the
+// clipChildren flag of shape figures on the canvas: each figure item under a
+// clipping figure is wrapped into one per clipping ancestor.
+class QTENV_API ClipContainerItem : public QGraphicsItem {
+protected:
+    QPainterPath clipPath;
+
+public:
+    ClipContainerItem();
+    void setClipPath(const QPainterPath& path);
+    QRectF boundingRect() const override { return clipPath.boundingRect(); }
+    QPainterPath shape() const override { return clipPath; }
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override { /* nothing */ }
+};
+
 // Used in the ModuleInspector to make text more readable on a cluttered background,
 // as well as on the canvas to implement the halo option for label and text figures.
 // If the functionality is not enough, just implement more of QGraphicsSimpleTextItems

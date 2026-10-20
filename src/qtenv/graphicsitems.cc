@@ -158,6 +158,22 @@ void GraphicsLayer::clear()
 
 //---- end of GraphicsLayer ----
 
+//---- ClipContainerItem implementation ----
+
+ClipContainerItem::ClipContainerItem()
+{
+    setFlag(ItemClipsChildrenToShape);
+    setFlag(ItemHasNoContents);
+}
+
+void ClipContainerItem::setClipPath(const QPainterPath& path)
+{
+    prepareGeometryChange();
+    clipPath = path;
+}
+
+//---- end of ClipContainerItem ----
+
 //---- OutlinedTextItem implementation ----
 
 OutlinedTextItem::OutlinedTextItem(QGraphicsItem *parent)

@@ -117,6 +117,10 @@ public:
     static void clearRendererCache();
     virtual QGraphicsItem *render(const FigureRenderingArgs& args);
     virtual void refresh(const FigureRenderingArgs& args, uint8_t what);
+
+    // Returns the region to clip the child items to (see cAbstractShapeFigure::setClipChildren()),
+    // in the coordinate system of the layer that the figure items are in. args.item must be set.
+    virtual QPainterPath getClipPath(const FigureRenderingArgs& args);
 };
 
 class QTENV_API AbstractShapeFigureRenderer : public FigureRenderer
@@ -125,6 +129,9 @@ protected:
     QGraphicsItem *newItem() override;
     virtual void refreshVisual(const FigureRenderingArgs& args) override;
     virtual void refreshZoom(const FigureRenderingArgs& args) override;
+
+public:
+    virtual QPainterPath getClipPath(const FigureRenderingArgs& args) override;
 };
 
 class QTENV_API NullRenderer : public FigureRenderer

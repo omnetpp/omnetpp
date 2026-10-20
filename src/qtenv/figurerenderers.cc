@@ -496,6 +496,11 @@ void FigureRenderer::refresh(const FigureRenderingArgs& args, uint8_t what)
     // queried from the figure on demand, and is not stored in the items
 }
 
+QPainterPath FigureRenderer::getClipPath(const FigureRenderingArgs& args)
+{
+    throw cRuntimeError("%s does not support clipping the child figures of %s", getClassName(), args.figure->getClassName());
+}
+
 void FigureRenderer::refreshTransform(const FigureRenderingArgs& args)
 {
     args.item->setTransform(QTransform(
@@ -527,6 +532,17 @@ void AbstractShapeFigureRenderer::refreshZoom(const FigureRenderingArgs& args)
 QGraphicsItem *AbstractShapeFigureRenderer::newItem()
 {
     return new PathItem();
+}
+
+QPainterPath AbstractShapeFigureRenderer::getClipPath(const FigureRenderingArgs& args)
+{
+    // The item's path is the geometry of the shape without the outline (incl. holes and
+    // the fill rule), i.e. exactly the clip region. The item's transform maps it into the
+    // coordinate system of the layer.
+    QGraphicsPathItem *pathItem = dynamic_cast<QGraphicsPathItem *>(args.item);
+    if (!pathItem) // e.g. a subclass that renders a different kind of item
+        return FigureRenderer::getClipPath(args);
+    return pathItem->transform().map(pathItem->path());
 }
 
 void ImageFigureRenderer::setImageTransform(const FigureRenderingArgs& args, double naturalWidth, double naturalHeight, bool translateOnly)
