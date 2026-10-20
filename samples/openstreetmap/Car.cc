@@ -22,8 +22,7 @@ void Driver::initialize(int stage)
         routePlanner = check_and_cast<RoutePlanner*>(getModuleByPath(par("routePlannerModule").stringValue()));
 
         carFigure = createCarFigure();
-        cCanvas *canvas = getSystemModule()->getCanvas();
-        canvas->addFigure(carFigure);
+        osmModule->getMapFigure()->addFigure(carFigure);
     }
     else if (stage == 1) {
         p1 = getNextTarget();

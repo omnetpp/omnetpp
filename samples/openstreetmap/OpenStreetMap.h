@@ -73,6 +73,7 @@ class OpenStreetMap : public cSimpleModule
     const Map& getMap() const {return map;}
     const StreetNetwork& getStreetNetwork() const {return streetNetwork;}
     cFigure::Point toCanvas(double lat, double lon);
+    cFigure *getMapFigure() const;
 };
 
 }; //namespace

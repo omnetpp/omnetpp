@@ -106,6 +106,15 @@ cFigure::Point OpenStreetMap::toCanvas(double lat, double lon)
     return { x, y };
 }
 
+cFigure *OpenStreetMap::getMapFigure() const
+{
+    // the parent figure for the map and the cars; it clips them to the map area (see Network.ned)
+    cFigure *figure = getSystemModule()->getCanvas()->getFigure("mapArea");
+    if (!figure)
+        throw cRuntimeError("Figure 'mapArea' not found on the canvas of the network");
+    return figure;
+}
+
 void OpenStreetMap::drawMap(const Map& map)
 {
     const cFigure::Color COLOR_HIGHWAY_PRIMARY = {255,255,120};
@@ -114,6 +123,7 @@ void OpenStreetMap::drawMap(const Map& map)
 
     cCanvas *canvas = getSystemModule()->getCanvas();
     canvas->setAnimationSpeed(1, this);
+    cFigure *mapFigure = getMapFigure();
 
     for (const auto& way : map.ways) {
         std::vector<cFigure::Point> points;
@@ -159,7 +169,7 @@ void OpenStreetMap::drawMap(const Map& map)
             }
 
             if (polyline)
-                canvas->addFigure(polyline);
+                mapFigure->addFigure(polyline);
         }
         else {
             // building, park, etc.
@@ -181,7 +191,7 @@ void OpenStreetMap::drawMap(const Map& map)
             else
                 polygon->setFillColor(cFigure::GREEN);
             polygon->setZIndex(0);
-            canvas->addFigure(polygon);
+            mapFigure->addFigure(polygon);
         }
     }
 }
