@@ -130,7 +130,7 @@ void EventlogFileManager::clearInternalState()
     beginningFileOffset = -1;
     previousIndexFileOffset = -1;
     previousSnapshotFileOffset = -1;
-    isEventRecordingEnabled = true;
+    isEventRecordingEnabled = isOpen();  // note: may be called before open(), e.g. from the constructor
     isIntervalFilterRecordingEnabled = true;
     isModuleFilterRecordingEnabled = true;
     isRecordingEnabled = recordEventLog;

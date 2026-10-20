@@ -1,0 +1,46 @@
+%description:
+Test that log output and message creation in a lifecycle listener before the
+eventlog file is opened (LF_PRE_NETWORK_SETUP, by a listener that precedes the
+eventlog manager) do not crash the simulation or break subsequent logging.
+Regression test for issue #1496.
+
+%includes:
+#include "../lib/testutil.h"
+
+%global:
+
+namespace {
+class EarlyListener : public cISimulationLifecycleListener {
+    virtual void lifecycleEvent(SimulationLifecycleEventType eventType, cObject *details) override {
+        if (eventType == LF_PRE_NETWORK_SETUP) {
+            EV << "logging before the eventlog is opened" << endl;
+            delete new cMessage("early");
+        }
+    }
+} listener;
+}
+
+EXECUTE_ON_STARTUP(
+    if (testlib::isRunningTest("@TESTNAME@"))
+        cSimulation::getActiveEnvir()->addLifecycleListener(&listener)
+);
+
+%inifile: omnetpp.ini
+[General]
+record-eventlog = true
+
+%activity:
+EV << "logging from activity" << endl;
+
+%contains: stdout
+logging before the eventlog is opened
+Recording eventlog to file `results/General-#0.elog'...
+
+%contains: stdout
+logging from activity
+
+%contains: results/General-#0.elog
+- logging from activity
+
+%not-contains: results/General-#0.elog
+logging before the eventlog is opened

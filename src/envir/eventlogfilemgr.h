@@ -123,7 +123,7 @@ class ENVIR_API EventlogFileManager : public cIEventlogManager, public cISimulat
 
     // general recording flags
     bool isRecordingEnabled = true;  // whether eventlog recording is currently enabled (recording turned on, and not currently suspended)
-    bool isEventRecordingEnabled = true;  // whether the current event should be recorded (recording is enabled, module and interval filters match, etc)
+    bool isEventRecordingEnabled = false;  // whether the current event should be recorded (recording is enabled, module and interval filters match, etc); must be false while the file is not open
 
     // recording flags for filters
     bool isModuleFilterRecordingEnabled = true; // module filter matches the current event
