@@ -6,7 +6,8 @@ module Clipping
 {
     parameters:
         @class(ClippingAnimator);
-        @display("bgb=1300,900");
+        @display("bgb=1300,1100");
+        int numBalls = default(500); // for case 17
 
         // basic: an oval sticking out of a rectangle; the rectangle's own (thick) outline must not be clipped
         @figure[t1](type=text; pos=20,20; text="1. oval clipped to rect, outline not clipped");
@@ -91,6 +92,11 @@ module Clipping
         @figure[c16](type=rectangle; bounds=960,740,200,120; fillColor=lightyellow; clipChildren=true);
         @figure[c16.fill](type=rectangle; bounds=980,760,160,180; zIndex=2; fillColor=orange);
         @figure[bar16](type=rectangle; bounds=1040,720,40,160; fillColor=green; zIndex=1);
+
+        // rendering scalability: lots of balls (see numBalls) moving all over the module area, as children
+        // of a small window whose clipping is toggled; the balls are created by ClippingAnimator
+        @figure[t17](type=text; pos=20,920; text="17. scalability: many balls under a small window, clipChildren toggles every 5s");
+        @figure[c17](type=rectangle; bounds=60,950,160,100; lineWidth=2; cornerRadius=40; fillColor=lightyellow; clipChildren=true);
 
     submodules:
         ticker: ClippingTicker {
