@@ -1,0 +1,24 @@
+%description:
+Tests the error message for an invalid recording mode in @statistic.
+
+%file: test.ned
+
+module Node
+{
+    @statistic[a](record=nosuchrecorder);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+
+%exitcode: 1
+
+%contains: stderr
+Cannot add statistic 'a' to module Test.node (NED type: Node): Bad recording mode 'nosuchrecorder': Result recorder "nosuchrecorder" not found
