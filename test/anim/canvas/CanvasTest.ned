@@ -157,5 +157,8 @@ network CanvasTest
         transform: Transform {
             @display("p=1000,750");
         }
+        clipping: Clipping {
+            @display("p=1100,750");
+        }
 }
 
