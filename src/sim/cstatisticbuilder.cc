@@ -182,6 +182,20 @@ std::vector<std::string> cStatisticBuilder::extractRecorderList(const char *mode
     return modes;
 }
 
+SignalSource cStatisticBuilder::makeSignalSource(cComponent *component, cProperty *statisticProperty, simsignal_t signal, bool needWarmupFilter)
+{
+    // the signal itself, or a warm-up period filter subscribed to it
+    if (!needWarmupFilter)
+        return SignalSource(component, signal);
+    else {
+        WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
+        cResultFilter::Context ctx {component, statisticProperty};
+        warmupFilter->init(&ctx);
+        component->subscribe(signal, warmupFilter);
+        return SignalSource(warmupFilter);
+    }
+}
+
 SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, cProperty *statisticProperty, const char *statisticName, const char *sourceSpec, TristateBool checkSignalDecl, bool needWarmupFilter)
 {
     try {
@@ -189,15 +203,7 @@ SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, cProper
             // simple case: just a signal name
             StatisticSourceParser::checkSignalDeclaration(component, sourceSpec, checkSignalDecl);
             simsignal_t signalID = cComponent::registerSignal(sourceSpec);
-            if (!needWarmupFilter)
-                return SignalSource(component, signalID);
-            else {
-                WarmupPeriodFilter *warmupFilter = new WarmupPeriodFilter();
-                cResultFilter::Context ctx {component, statisticProperty};
-                warmupFilter->init(&ctx);
-                component->subscribe(signalID, warmupFilter);
-                return SignalSource(warmupFilter);
-            }
+            return makeSignalSource(component, statisticProperty, signalID, needWarmupFilter);
         }
         else {
             StatisticSourceParser parser;
