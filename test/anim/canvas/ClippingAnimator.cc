@@ -41,6 +41,6 @@ void ClippingAnimator::refreshDisplay() const
 
     // 16: zIndex of the clipper toggled; the effective Z-indices of its subtree follow it,
     // so the whole subtree must move above/below the green bar together
-    cFigure *c16 = canvas->getFigure("c16");
-    c16->setZIndex(((int)(t / 2)) % 2 == 0 ? 0 : 2);
+    cAbstractShapeFigure *c16 = check_and_cast<cAbstractShapeFigure *>(canvas->getFigure("c16"));
+    c16->setClipChildren(((int)(t / 2)) % 2 == 0);
 }

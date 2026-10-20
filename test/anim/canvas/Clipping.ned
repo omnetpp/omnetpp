@@ -89,7 +89,7 @@ module Clipping
         @figure[c15.oval](type=oval; bounds=740,780,200,100; fillColor=orange);
         @figure[t16](type=text; pos=960,700; text="16. animated: clipper zIndex toggles vs green bar");
         @figure[c16](type=rectangle; bounds=960,740,200,120; fillColor=lightyellow; clipChildren=true);
-        @figure[c16.fill](type=rectangle; bounds=980,760,160,80; fillColor=orange);
+        @figure[c16.fill](type=rectangle; bounds=980,760,160,180; zIndex=2; fillColor=orange);
         @figure[bar16](type=rectangle; bounds=1040,720,40,160; fillColor=green; zIndex=1);
 
     submodules:
