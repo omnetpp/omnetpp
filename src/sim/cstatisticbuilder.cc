@@ -104,24 +104,35 @@ void cStatisticBuilder::doAddResultRecorders(cComponent *component, std::string&
 
     // if there are result recorders, add source filters and recorders
     if (!modes.empty()) {
-        TristateBool checkSignalDecl = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_CHECKSIGNALS), "checkSignals attribute");
-        bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
-        TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "autoWarmupFilter attribute");
-        bool needWarmupFilter = hasWarmupPeriod && warmupAttr != TRISTATE_FALSE;
-        // determine source: use either the signal from the argument list, or the source= key in the @statistic property
-        SignalSource source;
-        if (signal == SIMSIGNAL_NULL) {
-            const char *sourceSpec = opp_emptytodefault(statisticProperty->getValue(PROPKEY_STATISTIC_SOURCE, 0), statisticName);
-            source = doStatisticSource(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, needWarmupFilter);
-        }
-        else {
-            StatisticSourceParser::checkSignalDeclaration(component, cComponent::getSignalName(signal), checkSignalDecl);
-            source = makeSignalSource(component, statisticProperty, signal, needWarmupFilter);
-        }
+        try {
+            TristateBool checkSignalDecl = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_CHECKSIGNALS), "checkSignals attribute");
+            bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
+            TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "autoWarmupFilter attribute");
+            bool needWarmupFilter = hasWarmupPeriod && warmupAttr != TRISTATE_FALSE;
+            // determine source: use either the signal from the argument list, or the source= key in the @statistic property
+            SignalSource source;
+            if (signal == SIMSIGNAL_NULL) {
+                const char *sourceSpec = opp_emptytodefault(statisticProperty->getValue(PROPKEY_STATISTIC_SOURCE, 0), statisticName);
+                source = doStatisticSource(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, needWarmupFilter);
+            }
+            else {
+                StatisticSourceParser::checkSignalDeclaration(component, cComponent::getSignalName(signal), checkSignalDecl);
+                source = makeSignalSource(component, statisticProperty, signal, needWarmupFilter);
+            }
 
-        // add result recorders
-        for (auto & mode : modes)
-            doResultRecorder(source, mode.c_str(), component, statisticName, statisticProperty);
+            // add result recorders
+            for (auto & mode : modes)
+                doResultRecorder(source, mode.c_str(), component, statisticName, statisticProperty);
+        }
+        catch (cRuntimeError& e) {
+            e.prependMessage("Cannot add statistic '%s' to module %s (NED type: %s): ",
+                    statisticName, componentFullPath.c_str(), component->getNedTypeName());
+            throw;
+        }
+        catch (std::exception& e) {
+            throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): %s",
+                    statisticName, componentFullPath.c_str(), component->getNedTypeName(), e.what());
+        }
     }
 }
 
@@ -211,13 +222,11 @@ SignalSource cStatisticBuilder::doStatisticSource(cComponent *component, cProper
         }
     }
     catch (cRuntimeError& e) {
-        e.prependMessage("Cannot add statistic '%s' to module %s (NED type: %s): Error in source=%s: ",
-                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec);
+        e.prependMessage("Error in source=%s: ", sourceSpec);
         throw;
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): Error in source=%s: %s",
-                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), sourceSpec, e.what());
+        throw cRuntimeError("Error in source=%s: %s", sourceSpec, e.what());
     }
 }
 
@@ -239,13 +248,11 @@ void cStatisticBuilder::doResultRecorder(const SignalSource& source, const char 
         }
     }
     catch (cRuntimeError& e) {
-        e.prependMessage("Cannot add statistic '%s' to module %s (NED type: %s): Bad recording mode '%s': ",
-                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode);
+        e.prependMessage("Bad recording mode '%s': ", recordingMode);
         throw;
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Cannot add statistic '%s' to module %s (NED type: %s): Bad recording mode '%s': %s",
-                statisticName, component->getFullPath().c_str(), component->getNedTypeName(), recordingMode, e.what());
+        throw cRuntimeError("Bad recording mode '%s': %s", recordingMode, e.what());
     }
 }
 

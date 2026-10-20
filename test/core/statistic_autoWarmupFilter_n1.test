@@ -1,5 +1,6 @@
 %description:
-Tests that an invalid autoWarmupFilter value is reported with the name of the key.
+Tests that an invalid autoWarmupFilter value is reported with the name of the key,
+the statistic and the module.
 
 %file: test.ned
 
@@ -21,4 +22,4 @@ network = Test
 %exitcode: 1
 
 %contains: stderr
-Invalid value 'maybe' for autoWarmupFilter attribute, expecting 'true' or 'false'
+Cannot add statistic 'a' to module Test.node (NED type: Node): Invalid value 'maybe' for autoWarmupFilter attribute, expecting 'true' or 'false'

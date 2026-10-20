@@ -1,0 +1,44 @@
+%description:
+Tests that errors in addResultRecorders() with a @statisticTemplate
+name the statistic and the module.
+
+%file: test.ned
+
+simple Node
+{
+    @statisticTemplate[t](record=mean);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule {
+    virtual void initialize() override {
+        simsignal_t signal = registerSignal("undeclared");
+        getEnvir()->addResultRecorders(this, signal, "stat", getProperties()->get("statisticTemplate", "t"));
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+
+%exitcode: 1
+
+%contains: stderr
+Cannot add statistic 'stat' to module Test.node (NED type: Node): Signal 'undeclared' is not declared on type 'Node'
