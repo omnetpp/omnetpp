@@ -12,7 +12,7 @@ name, which will place the newly generated ``.pyi`` file directly into the
 module folder.
 
 ```
-python -m nanobind.stubgen <module name>
+python -m nanobind.stubgen -m <module name>
 ```
 
 Specify ``-o <filename>`` or ``-O <path>`` to redirect the output somewhere
@@ -57,6 +57,8 @@ import argparse
 import builtins
 import enum
 from inspect import Signature, Parameter, signature, ismodule
+import io
+import os
 import textwrap
 import importlib
 import importlib.machinery
@@ -64,15 +66,12 @@ import importlib.util
 import types
 import typing
 from dataclasses import dataclass
-from typing import Dict, Sequence, List, Optional, Tuple, cast, Generator, Any, Callable, Union, Protocol, Literal
+from typing import Dict, Sequence, List, Optional, Set, Tuple, cast, Generator, Any, Callable, Union, Protocol, Literal
 from pathlib import Path
 import re
 import sys
 
-if sys.version_info < (3, 9):
-    from typing import Match, Pattern
-else:
-    from re import Match, Pattern
+from re import Match, Pattern
 
 if sys.version_info < (3, 11):
     try:
@@ -84,33 +83,47 @@ if sys.version_info < (3, 11):
 else:
     typing_extensions = None
 
-# Exclude various standard elements found in modules, classes, etc.
 SKIP_LIST = [
+    # Various standard attributes found in modules, classes, etc.
     "__doc__", "__module__", "__name__", "__new__", "__builtins__",
     "__cached__", "__path__", "__version__", "__spec__", "__loader__",
     "__package__", "__nb_signature__", "__class_getitem__", "__orig_bases__",
     "__file__", "__dict__", "__weakref__", "__format__", "__nb_enum__",
     "__firstlineno__", "__static_attributes__", "__annotations__", "__annotate__",
-    "__annotate_func__"
+    "__annotate_func__",
+
+    # Auto-generated enum attributes. Type checkers synthesize these, so they
+    # shouldn't appear in the stubs.
+    "_new_member_", "_use_args_", "_member_names_", "_member_map_",
+    "_value2member_map_", "_hashable_values_", "_unhashable_values_",
+    "_unhashable_values_map_", "_value_repr_",
 ]
-# fmt: on
 
-# This type is used to track per-module imports (``import name as desired_name``)
-# during stub generation. The actual name in the stub is given by the value element.
-# (name, desired_as_name) -> actual_as_name
-ImportDict = Dict[Tuple[Optional[str], Optional[str]], Optional[str]]
+# Interpreter-internal types.
+TYPES_TYPES = {
+    getattr(types, name): name for name in [
+        "MethodDescriptorType",
+        "MemberDescriptorType",
+        "ModuleType",
+    ]
+}
 
-# This type maps a module name to an `ImportDict` tuple that tracks the
-# import declarations from that module.
-# package_name -> ((name, desired_as_name) -> actual_as_name)
-PackagesDict = Dict[str, ImportDict]
+# Lookup table of nb::ndarray types -> Python type annotation exports.
+_FRAMEWORK_STUB_TYPES: Dict[str, Tuple[str, str]] = {
+    "numpy.ndarray":         ("numpy.typing", "NDArray"),
+    "ndarray":               ("numpy.typing", "NDArray"),
+    "jaxlib._jax.ArrayImpl": ("jax", "Array"),
+    "torch.Tensor":          ("torch", "Tensor"),
+    "mlx.core.array":        ("mlx.core", "array"),
+    "cupy.ndarray":          ("cupy", "ndarray"),
+    "tensorflow.Tensor":     ("tensorflow", "Tensor"),
+    "memoryview":            ("builtins", "memoryview"),
+    "ArrayLike":             ("typing", "Any"),
+}
 
 # Type of an entry of the ``__nb_signature__`` tuple of nanobind functions.
 # It stores a function signature string, docstring, and a tuple of default function values.
 # (signature_str, doc_str, (default_arg_1, default_arg_2, ...))
-NbSignature = Tuple[Optional[str], Optional[str]]
-
-# Type of an entry of the ``__nb_signature__`` tuple of nanobind functions.
 NbFunctionSignature = Tuple[Optional[str], Optional[str], Optional[Tuple[Any, ...]]]
 
 # Type of an entry of the ``__nb_signature__`` tuple of nanobind getters and setters.
@@ -196,7 +209,7 @@ class StubGen:
         include_internal_imports: bool = True,
         include_external_imports: bool = False,
         max_expr_length: int = 50,
-        patterns: List[ReplacePattern] = [],
+        patterns: Optional[List[ReplacePattern]] = None,
         quiet: bool = True,
         output_file: Optional[Path] = None
     ) -> None:
@@ -222,7 +235,7 @@ class StubGen:
         self.max_expr_length = max_expr_length
 
         # Replacement patterns as produced by ``load_pattern_file()`` below
-        self.patterns = patterns
+        self.patterns = patterns if patterns is not None else []
 
         # Set this to ``True`` if output to stdout is unacceptable
         self.quiet = quiet
@@ -235,8 +248,8 @@ class StubGen:
         # Current depth / indentation level
         self.depth = 0
 
-        # Output will be appended to this string
-        self.output = ""
+        # Output buffer
+        self._output = io.StringIO()
 
         # A stack to avoid infinite recursion
         self.stack: List[object] = []
@@ -244,17 +257,20 @@ class StubGen:
         # An identifier associated with the top element of the stack
         self.prefix = module.__name__
 
-        # Dictionary to keep track of import directives added by the stub generator
-        # Maps package_name -> ((name, desired_as_name) -> actual_as_name)
-        self.imports: PackagesDict = {}
+        # Import bindings accumulated during stub generation
+        # Maps local name -> (module, member or None, export)
+        self.bindings: Dict[str, Tuple[str, Optional[str], bool]] = {}
+
+        # Modules referenced by qualified names in signatures ('import a.b')
+        self.module_refs: Set[str] = set()
 
         # ---------- Regular expressions ----------
 
-        # Negative lookbehind matching word boundaries except '.'
-        sep_before = r"(?<![\\B\.])"
+        # Reject matches that continue an identifier or dotted name
+        sep_before = r"(?<![\w.])"
 
-        # Negative lookforward matching word boundaries except '.'
-        sep_after = r"(?![\\B\.])"
+        # Reject matches followed by a '.' (part of a longer dotted name)
+        sep_after = r"(?!\.)"
 
         # Regexp matching a Python identifier
         identifier = r"[^\d\W]\w*"
@@ -271,9 +287,10 @@ class StubGen:
         )
 
         # Precompile RE to extract nanobind nd-arrays
-        self.ndarray_re = re.compile(
-            sep_before + r"(numpy\.ndarray|ndarray|torch\.Tensor)\[([^\]]*)\]"
+        NDARRAY_PAT = (
+            "(" + "|".join(re.escape(fw) for fw in _FRAMEWORK_STUB_TYPES) + ")" + r"\[([^\]]*)\]"
         )
+        self.ndarray_re = re.compile(sep_before + NDARRAY_PAT)
 
         # Types which moved from typing.* to collections.abc in Python 3.9
         self.abc_re = re.compile(
@@ -283,34 +300,50 @@ class StubGen:
             'MutableSequence|MutableSet|Sequence|ValuesView)'
         )
 
+    @property
+    def output(self) -> str:
+        """Get the current output as a string."""
+        return self._output.getvalue()
+
     def write(self, s: str) -> None:
         """Append raw characters to the output"""
-        self.output += s
+        self._output.write(s)
 
     def write_ln(self, line: str) -> None:
         """Append an indented line"""
         if len(line) != 0 and not line.isspace():
-            self.output += "    " * self.depth + line
-        self.output += "\n"
+            self._output.write("    " * self.depth + line)
+        self._output.write("\n")
 
-    def write_par(self, line: str) -> None:
-        """Append an indented paragraph"""
-        self.output += textwrap.indent(line, "    " * self.depth)
+    def _replace_tail(self, num_chars: int, replacement: str) -> None:
+        """Remove the last num_chars from output and append replacement."""
+        self._output.seek(self._output.tell() - num_chars)
+        self._output.truncate()
+        self._output.write(replacement)
+
+    def format_docstr(self, docstr: str, depth: int) -> str:
+        """Format a single or multi-line docstring with given indentation"""
+        docstr = textwrap.dedent(docstr).strip()
+        # Escape whatever could terminate or corrupt the triple-quoted string
+        docstr = docstr.replace("\\", "\\\\").replace('"""', '\\"\\"\\"')
+        if docstr.endswith('"'):
+            docstr = docstr[:-1] + '\\"'
+        if len(docstr) > 70 or "\n" in docstr:
+            docstr = "\n" + docstr + "\n"
+        docstr = f'"""{docstr}"""\n'
+        return textwrap.indent(docstr, "    " * depth)
 
     def put_docstr(self, docstr: str) -> None:
         """Append an indented single or multi-line docstring"""
-        docstr = textwrap.dedent(docstr).strip()
-        raw_str = ""
-        if "''" in docstr or "\\" in docstr:
-            # Escape all double quotes so that no unquoted triple quote can exist
-            docstr = docstr.replace("''", "\\'\\'")
-            raw_str = "r"
-        if len(docstr) > 70 or "\n" in docstr:
-            docstr = "\n" + docstr + "\n"
-        docstr = f'{raw_str}"""{docstr}"""\n'
-        self.write_par(docstr)
+        self.write(self.format_docstr(docstr, self.depth))
 
-    def put_nb_overload(self, fn: NbFunction, sig: NbFunctionSignature, name: Optional[str] = None) -> None:
+    def put_nb_overload(
+        self,
+        fn: NbFunction,
+        sig: NbFunctionSignature,
+        name: Optional[str] = None,
+        is_classmethod: bool = False,
+    ) -> None:
         """
         The ``put_nb_func()`` repeatedly calls this method to render the
         individual method overloads.
@@ -364,42 +397,68 @@ class StubGen:
                 sig_str = sig_str[:pos] + arg_str + sig_str[pos + len(pattern) :]
                 start = pos + len(arg_str)
 
-        if type(fn).__name__ == "nb_func" and self.depth > 0:
+        if is_classmethod:
+            # Rewrite the first parameter to just 'cls'. Its annotation may
+            # contain commas, so scan for its end at bracket depth zero.
+            pos = paren = sig_str.index("(") + 1
+            depth = 0
+            for pos in range(paren, len(sig_str)):
+                c = sig_str[pos]
+                if depth == 0 and c in ",)":
+                    break
+                depth += (c in "([{") - (c in ")]}")
+            sig_str = sig_str[:paren] + "cls" + sig_str[pos:]
+        elif type(fn).__name__ == "nb_func" and self.depth > 0:
             self.write_ln("@staticmethod")
 
         if not docstr or not self.include_docstrings:
             for s in sig_str.split("\n"):
                 self.write_ln(s)
-            self.output = self.output[:-1] + ": ...\n"
+            self._replace_tail(1, ": ...\n")
         else:
             docstr = textwrap.dedent(docstr)
             for s in sig_str.split("\n"):
                 self.write_ln(s)
-            self.output = self.output[:-1] + ":\n"
+            self._replace_tail(1, ":\n")
             self.depth += 1
             self.put_docstr(docstr)
             self.depth -= 1
         self.write("\n")
 
-    def put_nb_func(self, fn: NbFunction, name: Optional[str] = None) -> None:
+    def put_nb_func(
+        self, fn: NbFunction, name: Optional[str] = None, is_classmethod: bool = False,
+    ) -> None:
         """Append a nanobind function binding to the stub"""
         sigs = fn.__nb_signature__
         count = len(sigs)
         assert count > 0
         if count == 1:
             # No overloads write directly
-            self.put_nb_overload(fn, sigs[0], name)
+            self.put_nb_overload(fn, sigs[0], name, is_classmethod=is_classmethod)
         else:
-            # Render an @overload-decorated chain
-            overload = self.import_object("typing", "overload")
-            for s in sigs:
+            # Render an @overload-decorated chain. When several overloads share
+            # a docstring, keep it only on the last one: type checkers resolve
+            # to the first non-empty docstring regardless of position, while
+            # tools that read the final declaration (e.g. sphinx-autoapi) expect
+            # it there. This also avoids duplicating the text.
+            overload = self.bind("typing", "overload")
+            last_idx: Dict[str, int] = {}
+            for i, s in enumerate(sigs):
+                if s[1] is not None:
+                    last_idx[s[1]] = i
+            for i, s in enumerate(sigs):
+                docstr = s[1]
+                if docstr is not None and last_idx[docstr] != i:
+                    s = (s[0], None, s[2])
                 self.write_ln(f"@{overload}")
-                self.put_nb_overload(fn, s, name)
+                self.put_nb_overload(fn, s, name, is_classmethod=is_classmethod)
 
     def put_function(self, fn: Callable[..., Any], name: Optional[str] = None, parent: Optional[object] = None):
         """Append a function of an arbitrary type to the stub"""
-        # Don't generate a constructor for nanobind classes that aren't constructible
-        if name == "__init__" and type(parent).__name__.startswith("nb_type"):
+        # A nanobind class without a bound constructor exposes a '__init__'
+        # wrapper descriptor for its error-raising default 'tp_init'. Skip it.
+        if name == "__init__" and isinstance(fn, types.WrapperDescriptorType) \
+                and type(parent).__name__ == "nb_type":
             return
 
         fn_module = getattr(fn, "__module__", None)
@@ -415,18 +474,21 @@ class StubGen:
             self.write_ln(f"{name} = {fn_name}\n")
             return
 
-        # Special handling for nanobind functions with overloads
-        if type(fn).__module__ == "nanobind":
-            fn = cast(NbFunction, fn)
-            self.put_nb_func(fn, name)
-            return
-
-        if isinstance(fn, staticmethod):
-            self.write_ln("@staticmethod")
+        # Unwrap staticmethod/classmethod descriptors.
+        if is_staticmethod := isinstance(fn, staticmethod):
             fn = fn.__func__
-        elif isinstance(fn, classmethod):
+        if is_classmethod := isinstance(fn, classmethod):
             self.write_ln("@classmethod")
             fn = fn.__func__
+
+        # Special handling for nanobind functions with overloads.
+        if type(fn).__module__ == "nanobind":
+            fn = cast(NbFunction, fn)
+            self.put_nb_func(fn, name, is_classmethod=is_classmethod)
+            return
+
+        if is_staticmethod:
+            self.write_ln("@staticmethod")
 
         if name is None:
             name = fn.__name__
@@ -444,7 +506,7 @@ class StubGen:
 
         for i, fno in enumerate(overloads):
             if len(overloads) > 1:
-                overload = self.import_object("typing", "overload")
+                overload = self.bind("typing", "overload")
                 self.write_ln(f"@{overload}")
 
             try:
@@ -456,7 +518,7 @@ class StubGen:
                 sig_str = f"{name}{self.signature_str(sig)}"
             else:
                 # If inspect.signature fails, use a maximally permissive type.
-                any_type = self.import_object("typing", "Any")
+                any_type = self.bind("typing", "Any")
                 sig_str = f"{name}(*args, **kwargs) -> {any_type}"
 
             # Potentially copy docstring from the implementation function
@@ -476,6 +538,31 @@ class StubGen:
     def put_property(self, prop: property, name: Optional[str]):
         """Append a Python 'property' object"""
         fget, fset = prop.fget, prop.fset
+
+        if fget is None:
+            # A stub cannot express a property without a getter. Emit a plain
+            # attribute annotated with the setter's argument type if available.
+            tp_str = None
+            if isinstance(fset, NbGetterSetter):
+                # Capture 'T' in a setter signature 'def name(self, value: T, /) -> None'
+                m = re.search(r",\s*\w+\s*:\s*(.+?)(?:,\s*/\s*)?\)\s*->",
+                              fset.__nb_signature__[0][0])
+                tp_str = self.simplify_types(m.group(1)) if m else None
+            elif fset is not None:
+                try:
+                    ann = list(signature(fset).parameters.values())[1].annotation
+                    if ann is not Parameter.empty:
+                        tp_str = self.type_str(ann)
+                except (ValueError, TypeError, IndexError):
+                    pass
+            if tp_str is None:
+                tp_str = self.bind("typing", "Any")
+            self.write_ln(f"{name}: {tp_str}")
+            if prop.__doc__ and self.include_docstrings:
+                self.put_docstr(prop.__doc__)
+            self.write("\n")
+            return
+
         self.write_ln("@property")
         self.put(fget, name=name)
         if fset:
@@ -489,14 +576,35 @@ class StubGen:
             self.put(prop.fset, name=name)
             self.include_docstrings = docstrings_backup
 
-    def put_nb_static_property(self, name: Optional[str], prop: NbStaticProperty):
+    def put_nb_static_property(
+        self,
+        name: Optional[str],
+        prop: NbStaticProperty,
+        parent: Optional[object] = None,
+    ):
         """Append a 'nb_static_property' object"""
+        # Read-only static properties are annotated as 'Final', which a type
+        # checker forbids redeclaring in a subclass. If a base class already
+        # declares a static property of the same name, the subclass inherits
+        # it, so skip re-emitting it here (it would add nothing typing-wise).
+        if prop.fset is None and isinstance(parent, type) and any(
+            isinstance(base.__dict__.get(name), type(prop))
+            for base in parent.__mro__[1:]
+        ):
+            return
+
         getter_sig = prop.fget.__nb_signature__[0][0]
         pos = getter_sig.find("/) -> ")
         if pos == -1:
             raise RuntimeError(f"Static property '{name}' ({getter_sig}) has an invalid signature!")
-        getter_sig = getter_sig[pos + 6 :]
-        self.write_ln(f"{name}: {getter_sig} = ...")
+        tp = self.simplify_types(getter_sig[pos + 6 :])
+        # 'Final' at class scope already implies 'ClassVar', and per PEP 591
+        # the two must not be combined (e.g. 'ClassVar[Final[int]]' is invalid).
+        if prop.fset is None:
+            tp = f"{self.bind('typing', 'Final')}[{tp}]"
+        else:
+            tp = f"{self.bind('typing', 'ClassVar')}[{tp}]"
+        self.write_ln(f"{name}: {tp} = ...")
         if prop.__doc__ and self.include_docstrings:
             self.put_docstr(prop.__doc__)
         self.write("\n")
@@ -513,9 +621,9 @@ class StubGen:
             if same_module:
                 # This is an alias of a type in the same module or same top-level module
                 if sys.version_info >= (3, 10, 0):
-                    alias_tp = self.import_object("typing", "TypeAlias")
+                    alias_tp = self.bind("typing", "TypeAlias")
                 else:
-                    alias_tp = self.import_object("typing_extensions", "TypeAlias")
+                    alias_tp = self.bind("typing_extensions", "TypeAlias")
                 self.write_ln(f"{name}: {alias_tp} = {tp.__qualname__}\n")
             elif self.include_external_imports or (same_toplevel_module and self.include_internal_imports):
                 # Import from a different module
@@ -523,23 +631,20 @@ class StubGen:
         else:
             docstr = tp.__doc__
             tp_dict = dict(tp.__dict__)
-            tp_bases: Union[List[str], Tuple[Any, ...], None] = None
 
-            if "__nb_signature__" in tp.__dict__:
+            tp_sig = tp.__dict__.get("__nb_signature__", None)
+            if isinstance(tp_sig, str) and self.is_class_signature(tp_sig):
                 # Types with a custom signature override
-                for s in tp.__nb_signature__.split("\n"):
+                for s in tp_sig.split("\n"):
                     self.write_ln(self.simplify_types(s))
-                self.output = self.output[:-1] + ":\n"
+                self._replace_tail(1, ":\n")
             else:
                 self.write_ln(f"class {tp_name}:")
-                if tp_bases is None:
-                    tp_bases = getattr(tp, "__orig_bases__", None)
-                    if tp_bases is None:
-                        tp_bases = tp.__bases__
-                    tp_bases = [self.type_str(base) for base in tp_bases]
+                bases: Tuple[Any, ...] = getattr(tp, "__orig_bases__", tp.__bases__)
+                tp_bases = [self.type_str(base) for base in bases]
 
                 if tp_bases != ["object"]:
-                    self.output = self.output[:-2] + "("
+                    self._replace_tail(2, "(")
                     for i, base in enumerate(tp_bases):
                         if i:
                             self.write(", ")
@@ -547,14 +652,16 @@ class StubGen:
                     self.write("):\n")
 
             self.depth += 1
-            output_len = len(self.output)
+            output_pos = self._output.tell()
             if docstr and self.include_docstrings:
                 self.put_docstr(docstr)
                 if len(tp_dict):
                     self.write("\n")
+            self.apply_pattern(self.prefix + ".__prefix__", None)
             for k, v in tp_dict.items():
                 self.put(v, k, tp)
-            if output_len == len(self.output):
+            self.apply_pattern(self.prefix + ".__suffix__", None)
+            if output_pos == self._output.tell():
                 self.write_ln("pass\n")
             self.depth -= 1
 
@@ -566,12 +673,34 @@ class StubGen:
         return (
             issubclass(tp, types.FunctionType)
             or issubclass(tp, types.BuiltinFunctionType)
-            or issubclass(tp, types.BuiltinMethodType)
             or issubclass(tp, types.WrapperDescriptorType)
             or issubclass(tp, staticmethod)
             or issubclass(tp, classmethod)
-            or (tp.__module__ == "nanobind" and tp.__name__ == "nb_func")
+            or (tp.__module__ == "nanobind" and tp.__name__ in ("nb_func", "nb_method"))
         )
+
+    def is_class_signature(self, sig: str) -> bool:
+        """
+        Test if a signature declares a class. Such a signature has the form
+        ``class Name(...)``, optionally below one or more decorator lines.
+        """
+        return sig.rpartition("\n")[2].startswith("class ")
+
+    def member_signature_override(self, value: object) -> Optional[str]:
+        """
+        Return the stub declaration that a data member provides for itself via
+        a ``__nb_signature__`` string on its type, if any. A ``class ...``
+        string describes the type itself (``nb::sig`` on a class) and does not
+        apply to instances. Generic aliases forward attribute reads to their
+        origin, hence the check on the type.
+        """
+        tp = type(value)
+        if self.is_function(tp) or not hasattr(tp, "__nb_signature__"):
+            return None
+        sig = getattr(value, "__nb_signature__", None)
+        if isinstance(sig, str) and not self.is_class_signature(sig):
+            return sig
+        return None
 
     def put_value(self, value: object, name: str, parent: Optional[object] = None, abbrev: bool = True) -> None:
         """
@@ -594,9 +723,9 @@ class StubGen:
         if tp.__module__ == '__future__':
             return
 
-        if isinstance(parent, type) and issubclass(tp, parent):
+        if isinstance(value, enum.Enum) and isinstance(parent, type) and issubclass(tp, parent):
             # This is an entry of an enumeration
-            self.write_ln(f"{name} = {typing.cast(enum.Enum, value).value}")
+            self.write_ln(f"{name} = {value._value_!r}")
             if value.__doc__ and self.include_docstrings:
                 self.put_docstr(value.__doc__)
             self.write("\n")
@@ -606,7 +735,7 @@ class StubGen:
 
             if self.include_external_imports or (same_toplevel_module and self.include_internal_imports):
                 # This is a function or a type, import it from its actual source
-                self.import_object(named_value.__module__, named_value.__name__, name)
+                self.bind(named_value.__module__, named_value.__name__, name, export=True)
         else:
             value_str = self.expr_str(value, abbrev)
 
@@ -615,24 +744,36 @@ class StubGen:
 
             # Catch a few different typing.* constructs
             if self.is_type_var(tp):
-                types = ""
+                annotation = ""
             elif typing.get_origin(value):
                 if sys.version_info >= (3, 10, 0):
-                    types = ": " + self.import_object("typing", "TypeAlias")
+                    annotation = ": " + self.bind("typing", "TypeAlias")
                 else:
-                    types = ": " + self.import_object("typing_extensions", "TypeAlias")
+                    annotation = ": " + self.bind("typing_extensions", "TypeAlias")
             else:
-                types = f": {self.type_str(tp)}"
+                annotation = f": {self.type_str(tp)}"
 
-            self.write_ln(f"{name}{types} = {value_str}\n")
+            self.write_ln(f"{name}{annotation} = {value_str}\n")
 
     def is_type_var(self, tp: type) -> bool:
-        return (issubclass(tp, typing.TypeVar)
-            or (sys.version_info >= (3, 11) and issubclass(tp, typing.TypeVarTuple))
-            or (typing_extensions is not None
-            and (
-                issubclass(tp, typing_extensions.TypeVar)
-                or issubclass(tp, typing_extensions.TypeVarTuple))))
+        if issubclass(tp, typing.TypeVar):
+            return True
+        if issubclass(tp, typing.ParamSpec):
+            return True
+        if sys.version_info >= (3, 11) and issubclass(tp, typing.TypeVarTuple):
+            return True
+        if typing_extensions is not None:
+            if issubclass(
+                tp,
+                (
+                    typing_extensions.TypeVar,
+                    typing_extensions.ParamSpec,
+                    typing_extensions.TypeVarTuple
+                )
+            ):
+                return True
+        return False
+
 
     def simplify_types(self, s: str) -> str:
         """
@@ -648,7 +789,9 @@ class StubGen:
 
         - "NoneType" -> "None"
 
-        - "ndarray[...]" -> "Annotated[NDArray[dtype], dict(..extras..)]"
+        - "ndarray[...]" -> "Annotated[ArrayT, dict(..extras..)]"
+          (with ArrayT as the target type specified by the framework
+           annotation given to nb::ndarray)
 
         - "collections.abc.X" -> "X"
           (with "from collections.abc import X" added at top)
@@ -658,22 +801,23 @@ class StubGen:
            changed to 'collections.abc' on newer Python versions)
         """
 
-        # Process nd-array type annotations so that MyPy accepts them
-        s = self.ndarray_re.sub(lambda m: self._format_ndarray(m.group(2)), s)
+        if sys.version_info >= (3, 13):
+            s = s.replace("typing_extensions.CapsuleType", "types.CapsuleType")
 
-        if sys.version_info >= (3, 9, 0):
-            s = self.abc_re.sub(r'collections.abc.\1', s)
+        # Process nd-array type annotations so that MyPy accepts them
+        s = self.ndarray_re.sub(
+            lambda m: self._format_ndarray(m.group(1), m.group(2)), s
+        )
+
+        s = self.abc_re.sub(r'collections.abc.\1', s)
 
         # Process other type names and add suitable import statements
         def process_general(m: Match[str]) -> str:
             def is_valid_module(module_name: str) -> bool:
                 try:
-                    importlib.util.find_spec(module_name)
-                    # If we get here, the module exists and has a valid spec.
-                    return True
+                    return importlib.util.find_spec(module_name) is not None
                 except ValueError:
-                    # The module exists but has no spec, `find_spec` raises a
-                    # `ValueError`, so if we get here, the module does exist.
+                    # An already-imported module without a spec (e.g. __main__)
                     return True
                 except ModuleNotFoundError:
                     return False
@@ -683,12 +827,24 @@ class StubGen:
             if mod_name == "builtins":
                 # Simplify builtins
                 return cls_name if cls_name != "NoneType" else "None"
-            if full_name.startswith(self.module.__name__):
-                # Strip away the module prefix for local classes
-                return full_name[len(self.module.__name__) + 1 :]
-            elif mod_name == "typing" or mod_name == "collections.abc":
+
+            # Resolve module aliases (e.g. "import numpy as np"), which reach
+            # this point when PEP 563 turns annotations into strings
+            head, sep, tail = mod_name.partition(".")
+            head_mod = getattr(self.module, head, None)
+            if ismodule(head_mod) and head_mod.__name__ != head:
+                mod_name = head_mod.__name__ + sep + tail
+                full_name = mod_name + "." + cls_name
+
+            # Strip the module prefix from local classes, but only when the
+            # first segment is an actual runtime attribute (lazy modules)
+            mod_prefix = self.module.__name__ + "."
+            if full_name.startswith(mod_prefix) and \
+                    (result := full_name[len(mod_prefix) :]).split(".")[0] in self.module.__dict__:
+                return result
+            elif mod_name in ("typing", "typing_extensions", "collections.abc"):
                 # Import frequently-occurring typing classes and ABCs directly
-                return self.import_object(mod_name, cls_name)
+                return self.bind(mod_name, cls_name)
             else:
                 # Handle nested names. While mod_name isn't a valid module, then
                 # move the last segment of the name from mod_name to cls_name
@@ -704,30 +860,46 @@ class StubGen:
                     search_cls_name = f"{symbol}.{search_cls_name}"
 
                 # Import the module and reference the contained class by name
-                self.import_object(mod_name, None)
+                self.bind(mod_name)
                 return full_name
 
         s = self.id_seq.sub(process_general, s)
 
         return s
 
-    def _format_ndarray(self, annotation: str) -> str:
-        """Improve NumPy type annotations for static type checking"""
-        dtype = None
+    def _format_ndarray(self, framework: str, annotation: str) -> str:
+        """Improve nb::ndarray type annotations for static type checking"""
         m = re.search(r"dtype=(\w+)", annotation)
+        dtype = m.group(1) if m else None
+        is_numpy = framework in ("numpy.ndarray", "ndarray")
 
-        if m:
-            dtype = "numpy."+ m.group(1)
-            annotation = re.sub(r"dtype=\w+,?\s*", "", annotation).rstrip(", ")
+        module, attr = _FRAMEWORK_STUB_TYPES[framework]
+
+        if framework in ("memoryview", "ArrayLike"):
+            result = self.bind(module, attr)
+        elif is_numpy:
+            if m:
+                dtype = "numpy." + m.group(1)
+                dtype = dtype.replace('bool', 'bool_')
+                annotation = re.sub(r"dtype=\w+,?\s*", "", annotation).rstrip(", ")
+
+            # Build type while potentially preserving extra information as an annotation
+            ndarray = self.bind(module, attr)
+            result = f"{ndarray}[{dtype}]" if dtype else ndarray
+        else:
+            self.bind(module, None)
+            result = f"{module}.{attr}"
+
+        # Non-NumPy frameworks keep dtype in the extras dict rather than folding it
+        # into the type itself, so it must be quoted to remain valid Python.
+        if m and not is_numpy:
+            annotation = re.sub(r"dtype=(\w+)", r"dtype='\1'", annotation)
 
         # Turn shape notation into a valid Python type expression
         annotation = annotation.replace("*", "None").replace("(None)", "(None,)")
 
-        # Build type while potentially preserving extra information as an annotation
-        ndarray = self.import_object("numpy.typing", "NDArray")
-        result = f"{ndarray}[{dtype}]" if dtype else ndarray
         if annotation:
-            annotated = self.import_object("typing", "Annotated")
+            annotated = self.bind("typing", "Annotated")
             result = f"{annotated}[{result}, dict({annotation})]"
 
         return result
@@ -749,6 +921,9 @@ class StubGen:
         if not match or not pattern:
             return False
 
+        # '\doc' markers are consumed in order, one per overload
+        doc_index = 0
+
         for line in pattern.lines:
             ls = line.strip()
             if ls == "\\doc":
@@ -760,10 +935,22 @@ class StubGen:
                     "nb_method",
                 ):
                     value = cast(NbFunction, value)
-                    for tp_i in value.__nb_signature__:
-                        doc = tp_i[1]
-                        if doc:
-                            break
+                    sigs = value.__nb_signature__
+                    if doc_index < len(sigs):
+                        doc = sigs[doc_index][1]
+                    # Patterns with fewer markers than overloads fall back
+                    # to the first non-empty docstring
+                    if not doc:
+                        for tp_i in sigs:
+                            doc = tp_i[1]
+                            if doc:
+                                break
+                    doc_index += 1
+                elif value is None:
+                    # '__[pre/suf]fix__' have no object to copy from
+                    raise RuntimeError(
+                        "'\\doc' can only be used in patterns that replace "
+                        "an object with a docstring")
                 else:
                     doc = getattr(value, "__doc__", None)
                 self.depth += 1
@@ -784,24 +971,42 @@ class StubGen:
                         item_list[0].strip(),
                     )
                     import_as = item_list[1].strip() if len(item_list) > 1 else None
-                    self.import_object(import_module, import_name, import_as)
+                    self.bind(import_module, import_name, import_as)
+                continue
+            elif ls.startswith("\\import "):
+                # inline module imports like "\import A, B as b"
+                mod_list = ls[7:].split(",")
+                for mod in mod_list:
+                    items = mod.split(" as ")
+                    if len(items) == 1:
+                        modname, as_name = items[0].strip(), None
+                    elif len(items) == 2:
+                        modname, as_name = [i.strip() for i in items]
+                    else:
+                        raise RuntimeError(f"Could not parse import declaration {mod}")
+                    if as_name:
+                        self.bind(modname, name=as_name)
+                    else:
+                        self.bind(modname)
                 continue
 
             groups = match.groups()
             for i in reversed(range(len(groups))):
-                line = line.replace(f"\\{i+1}", groups[i])
+                # Non-participating groups substitute as an empty string
+                line = line.replace(f"\\{i+1}", groups[i] or "")
             for k, v in match.groupdict().items():
-                line = line.replace(f"\\{k}", v)
+                line = line.replace(f"\\{k}", v or "")
             self.write_ln(line)
 
         # Success, pattern was applied
+        pattern.matches += 1
         return True
 
     def put(self, value: object, name: Optional[str] = None, parent: Optional[object] = None) -> None:
         old_prefix = self.prefix
 
-        if value in self.stack:
-            # Avoid infinite recursion due to cycles
+        if any(value is v for v in self.stack):
+            # Avoid infinite recursion due to cycles ('is' since '==' may be overloaded)
             return
 
         try:
@@ -816,6 +1021,14 @@ class StubGen:
             if name in SKIP_LIST:
                 return
 
+            # Members with a custom signature are emitted verbatim, even if private
+            sig = self.member_signature_override(value)
+            if sig is not None:
+                for line in sig.splitlines():
+                    self.write_ln(line)
+                self.write("\n")
+                return
+
             is_type_alias = typing.get_origin(value) or (
                 isinstance(value, type)
                 and (value.__name__ != name or value.__module__ != self.module.__name__)
@@ -826,7 +1039,7 @@ class StubGen:
                 not self.include_private
                 and name
                 and not is_type_alias
-                and len(name) > 2
+                and len(name) > 1
                 and (
                     (name[0] == "_" and name[1] != "_")
                     or (name[-1] == "_" and name[-2] != "_")
@@ -841,15 +1054,21 @@ class StubGen:
                 if len(self.stack) != 1:
                     value_name_s = value.__name__.split(".")
                     module_name_s = self.module.__name__.split(".")
-                    is_external = value_name_s[0] != module_name_s[0]
-                    if not self.include_external_imports and is_external:
+                    if not self.include_external_imports and value_name_s[0] != module_name_s[0]:
                         return
 
-                    # Do not include submodules in the same stub, but include a directive to import them
-                    self.import_object(value.__name__, name=None, as_name=name)
+                    # Skip bindings of ancestor modules, which the import
+                    # machinery plants into submodule namespaces
+                    if module_name_s[: len(value_name_s)] == value_name_s:
+                        return
+
+                    # Bind the module so that it stays accessible through this stub
+                    self.bind(value.__name__, name=name, export=True)
+
+                    in_recursive_mode = self.recursive and self.output_file is not None
 
                     # If the user requested this, generate recursive stub files as well
-                    if self.recursive and value_name_s[:-1] == module_name_s and self.output_file:
+                    if in_recursive_mode and value_name_s[:-1] == module_name_s and self.output_file:
                         if create_subdirectory_for_module(value):
                             # Create a new subdirectory and start with an __init__.pyi file there
                             dir_name = self.output_file.parents[0] / value_name_s[-1]
@@ -882,9 +1101,10 @@ class StubGen:
                     return
                 else:
                     self.apply_pattern(self.prefix + ".__prefix__", None)
-                    # using value.__dict__ rather than inspect.getmembers
-                    # to preserve insertion order
-                    for name, child in value.__dict__.items():
+                    # using value.__dict__ rather than inspect.getmembers to
+                    # preserve insertion order. Copy it: emitting a member may
+                    # import a submodule, which binds an attribute here.
+                    for name, child in list(value.__dict__.items()):
                         self.put(child, name=name, parent=value)
                     self.apply_pattern(self.prefix + ".__suffix__", None)
             elif self.is_function(tp):
@@ -894,12 +1114,9 @@ class StubGen:
                 value = cast(NbType, value)
                 self.put_type(value, name)
             elif tp_mod == "nanobind":
-                if tp_name == "nb_method":
-                    value = cast(NbFunction, value)
-                    self.put_function(value, name)
-                elif tp_name == "nb_static_property":
+                if tp_name == "nb_static_property":
                     value = cast(NbStaticProperty, value)
-                    self.put_nb_static_property(name, value)
+                    self.put_nb_static_property(name, value, parent)
             elif tp_mod == "builtins":
                 if tp is property:
                     value = cast(property, value)
@@ -915,69 +1132,73 @@ class StubGen:
             self.stack.pop()
             self.prefix = old_prefix
 
-    def import_object(
-        self, module: str, name: Optional[str], as_name: Optional[str] = None
+    def bind(
+        self,
+        module: str,
+        member: Optional[str] = None,
+        name: Optional[str] = None,
+        export: bool = False,
     ) -> str:
         """
-        Import a type (e.g. typing.Optional) used within the stub, ensuring
-        that this does not cause conflicts. Specify ``as_name`` to ensure that
-        the import is bound to a specified name.
+        Register an import needed by the stub and return the local name that
+        refers to the imported object.
 
-        When ``name`` is None, the entire module is imported.
+        - ``module``: the source module. ``bind(module)`` alone records a
+          plain reference (``import a.b``) that resolves qualified names.
+        - ``member``: an object within ``module`` (``from m import x``).
+          When None, the binding refers to the module itself.
+        - ``name``: the desired local name. When None, it is derived from
+          ``member``, prefixing underscores to dodge conflicting names.
+        - ``export``: declares the name to be part of the module interface.
+          The binding then renders with the redundant re-export alias
+          (``x as x``) required by PEP 484.
+
+        Members of ``builtins`` need no import and keep their name.
         """
-        if module == "builtins" and name and (not as_name or name == as_name):
-            return name
+        if module == "builtins" and member and (not name or name == member):
+            return member
 
-        # Rewrite module name if this is relative import from a submodule
-        if module.startswith(self.module.__name__) and module != self.module.__name__:
-            module_short = module[len(self.module.__name__) :]
-            if not name and as_name and module_short[0] == ".":
-                name = as_name = module_short[1:]
-                module_short = "."
-        else:
-            module_short = module
+        if member is None and name is None:
+            self.module_refs.add(module)
+            return module
 
-        # Query a cache of previously imported objects
-        imports_module: Optional[ImportDict] = self.imports.get(module_short, None)
-        if not imports_module:
-            imports_module = {}
-            self.imports[module_short] = imports_module
-
-        key = (name, as_name)
-        final_name = imports_module.get(key, None)
-        if final_name:
-            return final_name
-
-        # Cache miss, import the object
-        final_name = as_name if as_name else name
-
-        # If no as_name constraint was set, potentially adjust the name to
-        # avoid conflicts with an existing object of the same name
-        if name and not as_name:
-            test_name = name
+        local = name
+        if local is None:
+            assert member is not None
+            # Find a conflict-free local name, dodging attributes of the
+            # stubbed module that refer to something else
+            local = member
             while True:
-                # Accept the name if there are no conflicts
-                if not hasattr(self.module, test_name):
-                    break
-                value = getattr(self.module, test_name)
-                try:
-                    if module == ".":
-                        mod_o = self.module
-                    else:
-                        mod_o = importlib.import_module(module)
-
-                    # If there is a conflict, accept it if it refers to the same object
-                    if getattr(mod_o, name) is value:
+                prev = self.bindings.get(local, None)
+                if prev is not None:
+                    # Reuse a matching previous binding, keeping its export flag
+                    if prev[:2] == (module, member):
+                        export = export or prev[2]
                         break
-                except ImportError:
-                    pass
-
+                elif not hasattr(self.module, local):
+                    break
+                else:
+                    # A module attribute of the same name is acceptable if
+                    # it refers to the same object
+                    try:
+                        if getattr(importlib.import_module(module), member) \
+                                is getattr(self.module, local):
+                            break
+                    except ImportError:
+                        pass
                 # Prefix with an underscore
-                test_name = "_" + test_name
-            final_name = test_name
+                local = "_" + local
+        else:
+            prev = self.bindings.get(local, None)
+            if prev is not None:
+                if prev[:2] == (module, member):
+                    export = export or prev[2]
+                elif not self.quiet:
+                    print(f"  - warning: the import of '{local}' shadows a "
+                          f"previous import from '{prev[0]}'.")
 
-        imports_module[key] = final_name
-        return final_name if final_name else ""
+        self.bindings[local] = (module, member, export)
+        return local
 
     def expr_str(self, e: Any, abbrev: bool = True) -> Optional[str]:
         """
@@ -987,39 +1208,63 @@ class StubGen:
         complicated.
         """
         tp = type(e)
-        for t in [bool, int, type(None), type(builtins.Ellipsis)]:
-            if issubclass(tp, t):
-                return repr(e)
-        if issubclass(tp, float):
+        if issubclass(tp, (int, type(None), type(builtins.Ellipsis))):
+            s = repr(e)
+            if len(s) < self.max_expr_length or not abbrev:
+                return s
+        elif issubclass(tp, float):
             s = repr(e)
             if "inf" in s or "nan" in s:
-                return f"float('{s}')"
-            else:
+                s = f"float('{s}')"
+            if len(s) < self.max_expr_length or not abbrev:
                 return s
         elif issubclass(tp, type) or typing.get_origin(e):
             return self.type_str(e)
         elif issubclass(tp, typing.ForwardRef):
             return f'"{e.__forward_arg__}"'
         elif issubclass(tp, enum.Enum):
-            return self.type_str(tp) + '.' + e.name
+            return self.type_str(tp) + '.' + e._name_
+        elif issubclass(tp, typing.ParamSpec) \
+            or (typing_extensions is not None and issubclass(tp, typing_extensions.ParamSpec)):
+            tv = self.bind(tp.__module__, "ParamSpec")
+            return f'{tv}("{e.__name__}")'
         elif (sys.version_info >= (3, 11) and issubclass(tp, typing.TypeVarTuple)) \
             or (typing_extensions is not None and issubclass(tp, typing_extensions.TypeVarTuple)):
-            tv = self.import_object(tp.__module__, "TypeVarTuple")
-            return f'{tv}("{e.__name__}")'
+            tv = self.bind(tp.__module__, "TypeVarTuple")
+            s = f'{tv}("{e.__name__}"'
+            if sys.version_info >= (3, 13):
+                v = e.__default__
+                if v is not typing.NoDefault:
+                    v = self.expr_str(v, abbrev=False)
+                    if v is None:
+                        return None
+                    s += ", default=" + v
+            return s + ')'
         elif issubclass(tp, typing.TypeVar):
-            tv = self.import_object("typing", "TypeVar")
+            tv = self.bind("typing", "TypeVar")
             s = f'{tv}("{e.__name__}"'
             for v in getattr(e, "__constraints__", ()):
-                v = self.expr_str(v)
+                v = self.type_str(v)
                 assert v
                 s += ", " + v
-            for k in ["contravariant", "covariant", "bound", "infer_variance"]:
+            if v := getattr(e, "__bound__", None):
+                v = self.type_str(v)
+                assert v
+                s += ", bound=" + v
+            for k in ["contravariant", "covariant", "infer_variance"]:
                 v = getattr(e, f"__{k}__", None)
                 if v:
-                    v = self.expr_str(v)
+                    v = self.expr_str(v, abbrev=False)
                     if v is None:
                         return None
                     s += f", {k}=" + v
+            if sys.version_info >= (3, 13):
+                v = e.__default__
+                if v is not typing.NoDefault:
+                    v = self.expr_str(v, abbrev=False)
+                    if v is None:
+                        return None
+                    s += ", default=" + v
             s += ")"
             return s
         elif issubclass(tp, str):
@@ -1139,8 +1384,10 @@ class StubGen:
                 + ", ".join(args_gen)
                 + "]"
             )
-        elif tp is types.ModuleType:
-            result = "types.ModuleType"
+        elif tp in TYPES_TYPES:
+            result = f"types.{TYPES_TYPES[tp]}"
+        elif tp is Ellipsis:
+            result = "..."
         elif isinstance(tp, type):
             result = tp.__module__ + "." + tp.__qualname__
         else:
@@ -1154,58 +1401,73 @@ class StubGen:
         1 = From 3rd party package
         2 = From the package being built
         """
-        if module.startswith(".") or module.split('.')[0] == self.module.__name__.split('.')[0]:
+        top = module.split(".")[0]
+        if top == self.module.__name__.split(".")[0]:
             return 2
-
-        try:
-            spec = importlib.util.find_spec(module)
-        except (ModuleNotFoundError, ValueError):
-            return 1
-
-        if spec:
-            if spec.origin and ("site-packages" in spec.origin or "dist-packages" in spec.origin):
-                return 1
-            else:
-                return 0
+        elif top in getattr(sys, "stdlib_module_names", ()):
+            return 0
         else:
             return 1
 
     def get(self) -> str:
         """Generate the final stub output"""
         s = ""
+
+        # Potentially add a module docstring
+        doc = getattr(self.module, '__doc__', None)
+        if self.include_docstrings and doc:
+            s += self.format_docstr(doc, 0) + "\n"
+
+        # Derive import statements from the binding table. Bindings of dotted
+        # modules use the 'from <parent> import <child>' form, which can also
+        # express a re-export ('as <child>'). Plain module references and
+        # bindings of top-level modules render as 'import' statements.
+        import_lines: Dict[str, List[str]] = {}
+        from_imports: Dict[str, List[str]] = {}
+
+        for local, (module, member, export) in self.bindings.items():
+            if member is None:
+                source, _, symbol = module.rpartition(".")
+                if not source:
+                    alias = "" if local == module and not export else f" as {local}"
+                    import_lines.setdefault(module, []).append(f"import {module}{alias}")
+                    continue
+            else:
+                source, symbol = module, member
+            item = symbol if local == symbol and not export else f"{symbol} as {local}"
+            from_imports.setdefault(source, []).append(item)
+
+        for ref in self.module_refs:
+            # A binding of the same top-level module already provides the name
+            b = self.bindings.get(ref, None)
+            if b is None or b[:2] != (ref, None):
+                import_lines.setdefault(ref, []).append(f"import {ref}")
+
+        sources = sorted(set(import_lines) | set(from_imports),
+                         key=lambda m: (self.check_party(m), m))
         last_party = None
 
-        for module in sorted(self.imports, key=lambda i: str(self.check_party(i)) + i):
-            imports = self.imports[module]
-            items: List[str] = []
-            party = self.check_party(module)
-
+        for source in sources:
+            party = self.check_party(source)
             if party != last_party:
                 if last_party is not None:
                     s += "\n"
                 last_party = party
 
-            for (k, v1), v2 in imports.items():
-                if k is None:
-                    if v1 and v1 != module:
-                        s += f"import {module} as {v1}\n"
-                    elif v1 is None or (k, None) not in imports:
-                        s += f"import {module}\n"
-                else:
-                    if k != v2 or v1:
-                        items.append(f"{k} as {v2}")
-                    else:
-                        items.append(k)
+            for line in sorted(import_lines.get(source, [])):
+                s += line + "\n"
 
-            items = sorted(items)
+            items = sorted(from_imports.get(source, []))
             if items:
                 items_v0 = ", ".join(items)
-                items_v0 = f"from {module} import {items_v0}\n"
+                items_v0 = f"from {source} import {items_v0}\n"
                 items_v1 = "(\n    " + ",\n    ".join(items) + "\n)"
-                items_v1 = f"from {module} import {items_v1}\n"
+                items_v1 = f"from {source} import {items_v1}\n"
                 s += items_v0 if len(items_v0) <= 70 else items_v1
 
-        s += "\n\n"
+        # Separate the import block from the module contents
+        if s:
+            s += "\n\n"
 
         # Append the main generated stub
         s += self.output
@@ -1278,10 +1540,12 @@ def parse_options(args: List[str]) -> argparse.Namespace:
     parser.add_argument(
         "-p",
         "--pattern-file",
+        action="append",
         metavar="FILE",
         dest="pattern_file",
-        default=None,
-        help="apply the given patterns to the generated stub (see the docs for syntax)",
+        default=[],
+        help="apply the given patterns to the generated stub (see the docs for "
+             "syntax, can specify multiple times)",
     )
 
     parser.add_argument(
@@ -1300,6 +1564,14 @@ def parse_options(args: List[str]) -> argparse.Namespace:
         default=True,
         action="store_false",
         help="exclude docstrings from the generated stub",
+    )
+
+    parser.add_argument(
+        "--exclude-values",
+        dest="exclude_values",
+        default=False,
+        action="store_true",
+        help="force the use of ... for values",
     )
 
     parser.add_argument(
@@ -1378,26 +1650,26 @@ def load_pattern_file(fname: str) -> List[ReplacePattern]:
 
 
 def main(args: Optional[List[str]] = None) -> None:
-    import sys
-
     # Ensure that the current directory is on the path
     if "" not in sys.path and "." not in sys.path:
         sys.path.insert(0, "")
 
     opt = parse_options(sys.argv[1:] if args is None else args)
 
-    patterns: List[ReplacePattern]
-    if opt.pattern_file:
+    patterns: List[ReplacePattern] = []
+    for pattern_file in opt.pattern_file:
         if not opt.quiet:
-            print('Using pattern file "%s" ..' % opt.pattern_file)
-        patterns = load_pattern_file(opt.pattern_file)
+            print('Using pattern file "%s" ..' % pattern_file)
+        loaded = load_pattern_file(pattern_file)
         if not opt.quiet:
-            print("  - loaded %i patterns.\n" % len(patterns))
-    else:
-        patterns = []
+            print("  - loaded %i patterns.\n" % len(loaded))
+        patterns += loaded
 
     for i in opt.imports:
         sys.path.insert(0, i)
+
+    # Let modules detect that they are being imported for stub generation
+    os.environ["NB_STUBGEN"] = "1"
 
     for i, mod in enumerate(opt.modules):
         if not opt.quiet:
@@ -1420,8 +1692,7 @@ def main(args: Optional[List[str]] = None) -> None:
                 )
             file = Path(str(file_s))
 
-            ext_loader = importlib.machinery.ExtensionFileLoader
-            if isinstance(mod_imported.__loader__, ext_loader):
+            if file.suffix in importlib.machinery.EXTENSION_SUFFIXES:
                 # Splitting on "." (module nesting qualifier) handles the case
                 # of invoking stubgen on a module that's not in the current
                 # working directory - in that case, we still only want the Python
@@ -1446,6 +1717,7 @@ def main(args: Optional[List[str]] = None) -> None:
             recursive=opt.recursive,
             include_docstrings=opt.include_docstrings,
             include_private=opt.include_private,
+            max_expr_length=0 if opt.exclude_values else 50,
             patterns=patterns,
             output_file=file
         )

@@ -1,21 +1,23 @@
 /*
-   src/nb_abi.h: this file computes tags that are used to isolate extensions
-   from each other in the case of platform or nanobind-related ABI
-   incompatibilities. The file is included by ``nb_internals.cpp`` and should
-   not be used directly.
+    nanobind/nb_platform.h: this file computes the platform ABI tag, a string
+    capturing the properties of the compilation environment that determine
+    whether two binaries may call each other at all. A mismatch means that no
+    compatible backend exists. The other binary compatibility contracts are
+    described in nb_backend.h.
 
-   The implementation of this file (specifically, the NB_PLATFORM_ABI_TAG) is
-   designed to be compatible with @rwgk's
-   https://github.com/pybind/pybind11/blob/master/include/pybind11/conduit/pybind11_platform_abi_id.h
+    The implementation of this file is designed to be compatible with @rwgk's
+    https://github.com/pybind/pybind11/blob/master/include/pybind11/conduit/pybind11_platform_abi_id.h
+    though the resulting tag string is specific to nanobind.
 
-   Use of this source code is governed by a BSD-style license that can be found
-   in the LICENSE file.
+    Use of this source code is governed by a BSD-style license that can be
+    found in the LICENSE file.
 */
 
-/// Tracks the version of nanobind's internal data structures
-#ifndef NB_INTERNALS_VERSION
-#  define NB_INTERNALS_VERSION 16
-#endif
+#pragma once
+
+// Include a libstdc++ header so that _GLIBCXX_USE_CXX11_ABI is defined below
+// regardless of include order
+#include <cstddef>
 
 #if defined(__MINGW32__)
 #  define NB_COMPILER_TYPE "mingw"
@@ -64,39 +66,33 @@
 #  error "Unknown platform or compiler. Please revise this code."
 #endif
 
-// On MSVC, debug and release builds are not ABI-compatible!
-#if defined(_MSC_VER) && defined(_DEBUG)
+// MSVC debug builds and libstdc++'s _GLIBCXX_DEBUG mode are not
+// ABI-compatible with regular builds (standard container layouts change)
+#if (defined(_MSC_VER) && defined(_DEBUG)) || defined(_GLIBCXX_DEBUG)
 #  define NB_BUILD_TYPE "_debug"
 #else
 #  define NB_BUILD_TYPE ""
 #endif
 
-// Tag to determine if inter-library C++ function can be safely dispatched
-#define NB_PLATFORM_ABI_TAG \
-    NB_COMPILER_TYPE NB_BUILD_ABI NB_BUILD_TYPE
-
-// Can have limited and non-limited-API extensions in the same process.
-// Nanobind data structures will differ, so these can't talk to each other
-#if defined(Py_LIMITED_API)
-#  define NB_STABLE_ABI "_stable"
-#else
-#  define NB_STABLE_ABI ""
-#endif
-
-// As above, but for free-threaded extensions
+// Free-threaded extensions lay out per-type state differently
 #if defined(NB_FREE_THREADED)
 #  define NB_FREE_THREADED_ABI "_ft"
 #else
 #  define NB_FREE_THREADED_ABI ""
 #endif
 
+// Separate one pre-release's boundary from the next; empty in releases. The
+// release version is part of the tag because the dev counter restarts at 1
+// with every release cycle
 #if NB_VERSION_DEV > 0
-  #define NB_VERSION_DEV_STR "_dev" NB_TOSTRING(NB_VERSION_DEV)
+#  define NB_VERSION_DEV_STR                                                   \
+       "_" NB_TOSTRING(NB_VERSION_MAJOR) "_" NB_TOSTRING(NB_VERSION_MINOR)     \
+       "_" NB_TOSTRING(NB_VERSION_PATCH) "_dev" NB_TOSTRING(NB_VERSION_DEV)
 #else
-  #define NB_VERSION_DEV_STR ""
+#  define NB_VERSION_DEV_STR ""
 #endif
 
-#define NB_ABI_TAG                                                             \
-    "v" NB_TOSTRING(NB_INTERNALS_VERSION)                                      \
-        NB_VERSION_DEV_STR "_" NB_PLATFORM_ABI_TAG NB_STABLE_ABI               \
-            NB_FREE_THREADED_ABI
+// Tag to determine if inter-library C++ function calls are safe
+#define NB_PLATFORM_ABI_TAG                                                    \
+    "nanobind" NB_VERSION_DEV_STR "_"                                          \
+        NB_COMPILER_TYPE NB_BUILD_ABI NB_BUILD_TYPE NB_FREE_THREADED_ABI

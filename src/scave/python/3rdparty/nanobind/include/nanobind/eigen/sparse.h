@@ -10,7 +10,6 @@
 #pragma once
 
 #include <nanobind/ndarray.h>
-#include <nanobind/eigen/dense.h>
 #include <Eigen/SparseCore>
 
 #include <memory>
@@ -21,9 +20,12 @@ NAMESPACE_BEGIN(NB_NAMESPACE)
 
 NAMESPACE_BEGIN(detail)
 
+inline import_cache scipy_csr { "scipy.sparse", "csr_matrix" },
+                    scipy_csc { "scipy.sparse", "csc_matrix" };
+
 /// Detect Eigen::SparseMatrix
 template <typename T> constexpr bool is_eigen_sparse_matrix_v =
-    is_eigen_sparse_v<T> &&
+    is_base_of_template_v<T, Eigen::SparseMatrixBase> &&
     !std::is_base_of_v<Eigen::SparseMapBase<T, Eigen::ReadOnlyAccessors>, T>;
 
 
@@ -52,15 +54,16 @@ template <typename T> struct type_caster<T, enable_if_t<is_eigen_sparse_matrix_v
     ScalarCaster data_caster;
     StorageIndexCaster indices_caster, indptr_caster;
 
-    bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept {
+    bool from_python(handle src, uint32_t flags, cleanup_list *cleanup) noexcept {
         object obj = borrow(src);
 
         try {
-            object matrix_type =
-                module_::import_("scipy.sparse")
-                    .attr(RowMajor ? "csr_matrix" : "csc_matrix");
-            if (!obj.type().is(matrix_type))
+            handle matrix_type = (RowMajor ? scipy_csr : scipy_csc).get();
+            if (!obj.type().is(matrix_type)) {
+                if (!(flags & cast_flags::convert))
+                    return false;
                 obj = matrix_type(obj);
+            }
 
             if (!cast<bool>(obj.attr("has_sorted_indices")))
                 obj.attr("sort_indices")();
@@ -90,7 +93,7 @@ template <typename T> struct type_caster<T, enable_if_t<is_eigen_sparse_matrix_v
                               indices_caster.value.data(),
                               data_caster.value.data());
             return true;
-        } catch (const python_error &) {
+        } catch (const std::exception &) {
             return false;
         }
     }
@@ -120,9 +123,9 @@ template <typename T> struct type_caster<T, enable_if_t<is_eigen_sparse_matrix_v
             return handle();
         }
 
-        object matrix_type;
+        handle matrix_type;
         try {
-            matrix_type = module_::import_("scipy.sparse").attr(RowMajor ? "csr_matrix" : "csc_matrix");
+            matrix_type = (RowMajor ? scipy_csr : scipy_csc).get();
         } catch (python_error &e) {
             e.restore();
             return handle();
@@ -135,7 +138,10 @@ template <typename T> struct type_caster<T, enable_if_t<is_eigen_sparse_matrix_v
         T *src = std::addressof(const_cast<T &>(v));
         object owner;
         if (policy == rv_policy::move) {
-            src = new T(std::move(v));
+            // Eigen sparse matrices lack a move constructor; copy-constructing
+            // from a matrix flagged as an rvalue performs a cheap pointer swap.
+            const_cast<T &>(v).markAsRValue();
+            src = new T(v);
             owner = capsule(src, [](void *p) noexcept { delete (T *) p; });
         }
 
@@ -184,13 +190,11 @@ struct type_caster<Eigen::Map<T>, enable_if_t<is_eigen_sparse_matrix_v<T>>> {
     StorageIndexCaster indices_caster, indptr_caster;
     Index rows, cols, nnz;
 
-    bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept {
-        flags = ~(uint8_t) cast_flags::convert;
+    bool from_python(handle src, uint32_t flags, cleanup_list *cleanup) noexcept {
+        flags &= ~cast_flags::convert;
 
         try {
-            object matrix_type =
-                module_::import_("scipy.sparse")
-                    .attr(RowMajor ? "csr_matrix" : "csc_matrix");
+            handle matrix_type = (RowMajor ? scipy_csr : scipy_csc).get();
             if (!src.type().is(matrix_type))
                 return false;
 
@@ -216,7 +220,7 @@ struct type_caster<Eigen::Map<T>, enable_if_t<is_eigen_sparse_matrix_v<T>>> {
             rows = cast<Index>(shape_o[0]);
             cols = cast<Index>(shape_o[1]);
             nnz = cast<Index>(src.attr("nnz"));
-        } catch (const python_error &) {
+        } catch (const std::exception &) {
             return false;
         }
 
@@ -233,10 +237,9 @@ struct type_caster<Eigen::Map<T>, enable_if_t<is_eigen_sparse_matrix_v<T>>> {
             return handle();
         }
 
-        object matrix_type;
+        handle matrix_type;
         try {
-            matrix_type = module_::import_("scipy.sparse")
-                              .attr(RowMajor ? "csr_matrix" : "csc_matrix");
+            matrix_type = (RowMajor ? scipy_csr : scipy_csc).get();
 
             const Index rows = v.rows(), cols = v.cols();
             const size_t data_shape[] = { (size_t) v.nonZeros() };
@@ -280,7 +283,7 @@ struct type_caster<Eigen::Ref<T, Options>, enable_if_t<is_eigen_sparse_matrix_v<
     template <typename T_> using Cast = Ref;
     template <typename T_> static constexpr bool can_cast() { return true; }
 
-    bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept = delete;
+    bool from_python(handle src, uint32_t flags, cleanup_list *cleanup) noexcept = delete;
 
     static handle from_cpp(const Ref &v, rv_policy policy, cleanup_list *cleanup) noexcept = delete;
 };

@@ -11,10 +11,10 @@ NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 
 template <typename Caster>
-bool from_python_remember_conv(Caster &c, PyObject **args, uint8_t *args_flags,
+bool from_python_remember_conv(Caster &c, PyObject **args, uint32_t flags,
                                cleanup_list *cleanup, size_t index) {
     size_t size_before = cleanup->size();
-    if (!c.from_python(args[index], args_flags[index], cleanup))
+    if (!c.from_python(args[index], flags, cleanup))
         return false;
 
     // If an implicit conversion took place, update the 'args' array so that
@@ -26,13 +26,64 @@ bool from_python_remember_conv(Caster &c, PyObject **args, uint8_t *args_flags,
     return true;
 }
 
+/// Compute the compile-time cast flags of every C++ function parameter.
+/// Annotations map to consecutive parameters, skipping the 'self' argument
+/// of methods (whose flags are zero).
+template <bool IsMethod, bool HasArgAnnotations, typename... Extra,
+          typename Return, typename... Args>
+constexpr auto arg_flags_static(Return (*)(Args...)) {
+    constexpr size_t N = sizeof...(Args), M = sizeof...(Extra);
+
+    // Contribution of the C++ parameter types: std::optional-style arguments
+    // implicitly accept 'None'; value/reference bindings of bound types do not
+    constexpr uint32_t type_flags[] = {
+        ((has_arg_defaults_v<Args> ? (uint32_t) cast_flags::accepts_none : 0u) |
+         none_disallowed_flag<Args>)..., 0u };
+
+    // Which 'Extra' entries are argument annotations, and their flags
+    constexpr bool     is_ann[]    = { arg_traits<Extra>::is_arg..., false };
+    constexpr uint32_t ann_flags[] = { arg_traits<Extra>::flags..., 0u };
+
+    struct { uint32_t v[N == 0 ? 1 : N]; } r{};
+    size_t j = 0;
+    for (size_t i = IsMethod ? 1 : 0; i < N; ++i) {
+        uint32_t f = arg_flags_default;
+        if constexpr (HasArgAnnotations) {
+            while (j < M && !is_ann[j]) // advance to the next annotation
+                j++;
+            if (j < M)
+                f = ann_flags[j++];
+        }
+        r.v[i] = f | type_flags[i];
+    }
+
+    (void) is_ann; (void) ann_flags; (void) j;
+    return r;
+}
+
+/// Combine an argument's compile-time cast flags with the call-wide dynamic
+/// word assembled by the dispatcher
+template <size_t Index, uint32_t ArgFlags>
+NB_INLINE uint32_t combine_flags(uint32_t call_flags) {
+    // 'construct' and 'trusted' only apply to the 'self' argument
+    if constexpr (Index != 0)
+        call_flags &= ~(cast_flags::construct |
+                        cast_flags::trusted);
+
+    // Implicit conversion requires agreement of both flag words
+    if constexpr (!(ArgFlags & cast_flags::convert))
+        call_flags &= ~cast_flags::convert;
+
+    return call_flags | (ArgFlags & ~cast_flags::convert);
+}
+
 // Return the number of nb::arg and nb::arg_v types in the first I types Ts.
 // Invoke with std::make_index_sequence<sizeof...(Ts)>() to provide
 // an index pack 'Is' that parallels the types pack Ts.
 template <size_t I, typename... Ts, size_t... Is>
 constexpr size_t count_args_before_index(std::index_sequence<Is...>) {
     static_assert(sizeof...(Is) == sizeof...(Ts));
-    return ((Is < I && std::is_base_of_v<arg, Ts>) + ... + 0);
+    return ((Is < I && arg_traits<Ts>::is_arg) + ... + 0);
 }
 
 #if defined(NB_FREE_THREADED)
@@ -43,14 +94,16 @@ struct ft_args_collector {
     size_t index = 0;
 
     NB_INLINE explicit ft_args_collector(PyObject **a) : args(a) {}
-    NB_INLINE void apply(arg_locked *) {
-        if (h1.ptr() == nullptr)
-            h1 = args[index];
-        h2 = args[index];
-        ++index;
+    template <typename T> NB_INLINE void apply(T *) {
+        if constexpr (arg_traits<T>::is_arg) {
+            if constexpr (arg_traits<T>::locked) {
+                if (h1.ptr() == nullptr)
+                    h1 = args[index];
+                h2 = args[index];
+            }
+            ++index;
+        }
     }
-    NB_INLINE void apply(arg *) { ++index; }
-    NB_INLINE void apply(...) {}
 };
 
 struct ft_args_guard {
@@ -75,7 +128,7 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
 
     if constexpr (CheckGuard && !std::is_same_v<typename Info::call_guard, void>) {
         return func_create<ReturnRef, false>(
-            [func = (forward_t<Func>) func](Args... args) NB_INLINE_LAMBDA {
+            [func = (forward_t<Func>) func](Args... args) NB_INLINE_LAMBDA -> Return {
                 typename Info::call_guard::type g;
                 (void) g;
                 return func((forward_t<Args>) args...);
@@ -95,30 +148,38 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
         kwargs_pos_n = index_n_v<std::is_same_v<intrinsic_t<Args>, kwargs>...>,
         nargs = sizeof...(Args);
 
+    // Detect location of nb::kw_only, if supplied. As with args/kwargs we find
+    // the first and last location and later verify they match. Note this is an
+    // index in Extra... while args/kwargs_pos_* are indices in Args...
+    constexpr size_t
+        kwonly_pos_1 = index_1_v<std::is_same_v<kw_only, Extra>...>,
+        kwonly_pos_n = index_n_v<std::is_same_v<kw_only, Extra>...>;
+
+    constexpr bool has_arg_defaults = (detail::has_arg_defaults_v<Args> || ... || false);
+
     // Determine the number of nb::arg/nb::arg_v annotations
     constexpr size_t nargs_provided =
-        (std::is_base_of_v<arg, Extra> + ... + 0);
-    constexpr bool is_method_det =
+        (arg_traits<Extra>::is_arg + ... + 0);
+    static constexpr bool is_method_det =
         (std::is_same_v<is_method, Extra> + ... + 0) != 0;
     constexpr bool is_getter_det =
         (std::is_same_v<is_getter, Extra> + ... + 0) != 0;
-    constexpr bool has_arg_annotations = nargs_provided > 0 && !is_getter_det;
+    static constexpr bool has_arg_annotations = has_arg_defaults ||
+        (nargs_provided > 0 && !is_getter_det);
+
+    // Number of 'arg_data_init' records in the function record below. This can
+    // be zero even when 'has_arg_annotations' is set, e.g. for a method whose
+    // only parameter is a 'self' of type 'std::optional<T>'.
+    constexpr size_t nrec =
+        has_arg_defaults ? (nargs - is_method_det) : nargs_provided;
 
     // Determine the number of potentially-locked function arguments
-    constexpr bool lock_self_det =
+    static constexpr bool lock_self_det =
         (std::is_same_v<lock_self, Extra> + ... + 0) != 0;
     static_assert(Info::nargs_locked <= 2,
         "At most two function arguments can be locked");
     static_assert(!(lock_self_det && !is_method_det),
         "The nb::lock_self() annotation only applies to methods");
-
-    // Detect location of nb::kw_only annotation, if supplied. As with args/kwargs
-    // we find the first and last location and later verify they match each other.
-    // Note this is an index in Extra... while args/kwargs_pos_* are indices in
-    // Args... .
-    constexpr size_t
-        kwonly_pos_1 = index_1_v<std::is_same_v<kw_only, Extra>...>,
-        kwonly_pos_n = index_n_v<std::is_same_v<kw_only, Extra>...>;
 
     // Arguments after nb::args are implicitly keyword-only even if there is no
     // nb::kw_only annotation
@@ -128,13 +189,17 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
     // A few compile-time consistency checks
     static_assert(args_pos_1 == args_pos_n && kwargs_pos_1 == kwargs_pos_n,
         "Repeated use of nb::kwargs or nb::args in the function signature!");
-    static_assert(!has_arg_annotations || nargs_provided + is_method_det == nargs,
+
+    // If annotations are provided, they must exactly match the parameter count
+    static_assert(!has_arg_annotations || nargs_provided == 0 ||
+                  nargs_provided + is_method_det == nargs,
         "The number of nb::arg annotations must match the argument count!");
     static_assert(kwargs_pos_1 == nargs || kwargs_pos_1 + 1 == nargs,
         "nb::kwargs must be the last element of the function signature!");
     static_assert(args_pos_1 == nargs || args_pos_1 < kwargs_pos_1,
         "nb::args must precede nb::kwargs if both are present!");
-    static_assert(has_arg_annotations || (!implicit_kw_only && !explicit_kw_only),
+    // Implicit annotations carry no name and cannot satisfy this requirement
+    static_assert(nargs_provided > 0 || (!implicit_kw_only && !explicit_kw_only),
         "Keyword-only arguments must have names!");
 
     // Find the index in Args... of the first keyword-only parameter. Since
@@ -188,14 +253,16 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
     };
 
     // The following temporary record will describe the function in detail
-    func_data_prelim<nargs_provided> f;
-    f.flags = (args_pos_1   < nargs ? (uint32_t) func_flags::has_var_args   : 0) |
+    func_data_init<nrec> f;
+
+    f.flags = NB_ABI_MINOR_TAG |
+              (args_pos_1   < nargs ? (uint32_t) func_flags::has_var_args   : 0) |
               (kwargs_pos_1 < nargs ? (uint32_t) func_flags::has_var_kwargs : 0) |
               (ReturnRef            ? (uint32_t) func_flags::return_ref     : 0) |
               (has_arg_annotations  ? (uint32_t) func_flags::has_args       : 0);
 
-    /* Store captured function inside 'func_data_prelim' if there is space. Issues
-       with aliasing are resolved via separate compilation of libnanobind. */
+    // Store captured function inside 'func_data_init' if there is space. Issues
+    // with aliasing are resolved via separate compilation of libnanobind.
     if constexpr (sizeof(capture) <= sizeof(f.capture)) {
         capture *cap = (capture *) f.capture;
         new (cap) capture{ (forward_t<Func>) func };
@@ -216,9 +283,10 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
         };
     }
 
-    f.impl = [](void *p, PyObject **args, uint8_t *args_flags, rv_policy policy,
-                cleanup_list *cleanup) NB_INLINE_LAMBDA -> PyObject * {
-        (void) p; (void) args; (void) args_flags; (void) policy; (void) cleanup;
+    f.impl = [](void *p, PyObject **args, uint32_t call_flags,
+                cleanup_list *cleanup)
+                    NB_INLINE_LAMBDA -> PyObject * {
+        (void) p; (void) args; (void) call_flags; (void) cleanup;
 
         const capture *cap;
         if constexpr (sizeof(capture) <= sizeof(f.capture))
@@ -244,15 +312,24 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
         }
 #endif
 
+        // Per-argument cast flags, indexed by C++ parameter
+        constexpr auto arg_flags =
+            arg_flags_static<is_method_det, has_arg_annotations, Extra...>(
+                (Return (*)(Args...)) nullptr);
+
         if constexpr (Info::pre_post_hooks) {
             std::integral_constant<size_t, nargs> nargs_c;
             (process_precall(args, nargs_c, cleanup, (Extra *) nullptr), ...);
-            if ((!from_python_remember_conv(in.template get<Is>(), args,
-                                            args_flags, cleanup, Is) || ...))
+            if ((!from_python_remember_conv(
+                     in.template get<Is>(), args,
+                     combine_flags<Is, arg_flags.v[Is]>(call_flags),
+                     cleanup, Is) || ...))
                 return NB_NEXT_OVERLOAD;
         } else {
-            if ((!in.template get<Is>().from_python(args[Is], args_flags[Is],
-                                                    cleanup) || ...))
+            if ((!in.template get<Is>().from_python(
+                     args[Is],
+                     combine_flags<Is, arg_flags.v[Is]>(call_flags),
+                     cleanup) || ...))
                 return NB_NEXT_OVERLOAD;
         }
 
@@ -263,18 +340,17 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
 #else
             cap->func(in.template get<Is>().operator cast_t<Args>()...);
 #endif
-            result = Py_None;
-            Py_INCREF(result);
+            result = none_ref();
         } else {
 #if defined(_WIN32) && !defined(__CUDACC__) // temporary workaround for an internal compiler error in MSVC
             result = cast_out::from_cpp(
                        cap->func(static_cast<cast_t<Args>>(in.template get<Is>())...),
-                       policy, cleanup).ptr();
+                       rv_policy(Info::policy), cleanup).ptr();
 #else
             result = cast_out::from_cpp(
                        cap->func((in.template get<Is>())
                                      .operator cast_t<Args>()...),
-                       policy, cleanup).ptr();
+                       rv_policy(Info::policy), cleanup).ptr();
 #endif
         }
 
@@ -305,13 +381,31 @@ NB_INLINE PyObject *func_create(Func &&func, Return (*)(Args...),
                       explicit_kw_only ? nargs_before_kw_only :
                   kwargs_pos_1 < nargs ? kwargs_pos_1 : nargs;
 
+    // Store information (flags, defaults) about annotated parameters. Skips
+    // getters. When 'has_arg_defaults' is set (e.g. due to the presence of
+    // ``std::optional<T>``), we provide an implicit annotation for every
+    // parameter, which is initialized by the loop below.
+    if constexpr (has_arg_annotations && nrec > 0) {
+        constexpr auto arg_flags =
+            arg_flags_static<is_method_det, has_arg_annotations, Extra...>(
+                (Return (*)(Args...)) nullptr);
+        for (size_t i = 0; i < nrec; ++i) {
+            arg_data_init &a = f.args[i];
+            a.name = nullptr;
+            a.signature = nullptr;
+            a.value = nullptr;
+            a.flag = (uint32_t) (arg_flags.v[i + is_method_det] &
+                                 cast_flags::accepts_none);
+        }
+    }
+
     // Fill remaining fields of 'f'
     size_t arg_index = 0;
     (func_extra_apply(f, extra, arg_index), ...);
 
     (void) arg_index;
 
-    return nb_func_new((const void *) &f);
+    return NB_CALL(nb_func_new)(NB_CTX, &f);
 }
 
 NAMESPACE_END(detail)

@@ -1,8 +1,8 @@
 import sys
 import os
 
-if sys.version_info < (3, 8):
-    raise ImportError("nanobind does not support Python < 3.8.")
+if sys.version_info < (3, 10):
+    raise ImportError("nanobind does not support Python < 3.10.")
 
 def source_dir() -> str:
     "Return the path to the nanobind source directory."
@@ -16,7 +16,7 @@ def cmake_dir() -> str:
     "Return the path to the nanobind CMake module directory."
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), "cmake")
 
-__version__ = "2.9.2"
+__version__ = "3.1.0"
 
 __all__ = (
     "__version__",

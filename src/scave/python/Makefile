@@ -13,13 +13,13 @@ O=$(OMNETPP_OUT_DIR)/$(CONFIGNAME)/src/scave/python
 SCAVE_PYTHON_DIR=$(OMNETPP_PYTHON_DIR)/omnetpp/scave
 TARGET_LIB_FILES=$(SCAVE_PYTHON_DIR)/$(LIBNAME)$(PYTHON_EXT_SUFFIX)
 
-CFLAGS += -DOMNETPP_MODE_SUFFIX=$D -DNB_SHARED -DNB_BUILD
+CFLAGS += -DOMNETPP_MODE_SUFFIX=$D
 
 NANOBIND_DIR=3rdparty/nanobind
 NBO=$(O)/3rdparty/nanobind
 NANOBIND_OBJS=$(NBO)/common.o $(NBO)/implicit.o $(NBO)/nb_func.o $(NBO)/nb_ndarray.o \
     $(NBO)/nb_static_property.o $(NBO)/trampoline.o $(NBO)/error.o $(NBO)/nb_enum.o \
-    $(NBO)/nb_internals.o $(NBO)/nb_type.o
+    $(NBO)/nb_internals.o $(NBO)/nb_type.o $(NBO)/nb_datetime.o $(NBO)/nb_ft.o
 
 
 INCL_FLAGS=-I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_SRC_DIR)" \

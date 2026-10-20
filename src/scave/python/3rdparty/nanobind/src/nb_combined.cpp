@@ -41,7 +41,10 @@
    - The '-Wl,-s' parameter strips debug information from the generated shared
      library. Similarly, '-DNDEBUG' and '-DNB_COMPACT_ASSERTIONS' are parameters
      that improve performance and reduce binary size in release builds, but
-     which would be omitted in debug builds.
+     which would be omitted in debug builds. '-DNB_COMPACT_ASSERTIONS' replaces
+     the message of every failed internal check with a generic one that asks
+     the user to rebuild in debug mode. Omit it when building a backend module,
+     whose users cannot rebuild it.
 
    - here, the libnanobind part uses -O3 (optimization for highest peformance),
      while the bindings use -Os (optimization for the smallest size). The
@@ -78,7 +81,10 @@
 #include "nb_enum.cpp"
 #include "nb_ndarray.cpp"
 #include "nb_static_property.cpp"
-#include "nb_ft.cpp"
+#include "nb_datetime.cpp"
+#if defined(Py_GIL_DISABLED)
+#  include "nb_ft.cpp"
+#endif
 #include "error.cpp"
 #include "common.cpp"
 #include "implicit.cpp"

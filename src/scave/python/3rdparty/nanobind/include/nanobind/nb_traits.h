@@ -118,6 +118,25 @@ using function_signature_t = std::conditional_t<
 template <typename T>
 using forward_t = std::conditional_t<std::is_lvalue_reference_v<T>, T, T &&>;
 
+/// Is 'T' a C string key (a character array or a pointer to characters)?
+template <typename T>
+inline constexpr bool is_c_string_v =
+    std::is_same_v<std::decay_t<T>, const char *> ||
+    std::is_same_v<std::decay_t<T>, char *>;
+
+/// Storage bound that a C string key of type 'T' vouches for (see the
+/// cached_string() backend slot): the extent of a 'const char' array, whose
+/// address the cache may then index, and zero for pointers and mutable
+/// buffers, which restricts the cache to lookups.
+template <typename T> constexpr size_t c_string_bound() {
+    using Bare = std::remove_reference_t<T>;
+    if constexpr (std::is_array_v<Bare> &&
+                  std::is_const_v<std::remove_extent_t<Bare>>)
+        return std::extent_v<Bare>;
+    else
+        return 0;
+}
+
 template <typename...> inline constexpr bool false_v = false;
 
 template <typename... Args> struct overload_cast_impl {
@@ -194,6 +213,12 @@ struct is_complex<T, enable_if_t<std::is_same_v<
 /// True if the type `T` is a complete type representing a complex number.
 template<typename T>
 inline constexpr bool is_complex_v = is_complex<T>::value;
+
+template <typename T>
+struct has_arg_defaults : std::false_type {};
+
+template <typename T>
+constexpr bool has_arg_defaults_v = has_arg_defaults<intrinsic_t<T>>::value;
 
 NAMESPACE_END(detail)
 

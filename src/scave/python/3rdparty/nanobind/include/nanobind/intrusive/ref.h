@@ -119,7 +119,7 @@ private:
     T *m_ptr = nullptr;
 };
 
-// Registar a type caster for ``ref<T>`` if nanobind was previously #included
+// Register a type caster for ``ref<T>`` if nanobind was previously #included
 #if defined(NB_VERSION_MAJOR)
 NAMESPACE_BEGIN(detail)
 template <typename T> struct type_caster<nanobind::ref<T>> {
@@ -127,7 +127,7 @@ template <typename T> struct type_caster<nanobind::ref<T>> {
     static constexpr bool IsClass = true;
     NB_TYPE_CASTER(ref<T>, Caster::Name)
 
-    bool from_python(handle src, uint8_t flags,
+    bool from_python(handle src, uint32_t flags,
                      cleanup_list *cleanup) noexcept {
         Caster caster;
         if (!caster.from_python(src, flags, cleanup))

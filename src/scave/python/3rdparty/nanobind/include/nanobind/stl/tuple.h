@@ -23,7 +23,7 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
     using Indices = std::make_index_sequence<N>;
 
     static constexpr auto Name =
-        const_name(NB_TYPING_TUPLE "[") +
+        const_name("tuple[") +
         const_name<N == 0>(const_name("()"), concat(make_caster<Ts>::Name...)) +
         const_name("]");
 
@@ -33,26 +33,24 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
     /// alias below informs users of this class of this fact.
     template <typename T> using Cast = Value;
 
-    bool from_python(handle src, uint8_t flags,
+    bool from_python(handle src, uint32_t flags,
                      cleanup_list *cleanup) noexcept {
         return from_python_impl(src, flags, cleanup, Indices{});
     }
 
     template <size_t... Is>
-    bool from_python_impl(handle src, uint8_t flags, cleanup_list *cleanup,
+    bool from_python_impl(handle src, uint32_t flags, cleanup_list *cleanup,
                           std::index_sequence<Is...>) noexcept {
         (void) src; (void) flags; (void) cleanup;
 
         PyObject *temp; // always initialized by the following line
-        PyObject **o = seq_get_with_size(src.ptr(), N, &temp);
+        PyObject **o = NB_CALL(seq_get_with_size)(src.ptr(), N, &temp);
 
-        bool success =
-            (o && ... &&
-             std::get<Is>(casters).from_python(o[Is], flags, cleanup));
+        temp_ref = steal(temp);
 
-        Py_XDECREF(temp);
-
-        return success;
+        return (o && ... &&
+                std::get<Is>(casters).from_python(
+                    o[Is], flags_for_local_caster<Ts>(flags), cleanup));
     }
 
     template <typename T>
@@ -62,7 +60,8 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
     }
 
     template <typename T>
-    static handle from_cpp(T *value, rv_policy policy, cleanup_list *cleanup) {
+    static handle from_cpp(T *value, rv_policy policy,
+                           cleanup_list *cleanup) noexcept {
         if (!value)
             return none().release();
         return from_cpp_impl(*value, policy, cleanup, Indices{});
@@ -73,20 +72,14 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
                                 cleanup_list *cleanup,
                                 std::index_sequence<Is...>) noexcept {
         (void) value; (void) policy; (void) cleanup;
-        object o[N1];
 
-        bool success =
-            (... &&
-             ((o[Is] = steal(make_caster<Ts>::from_cpp(
-                   forward_like_<T>(std::get<Is>(value)), policy, cleanup))),
-              o[Is].is_valid()));
+        PyObject *items[N1] { };
 
-        if (!success)
-            return handle();
+        (void) (... && ((items[Is] = make_caster<Ts>::from_cpp(
+                             forward_like_<T>(std::get<Is>(value)), policy,
+                             cleanup).ptr()) != nullptr));
 
-        PyObject *r = PyTuple_New(N);
-        (NB_TUPLE_SET_ITEM(r, Is, o[Is].release().ptr()), ...);
-        return r;
+        return NB_CALL(tuple_new)(items, N);
     }
 
     template <typename T>
@@ -103,6 +96,7 @@ template <typename... Ts> struct type_caster<std::tuple<Ts...>> {
     }
 
     std::tuple<make_caster<Ts>...> casters;
+    object temp_ref;
 };
 
 NAMESPACE_END(detail)

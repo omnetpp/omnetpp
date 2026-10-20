@@ -30,25 +30,24 @@ template <typename T1, typename T2> struct type_caster<std::pair<T1, T2>> {
 
     // Value name for docstring generation
     static constexpr auto Name =
-        const_name(NB_TYPING_TUPLE "[") + concat(Caster1::Name, Caster2::Name) + const_name("]");
+        const_name("tuple[") + concat(Caster1::Name, Caster2::Name) + const_name("]");
 
     /// Python -> C++ caster, populates `caster1` and `caster2` upon success
-    bool from_python(handle src, uint8_t flags,
+    bool from_python(handle src, uint32_t flags,
                      cleanup_list *cleanup) noexcept {
         PyObject *temp; // always initialized by the following line
-        PyObject **o = seq_get_with_size(src.ptr(), 2, &temp);
+        PyObject **o = NB_CALL(seq_get_with_size)(src.ptr(), 2, &temp);
 
-        bool success = o &&
-                       caster1.from_python(o[0], flags, cleanup) &&
-                       caster2.from_python(o[1], flags, cleanup);
+        temp_ref = steal(temp);
 
-        Py_XDECREF(temp);
-
-        return success;
+        return o &&
+               caster1.from_python(o[0], flags_for_local_caster<T1>(flags), cleanup) &&
+               caster2.from_python(o[1], flags_for_local_caster<T2>(flags), cleanup);
     }
 
     template <typename T>
-    static handle from_cpp(T *value, rv_policy policy, cleanup_list *cleanup) {
+    static handle from_cpp(T *value, rv_policy policy,
+                           cleanup_list *cleanup) noexcept {
         if (!value)
             return none().release();
         return from_cpp(*value, policy, cleanup);
@@ -57,20 +56,15 @@ template <typename T1, typename T2> struct type_caster<std::pair<T1, T2>> {
     template <typename T>
     static handle from_cpp(T &&value, rv_policy policy,
                            cleanup_list *cleanup) noexcept {
-        object o1 = steal(
-            Caster1::from_cpp(forward_like_<T>(value.first), policy, cleanup));
-        if (!o1.is_valid())
-            return {};
+        PyObject *items[2] { };
 
-        object o2 = steal(
-            Caster2::from_cpp(forward_like_<T>(value.second), policy, cleanup));
-        if (!o2.is_valid())
-            return {};
+        items[0] = Caster1::from_cpp(forward_like_<T>(value.first), policy,
+                                     cleanup).ptr();
+        if (NB_LIKELY(items[0]))
+            items[1] = Caster2::from_cpp(forward_like_<T>(value.second), policy,
+                                         cleanup).ptr();
 
-        PyObject *r = PyTuple_New(2);
-        NB_TUPLE_SET_ITEM(r, 0, o1.release().ptr());
-        NB_TUPLE_SET_ITEM(r, 1, o2.release().ptr());
-        return r;
+        return NB_CALL(tuple_new)(items, 2);
     }
 
     template <typename T>
@@ -86,6 +80,7 @@ template <typename T1, typename T2> struct type_caster<std::pair<T1, T2>> {
 
     Caster1 caster1;
     Caster2 caster2;
+    object temp_ref;
 };
 
 NAMESPACE_END(detail)

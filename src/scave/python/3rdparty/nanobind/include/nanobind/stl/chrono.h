@@ -20,19 +20,108 @@
 #include <chrono>
 #include <cmath>
 #include <ctime>
-#include <limits>
 
-#include <nanobind/stl/detail/chrono.h>
+NAMESPACE_BEGIN(NB_NAMESPACE)
+NAMESPACE_BEGIN(detail)
+
+// The helpers below wrap the 'datetime_unpack' and 'datetime_pack' functions
+// of the nanobind library.
+
+// Unpack a datetime.timedelta object into integer days, seconds, and
+// microseconds. Returns 1 if successful, 0 if `o` is not a timedelta, or
+// -1 with a Python error set if something else went wrong.
+NB_NOINLINE inline int unpack_timedelta(PyObject *o, int *days, int *secs,
+                                        int *usecs,
+                                        cleanup_list *cleanup = nullptr) noexcept {
+    int32_t parts[3];
+    int kind = NB_CALL(datetime_unpack)(
+        NB_CTX_C(cleanup), o, (uint32_t) datetime_kind::timedelta, parts);
+    if (kind <= 0)
+        return kind;
+    *days = parts[0];
+    *secs = parts[1];
+    *usecs = parts[2];
+    return 1;
+}
+
+// Unpack a datetime.date, datetime.time, or datetime.datetime object into
+// integer year, month, day, hour, minute, second, and microsecond fields.
+// Time objects will be considered to represent that time on Jan 1, 1970.
+// Date objects will be considered to represent midnight on that date.
+// Returns 1 if successful, 0 if `o` is not a date, time, or datetime, or
+// -1 with a Python error set if something else went wrong.
+NB_NOINLINE inline int unpack_datetime(PyObject *o,
+                                       int *year, int *month, int *day,
+                                       int *hour, int *minute, int *second,
+                                       int *usec,
+                                       cleanup_list *cleanup = nullptr) noexcept {
+    int32_t parts[8];
+    int kind = NB_CALL(datetime_unpack)(
+        NB_CTX_C(cleanup), o,
+        (uint32_t) datetime_kind::datetime | (uint32_t) datetime_kind::date |
+        (uint32_t) datetime_kind::time, parts);
+
+    if (kind == (int) datetime_kind::datetime) {
+        *year = parts[0];
+        *month = parts[1];
+        *day = parts[2];
+        *hour = parts[3];
+        *minute = parts[4];
+        *second = parts[5];
+        *usec = parts[6];
+    } else if (kind == (int) datetime_kind::date) {
+        *year = parts[0];
+        *month = parts[1];
+        *day = parts[2];
+        *usec = *second = *minute = *hour = 0;
+    } else if (kind == (int) datetime_kind::time) {
+        *year = 1970;
+        *month = 1;
+        *day = 1;
+        *hour = parts[0];
+        *minute = parts[1];
+        *second = parts[2];
+        *usec = parts[3];
+    } else {
+        return kind;
+    }
+    return 1;
+}
+
+// Create a datetime.timedelta object from integer days, seconds, and
+// microseconds.  Returns a new reference, or nullptr and sets the
+// Python error indicator on error.
+inline PyObject* pack_timedelta(int days, int secs, int usecs,
+                                cleanup_list *cleanup = nullptr) noexcept {
+    const int32_t parts[3] = { days, secs, usecs };
+    return NB_CALL(datetime_pack)(
+        NB_CTX_C(cleanup), (uint32_t) datetime_kind::timedelta, parts);
+}
+
+// Create a timezone-naive datetime.datetime object from its components.
+// Returns a new reference, or nullptr and sets the Python error indicator
+// on error.
+inline PyObject* pack_datetime(int year, int month, int day,
+                               int hour, int minute, int second,
+                               int usec,
+                               cleanup_list *cleanup = nullptr) noexcept {
+    const int32_t parts[8] = { year, month, day, hour,
+                               minute, second, usec, 0 };
+    return NB_CALL(datetime_pack)(
+        NB_CTX_C(cleanup), (uint32_t) datetime_kind::datetime, parts);
+}
 
 // Casts a std::chrono type (either a duration or a time_point) to/from
 // Python timedelta objects, or from a Python float representing seconds.
+// The latter is an implicit conversion and requires 'cast_flags::convert'.
 template <typename type> class duration_caster {
 public:
     using rep = typename type::rep;
     using period = typename type::period;
     using duration_t = std::chrono::duration<rep, period>;
 
-    bool from_python(handle src, uint8_t /*flags*/, cleanup_list*) noexcept {
+    bool from_python(handle src, uint32_t flags,
+                     cleanup_list *cleanup) noexcept {
         namespace ch = std::chrono;
 
         if (!src) return false;
@@ -42,25 +131,19 @@ public:
 
         // If invoked with datetime.delta object, unpack it
         int dd, ss, uu;
-        try {
-            if (unpack_timedelta(src.ptr(), &dd, &ss, &uu)) {
-                value = type(ch::duration_cast<duration_t>(
-                                 days(dd) + ch::seconds(ss) + ch::microseconds(uu)));
-                return true;
-            }
-        } catch (python_error& e) {
-            e.discard_as_unraisable(src.ptr());
+        int rv = unpack_timedelta(src.ptr(), &dd, &ss, &uu, cleanup);
+        if (rv < 0) {
+            PyErr_Clear();
             return false;
         }
+        if (rv) {
+            value = type(ch::duration_cast<duration_t>(
+                             days(dd) + ch::seconds(ss) + ch::microseconds(uu)));
+            return true;
+        }
 
-        // If invoked with a float we assume it is seconds and convert
-        int is_float;
-#if defined(Py_LIMITED_API)
-        is_float = PyType_IsSubtype(Py_TYPE(src.ptr()), &PyFloat_Type);
-#else
-        is_float = PyFloat_Check(src.ptr());
-#endif
-        if (is_float) {
+        // Interpret floating point values as seconds as an implicit conversion
+        if (PyFloat_Check(src.ptr()) && (flags & (uint32_t) cast_flags::convert)) {
             value = type(ch::duration_cast<duration_t>(
                              ch::duration<double>(PyFloat_AsDouble(src.ptr()))));
             return true;
@@ -80,7 +163,8 @@ public:
         return src.time_since_epoch();
     }
 
-    static handle from_cpp(const type& src, rv_policy, cleanup_list*) noexcept {
+    static handle from_cpp(const type& src, rv_policy,
+                           cleanup_list *cleanup) noexcept {
         namespace ch = std::chrono;
 
         // Use overloaded function to get our duration from our source
@@ -96,16 +180,10 @@ public:
         auto subd = d - dd;
         auto ss = ch::duration_cast<ss_t>(subd);
         auto us = ch::duration_cast<us_t>(subd - ss);
-        return pack_timedelta(dd.count(), ss.count(), us.count());
+        return pack_timedelta(dd.count(), ss.count(), us.count(), cleanup);
     }
 
-    #if PY_VERSION_HEX < 0x03090000
-        NB_TYPE_CASTER(type, io_name("typing.Union[datetime.timedelta, float]",
-                                     "datetime.timedelta"))
-    #else
-        NB_TYPE_CASTER(type, io_name("datetime.timedelta | float",
-                                     "datetime.timedelta"))
-    #endif
+    NB_TYPE_CASTER(type, const_name("datetime.timedelta"))
 };
 
 template <class... Args>
@@ -143,7 +221,8 @@ template <typename Duration>
 class type_caster<std::chrono::time_point<std::chrono::system_clock, Duration>> {
 public:
     using type = std::chrono::time_point<std::chrono::system_clock, Duration>;
-    bool from_python(handle src, uint8_t /*flags*/, cleanup_list*) noexcept {
+    bool from_python(handle src, uint32_t /*flags*/,
+                     cleanup_list *cleanup) noexcept {
         namespace ch = std::chrono;
 
         if (!src)
@@ -152,13 +231,11 @@ public:
         std::tm cal;
         ch::microseconds msecs;
         int yy, mon, dd, hh, min, ss, uu;
-        try {
-            if (!unpack_datetime(src.ptr(), &yy, &mon, &dd,
-                                 &hh, &min, &ss, &uu)) {
-                return false;
-            }
-        } catch (python_error& e) {
-            e.discard_as_unraisable(src.ptr());
+        int rv = unpack_datetime(src.ptr(), &yy, &mon, &dd,
+                                 &hh, &min, &ss, &uu, cleanup);
+        if (rv <= 0) {
+            if (rv < 0)
+                PyErr_Clear();
             return false;
         }
         cal.tm_sec = ss;
@@ -174,7 +251,8 @@ public:
         return true;
     }
 
-    static handle from_cpp(const type& src, rv_policy, cleanup_list*) noexcept {
+    static handle from_cpp(const type& src, rv_policy,
+                           cleanup_list *cleanup) noexcept {
         namespace ch = std::chrono;
 
         // Get out microseconds, and make sure they are positive, to
@@ -212,15 +290,10 @@ public:
                              localtime.tm_hour,
                              localtime.tm_min,
                              localtime.tm_sec,
-                             (int) us.count());
+                             (int) us.count(), cleanup);
     }
-    #if PY_VERSION_HEX < 0x03090000
-        NB_TYPE_CASTER(type, io_name("typing.Union[datetime.datetime, datetime.date, datetime.time]",
-                                     "datetime.datetime"))
-    #else
-        NB_TYPE_CASTER(type, io_name("datetime.datetime | datetime.date | datetime.time",
-                                     "datetime.datetime"))
-    #endif
+    NB_TYPE_CASTER(type, io_name("datetime.datetime | datetime.date | datetime.time",
+                                 "datetime.datetime"))
 };
 
 // Other clocks that are not the system clock are not measured as

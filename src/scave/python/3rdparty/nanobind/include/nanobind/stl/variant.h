@@ -25,6 +25,7 @@ template <typename... Ts> struct remove_opt_mono<std::variant<Ts...>>
     : concat_variant<std::conditional_t<std::is_same_v<std::monostate, Ts>, std::variant<>, std::variant<remove_opt_mono_t<Ts>>>...> {};
 
 template <> struct type_caster<std::monostate> : none_caster<std::monostate> { };
+template <> struct has_arg_defaults<std::monostate> : std::true_type { };
 
 template <bool Defaultable, typename... Ts>
 struct variant_caster_storage;
@@ -68,7 +69,7 @@ struct type_caster<std::variant<Ts...>>
     explicit operator Value&&() { return (Value &&) this->get(); }
 
     template <typename T>
-    bool try_variant(const handle &src, uint8_t flags, cleanup_list *cleanup) {
+    bool try_variant(const handle &src, uint32_t flags, cleanup_list *cleanup) {
         using CasterT = make_caster<T>;
 
         CasterT caster;
@@ -82,17 +83,17 @@ struct type_caster<std::variant<Ts...>>
         return true;
     }
 
-    bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept {
-        if (flags & (uint8_t) cast_flags::convert) {
-            if ((try_variant<Ts>(src, flags & ~(uint8_t)cast_flags::convert, cleanup) || ...)){
+    bool from_python(handle src, uint32_t flags, cleanup_list *cleanup) noexcept {
+        if (flags & cast_flags::convert) {
+            if ((try_variant<Ts>(src, flags & ~cast_flags::convert, cleanup) || ...))
                 return true;
-            }
         }
         return (try_variant<Ts>(src, flags, cleanup) || ...);
     }
 
     template <typename T>
-    static handle from_cpp(T *value, rv_policy policy, cleanup_list *cleanup) {
+    static handle from_cpp(T *value, rv_policy policy,
+                           cleanup_list *cleanup) noexcept {
         if (!value)
             return none().release();
         return from_cpp(*value, policy, cleanup);

@@ -21,7 +21,6 @@
 #include <Python.h>
 #include <frameobject.h>
 #include <pythread.h>
-#include <structmember.h>
 
 /* Python #defines overrides on all sorts of core functions, which
    tends to weak havok in C++ codebases that expect these to work
@@ -56,6 +55,6 @@
 #  pragma warning(pop)
 #endif
 
-#if PY_VERSION_HEX < 0x03080000
-#  error The nanobind library requires Python 3.8 (or newer)
+#if PY_VERSION_HEX < 0x030A0000
+#  error The nanobind library requires Python 3.10 (or newer)
 #endif

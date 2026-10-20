@@ -12,147 +12,113 @@
 #include "buffer.h"
 #include "nb_internals.h"
 
+#if defined(_MSC_VER)
+#  include <intrin.h>
+#endif
+
 NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 
-// Protected by internals->mutex in free-threaded builds
-Buffer buf(128);
+void error_fetch(error_payload *p) noexcept {
+    *p = error_payload { };
 
-NAMESPACE_END(detail)
-
-#if PY_VERSION_HEX >= 0x030C0000
-python_error::python_error() {
-    m_value = PyErr_GetRaisedException();
-    check(m_value,
-          "nanobind::python_error::python_error(): error indicator unset!");
+    #if PY_VERSION_HEX >= 0x030C0000
+        PyObject *value = PyErr_GetRaisedException();
+        check(value,
+              "nanobind::python_error::python_error(): error indicator unset!");
+        p->value = value;
+    #else
+        PyObject *t, *v, *tb;
+        PyErr_Fetch(&t, &v, &tb);
+        check(t, "nanobind::python_error::python_error(): error indicator unset!");
+        PyErr_NormalizeException(&t, &v, &tb);
+        check(v, "nanobind::python_error::python_error(): "
+                 "PyErr_NormalizeException() failed!");
+        if (tb) {
+            if (PyException_SetTraceback(v, tb) < 0)
+                PyErr_Clear();
+            Py_DECREF(tb);
+        }
+        Py_DECREF(t);
+        p->value = v;
+    #endif
 }
 
-python_error::~python_error() {
-    if (m_value) {
-        gil_scoped_acquire acq;
-        /* With GIL held */ {
+void error_restore(PyObject *value) noexcept {
+    check(value, "nanobind::python_error::restore(): error was already restored!");
+    #if PY_VERSION_HEX >= 0x030C0000
+        PyErr_SetRaisedException(value);
+    #else
+        PyErr_Restore(Py_NewRef(Py_TYPE(value)), value,
+                      PyException_GetTraceback(value));
+    #endif
+}
+
+void error_release(error_payload *p) noexcept {
+    // A python_error can be destroyed on any thread, including while the
+    // interpreter shuts down. Its reference is then no longer releasable.
+    if (p->value) {
+        if (cleanup_guard guard{}) {
             // Clear error status in case the following executes Python code
             error_scope scope;
-            Py_DECREF(m_value);
+            Py_DECREF(p->value);
         }
     }
 
-    free(m_what);
+    free(p->internal[0]);
 }
 
-python_error::python_error(const python_error &e)
-    : std::exception(e), m_value(e.m_value) {
-    if (m_value) {
-        gil_scoped_acquire acq;
-        Py_INCREF(m_value);
+void error_copy(const error_payload *src, error_payload *dst) noexcept {
+    *dst = *src;
+    if (dst->internal[0])
+        dst->internal[0] = strdup_check((const char *) dst->internal[0]);
+    if (dst->value) {
+        if (cleanup_guard guard{})
+            Py_INCREF(dst->value);
     }
-    if (e.m_what)
-        m_what = detail::strdup_check(e.m_what);
 }
 
-python_error::python_error(python_error &&e) noexcept
-    : std::exception(e), m_value(e.m_value), m_what(e.m_what) {
-    e.m_value = nullptr;
-    e.m_what = nullptr;
-}
-
-void python_error::restore() noexcept {
-    check(m_value,
-          "nanobind::python_error::restore(): error was already restored!");
-
-    PyErr_SetRaisedException(m_value);
-    m_value = nullptr;
-}
-
-#else /* Exception handling for Python 3.11 and older versions */
-
-python_error::python_error() {
-    PyErr_Fetch(&m_type, &m_value, &m_traceback);
-    check(m_type,
-          "nanobind::python_error::python_error(): error indicator unset!");
-}
-
-python_error::~python_error() {
-    if (m_type) {
-        gil_scoped_acquire acq;
-        /* With GIL held */ {
-            // Clear error status in case the following executes Python code
-            error_scope scope;
-            Py_XDECREF(m_type);
-            Py_XDECREF(m_value);
-            Py_XDECREF(m_traceback);
-        }
-    }
-    free(m_what);
-}
-
-python_error::python_error(const python_error &e)
-    : std::exception(e), m_type(e.m_type), m_value(e.m_value),
-      m_traceback(e.m_traceback) {
-    if (m_type) {
-        gil_scoped_acquire acq;
-        Py_INCREF(m_type);
-        Py_XINCREF(m_value);
-        Py_XINCREF(m_traceback);
-    }
-    if (e.m_what)
-        m_what = detail::strdup_check(e.m_what);
-}
-
-python_error::python_error(python_error &&e) noexcept
-    : std::exception(e), m_type(e.m_type), m_value(e.m_value),
-      m_traceback(e.m_traceback), m_what(e.m_what) {
-    e.m_type = e.m_value = e.m_traceback = nullptr;
-    e.m_what = nullptr;
-}
-
-void python_error::restore() noexcept {
-    check(m_type,
-          "nanobind::python_error::restore(): error was already restored!");
-
-    PyErr_Restore(m_type, m_value, m_traceback);
-    m_type = m_value = m_traceback = nullptr;
-}
-
-#endif
-
-const char *python_error::what() const noexcept {
-    using namespace nanobind::detail;
-
+const char *error_what(error_payload *p) noexcept {
     // Return the existing error message if already computed once
-    if (m_what)
-        return m_what;
+    if (p->internal[0])
+        return (const char *) p->internal[0];
 
-    gil_scoped_acquire acq;
-    // 'buf' is protected by internals->mutex in free-threaded builds
-    lock_internals guard(internals);
+    cleanup_guard guard;
+    if (!guard)
+        return "<error message unavailable, the Python interpreter is "
+               "shutting down>";
 
-    // Try again with GIL held
-    if (m_what)
-        return m_what;
+    // Try again with a thread state attached
+    if (p->internal[0])
+        return (const char *) p->internal[0];
 
-#if PY_VERSION_HEX < 0x030C0000
-    PyErr_NormalizeException(&m_type, &m_value, &m_traceback);
-    check(m_type,
-          "nanobind::python_error::what(): PyErr_NormalizeException() failed!");
-
-    if (m_traceback) {
-        if (PyException_SetTraceback(m_value, m_traceback) < 0)
-            PyErr_Clear();
-    }
-
-    handle exc_type = m_type, exc_value = m_value;
-#else
-    handle exc_value = m_value, exc_type = exc_value.type();
-#endif
-    object exc_traceback = traceback();
+    handle exc_value = p->value, exc_type = exc_value.type();
+    object exc_traceback = steal(PyException_GetTraceback(p->value));
 
 #if defined(Py_LIMITED_API) || defined(PYPY_VERSION)
-    object mod = module_::import_("traceback"),
-           result = mod.attr("format_exception")(exc_type, exc_value, exc_traceback);
-    m_what = strdup_check(borrow<str>(str("\n").attr("join")(result)).c_str());
+    char *tmp;
+    try {
+        object mod = module_::import_("traceback");
+        object fn = steal(raise_if_null(
+            PyObject_GetAttrString(mod.ptr(), "format_exception")));
+        handle tb = exc_traceback.is_valid() ? exc_traceback.ptr() : none_ptr();
+        PyObject *args[4] = { nullptr, exc_type.ptr(), exc_value.ptr(),
+                              tb.ptr() };
+        object result = steal(raise_if_null(PyObject_Vectorcall(
+            fn.ptr(), args + 1, 3 | PY_VECTORCALL_ARGUMENTS_OFFSET, nullptr)));
+        str sep("\n");
+        str joined = steal<str>(raise_if_null(
+            PyObject_CallMethod(sep.ptr(), "join", "O", result.ptr())));
+        const char *cstr = joined.c_str();
+        if (!cstr) // e.g. lone surrogates from an unencodable file name
+            raise_python_error();
+        tmp = strdup_check(cstr);
+    } catch (...) {
+        PyErr_Clear();
+        tmp = strdup_check("<error while formatting exception>");
+    }
 #else
-    buf.clear();
+    Buffer exc_buf(128);
     if (exc_traceback.is_valid()) {
         PyTracebackObject *to = (PyTracebackObject *) exc_traceback.ptr();
 
@@ -167,71 +133,87 @@ const char *python_error::what() const noexcept {
 
         while (frame) {
             frames.push_back(frame);
-#if PY_VERSION_HEX >= 0x03090000
             frame = PyFrame_GetBack(frame);
-#else
-            frame = frame->f_back;
-            Py_XINCREF(frame);
-#endif
         }
 
-        buf.put("Traceback (most recent call last):\n");
+        exc_buf.put("Traceback (most recent call last):\n");
         for (auto it = frames.rbegin(); it != frames.rend(); ++it) {
             frame = *it;
-#if PY_VERSION_HEX >= 0x03090000
             PyCodeObject *f_code = PyFrame_GetCode(frame);
-#else
-            PyCodeObject *f_code = frame->f_code;
-#endif
-            buf.put("  File \"");
-            buf.put_dstr(borrow<str>(f_code->co_filename).c_str());
-            buf.put("\", line ");
-            buf.put_uint32(PyFrame_GetLineNumber(frame));
-            buf.put(", in ");
-            buf.put_dstr(borrow<str>(f_code->co_name).c_str());
-            buf.put('\n');
-#if PY_VERSION_HEX >= 0x03090000
+            const char *filename = borrow<str>(f_code->co_filename).c_str();
+            if (!filename) {
+                PyErr_Clear();
+                filename = "<unencodable filename>";
+            }
+            const char *name = borrow<str>(f_code->co_name).c_str();
+            if (!name) {
+                PyErr_Clear();
+                name = "<unencodable name>";
+            }
+            exc_buf.put("  File \"");
+            exc_buf.put_dstr(filename);
+            exc_buf.put("\", line ");
+            exc_buf.put_uint32((uint32_t) PyFrame_GetLineNumber(frame));
+            exc_buf.put(", in ");
+            exc_buf.put_dstr(name);
+            exc_buf.put('\n');
             Py_DECREF(f_code);
-#endif
             Py_DECREF(frame);
         }
     }
 
     if (exc_type.is_valid()) {
-        object name = exc_type.attr("__name__");
-        buf.put_dstr(borrow<str>(name).c_str());
-        buf.put(": ");
+        try {
+            object name = steal(raise_if_null(
+                PyObject_GetAttrString(exc_type.ptr(), "__name__")));
+            exc_buf.put_dstr(borrow<str>(name).c_str());
+            exc_buf.put(": ");
+        } catch (...) { PyErr_Clear(); }
     }
 
-    if (exc_value.is_valid())
-        buf.put_dstr(str(m_value).c_str());
-    m_what = buf.copy();
+    if (exc_value.is_valid()) {
+        try {
+            exc_buf.put_dstr(str(exc_value).c_str());
+        } catch (...) {
+            PyErr_Clear();
+            exc_buf.put("<exception str() failed>");
+        }
+    }
+
+    char *tmp = exc_buf.copy();
 #endif
 
-    return m_what;
+    // Publish the message with a CAS; if a concurrent call raced us to it,
+    // free our copy and return the winner's message instead.
+    void *expected = nullptr;
+#if defined(_MSC_VER)
+    expected = _InterlockedCompareExchangePointer(
+        (void *volatile *) &p->internal[0], tmp, nullptr);
+    if (!expected)
+        return tmp;
+#else
+    if (__atomic_compare_exchange_n(&p->internal[0], &expected, (void *) tmp,
+                                    false, __ATOMIC_RELEASE, __ATOMIC_ACQUIRE))
+        return tmp;
+#endif
+    free(tmp);
+    return (const char *) expected;
 }
 
-builtin_exception::builtin_exception(exception_type type, const char *what)
-    : std::runtime_error(what ? what : ""), m_type(type) { }
-builtin_exception::~builtin_exception() { }
-
-NAMESPACE_BEGIN(detail)
-
-void register_exception_translator(exception_translator t, void *payload) {
-    nb_translator_seq *cur  = &internals->translators,
-                      *next = new nb_translator_seq(*cur);
-    cur->next = next;
-    cur->payload = payload;
-    cur->translator = t;
+void register_exception_translator(nb_internals *p, exception_translator t,
+                                   void *payload) {
+    nb_translator_seq *head =
+        new nb_translator_seq{ t, payload, p->translators.load_acquire() };
+    p->translators.store_release(head);
 }
 
-NB_CORE PyObject *exception_new(PyObject *scope, const char *name,
-                                PyObject *base) {
+NB_CORE PyObject *exception_new(nb_internals *p, PyObject *scope,
+                                const char *name, PyObject *base) {
     object modname;
     if (PyModule_Check(scope))
-        modname = getattr(scope, "__name__", handle());
+        modname = str_getattr_def(p, scope, "__name__");
     else
-        modname = getattr(scope, "__module__", handle());
+        modname = getattr(scope, NB_INTERNED(p, __module__), handle());
 
     if (!modname.is_valid())
         raise("nanobind::detail::exception_new(): could not determine module "
@@ -243,17 +225,15 @@ NB_CORE PyObject *exception_new(PyObject *scope, const char *name,
     object result = steal(PyErr_NewException(combined.c_str(), base, nullptr));
     check(result, "nanobind::detail::exception_new(): creation failed!");
 
-    if (hasattr(scope, name))
+    if (str_hasattr(p, scope, name))
         raise("nanobind::detail::exception_new(): an object of the same name "
               "already exists!");
 
-    setattr(scope, name, result);
+    str_setattr(p, scope, name, result);
     return result.release().ptr();
 }
 
-NAMESPACE_END(detail)
-
-static void chain_error_v(handle type, const char *fmt, va_list args) noexcept {
+void chain_v(PyObject *type, const char *fmt, va_list args) noexcept {
 #if PY_VERSION_HEX >= 0x030C0000
     PyObject *value = PyErr_GetRaisedException();
 #else
@@ -274,11 +254,11 @@ static void chain_error_v(handle type, const char *fmt, va_list args) noexcept {
 #endif
 
 #if !defined(PYPY_VERSION)
-    PyErr_FormatV(type.ptr(), fmt, args);
+    PyErr_FormatV(type, fmt, args);
 #else
     PyObject *exc_str = PyUnicode_FromFormatV(fmt, args);
-    check(exc_str, "nanobind::detail::raise_from(): PyUnicode_FromFormatV() failed!");
-    PyErr_SetObject(type.ptr(), exc_str);
+    check(exc_str, "nanobind::detail::chain_v(): PyUnicode_FromFormatV() failed!");
+    PyErr_SetObject(type, exc_str);
     Py_DECREF(exc_str);
 #endif
 
@@ -304,22 +284,5 @@ static void chain_error_v(handle type, const char *fmt, va_list args) noexcept {
 #endif
 }
 
-void chain_error(handle type, const char *fmt, ...) noexcept {
-    va_list args;
-    va_start(args, fmt);
-    chain_error_v(type, fmt, args);
-    va_end(args);
-}
-
-void raise_from(python_error &e, handle type, const char *fmt, ...) {
-    e.restore();
-
-    va_list args;
-    va_start(args, fmt);
-    chain_error_v(type, fmt, args);
-    va_end(args);
-
-    detail::raise_python_error();
-}
-
+NAMESPACE_END(detail)
 NAMESPACE_END(NB_NAMESPACE)

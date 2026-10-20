@@ -15,7 +15,7 @@ NAMESPACE_BEGIN(NB_NAMESPACE)
 NAMESPACE_BEGIN(detail)
 
 template <typename List, typename Entry> struct list_caster {
-    NB_TYPE_CASTER(List, io_name(NB_TYPING_SEQUENCE, NB_TYPING_LIST) +
+    NB_TYPE_CASTER(List, io_name("collections.abc.Sequence", "list") +
                               const_name("[") + make_caster<Entry>::Name +
                               const_name("]"))
 
@@ -23,13 +23,13 @@ template <typename List, typename Entry> struct list_caster {
 
     template <typename T> using has_reserve = decltype(std::declval<T>().reserve(0));
 
-    bool from_python(handle src, uint8_t flags, cleanup_list *cleanup) noexcept {
+    bool from_python(handle src, uint32_t flags, cleanup_list *cleanup) noexcept {
         size_t size;
         PyObject *temp;
 
-        /* Will initialize 'size' and 'temp'. All return values and
-           return parameters are zero/NULL in the case of a failure. */
-        PyObject **o = seq_get(src.ptr(), &size, &temp);
+        // Will initialize 'size' and 'temp'. All return values and
+        // return parameters are zero/NULL in the case of a failure.
+        PyObject **o = NB_CALL(seq_get)(src.ptr(), &size, &temp);
 
         value.clear();
 
@@ -57,25 +57,25 @@ template <typename List, typename Entry> struct list_caster {
     }
 
     template <typename T>
-    static handle from_cpp(T &&src, rv_policy policy, cleanup_list *cleanup) {
-        object ret = steal(PyList_New(src.size()));
+    static handle from_cpp(T &&src, rv_policy policy,
+                           cleanup_list *cleanup) noexcept {
+        seq_builder<false> b(src.size());
 
-        if (ret.is_valid()) {
-            Py_ssize_t index = 0;
+        if (NB_UNLIKELY(!b.valid()))
+            return {};
 
-            for (auto &&value : src) {
-                handle h = Caster::from_cpp(forward_like_<T>(value), policy, cleanup);
+        for (auto &&value : src) {
+            if (NB_UNLIKELY(b.full())) // In case size() was inaccurate
+                break;
 
-                if (!h.is_valid()) {
-                    ret.reset();
-                    break;
-                }
+            handle h = Caster::from_cpp(forward_like_<T>(value), policy, cleanup);
+            if (NB_UNLIKELY(!h.is_valid()))
+                break;
 
-                NB_LIST_SET_ITEM(ret.ptr(), index++, h.ptr());
-            }
+            b.put(h);
         }
 
-        return ret.release();
+        return b.commit();
     }
 };
 
