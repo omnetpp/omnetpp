@@ -210,6 +210,9 @@ public abstract class AbstractCanvasFigure extends Figure implements IComparable
                 graphics.setClip(getCascadedTransform().getInverse().applyTo(getBounds()));
 
                 graphics.restoreState();
+                Rectangle childClipBounds = getChildClipBounds();
+                if (childClipBounds != null)
+                    graphics.clipRect(childClipBounds);
                 for (IFigure child : (List<IFigure>)getChildren()) {
                     child.paint(graphics);
                 }
@@ -226,7 +229,22 @@ public abstract class AbstractCanvasFigure extends Figure implements IComparable
     protected abstract boolean hitTest(Point point);
 
     /**
-     * Adds visibility check and hit testing to the superclass's method.
+     * Returns the rectangle to which the painting and hit testing of the child
+     * figures is clipped, or null if the children are not clipped. The rectangle
+     * is in the same coordinate system as getBounds().
+     *
+     * Note that only rectangular clipping is possible, because Draw2D cannot
+     * save and restore the clipping set by Graphics.clipPath() (the next
+     * pushState() throws an exception), and every child figure calls pushState()
+     * in paint(). Non-rectangular and rotated clip regions must therefore be
+     * approximated with their bounding rectangle.
+     */
+    protected Rectangle getChildClipBounds() {
+        return null;
+    }
+
+    /**
+     * Adds visibility check, hit testing and child clipping to the superclass's method.
      */
     @Override
     public IFigure findFigureAt(int x, int y, TreeSearch search) {
@@ -234,7 +252,12 @@ public abstract class AbstractCanvasFigure extends Figure implements IComparable
             return null; // not drawn, see paint()
         }
 
-        IFigure result = super.findFigureAt(x, y, search);
+        Rectangle childClipBounds = getChildClipBounds();
+        IFigure result;
+        if (childClipBounds == null || childClipBounds.contains(x, y))
+            result = super.findFigureAt(x, y, search);
+        else // children are clipped away at this point, only this figure can be hit
+            result = (containsPoint(x, y) && !search.prune(this) && search.accept(this)) ? this : null;
 
         Point point = getCascadedTransform().getInverse().applyTo(new PrecisionPoint(x, y));
 
@@ -323,11 +346,15 @@ public abstract class AbstractCanvasFigure extends Figure implements IComparable
     @SuppressWarnings("unchecked")
     public void recomputeBounds() {
         Rectangle bounds = getCascadedTransform().applyTo(getOwnBounds());
+        Rectangle childClipBounds = getChildClipBounds();
 
         for (Figure child : (List<Figure>)getChildren()) {
             ((AbstractCanvasFigure)child).recomputeBounds();
             Rectangle childBounds = child.getBounds();
-            bounds.union(childBounds);
+            if (childClipBounds != null)
+                childBounds = childBounds.getIntersection(childClipBounds);
+            if (!childBounds.isEmpty())
+                bounds.union(childBounds);
         }
 
         this.bounds = bounds;

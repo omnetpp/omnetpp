@@ -133,6 +133,8 @@ public class CanvasFigurePropertySource extends NedBasePropertySource {
             "The width of the figure's outline."),
         ZoomLineWidth(PropType.Boolean, (Boolean)false, PKEY_ZOOMLINEWIDTH, "zoom line width", "Style",
             "Whether or not zooming affects the width of the line on the screen."),
+        ClipChildren(PropType.Boolean, (Boolean)false, PKEY_CLIPCHILDREN, "clip children", "Common",
+            "If set to true, the child figures are clipped to the interior of this shape."),
         LineColor(PropType.Color, PKEY_LINECOLOR, "line color", "Style",
             "The color of the figure's outline."),
         LineStyle(PropType.Enum, PKEY_LINESTYLE, "line style", "Style",
@@ -240,7 +242,7 @@ public class CanvasFigurePropertySource extends NedBasePropertySource {
 
     private static EnumSet<Prop> commonFigureProperties = EnumSet.of(Prop.Index, Prop.Type, Prop.ChildZ, Prop.Transform, Prop.IsVisible);
     private static EnumSet<Prop> commonLineProperties = EnumSet.of(Prop.LineWidth, Prop.ZoomLineWidth, Prop.LineColor, Prop.LineOpacity, Prop.LineStyle, Prop.CapStyle);
-    private static EnumSet<Prop> commonShapeProperties = EnumSet.of(Prop.LineWidth, Prop.ZoomLineWidth, Prop.LineColor, Prop.FillColor, Prop.FillOpacity, Prop.LineOpacity, Prop.LineStyle);
+    private static EnumSet<Prop> commonShapeProperties = EnumSet.of(Prop.LineWidth, Prop.ZoomLineWidth, Prop.LineColor, Prop.FillColor, Prop.FillOpacity, Prop.LineOpacity, Prop.LineStyle, Prop.ClipChildren);
     private static EnumSet<Prop> arrowHeadProperties = EnumSet.of(Prop.StartArrowHead, Prop.EndArrowHead);
     private static EnumSet<Prop> angleProperties = EnumSet.of(Prop.StartAngle, Prop.EndAngle);
 

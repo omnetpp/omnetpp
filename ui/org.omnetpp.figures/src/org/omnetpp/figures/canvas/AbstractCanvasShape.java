@@ -37,6 +37,7 @@ public abstract class AbstractCanvasShape extends AbstractCanvasFigure {
     protected boolean zoomLineWidth = false;
     protected double lineOpacity = 1.0;
     protected double fillOpacity = 1.0;
+    protected boolean clipChildren = false;
 
     LineStyle style = LineStyle.LINE_SOLID;
     JoinStyle join = JoinStyle.JOIN_BEVEL;
@@ -114,6 +115,25 @@ public abstract class AbstractCanvasShape extends AbstractCanvasFigure {
             graphics.setAlpha((int)Math.round(lineOpacity * 255.0));
             outlineShape(graphics); // Graphics seems to draw a fine line even with 0 width
         }
+    }
+
+    /**
+     * The clip region is the interior of the shape (without the outline);
+     * see the superclass method for why it is approximated with a rectangle.
+     */
+    @Override
+    protected Rectangle getChildClipBounds() {
+        if (!clipChildren)
+            return null;
+        float[] b = new float[4];
+        path.getBounds(b);
+        PrecisionRectangle transformed = getCascadedTransform().applyTo(new PrecisionRectangle(b[0], b[1], b[2], b[3]));
+        // round outwards, to make sure that nothing inside the region gets cut off
+        int left = (int)Math.floor(transformed.preciseX());
+        int top = (int)Math.floor(transformed.preciseY());
+        int right = (int)Math.ceil(transformed.preciseX() + transformed.preciseWidth());
+        int bottom = (int)Math.ceil(transformed.preciseY() + transformed.preciseHeight());
+        return new Rectangle(left, top, right - left, bottom - top);
     }
 
     @Override
@@ -219,6 +239,22 @@ public abstract class AbstractCanvasShape extends AbstractCanvasFigure {
 
     public JoinStyle getJoinStyle() {
         return join;
+    }
+
+    public boolean getClipChildren() {
+        return clipChildren;
+    }
+
+    public void setClipChildren(boolean clipChildren) {
+        if (this.clipChildren != clipChildren) {
+            erase();
+
+            this.clipChildren = clipChildren;
+
+            recomputeBounds();
+            repaint();
+            revalidate();
+        }
     }
 
     public void setJoinStyle(JoinStyle j) {

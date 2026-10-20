@@ -60,6 +60,9 @@ public abstract class AbstractCanvasShapeEditPart extends AbstractCanvasFigureEd
 
         JoinStyle joinStyle = parseJoinStyle(PKEY_JOINSTYLE);
         figure.setJoinStyle((joinStyle == null) ? JoinStyle.JOIN_MITER : joinStyle);
+
+        Boolean clipChildren = parseBoolean(PKEY_CLIPCHILDREN);
+        figure.setClipChildren((clipChildren == null) ? false : clipChildren);
     }
 
     // Utility functions for parameter parsing.

@@ -71,7 +71,7 @@ public final class NedCanvasFigureValidator {
         List<String> commonFigurePropertyKeys = Arrays.asList(new String[] { PKEY_TAGS, PKEY_VISIBLE, PKEY_TOOLTIP, PKEY_TYPE, PKEY_ZINDEX, PKEY_TRANSFORM });
         List<String> anchoredRectanglePropertyKeys = Arrays.asList(new String[] { PKEY_BOUNDS, PKEY_POS, PKEY_SIZE, PKEY_ANCHOR });
         List<String> commonLinePropertyKeys = Arrays.asList(new String[] { PKEY_LINEWIDTH, PKEY_ZOOMLINEWIDTH, PKEY_LINECOLOR, PKEY_LINEOPACITY, PKEY_LINESTYLE, PKEY_CAPSTYLE });
-        List<String> commonShapePropertyKeys = Arrays.asList(new String[] { PKEY_LINEWIDTH, PKEY_ZOOMLINEWIDTH, PKEY_LINECOLOR, PKEY_LINEOPACITY, PKEY_FILLCOLOR, PKEY_FILLOPACITY, PKEY_LINESTYLE});
+        List<String> commonShapePropertyKeys = Arrays.asList(new String[] { PKEY_LINEWIDTH, PKEY_ZOOMLINEWIDTH, PKEY_LINECOLOR, PKEY_LINEOPACITY, PKEY_FILLCOLOR, PKEY_FILLOPACITY, PKEY_LINESTYLE, PKEY_CLIPCHILDREN});
         List<String> arrowHeadPropertyKeys = Arrays.asList(new String[] { PKEY_STARTARROWHEAD, PKEY_ENDARROWHEAD });
 
 
@@ -256,7 +256,7 @@ public final class NedCanvasFigureValidator {
         } else if (param.equals(PKEY_ANCHOR)) { return validAnchors;
         } else if (param.equals(PKEY_CAPSTYLE)) { return validCapStyles;
         } else if (param.equals(PKEY_STARTARROWHEAD) || param.equals(PKEY_ENDARROWHEAD)) { return validArrowHeads;
-        } else if (param.equals(PKEY_VISIBLE) || param.equals(PKEY_SMOOTH) || param.equals(PKEY_ZOOMLINEWIDTH) || param.equals(PKEY_HALO)) { return validBooleans;
+        } else if (param.equals(PKEY_VISIBLE) || param.equals(PKEY_SMOOTH) || param.equals(PKEY_ZOOMLINEWIDTH) || param.equals(PKEY_HALO) || param.equals(PKEY_CLIPCHILDREN)) { return validBooleans;
         } else if (param.equals(PKEY_JOINSTYLE)) { return validJoinStyles;
         } else if (param.equals(PKEY_LINESTYLE)) { return validLineStyles;
         } else if (param.equals(PKEY_FILLRULE)) { return validFillRules;
@@ -358,6 +358,7 @@ public final class NedCanvasFigureValidator {
         checkSingleColor(PKEY_FILLCOLOR);
         checkOpacity(PKEY_FILLOPACITY);
         checkLineStyle();
+        checkSingleBoolean(PKEY_CLIPCHILDREN);
     }
 
     private void validateAbstractLine() {

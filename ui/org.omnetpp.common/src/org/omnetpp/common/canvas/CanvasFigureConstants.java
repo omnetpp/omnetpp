@@ -50,6 +50,7 @@ public final class CanvasFigureConstants {
     public static final String PKEY_FILLCOLOR = "fillColor";
     public static final String PKEY_FILLOPACITY = "fillOpacity";
     public static final String PKEY_FILLRULE = "fillRule";
+    public static final String PKEY_CLIPCHILDREN = "clipChildren";
     public static final String PKEY_STARTARROWHEAD = "startArrowhead";
     public static final String PKEY_ENDARROWHEAD = "endArrowhead";
     public static final String PKEY_TEXT = "text";
