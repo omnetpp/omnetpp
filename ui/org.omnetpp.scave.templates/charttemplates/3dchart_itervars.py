@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from omnetpp.scave import results, chart, utils
@@ -62,7 +61,7 @@ colormap_reverse = props["colormap_reverse"]
 if colormap_reverse == "true" and colormap:
     colormap += "_r"
 
-cmap = cm.get_cmap(colormap)
+cmap = plt.get_cmap(colormap)
 max_height = np.max(df.values)  # get range of values so we can normalize
 min_height = np.min(df.values)
 top = df.values.ravel()
