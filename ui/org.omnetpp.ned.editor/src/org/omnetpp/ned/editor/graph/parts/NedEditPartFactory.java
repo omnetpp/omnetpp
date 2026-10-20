@@ -7,6 +7,8 @@
 
 package org.omnetpp.ned.editor.graph.parts;
 
+import java.util.Set;
+
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 import org.omnetpp.ned.editor.graph.parts.canvas.*;
@@ -27,6 +29,20 @@ import static org.omnetpp.common.canvas.CanvasFigureConstants.*;
  * @author rhornig
  */
 public class NedEditPartFactory implements EditPartFactory {
+
+    // @figure types for which createEditPart() creates a dedicated edit part; must be kept in sync with it
+    private static final Set<String> FIGURE_TYPES_WITH_EDITPART = Set.of(
+            FTYPE_RECTANGLE, FTYPE_OVAL, FTYPE_RING, FTYPE_PIESLICE, FTYPE_ARC, FTYPE_POLYLINE, FTYPE_LINE,
+            FTYPE_POLYGON, FTYPE_TEXT, FTYPE_LABEL, FTYPE_GROUP, FTYPE_IMAGE, FTYPE_PIXMAP, FTYPE_ICON, FTYPE_PATH);
+
+    /**
+     * Returns true if the given @figure type has a dedicated edit part. Figures of other types
+     * (unknown or custom types, and known types that the editor cannot display, such as "panel")
+     * get a PlaceholderEditPart.
+     */
+    public static boolean hasFigureEditPart(String type) {
+        return FIGURE_TYPES_WITH_EDITPART.contains(type);
+    }
 
     public EditPart createEditPart(EditPart context, Object model) {
         EditPart child = null;

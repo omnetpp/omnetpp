@@ -4,20 +4,23 @@ import org.eclipse.draw2d.geometry.PrecisionDimension;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.omnetpp.figures.canvas.CanvasPlaceholderFigure;
 import org.omnetpp.figures.misc.AnchoredRectangle;
-import org.omnetpp.ned.core.NedCanvasFigureValidator;
 import org.omnetpp.ned.editor.graph.misc.CanvasFigureUtils;
+import org.omnetpp.ned.editor.graph.parts.NedEditPartFactory;
 
 import static org.omnetpp.common.canvas.CanvasFigureConstants.*;
 
 /**
- * EditPart for unknown/custom @figure types. Renders a placeholder
+ * EditPart for @figure types that have no dedicated edit part: unknown/custom
+ * types, and known types the editor cannot display (e.g. "panel"). Renders a placeholder
  * figure using pos and size property keys, defaulting to 80x40 at the origin.
  */
 public class PlaceholderEditPart extends AbstractCanvasShapeEditPart {
 
     @Override
     protected boolean representsType(String type) {
-        return !NedCanvasFigureValidator.validTypes.contains(type);
+        // must accept exactly the types for which NedEditPartFactory creates a placeholder,
+        // otherwise getModel() returns null for them
+        return !NedEditPartFactory.hasFigureEditPart(type);
     }
 
     @Override
