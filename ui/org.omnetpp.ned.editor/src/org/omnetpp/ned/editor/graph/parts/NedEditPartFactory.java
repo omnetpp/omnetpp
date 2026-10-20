@@ -33,12 +33,12 @@ public class NedEditPartFactory implements EditPartFactory {
     // @figure types for which createEditPart() creates a dedicated edit part; must be kept in sync with it
     private static final Set<String> FIGURE_TYPES_WITH_EDITPART = Set.of(
             FTYPE_RECTANGLE, FTYPE_OVAL, FTYPE_RING, FTYPE_PIESLICE, FTYPE_ARC, FTYPE_POLYLINE, FTYPE_LINE,
-            FTYPE_POLYGON, FTYPE_TEXT, FTYPE_LABEL, FTYPE_GROUP, FTYPE_IMAGE, FTYPE_PIXMAP, FTYPE_ICON, FTYPE_PATH);
+            FTYPE_POLYGON, FTYPE_TEXT, FTYPE_LABEL, FTYPE_GROUP, FTYPE_PANEL, FTYPE_IMAGE, FTYPE_PIXMAP, FTYPE_ICON, FTYPE_PATH);
 
     /**
      * Returns true if the given @figure type has a dedicated edit part. Figures of other types
-     * (unknown or custom types, and known types that the editor cannot display, such as "panel")
-     * get a PlaceholderEditPart.
+     * (unknown or custom types, and known types that the editor cannot display) get a
+     * PlaceholderEditPart.
      */
     public static boolean hasFigureEditPart(String type) {
         return FIGURE_TYPES_WITH_EDITPART.contains(type);
@@ -87,6 +87,8 @@ public class NedEditPartFactory implements EditPartFactory {
                     child = new LabelEditPart();
                 } else if (type.equals(FTYPE_GROUP)) {
                     child = new GroupEditPart();
+                } else if (type.equals(FTYPE_PANEL)) {
+                    child = new PanelEditPart();
                 } else if (type.equals(FTYPE_IMAGE)) {
                     child = new ImageEditPart();
                 } else if (type.equals(FTYPE_PIXMAP)) {

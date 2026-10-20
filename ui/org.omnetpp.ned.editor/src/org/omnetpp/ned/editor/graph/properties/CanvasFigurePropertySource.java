@@ -93,6 +93,10 @@ public class CanvasFigurePropertySource extends NedBasePropertySource {
             "The X coordinate of the figure's anchored point."),
         PositionY(PropType.Number, PKEY_POS, 1, "y", "Location and Size",
             "The Y coordinate of the figure's anchored point."),
+        AnchorPointX(PropType.Number, PKEY_ANCHORPOINT, 0, "anchor point x", "Location and Size",
+            "The X coordinate of the point of the panel's coordinate system that is placed at the position."),
+        AnchorPointY(PropType.Number, PKEY_ANCHORPOINT, 1, "anchor point y", "Location and Size",
+            "The Y coordinate of the point of the panel's coordinate system that is placed at the position."),
         Anchor(PropType.Anchor, PKEY_ANCHOR, "anchor", "Location and Size",
             "Specifies which point of the defining rectangle is positioned with the x and y properties."),
 
@@ -377,6 +381,11 @@ public class CanvasFigurePropertySource extends NedBasePropertySource {
                 supportedProperties.addAll(arrowHeadProperties);
             } else if (type.equals(FTYPE_GROUP)) {
                 // A group doesn't have anything except the common figure parameters.
+            } else if (type.equals(FTYPE_PANEL)) {
+                supportedProperties.add(Prop.PositionX);
+                supportedProperties.add(Prop.PositionY);
+                supportedProperties.add(Prop.AnchorPointX);
+                supportedProperties.add(Prop.AnchorPointY);
             } else if (type.equals(FTYPE_TEXT) || type.equals(FTYPE_LABEL)) { // these are essentially the same
                 supportedProperties.add(Prop.Text);
                 supportedProperties.add(Prop.Font);

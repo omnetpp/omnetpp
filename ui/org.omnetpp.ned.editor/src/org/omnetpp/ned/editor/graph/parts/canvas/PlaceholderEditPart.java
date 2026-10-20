@@ -11,7 +11,7 @@ import static org.omnetpp.common.canvas.CanvasFigureConstants.*;
 
 /**
  * EditPart for @figure types that have no dedicated edit part: unknown/custom
- * types, and known types the editor cannot display (e.g. "panel"). Renders a placeholder
+ * types, and known types the editor cannot display. Renders a placeholder
  * figure using pos and size property keys, defaulting to 80x40 at the origin.
  */
 public class PlaceholderEditPart extends AbstractCanvasShapeEditPart {
