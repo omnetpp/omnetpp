@@ -18,11 +18,11 @@
 
 #ifdef WITH_PYTHON
 
+#include "Python.h"
+
 #include <cstddef>
 #include <string>
 #include <regex>
-
-#include "Python.h"
 
 #include "common/stringutil.h"
 #include "omnetpp/cvalue.h"

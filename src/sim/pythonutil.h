@@ -21,8 +21,8 @@
 
 #ifdef WITH_PYTHON
 
-#include <string>
 #include <Python.h>
+#include <string>
 #include "common/fileutil.h"
 #include "common/stringutil.h"
 #include "omnetpp/cexception.h"

@@ -16,10 +16,9 @@
 
 
 #include "omnetpp/platdep/config.h"
-#include "omnetpp/cnedfunction.h"
-#include "omnetpp/cexception.h"
 
 #ifdef WITH_PYTHON
+#include "pythonutil.h"
 
 #include <cstddef>
 #include <string>
@@ -29,9 +28,10 @@
 #include "omnetpp/cvalue.h"
 #include "omnetpp/cvaluearray.h"
 #include "omnetpp/cvaluemap.h"
-#include "pythonutil.h"
-
 #endif
+
+#include "omnetpp/cnedfunction.h"
+#include "omnetpp/cexception.h"
 
 namespace omnetpp {
 
