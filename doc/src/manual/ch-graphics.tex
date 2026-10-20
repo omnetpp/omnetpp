@@ -1770,6 +1770,62 @@ that can be turned on/off from Qtenv.
 %% TODO example
 
 
+\subsection{Clipping}
+\label{sec:graphics:clipping}
+
+Shape figures (subclasses of \cclass{cAbstractShapeFigure}: rectangle, oval,
+ring, pie slice, polygon, and path) can clip the rendering of their figure
+subtree to their own shape. Clipping is turned on with
+\ttt{setClipChildren(true)} in C++, or with \ttt{clipChildren=true} in the
+\fprop{@figure} property. Clipping is useful, for example, for plots whose
+curves must not extend beyond the plot area, for window-like overlays with
+scrolling content, and for limiting visualization to a map area.
+
+The clip region is the geometric interior of the shape, i.e. the area that would
+be filled, regardless of whether the figure is actually filled. The outline is
+not part of the clip region. For rings, the hole is excluded from the region,
+and for polygons and paths, the fill rule is taken into account. The figure
+itself is not clipped, only its descendants.
+
+The clip region is subject to the transform of the clipping figure and its
+ancestors, but not to the transforms of the child figures. When clipping
+figures are nested, their clip regions are intersected. Mouse interaction in
+the GUI, such as tooltips and selecting the associated object, also honors
+clipping: clipped-away parts of figures do not respond to the mouse.
+
+Clipping does not affect the stacking order (see
+\ref{sec:graphics:canvas-stacking-order}): the descendants of a clipping figure
+are stacked by their effective Z-index together with all other figures, and
+they are clipped wherever they end up in the stack. For example, a child with a
+large Z-index is drawn above figures outside the subtree of the clipping figure,
+but it is still clipped to the shape of the clipping figure.
+
+The submodules layer (see \ffunc{getSubmodulesLayer()} of \cclass{cCanvas})
+cannot be placed under a clipping figure, i.e. submodules and connections
+cannot be clipped.
+
+An invisible clipping container can be created by turning off both the outline
+and the fill of the figure. The following example creates a window whose
+content is clipped to a rounded rectangle:
+
+\begin{ned}
+@figure[window](type=rectangle; bounds=50,50,200,100; cornerRadius=10;
+                fillColor=white; clipChildren=true);
+@figure[window.content](type=text; pos=60,60;
+                        text="Long text that would extend beyond the window border");
+\end{ned}
+
+To clip the contents of a window that stays fixed in screen pixels (i.e.
+is immune to zooming), place the clipping rectangle under a
+\cclass{cPanelFigure}.
+
+\begin{note}
+The graphical NED editor in the IDE approximates the clip region with its
+bounding rectangle, so there clipping is exact only for unrotated rectangles
+without rounded corners. Qtenv clips exactly.
+\end{note}
+
+
 \subsection{Figure Tooltip, Associated Object}
 \label{sec:graphics:figure-tooltip-associated-object}
 
@@ -2201,6 +2257,10 @@ The default is non-zooming lines.
 
 Specifying zero for line width is currently not allowed. To hide the outline,
 \ttt{setOutlined(false)} can be used.
+
+Shape figures can clip the rendering of their child figures to their own
+shape; this can be turned on with \ttt{setClipChildren(true)}. See
+\ref{sec:graphics:clipping} for details.
 
 
 \subsubsection{cRectangleFigure}
