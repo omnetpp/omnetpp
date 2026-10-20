@@ -1,0 +1,80 @@
+%description:
+Test the clipChildren flag of shape figures: parsing from @figure, copying
+with dup() and dupTree(), and that figures without the flag keep their
+pre-existing hash values (so that fingerprints do not change).
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule {
+public:
+    void initialize() override {
+        cCanvas *canvas = getCanvas();
+        for (const char *name : {"plain", "rect", "rectoff", "oval", "ring", "pieslice", "polygon", "path"}) {
+            cAbstractShapeFigure *f = check_and_cast<cAbstractShapeFigure *>(canvas->getFigure(name));
+            EV << name << ": " << f->getClipChildren() << endl;
+        }
+
+        cRectangleFigure *rect = check_and_cast<cRectangleFigure *>(canvas->getFigure("rect"));
+        cRectangleFigure *copy = rect->dup();
+        EV << "dup: " << copy->getClipChildren() << endl;
+        delete copy;
+        cFigure *tree = rect->dupTree();
+        EV << "dupTree: " << check_and_cast<cAbstractShapeFigure *>(tree)->getClipChildren() << " " << tree->getNumFigures() << endl;
+        delete tree;
+
+        // hash of a figure without the flag; the expected value was obtained with the library before clipChildren was added
+        cRectangleFigure *r = new cRectangleFigure();
+        r->setBounds(cFigure::Rectangle(10, 20, 100, 50));
+        r->setFilled(true);
+        uint32_t hashWithout = r->getHash();
+        EV << "hash: " << hashWithout << endl;
+        r->setClipChildren(true);
+        EV << "hash changes when set: " << (r->getHash() != hashWithout) << endl;
+        r->setClipChildren(false);
+        EV << "hash restored when cleared: " << (r->getHash() == hashWithout) << endl;
+        delete r;
+        EV << "." << endl;
+    }
+};
+Define_Module(Test);
+
+} // namespace @TESTNAME@
+
+%file: test.ned
+
+simple Test
+{
+    @isNetwork(true);
+
+    @figure[plain](type=rectangle; bounds=0,0,100,100);
+    @figure[rect](type=rectangle; bounds=0,0,100,100; clipChildren=true);
+    @figure[rect.child](type=oval; bounds=50,50,100,100);
+    @figure[rectoff](type=rectangle; bounds=0,0,100,100; clipChildren=false);
+    @figure[oval](type=oval; bounds=0,0,100,100; clipChildren=true);
+    @figure[ring](type=ring; bounds=0,0,100,100; innerSize=50,50; clipChildren=true);
+    @figure[pieslice](type=pieslice; bounds=0,0,100,100; startAngle=0; endAngle=90; clipChildren=true);
+    @figure[polygon](type=polygon; points=0,0,100,0,50,100; clipChildren=true);
+    @figure[path](type=path; path="M 0 0 L 100 0 L 50 100 Z"; clipChildren=true);
+}
+
+%contains: stdout
+plain: 0
+rect: 1
+rectoff: 0
+oval: 1
+ring: 1
+pieslice: 1
+polygon: 1
+path: 1
+dup: 1
+dupTree: 1 1
+hash: 637665877
+hash changes when set: 1
+hash restored when cleared: 1
+.

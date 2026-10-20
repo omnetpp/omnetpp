@@ -122,6 +122,7 @@ static const char *PKEY_LINEOPACITY = "lineOpacity";
 static const char *PKEY_CAPSTYLE = "capStyle";
 static const char *PKEY_JOINSTYLE = "joinStyle";
 static const char *PKEY_ZOOMLINEWIDTH = "zoomLineWidth";
+static const char *PKEY_CLIPCHILDREN = "clipChildren";
 static const char *PKEY_FILLCOLOR = "fillColor";
 static const char *PKEY_FILLOPACITY = "fillOpacity";
 static const char *PKEY_FILLRULE = "fillRule";
@@ -1902,6 +1903,7 @@ void cAbstractShapeFigure::copy(const cAbstractShapeFigure& other)
     setLineOpacity(other.getLineOpacity());
     setFillOpacity(other.getFillOpacity());
     setZoomLineWidth(other.getZoomLineWidth());
+    setClipChildren(other.getClipChildren());
 }
 
 cAbstractShapeFigure& cAbstractShapeFigure::operator=(const cAbstractShapeFigure& other)
@@ -1941,13 +1943,15 @@ void cAbstractShapeFigure::parse(cProperty *property)
         setFillOpacity(opp_atof(s));
     if ((s = property->getValue(PKEY_ZOOMLINEWIDTH)) != nullptr)
         setZoomLineWidth(parseBool(s));
+    if ((s = property->getValue(PKEY_CLIPCHILDREN)) != nullptr)
+        setClipChildren(parseBool(s));
 }
 
 const char **cAbstractShapeFigure::getAllowedPropertyKeys() const
 {
     static const char *keys[32];
     if (!keys[0]) {
-        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_FILLCOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_FILLOPACITY, PKEY_ZOOMLINEWIDTH, nullptr};
+        const char *localKeys[] = { PKEY_LINECOLOR, PKEY_FILLCOLOR, PKEY_LINESTYLE, PKEY_LINEWIDTH, PKEY_LINEOPACITY, PKEY_FILLOPACITY, PKEY_ZOOMLINEWIDTH, PKEY_CLIPCHILDREN, nullptr};
         concatArrays(keys, cFigure::getAllowedPropertyKeys(), localKeys);
     }
     return keys;
@@ -2028,6 +2032,14 @@ void cAbstractShapeFigure::setZoomLineWidth(bool zoomLineWidth)
     fireVisualChange();
 }
 
+void cAbstractShapeFigure::setClipChildren(bool clipChildren)
+{
+    if (clipChildren == this->clipChildren)
+        return;
+    this->clipChildren = clipChildren;
+    fireStructuralChange(); // changes how the subtree is rendered, so GUIs need to rebuild it
+}
+
 void cAbstractShapeFigure::hashTo(cHasher& hasher) const
 {
     cFigure::hashTo(hasher);
@@ -2040,6 +2052,8 @@ void cAbstractShapeFigure::hashTo(cHasher& hasher) const
     hasher << getLineOpacity();
     hasher << getFillOpacity();
     hasher << getZoomLineWidth();
+    if (getClipChildren())
+        hasher << true; // only if set, so that the hashes (and fingerprints) of existing figures do not change
 }
 
 //----

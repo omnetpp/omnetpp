@@ -266,6 +266,7 @@ lineWidth : double = 1
 lineOpacity : double = 1
 fillOpacity : double = 1
 zoomLineWidth : bool = false
+clipChildren : bool = false
 bounds : omnetpp::cFigure::Rectangle = "(0, 0, w=0, h=0)"
 cornerRx : double = 0
 cornerRy : double = 0

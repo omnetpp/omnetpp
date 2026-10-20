@@ -1398,6 +1398,7 @@ class SIM_API cAbstractShapeFigure : public cFigure
         double lineOpacity = 1;
         double fillOpacity = 1;
         bool zoomLineWidth = false;
+        bool clipChildren = false;
     private:
         void copy(const cAbstractShapeFigure& other);
     protected:
@@ -1526,6 +1527,46 @@ class SIM_API cAbstractShapeFigure : public cFigure
          * setting is false, i.e. zoom does not affect line width.
          */
         virtual void setZoomLineWidth(bool zoomLineWidth);
+        //@}
+
+        /** @name Clipping */
+        //@{
+        /**
+         * Returns true if the rendering of the child figures is clipped to
+         * the shape of this figure, and false if not.
+         */
+        virtual bool getClipChildren() const {return clipChildren;}
+
+        /**
+         * Sets the flag that controls whether the rendering of the figure
+         * subtree under this figure should be clipped to the shape of this
+         * figure. The default setting is false.
+         *
+         * The clip region is the geometric interior of the shape, i.e. the
+         * area that would be filled, regardless of whether the figure is
+         * actually filled. The outline is not part of the clip region. For
+         * rings, the hole is excluded from the region, and for polygons and
+         * paths, the fill rule is taken into account. The clip region is
+         * subject to the transform of this figure (and its ancestors), but
+         * not to the transforms of the child figures. The figure itself is
+         * not clipped. If clipping figures are nested, the clip regions are
+         * intersected. Mouse interaction (tooltips, selection) also honors
+         * clipping.
+         *
+         * Clipping does not affect the stacking order: the descendants are
+         * stacked by their effective Z-index (see getEffectiveZIndex())
+         * together with all other figures on the canvas, as usual, and they
+         * are clipped wherever they end up in the stacking order.
+         *
+         * The submodules layer (see cCanvas::getSubmodulesLayer()) cannot be
+         * placed under a clipping figure.
+         *
+         * An invisible clipping container can be created by setting both
+         * the outlined and the filled flags to false. To clip the contents
+         * of a window that is fixed in screen pixels, place a clipping
+         * rectangle under a cPanelFigure.
+         */
+        virtual void setClipChildren(bool clipChildren);
         //@}
 };
 

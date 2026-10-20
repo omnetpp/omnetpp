@@ -1209,6 +1209,7 @@ class cAbstractShapeFigure extends cFigure
     double lineOpacity @group(outline) @editable;
     double fillOpacity @group(fill) @editable;
     bool zoomLineWidth @group(outline) @editable;
+    bool clipChildren @group(figure) @editable;
 }
 
 class cRectangleFigure extends cAbstractShapeFigure

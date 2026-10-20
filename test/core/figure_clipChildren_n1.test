@@ -1,0 +1,15 @@
+%description:
+Test that clipChildren is rejected on non-shape figures.
+
+%file: test.ned
+
+module Test
+{
+    @isNetwork(true);
+    @figure[label](type=text; pos=0,0; text="hello"; clipChildren=true);
+}
+
+%exitcode: 1
+
+%contains-regex: stderr
+Unknown property key 'clipChildren'
