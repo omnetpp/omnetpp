@@ -5234,7 +5234,9 @@ In the \fprop{@statisticTemplate} property, the \ttt{source} key will be
 ignored (as the parameter signal will be used as the source). The actual
 name and index of the property will also be ignored. (In the case of \fprop{@statistic},
 the index holds the result name, but here the name is explicitly specified
-in the \ttt{statisticName} parameter.)
+in the \ttt{statisticName} parameter.) Warm-up period support works
+the same way as with \fprop{@statistic}, including the \ttt{autoWarmupFilter}
+key.
 
 When recording multiple signals using a common \fprop{@statisticTemplate},
 you may want the titles of the recorded statistics to differ for each signal.

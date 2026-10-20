@@ -1,0 +1,72 @@
+%description:
+Tests that statistics added via addResultRecorders() with a @statisticTemplate
+honor warmup-period and the autoWarmupFilter attribute, like @statistic does.
+
+%file: test.ned
+
+simple Node
+{
+    @signal[foo];
+    @statisticTemplate[t1](record=count,mean);
+    @statisticTemplate[t2](record=count,mean;autoWarmupFilter=false);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class Node : public cSimpleModule {
+    simsignal_t signal;
+    int step = 0;
+
+    virtual void initialize() override {
+        signal = registerSignal("foo");
+        getEnvir()->addResultRecorders(this, signal, "withWarmup", getProperties()->get("statisticTemplate", "t1"));
+        getEnvir()->addResultRecorders(this, signal, "noWarmup", getProperties()->get("statisticTemplate", "t2"));
+
+        emit(signal, 100);
+        scheduleAt(5, new cMessage());
+    }
+    virtual void handleMessage(cMessage *msg) override {
+        // t=5: inside warm-up period; t=10 and t=20: after it
+        static const double values[] = {200, 1, 3};
+        static const double times[] = {10, 20};
+        emit(signal, values[step]);
+        if (step < 2)
+            scheduleAt(times[step], msg);
+        else
+            delete msg;
+        step++;
+    }
+};
+
+Define_Module(Node);
+
+}; //namespace
+
+%inifile: test.ini
+[General]
+network = Test
+warmup-period = 10s
+
+%contains: results/General-#0.sca
+scalar Test.node withWarmup:count 2
+
+%contains: results/General-#0.sca
+scalar Test.node withWarmup:mean 2
+
+%contains: results/General-#0.sca
+scalar Test.node noWarmup:count 4
+
+%contains: results/General-#0.sca
+scalar Test.node noWarmup:mean 76

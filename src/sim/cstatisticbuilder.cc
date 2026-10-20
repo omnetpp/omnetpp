@@ -105,18 +105,18 @@ void cStatisticBuilder::doAddResultRecorders(cComponent *component, std::string&
     // if there are result recorders, add source filters and recorders
     if (!modes.empty()) {
         TristateBool checkSignalDecl = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_CHECKSIGNALS), "checkSignals attribute");
+        bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
+        TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "warmup attribute");
+        bool needWarmupFilter = hasWarmupPeriod && warmupAttr != TRISTATE_FALSE;
         // determine source: use either the signal from the argument list, or the source= key in the @statistic property
         SignalSource source;
         if (signal == SIMSIGNAL_NULL) {
             const char *sourceSpec = opp_emptytodefault(statisticProperty->getValue(PROPKEY_STATISTIC_SOURCE, 0), statisticName);
-            bool hasWarmupPeriod = getSimulation()->getWarmupPeriod() != SIMTIME_ZERO;
-            TristateBool warmupAttr = parseTristateBool(statisticProperty->getValue(PROPKEY_STATISTIC_AUTOWARMUPFILTER), "warmup attribute");
-            bool needWarmupFilter = hasWarmupPeriod && warmupAttr != TRISTATE_FALSE;
             source = doStatisticSource(component, statisticProperty, statisticName, sourceSpec, checkSignalDecl, needWarmupFilter);
         }
         else {
-            source = SignalSource(component, signal);
             StatisticSourceParser::checkSignalDeclaration(component, cComponent::getSignalName(signal), checkSignalDecl);
+            source = makeSignalSource(component, statisticProperty, signal, needWarmupFilter);
         }
 
         // add result recorders
