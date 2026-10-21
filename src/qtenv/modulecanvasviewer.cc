@@ -175,7 +175,11 @@ QString ModuleCanvasViewer::tooltipAt(const QRect& rect)
     // under the cursor, and aggregate them.
     // So we have to store their tooltips as custom user data.
 
-    auto items = scene()->items(mapToScene(rect));
+    QPolygonF sceneRect = mapToScene(rect);
+    auto items = scene()->items(sceneRect);
+    QPainterPath area;
+    area.addPolygon(sceneRect);
+    removeClippedItemsOutsideShape(items, area);
     auto objects = gatherObjects(items);
     bool verboseTooltip = (objects.size() == 1);  // initially
 
@@ -969,7 +973,11 @@ std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QPoint& pos, int t
 
 std::vector<cObject *> ModuleCanvasViewer::getObjectsAt(const QRect& rect)
 {
-    QList<QGraphicsItem *> items = scene()->items(mapToScene(rect));
+    QPolygonF sceneRect = mapToScene(rect);
+    QList<QGraphicsItem *> items = scene()->items(sceneRect);
+    QPainterPath area;
+    area.addPolygon(sceneRect);
+    removeClippedItemsOutsideShape(items, area);
     std::vector<cObject *> objects;
 
     for (auto item : items) {

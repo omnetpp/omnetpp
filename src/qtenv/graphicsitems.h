@@ -91,6 +91,15 @@ public:
     void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override { /* nothing */ }
 };
 
+// Workaround for a Qt bug (QTBUG-73663): for an item whose ancestor clips its
+// children (see ItemClipsChildrenToShape), QGraphicsItem::collidesWithPath() and
+// contains() use clipPath() instead of shape(), contrary to their documentation.
+// clipPath() is the item's bounding rectangle (not its shape) intersected with the
+// ancestors' clip regions, so QGraphicsScene::items() finds clipped items wherever
+// their bounding rectangle is. This function removes the clipped items from the
+// list whose shape does not intersect the given area (in scene coordinates).
+QTENV_API void removeClippedItemsOutsideShape(QList<QGraphicsItem *>& items, const QPainterPath& area);
+
 // Used in the ModuleInspector to make text more readable on a cluttered background,
 // as well as on the canvas to implement the halo option for label and text figures.
 // If the functionality is not enough, just implement more of QGraphicsSimpleTextItems

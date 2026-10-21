@@ -99,7 +99,11 @@ FigureRenderingHints CanvasViewer::makeFigureRenderingHints()
 
 std::vector<cObject *> CanvasViewer::getObjectsAt(const QPoint& pos)
 {
-    QList<QGraphicsItem *> items = scene()->items(mapToScene(pos));
+    QPointF scenePos = mapToScene(pos);
+    QList<QGraphicsItem *> items = scene()->items(scenePos);
+    QPainterPath area;
+    area.addRect(QRectF(scenePos, QSizeF(1, 1))); // this is also what QGraphicsScene::items() tests with
+    removeClippedItemsOutsideShape(items, area);
     std::vector<cObject *> objects;
 
     for (auto item : items) {

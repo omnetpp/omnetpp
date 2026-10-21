@@ -16,6 +16,7 @@
 
 #include "graphicsitems.h"
 
+#include <algorithm>
 #include <cmath>
 #include <QtGui/QPen>
 #include <QtGui/QPainter>
@@ -173,6 +174,14 @@ void ClipContainerItem::setClipPath(const QPainterPath& path)
 }
 
 //---- end of ClipContainerItem ----
+
+void removeClippedItemsOutsideShape(QList<QGraphicsItem *>& items, const QPainterPath& area)
+{
+    auto isOutsideShape = [&](QGraphicsItem *item) {
+        return item->isClipped() && !item->shape().intersects(item->mapFromScene(area));
+    };
+    items.erase(std::remove_if(items.begin(), items.end(), isOutsideShape), items.end());
+}
 
 //---- OutlinedTextItem implementation ----
 
