@@ -196,7 +196,10 @@ public abstract class AbstractCanvasFigure extends Figure implements IComparable
     @Override
     @SuppressWarnings("unchecked")
     public void paint(Graphics graphics) {
-        if (isVisible) {
+        // A non-invertible transform (e.g. a zero scale factor, which is allowed in the simulation)
+        // collapses the figure and its whole subtree into a line or a point: there is nothing to draw,
+        // like in Qtenv. (Also, the transform could not be inverted below.)
+        if (isVisible && getCascadedTransform().isInvertible()) {
             graphics.pushState();
             try {
                 applyTransformToGraphics(getCascadedTransform(), graphics);
@@ -227,8 +230,8 @@ public abstract class AbstractCanvasFigure extends Figure implements IComparable
      */
     @Override
     public IFigure findFigureAt(int x, int y, TreeSearch search) {
-        if (!isVisible) {
-            return null;
+        if (!isVisible || !getCascadedTransform().isInvertible()) {
+            return null; // not drawn, see paint()
         }
 
         IFigure result = super.findFigureAt(x, y, search);

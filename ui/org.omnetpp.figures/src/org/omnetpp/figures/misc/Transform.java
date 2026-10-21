@@ -95,6 +95,15 @@ public class Transform implements Cloneable {
         return new Transform(d, -b, -c, a, c * t2 - d * t1, b * t1 - a * t2);
     }
 
+    /**
+     * Returns true if the transform can be inverted, i.e. it does not collapse the plane
+     * into a line or a point (e.g. with a zero scale factor), and all elements are finite.
+     */
+    public boolean isInvertible() {
+        double det = determinant();
+        return det != 0 && Double.isFinite(det) && Double.isFinite(t1) && Double.isFinite(t2);
+    }
+
     public Transform getInverse() {
         Transform inverse;
 

@@ -107,6 +107,8 @@ public abstract class AbstractCanvasFigureEditPart extends AbstractGraphicalEdit
     }
 
     protected Command getTransformedMoveCommand(Request request, Transform t) {
+        if (!t.isInvertible())
+            return UnexecutableCommand.INSTANCE; // the figure is collapsed into a line or a point
         if (request instanceof ChangeBoundsRequest) {
             ChangeBoundsRequest boundsRequest = (ChangeBoundsRequest)request;
 
