@@ -221,7 +221,8 @@ def launch_gateway(port=0, jarpath="", classpath="", javaopts=[],
                    die_on_exit=False, redirect_stdout=None,
                    redirect_stderr=None, daemonize_redirect=True,
                    java_path="java", create_new_process_group=False,
-                   enable_auth=False, cwd=None, return_proc=False):
+                   enable_auth=False, cwd=None, return_proc=False,
+                   use_shell=False):
     """Launch a `Gateway` in a new Java process.
 
     The redirect parameters accept file-like objects, Queue, or deque. When
@@ -273,6 +274,8 @@ def launch_gateway(port=0, jarpath="", classpath="", javaopts=[],
         directory of the Java process.
     :param return_proc: If True, returns the Popen object returned when the JVM
         process was created.
+    :param use_shell: If True, Popen will be start the java process with
+        shell=True
 
     :rtype: the port number of the `Gateway` server or, when auth enabled,
             a 2-tuple with the port number and the auth token.
@@ -324,8 +327,10 @@ def launch_gateway(port=0, jarpath="", classpath="", javaopts=[],
     if create_new_process_group:
         popen_kwargs.update(get_create_new_process_group_kwargs())
 
-    proc = Popen(command, stdout=PIPE, stdin=PIPE, stderr=stderr,
-                 cwd=cwd, **popen_kwargs)
+    popen_kwargs["shell"] = use_shell
+    proc = Popen(
+        command, stdout=PIPE, stdin=PIPE, stderr=stderr, cwd=cwd,
+        **popen_kwargs)
 
     # Determine which port the server started on (needed to support
     # ephemeral ports)
@@ -334,7 +339,7 @@ def launch_gateway(port=0, jarpath="", classpath="", javaopts=[],
     # Read the auth token from the server if enabled.
     _auth_token = None
     if enable_auth:
-        _auth_token = proc.stdout.readline()[:-1]
+        _auth_token = proc.stdout.readline()[:-len(os.linesep)]
 
     # Start consumer threads so process does not deadlock/hangs
     OutputConsumer(
@@ -822,7 +827,7 @@ class CallbackServerParameters(object):
             connection
 
         :param port: the port to which the client will request a connection.
-            Default is 25333.
+            Default is 25334.
 
         :param daemonize: If `True`, will set the daemon property of the server
             thread to True. The callback server will exit automatically if all
@@ -1044,12 +1049,61 @@ class GatewayClient(object):
                     reset = True
                 connection.close(reset)
             if self._should_retry(retry, connection, pne):
+                if pne.when == proto.ERROR_ON_SEND or pne.when == proto.EMPTY_RESPONSE:
+                    # For empty response, just try once more because now we reset
+                    # the connection, and should work if the other end is alive.
+                    retry = False
                 logging.info("Exception while sending command.", exc_info=True)
-                response = self.send_command(command, binary=binary)
+                response = self.send_command(command, retry, binary=binary)
             else:
                 logging.exception(
                     "Exception while sending command.")
                 response = proto.ERROR
+        except KeyboardInterrupt:
+            # For KeyboardInterrupt triggered from Python shell, it should
+            # clean up the connection so the connection is
+            #   - closed and does not leak
+            #   - removed from the thread local when Py4J
+            #     Single Threading Model is on
+            # See also https://github.com/bartdag/py4j/pull/440 for
+            # more details.
+            logging.exception("KeyboardInterrupt while sending command.")
+
+            if connection and connection.socket:
+                local_addr = connection.socket.getsockname()
+                remote_addr = connection.socket.getpeername()
+                logger.info(
+                    "Search for sockets that match local addr {0} and remote addr {1}".
+                    format(local_addr, remote_addr))
+                # Find all of the socket pairs with the same laddr and raddr.
+                remaining_sockets = []
+                size = len(self.deque)
+
+                for _ in range(0, size):
+                    try:
+                        next_conn = self.deque.pop()
+                        socket_match = next_conn.socket and \
+                            (next_conn.socket.getsockname() == local_addr or \
+                            next_conn.socket.getpeername() == remote_addr)
+                        if socket_match:
+                            logger.info("Shutting down matched socket {0}".format(next_conn.socket))
+                            # We send local port as remote and remote port as local for JVM part
+                            # of the connection.
+                            next_conn.shutdown_socket(local_addr[1], remote_addr[1])
+                            logger.info("Finished shutdown of socket {0}".format(next_conn.socket))
+                        else:
+                            remaining_sockets.append(next_conn)
+                    except IndexError:
+                        pass
+
+                for conn in remaining_sockets:
+                    self.deque.append(conn)
+
+                logger.info("Shutting down the current connection {0}".format(connection))
+                # The ports are reversed for JVM side of the connection.
+                connection.shutdown_socket(local_addr[1], remote_addr[1])
+
+            raise
 
         return response
 
@@ -1057,7 +1111,8 @@ class GatewayClient(object):
         return GatewayConnectionGuard(self, connection)
 
     def _should_retry(self, retry, connection, pne=None):
-        return pne and pne.when == proto.ERROR_ON_SEND
+        return retry and pne and (
+            pne.when == proto.ERROR_ON_SEND or pne.when == proto.EMPTY_RESPONSE)
 
     def close(self):
         """Closes all currently opened connections.
@@ -1204,10 +1259,12 @@ class GatewayConnection(object):
             # Happens when a the other end is dead. There might be an empty
             # answer before the socket raises an error.
             if answer.strip() == "":
-                raise Py4JNetworkError("Answer from Java side is empty")
+                raise Py4JNetworkError("Answer from Java side is empty", when=proto.EMPTY_RESPONSE)
             return answer
         except Exception as e:
             logger.info("Error while receiving.", exc_info=True)
+            if isinstance(e, Py4JNetworkError) and e.when == proto.EMPTY_RESPONSE:
+                raise
             raise Py4JNetworkError(
                 "Error while receiving", e, proto.ERROR_ON_RECEIVE)
 
@@ -1288,7 +1345,8 @@ class JavaMember(object):
             answer, self.gateway_client, self.target_id, self.name)
 
         for temp_arg in temp_args:
-            temp_arg._detach()
+            if hasattr(temp_arg, "_detach"):
+                temp_arg._detach()
 
         return connection
 
@@ -1305,7 +1363,8 @@ class JavaMember(object):
             answer, self.gateway_client, self.target_id, self.name)
 
         for temp_arg in temp_args:
-            temp_arg._detach()
+            if hasattr(temp_arg, "_detach"):
+                temp_arg._detach()
 
         return return_value
 
@@ -1569,7 +1628,8 @@ class JavaClass(object):
             answer, self._gateway_client, None, self._fqn)
 
         for temp_arg in temp_args:
-            temp_arg._detach()
+            if hasattr(temp_arg, "_detach"):
+                temp_arg._detach()
 
         return return_value
 
@@ -2084,7 +2144,8 @@ class JavaGateway(object):
             cls, port=0, jarpath="", classpath="", javaopts=[],
             die_on_exit=False, redirect_stdout=None,
             redirect_stderr=None, daemonize_redirect=True, java_path="java",
-            create_new_process_group=False, enable_auth=False, cwd=None):
+            create_new_process_group=False, enable_auth=False, cwd=None,
+            use_shell=False):
         """Launch a `Gateway` in a new Java process and create a default
         :class:`JavaGateway <py4j.java_gateway.JavaGateway>` to connect to
         it.
@@ -2132,6 +2193,8 @@ class JavaGateway(object):
             an authentication token when connecting.
         :param cwd: If not None, path that will be used as the current working
             directory of the Java process.
+        :param use_shell: If True, Popen will be start the java process with
+            shell=True
 
         :rtype: a :class:`JavaGateway <py4j.java_gateway.JavaGateway>`
             connected to the `Gateway` server.
@@ -2141,7 +2204,8 @@ class JavaGateway(object):
             redirect_stdout=redirect_stdout, redirect_stderr=redirect_stderr,
             daemonize_redirect=daemonize_redirect, java_path=java_path,
             create_new_process_group=create_new_process_group,
-            enable_auth=enable_auth, cwd=cwd, return_proc=True)
+            enable_auth=enable_auth, cwd=cwd, return_proc=True,
+            use_shell=use_shell)
         if enable_auth:
             _port, _auth_token, proc = _ret
         else:

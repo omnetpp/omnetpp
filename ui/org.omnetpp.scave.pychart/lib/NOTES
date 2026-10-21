@@ -1,3 +1,0 @@
-The py4j-0.10.9.3.jar file here is patched, also includes the changes in
-https://github.com/bartdag/py4j/pull/453 on top of the 0.10.9.3 tag, to
-make it compatible with Java 17 (which is what comes with Eclipse 4.22).

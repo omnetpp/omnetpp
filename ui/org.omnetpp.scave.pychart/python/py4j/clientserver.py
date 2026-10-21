@@ -146,7 +146,7 @@ class PythonParameters(CallbackServerParameters):
             connection
 
         :param port: the port to which the client will request a connection.
-            Default is 25333.
+            Default is 25334.
 
         :param daemonize: If `True`, will set the daemon property of the server
             thread to True. The callback server will exit automatically if all
@@ -244,7 +244,10 @@ class JavaClient(GatewayClient):
         :param connection: The ClientServerConnection to associate with the
             current thread.
         """
-        self.thread_connection.connection = weakref.ref(connection)
+        conn = weakref.ref(connection)
+        self.thread_connection._cleaner = (
+            ThreadLocalConnectionFinalizer(conn, self.deque))
+        self.thread_connection.connection = conn
 
     def shutdown_gateway(self):
         try:
@@ -298,6 +301,39 @@ class JavaClient(GatewayClient):
 
     def _create_connection_guard(self, connection):
         return ClientServerConnectionGuard(self, connection)
+
+
+class ThreadLocalConnectionFinalizer(object):
+    """Cleans :class:`ClientServerConnection` held by a thread local by
+    closing it properly and removing it from the :class:`JavaClient`
+    deque. Right before the Python thread is terminated, this
+    instance will be garbage-collected, which triggers a call
+    to __del__  that contains the cleanup logic.
+    """
+    def __init__(self, connection, dequeue):
+        assert (
+            isinstance(connection, weakref.ReferenceType) and
+            connection() is not None and
+            isinstance(connection(), ClientServerConnection))
+        self.connection = connection
+        self.deque = dequeue
+
+    def __del__(self):
+        """Removes the connection associated with the current thread
+        from the deque.
+
+        Expected to be called when the thread that started the
+        connection is garbage-collected.
+        """
+        conn = self.connection()
+        if conn is not None:
+            try:
+                # This dequeue is thread-safe, and shared across other
+                # threads.
+                self.deque.remove(conn)
+            except ValueError:
+                # Should never reach this point
+                pass
 
 
 class ClientServerConnectionGuard(GatewayConnectionGuard):
@@ -451,6 +487,30 @@ class ClientServerConnection(object):
             logger.debug("Exception occurred while shutting down gateway",
                          exc_info=True)
 
+    # Shuts down the connection and the corresponding Java socket.
+    # remote_port is the remote port of the Java socket (local port for Py4j).
+    # local_port is the local port of the Java socket (remote port for Py4j).
+    def shutdown_socket(self, remote_port, local_port):
+        if not self.is_connected:
+            raise Py4JError("Gateway must be connected to send cancel cmd.")
+        try:
+            logger.info("Close connection stream")
+            quiet_close(self.stream)
+            address = "127.0.0.1"
+            logger.info(
+                "Send shutdown request for the Java socket {0}, remote port {1}, local port {2}".
+                format(address, remote_port, local_port))
+            self.socket.sendall("z\n".encode("utf-8"))
+            self.socket.sendall(("%s\n" % address).encode("utf-8"))
+            self.socket.sendall(("%s\n" % remote_port).encode("utf-8"))
+            self.socket.sendall(("%s\n" % local_port).encode("utf-8"))
+            logger.info("Close connection")
+            self.close()
+            self.is_connected = False
+            logger.info("Connection is closed")
+        except Exception:
+            logger.exception("Exception occurred while shutting down connection", exc_info=True)
+
     def start(self):
         t = Thread(target=self.run)
         t.daemon = self.python_parameters.daemonize_connections
@@ -477,7 +537,8 @@ class ClientServerConnection(object):
                 # Happens when a the other end is dead. There might be an empty
                 # answer before the socket raises an error.
                 if answer.strip() == "":
-                    raise Py4JNetworkError("Answer from Java side is empty")
+                    raise Py4JNetworkError(
+                        "Answer from Java side is empty", when=proto.EMPTY_RESPONSE)
                 if answer.startswith(proto.RETURN_MESSAGE):
                     return answer[1:]
                 else:
@@ -500,6 +561,8 @@ class ClientServerConnection(object):
                             proto.ERROR_RETURN_MESSAGE.encode("utf-8"))
         except Exception as e:
             logger.info("Error while receiving.", exc_info=True)
+            if isinstance(e, Py4JNetworkError) and e.when == proto.EMPTY_RESPONSE:
+                raise
             raise Py4JNetworkError(
                 "Error while sending or receiving", e, proto.ERROR_ON_RECEIVE)
 
@@ -602,6 +665,12 @@ class ClientServerConnection(object):
             params.append(param)
             temp = smart_decode(input.readline())[:-1]
         return params
+
+    def __del__(self):
+        # In case new connection is set via
+        # `JavaClient.set_thread_connection`, this connection will be
+        # garbage-collected with closing the underlying socket properly.
+        self.close()
 
 
 class ClientServer(JavaGateway):
