@@ -6,7 +6,7 @@ module Clipping
 {
     parameters:
         @class(ClippingAnimator);
-        @display("bgb=1300,1100");
+        @display("bgb=1300,1500");
         int numBalls = default(500); // for case 17
 
         // basic: an oval sticking out of a rectangle; the rectangle's own (thick) outline must not be clipped
@@ -97,6 +97,58 @@ module Clipping
         // of a small window whose clipping is toggled; the balls are created by ClippingAnimator
         @figure[t17](type=text; pos=20,920; text="17. scalability: many balls under a small window, clipChildren toggles every 5s");
         @figure[c17](type=rectangle; bounds=60,950,160,100; lineWidth=2; cornerRadius=40; fillColor=lightyellow; clipChildren=true);
+
+        // static stacking order test with nested clipping figures A > B > C (zIndex 0, 2, 1, i.e. effective 0, 2, 3).
+        // The unclipped gray bars have zIndex 1..7. Each stripe is drawn over the bars with lower effective Z-index,
+        // and under those with higher; at equal Z-index, the figure that comes later in preorder is on top, which
+        // means the stripes (the bars come first). The labels state where each stripe must be; every stripe must
+        // also be clipped to all of its clipping ancestors.
+        @figure[t18](type=text; pos=20,1100; text="18. static: global Z order with nested clipping figures A > B > C; gray bars have z=1..7");
+        @figure[bar1](type=rectangle; bounds=100,1130,24,340; fillColor=#808080; lineColor=; zIndex=1);
+        @figure[bar2](type=rectangle; bounds=200,1130,24,340; fillColor=#808080; lineColor=; zIndex=2);
+        @figure[bar3](type=rectangle; bounds=300,1130,24,340; fillColor=#808080; lineColor=; zIndex=3);
+        @figure[bar4](type=rectangle; bounds=400,1130,24,340; fillColor=#808080; lineColor=; zIndex=4);
+        @figure[bar5](type=rectangle; bounds=500,1130,24,340; fillColor=#808080; lineColor=; zIndex=5);
+        @figure[bar6](type=rectangle; bounds=600,1130,24,340; fillColor=#808080; lineColor=; zIndex=6);
+        @figure[bar7](type=rectangle; bounds=700,1130,24,340; fillColor=#808080; lineColor=; zIndex=7);
+        @figure[lbar1](type=text; pos=112,1115; text="1"; anchor=n);
+        @figure[lbar2](type=text; pos=212,1115; text="2"; anchor=n);
+        @figure[lbar3](type=text; pos=312,1115; text="3"; anchor=n);
+        @figure[lbar4](type=text; pos=412,1115; text="4"; anchor=n);
+        @figure[lbar5](type=text; pos=512,1115; text="5"; anchor=n);
+        @figure[lbar6](type=text; pos=612,1115; text="6"; anchor=n);
+        @figure[lbar7](type=text; pos=712,1115; text="7"; anchor=n);
+
+        // A: z=0; its fill is under all bars. Its stripes (red) stick out on both sides of it, and must be cut at its edges.
+        @figure[a18](type=rectangle; bounds=60,1150,880,310; fillColor=#fffde0; lineColor=darkred; clipChildren=true);
+        @figure[a18.z0](type=rectangle; bounds=30,1160,950,16; fillColor=#e04040; lineColor=);
+        @figure[a18.z3a](type=rectangle; bounds=30,1185,950,16; fillColor=#e04040; lineColor=; zIndex=3);
+        @figure[a18.z3b](type=rectangle; bounds=30,1193,950,16; fillColor=#902020; lineColor=; zIndex=3);
+        @figure[a18.z5](type=rectangle; bounds=30,1222,950,16; fillColor=#e04040; lineColor=; zIndex=5);
+
+        // B: in A, z=2 (zIndex=2); its half-transparent fill is over bar 2, under bars 3..7. Its stripes (blue) are cut at its edges.
+        @figure[a18.b](type=rectangle; bounds=150,1250,730,190; cornerRadius=20; fillColor=#c0c0ff; fillOpacity=0.6; lineColor=darkblue; zIndex=2; clipChildren=true);
+        @figure[a18.b.z2](type=rectangle; bounds=30,1262,950,16; fillColor=#3050e0; lineColor=);
+        @figure[a18.b.z4](type=rectangle; bounds=30,1288,950,16; fillColor=#3050e0; lineColor=; zIndex=2);
+        @figure[a18.b.z7](type=rectangle; bounds=30,1314,950,16; fillColor=#3050e0; lineColor=; zIndex=5);
+        @figure[a18.b.post4](type=rectangle; bounds=790,1255,16,185; fillColor=#a020a0; lineColor=; zIndex=2);
+
+        // C: in B, z=3 (zIndex=1); an oval, also cut by B on the right and at the bottom. Its stripes (green) are cut to the oval and to B.
+        @figure[a18.b.c](type=oval; bounds=420,1335,560,120; fillColor=#c0ffc0; fillOpacity=0.6; lineColor=darkgreen; zIndex=1; clipChildren=true);
+        @figure[a18.b.c.z0](type=rectangle; bounds=30,1355,950,16; fillColor=#20a020; lineColor=; zIndex=-3);
+        @figure[a18.b.c.z4](type=rectangle; bounds=30,1383,950,16; fillColor=#20a020; lineColor=; zIndex=1);
+        @figure[a18.b.c.z6](type=rectangle; bounds=30,1411,950,16; fillColor=#20a020; lineColor=; zIndex=3);
+
+        @figure[l18a0](type=text; pos=960,1160; text="A z=0: under all bars");
+        @figure[l18a3](type=text; pos=960,1189; text="A z=3, z=3: over bars 1-3, under 4-7; dark over light");
+        @figure[l18a5](type=text; pos=960,1222; text="A z=5: over bars 1-5, under 6-7");
+        @figure[l18b2](type=text; pos=960,1262; text="B z=2: over bar 2 (and B), under 3-7");
+        @figure[l18b4](type=text; pos=960,1288; text="B z=4: over bars 2-4, under 5-7");
+        @figure[l18b7](type=text; pos=960,1314; text="B z=7: over all bars");
+        @figure[l18bp](type=text; pos=960,1336; text="B purple post z=4: over C's fill and z=0 stripe");
+        @figure[l18c0](type=text; pos=960,1355; text="C z=0: under bars and post, dimmed by B, C fill");
+        @figure[l18c4](type=text; pos=960,1383; text="C z=4: under bars 5-7, over post (z=4)");
+        @figure[l18c6](type=text; pos=960,1411; text="C z=6: over bars 5-6 and post, under 7");
 
     submodules:
         ticker: ClippingTicker {
