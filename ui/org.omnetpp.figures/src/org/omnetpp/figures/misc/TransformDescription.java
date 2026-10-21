@@ -137,11 +137,27 @@ public class TransformDescription {
             else
                 tr.rotate(Math.toRadians(args.get(0)));
         } else if (operation.equals("scale")) {
-            tr.scale(args.get(0), args.size() >= 2 ? args.get(1) : args.get(0));
+            // same as cFigure::parseTransform(): scale(s), scale(sx,sy), scale(s,cx,cy), scale(sx,sy,cx,cy)
+            if (args.size() == 1)
+                tr.scale(args.get(0), args.get(0));
+            else if (args.size() == 2)
+                tr.scale(args.get(0), args.get(1));
+            else if (args.size() == 3)
+                tr.scale(args.get(0), args.get(0), args.get(1), args.get(2));
+            else
+                tr.scale(args.get(0), args.get(1), args.get(2), args.get(3));
         } else if (operation.equals("skewx")) {
-            tr.skewx(args.get(0), args.size() >= 2 ? args.get(1) : args.get(0));
+            // skewx(coeff) or skewx(coeff,cy)
+            if (args.size() == 1)
+                tr.skewx(args.get(0));
+            else
+                tr.skewx(args.get(0), args.get(1));
         } else if (operation.equals("skewy")) {
-            tr.skewy(args.get(0), args.size() >= 2 ? args.get(1) : args.get(0));
+            // skewy(coeff) or skewy(coeff,cx)
+            if (args.size() == 1)
+                tr.skewy(args.get(0));
+            else
+                tr.skewy(args.get(0), args.get(1));
         } else if (operation.equals("matrix")) {
             tr.setElements(args);
         }
