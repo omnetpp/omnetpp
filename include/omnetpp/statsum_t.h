@@ -22,7 +22,7 @@
 
 namespace omnetpp {
 
-namespace internals {
+namespace internal {
 
 /**
  * @brief Compensated summation using the Kahan-Babuška-Neumaier (KBN) algorithm.
@@ -68,9 +68,9 @@ class SIM_API NeumaierSum
     }
 };
 
-}  // namespace internals
+}  // namespace internal
 
-using statsum_t = internals::NeumaierSum;
+using statsum_t = internal::NeumaierSum;
 
 // Legacy mode:
 // using statsum_t = double;
