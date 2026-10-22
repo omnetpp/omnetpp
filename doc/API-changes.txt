@@ -570,8 +570,6 @@ OMNeT++ 6.0
 (!)     cExpression, cDynamicExpression, cParImpl: Removed method
         containsConstSubexpressions() and evaluateConstSubexpressions().
 
-(x)     cSimpleModule: Removed deprecated legacy constructor.
-
 (x)     Removed cStatistic deprecated methods getWeights(),collect2(), random(),
         clearResult(). Replacements: getSumWeights(), collectWeighted(), draw(),
         clear().
