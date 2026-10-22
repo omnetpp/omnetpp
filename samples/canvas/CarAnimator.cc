@@ -30,8 +30,6 @@ class CarAnimator : public cSimpleModule
         cPolylineFigure *trail;
         cTextFigure *distanceDisplay;
         cTextFigure *headingDisplay;
-        cFigure *navView;
-        cFigure *navCar;
     protected:
         virtual void initialize() override;
         virtual void handleMessage(cMessage *msg) override;
@@ -61,19 +59,6 @@ void CarAnimator::initialize()
     distanceDisplay = check_and_cast<cTextFigure *>(canvas->getFigureByPath("status.distance"));
     headingDisplay = check_and_cast<cTextFigure *>(canvas->getFigureByPath("status.heading"));
 
-    // navigator: a magnified copy of the road with a marker for the car;
-    // the navigator window clips it (see clipChildren in the NED file)
-    navView = new cGroupFigure("view");
-    navView->addFigure(road->dup());
-    navView->addFigure(canvas->getFigure("paint")->dup());
-    cOvalFigure *marker = new cOvalFigure("car");
-    marker->setBounds(cFigure::Rectangle(-5, -5, 10, 10));
-    marker->setFilled(true);
-    marker->setFillColor(cFigure::RED);
-    navCar = marker;
-    navView->addFigure(navCar);
-    canvas->getFigureByPath("status.nav")->addFigure(navView);
-
     loc = road->getPoint(targetPointIndex);
 
     WATCH(timeStep);
@@ -101,13 +86,8 @@ void CarAnimator::refresh() const
     carTr.rotate(heading + angularSpeed * t);
 
     double distance = speed * t;
-    Point carPos(loc.x + distance * cos(heading), loc.y + distance * sin(heading));
-    carTr.translate(carPos.x, carPos.y);
+    carTr.translate(loc.x + distance * cos(heading), loc.y + distance * sin(heading));
     car->setTransform(carTr);
-
-    // keep the car in the middle of the navigator window (whose center is at (0,160) in "status"), at 2x magnification
-    navCar->setTransform(cFigure::Transform().translate(carPos.x, carPos.y));
-    navView->setTransform(cFigure::Transform().translate(-carPos.x, -carPos.y).scale(2).translate(0, 160));
 
     cFigure::Transform antTr;
     antTr.rotate(-2 * simTime().dbl()*M_PI/180);

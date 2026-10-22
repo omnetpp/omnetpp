@@ -25,9 +25,6 @@ network CarDemo
        @figure[status.distance](type=text; pos=0,40; text="0m"; anchor=center; font=Arial,22);
        @figure[status.headingTitle](type=text; pos=0,70; text="Heading"; anchor=center);
        @figure[status.heading](type=text; pos=0,90; text="0"; anchor=center; font=Arial,22);
-       // a magnified view of the road around the car is added to the navigator window in C++;
-       // clipChildren=true keeps it within the window
-       @figure[status.nav](type=rectangle; pos=0,110; size=150,100; anchor=n; cornerRadius=10; fillColor=#fafdb9; fillOpacity=0.2; lineColor=#fafdb9; lineOpacity=0.4; clipChildren=true);
 
     submodules:
        animator: CarAnimator;
