@@ -5,6 +5,164 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 6.5 (October 2026)
+--------------------------
+
+This is primarily a bugfix release. The main new features are clipping
+support for canvas figures, reporting of configuration entries that have no
+effect (useful e.g. when porting models to a new version of a model library),
+and the ability of the NED documentation generator to link to the separately
+generated documentation of referenced projects and to produce PNG images. The
+main bugfix areas are the correctness of recorded and analyzed results (units
+of count scalars, field scalars and dB; warm-up period handling), `WATCH()` and
+inspector display, rendering in the graphical NED editor, and matplotlib
+compatibility in the Analysis Tool.
+
+Simulation kernel:
+
+  - Canvas: Shape figures can now clip the rendering of their figure subtree to
+    their own shape: `setClipChildren(true)` in C++, `clipChildren=true` in
+    `@figure`. The clip region is the geometric interior of the shape (excluding
+    the outline), and nested clip regions are intersected.
+
+  - Fixed several `WATCH()` problems, including missing support for some
+    standard library types (e.g. `std::deque`, `std::optional`, smart pointers)
+    and a compile error for `std::vector<bool>`.
+
+  - Fixed `opp_typename()` dropping template arguments from type names, which
+    caused name collisions in `WATCH()`. It now returns full type names.
+
+  - Fixed `cObject::dropAndDelete()` leaving a dangling pointer in the owner
+    module's list of owned objects, which caused a crash later.
+
+  - Fixed the `count` and `totalCount` recording modes recording the unit of the
+    statistic, which made tools that convert to base units produce bogus numbers
+    (#1513). The unit is also removed when loading older result files.
+
+  - Fixed statistics added dynamically via `cEnvir::addResultRecorders()` with a
+    `@statisticTemplate` ignoring `warmup-period` and the `autoWarmupFilter` key
+    (#1522).
+
+  - Fixed a crash when something was logged before the eventlog file was opened,
+    e.g. from lifecycle listeners (#1496).
+
+Configuration:
+
+  - Added the `unused-entry-check` configuration option (`off`, `warning`,
+    `error`; default: `warning`), which reports configuration entries that have
+    had no effect, e.g. because the parameter, or a module in the entry's path,
+    was renamed or removed. The companion option `unused-entry-check-time`
+    (`initialization` or `end`, default: `end`) selects when the check is done;
+    checking at the `end` also covers modules created dynamically.
+
+  - Fixed shadowed duplicate keys being recorded into the run header of result
+    files (and printed by `-q runconfig`).
+
+NED:
+
+  - Fix: Removed the conversion from plain `dB` to `x` (dimensionless ratio),
+    because it was ambiguous: the unit alone cannot tell whether a value denotes
+    an amplitude ratio (20*log10(x)) or a power ratio (10*log10(x)). Assigning a
+    dB value to an `@unit(x)` parameter is now an error (#1514).
+
+MSG files, opp_msgc:
+
+  - Fixed some generated descriptors displaying values inconsistently or as
+    "(unprintable)", e.g. for typedefs of standard library containers such as
+    INET's `Ipv4AddressVector`.
+
+Qtenv:
+
+  - Implemented clipping of canvas figures. Tooltips and object selection honor
+    the clipping, and zoom-to-fit ignores the clipped-away areas.
+
+  - Warnings (e.g. those about unused configuration entries) are now written to
+    the log window.
+
+Command-line Tools:
+
+  - `opp_neddoc`: Added the `-l`, `-r` and `--raster-images` options for the new
+    NED Documentation Generator features (see below). Fixed errors not being
+    reflected in the exit code.
+
+Python library:
+
+  - `omnetpp.scave`: Fixed `convert_to_base_unit` converting results with
+    logarithmic units (e.g. dBm) point-wise, which gives wrong results for the
+    mean and stddev columns. Such results are now left unchanged (#1514).
+
+  - Fixed fields of statistics, histograms and vectors exposed as scalars
+    (`include_fields=True`, also in the Analysis Tool) inheriting the unit of
+    the containing item. Now count-like fields have no unit, and the start/end
+    time of vectors is in seconds (related to #1513).
+
+Analysis Tool:
+
+  - Fixed chart pan/zoom with matplotlib 3.11 (#1519), and the
+    `3dchart_itervars` chart template with matplotlib 3.9 and later.
+
+  - Updated Py4J to 0.10.9.9 and Pickle to 1.5.
+
+NED Editor:
+
+  - Added support for the `clipChildren` attribute of shape figures.
+    Due to limitations of Draw2D, the clip region is approximated with its
+    bounding rectangle, so clipping is exact only for unrotated rectangles
+    without rounded corners.
+
+  - Fixed several gaps and differences from Qtenv in the rendering of the
+    graphical editor, such as panel figures (NED files containing them failed
+    to open), the `g` (layout group) display string tag, some `@figure`
+    transforms, and the `is` and `i` tags on the default icon. Also fixed
+    submodules jumping away when moved or pinned.
+
+Other IDE Components:
+
+  - NED Documentation Generator: Projects can now be documented without their
+    dependencies (e.g. Simu5G without INET), with links to the separately
+    generated documentation of the referenced projects ("External
+    documentation" option). References to types that are not documented are
+    marked as coming from another project instead of becoming broken links.
+
+  - NED Documentation Generator: Added an option to generate PNG images instead
+    of SVG. The generator now asks for confirmation if the selected projects
+    have NED errors. Fixed image generation errors not being reported (producing
+    pages with missing diagrams), exporting NED type diagrams with transformed
+    `@figure`s into SVG, and the navigation tree jumping away when clicking
+    through a list.
+
+  - Ini File Editor: Runtime checks and diagnostic output options were moved
+    to a new "Diagnostics" page. Added the `unused-entry-check` options, and
+    content assist for the values of `config-recording`,
+    `output-vector-db-indexing` and `cmdenv-log-level`.
+
+  - Updated the bundled Eclipse platform to 2026-09.
+
+Samples:
+
+  - `openstreetmap`: The map is now clipped to the map area, so streets,
+    buildings and cars no longer stick out of the background.
+
+Install Guide:
+
+  - The Python virtual environment is now set up using `uv` (pip remains an
+    alternative).
+
+Build:
+
+  - `setenv` now activates the Python virtual environment as its first step;
+    fixed the virtual environment not being activated on NixOS. On NixOS, the
+    `setenv` environment is pinned to nixos-26.05 and no longer leaks host
+    libraries into the shell.
+
+  - Updated the bundled SQLite to 3.54.1, backward-cpp to 1.6 and nanobind to
+    3.1.0. Silenced compiler warnings about `_XOPEN_SOURCE` being redefined.
+
+See ChangeLogs in individual folders for details.
+
+Bugs fixed: https://github.com/omnetpp/omnetpp/issues?q=is%3Aissue+is%3Aclosed+milestone%3A6.5
+
+
 OMNeT++ 6.4 (April 2026)
 ------------------------
 
