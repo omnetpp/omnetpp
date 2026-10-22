@@ -1,3 +1,119 @@
+2026-10-21  Andras Varga
+
+	* NED Editor: Fixed a canvas figure with a non-invertible transform (e.g.
+	scale(0)) breaking the painting of the whole IDE window. Such figures are now
+	not drawn, like in Qtenv.
+
+	* NED Editor: Fixed some @figure transforms being interpreted differently
+	than in the simulation: scale(s,cx,cy) and scale(sx,sy,cx,cy) ignored the
+	center, and skewx(coeff)/skewy(coeff) also used the coefficient as center.
+
+2026-10-21  Attila Torok
+
+	* Analysis Tool: Updated Py4J to 0.10.9.9, and Pickle to 1.5.
+
+2026-10-20  Andras Varga
+
+	* NED Editor: support for the clipChildren @figure property key of shape
+	figures (validation, property sheet, rendering). Due to limitations of
+	Draw2D, the clip region is approximated with its bounding rectangle, so
+	clipping is exact only for unrotated rectangles without rounded corners.
+	Also, as for all figures, the NED Editor orders clipped figures only among
+	their siblings, not by effective Z-index.
+
+	* NED Editor: Fix: Panel figures (type=panel) are now rendered like in Qtenv.
+	Previously, NED files containing panel figures failed to open in the
+	graphical editor.
+
+2026-10-20  Attila Torok
+
+	* Analysis Tool: Fixed the 3dchart_itervars chart template with
+	matplotlib 3.9 and later.
+
+2026-10-19  Attila Torok
+
+	* Analysis Tool: Fixed chart pan/zoom with matplotlib 3.11. (fix #1519)
+
+	* Analysis Tool: Fix: The release of a right-click that opens the context
+	menu is no longer passed to matplotlib.
+
+2026-10-18  Andras Varga
+
+	* Inifile Editor: Added the unused-entry-check and unused-entry-check-time
+	options (form editor and content assist).
+
+	* Inifile Editor: Moved the runtime checks, diagnostic output options and
+	the snapshot file option from the Debugging page to a new "Diagnostics"
+	form page, into the groups "Checks", "Diagnostic Output" and "Snapshot
+	Files". The Debugging page keeps only the debugger options.
+
+	* Inifile Editor: Content assist now offers the values of config-recording,
+	output-vector-db-indexing and cmdenv-log-level. Also fixed the
+	output-vector-db-indexing combo box in the form editor offering no values.
+
+	* Inifile Editor: Clearer label for print-unused-parameters: "Report unread
+	parameters (per NED type)".
+
+2026-10-15  Andras Varga
+
+	* NED Editor: Fix: The "is" (icon size) and "i" (colorization) display string
+	tags are now also applied to the default icon (used when a submodule has
+	neither an icon nor a shape), like in Qtenv.
+
+2026-09-28  Rudolf Hornig
+
+	* Updated to Eclipse 2026-09.
+
+2026-09-18  Andras Varga
+
+	* NED Editor: Fix: Honor the "g" (layout group) display string tag. Submodules
+	that share the same layout group are arranged according to the arrangement
+	in the "p" tag (row, column, matrix, ring, cring), the same way as the
+	elements of a submodule vector are arranged at runtime. Moving a member of
+	a layout group moves the whole group. Generated NED documentation diagrams
+	also reflect this.
+
+	* NED Editor: Fixed submodules jumping away by the arrangement offset when
+	moved or pinned (also affected the "exact" arrangement). Changing only the
+	arrangement in the "p" tag now takes effect without an explicit Relayout.
+
+	* NED Documentation: Allow linking to the separately generated
+	documentation of referenced projects (e.g. documenting Simu5G without
+	INET). The new "External documentation" option (-l for opp_neddoc) takes a
+	list of <projectName>=<baseUrl> items. References to types of referenced
+	projects are linked to the external documentation if its URL is known;
+	otherwise they are not linked, but marked as coming from another project
+	instead of becoming broken links. Unlinked references are summarized in a
+	warning. opp_neddoc also got the -r option, to open referenced projects
+	without documenting them.
+
+	* NED Documentation: Fixed links to types of another project documented in
+	the same run, when the two projects have different documentation paths.
+
+	* NED Documentation: The generation dialog now asks for confirmation if the
+	selected projects have NED errors, as the affected types would be missing
+	from the documentation. opp_neddoc prints a warning instead.
+
+	* NED Documentation: Fix: The navigation tree no longer jumps away when clicking
+	through a list (e.g. the Modules list).
+
+2026-09-17  Andras Varga
+
+	* NED Documentation: Added an option to generate raster (PNG) images
+	instead of SVG ("Raster (PNG) images instead of SVG" in the dialog,
+	--raster-images for opp_neddoc). Diagrams remain clickable, and images are
+	rendered at twice their nominal size to stay crisp on high resolution
+	displays.
+
+	* NED Documentation: Fix: Errors during image and diagram generation are now
+	reported instead of producing pages with missing network diagrams. The
+	error dialog shows the cause, and opp_neddoc now reports failure in its
+	exit code.
+
+	* NED Editor: Fixed exporting NED type diagrams that contain transformed
+	@figures into SVG (failed with an exception). This also affected network
+	diagrams in the generated NED documentation.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-03-24  Attila Torok

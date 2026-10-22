@@ -1,3 +1,22 @@
+2026-10-21  Attila Torok
+
+	* Canvas: Fix: Clipped figures were picked (tooltips, object selection) by
+	their bounding rectangle instead of their own shape, due to a Qt bug
+	(QTBUG-73663), which is now worked around.
+
+2026-10-20  Andras Varga
+
+	* Canvas: implemented the clipChildren flag of shape figures (clipping the
+	child figures to the shape of the parent figure). Mouse interaction
+	(tooltips, selecting the associated object) honors the clipping, and
+	zoom-to-fit ignores clipped-away areas.
+
+2026-10-18  Andras Varga
+
+	* Follow envir change: check for unused configuration entries
+	(unused-entry-check) at the end of a successful run. Warnings (including
+	these) are now written to the log window.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2021-11-17  Rudolf Hornig

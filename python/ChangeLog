@@ -1,3 +1,16 @@
+2026-10-19  Attila Torok
+
+	* omnetpp.scave: Fix: convert_to_base_unit converted results with logarithmic
+	units (e.g. dBm to mW) point-wise, which gives wrong results for the mean and
+	stddev columns. Such results are now left unchanged, also when
+	convert_to_base_unit=True is passed to get_scalars(), get_vectors(),
+	get_statistics() and get_histograms(). (#1514)
+
+2026-09-29  Rudolf Hornig
+
+	* omnetpp.scave.utils: The upgrade hint printed for outdated Python modules
+	now suggests uv (with pip as an alternative).
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-28  Andras Varga

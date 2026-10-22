@@ -1,3 +1,30 @@
+2026-10-20  Attila Torok
+
+	* python: Updated the bundled nanobind to 3.1.0 and robin-map to 1.4.1. This
+	silences a lot of compiler warnings about the _XOPEN_SOURCE macro being
+	redefined. The bundled nanobind is now built from its single-file
+	nb_combined.cpp.
+
+2026-10-19  Andras Varga
+
+	* ResultFileManager: Fixed field scalars (e.g. "foo:stats:count";
+	include_fields=True in the Python API, field scalars in the IDE) inheriting
+	the unit of the containing item, which made unit conversion produce bogus
+	numbers. Now count-like fields (count, numbins; also sumweights, underflows,
+	overflows for unweighted statistics) have no unit, the starttime/endtime
+	fields of vectors are in seconds, and sumweights of time-weighted statistics
+	is in seconds. Value-based fields keep the unit. Related to #1513.
+
+	* ResultFileManager: Fix: Count and totalCount scalars in result files
+	written by earlier versions carry the unit of the statistic (see #1513 in
+	src/sim/ChangeLog), which made unit conversion produce bogus numbers. The
+	"unit" attribute of scalars recorded with the "count" or "totalCount"
+	recording mode is now removed when loading a result file.
+
+2026-10-19  Attila Torok
+
+	* python: Exposed UnitConversion.isLinearUnit() in scave_bindings.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-20  Andras Varga

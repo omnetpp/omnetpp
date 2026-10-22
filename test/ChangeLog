@@ -1,3 +1,60 @@
+2026-10-21  Attila Torok
+
+	* anim/canvas: Clipping: added a static stacking order case with nested
+	clipping, a rendering scalability case, and toggling clipChildren.
+	ZOrder: added interleaving children of sibling groups.
+
+2026-10-20  Andras Varga
+
+	* anim/canvas: Added Clipping test for clipChildren.
+
+	* core: New tests: figure_clipChildren_1, figure_clipChildren_n1;
+	updated msg_getFieldValue_1 for the new figure field.
+
+	* core: New test eventlogrecording_3 (#1496).
+
+	* core: New tests statistic_dynamic_warmup_1 (#1522),
+	statistic_dynamic_n1, statistic_record_n1; updated
+	statistic_autoWarmupFilter_n1 for the changed error message.
+
+2026-10-19  Andras Varga
+
+	* core: New tests statistic_unit_1 (#1513), scavetool_count_unit_1,
+	statistic_autoWarmupFilter_n1.
+
+	* scave: results_api: updated scalars_with_fields.csv after the field
+	scalar unit fix (the baseline recorded wrong values).
+
+	* core: Updated inifile_configexpr_1, resultfile_format_1 after shadowed
+	config keys were omitted from result file headers.
+
+2026-10-19  Attila Torok
+
+	* core: Updated NED_functions_1 after dB was made its own base unit
+	(#1514).
+
+2026-10-18  Andras Varga
+
+	* core: New tests cfg_unused_entry_check_1..8, descriptor_existingclass_1.
+
+2026-10-16  Andras Varga
+
+	* anim/watch: Added Printability module.
+
+	* core: New tests WATCH_vectorbool_1, WATCH_cobjectcontainer_1,
+	WATCH_const_1, WATCH_template_1, WATCH_nullptr_1,
+	descriptor_valuestring_1, opp_typename_2, typenameregistry_1; extended
+	descriptor_dynamic_2; updated expected outputs for the changed type name
+	formatting and descriptor value strings.
+
+2026-10-15  Andras Varga
+
+	* core: New test cObject_dropAndDelete_1.
+
+2026-09-20  Andras Varga
+
+	* anim/displaystring: Added LayoutGroup2.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-29  Rudolf Hornig

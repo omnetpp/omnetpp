@@ -1,3 +1,45 @@
+2026-10-20  Andras Varga
+
+	* Fixed crash (release mode) or silently lost log output (debug mode) when
+	something was logged, or messages were created, before the eventlog file was
+	opened, e.g. from lifecycle listeners on LF_PRE_NETWORK_SETUP. Output
+	produced before the eventlog file is opened is not recorded in the eventlog,
+	but it is still shown by the user interface. (fix #1496)
+
+2026-10-18  Andras Varga
+
+	* Added reporting of configuration entries that have had no effect. An ini
+	entry that matches nothing used to be silently ignored, so typos, renamed or
+	removed parameters and submodules, or entries that a module type or an
+	earlier entry makes inapplicable went unnoticed. New config options:
+
+	  unused-entry-check = off|warning|error           (default: warning)
+	  unused-entry-check-time = initialization|end     (default: end)
+
+	All unused entries of a run are reported together, with their key, value
+	and location. "end" checks after finish() (complete also for modules created
+	during the simulation); "initialization" checks before the simulation starts
+	(fails fast, but also reports entries meant for modules created later). There
+	is no check if the run ends with an error, and the check is skipped in
+	parallel simulation. The check covers parameter assignments, typename,
+	display-string, display-name and rng-N entries. It does not cover result
+	recording options, other per-object options that are read only under certain
+	conditions, options registered by models, and global options. Overridden
+	entries (same key earlier in the configuration) are not reported.
+
+	* SectionBasedConfiguration: Implemented getUnusedEntries() described in
+	include/omnetpp/ChangeLog. Config entries are now stored only once, and the
+	lookup bins hold pointers to them (previously, entries with wildcard
+	suffixes were copied into every matching bin).
+
+2026-07-07  Andras Varga
+
+	* Fix: The configuration key-value pairs recorded into the run header of
+	result files (and printed by "-q runconfig") included shadowed duplicate
+	keys, e.g. sim-time-limit given both on the command line and in the ini file,
+	producing conflicting lines. Now only the first (effective) occurrence of
+	each key is kept.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-20  Andras Varga

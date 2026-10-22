@@ -1,3 +1,46 @@
+2026-10-21  Attila Torok
+
+	* Updated the bundled backward-cpp to 1.6 (adds support for Apple Silicon,
+	RISC-V, libunwind on Linux and macOS, C++17 compatibility, and bug fixes).
+
+	* Updated the bundled yxml sources (minor changes only).
+
+2026-10-20  Attila Torok
+
+	* Updated the bundled SQLite to 3.54.1.
+
+2026-10-19  Attila Torok
+
+	* UnitConversion: Fix: Plain dB was convertible to x ("times"), defined as
+	20*log10(x), i.e. an amplitude ratio, but power ratios (SNR, SINR, antenna
+	gain, path loss) use 10*log10(x), and the unit alone cannot tell the two
+	apart. dB is now its own base unit; it remains a logarithmic unit, so
+	expression arithmetic on it is still refused. As a consequence, e.g. x(3dB)
+	in NED, or assigning a dB value to an @unit(x) parameter, is now an error.
+	(#1514)
+
+	* UnitConversion::tryConvert(): Fixed infinite recursion instead of an
+	error when converting between two unrelated base units (e.g. s to m), with
+	compilers that do not merge identical string literals.
+
+2026-10-16  Andras Varga
+
+	* opp_typename(): Fix: Now returns full type names including template
+	arguments. Previously, template arguments were dropped (e.g. std::vector<A>
+	and std::vector<B> both became "std::vector"), which caused name collisions
+	for dynamically created descriptors, and an empty string was returned for
+	types in std::__cxx11 (e.g. std::list). The implementation (new
+	TypeNameRegistry class) uses the platform's demangler, and normalizes the
+	result: inline namespaces of the standard library (std::__cxx11, std::__1)
+	are removed; trailing template arguments of standard containers and
+	std::unique_ptr that are equal to their defaults are omitted;
+	std::basic_string<char> is written as std::string; template arguments are
+	separated with ", ". Pointers are now written as "Foo*", "Foo const*"
+	(previously "Foo *", "const Foo *"). Name collisions and demangling failures
+	are reported with an exception.
+
+	* opp_findmatchingparen(): Added support for angle brackets.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 src/common/ChangeLog

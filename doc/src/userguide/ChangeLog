@@ -1,3 +1,13 @@
+2026-09-18  Andras Varga
+
+	* NED Documentation chapter: Documented linking to the documentation of
+	referenced projects (the "External documentation" option). Mentioned
+	opp_neddoc.
+
+2026-07-21  Rudolf Hornig
+
+	* Adapted for the unified Sphinx documentation site.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2025-11-10  ------ omnetpp-6.3.0 released ------

@@ -1,3 +1,8 @@
+2026-10-18  Andras Varga
+
+	* Follow envir change: check for unused configuration entries
+	(unused-entry-check) at the end of a successful run.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2021-11-17  Rudolf Hornig

@@ -1,3 +1,37 @@
+2026-10-20  Andras Varga
+
+	* Documented clipChildren (new "Clipping" subsection in the Canvas chapter,
+	and the new key in the @figure property reference).
+
+	* Documented that warm-up period support works the same way with
+	@statisticTemplate as with @statistic, including the autoWarmupFilter key.
+
+2026-10-19  Andras Varga
+
+	* Documented that the unit is not recorded for the count and totalCount
+	recording modes.
+
+2026-10-19  Attila Torok
+
+	* NED Reference appendix: dB is no longer listed as 20*log10(x).
+
+2026-10-18  Andras Varga
+
+	* Documented the unused-entry-check and unused-entry-check-time options
+	(new "Entries That Have No Effect" subsection in the Configuring Simulations
+	chapter, and the configuration options appendix).
+
+2026-09-18  Andras Varga
+
+	* NED documentation chapter: Updated the tilde linking rules for types
+	coming from referenced projects.
+
+2026-07-21  Rudolf Hornig
+
+	* Adapted the LaTeX sources for clean conversion to reStructuredText, for
+	the new Sphinx-based documentation site; added the tex2rst converter. Fixed
+	class references to classes that are not part of the public API.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-23  Andras Varga

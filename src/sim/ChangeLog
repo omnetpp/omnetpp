@@ -1,3 +1,53 @@
+2026-10-20  Andras Varga
+
+	* Implemented the clipChildren flag of cAbstractShapeFigure, as described in
+	include/omnetpp/ChangeLog.
+
+	* Fixed warmup-period being ignored by statistics added dynamically via
+	cEnvir::addResultRecorders() with a @statisticTemplate: values emitted
+	during the warm-up period were recorded, and the autoWarmupFilter key was
+	ignored. (fix #1522)
+
+	* Fix: Some errors that occur while adding a statistic did not name the
+	statistic and the module ("Cannot add statistic '...' to module ..."): those
+	of the @statisticTemplate code path (e.g. an undeclared signal), and those
+	about invalid checkSignals and autoWarmupFilter values. Now all of them do.
+
+2026-10-20  Attila Torok
+
+	* Silenced compiler warnings about the _XOPEN_SOURCE macro being redefined,
+	by including Python.h before any standard headers.
+
+2026-10-19  Andras Varga
+
+	* Fixed the "count" and "totalCount" recording modes recording the unit of
+	the statistic, as described in include/omnetpp/ChangeLog. (#1513) Note that
+	recording modes that are expressions (e.g. "count+10") or that apply the
+	"count" filter (e.g. "vector(count)") still get the unit of the statistic.
+
+	* Fix: The undeclared-signal error message suggested adding
+	checkSignals=false only to the @statistic property; now it mentions
+	@statisticTemplate as well.
+
+	* Fix: The error message for an invalid autoWarmupFilter value did not name
+	the key (it said "warmup attribute").
+
+	* Fixed warm-up period filters created by the statistic source parser not
+	being initialized (latent bug; results were not affected).
+
+2026-10-16  Andras Varga
+
+	* Fixed crash when displaying the WATCH() of a null pointer to a
+	non-cObject type. Setters of cWatchProxyDescriptor now throw an error for
+	a null value pointer instead of silently doing nothing.
+
+2026-10-15  Andras Varga
+
+	* cObject::dropAndDelete(): Fixed leaving a dangling pointer in the owner's
+	list of owned objects when the owner was a cSoftOwner (e.g. a module),
+	which caused a crash on the next traversal. It now calls drop(), as
+	documented. Also improved the "Not owner of object" error messages.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-30  Andras Varga

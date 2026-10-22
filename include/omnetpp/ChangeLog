@@ -1,3 +1,72 @@
+2026-10-20  Andras Varga
+
+	* Canvas: added clipping support. Shape figures (subclasses of
+	cAbstractShapeFigure) can now clip the rendering of their child figures to
+	their own shape, by setting the new clipChildren flag (C++:
+	setClipChildren(true), NED: clipChildren=true in the @figure property).
+	The clip region is the geometric interior of the shape (the outline is not
+	included). Clipping does not affect the stacking order of figures.
+	Nested clip regions are intersected. The submodules layer cannot be placed
+	under a clipping figure. The flag only enters the figure hash (the 'f'
+	fingerprint ingredient) when it is set, so existing fingerprints are
+	unchanged.
+
+2026-10-19  Andras Varga
+
+	* TotalCountRecorder, CountRecorder: Fix: The "count" and "totalCount"
+	recording modes recorded the unit of the statistic, although counts are
+	dimensionless. E.g. @statistic(record=count; unit=B) produced a count scalar
+	with "attr unit B", which caused tools that convert to base units to produce
+	bogus numbers. They no longer record the unit. (#1513)
+
+2026-10-18  Andras Varga
+
+	* cConfigurationEx: Added getUnusedEntries(), which returns the parameter
+	and per-object configuration entries that no lookup has returned since the
+	configuration was activated, i.e. that have had no effect so far.
+	Overridden entries are not included. The method has a default
+	implementation that returns an empty vector, so existing subclasses still
+	compile.
+
+2026-10-16  Andras Varga
+
+	* WATCH(): Fix: Many standard library types were displayed as "(unprintable)"
+	or as a bare address. Added support for std::deque, std::forward_list,
+	std::array, std::multiset, std::unordered_set, std::unordered_multiset
+	(read-only), std::multimap, std::unordered_multimap (elements labeled with
+	their keys), the container adaptors std::queue, std::stack and
+	std::priority_queue (read-only, displaying the elements of the underlying
+	container), and std::optional, std::unique_ptr and std::shared_ptr (displayed
+	as the contained value / pointee, with a single "value" / "pointee" field).
+	They also work as container elements. Not supported: std::weak_ptr;
+	std::unique_ptr<T[]> shows the first element only.
+
+	* WATCH(): The descriptors of standard library containers were unified
+	into a single implementation. Behavior changes: elements of primitive types
+	are no longer flagged as compound (FD_ISCOMPOUND); std::list elements can
+	now be resized; setting an element that is a null pointer is now an error
+	instead of being silently ignored; cObjects stored by value in containers
+	are accessed via their own descriptors (cObject::getDescriptor()).
+
+	* WATCH(): Fixes:
+	- WATCH() of a std::vector<bool> did not compile.
+	- WATCH() of a container of pointers to a cObject subclass that has no
+	  msg-generated descriptor (e.g. std::vector<Job*>) broke the inspectors of
+	  all objects of that class ("Attempt to read any_ptr(omnetpp::cObject*) as
+	  Job*"). ensureDescriptor<T>() no longer creates descriptors for cObject
+	  subclasses; it returns the registered descriptor, or nullptr.
+	- WATCH() descriptors of different instances of the same class template
+	  (e.g. units::value<long, b> and units::value<double, GHz>) collided.
+	- WATCH() of const-qualified variables, and of containers whose element
+	  type is a pointer to const, failed when displayed.
+	- Displaying the WATCH() of a null pointer to a non-cObject type crashed.
+
+	* opp_typename(): Fix: Template arguments were dropped from the returned type
+	names, which caused name collisions for WATCH() descriptors. It now returns
+	full type names including template arguments, and pointers are written as
+	"Foo*", "Foo const*" (previously "Foo *", "const Foo *"). See
+	src/common/ChangeLog.
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-30  Andras Varga

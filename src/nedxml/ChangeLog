@@ -1,3 +1,25 @@
+2026-10-18  Andras Varga
+
+	* Message compiler: Fix: Typedefs of standard library containers declared as
+	existing classes (e.g. INET's Ipv4AddressVector) were displayed as
+	"(unprintable)" instead of their elements, both in WATCHes and in message
+	fields of that type, because the generated (fieldless) descriptor shadowed
+	the container descriptor. Now, for an existing class (@existingClass)
+	declared without fields, base class and string conversion (@toString,
+	@fromString, @str), and which is not a cObject, the generated code registers
+	the descriptor created by ensureDescriptor<T>() from the C++ type, instead of
+	generating a descriptor class. Classes with @descriptor(readonly) keep the
+	generated descriptor.
+
+2026-10-16  Andras Varga
+
+	* Message compiler: Fix: The generated descriptors produced the string form
+	of values inconsistently: getFieldValueAsString() did not use operator<<
+	(unlike getValueAsString()), so e.g. a struct without @toString was displayed
+	differently as a field and as a watched value. Now both use operator<< if
+	there is one; otherwise, they return "" for compound values (whose fields can
+	be displayed) and "(unprintable)" for non-compound ones (e.g. opaque types).
+
 2026-05-06  ------ omnetpp-6.4.0 released ------
 
 2026-04-22  Andras Varga
