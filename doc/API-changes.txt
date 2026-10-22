@@ -24,6 +24,32 @@ Legend:
 (i)     information
 
 
+OMNeT++ 6.5
+~~~~~~~~~~~
+
+(+)     Canvas: Added clipping support to shape figures: cAbstractShapeFigure
+        got a clipChildren flag (setClipChildren(), getClipChildren()) that
+        clips the rendering of the child figures to the shape of the figure.
+        It can also be set from NED, with clipChildren=true in the @figure
+        property. Clipping does not affect the stacking order.
+
+(+)     cConfigurationEx: Added the getUnusedEntries() virtual method, which
+        returns the configuration entries that have had no effect so far. It has
+        a default implementation that returns an empty vector, so existing
+        subclasses still compile.
+
+(!)     opp_typename(): Reimplemented to fix the issue that the returned names
+        omitted template argument names, collating different specializations of
+        templated classes. The rewrite also results in minor changes in the
+        output, e.g. `const Foo *` is now returned as `Foo const*`. Code that
+        compares its result with hardcoded strings may need to be updated.
+
+(!)     Statistics added via cEnvir::addResultRecorders() with a
+        @statisticTemplate now honor warmup-period and the autoWarmupFilter
+        key. Values emitted during the warm-up period are no longer recorded,
+        which changes the recorded results of such statistics.
+
+
 OMNeT++ 6.4
 ~~~~~~~~~~~
 
