@@ -7,8 +7,9 @@ primary sidebar and of the content by dragging their edges, for every page of th
 rows are lower, too.
 
 The tabs open their sections as menus (omnetpp_nav_menus), with submenus down to omnetpp_nav_menu_depth levels, built
-from the navigation that the page carries. The tabs named by omnetpp_nav_dropdown (or all, with True) show no
-navigation sidebar on wide screens, which gives its width to the content, and are navigated by their menus.
+from the navigation that the page carries, except the tabs named by omnetpp_nav_no_menu. The tabs named by
+omnetpp_nav_dropdown (or all, with True) show no navigation sidebar on wide screens, which gives its width to the
+content, and are navigated by their menus.
 
 The table of contents follows the section in view also with the theme's instant navigation, which the theme's own
 tracking does not. With omnetpp_homepage set, the logo and the name of the site in the header lead to that URL.
@@ -37,7 +38,7 @@ def builder_inited(app):
     if app.config.omnetpp_nav_nowrap:
         app.add_js_file(None, body=f'window.omnetppNavNowrap = {json.dumps(list(app.config.omnetpp_nav_nowrap))};')
     if app.config.omnetpp_nav_menus:
-        menus = {'depth': app.config.omnetpp_nav_menu_depth}
+        menus = {'depth': app.config.omnetpp_nav_menu_depth, 'except': list(app.config.omnetpp_nav_no_menu)}
         app.add_js_file(None, body=f'window.omnetppNavMenus = {json.dumps(menus)};')
 
 
@@ -87,6 +88,7 @@ def setup(app):
     app.add_config_value('omnetpp_nav_nowrap', [], 'html')
     app.add_config_value('omnetpp_nav_menus', True, 'html')
     app.add_config_value('omnetpp_nav_menu_depth', 3, 'html')
+    app.add_config_value('omnetpp_nav_no_menu', [], 'html', types=(list, tuple))
     app.add_config_value('omnetpp_nav_dropdown', False, 'html', types=(bool, list, tuple))
     app.connect('config-inited', config_inited)
     app.connect('builder-inited', builder_inited)

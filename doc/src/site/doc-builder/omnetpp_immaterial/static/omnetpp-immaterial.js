@@ -449,6 +449,7 @@
 
   function section(tabItem) {
     const title = tabItem.textContent.trim();
+    if (options.except.includes(title)) return [];
     const items = document.querySelectorAll('.md-sidebar--primary .md-nav--primary > .md-nav__list > li');
     const li = [...items].find(item => {
       const link = own(item);
