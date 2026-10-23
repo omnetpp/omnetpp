@@ -167,12 +167,12 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     connect(treeView->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(gatherVisibleDataIfSafe()));
     connect(treeView->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(gatherVisibleDataIfSafe()));
 
-    // --- subtree mode overlay: single toggle button ---
+    // --- subtree mode overlay: strip of mode buttons ---
     treeView->viewport()->setMouseTracking(true);
     treeView->viewport()->installEventFilter(this);
 
     subtreeModeOverlay = new QWidget(treeView->viewport());
-    subtreeModeOverlay->setAttribute(Qt::WA_NoSystemBackground);
+    subtreeModeOverlay->setAutoFillBackground(true); // the buttons must not show the row text through
     subtreeModeOverlay->hide();
     subtreeModeOverlay->setAttribute(Qt::WA_TransparentForMouseEvents, false);
 
@@ -180,19 +180,39 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     overlayLayout->setContentsMargins(4, 0, 2, 0);
     overlayLayout->setSpacing(1);
 
-    detailsToggleButton = new QToolButton(subtreeModeOverlay);
-    detailsToggleButton->setIconSize(QSize(16, 16));
-    detailsToggleButton->setFixedSize(22, 22);
-    overlayLayout->addWidget(detailsToggleButton);
+    struct ModeButtonInfo {
+        Mode mode;
+        DetailsMode detailsMode;
+        const char *icon;
+        const char *tooltip;
+    };
+    for (const ModeButtonInfo& info : std::vector<ModeButtonInfo>{
+        {Mode::CHILDREN, DetailsMode::GROUPED, ":/tools/treemode_children", "Children mode: child objects (Ctrl+T, Ctrl+Click: toggle Children/Details)"},
+        {Mode::DETAILS, DetailsMode::GROUPED, ":/tools/treemode_grouped", "Details/Grouped: fields organized in groups (Ctrl+D: cycle Details modes)"},
+        {Mode::DETAILS, DetailsMode::FLAT, ":/tools/treemode_flat", "Details/Flat: fields in a single list (Ctrl+D: cycle Details modes)"},
+        {Mode::DETAILS, DetailsMode::INHERITANCE, ":/tools/treemode_inher", "Details/Inheritance: fields organized by declaring class (Ctrl+D: cycle Details modes)"},
+        {Mode::DETAILS, DetailsMode::PACKET, ":/tools/treemode_packet", "Details/Packet: packet data fields only (Ctrl+D: cycle Details modes)"}
+    }) {
+        QToolButton *button = new QToolButton(subtreeModeOverlay);
+        button->setIcon(QIcon(info.icon));
+        button->setToolTip(info.tooltip);
+        button->setIconSize(QSize(16, 16));
+        button->setFixedSize(22, 22);
+        button->setAutoRaise(true);
+        button->setCheckable(true);
+        overlayLayout->addWidget(button);
 
-    connect(detailsToggleButton, &QToolButton::clicked, [this](bool) {
-        if (!getQtenv()->inspectorsAreFresh())
-            return;
-        QPoint viewportPos = treeView->viewport()->mapFromGlobal(QCursor::pos());
-        QModelIndex index = treeView->indexAt(viewportPos);
-        if (index.isValid())
-            toggleNodeDetails(index);
-    });
+        connect(button, &QToolButton::clicked, [this, info](bool) {
+            if (!getQtenv()->inspectorsAreFresh())
+                return;
+            QPoint viewportPos = treeView->viewport()->mapFromGlobal(QCursor::pos());
+            QModelIndex index = treeView->indexAt(viewportPos);
+            if (index.isValid())
+                switchNodeMode(index, info.mode, info.detailsMode);
+        });
+
+        modeButtons.push_back({info.mode, info.detailsMode, button});
+    }
 
     subtreeModeOverlay->adjustSize();
 
@@ -266,12 +286,13 @@ void GenericObjectInspector::updateSubtreeModeOverlay(const QPoint &viewportPos)
         return;
     }
 
-    // Icon reflects current state: Details icon if in Details mode, Children icon if in Children mode
-    bool inDetails = node->getMode() == Mode::DETAILS;
-    detailsToggleButton->setIcon(QIcon(inDetails ? ":/tools/treemode_grouped" : ":/tools/treemode_children"));
-    detailsToggleButton->setToolTip(inDetails
-        ? "Details mode, click to switch to Children mode\n(Shortcuts: Ctrl+T, Ctrl+Click)"
-        : "Children mode, click to switch to Details mode\n(Shortcuts: Ctrl+T, Ctrl+Click)");
+    // Check the button of the current mode; Packet mode is only offered for packets
+    bool nodeIsCPacket = dynamic_cast<cPacket *>(node->getCObjectPointer()) != nullptr;
+    for (const ModeButton& mb : modeButtons) {
+        bool isCurrent = node->getMode() == mb.mode && (mb.mode != Mode::DETAILS || node->getDetailsMode() == mb.detailsMode);
+        mb.button->setChecked(isCurrent);
+        mb.button->setEnabled(mb.detailsMode != DetailsMode::PACKET || nodeIsCPacket);
+    }
 
     subtreeModeOverlay->adjustSize();
 

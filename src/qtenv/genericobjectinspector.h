@@ -20,6 +20,7 @@
 #include "qtenvdefs.h"
 #include "inspector.h"
 
+#include <vector>
 #include <QtCore/QModelIndex>
 
 #include "genericobjecttreemodel.h"
@@ -63,9 +64,15 @@ protected:
 
     void recreateModel(bool keepNodeModeOverrides = true);
 
-    // Single toggle button shown on hover, right-aligned in each row
+    // Strip of mode buttons shown on hover, right-aligned in each row;
+    // the button of the node's current mode is checked
+    struct ModeButton {
+        Mode mode;
+        DetailsMode detailsMode;
+        QToolButton *button;
+    };
     QWidget *subtreeModeOverlay = nullptr;
-    QToolButton *detailsToggleButton = nullptr;
+    std::vector<ModeButton> modeButtons;
 
     void updateSubtreeModeOverlay(const QPoint &viewportPos);
 
