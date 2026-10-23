@@ -1,3 +1,5 @@
+:no-copy:
+
 .. include:: ch-introduction.rst
 .. include:: ch-overview.rst
 .. include:: ch-ned-lang.rst

@@ -474,7 +474,21 @@ def convert_markdown_docstring(app, what, name, obj, options, lines):
         return
     lines[:] = rst.splitlines()
 
+# -- Pages without copy buttons --------------------------------------------------
+# The theme mounts a copy button on each code block, forcing a layout of the
+# whole page for every block: on a page as large as the single-page manual, that
+# freezes the browser for minutes. A page opts out with a ':no-copy:' field at
+# its top, which marks its code blocks with the 'no-copy' class the theme honors.
+from docutils import nodes
+
+def mark_no_copy_code_blocks(app, doctree, docname):
+    if 'no-copy' not in app.env.metadata.get(docname, {}):
+        return
+    for node in doctree.findall(nodes.literal_block):
+        node['classes'].append('no-copy')
+
 def setup(app : Sphinx):
     app.connect("autodoc-skip-member", autodoc_skip_member_callback) # Entry point to autodoc-skip-member
     app.connect("autodoc-process-docstring", convert_markdown_docstring)
+    app.connect("doctree-resolved", mark_no_copy_code_blocks)
     app.add_config_value('what', 'omnetpp', 'env')
