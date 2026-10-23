@@ -22,7 +22,7 @@ RUN curl -fsSL -o /tmp/pandoc.deb \
     rm -f /tmp/pandoc.deb
 
 # uv builds the doc venv in the distrobuild image; pinned so lock handling does not change under us
-COPY --from=ghcr.io/astral-sh/uv:0.11.8 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.13.1 /uv /uvx /bin/
 
 # install maven manually as the 3.6.3 version in the repo does not work on Java17
 RUN cd /opt && \
