@@ -221,6 +221,7 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
 
         modeButtons.push_back({info.mode, info.detailsMode, button});
     }
+    overlayLayout->addStretch(); // keep the buttons left-aligned when the overlay is wider than needed
 
     subtreeModeOverlay->adjustSize();
 
@@ -304,13 +305,20 @@ void GenericObjectInspector::updateSubtreeModeOverlay(const QPoint &viewportPos)
 
     subtreeModeOverlay->adjustSize();
 
-    // Position overlay flush-right in the row rect
+    // Position overlay flush-right in the row rect. Leave room for the vertical
+    // scrollbar even when it is not shown, otherwise the overlay would jump
+    // sideways under the mouse whenever a mode switch makes the scrollbar
+    // appear or disappear. (Transient scrollbars don't take up room.) The overlay
+    // still extends to the right edge, so that its background covers the
+    // row (and its selection highlight) in the room left for the scrollbar.
     QRect rowRect = treeView->visualRect(sourceIndex);
-    int overlayWidth = subtreeModeOverlay->sizeHint().width();
-    int overlayHeight = rowRect.height();
-    int x = treeView->viewport()->width() - overlayWidth;
+    int viewportWidth = treeView->viewport()->width();
+    int x = viewportWidth - subtreeModeOverlay->sizeHint().width();
+    QScrollBar *vScrollBar = treeView->verticalScrollBar();
+    if (!vScrollBar->isVisible() && !treeView->style()->styleHint(QStyle::SH_ScrollBar_Transient, nullptr, vScrollBar))
+        x -= vScrollBar->sizeHint().width();
     int y = rowRect.top();
-    subtreeModeOverlay->setGeometry(x, y, overlayWidth, overlayHeight);
+    subtreeModeOverlay->setGeometry(x, y, viewportWidth - x, rowRect.height());
     subtreeModeOverlay->raise();
     subtreeModeOverlay->show();
 }
