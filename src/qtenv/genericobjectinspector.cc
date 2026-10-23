@@ -561,12 +561,20 @@ void GenericObjectInspector::toggleNodeDetails(const QModelIndex &sourceIndex)
 
     bool inDetails = node->getMode() == Mode::DETAILS;
     if (inDetails) {
-        sourceModel->setNodeMode(sourceIndex, Mode::CHILDREN);
+        switchNodeMode(sourceIndex, Mode::CHILDREN);
     }
     else {
         DetailsMode dm = dynamic_cast<cPacket *>(node->getCObjectPointer()) ? DetailsMode::PACKET : DetailsMode::GROUPED;
-        sourceModel->setNodeMode(sourceIndex, Mode::DETAILS, dm);
+        switchNodeMode(sourceIndex, Mode::DETAILS, dm);
     }
+}
+
+void GenericObjectInspector::switchNodeMode(const QModelIndex &sourceIndex, Mode mode, DetailsMode detailsMode)
+{
+    if (!sourceIndex.isValid())
+        return;
+
+    sourceModel->setNodeMode(sourceIndex, mode, detailsMode);
 
     subtreeModeOverlay->hide();
 

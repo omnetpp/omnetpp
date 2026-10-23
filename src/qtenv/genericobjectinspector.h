@@ -74,6 +74,8 @@ protected:
 
     // Toggle the given node between Children and Details mode
     void toggleNodeDetails(const QModelIndex &proxyIndex);
+    // Put the given node into the given mode, and expand it
+    void switchNodeMode(const QModelIndex &sourceIndex, Mode mode, DetailsMode detailsMode = DetailsMode::GROUPED);
 
 protected Q_SLOTS:
     void onTreeViewActivated(const QModelIndex& index);
