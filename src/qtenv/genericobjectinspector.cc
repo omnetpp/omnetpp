@@ -176,6 +176,14 @@ GenericObjectInspector::GenericObjectInspector(QWidget *parent, bool isTopLevel,
     subtreeModeOverlay->hide();
     subtreeModeOverlay->setAttribute(Qt::WA_TransparentForMouseEvents, false);
 
+    // Make the button of the current mode stand out: the native checked look is
+    // barely visible in some themes. Partially transparent so that dark icons
+    // remain readable in the light theme.
+    QColor checkedColor = treeView->palette().color(QPalette::Highlight);
+    checkedColor.setAlpha(150);
+    subtreeModeOverlay->setStyleSheet(QString("QToolButton:checked { background: rgba(%1, %2, %3, %4); border: none; border-radius: 3px; }")
+            .arg(checkedColor.red()).arg(checkedColor.green()).arg(checkedColor.blue()).arg(checkedColor.alpha()));
+
     QHBoxLayout *overlayLayout = new QHBoxLayout(subtreeModeOverlay);
     overlayLayout->setContentsMargins(4, 0, 2, 0);
     overlayLayout->setSpacing(1);
