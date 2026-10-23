@@ -24,6 +24,9 @@ sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('_extensions'))
 sys.path.insert(0, os.path.abspath('_templates'))
 sys.path.insert(0, os.path.abspath('_themes'))
+# omnetpp_immaterial from this checkout rather than the copy baked into the doc-builder image, so that the site is
+# rendered with the theme of the same commit and also builds outside the image.
+sys.path.insert(0, os.path.abspath('site/doc-builder'))
 
 
 # -- Project information -----------------------------------------------------
@@ -203,8 +206,12 @@ html_context = {'buildid': buildid}
 
 extensions.append('sphinx_immaterial')
 extensions.append('sphinx_immaterial.graphviz')
+extensions.append('omnetpp_immaterial')
 
 html_theme = "sphinx_immaterial"
+omnetpp_homepage = 'https://omnetpp.org/'
+omnetpp_nav_nowrap = ['/api/', '/nedxml-api/', '/parsim-api/', '/python-api/']
+omnetpp_nav_no_menu = ['Manual']
 html_css_files = ['sphinx-omnetpp.css',]
 html_logo = 'images/logo.png'
 html_favicon = '_static/logo.png'

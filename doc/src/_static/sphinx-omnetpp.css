@@ -124,37 +124,6 @@ div#doc-content {
 
 /* immaterial customizations */
 
-a.md-tabs__link {
-    margin-top: 0;
-}
-
-.md-tabs__item {
-    height: 1.4rem;
-}
-
 aside.footnote-list {
     padding-bottom: 2rem;
-}
-
-/* Constrain the left navigation sidebar to the space between the header/tabs bar
-   and the bottom of the viewport, so that with many items it scrolls internally
-   instead of growing to full page height (which prevented scrolling and let it
-   overlap the footer). The theme normally sets this height via JS; this is a
-   CSS-only fallback that mirrors the theme's own sticky-top offsets. Desktop
-   layout only (>=76.25em); the mobile drawer is unaffected. */
-@media screen and (min-width: 76.25em) {
-    /* Let the (sticky) sidebar wrap to the scroll container's height instead of
-       the theme's JS-driven fixed height, so it never grows past the viewport. */
-    .md-sidebar--primary {
-        height: auto !important;
-    }
-    /* The scroll container: cap its height and scroll internally. */
-    .md-sidebar--primary .md-sidebar__scrollwrap {
-        max-height: calc(100vh - 2.4rem);   /* header only */
-        overflow-y: auto;
-    }
-    /* When the tabs bar is present (lifted header), account for its height too. */
-    .md-header--lifted ~ .md-container .md-sidebar--primary .md-sidebar__scrollwrap {
-        max-height: calc(100vh - 4.8rem);   /* header + tabs bar */
-    }
 }
