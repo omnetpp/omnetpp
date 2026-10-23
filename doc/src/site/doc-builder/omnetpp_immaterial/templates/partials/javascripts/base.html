@@ -1,0 +1,7 @@
+{#- The widths of the primary sidebar and of the content are set here, in the head, after the theme's storage
+    functions: set by omnetpp-immaterial.js at the end of the page, they would first be drawn at the theme's widths.
+    A sidebar that omnetpp-immaterial.js scrolls back to where an entry of it was clicked is hidden from here until
+    then. -#}
+{% include "!partials/javascripts/base.html" %}
+<script>try{var w=__md_get("omnetpp-nav.width");if(w)document.documentElement.style.setProperty("--omnetpp-nav-width",Math.min(w,innerWidth/2)+"px");w=__md_get("omnetpp-content.width");if(w)document.documentElement.style.setProperty("--omnetpp-content-width",Math.min(w,innerWidth)+"px")}catch(e){}</script>
+<script>try{var s=JSON.parse(sessionStorage.getItem("omnetpp-nav.clicked"));if(s&&s.href.split(/[?#]/)[0]===location.href.split(/[?#]/)[0])document.documentElement.classList.add("omnetpp-nav-restoring")}catch(e){}</script>

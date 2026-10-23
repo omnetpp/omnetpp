@@ -1,0 +1,550 @@
+/* The primary sidebar is a column of the page on wide screens only; below that, it is the theme's drawer, whose
+   entries stay large enough to tap. */
+
+/* Translucent, so that it deepens with each level of nesting. */
+[data-md-color-scheme] {
+  --omnetpp-nav-shade: color-mix(in srgb, var(--md-default-fg-color) 5%, transparent);
+  --omnetpp-nav-layer: linear-gradient(var(--omnetpp-nav-shade), var(--omnetpp-nav-shade));
+}
+
+.md-typeset table.data:not(.plain) th,
+.md-typeset table.data:not(.plain) td {
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
+}
+
+@media screen and (min-width: 76.25em) {
+  /* The sidebars keep their padding below the header when pinned, but the page starts further down, below the
+     theme's margin on top of that. */
+  .md-main__inner {
+    margin-top: 0;
+  }
+
+  /* A wider sidebar or content widens the page rather than narrowing the rest. The content width includes the
+     secondary sidebar (see omnetpp-immaterial.js). */
+  .md-grid {
+    max-width: calc(var(--omnetpp-nav-width, 12.1rem) + var(--omnetpp-content-width, 48.9rem));
+  }
+
+  /* The seams stick out of their parts, over the next one: the sticky sidebars are stacked on their own, after
+     the content for the secondary one. */
+  .md-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .md-sidebar--primary {
+    z-index: 2;
+  }
+
+  .md-sidebar--primary {
+    width: var(--omnetpp-nav-width, 12.1rem);
+  }
+
+  .md-sidebar--primary .md-nav__item > .md-nav__link {
+    margin-top: 0;
+    padding: 0.2em 0;
+  }
+
+  /* The theme keeps 0.4rem below each nested list, which the next entry overlaps, even when the list is collapsed;
+     a shaded list would show it. */
+  .md-sidebar--primary .md-nav {
+    margin-bottom: 0;
+  }
+
+  .md-sidebar--primary .md-nav .md-nav__list {
+    padding-bottom: 0;
+  }
+
+  .md-sidebar--primary .md-nav__toggle ~ .md-nav {
+    grid-template-rows: minmax(0, 0fr);
+  }
+
+  .md-sidebar--primary .md-nav__toggle:checked ~ .md-nav,
+  .md-sidebar--primary .md-nav__toggle.md-toggle--indeterminate ~ .md-nav,
+  .md-sidebar--primary .md-nav--lifted .md-nav[data-md-level="1"] {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  /* The visible top level is left unshaded: the one below the tab of the page when the theme lifts it there. */
+  .md-nav--primary:not(.md-nav--lifted) .md-nav .md-nav__list,
+  .md-nav--lifted .md-nav .md-nav .md-nav__list {
+    background-color: var(--omnetpp-nav-shade);
+    border-radius: 0.2rem 0 0 0.2rem;
+  }
+
+  /* The glow of the entry of the tab stays above it only, for the same reason. */
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
+    box-shadow: 0 -0.4rem 0 0.4rem var(--md-default-bg-color);
+  }
+
+  /* An entry with children, here and in the secondary sidebar, stays at the top while its children scroll under it,
+     so it needs a background: the shades of the lists around it. The theme's glow around it would cover the entries
+     next to it, now that they are closer. */
+  .md-sidebar--primary .md-nav__link.md-nav__sticky {
+    background-image: var(--omnetpp-nav-under);
+    box-shadow: none;
+  }
+
+  /* The theme pins a nested entry at the height of the entries above it plus the margin above each of them, one
+     0.625em for each level, which these entries do not have. It rounds the heights to pixels, so the entries
+     overlap by a pixel instead, under the one above. */
+  .md-sidebar--primary .md-nav[data-md-level="1"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 1 * (0.625em + 1px));
+  }
+
+  .md-sidebar--primary .md-nav[data-md-level="2"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 2 * (0.625em + 1px));
+  }
+
+  .md-sidebar--primary .md-nav[data-md-level="3"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 3 * (0.625em + 1px));
+  }
+
+  .md-sidebar--primary .md-nav[data-md-level="4"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 4 * (0.625em + 1px));
+  }
+
+  .md-sidebar--primary .md-nav[data-md-level="5"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 5 * (0.625em + 1px));
+  }
+
+  .md-sidebar--primary .md-nav[data-md-level="6"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 6 * (0.625em + 1px));
+  }
+
+  .md-sidebar--primary .md-nav[data-md-level="7"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 7 * (0.625em + 1px));
+  }
+
+  .md-sidebar--primary .md-nav[data-md-level="8"] > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 8 * (0.625em + 1px));
+  }
+
+  .md-nav--lifted .md-nav[data-md-level="2"],
+  .md-nav--primary:not(.md-nav--lifted) .md-nav[data-md-level="1"] {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--lifted .md-nav[data-md-level="3"],
+  .md-nav--primary:not(.md-nav--lifted) .md-nav[data-md-level="2"] {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--lifted .md-nav[data-md-level="4"],
+  .md-nav--primary:not(.md-nav--lifted) .md-nav[data-md-level="3"] {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--lifted .md-nav[data-md-level="5"],
+  .md-nav--primary:not(.md-nav--lifted) .md-nav[data-md-level="4"] {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--lifted .md-nav[data-md-level="6"],
+  .md-nav--primary:not(.md-nav--lifted) .md-nav[data-md-level="5"] {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--lifted .md-nav[data-md-level="7"],
+  .md-nav--primary:not(.md-nav--lifted) .md-nav[data-md-level="6"] {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--lifted .md-nav[data-md-level="8"],
+  .md-nav--primary:not(.md-nav--lifted) .md-nav[data-md-level="7"] {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    overflow-x: auto;
+  }
+
+  /* The theme pads the content to a fixed width; it takes the width of its longest entry that does not wrap
+     instead. */
+  .md-sidebar--primary .md-sidebar__inner {
+    width: max-content;
+    min-width: 100%;
+    padding-right: 0;
+  }
+
+  .omnetpp-seam {
+    position: absolute;
+    right: -0.3rem;
+    width: 0.6rem;
+    cursor: col-resize;
+    touch-action: none;
+    z-index: 2;
+  }
+
+  /* The seam of the primary sidebar is placed over its scroll area by omnetpp-immaterial.js: the sidebar box itself
+     has no height. */
+  .omnetpp-content-seam {
+    top: 0;
+    bottom: 0;
+  }
+
+  .omnetpp-seam::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 0.05rem);
+    width: 0.1rem;
+    background-color: var(--md-accent-fg-color);
+    opacity: 0;
+    transition: opacity 125ms;
+  }
+
+  /* Faint, so that it does not stand out whenever the pointer passes over an edge. */
+  .omnetpp-seam:hover::after {
+    opacity: 0.3;
+  }
+
+  .omnetpp-seam--active::after {
+    opacity: 0.6;
+  }
+
+  .omnetpp-resizing,
+  .omnetpp-resizing * {
+    cursor: col-resize !important;
+    user-select: none !important;
+  }
+}
+
+@media screen and (min-width: 76.25em) {
+  /* Faded out when an entry is clicked, kept hidden on the new page while omnetpp-immaterial.js scrolls it back to
+     where the entry was clicked, and faded in then. */
+  .md-sidebar--primary .md-sidebar__scrollwrap {
+    transition: opacity 150ms;
+  }
+
+  .omnetpp-nav-restoring .md-sidebar--primary .md-sidebar__scrollwrap {
+    opacity: 0;
+  }
+}
+
+@media screen and (max-width: 76.2344em) {
+  .omnetpp-seam {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 60em) {
+  /* Without the theme's right margin, an entry that fits needs no scrollbar: these entries have no icon to keep
+     clear of the edge. */
+  .md-sidebar--secondary .md-nav--secondary .md-nav__item > .md-nav__link {
+    margin-top: 0;
+    margin-right: 0;
+    padding: 0.2em 0;
+  }
+
+  .md-sidebar--secondary .md-nav {
+    margin-bottom: 0;
+  }
+
+  .md-sidebar--secondary .md-nav .md-nav__list {
+    padding-bottom: 0;
+  }
+
+  .md-nav--secondary .md-nav .md-nav__list {
+    background-color: var(--omnetpp-nav-shade);
+    border-radius: 0.2rem 0 0 0.2rem;
+  }
+
+  .md-nav--secondary .md-nav__title {
+    box-shadow: 0 -0.4rem 0 0.4rem var(--md-default-bg-color);
+  }
+
+  .md-sidebar--secondary .md-nav__link.md-nav__sticky {
+    background-image: var(--omnetpp-nav-under);
+    box-shadow: none;
+  }
+
+  .md-nav--secondary .md-nav > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 1 * (0.625em + 1px));
+  }
+
+  .md-nav--secondary .md-nav .md-nav > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 2 * (0.625em + 1px));
+  }
+
+  .md-nav--secondary .md-nav .md-nav .md-nav > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 3 * (0.625em + 1px));
+  }
+
+  .md-nav--secondary .md-nav .md-nav .md-nav .md-nav > .md-nav__list > .md-nav__item > .md-nav__link.md-nav__sticky {
+    top: calc(var(--md-nav__header-height, 0px) - 4 * (0.625em + 1px));
+  }
+
+  .md-nav--secondary .md-nav {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--secondary .md-nav .md-nav {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-nav--secondary .md-nav .md-nav .md-nav {
+    --omnetpp-nav-under: var(--omnetpp-nav-layer), var(--omnetpp-nav-layer), var(--omnetpp-nav-layer);
+  }
+
+  .md-sidebar--secondary .md-sidebar__scrollwrap {
+    overflow-x: auto;
+  }
+
+  .md-sidebar--secondary .md-sidebar__inner {
+    width: max-content;
+    min-width: 100%;
+    padding-right: 0;
+  }
+
+  /* Entries wrap at the width of the sidebar, which they do not widen, except those marked by omnetpp-immaterial.js
+     (omnetpp_nav_nowrap), e.g. of an API reference, whose long names would wrap into ragged lists. */
+  .md-sidebar .md-ellipsis {
+    flex-grow: 1;
+    contain: inline-size;
+  }
+
+  .md-sidebar .omnetpp-nowrap .md-ellipsis,
+  .md-sidebar.omnetpp-nowrap .md-ellipsis {
+    overflow: visible;
+    white-space: nowrap;
+    contain: none;
+  }
+}
+
+/* The scrollbars of the sidebars: the vertical one always shown, the horizontal one only while the reader points
+   at the sidebar or it scrolls sideways (omnetpp-immaterial.js). Only the -webkit- scrollbar styles can tell the
+   two apart, and a browser that has the standard ones (scrollbar-color) ignores those unless they are unset;
+   elsewhere, e.g. in Firefox, the theme's scrollbars stay. */
+@supports selector(::-webkit-scrollbar) {
+  .md-sidebar__scrollwrap,
+  .md-sidebar__scrollwrap:hover,
+  .md-sidebar__scrollwrap:focus-within {
+    scrollbar-color: auto;
+    scrollbar-width: auto;
+  }
+
+  .md-sidebar__scrollwrap::-webkit-scrollbar-thumb {
+    background-color: var(--md-default-fg-color--lighter);
+  }
+
+  .md-sidebar__scrollwrap:hover::-webkit-scrollbar-thumb {
+    background-color: var(--md-accent-fg-color);
+  }
+
+  .md-sidebar__scrollwrap::-webkit-scrollbar-thumb:horizontal {
+    background-color: transparent;
+  }
+
+  .md-sidebar__scrollwrap:hover::-webkit-scrollbar-thumb:horizontal,
+  .md-sidebar__scrollwrap.omnetpp-nav-scrolling::-webkit-scrollbar-thumb:horizontal {
+    background-color: var(--md-accent-fg-color);
+  }
+}
+
+.omnetpp-header-home {
+  color: inherit;
+}
+
+@media screen and (min-width: 76.25em) {
+  /* A page that is a tab of its own is all that the navigation of its tab would show, where it would hold only the
+     TOC of the page, which the page asks to hide. Without tabs, the entry is one of the whole site. */
+  body:has(.md-tabs):has(.md-sidebar--secondary[hidden]) .md-nav--primary > .md-nav__list > .md-nav__item--active:not(.md-nav__item--nested) {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 76.25em) {
+  /* The theme spaces the name from the logo by its own margin, on top of the padding and margin of the logo. */
+  [dir=ltr] .md-header__title {
+    margin-left: -0.2rem;
+  }
+
+  [dir=rtl] .md-header__title {
+    margin-right: -0.2rem;
+  }
+}
+
+/* The scrollbar of the page is always shown: if it came and went with the length of the page, the centred page
+   would shift sideways from page to page. It is narrow, in the style of those of the sidebars. */
+html {
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-default-fg-color--lighter) transparent;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  html {
+    scrollbar-color: auto;
+    scrollbar-width: auto;
+  }
+
+  html::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background-color: var(--md-default-fg-color--lighter);
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background-color: var(--md-accent-fg-color);
+  }
+}
+
+/* The menus of the tabs (omnetpp-immaterial.js), in the style of those of an operating system. */
+.omnetpp-menu {
+  position: fixed;
+  z-index: 10;
+  box-sizing: border-box;
+  min-width: 10rem;
+  max-width: 22rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.3rem 0;
+  border: 0.05rem solid var(--md-default-fg-color--lightest);
+  border-radius: 0.1rem;
+  background-color: var(--md-default-bg-color);
+  box-shadow: var(--md-shadow-z2);
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.omnetpp-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.25rem 0.8rem;
+  color: var(--md-default-fg-color);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.omnetpp-menu__label {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.omnetpp-menu__item--parent::after {
+  content: "▸";
+  color: var(--md-default-fg-color--light);
+}
+
+.omnetpp-menu__item:hover,
+.omnetpp-menu__item:focus,
+.omnetpp-menu__item--open {
+  outline: none;
+  background-color: var(--md-accent-fg-color--transparent);
+  color: var(--md-accent-fg-color);
+}
+
+.omnetpp-menu__item--active {
+  font-weight: 700;
+}
+
+.md-tabs__item.omnetpp-tab--open .md-tabs__link {
+  opacity: 1;
+}
+
+@media screen and (max-width: 76.2344em) {
+  /* A tab without the navigation sidebar on wide screens keeps it as the drawer of narrow ones, which have no tabs
+     and so no menus. */
+  .md-sidebar--primary[hidden] {
+    display: block;
+  }
+}
+
+/* The active tab, a tab under the pointer, and one with its menu open are darker over their whole height, with the
+   top corners rounded like those of the search box. */
+.md-tabs__item {
+  border-radius: 0.1rem 0.1rem 0 0;
+  transition: background-color 125ms;
+}
+
+.md-tabs__item--active,
+.md-tabs__item:hover,
+.md-tabs__item.omnetpp-tab--open {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+.md-tabs__item:hover .md-tabs__link {
+  opacity: 1;
+}
+
+/* A lower tab bar, with the names of the tabs in its middle rather than at a fixed distance from its top. */
+.md-tabs__item {
+  display: flex;
+  align-items: center;
+  height: 1.8rem;
+}
+
+.md-tabs__link {
+  margin-top: 0;
+  opacity: 0.95;
+}
+
+@media screen and (min-width: 76.25em) {
+  /* The tab bar sticks under the header, and goes out of view, under the header, while omnetpp-immaterial.js has
+     it away (scrolling down). Its own state replaces that of the theme, which hides it once it has scrolled away.
+     Sites without tabs, or with the theme's sticky tabs (inside the header), are left as they are. */
+  .md-container > .md-tabs {
+    position: sticky;
+    top: 2.4rem;
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Away, all of the tab bar but its bottom edge (--omnetpp-tabs-edge, e.g. a border that a site gives it) is under
+     the header, so that the edge stays below the header. */
+  .omnetpp-tabs-away .md-container > .md-tabs {
+    transform: translateY(calc(-100% + var(--omnetpp-tabs-edge, 0px)));
+  }
+
+  /* The shadow over the content scrolled under the header is cast by the tab bar, which is the bottom of the header
+     in both of its positions, and moves with it, rather than by the header, which would cast it over the tab bar. */
+  html:has(.md-container > .md-tabs) .md-header {
+    box-shadow: none;
+  }
+
+  html:has(.md-header--shadow) .md-container > .md-tabs {
+    box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+  }
+
+  html:not(.omnetpp-tabs-away) .md-tabs[hidden] {
+    pointer-events: auto;
+  }
+
+  html:not(.omnetpp-tabs-away) .md-tabs[hidden] .md-tabs__link {
+    opacity: 0.95;
+    transform: none;
+  }
+
+  html:not(.omnetpp-tabs-away) .md-tabs[hidden] :is(.md-tabs__item--active, .md-tabs__item:hover, .omnetpp-tab--open) .md-tabs__link {
+    opacity: 1;
+  }
+
+  /* While the tab bar shows, what sticks under the header goes below it: the back-to-top button (by its margin: the
+     theme sets its top inline) and the sidebars (whose top and height the theme also sets inline, for under the
+     header), and so does a section that a link leads to. */
+  html:not(.omnetpp-tabs-away):has(.md-container > .md-tabs) .md-top {
+    margin-top: var(--omnetpp-tabs-height, 1.8rem);
+  }
+
+  .md-sidebar {
+    transition: top 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html:not(.omnetpp-tabs-away):has(.md-container > .md-tabs) .md-sidebar {
+    top: calc(2.4rem + var(--omnetpp-tabs-height, 1.8rem)) !important;
+  }
+
+  html:not(.omnetpp-tabs-away):has(.md-container > .md-tabs) .md-sidebar__scrollwrap {
+    max-height: calc(100vh - 4.8rem - var(--omnetpp-tabs-height, 1.8rem));
+  }
+
+  html:not(.omnetpp-tabs-away):has(.md-container > .md-tabs) .md-typeset :target {
+    --md-scroll-margin: calc(3.6rem + var(--omnetpp-tabs-height, 1.8rem));
+  }
+}

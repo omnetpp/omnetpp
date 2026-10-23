@@ -2,6 +2,7 @@
 *.htm
 *.html
 !/src/_templates/**/*.html
+!/src/site/doc-builder/omnetpp_immaterial/templates/**/*.html
 *.pyc
 /guides/
 /manual/

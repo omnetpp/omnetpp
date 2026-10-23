@@ -1,0 +1,7 @@
+{%- if show_sphinx %}
+  {%- set rendered_extracopyright -%}
+    for the <a href="https://omnetpp.org/" target="_blank" rel="noopener">OMNeT++ Discrete Event Simulator</a>
+    {{- rendered_extracopyright }}
+  {%- endset %}
+{%- endif %}
+{% include "!partials/copyright.html" %}

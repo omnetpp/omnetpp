@@ -6,7 +6,8 @@
 # uv.lock. Math is rendered client-side by KaTeX, so no LaTeX/texlive is needed.
 # It also carries the OMNeT++ command-line tools (opp_docgen, opp_lint, opp_lsp,
 # opp_ide_mcp) so the image can generate NED documentation, e.g. as the base of a
-# model library's (INET's) documentation build.
+# model library's (INET's) documentation build, and the omnetpp_immaterial Sphinx
+# extension, the shared look of the OMNeT++ sites.
 #
 # Two images are built from this file (build.sh always passes --target):
 #   base  the HTML toolchain above            -> ghcr.io/omnetpp/doc-builder:latest
@@ -116,6 +117,25 @@ RUN set -eu; \
     chmod -R a+rX "$SPHINX_IMMATERIAL_EXTERNAL_RESOURCE_CACHE_DIR"; \
     find /opt/docvenv -type d -name '__pycache__' -prune -exec rm -rf {} +; \
     rm -rf /tmp/fonts
+
+# omnetpp_immaterial: the Sphinx extension that gives the OMNeT++ sites the density of the former OMNeT++
+# documentation on top of sphinx_immaterial (site/doc-builder/omnetpp_immaterial). It is a plain module, copied into
+# the venv rather than installed from uv.lock, so that it can change without rebuilding the Sphinx stack; a site
+# enables it with extensions = [..., 'omnetpp_immaterial']. The smoke check fails the build if a site with the
+# extension does not build or does not get its stylesheet.
+RUN --mount=type=bind,source=site/doc-builder/omnetpp_immaterial,target=/tmp/omnetpp_immaterial \
+    set -eu; \
+    site="$(python -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')"; \
+    cp -r /tmp/omnetpp_immaterial "$site/"; \
+    find "$site/omnetpp_immaterial" -type d -name '__pycache__' -prune -exec rm -rf {} +; \
+    chmod -R a+rX "$site/omnetpp_immaterial"; \
+    mkdir -p /tmp/smoke; \
+    printf "html_theme = 'sphinx_immaterial'\nextensions = ['sphinx_immaterial', 'omnetpp_immaterial']\n" > /tmp/smoke/conf.py; \
+    printf 'Smoke\n=====\n' > /tmp/smoke/index.rst; \
+    sphinx-build -b html -q -W /tmp/smoke /tmp/smoke/_build; \
+    test -s /tmp/smoke/_build/_static/omnetpp-immaterial.css; \
+    find /opt/docvenv -type d -name '__pycache__' -prune -exec rm -rf {} +; \
+    rm -rf /tmp/smoke
 
 # OMNeT++ command-line tools from the @omnetpp/opp-tools npm package (built in the
 # omnetpp-vscode repo). Its bundles are self-contained, so no npm is needed: the

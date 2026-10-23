@@ -27,6 +27,31 @@ building the documentation needs no network access. A project that sets other
 fonts in `html_theme_options` still downloads them, into a cache directory of its
 own (the image's is not writable for non-root users).
 
+## The omnetpp_immaterial theme
+
+`omnetpp_immaterial/` is a Sphinx extension on top of `sphinx_immaterial`, the shared look of the OMNeT++ sites
+(INET's inet.omnetpp.org first): denser sidebars with resizable widths, a sticky tab bar whose tabs open their
+sections as menus, the name of the site next to the logo, and a footer crediting OMNeT++. The `Containerfile`
+copies it into the venv, so a project built in the image enables it in its `conf.py`:
+
+```python
+html_theme = 'sphinx_immaterial'
+extensions = [..., 'sphinx_immaterial', 'omnetpp_immaterial']
+```
+
+Its settings, all optional:
+
+| Setting | Default | Meaning |
+|---------|---------|---------|
+| `omnetpp_homepage` | `None` | URL that the logo and the name of the site in the header lead to |
+| `omnetpp_nav_nowrap` | `[]` | URL path parts (e.g. `'/api/'`) whose sidebar entries scroll sideways instead of wrapping |
+| `omnetpp_nav_menus` | `True` | the tabs open their sections as menus |
+| `omnetpp_nav_menu_depth` | `3` | levels of submenus |
+| `omnetpp_nav_dropdown` | `False` | tab titles (or `True` for all) navigated by their menus alone, without the navigation sidebar |
+
+A site restyles it with its own stylesheet; e.g. `--omnetpp-tabs-edge` is the height of a bottom border that the
+site gives the tab bar, which stays below the header while the tab bar is away.
+
 ## Naming and tags
 
 The same references are used by CI and locally:
