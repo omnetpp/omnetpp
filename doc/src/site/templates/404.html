@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+  Not-found page of docs.omnetpp.org. site/deploy/assemble-site.sh fills in the
+  default version, the version labels and the list of versions from versions.txt.
+  GitHub Pages serves it at whatever path was missing, so every link is absolute.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Page not found - OMNeT++ Documentation</title>
+  <style>
+    :root { --fg: #1d1d1f; --muted: #5f6368; --bg: #fff; --link: #1565c0; }
+    @media (prefers-color-scheme: dark) {
+      :root { --fg: #e8eaed; --muted: #9aa0a6; --bg: #1e1e1e; --link: #8ab4f8; }
+    }
+    body { margin: 0; padding: 4rem 1rem; background: var(--bg); color: var(--fg);
+           font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 36rem; margin: 0 auto; }
+    h1 { font-size: 1.6rem; margin: 0 0 1rem; }
+    p, li { color: var(--muted); }
+    a { color: var(--link); }
+    #latest { display: none; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Page not found</h1>
+  <p id="latest">This page is not in that version. It may exist in the
+    <a href="/">current documentation</a>: <a id="latest-link" href="/"></a></p>
+  <p>Go to the <a href="/">OMNeT++ @DEFAULT_VERSION@ documentation</a> (current), or pick a version:</p>
+  <ul>
+@VERSION_LINKS@
+  </ul>
+</main>
+<script>
+  (function () {
+    var labels = @VERSION_LABELS@;
+    var parts = location.pathname.split('/');
+    // The default version is the same tree as the root, so only an older one can point there.
+    if (parts.length > 2 && parts[2] && labels.indexOf(parts[1]) !== -1 && parts[1] !== '@DEFAULT_VERSION@') {
+      var path = '/' + parts.slice(2).join('/');
+      var link = document.getElementById('latest-link');
+      link.href = path + location.hash;
+      link.textContent = path;
+      document.getElementById('latest').style.display = 'block';
+    }
+  })();
+</script>
+</body>
+</html>

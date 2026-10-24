@@ -191,10 +191,11 @@ napoleon_attr_annotations = True
 html_copy_source = False
 html_show_source_link = False
 
-# Base URL for the canonical <link> on every page. The published site is
-# versioned -- each build is served under /<VERSION>/ -- so the version has to be
-# part of it, otherwise every page advertises a canonical URL that does not exist.
-html_baseurl = 'https://docs.omnetpp.org/%s/' % version
+# Base URL for the canonical <link> on every page. Each version is served under
+# /<VERSION>/, but the default version is also served at the site root, which is
+# its canonical location: the deploy scripts pass that in BASEURL. Other versions
+# stay canonical under their own directory, where all their pages exist.
+html_baseurl = os.environ.get('BASEURL') or 'https://docs.omnetpp.org/%s/' % version
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -229,7 +230,7 @@ html_theme_options = {
         "edit": "material/file-edit-outline",
         # "logo": "material/book-open-page-variant-outline",
     },
-    "site_url": "https://omnetpp.org/",
+    "site_url": html_baseurl,
     "repo_url": "https://github.com/omnetpp/omnetpp",
     "repo_name": "OMNeT++",
     # "edit_uri": "blob/site/doc/src",

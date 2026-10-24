@@ -13,7 +13,8 @@ anywhere.
 push doc branch ──► .github/workflows/deploy-docs.yml
     job build (in the doc-builder image)
       ├─ deploy/build-all.sh  _site        # build each version → _site/<label>/
-      ├─ deploy/assemble-site.sh _site     # + index.html redirect to the default
+      ├─ deploy/assemble-site.sh _site     # default version also at the root, + 404.html
+      ├─ deploy/check-legacy-urls.py _site # pre-versioning URLs still lead to pages
       └─ actions/upload-pages-artifact     # pack _site as the 'github-pages' artifact
     job deploy (plain runner, only on refs/heads/doc)
       └─ actions/deploy-pages              # OIDC → Pages → https://docs.omnetpp.org
@@ -23,11 +24,12 @@ push doc branch ──► .github/workflows/deploy-docs.yml
 
 | Path | Purpose |
 |------|---------|
-| `versions.txt` | Version manifest: `"<label>  <git-ref>"` per line; the first non-comment line is the **default** (the site root redirects to it). |
+| `versions.txt` | Version manifest: `"<label>  <git-ref>"` per line; the first non-comment line is the **default**, also published at the site root. |
 | `deploy/build-all.sh` | Reads `versions.txt` and builds every listed version. |
 | `deploy/build-version.sh` | Checks a ref out into a git worktree and runs `make ci-html` for it, staging `_site/<label>/`. |
-| `deploy/assemble-site.sh` | Renders the site-root `index.html` that redirects to the default version. |
-| `templates/index-redirect.html` | Template for that root redirect. |
+| `deploy/assemble-site.sh` | Copies the default version to the site root and renders `404.html`. |
+| `deploy/check-legacy-urls.py` | Checks that the URLs of the pre-versioning site lead to pages; prints the Cloudflare redirect rules they need. |
+| `templates/404.html` | Template for the not-found page. |
 | `doc-builder/` | The container image with the full build toolchain (see `doc-builder/README.md`). |
 | `check-conversion.py` | The TeX→RST conversion audit that gates the build. |
 | `../../../.github/workflows/deploy-docs.yml` | Builds and deploys the site. |
@@ -94,6 +96,18 @@ docs.omnetpp.org.   CNAME   omnetpp.github.io.
 
 Do this before step 4: GitHub verifies the record when the custom domain is set.
 
+The zone is proxied by Cloudflare. The URLs of the site before it was versioned
+(MkDocs, e.g. `/tutorials/tictoc/part2/`) end in a slash, which GitHub Pages only
+serves for directories, so they need two **Single Redirect** rules in the zone
+(**Rules → Redirect Rules**). Print them with:
+
+```bash
+doc/src/site/deploy/check-legacy-urls.py --cloudflare
+```
+
+They list the old site's pages explicitly: that set never grows, so the rules
+never change. The deploy job checks every old URL against them on each run.
+
 ### Step 4 — Turn on Pages
 
 In the pipeline repository, **Settings → Pages**:
@@ -132,9 +146,11 @@ links the published URL.
 ### Step 7 — Verify
 
 ```bash
-curl -sI https://docs.omnetpp.org/          # 200, and the body redirects to /6.x/
-curl -sI https://docs.omnetpp.org/6.x/      # 200
-curl -sI https://docs.omnetpp.org/6.x/api/  # 200 - the doxygen C++ API
+curl -sI https://docs.omnetpp.org/                          # 200 - the default version
+curl -sI https://docs.omnetpp.org/6.4/                      # 200 - the same, under its label
+curl -sI https://docs.omnetpp.org/api/                      # 200 - the doxygen C++ API
+curl -sI https://docs.omnetpp.org/tutorials/tictoc/part2/   # 301 to .../part2 (Cloudflare)
+curl -sI https://docs.omnetpp.org/no-such-page              # 404, with the site's 404.html
 ```
 
 Check that a page under `_static/` loads and that math renders, which confirms the
@@ -183,11 +199,20 @@ moving those refs republishes the same content with a possibly different pipelin
 ```
 
 - `<label>` is the URL path segment: `docs.omnetpp.org/<label>/…`. It is also
-  passed to the build as `VERSION`, and appears in each page's canonical URL.
+  passed to the build as `VERSION`. It must not be the name of a top-level entry
+  of the documentation (`manual`, `api`, …), with which it shares the root;
+  `assemble-site.sh` refuses such a label.
 - `<git-ref>` is the branch or tag to build. It **must already contain this Sphinx
   build system** (`doc/src/site/`); `build-version.sh` refuses anything else with
   exit code 3. Old, LaTeX-only release tags cannot be built.
-- The **first** non-comment line is the default; the site root redirects to it.
+- The **first** non-comment line is the default. It is published twice: at the
+  site root, which carries the URLs of the site from before it was versioned and
+  always shows the newest documentation, and under its `<label>/`, which keeps
+  links to that version working after the next release. Both copies name the root
+  page as canonical (`build-all.sh` builds it with `BASEURL` set to the root);
+  every other version is canonical under its own `<label>/`.
+- A release is a `versions.txt` edit: put the new version first. Nothing outside
+  this repository changes.
 - **Every listed version is rebuilt on every deploy.** A Pages deployment replaces
   the entire site, so there is no way to refresh one version and leave the others
   standing — and deleting a line removes that version from the live site on the
@@ -209,6 +234,7 @@ origin if the local clone lacks them — stage it into a scratch directory:
 ```bash
 doc/src/site/deploy/build-all.sh    /tmp/_site   # run from the repo root
 doc/src/site/deploy/assemble-site.sh /tmp/_site
+doc/src/site/deploy/check-legacy-urls.py /tmp/_site
 python3 -m http.server -d /tmp/_site 8000   # open http://localhost:8000/
 ```
 

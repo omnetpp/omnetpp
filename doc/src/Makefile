@@ -11,10 +11,12 @@ LATEXOPTS     ?= --halt-on-error -interaction=batchmode
 
 # Documentation identity, consumed by conf.py via the environment. Overridable on
 # the command line (e.g. make ci-html VERSION=6.x BUILDID=abc123 what=omnetpp).
+# BASEURL overrides the canonical base URL; empty means /<VERSION>/ (see conf.py).
 what          ?= omnetpp
 VERSION       ?= internal
 BUILDID       ?= deadbeef
-export what VERSION BUILDID
+BASEURL       ?=
+export what VERSION BUILDID BASEURL
 
 # Prefix for running the Sphinx toolchain. Defaults to running it via uv in the
 # project virtualenv (uv sync creates ./.venv from uv.lock). Inside the doc-builder

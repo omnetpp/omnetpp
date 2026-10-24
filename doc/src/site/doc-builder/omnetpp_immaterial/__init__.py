@@ -13,7 +13,8 @@ content, and are navigated by their menus.
 
 The table of contents follows the section in view also with the theme's instant navigation, which the theme's own
 tracking does not. With omnetpp_homepage set, the logo and the name of the site in the header lead to that URL.
-The footer credits the OMNeT++ Discrete Event Simulator.
+The footer credits the OMNeT++ Discrete Event Simulator. With html_baseurl set, every page names its canonical URL,
+which the theme has a place for but never fills in.
 
 A build that reads no document still writes the CSS and JavaScript bundles of the theme (see bundle_always).
 
@@ -57,6 +58,8 @@ def page_context(app, pagename, templatename, context, doctree):
     # The theme leads the logo to the root document of the build, e.g. the start page of a version.
     if app.config.omnetpp_homepage and 'config' in context:
         context['config'].setdefault('extra', {})['homepage'] = app.config.omnetpp_homepage
+    if context.get('pageurl') and 'page' in context:
+        context['page'].setdefault('canonical_url', context['pageurl'])
     # The theme's own way of hiding the navigation of a page (hide-navigation), which its instant navigation follows.
     if dropdown(app, context) and 'page' in context:
         hide = context['page'].setdefault('meta', {}).setdefault('hide', [])

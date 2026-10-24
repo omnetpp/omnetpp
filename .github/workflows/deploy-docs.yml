@@ -54,7 +54,14 @@ jobs:
         run: doc/src/site/deploy/build-all.sh _site
 
       - name: Assemble site root
+        # The default version also goes to the root, where the URLs of the
+        # unversioned site live on, plus the 404 page.
         run: doc/src/site/deploy/assemble-site.sh _site
+
+      - name: Check legacy URLs
+        # Every page of the pre-versioning site must still lead somewhere (through
+        # the Cloudflare redirects the script prints with --cloudflare).
+        run: doc/src/site/deploy/check-legacy-urls.py _site
 
       # Packs _site into the 'github-pages' artifact that deploy-pages consumes.
       # It is also downloadable from the run summary (as a .tar) for inspection.

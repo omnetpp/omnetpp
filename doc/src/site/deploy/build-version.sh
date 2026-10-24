@@ -11,7 +11,8 @@
 # afterwards.
 #
 # Environment:
-#   WHAT   'omnetpp' (default) or 'omnest'
+#   WHAT     'omnetpp' (default) or 'omnest'
+#   BASEURL  canonical base URL of the pages (default: the version's own directory)
 #
 set -euo pipefail
 
@@ -19,6 +20,7 @@ LABEL="${1:?usage: build-version.sh <label> <ref> <output-dir>}"
 REF="${2:?missing <ref>}"
 OUT="${3:?missing <output-dir>}"
 WHAT="${WHAT:-omnetpp}"
+BASEURL="${BASEURL:-}"
 
 REPO="$(git rev-parse --show-toplevel)"
 OUT_ABS="$(cd "$OUT" && pwd)"
@@ -54,10 +56,10 @@ if [ ! -f "$DOCSRC/site/check-conversion.py" ]; then
     exit 3
 fi
 
-echo "--> building HTML (VERSION=$LABEL BUILDID=$BUILDID what=$WHAT)"
+echo "--> building HTML (VERSION=$LABEL BUILDID=$BUILDID what=$WHAT BASEURL=${BASEURL:-<per-version>})"
 # If the Sphinx toolchain is available globally (e.g. inside the doc-builder
 # container), bypass uv; otherwise fall back to the uv-managed virtualenv.
-make_args=(VERSION="$LABEL" BUILDID="$BUILDID" what="$WHAT")
+make_args=(VERSION="$LABEL" BUILDID="$BUILDID" what="$WHAT" BASEURL="$BASEURL")
 if command -v sphinx-build >/dev/null 2>&1 && command -v doxysphinx >/dev/null 2>&1; then
     make_args+=(PIPRUN= VENVDEP=)
 fi

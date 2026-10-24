@@ -4,8 +4,8 @@
 #   <label>    URL path segment and display name, e.g. 6.x -> docs.omnetpp.org/6.x/
 #   <git-ref>  git branch or tag to build the documentation from
 #
-# The FIRST non-comment line is the DEFAULT version: the site root
-# (docs.omnetpp.org/) redirects to it.
+# The FIRST non-comment line is the DEFAULT version: it is published at the site
+# root (docs.omnetpp.org/) as well as under its label.
 #
 # Only refs that already contain the Sphinx-based doc build system (doc/src, this
 # site/ directory) can be built. Old, LaTeX-only release tags are not supported.
