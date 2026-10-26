@@ -922,10 +922,13 @@ QPolygonF ModuleCanvasViewer::getConnectionLine(cGate *gate)
     bool nextIsIn = nextGate->getType() == cGate::INPUT;
     bool nextIsOut = nextGate->getType() == cGate::OUTPUT;
 
-    if ( !(parent == nextParent && isOut && nextIsIn)   // connection is not to sibling
-      && !( owner == nextParent && isIn  && nextIsIn)   // connection is not to parent
-      && !(parent == nextOwner  && isOut && nextIsOut)) // connection is not to child
-    {
+    // The non-degenerate cases, where "parent" is the inspected compound module
+    bool isProper = (parent == nextParent && isOut && nextIsIn)   // submodule -> submodule
+                 || ( owner == nextParent && isIn  && nextIsIn)   // parent -> submodule
+                 || (parent == nextOwner  && isOut && nextIsOut)  // submodule -> parent
+                 || ( owner == nextOwner  && isIn  && nextIsOut); // parent input -> parent output
+
+    if (!isProper) {
         // The connection is degenerate, so only drawing a half length line
         // to not make a false impression about where it actually ends.
         // Truncate polyline to half its length
