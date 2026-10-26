@@ -3,7 +3,7 @@ This is all the tests extracted from results_api_test, adapted to the
 standalone result loading/processing API.
 """
 
-from omnetpp.scave import results
+from omnetpp.scave import results, utils
 import pandas as pd
 import tester
 tester.print = print
@@ -181,6 +181,23 @@ def test_vector_data():
     df = results.get_results(filtered, row_types=["vector"])
     _assert_sequential_index(df)
     return df["vectime"].map(lambda a: a.shape == (100,)).all()
+
+
+def _merge_vectors_of_node1(name_pattern):
+    filtered = results.read_result_files(RESULT_FILES, "type =~ vector AND run =~ General-0* AND module =~ Test.node1 AND (" + name_pattern + ")")
+    df = results.get_vectors(filtered, include_attrs=True)
+    _assert(len(df) == 2, "two vectors expected")
+    df = utils.perform_vector_ops(df, "apply:merge")
+    _assert(len(df) == 1, "one merged vector expected")
+    return df
+
+def test_vector_merge_with_missing_title():
+    df = _merge_vectors_of_node1("name =~ foo0:vector OR name =~ foo2:vector")
+    _assert(df["title"][0] == "A very nice foo. and 1 more", "the existing title should be chosen as example")
+
+def test_vector_merge_with_empty_title():
+    df = _merge_vectors_of_node1("name =~ foo2:vector OR name =~ foo3:vector")
+    _assert(df["title"][0] == "A very nice foo. and 1 more", "the non-empty title should be chosen as example")
 
 
 def test_vector_time_limit_at_load_1():
