@@ -98,7 +98,7 @@ echo_root_run() {
 # locate uv or install it for the current user (pipx is preferred because 'pip --user' is refused on PEP 668 distros)
 find_or_install_uv() {
     local user_bin
-    user_bin="$($PYTHON3 -m site --user-base)/bin"
+    user_bin="$($PYTHON3 -m site --user-base || true)/bin" # exits with 1 when the user site is disabled (e.g. NixOS, inside a venv)
     for UV in "$(command -v uv)" "$HOME/.local/bin/uv" "$user_bin/uv"; do
         [[ -n "$UV" && -x "$UV" ]] && return
     done
