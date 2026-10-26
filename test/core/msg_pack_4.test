@@ -1,0 +1,49 @@
+%description:
+Tests parsimPack/parsimUnpack for std::vector<bool> fields (GitHub issue #1421):
+the vector<bool> element proxy cannot bind to bool&.
+
+%file: test.msg
+
+namespace @TESTNAME@;
+
+cplusplus {{
+typedef std::vector<bool> BoolVector;
+}}
+
+class BoolVector {@existingClass;@opaque;}
+
+message TestMessage {
+    BoolVector v;
+}
+
+
+%includes:
+#include <omnetpp/cfilecommbuffer.h>
+#include "test_m.h"
+
+%activity:
+TestMessage msg("msg");
+
+msg.getVForUpdate().push_back(true);
+msg.getVForUpdate().push_back(false);
+msg.getVForUpdate().push_back(false);
+msg.getVForUpdate().push_back(true);
+
+cFileCommBuffer *buffer = new cFileCommBuffer();
+msg.parsimPack(buffer);
+
+TestMessage msg2("tmp");
+msg2.parsimUnpack(buffer);
+EV << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
+
+EV << "v:";
+for (bool b : msg2.getV())
+    EV << " " << b;
+EV << "\n";
+
+delete buffer;
+
+%contains: stdout
+isBufferEmpty:1
+v: 1 0 0 1
+
