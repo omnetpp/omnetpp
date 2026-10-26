@@ -173,6 +173,10 @@ QString getMessageShortInfoString(cMessage *msg);
 // to the this gate's pair from the next gate's pair)
 bool isTwoWayConnection(cGate *gate);
 
+// check if this gate is the source of the reverse half of a two way connection;
+// exactly one of the two halves is, even if both ends are on the same module
+bool isReverseHalfOfTwoWayConnection(cGate *gate);
+
 
 
 /**

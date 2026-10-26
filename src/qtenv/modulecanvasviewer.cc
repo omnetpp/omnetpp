@@ -630,14 +630,9 @@ void ModuleCanvasViewer::buildConnectionGrouping()
             cGate *gate = *git;
 
             if (gate->getType() == (atParent ? cGate::INPUT : cGate::OUTPUT) && gate->getNextGate() != nullptr) {
-                cModule *srcMod = gate->getOwnerModule();
-                cModule *destMod = gate->getNextGate()->getOwnerModule();
-
-                // NOTE: what if two way conn of a module with itself...?
-
-                if (isTwoWayConnection(gate) && srcMod->getId() > destMod->getId()) {
+                if (isReverseHalfOfTwoWayConnection(gate)) {
                     // To avoid double-counting bidirectional connections,
-                    // only consider one direction (the one with smaller src module ID)
+                    // only consider the forward half
                     continue;
                 }
 
@@ -838,11 +833,10 @@ QPolygonF ModuleCanvasViewer::getConnectionLine(cGate *gate)
         return QPolygonF();
 
     // For bidirectional connections, both halves must follow the same polyline path.
-    // Canonicalize: always use the forward half (smaller module ID as source).
+    // Canonicalize: always use the forward half.
     // The reverse half reuses the forward half's channel for display string parsing,
     // since NED only sets the display string on the forward channel.
-    bool twoWay = isTwoWayConnection(gate);
-    bool isReverseHalf = twoWay && gate->getOwnerModule()->getId() > nextGate->getOwnerModule()->getId();
+    bool isReverseHalf = isReverseHalfOfTwoWayConnection(gate);
 
     cGate *canonicalGate = gate;
     if (isReverseHalf) {

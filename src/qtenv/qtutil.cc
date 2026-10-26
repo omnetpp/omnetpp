@@ -729,6 +729,22 @@ bool isTwoWayConnection(cGate *gate)
     return false;
 }
 
+bool isReverseHalfOfTwoWayConnection(cGate *gate)
+{
+    if (!isTwoWayConnection(gate))
+        return false;
+
+    cGate *nextGate = gate->getNextGate();
+    int ownerId = gate->getOwnerModule()->getId();
+    int nextOwnerId = nextGate->getOwnerModule()->getId();
+    if (ownerId != nextOwnerId)
+        return ownerId > nextOwnerId;
+
+    // both ends are on the same module: compare the two source gates,
+    // which are the same half of different inout gates
+    return gate->getId() > nextGate->getOtherHalf()->getId();
+}
+
 std::vector<std::pair<ChartTickDecimal, bool>> getLinearTicks(double start, double end, double approxDelta)
 {
     int scale = std::ceil(log10(approxDelta));
