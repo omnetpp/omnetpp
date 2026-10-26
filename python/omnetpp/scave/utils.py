@@ -2699,6 +2699,10 @@ def to_numeric(df, columns=list()):
         columns = df.columns.values
 
     for c in columns:
+        # A "str" column cannot hold numbers, so make it an object column first
+        if not pd.api.types.is_numeric_dtype(df[c]):
+            df[c] = df[c].astype(object)
+
         # Attempt to convert the entire column to numeric, but store the result separately
         numeric_data = pd.to_numeric(df[c], errors='coerce')
 
