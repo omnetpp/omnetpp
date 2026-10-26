@@ -228,7 +228,8 @@ def _ensure_columns_exist(df : pd.DataFrame, columns : List[str]) -> None:
     for col in columns:
         if col not in df:
             # Not [] because that would set dtype to float64, and we want object
-            df[col] = ""
+            # (and explicitly so, because a plain "" would set dtype to "str" with Pandas 3)
+            df[col] = pd.Series("", index=df.index, dtype=object)
 
 def _dropna_except(df : pd.DataFrame, keep_columns : List[str]):
     cols_with_all_nan = df.columns[df.isna().all()].tolist()
