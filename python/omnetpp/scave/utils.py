@@ -177,10 +177,9 @@ def _check_same_unit(df):
     def is_nonunit(u):
         nonunits = [None, math.nan, np.nan, ""]
         return u in nonunits or (isinstance(u, float) and math.isnan(u))
-    unit_col = df["unit"]
-    # The units column, but with all values in it that are considered non-units replaced with None.
-    unified_nonunits = unit_col.mask(unit_col.map(is_nonunit), None)
-    units = list(unified_nonunits.unique())
+    # The distinct units, with all values that are considered non-units replaced with None.
+    # (Series.mask() would turn None back into NaN in a "str" column.)
+    units = list(dict.fromkeys(None if is_nonunit(u) else u for u in df["unit"].unique()))
     if not units:
         return None
     if len(units) > 1:
