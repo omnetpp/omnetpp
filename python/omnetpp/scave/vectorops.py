@@ -296,17 +296,16 @@ def _combine_rows(df, out_times, out_values, comment):
     def column_brief(df, col):
         if not col in df:
             return None
-        names = df[col].unique()
+        names = list(df[col].unique())
         n = len(names)
         if n == 0:
             return "n/a"
         elif n == 1:
             return names[0]
         else:
-            for i in ["", np.nan, None]: # move empty values to the back so that aren't chosen as example if at all possible
-                if i in names:
-                    names.remove(i); names.append(i)  # move to back
-            return str(names[0]) + " and " + str(n-1) + " more"
+            # choose a non-empty value as example if at all possible
+            nonempty_names = [name for name in names if not pd.isna(name) and name != ""]
+            return str((nonempty_names or names)[0]) + " and " + str(n-1) + " more"
 
     data = { 'vectime': [ out_times ], 'vecvalue': [ out_values ], 'comment': [ comment ] }
     for column in df:
