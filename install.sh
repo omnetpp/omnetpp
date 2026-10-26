@@ -179,6 +179,11 @@ install_deps() {
             echo_root_run "dnf install -y $packages ; dnf clean packages"
 
         elif [[ "$(command -v dnf)" != "" &&  ( "$ID" == "almalinux" || "$ID" == "rhel" || "$ID" == "rocky" || "$ID" == "centos" ) ]]; then # (tested versions 9, 10)
+            # KLUDGE: Force using python 3.12 on 9.x because the default python version is 3.9 which is too old for nanobind.
+            if [[ "$PYTHON3" == "python3" && "$VERSION_ID" == 9* ]]; then
+                PYTHON3="python3.12"
+            fi
+
             packages="make ccache clang lld lldb gdb bison flex perl $PYTHON3-devel $PYTHON3-pip libxml2-devel zlib-devel graphviz xdg-utils elfutils-devel"
 
             if ! $no_gui; then

@@ -33,6 +33,11 @@ Then, install the core development tools and libraries:
        python3-devel python3-pip libxml2-devel zlib-devel graphviz \
        xdg-utils elfutils-devel
 
+.. note::
+
+   On RHEL/AlmaLinux/RockyLinux 9, the default Python 3.9 is too old. Install ``python3.12-devel python3.12-pip``
+   instead of ``python3-devel python3-pip``, and use ``python3.12`` in place of ``python3`` in the commands below.
+
 Next, install packages for the graphical environment (Qtenv and IDE). If you
 do not need GUI support, you can skip this step and later configure |omnet++|
 with ``WITH_QTENV=no`` and ``WITH_OSG=no``.

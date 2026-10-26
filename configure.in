@@ -948,6 +948,12 @@ if test "$WITH_SCAVE_PYTHON_BINDINGS" = "yes"; then
   if test $python3_found != yes; then
     AC_MSG_ERROR([Python support was configured (WITH_SCAVE_PYTHON_BINDINGS=yes), but the Python 3 development package was not found.])
   fi
+
+  # required by nanobind
+  if ! $PYTHON3 -c "import sys; sys.exit(sys.version_info < (3, 10))"; then
+    PYTHON3_VERSION=$($PYTHON3 -c "import platform; print(platform.python_version())")
+    AC_MSG_ERROR([Python 3.10 or newer is required (WITH_SCAVE_PYTHON_BINDINGS=yes), but $PYTHON3 is version $PYTHON3_VERSION. Install a newer Python and pass it via PYTHON3=..., or recreate the .venv with it.])
+  fi
 fi
 
 if test "$WITH_PYTHON" = "yes"; then
