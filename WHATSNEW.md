@@ -15,8 +15,9 @@ and the ability of the NED documentation generator to link to the separately
 generated documentation of referenced projects and to produce PNG images. The
 main bugfix areas are the correctness of recorded and analyzed results (units
 of count scalars, field scalars and dB; warm-up period handling), `WATCH()` and
-inspector display, rendering in the graphical NED editor, and matplotlib
-compatibility in the Analysis Tool.
+inspector display, connection drawing in Qtenv, rendering in the graphical NED
+editor, and matplotlib and Pandas compatibility in the Analysis Tool and the
+Python library.
 
 Simulation kernel:
 
@@ -71,10 +72,22 @@ MSG files, opp_msgc:
     "(unprintable)", e.g. for typedefs of standard library containers such as
     INET's `Ipv4AddressVector`.
 
+  - Fixed parsim unpacking of `std::vector<bool>` fields not compiling (#1421).
+
 Qtenv:
 
   - Implemented clipping of canvas figures. Tooltips and object selection honor
     the clipping, and zoom-to-fit ignores the clipped-away areas.
+
+  - Generic Object Inspector usability improvement: The overlay on hovered tree
+    rows now holds a strip of mode buttons (Children, and the Details variants
+    Grouped, Flat, Inheritance and Packet) instead of the Children/Details
+    toggle, so a row can be switched to any mode with a single click.
+
+  - Fixed connections between two gates of the inspected compound module being
+    drawn as an arrow ending in the middle of the module (#1399), and only half
+    of the line being drawn for two-way connections whose both ends are on the
+    same module.
 
   - Warnings (e.g. those about unused configuration entries) are now written to
     the log window.
@@ -85,7 +98,15 @@ Command-line Tools:
     NED Documentation Generator features (see below). Fixed errors not being
     reflected in the exit code.
 
+  - `opp_makemake`: Fixed large projects (e.g. INET) failing to link on Windows
+    with "Argument list too long" when the `OS` environment variable was unset
+    (#1506).
+
 Python library:
+
+  - Pandas 3 is now supported (#1482). Fixed bar, histogram, box-and-whiskers,
+    line, scatter and 3D charts failing with Pandas 3, e.g. for results without
+    a unit.
 
   - `omnetpp.scave`: Fixed `convert_to_base_unit` converting results with
     logarithmic units (e.g. dBm) point-wise, which gives wrong results for the
@@ -95,6 +116,10 @@ Python library:
     (`include_fields=True`, also in the Analysis Tool) inheriting the unit of
     the containing item. Now count-like fields have no unit, and the start/end
     time of vectors is in seconds (related to #1513).
+
+  - `omnetpp.scave.vectorops`: Fixed `merge` and `aggregate` failing (also in
+    Analysis Tool charts) when the vectors differed in an attribute such as the
+    title, and one of them had an empty value for it.
 
 Analysis Tool:
 
