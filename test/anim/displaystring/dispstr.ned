@@ -25,6 +25,7 @@ network DisplayStringTest
         iconTransform: IconTransform;
         connRoutingToParent: ConnRoutingToParent;
         connRoutingToParentBidi: ConnRoutingToParentBidi;
+        connRoutingThroughParent: ConnRoutingThroughParent;
         connRoutingCartesian: ConnRoutingCartesian;
         connRoutingCartesianBidi: ConnRoutingCartesianBidi;
         connRoutingManual : ConnRoutingManual;

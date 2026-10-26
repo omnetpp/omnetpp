@@ -82,6 +82,35 @@ module ConnRoutingToParentBidi
 }
 
 //
+// Connections between two gates of the compound module itself (input -> output),
+// not touching any submodule. Each must be drawn across the whole module, from
+// one edge to the opposite one, never ending in its middle.
+//
+module ConnRoutingThroughParent
+{
+    parameters:
+        @display("bgb=500,300");
+        @figure[note](type=label;pos=10,20;anchor=nw;text="Lines must span the module from edge to edge.\nAuto picks the shorter axis (vertical here); m=h/m=v force the axis.\nTurn on 'Distribute Connection Arrows' (context menu) to spread them.");
+    gates:
+        input in[6] @loose;
+        output out[6] @loose;
+        inout twoway[2] @loose;
+    connections allowunconnected:
+        // auto (unidir)
+        in++ --> { @display("t=auto"); } --> out++;
+        in++ --> { @display("t=auto"); } --> out++;
+
+        // explicit axis (unidir)
+        in++ --> { @display("m=h;t=m=h"); } --> out++;
+        in++ --> { @display("m=h;t=m=h"); } --> out++;
+        in++ --> { @display("m=v;t=m=v"); } --> out++;
+        in++ --> { @display("m=v;t=m=v"); } --> out++;
+
+        // bidir
+        twoway[0] <--> { @display("t=bidir"); } <--> twoway[1];
+}
+
+//
 // Full cartesian product: 3 srcDir x 3 destDir (-, h, v)
 // 2 unidir connections per pair (to test bundling offsets).
 // Modules positioned NW-SE within each pair.
