@@ -1,3 +1,15 @@
+2026-10-26  Attila Torok
+
+	* anim/displaystring: Added a test for connections through the compound
+	module (#1399).
+
+	* scave: results_api: Added vectors with a missing and an empty title, and
+	tests for merging them.
+
+2026-10-26  Andras Varga
+
+	* core: New test msg_pack_4 (#1421).
+
 2026-10-21  Attila Torok
 
 	* anim/canvas: Clipping: added a static stacking order case with nested

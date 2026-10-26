@@ -1,3 +1,9 @@
+2026-10-26  Andras Varga
+
+	* Message compiler: Fix: Parsim unpacking of std::vector<bool> fields did
+	not compile, because the elements of std::vector<bool> are proxy objects
+	that cannot bind to bool& (#1421).
+
 2026-10-18  Andras Varga
 
 	* Message compiler: Fix: Typedefs of standard library containers declared as

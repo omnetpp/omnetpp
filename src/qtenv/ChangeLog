@@ -1,3 +1,21 @@
+2026-10-26  Attila Torok
+
+	* Graphics: Fix: Connections between two gates of the inspected compound
+	module (e.g. "lowerLayerIn --> upperLayerOut") were drawn as an arrow
+	ending in the middle of the module, instead of across the module (#1399).
+
+	* Graphics: Fix: Only half of the line was drawn for two-way connections
+	whose both ends are on the same module (e.g. "twoway[0] <--> twoway[1]" of
+	the compound module, or a bidirectional self-loop on a submodule).
+
+2026-10-23  Andras Varga
+
+	* Generic Object Inspector: The overlay on hovered tree rows now holds a
+	strip of mode buttons (Children, and the Details variants Grouped, Flat,
+	Inheritance and Packet) instead of the Children/Details toggle, so a row
+	can be switched to any mode with a single click. The current mode of the
+	row is highlighted.
+
 2026-10-21  Attila Torok
 
 	* Canvas: Fix: Clipped figures were picked (tooltips, object selection) by

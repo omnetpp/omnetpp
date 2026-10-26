@@ -1,3 +1,21 @@
+2026-10-26  Attila Torok
+
+	* Pandas 3 is now allowed in requirements.txt (#1482).
+
+	* omnetpp.scave: Fixed incompatibilities with Pandas 3 that made bar,
+	histogram, box-and-whiskers, line, scatter and 3D charts fail (#1482):
+	utils.to_numeric() raised TypeError on columns with the new "str" dtype;
+	_check_same_unit() returned NaN instead of None for results without a unit,
+	which made the unit conversion functions raise TypeError; and missing
+	result columns (e.g. "unit") were created with the "str" dtype instead of
+	object.
+
+	* omnetpp.scave.vectorops: Fix: merge and aggregate failed ("'numpy.ndarray'
+	object has no attribute 'remove'") when the vectors differed in an
+	attribute (e.g. title) and one of them had an empty value for it. If one of
+	them had no such attribute, the combined value became "nan and 1 more"
+	instead of naming the non-empty value.
+
 2026-10-19  Attila Torok
 
 	* omnetpp.scave: Fix: convert_to_base_unit converted results with logarithmic
