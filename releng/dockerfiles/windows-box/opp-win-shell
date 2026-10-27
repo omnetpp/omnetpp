@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+#
+# Opens the MSYS2 clang64 shell of an unpacked OMNeT++ Windows distribution under Wine.
+#
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [--direct] [msys2_shell args...]
+       $(basename "$0") --find-root
+
+The OMNeT++ tree is looked up from the current directory upwards (a directory
+containing mingwenv.cmd), falling back to \$OMNETPP_WIN_ROOT.
+
+  --direct     start bash.exe directly instead of going through mingwenv.cmd
+  --find-root  print the detected OMNeT++ root and exit
+EOF
+}
+
+find_root() {
+  local dir=$PWD
+  while [ "$dir" != "/" ]; do
+    if [ -f "$dir/mingwenv.cmd" ]; then
+      echo "$dir"
+      return 0
+    fi
+    dir=$(dirname "$dir")
+  done
+  if [ -n "${OMNETPP_WIN_ROOT:-}" ] && [ -f "$OMNETPP_WIN_ROOT/mingwenv.cmd" ]; then
+    (cd "$OMNETPP_WIN_ROOT" && pwd)
+    return 0
+  fi
+  return 1
+}
+
+ensure_prefix() {
+  # Wine passes the whole Unix environment to Windows processes; host Qt/XDG search paths
+  # would mislead the Windows Qt and flood Cygwin with path conversion warnings
+  unset XDG_DATA_DIRS XDG_CONFIG_DIRS QT_PLUGIN_PATH QML2_IMPORT_PATH QML_IMPORT_PATH
+  unset $(compgen -v NIXPKGS_) $(compgen -v QT_QPA_)
+  export WINEPREFIX=${WINEPREFIX:-$HOME/.wine}
+  export WINEDEBUG=${WINEDEBUG:--all}
+  if [ ! -f "$WINEPREFIX/system.reg" ]; then
+    echo "Creating Wine prefix in $WINEPREFIX..."
+    # mono/gecko are not needed by MSYS2 or the IDE; skipping them avoids the interactive install dialogs
+    WINEDLLOVERRIDES="mscoree,mshtml=" wineboot -i
+    wineserver -w
+  fi
+}
+
+direct=0
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+  --find-root) find_root; exit $? ;;
+  --direct) direct=1; shift ;;
+esac
+
+if ! root=$(find_root); then
+  echo "Error: no OMNeT++ Windows tree found (cd into one or set OMNETPP_WIN_ROOT)." >&2
+  exit 1
+fi
+
+ensure_prefix
+
+if [ "$direct" = "1" ]; then
+  # Wine does not pass the Unix HOME to Windows processes, so it is set from inside cmd
+  export OPP_WIN_HOME=$(winepath -w "$root") MSYSTEM=CLANG64 CHERE_INVOKING=1
+  cd "$root"
+  exec wine cmd /c set "HOME=%OPP_WIN_HOME%&&" "$(winepath -w "$root/tools/win32.x86_64/usr/bin/bash.exe")" --login "$@"
+fi
+
+# without -no-start, msys2_shell.cmd uses 'start', which detaches bash from the current terminal under Wine
+exec wine cmd /c "$(winepath -w "$root/mingwenv.cmd")" -no-start "$@"

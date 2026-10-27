@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+cd $(dirname "$0")
+
+echo "Building windows-box docker image for distrobox..."
+
+set -e
+docker build --pull -t ghcr.io/omnetpp/windows-box:latest .
+
+echo
+echo "Install with:"
+echo "distrobox assemble create --file $(pwd)/distrobox.ini"
