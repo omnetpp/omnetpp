@@ -20,11 +20,11 @@ PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 default: pdf html eclipse
 
 pdf: $(ALLTEX) $(PDFPICS) figures/*.png
-	$(LATEX) usman.tex
+	$(LATEX) -jobname=usman "\def\oppversion{$(VERSION)}\input{usman.tex}"
 	bibtex usman
 	makeindex usman
-	$(LATEX) usman.tex
-	$(LATEX) usman.tex
+	$(LATEX) -jobname=usman "\def\oppversion{$(VERSION)}\input{usman.tex}"
+	$(LATEX) -jobname=usman "\def\oppversion{$(VERSION)}\input{usman.tex}"
 	cp usman.pdf ../../SimulationManual.pdf
 	rm -f *.aux *.idx *.ilg *.ind *.log *.out *.toc *.blg
 
