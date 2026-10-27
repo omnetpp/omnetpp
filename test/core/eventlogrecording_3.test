@@ -32,6 +32,7 @@ record-eventlog = true
 %activity:
 EV << "logging from activity" << endl;
 
+%subst: |results[/\\]|results/|
 %contains: stdout
 logging before the eventlog is opened
 Recording eventlog to file `results/General-#0.elog'...
