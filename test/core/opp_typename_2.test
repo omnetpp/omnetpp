@@ -7,7 +7,9 @@ The expected name of each type is written as C++ code, and a static_assert
 checks that it denotes the same type. So, if this test passes, the names returned
 by opp_typename() are valid C++ spellings of the types (no information lost).
 
-Note: Expected names are in the format of abi::__cxa_demangle() (gcc, clang).
+Note: Expected names are in the format of abi::__cxa_demangle() (gcc, clang),
+normalized by opp_typename(). Platform-dependent types (e.g. size_t template
+arguments: "5ul" on LP64, "5ull" on LLP64) are checked with a regex.
 
 %includes:
 #include <vector>
@@ -24,6 +26,7 @@ Note: Expected names are in the format of abi::__cxa_demangle() (gcc, clang).
 #include <array>
 #include <functional>
 #include <iostream>
+#include <regex>
 
 %global:
 
@@ -51,6 +54,15 @@ static void check(const char *actual, const char *expected, const char *what)
     }
 }
 
+static void checkMatches(const char *actual, const char *regex, const char *what)
+{
+    numChecked++;
+    if (!std::regex_match(actual, std::regex(regex))) {
+        numFailed++;
+        EV << "MISMATCH for " << what << ": got \"" << actual << "\", expected to match \"" << regex << "\"\n";
+    }
+}
+
 #define STR(...) STR2(__VA_ARGS__)
 #define STR2(...) #__VA_ARGS__
 
@@ -63,6 +75,9 @@ template<typename T> struct unparen<void(T)> { using type = T; };
 // CHECK_AS((T), E): the expected name of T is E, which must denote the same type
 #define CHECK_AS(T, ...)  static_assert(std::is_same_v<typename unparen<void T>::type, __VA_ARGS__>); \
                           check(opp_typename(typeid(typename unparen<void T>::type)), STR(__VA_ARGS__), #T);
+
+// CHECK_MATCHES((T), regex): for names that differ across platforms (e.g. size_t)
+#define CHECK_MATCHES(T, regex)  checkMatches(opp_typename(typeid(typename unparen<void T>::type)), regex, #T);
 
 // element types
 #define FOR_EACH_ELEMTYPE(M) \
@@ -125,7 +140,7 @@ CHECK(std::iostream)
 CHECK(@TESTNAME@::units::value<long, @TESTNAME@::units::b>)
 CHECK(@TESTNAME@::units::value<double, @TESTNAME@::units::GHz>)
 CHECK(@TESTNAME@::Arr<int, -3>)
-CHECK_AS((std::array<int, 5>), std::array<int, 5ul>)
+CHECK_MATCHES((std::array<int, 5>), "std::array<int, 5ull?>")
 
 // default arguments written out explicitly
 CHECK_AS((std::basic_string<char, std::char_traits<char>, std::allocator<char>>), std::string)
