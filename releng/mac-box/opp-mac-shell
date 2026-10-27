@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+#
+# Opens a shell on a remote Mac in a copy of the current OMNeT++ tree, synced there with rsync.
+#
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: $(basename "$0") [--gui] [command [args...]]
+       $(basename "$0") --sync
+       $(basename "$0") --check
+       $(basename "$0") --find-root
+
+Copies the OMNeT++ tree to ~/opp-trees/ on \$OPP_MAC_HOST (default: mini.local)
+and opens an interactive shell there with setenv sourced, or runs the given command.
+Only the source files are synced (one way, Linux to Mac); build outputs stay on the Mac.
+
+The OMNeT++ tree is looked up from the current directory upwards (a directory
+containing setenv and configure.user.dist), falling back to \$OPP_MAC_ROOT.
+
+  --gui        also show the Mac desktop (Screen Sharing) in a VNC viewer
+               (\$OPP_MAC_VNC_VIEWER, default: krdc; the vnc:// URL is appended)
+  --sync       only sync the tree, e.g. while a shell is open
+  --check      check the prerequisites on both machines
+  --find-root  print the detected OMNeT++ root and exit
+EOF
+}
+
+host=${OPP_MAC_HOST:-mini.local}
+vnc_port=${OPP_MAC_VNC_PORT:-15900}
+read -ra viewer <<<"${OPP_MAC_VNC_VIEWER:-krdc}"
+
+find_root() {
+  local dir=$PWD
+  while [ "$dir" != "/" ]; do
+    if [ -f "$dir/setenv" ] && [ -f "$dir/configure.user.dist" ]; then
+      echo "$dir"
+      return 0
+    fi
+    dir=$(dirname "$dir")
+  done
+  if [ -n "${OPP_MAC_ROOT:-}" ] && [ -f "$OPP_MAC_ROOT/setenv" ]; then
+    (cd "$OPP_MAC_ROOT" && pwd)
+    return 0
+  fi
+  return 1
+}
+
+# quotes an argument for the remote shell
+sq() {
+  printf "'%s'" "${1//\'/\'\\\'\'}"
+}
+
+check() {
+  local ok=0
+  echo "Local:"
+  if command -v rsync >/dev/null; then echo "  rsync: ok"; else echo "  rsync: MISSING"; ok=1; fi
+  if command -v "${viewer[0]}" >/dev/null; then echo "  ${viewer[0]}: ok"; else echo "  ${viewer[0]}: missing (only needed for --gui)"; fi
+  echo "Remote ($host):"
+  ssh -o BatchMode=yes "$host" 'bash -s' <<'EOF' || ok=1
+ok=0
+PATH=/opt/homebrew/bin:$PATH
+report() { if eval "$2" >/dev/null 2>&1; then echo "  $1: ok"; else echo "  $1: MISSING ($3)"; ok=1; fi; }
+report "Xcode command line tools" "xcode-select -p" "xcode-select --install"
+report "Homebrew" "command -v brew" "https://brew.sh"
+for p in bison flex qt@6 pkgconf make; do
+  report "brew $p" "brew list --versions $p" "brew install $p"
+done
+console=$(stat -f %Su /dev/console)
+if [ "$console" = "$USER" ]; then echo "  console login: ok"; else echo "  console login: '$console' is logged in, GUI apps of $USER will not show"; fi
+if netstat -an | grep -q '\.5900 .*LISTEN'; then echo "  Screen Sharing: ok"; else echo "  Screen Sharing: off (only needed for --gui)"; fi
+exit $ok
+EOF
+  return $ok
+}
+
+# lists the files to sync (NUL separated): the version-controlled and not ignored ones, or all
+list_files() {
+  if [ -d "$root/.jj" ] && command -v jj >/dev/null; then
+    (cd "$root" && jj --quiet file list | tr '\n' '\0')
+  elif git -C "$root" rev-parse --show-toplevel >/dev/null 2>&1; then
+    git -C "$root" ls-files -z --cached --others --exclude-standard
+  else
+    (cd "$root" && find . -type f -print0 -o -type l -print0)
+  fi
+}
+
+sync_tree() {
+  local list=$tmp/files old=$tmp/old
+  list_files | LC_ALL=C sort -z -u >"$list"
+  if [ ! -s "$list" ]; then
+    echo "Error: no files to sync in $root." >&2
+    exit 1
+  fi
+  ssh -S "$ctl" "$host" "mkdir -p $(sq "$remote")"
+  # openrsync on the Mac stalled once mid-transfer; fail instead of hanging
+  rsync -a --timeout=30 --files-from="$list" --from0 -e "ssh -S $ctl" "$root/" "$host:$remote/"
+  # files that were synced last time but are gone now (deleted or renamed in the tree)
+  ssh -S "$ctl" "$host" "cat $(sq "$remote")/.opp-mac-files 2>/dev/null" >"$old" || true
+  LC_ALL=C comm -z -23 "$old" "$list" | ssh -S "$ctl" "$host" "cd $(sq "$remote") && xargs -0 rm -f --"
+  ssh -S "$ctl" "$host" "cat >$(sq "$remote")/.opp-mac-files" <"$list"
+}
+
+gui=0 sync_only=0
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+  --find-root) find_root; exit $? ;;
+  --check) check; exit $? ;;
+  --gui) gui=1; shift ;;
+  --sync) sync_only=1; shift ;;
+esac
+
+if ! root=$(find_root); then
+  echo "Error: no OMNeT++ tree found (cd into one or set OPP_MAC_ROOT)." >&2
+  exit 1
+fi
+# mirrors the location under the home directory, so that trees with the same name do not collide
+rel=${root#"$HOME"/}
+remote="opp-trees/${rel#/}"
+
+tmp=$(mktemp -d)
+ctl=$tmp/ctl
+
+cleanup() {
+  ssh -S "$ctl" -O exit "$host" 2>/dev/null || true
+  rm -rf "$tmp"
+}
+trap cleanup EXIT
+trap "exit 1" HUP INT TERM
+
+ssh -fnN -M -S "$ctl" -o ControlPersist=no "$host"
+
+sync_tree
+[ "$sync_only" = "1" ] && exit 0
+
+if [ "$gui" = "1" ]; then
+  if ! command -v "${viewer[0]}" >/dev/null; then
+    echo "Warning: ${viewer[0]} not found, --gui ignored." >&2
+  elif ssh -S "$ctl" -O forward -L "$vnc_port:localhost:5900" "$host" >/dev/null; then
+    # the viewer is a host app: the OMNeT++ environment's libraries (e.g. an older Qt) would break it
+    setsid env -u LD_LIBRARY_PATH "${viewer[@]}" "vnc://localhost:$vnc_port" >/dev/null 2>&1 &
+  fi
+fi
+
+subdir=.
+case "$PWD/" in "$root"/*) subdir=".${PWD#"$root"}" ;; esac
+# configure.user is not synced: the Mac needs its own settings, and setenv requires one
+cmd="cd $(sq "$remote") && { [ -f configure.user ] || cp configure.user.dist configure.user; } && source setenv -q && cd $(sq "$subdir") &&"
+if [ $# -gt 0 ]; then
+  args=
+  for a in "$@"; do args+=" $(sq "$a")"; done
+  # -i: the Homebrew PATH is often set up only in .zshrc, and setenv needs brew
+  ssh -S "$ctl" "$host" "exec zsh -il -c $(sq "$cmd $args")" && rc=0 || rc=$?
+else
+  ssh -t -S "$ctl" "$host" "exec zsh -il -c $(sq "$cmd exec zsh -i")" && rc=0 || rc=$?
+fi
+exit $rc
