@@ -1133,7 +1133,7 @@ if test $WITH_BACKTRACE = "yes"; then
     AC_MSG_WARN([WITH_BACKTRACE is set to 'yes', but it is not supported on Windows. Turning it off...])
     WITH_BACKTRACE=no
   elif test "$PLATFORM" = "linux"; then
-    # on Linux  we will use libdw or fall back to libdwarf
+    # on Linux we use libdw (from elfutils)
     LIBDW_LIBS="$(pkg-config --silence-errors --libs libdw)"
     OPP_CHECK_LIB(libdw for enhanced backtrace support, elfutils/libdw.h, dwarf_errno(), , $LIBDW_LIBS, dw_found, BACKWARD_LDFLAGS="$LIBDW_LIBS" DEFINES="$DEFINES -DBACKWARD_HAS_DW=1",)
 

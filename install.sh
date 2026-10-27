@@ -166,7 +166,7 @@ install_deps() {
 
         elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora (tested versions: 42)
             # dnf is used on fedora
-            packages="make ccache clang awk lld lldb gdb bison flex perl $PYTHON3-devel $PYTHON3-pip uv libxml2-devel zlib-devel doxygen graphviz xdg-utils libdwarf-devel"
+            packages="make ccache clang awk lld lldb gdb bison flex perl $PYTHON3-devel $PYTHON3-pip uv libxml2-devel zlib-devel doxygen graphviz xdg-utils elfutils-devel"
 
             if ! $no_gui; then
                 packages="$packages qt6-qttools-devel qt6-qtbase-devel qt6-qtsvg qt6-qtwayland webkit2gtk4.1"
@@ -223,7 +223,7 @@ install_deps() {
 
         elif [[ "$(command -v pacman)" != "" ]]; then
             # pacman is used on Arch Linux
-            packages="make diffutils ccache clang pkgconf lld lldb gdb bison gawk flex perl python python-pip uv libxml2 zlib doxygen graphviz xdg-utils libdwarf"
+            packages="make diffutils ccache clang pkgconf lld lldb gdb bison gawk flex perl python python-pip uv libxml2 zlib doxygen graphviz xdg-utils elfutils"
 
             if ! $no_gui; then
                 packages="$packages qt6-base qt6-svg qt6-wayland webkit2gtk-4.1"

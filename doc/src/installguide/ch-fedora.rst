@@ -22,7 +22,7 @@ First, install the core development tools and libraries:
 
    $ sudo dnf install -y make ccache clang awk lld lldb gdb bison flex perl \
        python3-devel python3-pip uv libxml2-devel zlib-devel doxygen graphviz \
-       xdg-utils libdwarf-devel
+       xdg-utils elfutils-devel
 
 Next, install packages for the graphical environment (Qtenv and IDE). If you do not need GUI support (e.g., for a server installation), you can skip this step and later configure |omnet++| with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
 

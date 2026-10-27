@@ -18,7 +18,7 @@ First, ensure your system's package database is up to date and install the core 
 
    $ sudo pacman -Syu --needed --noconfirm make diffutils ccache clang pkgconf lld lldb gdb \
        bison gawk flex perl python python-pip uv libxml2 zlib doxygen graphviz \
-       xdg-utils libdwarf
+       xdg-utils elfutils
 
 Next, install packages for the graphical environment (Qtenv and IDE). If you do not need GUI support (e.g., for a server installation), you can skip this step and later configure |omnet++| with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
 

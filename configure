@@ -6647,7 +6647,7 @@ if test $WITH_BACKTRACE = "yes"; then
 printf "%s\n" "$as_me: WARNING: WITH_BACKTRACE is set to 'yes', but it is not supported on Windows. Turning it off..." >&2;}
     WITH_BACKTRACE=no
   elif test "$PLATFORM" = "linux"; then
-    # on Linux  we will use libdw or fall back to libdwarf
+    # on Linux we use libdw (from elfutils)
     LIBDW_LIBS="$(pkg-config --silence-errors --libs libdw)"
 
    save_CXXFLAGS=$CXXFLAGS
