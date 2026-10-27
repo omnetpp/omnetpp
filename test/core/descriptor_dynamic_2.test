@@ -219,6 +219,8 @@ network Test
         tester: Tester;
 }
 
+%# size_t template args are "ull" on LLP64 platforms (Windows); unify to the LP64 "ul" form
+%subst: /ull>/ul>/
 %contains: stdout
 === vector<int>
   descriptor=std::vector<int> value=size=2
