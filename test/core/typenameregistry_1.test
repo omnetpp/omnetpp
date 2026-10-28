@@ -33,16 +33,25 @@ static void normalizeMsvc(const char *msvcName)
 EV << "=== libstdc++\n";
 normalize("std::__cxx11::list<int, std::allocator<int> >");
 normalize("std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >");
+normalize("decltype(nullptr)");
+normalize("void (*)(decltype(nullptr))");
 
 EV << "=== libc++\n";
 normalize("std::__1::vector<int, std::__1::allocator<int> >");
 normalize("std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >");
 normalize("std::__1::map<int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::less<int>, std::__1::allocator<std::__1::pair<int const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > >");
+normalize("std::__1::basic_istream<char, std::__1::char_traits<char> >");
+normalize("std::__1::basic_ostream<char, std::__1::char_traits<char> >");
+normalize("std::__1::basic_iostream<char, std::__1::char_traits<char> >");
+normalize("std::__1::basic_ostream<wchar_t, std::__1::char_traits<wchar_t> >");
+normalize("std::nullptr_t");
+normalize("std::__1::array<int, 5ull>");
 
 EV << "=== MSVC\n";
 normalizeMsvc("class std::vector<int,class std::allocator<int> >");
 normalizeMsvc("class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >");
 normalizeMsvc("class std::map<int,double,struct std::less<int>,class std::allocator<struct std::pair<int const ,double> > >");
+normalizeMsvc("class std::basic_ostream<char,struct std::char_traits<char> >");
 normalizeMsvc("struct `anonymous namespace'::Foo");
 normalizeMsvc("class std::vector<struct `anonymous namespace'::Foo,class std::allocator<struct `anonymous namespace'::Foo> >");
 normalizeMsvc("class Subclass");
@@ -65,6 +74,10 @@ std::__cxx11::list<int, std::allocator<int> >
   --> std::list<int>
 std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >
   --> std::vector<std::string>
+decltype(nullptr)
+  --> std::nullptr_t
+void (*)(decltype(nullptr))
+  --> void (*)(std::nullptr_t)
 === libc++
 std::__1::vector<int, std::__1::allocator<int> >
   --> std::vector<int>
@@ -72,6 +85,18 @@ std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<ch
   --> std::string
 std::__1::map<int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, std::__1::less<int>, std::__1::allocator<std::__1::pair<int const, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> > > > >
   --> std::map<int, std::string>
+std::__1::basic_istream<char, std::__1::char_traits<char> >
+  --> std::istream
+std::__1::basic_ostream<char, std::__1::char_traits<char> >
+  --> std::ostream
+std::__1::basic_iostream<char, std::__1::char_traits<char> >
+  --> std::iostream
+std::__1::basic_ostream<wchar_t, std::__1::char_traits<wchar_t> >
+  --> std::basic_ostream<wchar_t, std::char_traits<wchar_t>>
+std::nullptr_t
+  --> std::nullptr_t
+std::__1::array<int, 5ull>
+  --> std::array<int, 5ull>
 === MSVC
 class std::vector<int,class std::allocator<int> >
   --> std::vector<int>
@@ -79,6 +104,8 @@ class std::basic_string<char,struct std::char_traits<char>,class std::allocator<
   --> std::string
 class std::map<int,double,struct std::less<int>,class std::allocator<struct std::pair<int const ,double> > >
   --> std::map<int, double>
+class std::basic_ostream<char,struct std::char_traits<char> >
+  --> std::ostream
 struct `anonymous namespace'::Foo
   --> (anonymous namespace)::Foo
 class std::vector<struct `anonymous namespace'::Foo,class std::allocator<struct `anonymous namespace'::Foo> >

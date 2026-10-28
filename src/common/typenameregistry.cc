@@ -88,13 +88,21 @@ std::string TypeNameRegistry::normalize(const std::string& demangledName)
     //  - trailing template arguments of standard library containers that are equal to
     //    their defaults (e.g. std::allocator<T>) are omitted. Only exact matches are
     //    omitted, so different types still get different names;
-    //  - std::basic_string<char, ...> is written as std::string;
+    //  - std::basic_string<char, ...> is written as std::string, and similarly for
+    //    std::istream, std::ostream and std::iostream;
+    //  - decltype(nullptr) is written as std::nullptr_t;
     //  - template arguments are separated with ", ", and ">>" is not split.
     // Otherwise, the formatting of the demangler is kept (e.g. "char const*").
+    // Only different spellings of the same type are unified; differences that come
+    // from the platform are kept (e.g. "std::array<int, 5ul>" vs "std::array<int, 5ull>"
+    // on LP64 vs LLP64, because size_t is a different type there).
 
     // e.g. "std::__cxx11::list" -> "std::list" (libstdc++), "std::__1::list" -> "std::list" (libc++)
     std::string result = opp_replacesubstring(demangledName, "std::__cxx11::", "std::", true);
     result = opp_replacesubstring(result, "std::__1::", "std::", true);
+
+    // the GNU demangler prints "decltype(nullptr)", the LLVM one "std::nullptr_t"
+    result = opp_replacesubstring(result, "decltype(nullptr)", "std::nullptr_t", true);
     return normalizeTemplateArgs(result);
 }
 
@@ -141,8 +149,20 @@ std::vector<std::string> TypeNameRegistry::splitTemplateArgs(const std::string& 
 
 std::string TypeNameRegistry::makeTemplateId(const std::string& name, std::vector<std::string> args)
 {
+    // Write the char instantiations of std::basic_string and the stream classes with their
+    // typedef names. The demangler prints these names when the types were mangled with their
+    // Itanium ABI abbreviations (libstdc++), and the full names otherwise (std::__cxx11::basic_string,
+    // and everything in libc++, which is in std::__1).
     if (name == "std::basic_string" && args == std::vector<std::string>{"char", "std::char_traits<char>", "std::allocator<char>"})
         return "std::string";
+    if (args == std::vector<std::string>{"char", "std::char_traits<char>"}) {
+        if (name == "std::basic_istream")
+            return "std::istream";
+        if (name == "std::basic_ostream")
+            return "std::ostream";
+        if (name == "std::basic_iostream")
+            return "std::iostream";
+    }
 
     // default values of the template arguments of standard library containers, given the preceding arguments
     if (opp_stringbeginswith(name.c_str(), "std::") && !args.empty()) {

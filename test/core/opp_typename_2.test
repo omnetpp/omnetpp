@@ -23,6 +23,7 @@ Note: Expected names are in the format of abi::__cxa_demangle() (gcc, clang).
 #include <stack>
 #include <array>
 #include <functional>
+#include <iostream>
 
 %global:
 
@@ -113,9 +114,12 @@ CHECK(char const* const*)
 CHECK(int [3])
 CHECK(void (*)(int, char const*))
 CHECK(std::function<void (int)>)
-CHECK_AS((std::nullptr_t), decltype(nullptr))
+CHECK(std::nullptr_t)
+CHECK(void (*)(std::nullptr_t))
 CHECK(std::string)
+CHECK(std::istream)
 CHECK(std::ostream)
+CHECK(std::iostream)
 
 // user-defined templates
 CHECK(@TESTNAME@::units::value<long, @TESTNAME@::units::b>)
@@ -125,6 +129,7 @@ CHECK_AS((std::array<int, 5>), std::array<int, 5ul>)
 
 // default arguments written out explicitly
 CHECK_AS((std::basic_string<char, std::char_traits<char>, std::allocator<char>>), std::string)
+CHECK_AS((std::basic_ostream<char, std::char_traits<char>>), std::ostream)
 CHECK_AS((std::vector<int, std::allocator<int>>), std::vector<int>)
 CHECK_AS((std::set<int, std::less<int>, std::allocator<int>>), std::set<int>)
 CHECK_AS((std::map<int, std::string, std::less<int>, std::allocator<std::pair<const int, std::string>>>), std::map<int, std::string>)
@@ -158,4 +163,4 @@ check(opp_typename(typeid(Anon)), "@TESTNAME@::(anonymous namespace)::Anon", "An
 EV << "checked: " << numChecked << ", mismatches: " << numFailed << "\n";
 
 %contains: stdout
-checked: 320, mismatches: 0
+checked: 324, mismatches: 0
