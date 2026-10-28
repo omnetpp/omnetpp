@@ -83,30 +83,6 @@ def colorDiff(diff):
             yield line
 
 
-# from net: do not change order of attributes
-class OppFormatter(argparse.RawDescriptionHelpFormatter):
-    # use defined argument order to display usage
-    def _format_usage(self, usage, actions, groups, prefix):
-        if prefix is None:
-            prefix = 'usage: '
-
-        # if usage is specified, use that
-        if usage is not None:
-            usage = usage % dict(prog=self._prog)
-
-        # if no optionals or positionals are available, usage is just prog
-        elif usage is None and not actions:
-            usage = '%(prog)s' % dict(prog=self._prog)
-        elif usage is None:
-            prog = '%(prog)s' % dict(prog=self._prog)
-            # build full usage string
-            action_usage = self._format_actions_usage(actions, groups) # NEW
-            usage = ' '.join([s for s in [prog, action_usage] if s])
-            # omit the long line wrapping code
-        # prefix with 'usage:'
-        return f'{prefix}{usage}\n\n'
-
-
 class OppTest:
     progname = 'opp_test.py'
     # .test file possible entries. legend: 1=once, v=has value, b=has body, f=value is filename
@@ -501,7 +477,7 @@ Supported .test file entry types:
 
         ''',
                 epilog=epilog,
-                formatter_class=OppFormatter)
+                formatter_class=argparse.RawDescriptionHelpFormatter)
         #subparsers = parser.add_subparsers(help='sub-command help', dest='mode')
         #parser_gen = subparsers.add_parser('gen', help='generate (export) source files from test case files')
         #parser_run = subparsers.add_parser('run', help='run test (expects pre-built test executable)')
@@ -532,10 +508,19 @@ Supported .test file entry types:
                             )
         self.parser.add_argument('filenames', nargs='+', metavar='TESTFILE',
                             )
-        self.parser.add_argument('-a', '--args', nargs=argparse.REMAINDER, dest='extraargs',
-                            #FIXME hasznaljuk-e a REMAINDERT? igy beszed mindent a '-a' utan '--'-ig, utana nem lehet egyeb argumentum, csak a filenames
-                            help='extra command-line arguments for the test program. You may need to use quotes: opp_test -a "-f extrasettings.ini"'
+        # only for the help text; the values are extracted by split_extraargs()
+        self.parser.add_argument('-a', '--args', nargs='*', metavar='ARG', dest='extraargs',
+                            help='extra command-line arguments for the test program; everything up to "--" is taken. Example: opp_test run -a -f extrasettings.ini -- *.test'
                             )
+
+    # argparse.REMAINDER cannot stop at "--" (since Python 3.15 it swallows it), so -a/--args is processed by hand
+    @staticmethod
+    def split_extraargs(argv):
+        end = argv.index('--') if '--' in argv else len(argv)
+        for i in range(end):
+            if argv[i] in ('-a', '--args'):
+                return argv[:i] + argv[end:], argv[i+1:end]
+        return argv, []
 
     def print_tail(self, label, fname):
         try:
@@ -963,16 +948,14 @@ Supported .test file entry types:
 
     def run(self):
         self.createParser()
-        self.args = self.parser.parse_args()
+        argv, extraargs = self.split_extraargs(sys.argv[1:])
+        self.args = self.parser.parse_args(argv)
+        self.args.extraargs = extraargs
         self.lprint(2, self.args)
 
         # test existence of work directory
         if not os.path.isdir(self.args.workdir):
             fail(f'work directory {self.args.workdir} does not exist\n')
-
-        # argument fixes
-        if self.args.extraargs is None:
-            self.args.extraargs = []
 
         # produce name of test program (only used for tests not containing '%testprog')
         if self.args.testprogram == '':
