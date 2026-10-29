@@ -9,9 +9,9 @@ installation procedure is described in the *Linux* chapter.
 
 The following Ubuntu releases are known to work (based on the ``install.sh`` script):
 
--  Ubuntu 22.04 LTS
 -  Ubuntu 24.04 LTS
--  Ubuntu 25.04 (and likely newer versions)
+-  Ubuntu 26.04 LTS
+-  Ubuntu 26.10 (and likely newer versions)
 
 The instructions below assume that you use the default desktop and the bash shell. If you use another desktop
 environment or shell, you may need to adjust the instructions accordingly.

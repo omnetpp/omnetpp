@@ -150,7 +150,7 @@ install_deps() {
         fi
 
         # detect the package manager
-        if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu (tested versions: 22.04, 24.04, 25.04)
+        if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu (tested versions: 24.04, 26.04, 26.10)
             # apt-get is used on debian (i.e. Ubuntu,  etc.)
             packages="make diffutils pkg-config ccache clang lld gdb lldb bison flex perl sed gawk $PYTHON3 $PYTHON3-pip $PYTHON3-venv $PYTHON3-dev pipx libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
 
@@ -164,7 +164,7 @@ install_deps() {
 
             echo_root_run "apt update; DEBIAN_FRONTEND=noninteractive apt install -y $packages ; apt clean"
 
-        elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora (tested versions: 42)
+        elif [[ "$(command -v dnf)" != "" && "$ID" == "fedora" ]]; then # e.g. ID=fedora (tested versions: 45)
             # dnf is used on fedora
             packages="make ccache clang awk lld lldb gdb bison flex perl $PYTHON3-devel $PYTHON3-pip uv libxml2-devel zlib-devel doxygen graphviz xdg-utils elfutils-devel"
 
@@ -178,7 +178,7 @@ install_deps() {
 
             echo_root_run "dnf install -y $packages ; dnf clean packages"
 
-        elif [[ "$(command -v dnf)" != "" &&  ( "$ID" == "almalinux" || "$ID" == "rhel" || "$ID" == "rocky" || "$ID" == "centos" ) ]]; then # (tested versions 9, 10)
+        elif [[ "$(command -v dnf)" != "" &&  ( "$ID" == "almalinux" || "$ID" == "rhel" || "$ID" == "rocky" || "$ID" == "centos" ) ]]; then # e.g. ID=almalinux (tested versions: 9, 10)
             # KLUDGE: Force using python 3.12 on 9.x because the default python version is 3.9 which is too old for nanobind.
             if [[ "$PYTHON3" == "python3" && "$VERSION_ID" == 9* ]]; then
                 PYTHON3="python3.12"
@@ -202,7 +202,7 @@ install_deps() {
 
             echo_root_run "dnf install -y epel-release && dnf install -y $packages ; dnf clean packages"
 
-        elif [[ "$(command -v zypper)" != "" && ( "$ID" == "opensuse-leap" || "$ID" == "opensuse-tumbleweed") ]]; then
+        elif [[ "$(command -v zypper)" != "" && ( "$ID" == "opensuse-leap" || "$ID" == "opensuse-tumbleweed") ]]; then # (tested: Leap 16.0, Tumbleweed)
             # zypper is used on OpenSUSE. 
 
             # KLUDGE: Force using python 3.12 on leap 15.x because the default python version is 3.6 which is too old.
@@ -226,7 +226,7 @@ install_deps() {
 
             echo_root_run "zypper install -y $packages ; zypper clean"
 
-        elif [[ "$(command -v pacman)" != "" ]]; then
+        elif [[ "$(command -v pacman)" != "" ]]; then # e.g. ID=arch (tested: rolling release)
             # pacman is used on Arch Linux
             packages="make diffutils ccache clang pkgconf lld lldb gdb bison gawk flex perl python python-pip uv libxml2 zlib doxygen graphviz xdg-utils elfutils"
 
@@ -373,7 +373,7 @@ and then configure and build OMNeT++.
 Supported operating systems [and package managers]:
 - Linux (Ubuntu/Debian [apt], Fedora/AlmaLinux/RHEL/RockyLinux [dnf],
         OpenSuse-tumbleweed/leap [zypper], ArchLinux [pacman], NixOS [nix])
-- macOS 16 [homebrew]
+- macOS 15 or later [homebrew]
 - Windows 11/Msys2 [pacman]
 
 ${BLUE}NOTE: This is an experimental script. If it doesn't work, please open

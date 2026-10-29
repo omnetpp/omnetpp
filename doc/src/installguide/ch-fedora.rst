@@ -9,7 +9,7 @@ procedure is described in the *Linux* chapter.
 
 The following Fedora release is known to work:
 
--  Fedora 42 (and likely newer versions)
+-  Fedora 45 (and likely newer versions)
 
 Installing the Prerequisite Packages
 ------------------------------------

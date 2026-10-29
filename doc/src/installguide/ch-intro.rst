@@ -14,7 +14,7 @@ Supported Platforms
 on the following operating systems:
 
 -  Linux x86_64/aarch64 distributions covered in this Installation Guide
--  macOS 15 on x86_64/aarch64 architectures
+-  macOS 15 or later on x86_64/aarch64 architectures
 -  Windows 11 on x86_64 architecture
 
 .. note::

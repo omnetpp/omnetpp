@@ -7,9 +7,10 @@ Supported Releases
 This chapter provides additional information for installing |omnet++| on openSUSE installations. The overall
 installation procedure is described in the *Linux* chapter.
 
-The following openSUSE release is supported:
+The following openSUSE releases are supported:
 
--  openSUSE Leap 15.4+
+-  openSUSE Tumbleweed
+-  openSUSE Leap 16.0
 
 It was tested on the following architectures:
 
