@@ -285,7 +285,8 @@ By default, shared libraries will be created. If you want to build static librar
 Additional Packages
 -------------------
 
-Note that at this point, MPI, Doxygen and GraphViz have been installed as part of the prerequisites.
+Note that at this point, Doxygen and GraphViz have been installed as part of the prerequisites (except Doxygen on
+RHEL-family distributions, see their chapter). MPI is optional; see your distribution's chapter for installing it.
 
 Qtenv
 ~~~~~

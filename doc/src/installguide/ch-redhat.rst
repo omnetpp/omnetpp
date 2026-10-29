@@ -5,15 +5,17 @@ Supported Releases
 ------------------
 
 This chapter provides additional information for installing |omnet++| on
-Red Hat Enterprise Linux (RHEL), RockyLinux and AlmaLinux distributions. 
+Red Hat Enterprise Linux (RHEL), RockyLinux and AlmaLinux distributions.
+
+The following releases were tested, without 3D support:
+
+-  AlmaLinux 9.x
+-  AlmaLinux 10.x
+
+RHEL, RockyLinux and CentOS Stream of the same major versions are expected to work.
 
 Installing the Prerequisite Packages
 ------------------------------------
-
-.. note::
-
-   You will need Red Hat Enterprise Linux Desktop Workstation for |omnet++|. The *Desktop Client* version does not
-   contain development tools.
 
 To install the required packages, type in the terminal. You may need ``sudo``
 privileges for these commands.
@@ -32,6 +34,14 @@ Then, install the core development tools and libraries:
    $ sudo dnf install -y make ccache clang lld lldb gdb bison flex perl \
        python3-devel python3-pip libxml2-devel zlib-devel graphviz \
        xdg-utils elfutils-devel
+
+.. note::
+
+   Doxygen is not in this list, and ``install.sh`` does not install it either: on these distributions it is
+   available only from the CodeReady Builder (CRB) repository, which is usually not enabled. Doxygen is
+   needed only for generating the documentation of simulation models. If you need it, enable CRB and install it:
+   ``sudo dnf config-manager --set-enabled crb && sudo dnf install -y doxygen`` (on RHEL itself, enable
+   ``codeready-builder-for-rhel-<version>-<arch>-rpms`` with ``subscription-manager`` instead).
 
 .. note::
 
@@ -89,7 +99,7 @@ To install additional (optional) packages for parallel simulation, type:
 
 .. code::
 
-   $ su -c 'yum install openmpi-devel'
+   $ sudo dnf install -y openmpi-devel
 
 Note that *openmpi* will not be available by default, it needs to be activated in every session with the
 
