@@ -61,8 +61,14 @@ tag() { echo "omnetpp-$VERSION"; }
 whatsnew_heading_version() { echo "$VERSION" | sed 's/\.0$//'; }
 
 remote_tag_commit() {
-    # a missing tag prints an error document, not a hash
-    gh api "repos/$REPO/git/ref/tags/$(tag)" --jq '.object.sha' 2>/dev/null | grep -E '^[0-9a-f]{40}$'
+    # a missing tag prints an error document, not a hash; an annotated tag's ref points to the tag
+    # object, which points to the commit
+    local obj
+    obj=$(gh api "repos/$REPO/git/ref/tags/$(tag)" --jq '.object.type + " " + .object.sha' 2>/dev/null)
+    case "$obj" in
+        "tag "*) gh api "repos/$REPO/git/tags/${obj#tag }" --jq '.object.sha' 2>/dev/null ;;
+        *) echo "${obj#* }" ;;
+    esac | grep -E '^[0-9a-f]{40}$'
 }
 
 test_failures() {
