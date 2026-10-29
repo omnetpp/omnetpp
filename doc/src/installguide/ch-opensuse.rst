@@ -24,7 +24,7 @@ First, install the core development tools and libraries:
 .. code::
 
    $ sudo zypper install -y make ccache clang lld lldb gdb bison gawk flex perl \
-       python311-devel python311-pip libxml2-devel zlib-devel doxygen graphviz \
+       python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz \
        xdg-utils libdw-devel
 
 Next, install packages for the graphical environment (Qtenv and IDE). If you do not need GUI support (e.g., for a server installation), you can skip this step and later configure |omnet++| with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
@@ -45,18 +45,23 @@ After installing system packages, it's good practice to clean the local reposito
 
    $ sudo zypper clean
 
-Install ``uv``, which is used to set up the Python environment. On Tumbleweed, install the ``uv`` package with ``zypper``.
+Install ``uv``, which is used to set up the Python environment. On Tumbleweed, install the ``uv`` package:
+
+.. code::
+
+   $ sudo zypper install -y uv
+
 On Leap, install it for the current user (``uv`` will be placed in ``~/.local/bin``, make sure it is on your ``PATH``):
 
 .. code::
 
-   $ python311 -m pip install --user uv
+   $ python3 -m pip install --user uv
 
 Next, set up a Python virtual environment for |omnet++| using ``uv``. In the root directory of your |omnet++| download:
 
 .. code::
 
-   $ uv venv --python python311 --seed --prompt "omnetpp/.venv" .venv
+   $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:
@@ -68,8 +73,8 @@ Then, install the required Python packages into the virtual environment:
 .. note::
 
    If you prefer not to use ``uv``, create the virtual environment with
-   ``python311 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
-   ``python311 -m pip install -r python/requirements.txt`` instead.
+   ``python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+   ``python3 -m pip install -r python/requirements.txt`` instead.
 
 .. note::
 
