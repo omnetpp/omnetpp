@@ -24,8 +24,8 @@ First, install the core development tools and libraries:
 .. code::
 
    $ sudo zypper install -y make ccache clang lld lldb gdb bison gawk flex perl \
-       python3-devel python3-pip libxml2-devel zlib-devel doxygen graphviz \
-       xdg-utils libdw-devel
+       python3-devel python3-pip doxygen graphviz xdg-utils \
+       libdw-devel
 
 Next, install packages for the graphical environment (Qtenv and IDE). If you do not need GUI support (e.g., for a server installation), you can skip this step and later configure |omnet++| with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
 
@@ -61,7 +61,7 @@ Next, set up a Python virtual environment for |omnet++| using ``uv``. In the roo
 
 .. code::
 
-   $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
+   $ UV_PYTHON_DOWNLOADS=never uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:

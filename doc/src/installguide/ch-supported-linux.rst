@@ -94,7 +94,7 @@ If you are installing manually or want to understand the process, the typical st
 
     .. code:: bash
 
-       $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
+       $ UV_PYTHON_DOWNLOADS=never uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
 
 3.  Activate the virtual environment:
 
@@ -107,6 +107,8 @@ If you are installing manually or want to understand the process, the typical st
     .. code:: bash
 
        $ uv pip install -r python/requirements.txt
+
+``UV_PYTHON_DOWNLOADS=never`` makes ``uv`` use the system's Python instead of downloading its own.
 
 If ``uv`` is not available on your system, ``install.sh`` installs it for the current user with ``pipx``
 or ``pip install --user``. You can also do without it: create the virtual environment with

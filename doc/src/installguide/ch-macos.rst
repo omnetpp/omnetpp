@@ -63,7 +63,7 @@ After installing packages with Homebrew, set up a Python virtual environment for
 
 .. code::
 
-   $ uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
+   $ UV_PYTHON_DOWNLOADS=never uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
    $ source .venv/bin/activate
 
 Then, install the required Python packages into the virtual environment:

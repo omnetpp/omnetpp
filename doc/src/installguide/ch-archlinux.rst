@@ -7,6 +7,8 @@ Supported Releases
 This chapter provides additional information for installing |omnet++| on Arch Linux. The overall
 installation procedure is described in the *Linux* chapter.
 
+Arch Linux is a rolling release; |omnet++| was tested with the packages current at the time of the release.
+
 These instructions assume you are using the ``pacman`` package manager.
 
 Installing the Prerequisite Packages
@@ -37,6 +39,25 @@ After installing system packages, it's good practice to clean the package cache:
 .. code::
 
    $ sudo pacman -Scc --noconfirm
+
+Next, set up a Python virtual environment for |omnet++| using ``uv``. In the root directory of your |omnet++| download:
+
+.. code::
+
+   $ UV_PYTHON_DOWNLOADS=never uv venv --python python3 --seed --prompt "omnetpp/.venv" .venv
+   $ source .venv/bin/activate
+
+Then, install the required Python packages into the virtual environment:
+
+.. code::
+
+   $ uv pip install -r python/requirements.txt
+
+.. note::
+
+   If you prefer not to use ``uv``, create the virtual environment with
+   ``python3 -m venv .venv --upgrade-deps --clear --prompt "omnetpp/.venv"`` and install the packages with
+   ``python3 -m pip install -r python/requirements.txt`` instead.
 
 .. note::
    The commands above install Clang as the C++ compiler and LLD as the linker. If you prefer to use GCC and the system's default linker, you can adjust the package list accordingly (e.g., replace ``clang`` with ``gcc`` and omit ``lld``) and set the ``PREFER_CLANG=no`` and ``PREFER_LLD=no`` options in the ``configure.user`` file or during the ``./configure`` step.

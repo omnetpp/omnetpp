@@ -242,7 +242,6 @@ install_deps() {
         elif [[ "$ID" == "nixos" ]]; then
             echo_q -e "${YELLOW}NixOS detected, dependencies should already be installed.${RESET}"
             echo_q
-            # do not install python dependencies
         else
             echo_q -e "${RED}Package manager (apt, dnf, zypper, pacman) not detected.\nSee 'doc/InstallGuide.pdf' and install the required packages manually.${RESET}"
             exit 1
