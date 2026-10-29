@@ -282,6 +282,8 @@ void Cmdenv::doRun()
                 stoppedWithException(e);
                 notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
+                if (networkSetupDone)
+                    reportUnusedEntriesAfterError();
             }
 
             // send LF_ON_RUN_END notification

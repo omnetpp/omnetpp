@@ -1,0 +1,57 @@
+%description:
+unused-entry-check = error: if the run stops with an error, the unused entries
+are still reported as a warning only; the original error remains the error.
+
+%file: test.ned
+
+simple App
+{
+    parameters:
+        int p = default(0);
+}
+
+network Test
+{
+    submodules:
+        app: App;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class App : public cSimpleModule
+{
+  protected:
+    virtual void initialize() override {
+        scheduleAt(1, new cMessage("timer"));
+    }
+    virtual void handleMessage(cMessage *msg) override {
+        delete msg;
+        throw cRuntimeError("Failed in handleMessage");
+    }
+};
+
+Define_Module(App);
+
+}
+
+%inifile: test.ini
+[General]
+unused-entry-check = error
+**.app.p = 1
+**.app.stale = 2
+
+%exitcode: 1
+
+%contains-regex: stderr
+(?s)<!> Error: Failed in handleMessage.*<!> Warning: 1 configuration entry had no effect before the run stopped \(see the unused-entry-check option\):
+  \*\*\.app\.stale = 2  -- .*test\.ini:4
+Possible causes: .*, or for a module created later during the simulation
+
+%not-contains: stderr
+<!> Error: 1 configuration entr

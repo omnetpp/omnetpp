@@ -171,7 +171,7 @@ Register_PerRunConfigOption(CFGID_RESULT_DIR, "result-dir", CFG_STRING, "results
 Register_PerRunConfigOption(CFGID_RECORD_EVENTLOG, "record-eventlog", CFG_BOOL, "false", "Enables recording an eventlog file, which can be later visualized on a sequence chart. See `eventlog-file` option too.");
 Register_PerRunConfigOption(CFGID_DEBUG_STATISTICS_RECORDING, "debug-statistics-recording", CFG_BOOL, "false", "Turns on the printing of debugging information related to statistics recording (`@statistic` properties)");
 Register_PerRunConfigOption(CFGID_UNUSED_ENTRY_CHECK, "unused-entry-check", CFG_STRING, "warning", "Specifies what to do with configuration entries that have had no effect in the run, i.e. that no parameter or other setting has been read from. Such entries are often mistakes: typos, renamed or removed parameters or submodules, a module type that lacks the parameter, or an entry hidden by an earlier one or by a value fixed in NED. Values: `off`, `warning`, `error`. The check covers parameter assignments, `typename`, `display-string`, `display-name` and `rng-N` entries, not result recording options and other per-object options. An entry whose key also occurs earlier in the configuration (i.e. it is overridden) is not reported. The check is skipped in parallel simulation. See also `unused-entry-check-time`.");
-Register_PerRunConfigOption(CFGID_UNUSED_ENTRY_CHECK_TIME, "unused-entry-check-time", CFG_STRING, "end", "Specifies when to check for configuration entries that have had no effect (see `unused-entry-check`). Values: `initialization`: after network initialization, i.e. before the simulation starts; `end`: after finish() has been called on all modules. Checking after initialization reports problems early, but it also reports entries that are meant for modules created later during the simulation.");
+Register_PerRunConfigOption(CFGID_UNUSED_ENTRY_CHECK_TIME, "unused-entry-check-time", CFG_STRING, "end", "Specifies when to check for configuration entries that have had no effect (see `unused-entry-check`). Values: `initialization`: after network initialization, i.e. before the simulation starts; `end`: after finish() has been called on all modules. Checking after initialization reports problems early, but it also reports entries that are meant for modules created later during the simulation. With `end`, if the run stops with an error after the network has been set up, the entries that have had no effect until the error are reported as a warning, even if `unused-entry-check` is `error`.");
 Register_PerRunConfigOption(CFGID_CHECK_SIGNALS, "check-signals", CFG_BOOL, CHECKSIGNALS_DEFAULT, "Controls whether the simulation kernel will validate signals emitted by modules and channels against signal declarations (`@signal` properties) in NED files. The default setting depends on the build type: `true` in DEBUG, and `false` in RELEASE mode.");
 
 Register_PerObjectConfigOption(CFGID_PARTITION_ID, "partition-id", KIND_MODULE, CFG_STRING, nullptr, "With parallel simulation: in which partition the module should be instantiated. Specify numeric partition ID, or a comma-separated list of partition IDs for compound modules that span across multiple partitions. Ranges (`5..9`) and `*` (=all) are accepted too.");
@@ -800,12 +800,15 @@ void EnvirBase::setupNetwork(cModuleType *network)
     currentEventName = "";
     currentEventClassName = nullptr;
     currentModuleId = -1;
+    unusedEntryCheckPending = false;
 
     getSimulation()->setupNetwork(network);
     eventlogManager->flush();
 
     if (opt->debugStatisticsRecording)
         EnvirUtils::dumpResultRecorders(out, getSimulation()->getSystemModule());
+
+    unusedEntryCheckPending = true;
 }
 
 void EnvirBase::prepareForRun()
@@ -2085,8 +2088,9 @@ static bool isInUnusedEntryCheckScope(const char *key)
 
 void EnvirBase::checkUnusedEntries(bool atEnd)
 {
-    if (opt->unusedEntryCheck == EnvirOptions::CHECK_OFF || opt->unusedEntryCheckAtEnd != atEnd)
+    if (!unusedEntryCheckPending || opt->unusedEntryCheck == EnvirOptions::CHECK_OFF || opt->unusedEntryCheckAtEnd != atEnd)
         return;
+    unusedEntryCheckPending = false;
     if (opt->parsim)
         return;  // entries used only on other partitions would look unused
 
@@ -2096,6 +2100,23 @@ void EnvirBase::checkUnusedEntries(bool atEnd)
     if (opt->unusedEntryCheck == EnvirOptions::CHECK_ERROR)
         throw cRuntimeError("%s", report.c_str());
     displayWarning(report.c_str());
+}
+
+void EnvirBase::reportUnusedEntriesAfterError()
+{
+    // Entries are marked as used when they are looked up during network setup,
+    // so the report is as reliable as the one after network initialization.
+    // It is only a warning even with unused-entry-check=error: the run has already
+    // failed, and the original error must remain the error.
+    if (!unusedEntryCheckPending || opt->unusedEntryCheck == EnvirOptions::CHECK_OFF || !opt->unusedEntryCheckAtEnd)
+        return;
+    unusedEntryCheckPending = false;
+    if (opt->parsim)
+        return;
+
+    std::string report = formatUnusedEntriesReport(AFTER_ERROR);
+    if (!report.empty())
+        displayWarning(report.c_str());
 }
 
 std::string EnvirBase::formatUnusedEntriesReport(UnusedEntryCheckPoint checkPoint)
@@ -2109,8 +2130,11 @@ std::string EnvirBase::formatUnusedEntriesReport(UnusedEntryCheckPoint checkPoin
 
     std::stringstream os;
     int n = unusedEntries.size();
-    os << n << " configuration " << (n == 1 ? "entry has" : "entries have") << " had no effect in this run (see the "
-       << CFGID_UNUSED_ENTRY_CHECK->getName() << " option):\n";
+    if (checkPoint == AFTER_ERROR)
+        os << n << " configuration " << (n == 1 ? "entry" : "entries") << " had no effect before the run stopped";
+    else
+        os << n << " configuration " << (n == 1 ? "entry has" : "entries have") << " had no effect in this run";
+    os << " (see the " << CFGID_UNUSED_ENTRY_CHECK->getName() << " option):\n";
     for (const cConfiguration::KeyValue *entry : unusedEntries) {
         os << "  " << entry->getKey() << " = " << entry->getValue();
         std::string location = entry->getSourceLocation().str();

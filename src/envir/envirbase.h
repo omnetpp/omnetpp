@@ -173,6 +173,10 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     simtime_t simulatedTime;  // sim. time after finishing simulation
 
+    // Whether the network has been set up completely, and the unused-entry check
+    // has not run on it yet (see checkUnusedEntries(), reportUnusedEntriesAfterError())
+    bool unusedEntryCheckPending = false;
+
   public:
 
     bool attachDebuggerOnErrors = false;
@@ -337,13 +341,21 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Reports the configuration entries that have had no effect in this run
     // (see the unused-entry-check option). atEnd: whether we are called after
     // finish() or after network initialization; the check only runs at the
-    // time configured with the unused-entry-check-time option.
+    // time configured with the unused-entry-check-time option, and at most
+    // once per network.
     void checkUnusedEntries(bool atEnd);
 
-    enum UnusedEntryCheckPoint { AFTER_INITIALIZATION, AFTER_FINISH };
+    // To be called when the run has stopped with an error, after the error has
+    // been displayed, and only if the network has been set up completely in this
+    // run. If the check after finish() would have run but has not, reports the
+    // configuration entries that have had no effect until the error. The report
+    // is always a warning (regardless of unused-entry-check=error); does not throw.
+    void reportUnusedEntriesAfterError();
 
-    // Utility for checkUnusedEntries(): returns the report text, or an empty
-    // string if there are no unused entries
+    enum UnusedEntryCheckPoint { AFTER_INITIALIZATION, AFTER_FINISH, AFTER_ERROR };
+
+    // Utility for checkUnusedEntries() and reportUnusedEntriesAfterError():
+    // returns the report text, or an empty string if there are no unused entries
     std::string formatUnusedEntriesReport(UnusedEntryCheckPoint checkPoint);
 
     // Displays a warning message. The default implementation writes it to the output.

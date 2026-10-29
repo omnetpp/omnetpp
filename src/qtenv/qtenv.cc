@@ -902,6 +902,7 @@ void Qtenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unti
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
+        reportUnusedEntriesAfterError();
     }
     stopClock();
     stopSimulationFlag = false;
@@ -1193,6 +1194,7 @@ void Qtenv::finishSimulation()
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
+        reportUnusedEntriesAfterError();
     }
     // then endrun
     try {
@@ -1248,6 +1250,7 @@ void Qtenv::loadNedFile(const char *fname, const char *expectedPackage, bool isX
 // XXX too similar to newRun
 void Qtenv::newNetwork(const char *networkname)
 {
+    bool networkSetupDone = false;
     try {
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
@@ -1274,6 +1277,7 @@ void Qtenv::newNetwork(const char *networkname)
         readPerRunOptions();
         opt->networkName = network->getName();  // override config setting
         setupNetwork(network);
+        networkSetupDone = true;
         prepareForRun();
 
         simulationState = SIM_NEW;
@@ -1283,6 +1287,8 @@ void Qtenv::newNetwork(const char *networkname)
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
+        if (networkSetupDone)
+            reportUnusedEntriesAfterError();
         simulationState = SIM_ERROR;
     }
 
@@ -1302,6 +1308,7 @@ void Qtenv::newNetwork(const char *networkname)
 // XXX too similar to newNetwork
 void Qtenv::newRun(const char *configname, int runnumber)
 {
+    bool networkSetupDone = false;
     try {
         // finish & cleanup previous run if we haven't done so yet
         if (simulationState != SIM_NONET) {
@@ -1333,6 +1340,7 @@ void Qtenv::newRun(const char *configname, int runnumber)
         ASSERT(network);
 
         setupNetwork(network);
+        networkSetupDone = true;
         prepareForRun();
 
         simulationState = SIM_NEW;
@@ -1341,6 +1349,8 @@ void Qtenv::newRun(const char *configname, int runnumber)
     catch (std::exception& e) {
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
+        if (networkSetupDone)
+            reportUnusedEntriesAfterError();
         simulationState = SIM_ERROR;
     }
 
@@ -1738,6 +1748,7 @@ void Qtenv::callRefreshDisplaySafe()
         stoppedWithException(e);
         notifyLifecycleListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
+        reportUnusedEntriesAfterError();
     }
 }
 

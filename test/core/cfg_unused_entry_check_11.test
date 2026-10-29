@@ -1,0 +1,61 @@
+%description:
+unused-entry-check: if the run stops with an error during network setup,
+nothing is reported, because the entries of the modules not yet created would
+look unused.
+
+%file: test.ned
+
+simple App
+{
+    parameters:
+        int p = default(0);
+}
+
+simple Failing
+{
+}
+
+network Test
+{
+    submodules:
+        app: App;
+        failing: Failing;
+        later: App;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+using namespace omnetpp;
+
+namespace @TESTNAME@ {
+
+class App : public cSimpleModule
+{
+};
+
+class Failing : public cSimpleModule
+{
+  public:
+    Failing() {throw cRuntimeError("Failed in constructor");}
+};
+
+Define_Module(App);
+Define_Module(Failing);
+
+}
+
+%inifile: test.ini
+[General]
+**.app.p = 1
+**.app.stale = 2
+**.later.p = 3
+
+%exitcode: 1
+
+%contains: stderr
+Failed in constructor
+
+%not-contains: stderr
+configuration entr
