@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-FROM quay.io/toolbx/ubuntu-toolbox:24.04
+FROM quay.io/toolbx/ubuntu-toolbox:26.04
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 SHELL ["/bin/bash", "-c"]
@@ -27,7 +27,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get install -y --no-install-recommends git wget curl ca-certificates \
   bash apt-utils bash-completion bc bzip2 \
   curl dialog diffutils findutils gnupg gnupg2 gpgsm hostname iproute2 iputils-ping keyutils language-pack-en \
-  less libcap2-bin libkrb5-3 libnss-mdns libnss-myhostname libvte-2.9*-common libvte-common locales lsof \
+  less libcap2-bin libkrb5-3 libnss-mdns libnss-myhostname libvte-2.9*-common locales lsof \
   man-db manpages mtr ncurses-base openssh-client passwd pigz pinentry-curses procps \
   rsync sudo tcpdump time traceroute tree tzdata unzip util-linux wget xauth xz-utils zip && \
   apt-get clean && \

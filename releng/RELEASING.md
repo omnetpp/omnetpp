@@ -29,12 +29,17 @@ In the commands, `X.Y.Z` is the version (e.g. `6.5.0`) and `X.Y` is its first tw
 
 ## Procedure
 
-1. **Build the container images**, which also writes `releng/dist/omnetpp-X.Y.Z-distrobox.ini`:
+1. **Build the container images**, which also writes `releng/dist/omnetpp-X.Y.Z-distrobox.ini`.
+   First check the base images: both `dockerfiles/omnetpp/Dockerfile` (`ubuntu:<version>`) and
+   `dockerfiles/omnetpp-gui/Dockerfile` (`quay.io/toolbx/ubuntu-toolbox:<version>`) must be based
+   on the latest Ubuntu LTS release, the one that runs `test_quick` in `misc/test-dist.distros`. If
+   one is older, update its `FROM` line and its tags (see below) before building, and commit the
+   change. Then build:
 
         releng/build-omnetpp-docker-images
 
    This builds `ghcr.io/omnetpp/omnetpp:u26.04-X.Y.Z` (core, no GUI) and
-   `ghcr.io/omnetpp/omnetpp-gui:u24.04-X.Y.Z` (for distrobox) from the archives in `releng/dist`.
+   `ghcr.io/omnetpp/omnetpp-gui:u26.04-X.Y.Z` (for distrobox) from the archives in `releng/dist`.
    The Ubuntu version in the tags follows the `FROM` line of each Dockerfile. If a Dockerfile
    changed its base image, check that the tag in its `build` script, `opp_docker_shell` and
    `distrobox-template.ini` changed with it.
@@ -71,7 +76,7 @@ In the commands, `X.Y.Z` is the version (e.g. `6.5.0`) and `X.Y` is its first tw
 5. **Gate 2: push the container images.** Ask, then:
 
         podman push ghcr.io/omnetpp/omnetpp:u26.04-X.Y.Z
-        podman push ghcr.io/omnetpp/omnetpp-gui:u24.04-X.Y.Z
+        podman push ghcr.io/omnetpp/omnetpp-gui:u26.04-X.Y.Z
 
 6. **Stage the assets and write the release notes:**
 
