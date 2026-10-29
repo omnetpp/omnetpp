@@ -63,12 +63,7 @@ void App::initialize()
     WATCH(pkCounter);
     WATCH(myAddress);
 
-    const char *destAddressesPar = par("destAddresses");
-    cStringTokenizer tokenizer(destAddressesPar);
-    const char *token;
-    while ((token = tokenizer.nextToken()) != nullptr)
-        destAddresses.push_back(atoi(token));
-
+    destAddresses = cStringTokenizer(par("destAddresses")).asIntVector();
     if (destAddresses.size() == 0)
         throw cRuntimeError("At least one address must be specified in the destAddresses parameter!");
 
