@@ -221,7 +221,7 @@ cp -a $IDE_BUILDDIR $DISTDIR/$what-$VERSION
 cp releng/icon.png $DISTDIR/$what-$VERSION/ide
 
 # create update site repository archive
-export IDE_REPOSIRORY_NAME=${BUILDID}-$what-${VERSION}-ide-repository.zip
+export IDE_REPOSITORY_NAME=${BUILDID}-$what-${VERSION}-ide-repository.zip
 if [ -d $IDE_BUILDDIR/../update ]; then
   zip -r -X -9 -q $DISTDIR/$IDE_REPOSITORY_NAME $IDE_BUILDDIR/../update || { echo --- error creating src-windows.zip ---; exit 1;}
 fi
