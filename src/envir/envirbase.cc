@@ -2090,12 +2090,22 @@ void EnvirBase::checkUnusedEntries(bool atEnd)
     if (opt->parsim)
         return;  // entries used only on other partitions would look unused
 
+    std::string report = formatUnusedEntriesReport(atEnd ? AFTER_FINISH : AFTER_INITIALIZATION);
+    if (report.empty())
+        return;
+    if (opt->unusedEntryCheck == EnvirOptions::CHECK_ERROR)
+        throw cRuntimeError("%s", report.c_str());
+    displayWarning(report.c_str());
+}
+
+std::string EnvirBase::formatUnusedEntriesReport(UnusedEntryCheckPoint checkPoint)
+{
     std::vector<const cConfiguration::KeyValue *> unusedEntries;
     for (const cConfiguration::KeyValue *entry : getConfigEx()->getUnusedEntries())
         if (isInUnusedEntryCheckScope(entry->getKey()))
             unusedEntries.push_back(entry);
     if (unusedEntries.empty())
-        return;
+        return "";
 
     std::stringstream os;
     int n = unusedEntries.size();
@@ -2111,12 +2121,9 @@ void EnvirBase::checkUnusedEntries(bool atEnd)
     os << "Possible causes: a typo, a renamed or removed parameter or submodule, a module type that lacks the "
           "parameter, an earlier entry or a NED assignment that takes precedence, or an entry meant for another "
           "configuration or run";
-    if (!atEnd)
+    if (checkPoint != AFTER_FINISH)
         os << ", or for a module created later during the simulation";
-
-    if (opt->unusedEntryCheck == EnvirOptions::CHECK_ERROR)
-        throw cRuntimeError("%s", os.str().c_str());
-    displayWarning(os.str().c_str());
+    return os.str();
 }
 
 void EnvirBase::displayWarning(const char *text)

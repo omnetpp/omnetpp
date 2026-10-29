@@ -340,6 +340,12 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // time configured with the unused-entry-check-time option.
     void checkUnusedEntries(bool atEnd);
 
+    enum UnusedEntryCheckPoint { AFTER_INITIALIZATION, AFTER_FINISH };
+
+    // Utility for checkUnusedEntries(): returns the report text, or an empty
+    // string if there are no unused entries
+    std::string formatUnusedEntriesReport(UnusedEntryCheckPoint checkPoint);
+
     // Displays a warning message. The default implementation writes it to the output.
     virtual void displayWarning(const char *text);
 
