@@ -1,7 +1,7 @@
 # workingdir,                        cmdLine,                                          simtimelimit, fingerprint,expected value,tags
-# for configs with multiple fingerprint, they are in "linux macos windows" order
+# platform dependent tests (transcendental functions are implemented differently on each platform) list multiple fingerprints in "linux macos windows wine" order
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,                100s,         a48f-1328/rsz,PASS,
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c DriftingNormal -r 0,         100s,         1ae5-a1bb/rsz d67e-0781/rsz 7fbb-cc64/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c DriftingNormal -r 0,         100s,         1ae5-a1bb/rsz d67e-0781/rsz 7fbb-cc64/rsz f812-80f3/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c RareExtremeValues -r 0,      100s,         26af-8de3/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue1 -r 0,100s,         ec21-cb68/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c UnexpectedExtremeValue2 -r 0,100s,         cfb1-f021/rsz,PASS,
@@ -10,7 +10,7 @@
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c TwoObservations -r 0,        100s,         58c5-156d/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c Constant -r 0,               100s,         778a-372c/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c Linear -r 0,                 100s,         311d-b770/rsz,PASS,
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c UnitNormal -r 0,             100s,         c3fb-d6de/rsz 4ce5-a3bc/rsz e02d-05eb/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c UnitNormal -r 0,             100s,         c3fb-d6de/rsz 4ce5-a3bc/rsz e02d-05eb/rsz e99a-f1aa/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c Exponential10 -r 0,          100s,         31ee-63d6/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c UnitUniform -r 0,            100s,         75b7-35b4/rsz,PASS,
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c Uniform200 -r 0,             100s,         a130-5dfb/rsz,PASS,
@@ -21,5 +21,5 @@
 # most likely sin() works a little differently on some systems, so we have to accept two different fingerprints here (there is only
 # noise in the bottom few bits of the numbers anyways), but the result files will be identical (they are printed with limited precision)
 /test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedUniform -r 0,    100s,         40e7-6689/rsz 89ee-de92/rsz 3acf-5b88/rsz,PASS,
-/test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedLinear -r 0,     100s,         3725-545d/rsz 3f2d-2b5c/rsz d1d2-d204/rsz,PASS,
+/test/models/histograms/,                ./histograms -f omnetpp.ini -c SineWeightedLinear -r 0,     100s,         3725-545d/rsz 3f2d-2b5c/rsz d1d2-d204/rsz 375a-ca1d/rsz,PASS,
 

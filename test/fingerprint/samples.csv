@@ -1,4 +1,5 @@
 # workingdir,                        cmdLine,                                          simtimelimit, fingerprint,expected value,tags
+# platform dependent tests (transcendental functions are implemented differently on each platform) list multiple fingerprints in "linux macos windows wine" order
 # /samples/aloha/,                     ./aloha -fakaroa.ini -c General -r 0,                5000s,         0000-0000,PASS,           # AKAROA required
 /samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAloha1 -r 0,            5000s,         bb79-95ff/tplx,PASS,
 /samples/aloha/,                     ./aloha -f omnetpp.ini -c PureAloha2 -r 0,            5000s,         7115-c344/tplx,PASS,
@@ -70,7 +71,7 @@
 
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Uniform -r 0,             1000s,         7c0d-e5b8/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c IntUniform -r 0,          1000s,         1014-70a1/rsz,PASS,
-/samples/histograms/,                ./histograms -f omnetpp.ini -c Normal -r 0,              1000s,         7edc-554c/rsz 148a-f878/rsz 85f7-6efb/rsz,PASS,
+/samples/histograms/,                ./histograms -f omnetpp.ini -c Normal -r 0,              1000s,         7edc-554c/rsz 148a-f878/rsz 85f7-6efb/rsz f76e-b688/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Exponential -r 0,         1000s,         45bc-2c33/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c Bimodal -r 0,             1000s,         5d61-d6c8/rsz,PASS,
 /samples/histograms/,                ./histograms -f omnetpp.ini -c ConstantWeightedUniform -r 0, 1000s,     eed5-f03f/rsz,PASS,
