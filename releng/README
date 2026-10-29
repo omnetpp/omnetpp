@@ -10,4 +10,5 @@ will be available in the 'releng/dist' folder.
 
 To create a build, execute the 'build-omnetpp-dist' script.
 To test the archives before a release, see RELEASE-TESTING.md (scripts in misc/test-dist).
+To publish a tested build on GitHub, omnetpp.org and opp_env, see RELEASING.md (script: misc/release-dist).
 misc/opp-mac-shell opens a shell on a Mac in a copy of the working tree, see misc/opp-mac-shell.md.

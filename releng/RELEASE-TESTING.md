@@ -58,6 +58,8 @@ cross-check and the report need judgement.
    This removes the `opprel-*` containers and images, `releng/dist/test-work` and
    `~/opp-dist-test` on the Mac. It keeps the pulled base images and `releng/dist/test-results`.
    Packages that install.sh installed on the Mac with Homebrew stay installed.
+8. **Release** the accepted build as described in `RELEASING.md`. Keep the archives and
+   `releng/dist/test-results` until then; `misc/release-dist` checks them.
 
 ## What is tested
 

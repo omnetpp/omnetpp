@@ -1,0 +1,232 @@
+#!/usr/bin/env bash
+#
+# Publishes tested distribution archives as a draft GitHub release, and prepares the data that
+# the omnetpp.org download page needs. See releng/RELEASING.md.
+#
+set -uo pipefail
+
+MISC=$(cd "$(dirname "$0")" && pwd)
+RELENG=$(dirname "$MISC")
+ROOT=$(dirname "$RELENG")
+DIST=${RELEASE_DIST_DIR:-$RELENG/dist}
+OUT=$DIST/release
+BRANCH=${RELEASE_BRANCH:-omnetpp-6.x}
+REPO=${RELEASE_GITHUB_REPO:-omnetpp/omnetpp}
+SUFFIXES="linux-x86_64.tgz linux-aarch64.tgz macos-x86_64.tgz macos-aarch64.tgz windows-x86_64.7z core.tgz"
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") <command> [args]
+
+  check [--accept-failures]   verify that the archives in the dist directory are one tested build
+                              of the tip of $BRANCH; --accept-failures only warns about failed tests
+  stage                       copy the release assets to $OUT under their published names
+  body                        write $OUT/release-notes.md from the WHATSNEW section of the version
+  draft [--accept-failures]   create a draft release on $REPO from the existing tag, and upload
+                              the staged assets and release notes
+  website-data [file]         print the size and sha256 of the staged assets; with a download item
+                              file of omnetpp.org, update its filesize and sha256 fields in place
+
+Environment: RELEASE_DIST_DIR=$DIST RELEASE_BRANCH=$BRANCH RELEASE_GITHUB_REPO=$REPO
+EOF
+}
+
+die() { echo "Error: $*" >&2; exit 1; }
+
+# sets BUILDID and VERSION from the archive names, and ARCHIVE_<n> for each suffix
+scan_archives() {
+    local s f n ids=() vers=()
+    BUILDID=""; VERSION=""
+    n=0
+    for s in $SUFFIXES; do
+        n=$((n+1))
+        f=$(ls "$DIST"/[0-9]*-omnetpp-*-"$s" 2>/dev/null)
+        [ -n "$f" ] || die "no <buildid>-omnetpp-*-$s in $DIST"
+        [ "$(echo "$f" | wc -l)" = 1 ] || die "more than one build in $DIST: $(echo $f)"
+        f=$(basename "$f")
+        ids+=("$(echo "$f" | sed -n "s/^\([0-9]\{6\}-[0-9a-f]*\)-omnetpp-.*-$s\$/\1/p")")
+        vers+=("$(echo "$f" | sed -n "s/^[0-9]\{6\}-[0-9a-f]*-omnetpp-\(.*\)-$s\$/\1/p")")
+        eval "ARCHIVE_$n=\$f"
+    done
+    [ $(printf '%s\n' "${ids[@]}" | sort -u | wc -l) = 1 ] || die "the archives come from different builds: $(printf '%s ' "${ids[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' ')"
+    [ $(printf '%s\n' "${vers[@]}" | sort -u | wc -l) = 1 ] || die "the archives have different versions"
+    BUILDID=${ids[0]}; VERSION=${vers[0]}
+    [ -n "$BUILDID" ] && [ -n "$VERSION" ] || die "cannot parse the archive names in $DIST"
+}
+
+is_prerelease() { case "$VERSION" in *[!0-9.]*) return 0;; esac; return 1; }
+tag() { echo "omnetpp-$VERSION"; }
+
+# WHATSNEW headings drop a trailing ".0": OMNeT++ 6.5 (October 2026)
+whatsnew_heading_version() { echo "$VERSION" | sed 's/\.0$//'; }
+
+remote_tag_commit() {
+    # a missing tag prints an error document, not a hash
+    gh api "repos/$REPO/git/ref/tags/$(tag)" --jq '.object.sha' 2>/dev/null | grep -E '^[0-9a-f]{40}$'
+}
+
+test_failures() {
+    local res=$DIST/test-results/$BUILDID p s
+    [ -d "$res" ] || { echo "no test results in $res"; return; }
+    for p in $(grep -v '^\s*\(#\|$\)' "$MISC/test-dist.distros" | awk '{print $1}') windows macos; do
+        s=$res/$p/summary.txt
+        if [ ! -f "$s" ]; then echo "$p: not tested"; continue; fi
+        grep -q '^install_exit: 0$' "$s" || echo "$p: install failed"
+        grep -q '^smoke: PASS$' "$s" || echo "$p: smoke test failed or missing"
+        if grep -q '^test_quick_exit:' "$s"; then
+            grep -q '^test_quick_exit: 0$' "$s" || echo "$p: test_quick failed"
+        fi
+    done
+}
+
+cmd_check() {
+    local accept=no tip hash full remote local_tag failures
+    [ "${1:-}" = --accept-failures ] && accept=yes
+    scan_archives
+    echo "build $BUILDID, version $VERSION"
+
+    tip=$(git -C "$ROOT" rev-parse --verify -q "refs/heads/$BRANCH") || die "no local branch (jj bookmark) $BRANCH"
+    hash=${BUILDID#*-}
+    full=$(git -C "$ROOT" rev-parse --verify -q "$hash^{commit}") || die "commit $hash of the build is not in this repository"
+    [ "$full" = "$tip" ] || die "the build is from $hash, but $BRANCH is at $(git -C "$ROOT" rev-parse --short "$tip"); rebuild, or move $BRANCH"
+    echo "commit: $hash is the tip of $BRANCH"
+
+    [ "$(git -C "$ROOT" show "$tip:Version" 2>/dev/null)" = "omnetpp-$VERSION" ] || die "the Version file at $BRANCH does not say omnetpp-$VERSION"
+    if ! is_prerelease; then
+        grep -q "^OMNeT++ $(whatsnew_heading_version) (" <(git -C "$ROOT" show "$tip:WHATSNEW.md") || die "WHATSNEW.md at $BRANCH has no 'OMNeT++ $(whatsnew_heading_version) (...)' section"
+    fi
+
+    [ -f "$DIST/omnetpp-$VERSION-distrobox.ini" ] || die "no $DIST/omnetpp-$VERSION-distrobox.ini; run releng/build-omnetpp-docker-images"
+
+    if local_tag=$(git -C "$ROOT" rev-parse --verify -q "refs/tags/$(tag)^{commit}"); then
+        [ "$local_tag" = "$tip" ] || die "tag $(tag) exists, but points to $(git -C "$ROOT" rev-parse --short "$local_tag"), not to the build"
+        echo "tag: $(tag) points to the build"
+    else
+        echo "tag: $(tag) does not exist yet"
+    fi
+    remote=$(remote_tag_commit)
+    if [ -n "$remote" ]; then
+        [ "$remote" = "$tip" ] || die "tag $(tag) on $REPO points to $remote, not to the build"
+        echo "tag: $(tag) on $REPO points to the build"
+    fi
+
+    failures=$(test_failures)
+    if [ -n "$failures" ]; then
+        echo "$failures" | sed 's/^/test: /'
+        [ $accept = yes ] || die "the build did not pass every test; rerun with --accept-failures only if the release check report accepts these"
+        echo "test failures accepted"
+    else
+        echo "tests: every platform passed"
+    fi
+    echo "check: OK"
+}
+
+cmd_stage() {
+    local n s
+    cmd_check "$@" >/dev/null
+    rm -rf "$OUT"; mkdir -p "$OUT"
+    n=0
+    for s in $SUFFIXES; do
+        n=$((n+1)); eval "f=\$ARCHIVE_$n"
+        cp --reflink=auto "$DIST/$f" "$OUT/omnetpp-$VERSION-$s" || die "cannot copy $f"
+    done
+    cp "$DIST/omnetpp-$VERSION-distrobox.ini" "$OUT/" || die "cannot copy the distrobox.ini"
+    (cd "$OUT" && sha256sum omnetpp-* > SHA256SUMS)
+    echo "Staged build $BUILDID in $OUT:"
+    ls -l "$OUT"
+}
+
+assets() {
+    local s
+    for s in $SUFFIXES distrobox.ini; do echo "$OUT/omnetpp-$VERSION-$s"; done
+}
+
+check_staged() {
+    local a
+    for a in $(assets); do [ -f "$a" ] || die "$(basename "$a") is not staged; run '$(basename "$0") stage'"; done
+    (cd "$OUT" && sha256sum --quiet -c SHA256SUMS) || die "the staged files differ from SHA256SUMS; run '$(basename "$0") stage' again"
+}
+
+cmd_body() {
+    local tip heading
+    scan_archives
+    is_prerelease && die "pre-release notes are written by hand (see RELEASING.md)"
+    tip=$(git -C "$ROOT" rev-parse --verify -q "refs/heads/$BRANCH") || die "no local branch $BRANCH"
+    heading="OMNeT++ $(whatsnew_heading_version) ("
+    mkdir -p "$OUT"
+    # the section without its heading; the intro paragraph joined into one line, the rest in a
+    # collapsed block, as in the 6.4.0 release
+    git -C "$ROOT" show "$tip:WHATSNEW.md" | awk -v heading="$heading" '
+        function flush() { while (nblank > 0) { rest = rest "\n"; nblank-- } }
+        done { next }   # read to the end, so that git show does not fail on a closed pipe
+        index($0, heading) == 1 { insec = 1; skip = 1; next }
+        !insec { next }
+        skip { skip = 0; next }   # the dash underline
+        /^OMNeT\+\+ [0-9][^ ]* \(.*\)$/ { done = 1; next }   # the next section
+        state == 0 && /^[[:space:]]*$/ { next }
+        state == 0 { intro = $0; state = 1; next }
+        state == 1 && /^[[:space:]]*$/ { state = 2; next }
+        state == 1 { intro = intro " " $0; next }
+        state == 2 && /^[[:space:]]*$/ { if (rest != "") nblank++; next }
+        state == 2 { flush(); rest = rest $0 "\n" }
+        END {
+            if (intro == "") exit 1
+            printf "%s\n\n<details>\n<summary>Click to expand details</summary>\n\n%s</details>\n", intro, rest
+        }' > "$OUT/release-notes.md" || die "no '$heading...' section in WHATSNEW.md at $BRANCH"
+    echo "Wrote $OUT/release-notes.md ($(wc -l < "$OUT/release-notes.md") lines)"
+}
+
+cmd_draft() {
+    local tip remote flags=()
+    cmd_check "$@" >/dev/null
+    check_staged
+    [ -f "$OUT/release-notes.md" ] || is_prerelease || die "no release notes; run '$(basename "$0") body'"
+    tip=$(git -C "$ROOT" rev-parse "refs/heads/$BRANCH")
+    remote=$(remote_tag_commit)
+    [ "$remote" = "$tip" ] || die "tag $(tag) is not on $REPO yet, or does not point to the build; push it first"
+    gh release view "$(tag)" -R "$REPO" >/dev/null 2>&1 && die "a release for $(tag) already exists on $REPO"
+    is_prerelease && flags+=(--prerelease)
+    if [ -f "$OUT/release-notes.md" ]; then flags+=(--notes-file "$OUT/release-notes.md"); else flags+=(--notes ""); fi
+    gh release create "$(tag)" -R "$REPO" --draft --verify-tag --title "OMNeT++ $VERSION" "${flags[@]}" $(assets) \
+        || die "gh release create failed; delete the partial draft on GitHub before retrying"
+    echo "Draft release created. It is not published; a person publishes it on GitHub."
+}
+
+cmd_website_data() {
+    local file=${1:-} a
+    scan_archives
+    check_staged
+    for a in $(assets); do
+        printf '%-40s %12s %s\n' "$(basename "$a")" "$(stat -c %s "$a")" "$(sha256sum "$a" | cut -d' ' -f1)"
+    done
+    [ -n "$file" ] || return 0
+    [ -f "$file" ] || die "no such file: $file"
+    # each download entry has a download-file-url line, followed by filesize and sha256 lines
+    awk -v out="$OUT" -v version="$VERSION" '
+        function info(name,   cmd, size, sum) {
+            cmd = "stat -c %s \"" out "/" name "\""; cmd | getline size; close(cmd)
+            cmd = "sha256sum \"" out "/" name "\""; cmd | getline sum; close(cmd)
+            split(sum, parts, " "); SIZE = size; SUM = parts[1]
+        }
+        /download-file-url: .*releases\/download\/omnetpp-@VERSION@\/omnetpp-@VERSION@-/ {
+            name = $0; sub(/.*omnetpp-@VERSION@-/, "", name)
+            info("omnetpp-" version "-" name); cur = name; print; next
+        }
+        /^[[:space:]]*- / { cur = "" }
+        cur != "" && /^[[:space:]]*filesize:/ { sub(/filesize:.*/, "filesize: " SIZE); print; next }
+        cur != "" && /^[[:space:]]*sha256:/ { sub(/sha256:.*/, "sha256: " SUM); print; next }
+        { print }' "$file" > "$file.tmp" && mv "$file.tmp" "$file" || die "cannot update $file"
+    echo "Updated filesize and sha256 in $file"
+}
+
+[ $# -ge 1 ] || { usage; exit 1; }
+c=$1; shift
+case "$c" in
+    check) cmd_check "$@" ;;
+    stage) cmd_stage "$@" ;;
+    body) cmd_body "$@" ;;
+    draft) cmd_draft "$@" ;;
+    website-data) cmd_website_data "$@" ;;
+    -h|--help|help) usage ;;
+    *) usage; exit 1 ;;
+esac
