@@ -31,7 +31,7 @@ unused-entry-check = error
 %exitcode: 1
 
 %contains-regex: stderr
-<!> Error: 4 configuration entries have had no effect in this run \(see the unused-entry-check option\):
+<!> Error: 4 configuration entries had no effect in this run \(see the unused-entry-check option\):
   \*\*\.app\.sendInterval = 3s  -- .*test\.ini:4
   \*\*\.fixedParam = 7  -- .*test\.ini:5
   \*\*\.app\.typename = "App"  -- .*test\.ini:6

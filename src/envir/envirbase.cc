@@ -2130,10 +2130,8 @@ std::string EnvirBase::formatUnusedEntriesReport(UnusedEntryCheckPoint checkPoin
 
     std::stringstream os;
     int n = unusedEntries.size();
-    if (checkPoint == AFTER_ERROR)
-        os << n << " configuration " << (n == 1 ? "entry" : "entries") << " had no effect before the run stopped";
-    else
-        os << n << " configuration " << (n == 1 ? "entry has" : "entries have") << " had no effect in this run";
+    os << n << " configuration " << (n == 1 ? "entry" : "entries") << " had no effect "
+       << (checkPoint == AFTER_ERROR ? "before the run stopped" : "in this run");
     os << " (see the " << CFGID_UNUSED_ENTRY_CHECK->getName() << " option):\n";
     for (const cConfiguration::KeyValue *entry : unusedEntries) {
         os << "  " << entry->getKey() << " = " << entry->getValue();

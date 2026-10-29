@@ -23,7 +23,7 @@ network Test
 **.app.sendIntv = 3s
 
 %contains-regex: stderr
-<!> Warning: 1 configuration entry has had no effect in this run \(see the unused-entry-check option\):
+<!> Warning: 1 configuration entry had no effect in this run \(see the unused-entry-check option\):
   \*\*\.app\.sendIntv = 3s  -- .*test\.ini:3
 
 %contains: stdout

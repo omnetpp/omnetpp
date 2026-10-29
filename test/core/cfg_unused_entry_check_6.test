@@ -55,6 +55,6 @@ unused-entry-check-time = initialization
 %exitcode: 1
 
 %contains-regex: stderr
-<!> Error: 1 configuration entry has had no effect in this run .*
+<!> Error: 1 configuration entry had no effect in this run .*
   \*\*\.dynamic\.p = 5  -- .*test\.ini:4
 .*or for a module created later during the simulation

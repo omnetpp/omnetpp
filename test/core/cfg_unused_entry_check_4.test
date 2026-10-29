@@ -34,5 +34,5 @@ unused-entry-check = error
 %exitcode: 1
 
 %contains-regex: stderr
-<!> Error: 1 configuration entry has had no effect in this run \(see the unused-entry-check option\):
+<!> Error: 1 configuration entry had no effect in this run \(see the unused-entry-check option\):
   \*\*\.app\.cmdLineParam = 1  -- <commandline>

@@ -49,7 +49,7 @@ unused-entry-check-time = initialization
 %exitcode: 1
 
 %contains-regex: stderr
-(?s)<!> Warning: 1 configuration entry has had no effect in this run .*
+(?s)<!> Warning: 1 configuration entry had no effect in this run .*
   \*\*\.app\.stale = 2  -- .*test\.ini:4
 .*<!> Error: Failed in handleMessage
 

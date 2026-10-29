@@ -35,4 +35,4 @@ network Test
 %extraargs: -r 0..1
 
 %contains-regex: stderr
-(?s)1 configuration entry has had no effect in this run.*  \*\*\.app\.b = 2  -- .*1 configuration entry has had no effect in this run.*  \*\*\.app\.a = 1  -- 
+(?s)1 configuration entry had no effect in this run.*  \*\*\.app\.b = 2  -- .*1 configuration entry had no effect in this run.*  \*\*\.app\.a = 1  -- 

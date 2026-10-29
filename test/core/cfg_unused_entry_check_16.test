@@ -48,7 +48,7 @@ unused-entry-check = error
 %exitcode: 1
 
 %contains-regex: stderr
-<!> Error: 1 configuration entry has had no effect in this run .*
+<!> Error: 1 configuration entry had no effect in this run .*
   \*\*\.app\.stale = 2  -- .*test\.ini:4
 
 %not-contains: stderr
