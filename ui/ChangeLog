@@ -1,3 +1,5 @@
+2026-10-29  ------ omnetpp-6.5.0 released ------
+
 2026-10-21  Andras Varga
 
 	* NED Editor: Fixed a canvas figure with a non-invertible transform (e.g.

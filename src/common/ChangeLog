@@ -1,3 +1,5 @@
+2026-10-29  ------ omnetpp-6.5.0 released ------
+
 2026-10-21  Attila Torok
 
 	* Updated the bundled backward-cpp to 1.6 (adds support for Apple Silicon,

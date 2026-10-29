@@ -1,3 +1,5 @@
+2026-10-29  ------ omnetpp-6.5.0 released ------
+
 2026-10-26  Attila Torok
 
 	* Pandas 3 is now allowed in requirements.txt (#1482).

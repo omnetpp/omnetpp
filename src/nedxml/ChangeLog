@@ -1,3 +1,5 @@
+2026-10-29  ------ omnetpp-6.5.0 released ------
+
 2026-10-26  Andras Varga
 
 	* Message compiler: Fix: Parsim unpacking of std::vector<bool> fields did

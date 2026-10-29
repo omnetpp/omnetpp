@@ -1,3 +1,5 @@
+2026-10-29  ------ omnetpp-6.5.0 released ------
+
 2026-10-26  Rudolf Hornig
 
 	* opp_makemake: Fix: Windows was detected via the OS environment variable.

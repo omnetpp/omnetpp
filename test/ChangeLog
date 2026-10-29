@@ -1,3 +1,5 @@
+2026-10-29  ------ omnetpp-6.5.0 released ------
+
 2026-10-29  Andras Varga
 
 	* core: New tests cfg_unused_entry_check_9..16, for reporting unused
