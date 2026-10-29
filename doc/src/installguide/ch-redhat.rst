@@ -52,7 +52,7 @@ with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
 
    OpenSceneGraph is generally **not available or easily installable** on RHEL/AlmaLinux distributions from standard repositories. Therefore, it is strongly recommended to build |omnet++| **without** 3D support on these systems.
 
-   You should configure |omnet++| with the ``WITH_OSG=no`` option. If you are using the ``install.sh`` script, it will prompt you or you can use the ``--no-3d`` flag.
+   You should configure |omnet++| with the ``WITH_OSG=no`` option. If you are using the ``install.sh`` script, it asks whether to continue without 3D support (with ``-y``, it continues without asking); use the ``--no-3d`` flag to skip the question.
 
 Install ``uv``, which is used to set up the Python environment. It is not packaged for this distribution, so install it
 for the current user (``uv`` will be placed in ``~/.local/bin``, make sure it is on your ``PATH``):

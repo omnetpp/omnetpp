@@ -191,8 +191,13 @@ install_deps() {
             fi
 
             if ! $no_3d; then
-                echo_q -e "${RED}This Linux distibution does not support OpenSceneGraph. Please disable the 3D support with --no-3d.${RESET}"
-                exit 1
+                echo_q -e "${YELLOW}This Linux distribution does not provide OpenSceneGraph packages, so OMNeT++ can be built only without 3D support.${RESET}"
+                if ask_user "Continue without 3D support?" ; then
+                    no_3d=true
+                else
+                    echo_q -e "${RED}Installation aborted. Use --no-3d to skip this question.${RESET}"
+                    exit 1
+                fi
             fi
 
             echo_root_run "dnf install -y epel-release && dnf install -y $packages ; dnf clean packages"
