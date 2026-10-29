@@ -541,6 +541,26 @@ the check is done: at the \ttt{end} of the run (the default), after the
 mistakes before a possibly long simulation, but it also reports entries
 meant for modules that are created later during the simulation.
 
+When the run stops with an error, the check at the end of the run is not
+done. Instead, if the network has been set up completely, the entries that
+have had no effect until the error are reported as a warning after the error
+message (also with \ttt{error}, so that the original error remains the
+error):
+
+\begin{filelisting}
+<!> Warning: 1 configuration entry had no effect before the run stopped (see
+the unused-entry-check option):
+  **.outboundMapper.protocol = "ieee8021qstag"  -- omnetpp.ini:23
+\end{filelisting}
+
+The list is often a clue to the cause of the error, for example an entry
+for a parameter that has been removed in a new version of a model library,
+while the setting it made is now done in another way. Like the check after
+initialization, it may also contain entries meant for modules that would
+have been created later. With \ttt{initialization}, the entries are not
+reported again after an error, and if the error occurs while the network
+is being set up, nothing is reported.
+
 The check covers parameter assignments and the \ttt{typename},
 \ttt{display-string}, \ttt{display-name} and \ttt{rng-N} options. It does
 not cover result recording options such as \ttt{vector-recording}, because

@@ -903,7 +903,10 @@ with the \fopt{-h configdetails} option.
     simulation starts; \ttt{end}: after finish() has been called on all
     modules. Checking after initialization reports problems early, but it also
     reports entries that are meant for modules created later during the
-    simulation.
+    simulation. With \ttt{end}, if the run stops with an error after the
+    network has been set up, the entries that have had no effect until the
+    error are reported as a warning, even if
+    \ttt{unused-{\allowbreak}entry-{\allowbreak}check} is \ttt{error}.
 \item[user-interface] = \textit{<string>}\\
     \textit{Global setting (applies to all simulation runs).}\\
     Selects the user interface to be started. Known good values are Cmdenv and
