@@ -6,10 +6,11 @@ Supported Releases
 
 This chapter provides additional information for installing |omnet++| on macOS.
 
-The following releases are known to work:
+The following release was tested:
 
--  macOS 15
--  macOS 27 (and likely newer versions)
+-  macOS 27 on Apple Silicon
+
+macOS 15 or later and Intel-based Macs are expected to work, but were not tested for this release.
 
 Installing the Prerequisite Packages
 ------------------------------------

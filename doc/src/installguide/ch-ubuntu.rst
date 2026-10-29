@@ -4,14 +4,15 @@ Ubuntu
 Supported Releases
 ------------------
 
-This chapter provides additional information for installing |omnet++| on Ubuntu Linux installations. The overall
+This chapter provides additional information for installing |omnet++| on Ubuntu and Debian installations. The overall
 installation procedure is described in the *Linux* chapter.
 
-The following Ubuntu releases are known to work (based on the ``install.sh`` script):
+The following Ubuntu and Debian releases are known to work (based on the ``install.sh`` script):
 
 -  Ubuntu 24.04 LTS
 -  Ubuntu 26.04 LTS
 -  Ubuntu 26.10 (and likely newer versions)
+-  Debian 13
 
 The instructions below assume that you use the default desktop and the bash shell. If you use another desktop
 environment or shell, you may need to adjust the instructions accordingly.

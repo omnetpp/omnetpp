@@ -13,9 +13,12 @@ Supported Platforms
 |omnet++| (including the Simulation IDE) has been tested and is supported
 on the following operating systems:
 
--  Linux x86_64/aarch64 distributions covered in this Installation Guide
--  macOS 15 or later on x86_64/aarch64 architectures
+-  Linux x86_64 distributions covered in this Installation Guide
+-  macOS 27 on Apple Silicon (aarch64)
 -  Windows 11 on x86_64 architecture
+
+Builds for Linux aarch64 and for Intel-based Macs are also provided, and macOS 15 or later is expected
+to work, but these were not tested for this release.
 
 .. note::
 

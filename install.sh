@@ -150,8 +150,7 @@ install_deps() {
         fi
 
         # detect the package manager
-        if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu (tested versions: 24.04, 26.04, 26.10)
-            # apt-get is used on debian (i.e. Ubuntu,  etc.)
+        if [[ "$(command -v apt)" != "" ]]; then # e.g. ID=ubuntu (tested versions: 24.04, 26.04, 26.10), ID=debian (tested versions: 13)
             packages="make diffutils pkg-config ccache clang lld gdb lldb bison flex perl sed gawk $PYTHON3 $PYTHON3-pip $PYTHON3-venv $PYTHON3-dev pipx libxml2-dev zlib1g-dev doxygen graphviz xdg-utils libdw-dev"
 
             if ! $no_gui; then
@@ -373,7 +372,7 @@ and then configure and build OMNeT++.
 Supported operating systems [and package managers]:
 - Linux (Ubuntu/Debian [apt], Fedora/AlmaLinux/RHEL/RockyLinux [dnf],
         OpenSuse-tumbleweed/leap [zypper], ArchLinux [pacman], NixOS [nix])
-- macOS 15 or later [homebrew]
+- macOS 27 on Apple Silicon, macOS 15 or later expected to work [homebrew]
 - Windows 11/Msys2 [pacman]
 
 ${BLUE}NOTE: This is an experimental script. If it doesn't work, please open

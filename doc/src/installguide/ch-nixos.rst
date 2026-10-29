@@ -14,8 +14,8 @@ The following NixOS releases are known to work:
 Installation Prerequisites
 --------------------------
 
-The |omnetpp| installation script (``install.sh``) can detect NixOS and install all the
-dependencies automatically. |omnetpp| assumes that certain features are enabled in your
+On NixOS, the dependencies come from the Nix environment that |omnetpp| provides, so
+``install.sh`` installs no system packages; it only sets up the Python virtual environment. |omnetpp| assumes that certain features are enabled in your
 NixOS configuration. Make sure that ``nix.settings.experimental-features = [ "nix-command" "flakes" ];``
 is present in your NixOS configuration (``/etc/nixos/configuration.nix``).
 

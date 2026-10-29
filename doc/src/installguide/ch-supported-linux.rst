@@ -9,6 +9,7 @@ This guide provides installation instructions for |omnet++| on various Linux dis
 The following distributions and versions are explicitly covered by the ``install.sh`` script and have dedicated chapters or sections in this guide:
 
 -  **Ubuntu**: 24.04 LTS, 26.04 LTS, 26.10 (and derivatives like Linux Mint)
+-  **Debian**: 13 (follow the Ubuntu chapter)
 -  **Fedora**: 45 (and similar RPM-based distributions)
 -  **Red Hat Enterprise Linux (RHEL), AlmaLinux**: 9.x and 10.x (and compatible distributions like RockyLinux, CentOS Stream)
 -  **OpenSUSE**: Leap 16.0, Tumbleweed (rolling release)
