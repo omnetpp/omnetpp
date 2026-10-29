@@ -1,3 +1,9 @@
+2026-10-29  Andras Varga
+
+	* Documented that unused configuration entries are also reported when the
+	run stops with an error ("Entries That Have No Effect" subsection, and the
+	unused-entry-check-time option in the configuration options appendix).
+
 2026-10-20  Andras Varga
 
 	* Documented clipChildren (new "Clipping" subsection in the Canvas chapter,

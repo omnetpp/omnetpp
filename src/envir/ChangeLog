@@ -1,3 +1,18 @@
+2026-10-29  Andras Varga
+
+	* unused-entry-check: The unused configuration entries are now also
+	reported when the run stops with an error, as a warning after the error
+	message ("... had no effect before the run stopped"). A stale entry is often
+	the cause of such an error, which may look unrelated. The report is printed
+	only if the check would have been done at the end of the run
+	(unused-entry-check-time = end, not off, not parallel simulation), and not if
+	the error occurs during network setup, because the entries of the modules
+	not yet created would look unused. It is a warning even with
+	unused-entry-check = error, so the original error remains the error; exit
+	codes and result files are unaffected. The check now runs at most once per
+	network. Added EnvirBase::reportUnusedEntriesAfterError() for the user
+	interfaces.
+
 2026-10-20  Andras Varga
 
 	* Fixed crash (release mode) or silently lost log output (debug mode) when

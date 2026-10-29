@@ -1,3 +1,11 @@
+2026-10-29  Andras Varga
+
+	* Follow envir change: report the unused configuration entries
+	(unused-entry-check) in the log window also when the simulation stops with
+	an error in initialize(), during the run, in refreshDisplay() or in
+	finish(). If finish() is called after the error, the entries are not
+	reported again.
+
 2026-10-26  Attila Torok
 
 	* Graphics: Fix: Connections between two gates of the inspected compound

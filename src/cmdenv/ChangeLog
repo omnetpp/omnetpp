@@ -1,3 +1,9 @@
+2026-10-29  Andras Varga
+
+	* Follow envir change: report the unused configuration entries
+	(unused-entry-check) also when the run stops with an error after network
+	setup.
+
 2026-10-18  Andras Varga
 
 	* Follow envir change: check for unused configuration entries

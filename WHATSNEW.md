@@ -54,7 +54,10 @@ Configuration:
     had no effect, e.g. because the parameter, or a module in the entry's path,
     was renamed or removed. The companion option `unused-entry-check-time`
     (`initialization` or `end`, default: `end`) selects when the check is done;
-    checking at the `end` also covers modules created dynamically.
+    checking at the `end` also covers modules created dynamically. If the run
+    stops with an error, the entries that have had no effect until then are
+    reported as a warning after the error message, because a stale entry is
+    often the cause of an error that looks unrelated.
 
   - Fixed shadowed duplicate keys being recorded into the run header of result
     files (and printed by `-q runconfig`).
