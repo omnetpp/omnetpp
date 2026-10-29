@@ -23,5 +23,5 @@ fi
 
 # build the docker image
 set -e
-docker build --build-arg VERSION=$VERSION -t ghcr.io/omnetpp/omnetpp:u24.04-$VERSION .
+docker build --build-arg VERSION=$VERSION -t ghcr.io/omnetpp/omnetpp:u26.04-$VERSION .
 rm omnetpp-$VERSION-core.tgz
