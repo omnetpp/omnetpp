@@ -214,7 +214,7 @@ public:
         // and this will basically blit that onto the screen.
 
         // Well except of course on Mac it has to be done differently...
-        #ifdef Q_OS_MAC
+        #ifdef Q_OS_MACOS
             viewer->context()->swapBuffers(viewer->context()->surface());
         #endif
 

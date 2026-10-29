@@ -3033,7 +3033,7 @@ void Qtenv::initFonts()
     defaultFonts.logFont = getFirstAvailableFontFamily({ "Fira Code", "DejaVu Sans Mono", "Courier New", "Consolas", "Terminal" }, 9);
     defaultFonts.timeFont = defaultFonts.boldFont;
     defaultFonts.timeFont.setPointSize(12);
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
     // Mac
     defaultFonts.boldFont = getFirstAvailableFontFamily({ "Lucida Grande", "Helvetica" }, 13);
     defaultFonts.canvasFont = defaultFonts.boldFont;
