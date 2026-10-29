@@ -44,13 +44,13 @@ Install the core development tools and libraries using Homebrew:
 
 .. code::
 
-   $ brew install bison ccache flex perl python@3 uv make pkg-config doxygen graphviz
+   $ brew install bison ccache llvm flex perl python@3 uv make pkg-config doxygen graphviz
 
 Next, install packages for the graphical environment (Qtenv and IDE). If you do not need GUI support, you can skip this step and later configure |omnet++| with ``WITH_QTENV=no`` and ``WITH_OSG=no``.
 
 .. code::
 
-   $ brew install qt@6
+   $ brew install qt@6 qtkeychain
 
 For 3D visualization support in Qtenv, install the OpenSceneGraph package. If you do not need 3D support, you can skip this step and later configure |omnet++| with ``WITH_OSG=no``.
 
