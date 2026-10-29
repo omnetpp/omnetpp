@@ -1,0 +1,165 @@
+<!--
+  Example release check report (OMNeT++ 6.5.0, build 261028-02271e2c10), see releng/RELEASE-TESTING.md.
+  It shows one way to present the results; the format of a new report is free.
+-->
+<title>OMNeT++ 6.5.0 Release Check</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column, summary matrix first, findings as a severity-striped list */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #1b2230; --muted: #5a6475; --line: #dde1e8;
+  --accent: #2f5fa7;
+  --ok: #1f7a4d; --ok-bg: #e3f3ea; --warn: #9a6200; --warn-bg: #fbf0d9;
+  --bad: #b3261e; --bad-bg: #fbe4e2; --na: #5a6475; --na-bg: #eceef2;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12161d; --surface: #1a2029; --fg: #e3e7ee; --muted: #9aa4b5; --line: #2c3440;
+  --accent: #7ea6e6;
+  --ok: #6fd19c; --ok-bg: #173225; --warn: #f0c46a; --warn-bg: #352a12;
+  --bad: #f2928b; --bad-bg: #3a1c1a; --na: #9aa4b5; --na-bg: #232a35; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12161d; --surface: #1a2029; --fg: #e3e7ee; --muted: #9aa4b5; --line: #2c3440;
+  --accent: #7ea6e6;
+  --ok: #6fd19c; --ok-bg: #173225; --warn: #f0c46a; --warn-bg: #352a12;
+  --bad: #f2928b; --bad-bg: #3a1c1a; --na: #9aa4b5; --na-bg: #232a35; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 960px; margin: 0 auto; padding-block: 40px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 40px; }
+header { display: grid; gap: 8px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: 30px; line-height: 1.2; margin: 0; font-weight: 600; text-wrap: balance; }
+h2 { font-size: 19px; margin: 0 0 12px; font-weight: 600; text-wrap: balance; }
+h3 { font-size: 16px; margin: 0; font-weight: 600; text-wrap: balance; }
+p { margin: 0; max-width: 70ch; }
+code, .mono { font-family: var(--mono); font-size: .9em; }
+code { background: var(--na-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.lede { color: var(--muted); max-width: 70ch; }
+section { display: grid; gap: 12px; min-width: 0; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 500; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+.ok { color: var(--ok); background: var(--ok-bg); }
+.warn { color: var(--warn); background: var(--warn-bg); }
+.bad { color: var(--bad); background: var(--bad-bg); }
+.na { color: var(--na); background: var(--na-bg); }
+.findings { display: grid; gap: 12px; }
+.finding { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--sev); border-radius: 6px; padding: 14px 16px; display: grid; gap: 8px; min-width: 0; }
+.finding.high { --sev: var(--bad); } .finding.med { --sev: var(--warn); } .finding.low { --sev: var(--na); } .finding.fixed { --sev: var(--ok); }
+.fhead { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.fhead h3 { flex: 1 1 260px; }
+.meta { font-size: 13px; color: var(--muted); }
+ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+pre { margin: 0; font-family: var(--mono); font-size: 12.5px; background: var(--na-bg); padding: 10px 12px; border-radius: 6px; overflow-x: auto; }
+a { color: var(--accent); }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Release verification · build 261028-02271e2c10 · 2026-10-29</div>
+  <h1>OMNeT++ 6.5.0 release check</h1>
+  <p class="lede">All results on this page come from one build, 261028-02271e2c10, the archives in <code>releng/dist</code> dated 2026-10-28 17:37. Installation and the smoke test pass on all 9 tested Linux distros and on macOS, each on the first attempt. <code>test_quick</code> passes on Ubuntu 26.04, Ubuntu 26.10, Fedora 46 and macOS. The two earlier fixes are confirmed in this build: <code>opp_test</code> works on Python 3.15 (finding 1), and Fedora 44 now finds libdw (finding 4). Windows was tested only under Wine. It still needs the MSYS2 runtime replaced before anything forks (finding 2), and it shows the same 4 histogram fingerprint mismatches as the previous build. These are Wine's own values; they are now accepted by the fingerprint CSVs (finding 3).</p>
+  <p class="lede">After testing, findings 3 and 5 and two of the minor issues were fixed in four jj changes on top of 02271e2c10: xxpsnmvq, zxtouxvn, tqvxwvmm and qsuxrwrm. They are not in the tested archives and need a new build.</p>
+</header>
+
+<section>
+  <h2>Test suite (<code>test/Makefile test_quick</code>)</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>Platform</th><th>Environment</th><th>Result</th><th>Details</th></tr></thead>
+    <tbody>
+      <tr><td>Linux x86_64</td><td><code>ubuntu:26.04</code>, clang 21.1.8, Qt 6.10.2, Python 3.14.4</td><td><span class="pill ok">PASS</span></td><td>All suites pass. core: 771 pass, 1 expected fail, 11 skipped. fingerprint: 142/142. Skips are by design (<code>WITH_LIBXML=no</code>, C++17).</td></tr>
+      <tr><td>Linux x86_64</td><td><code>ubuntu:26.10</code>, clang 22.1.8, Qt 6.11.2, Python 3.14.8</td><td><span class="pill ok">PASS</span></td><td>All suites pass. core: 771 pass, 1 expected fail. fingerprint: 142/142.</td></tr>
+      <tr><td>Linux x86_64</td><td><code>fedora:46</code> (prerelease), clang 23.1.4, Qt 6.12.0, Python 3.15.2</td><td><span class="pill ok">PASS</span></td><td>All suites pass. core: 771 pass, 1 expected fail, with the stock <code>opp_test</code> on Python 3.15. fingerprint: 142/142.</td></tr>
+      <tr><td>Windows x86_64</td><td><code>msys2-docker-experimental</code> (Wine 11.15), the dist's own clang64 toolchain (clang 20.1.5, Python 3.12.10)</td><td><span class="pill warn">4 FAIL</span></td><td>common, envir, core (770 pass, 1 expected fail, 12 skipped), anim, models, makemake, makemake2, featuretool and sqliteresultfiles pass. fingerprint: 138/142, with 4 histogram <code>rsz</code> mismatches (finding 3). The scave suites, which make skips after the fingerprint failure, were run separately and pass. With the fixed fingerprint CSVs (finding 3), fingerprint passes 142/142 under Wine. Ran only after replacing the MSYS2 runtime (finding 2).</td></tr>
+      <tr><td>macOS arm64</td><td>mini.local, macOS 27.0.1, Homebrew clang 23.1.4, Python 3.15.2</td><td><span class="pill ok">PASS</span></td><td>All suites pass with the archive as shipped. core: 771 pass, 1 expected fail. fingerprint: 142/142.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Installation on supported Linux distros</h2>
+  <p class="meta">Each distro ran in a fresh container started from the distro's base image, as a non-root user with sudo: unpack <code>linux-x86_64.tgz</code>, run <code>./install.sh -y</code>, then run the smoke test. The smoke test runs aloha, fifo and tictoc in Cmdenv (release builds), fifo_dbg, <code>opp_scavetool</code>, <code>omnetpp.scave</code> from the venv, <code>opp_charttool</code>, a new project built with <code>opp_makemake</code>, and checks the IDE JRE. GUI programs were not launched. On macOS, the archive was copied to the Mac and unpacked there, and the same steps were run.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Distro</th><th>Compiler</th><th>Python</th><th>Qtenv</th><th>OSG</th><th>libdw</th><th>Install + smoke</th></tr></thead>
+    <tbody>
+      <tr><td>Ubuntu 24.04</td><td class="num">clang 18.1.3</td><td class="num">3.12.3</td><td>yes</td><td>yes</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>Ubuntu 26.04</td><td class="num">clang 21.1.8</td><td class="num">3.14.4</td><td>yes</td><td>yes</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>Ubuntu 26.10</td><td class="num">clang 22.1.8</td><td class="num">3.14.8</td><td>yes</td><td>yes</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>Fedora 44</td><td class="num">clang 22.1.8</td><td class="num">3.14.8</td><td>yes</td><td>yes</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>Fedora 46 <span class="meta">(prerelease)</span></td><td class="num">clang 23.1.4</td><td class="num">3.15.2</td><td>yes</td><td>yes</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>AlmaLinux 9</td><td class="num">clang 21.1.8</td><td class="num">3.12.15</td><td>yes</td><td>no¹</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>AlmaLinux 10</td><td class="num">clang 21.1.8</td><td class="num">3.12.15</td><td>yes</td><td>no¹</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>openSUSE Tumbleweed</td><td class="num">clang 23.1.3</td><td class="num">3.13.16</td><td>yes</td><td>yes</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>Arch Linux</td><td class="num">clang 23.1.4</td><td class="num">3.14.8</td><td>yes</td><td>yes</td><td>yes</td><td><span class="pill ok">PASS</span></td></tr>
+      <tr><td>macOS 27.0.1 arm64</td><td class="num">clang 23.1.4</td><td class="num">3.15.2</td><td>yes</td><td>yes</td><td>n/a</td><td><span class="pill ok">PASS</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="meta">¹ Run with <code>--no-3d</code>. Without it, install.sh in this build exits with code 1 before installing anything (finding 5, now fixed).</p>
+</section>
+
+<section>
+  <h2>Findings</h2>
+  <div class="findings">
+
+    <article class="finding fixed">
+      <div class="fhead"><h3>1. opp_test rejected its documented <code>-a … -- files</code> form on Python 3.15</h3><span class="pill ok">fixed · 02271e2c10 · verified</span></div>
+      <p><code>python/omnetpp/test.py</code> declared <code>-a/--args</code> with <code>nargs=argparse.REMAINDER</code>. In Python 3.15 that option also takes the <code>--</code> and the test files after it, so any <code>opp_test … -a ARGS -- *.test</code> call failed. <code>test/core/runtest</code> uses that form, so test_core could not run on macOS, where Homebrew's <code>python3</code> is now 3.15. The error path also crashed, because <code>OppFormatter</code> called a private <code>argparse</code> method that 3.15 removed.</p>
+      <p class="meta">The fix takes <code>-a/--args</code> and everything up to <code>--</code> out of <code>sys.argv</code> before argparse runs, and removes <code>OppFormatter</code>. In this build, test_core passes with the stock <code>runtest</code> on macOS and on Fedora 46, both with Python 3.15.2.</p>
+    </article>
+
+    <article class="finding high">
+      <div class="fhead"><h3>2. The Windows toolchain's MSYS2 runtime crashes on every fork under Wine</h3><span class="pill bad">open · Wine only</span></div>
+      <p>The Windows archive still ships toolchain <code>msys2-runtime 3.6.1-4</code>. Under Wine 11.15, the first command that forks, such as <code>$(...)</code>, ends the shell: in this build, <code>bash -c "echo a; x=$(echo b); echo $x"</code> printed <code>a</code> and nothing after it. As a result, the shell from <code>mingwenv.cmd</code> does nothing, and configure and make cannot run. Replacing <code>usr/bin/msys-2.0.dll</code> with the one from msys2-runtime 3.6.10 fixes it, and every Windows result above was produced that way. The <code>windows-box</code> README already notes that 3.6.1 fails and 3.5.7 and 3.6.11 work.</p>
+      <p class="meta">Native Windows is probably not affected. The toolchain is from June 2025 (clang 20.1.5, Qt 6.9.0, Python 3.12.10). If Wine and <code>windows-box</code> testing should work with the release archive, rebuild the toolchain with msys2-runtime 3.6.10 or newer.</p>
+    </article>
+
+    <article class="finding fixed">
+      <div class="fhead"><h3>3. Four histogram fingerprints failed on Windows under Wine</h3><span class="pill ok">fixed · qsuxrwrm, not in this build</span></div>
+      <pre>/samples/histograms/      -c Normal              wine f76e-b688/rsz
+/test/models/histograms/  -c DriftingNormal      wine f812-80f3/rsz
+/test/models/histograms/  -c UnitNormal          wine e99a-f1aa/rsz
+/test/models/histograms/  -c SineWeightedLinear  wine 375a-ca1d/rsz</pre>
+      <p>These are the same values as in the previous build. All four tests use transcendental math, and Wine's <code>ucrtbase</code> math functions give slightly different results from Microsoft's. The Wine values are now listed as a fourth accepted fingerprint. <code>tests.csv</code> and <code>samples.csv</code> each have one comment line at the top: platform dependent tests list their fingerprints in "linux macos windows wine" order, because transcendental functions are implemented differently on each platform.</p>
+      <p class="meta">The Linux, macOS and Wine values were measured from this build, and they match the order note. The native Windows values are the ones added in b34d1e3601. For SineWeightedUniform, Wine gives the same value as native Windows (tests.csv) and as Linux (samples.csv), so those rows needed no new value. Rerun with the new CSVs: 142/142 under Wine and on Ubuntu 26.04. On macOS only values were added, so it was not rerun.</p>
+    </article>
+
+    <article class="finding fixed">
+      <div class="fhead"><h3>4. install.sh installed libdwarf instead of libdw on Fedora and Arch</h3><span class="pill ok">fixed · 804d6382aa · verified</span></div>
+      <p>Configure checks only for <code>libdw</code>, which comes from elfutils. install.sh now installs <code>elfutils-devel</code> on Fedora and <code>elfutils</code> on Arch, and the install guide chapters were corrected to match. In this build, configure finds libdw on all 9 distros, including Fedora 44, where it was missing before.</p>
+    </article>
+
+    <article class="finding fixed">
+      <div class="fhead"><h3>5. The RHEL chapter said install.sh asks about 3D; it exited instead</h3><span class="pill ok">fixed · xxpsnmvq, not in this build</span></div>
+      <p><code>ch-redhat.rst</code> said install.sh "will prompt you" to disable OpenSceneGraph. In this build, without <code>--no-3d</code>, the script prints "Please disable the 3D support with --no-3d" and exits with code 1 before installing anything, on both AlmaLinux 9 and 10.</p>
+      <p class="meta">Fix (xxpsnmvq): on RHEL, AlmaLinux and Rocky, install.sh now asks whether to continue without 3D support. With <code>-y</code> it continues; answering no exits with a hint about <code>--no-3d</code>. The RHEL chapter now describes this. Checked on AlmaLinux 9 and 10 with the fixed script: <code>-y</code> configures with <code>WITH_OSG=no</code> and builds, and fifo runs; answering no exits with code 1. The fix needs a new build to reach the archives.</p>
+    </article>
+
+    <article class="finding low">
+      <div class="fhead"><h3>6. Minor issues</h3><span class="pill na">low</span></div>
+      <ul>
+        <li><span class="pill ok">fixed · zxtouxvn, not in this build</span> macOS: Qt marks <code>Q_OS_MAC</code> as deprecated, which gave 4 build warnings in <code>qtenv.cc</code> and <code>osgviewer.cc</code>. Both now use <code>Q_OS_MACOS</code>. Rebuilt on the Mac: both files compile with no warnings. The linker warning about the missing <code>lib</code> search path did not appear in this build.</li>
+        <li><span class="pill ok">fixed · tqvxwvmm, not in this build</span> install.sh comments and intro text were out of date: they listed Ubuntu 22.04, 24.04 and 25.04 and Fedora 42 as tested, and said "macOS 16" where the install guide says macOS 15. The comments now list the versions tested here, and the intro says "macOS 15 or later". The install guide's version lists were updated to match: Ubuntu 24.04, 26.04 and 26.10; Fedora 44; openSUSE Tumbleweed; macOS 27.</li>
+        <li>Build warnings: bison's <code>expressionyynerrs</code> and <code>matchexpressionyynerrs</code> set but not used (Ubuntu, Alma, Tumbleweed, Arch, macOS); <code>unixBigLock</code> set but not used in the bundled SQLite with clang 23 (Fedora 46, Tumbleweed, Arch, macOS).</li>
+        <li><code>test/scave/multi_project</code> prints "Chart script silently failed to create data file …/test.csv" on Linux, macOS and Windows, but still passes. Either the test or the warning is wrong.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section>
+  <h2>Not covered</h2>
+  <ul>
+    <li>The macOS x86_64 archive: only an arm64 Mac was available.</li>
+    <li><code>test_build</code> and <code>test_toolchain</code>: only <code>test_quick</code> was in scope.</li>
+    <li><code>test_quick</code> on the other Linux distros: they got install and the smoke test only.</li>
+    <li>Native Windows: Windows was tested only under Wine.</li>
+    <li>GUI behaviour: Qtenv, the OSG views and the IDE were built and the JRE is present, but none were started.</li>
+    <li>The linux-aarch64 archive, the core-only archive and the source archive.</li>
+  </ul>
+</section>
+</div>

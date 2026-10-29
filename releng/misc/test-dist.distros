@@ -1,0 +1,12 @@
+# Linux distros tested by 'test-dist linux'. Update for each release.
+# name        image                                             test_quick  install.sh args
+ubuntu2404    docker.io/library/ubuntu:24.04                    no
+ubuntu2604    docker.io/library/ubuntu:26.04                    yes
+ubuntu2610    docker.io/library/ubuntu:26.10                    no
+debian13      docker.io/library/debian:13                       no
+fedora45      docker.io/library/fedora:45                       no
+alma9         docker.io/library/almalinux:9                     no          --no-3d
+alma10        docker.io/library/almalinux:10                    no
+leap          registry.opensuse.org/opensuse/leap:latest        no
+tumbleweed    registry.opensuse.org/opensuse/tumbleweed:latest  no
+arch          docker.io/library/archlinux:latest                no

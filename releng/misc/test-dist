@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+#
+# Tests the distribution archives in releng/dist on Linux (podman), Windows (Wine in podman)
+# and macOS (over ssh). See releng/RELEASE-TESTING.md.
+#
+set -uo pipefail
+
+MISC=$(cd "$(dirname "$0")" && pwd)
+RELENG=$(dirname "$MISC")
+HARNESS=$MISC/test-dist.d
+DIST=${TEST_DIST_DIR:-$RELENG/dist}
+WORK=$DIST/test-work
+JOBS=${TEST_DIST_JOBS:-2}
+CPUS=${TEST_DIST_CPUS:-16}
+MAC_HOST=${OPP_MAC_HOST:-mini.local}
+SSH=${OPP_SSH:-ssh}
+WINE_IMAGE=ghcr.io/msys2/msys2-docker-experimental:latest
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") <command> [args]
+
+  linux [name...|all]         install + smoke test (+ test_quick where enabled) in fresh containers;
+                              names and images are in test-dist.distros
+  linux --resume [name...]    rerun the smoke test (+ test_quick) on the installed images
+  windows                     build + smoke + test_quick of the Windows archive under Wine
+  macos                       install + smoke + test_quick of the macOS archive on \$OPP_MAC_HOST
+  summary                     print one table of all results of the current build
+  clean [--run]               print (or run) the commands that remove the containers, images
+                              and work trees created by the tests
+
+Results: $DIST/test-results/<buildid>/<platform>/
+Environment: TEST_DIST_JOBS=$JOBS TEST_DIST_CPUS=$CPUS OPP_MAC_HOST=$MAC_HOST OPP_SSH=$SSH
+EOF
+}
+
+die() { echo "Error: $*" >&2; exit 1; }
+
+archive() {
+    local f
+    f=$(ls "$DIST"/*omnetpp-*-"$1" 2>/dev/null | head -1)
+    [ -n "$f" ] || die "no *omnetpp-*-$1 in $DIST"
+    echo "$f"
+}
+
+buildid() {
+    # sed quits at the first match, which stops tar before it decompresses the rest of the archive
+    tar xzf "$(archive linux-x86_64.tgz)" --wildcards -O '*/configure' 2>/dev/null | sed -n '/^OMNETPP_BUILDID=/{s/^OMNETPP_BUILDID="\(.*\)"/\1/p;q}'
+}
+
+results() { echo "$DIST/test-results/$BUILDID"; }
+
+distros() {
+    if [ $# -eq 0 ] || [ "$1" = all ]; then
+        grep -v '^\s*\(#\|$\)' "$MISC/test-dist.distros" | sed 's/[[:space:]]*$//'
+    else
+        local n
+        for n in "$@"; do
+            grep -E "^$n\s" "$MISC/test-dist.distros" | sed 's/[[:space:]]*$//' | grep . || die "unknown distro: $n"
+        done
+    fi
+}
+
+linux_one() {
+    local name=$1 image=$2 quick=$3; shift 3
+    local out; out=$(results)/$name
+    local steps="smoke"; [ "$quick" = yes ] && steps="smoke quick"
+    mkdir -p "$out"
+    if [ "${RESUME:-}" != yes ]; then
+        rm -rf "$out"; mkdir -p "$out"
+        podman pull -q "$image" >/dev/null || { echo "$name: pull failed"; return 1; }
+        podman rm -f "opprel-$name" >/dev/null 2>&1
+        podman run --name "opprel-$name" --cpus "$CPUS" \
+            -v "$DIST:/dist:ro,z" -v "$HARNESS:/harness:ro,z" -v "$out:/out:z" \
+            "$image" bash /harness/linux-root.sh "$(basename "$(archive linux-x86_64.tgz)")" "$@" \
+            > "$out/container.log" 2>&1
+        podman commit -q "opprel-$name" "localhost/opprel-$name:installed" >/dev/null
+        podman rm "opprel-$name" >/dev/null
+        grep -q '^install_exit: 0' "$out/summary.txt" || { echo "$name: install FAILED"; return 1; }
+    fi
+    podman run --rm --cpus "$CPUS" \
+        -v "$DIST:/dist:ro,z" -v "$HARNESS:/harness:ro,z" -v "$out:/out:z" \
+        "localhost/opprel-$name:installed" \
+        sudo -iu opp env STEPS="$steps" bash /harness/dist-test.sh "/dist/$(basename "$(archive linux-x86_64.tgz)")" /home/opp /out \
+        >> "$out/container.log" 2>&1
+    echo "$name: $(grep -E '^(smoke|test_quick_exit):' "$out/summary.txt" | tr '\n' ' ')"
+}
+
+cmd_linux() {
+    [ "${1:-}" = --resume ] && { export RESUME=yes; shift; }
+    export -f linux_one archive results die
+    export DIST HARNESS CPUS BUILDID
+    local list; list=$(distros "$@") || exit 1
+    printf '%s\n' "$list" | xargs -P "$JOBS" -L1 bash -c 'linux_one "$@"' _
+}
+
+# wine_run <tree> <command for the MSYS2 bash> <timeout seconds>
+wine_run() {
+    # the command travels in a variable so that only the MSYS2 bash expands it; a script path
+    # given as a bash argument (instead of -c) made Wine hang
+    podman run --rm --cpus "$CPUS" --pids-limit=-1 -e OPP_CMD="$2" -e OPP_TIMEOUT="$3" \
+        -v "$WORK/windows/$1:/w:z" -v "$HARNESS:/h:ro,z" -v "$(results)/windows:/out:z" "$WINE_IMAGE" \
+        bash -c 'export WINEDEBUG=-all; timeout $OPP_TIMEOUT xvfb-run -a wine cmd /c "Z:\h\winelaunch.cmd" --login -c "$OPP_CMD"'
+}
+
+cmd_windows() {
+    local a out tree
+    a=$(archive windows-x86_64.7z); out=$(results)/windows
+    command -v 7z >/dev/null || die "7z is needed to unpack $a"
+    rm -rf "$out"; mkdir -p "$out" "$WORK/windows"
+    rm -rf "$WORK/windows"/omnetpp-*
+    echo "Unpacking $a..."
+    (cd "$WORK/windows" && 7z x -bd -y "$a" >/dev/null) || die "7z failed"
+    tree=$(cd "$WORK/windows" && ls -d omnetpp-* | head -1)
+    (cd "$WORK/windows/$tree/tools" && 7z x -bd -aos -y -owin32.x86_64 opp-tools-*-toolchain.7z >/dev/null && rm opp-tools-*-toolchain.7z) || die "toolchain unpack failed"
+    local rt; rt=$(ls "$WORK/windows/$tree/tools/win32.x86_64/var/lib/pacman/local" | grep '^msys2-runtime-[0-9]')
+    echo "msys2_runtime_shipped: ${rt#msys2-runtime-}" >> "$out/summary.txt"
+    local probe='echo probe-a; x=$(echo probe-b); echo $x'
+    if wine_run "$tree" "$probe" 300 2>&1 | grep probe-b >/dev/null; then
+        echo "msys2_runtime_fork: ok" >> "$out/summary.txt"
+    else
+        echo "msys2_runtime_fork: FAIL, replaced msys-2.0.dll from $WINE_IMAGE" >> "$out/summary.txt"
+        podman run --rm -v "$WORK/windows/$tree:/w:z" "$WINE_IMAGE" \
+            cp /root/.wine/drive_c/msys64/usr/bin/msys-2.0.dll /w/tools/win32.x86_64/usr/bin/msys-2.0.dll \
+            || die "cannot copy msys-2.0.dll from $WINE_IMAGE"
+        wine_run "$tree" "$probe" 300 2>&1 | grep probe-b >/dev/null || die "the replaced MSYS2 runtime also fails to fork under Wine"
+        echo "msys2_runtime_replaced_fork: ok" >> "$out/summary.txt"
+    fi
+    grep "^msys2_runtime" "$out/summary.txt"
+    echo "Building and testing under Wine (takes about an hour)..."
+    wine_run "$tree" "STEPS='install smoke quick' bash /z/h/dist-test.sh - /z/w /z/out" 10800 > "$out/container.log" 2>&1
+    grep -E '^(install_exit|smoke|test_quick_exit):' "$out/summary.txt"
+}
+
+cmd_macos() {
+    local a out arch r
+    arch=$($SSH -o BatchMode=yes "$MAC_HOST" uname -m) || die "cannot ssh to $MAC_HOST (is the key loaded with ssh-add?)"
+    [ "$arch" = arm64 ] && arch=aarch64
+    a=$(archive "macos-$arch.tgz"); out=$(results)/macos
+    r=opp-dist-test
+    mkdir -p "$out"
+    $SSH "$MAC_HOST" "pkill -f $r/dist-test.sh; rm -rf ~/$r && mkdir -p ~/$r" || die "cannot prepare ~/$r on $MAC_HOST"
+    echo "Copying $(basename "$a") to $MAC_HOST..."
+    scp -q -S "$SSH" "$a" "$HARNESS/dist-test.sh" "$MAC_HOST:$r/" || die "scp failed"
+    # zsh -il: Homebrew's PATH is often set up in .zshrc only, and a plain login shell may find
+    # an Intel Homebrew in /usr/local first
+    $SSH "$MAC_HOST" "cd ~/$r && nohup zsh -ilc 'STEPS=\"install smoke quick\" bash ~/$r/dist-test.sh ~/$r/$(basename "$a") ~/$r ~/$r/out' > ~/$r/run.log 2>&1 < /dev/null &"
+    echo "Running on $MAC_HOST, polling every minute..."
+    until $SSH "$MAC_HOST" "grep -q '^done:' ~/$r/out/summary.txt 2>/dev/null || ! pgrep -f $r/dist-test.sh >/dev/null"; do
+        sleep 60
+    done
+    scp -q -S "$SSH" "$MAC_HOST:$r/out/*" "$MAC_HOST:$r/run.log" "$out/"
+    grep -E '^(install_exit|smoke|test_quick_exit):' "$out/summary.txt"
+}
+
+cmd_summary() {
+    local dir; dir=$(results)
+    [ -d "$dir" ] || die "no results in $dir"
+    echo "Build $BUILDID, results in $dir"
+    local keys="buildid os compiler python qt with_qtenv with_osg libdw install_exit smoke test_quick_exit tq_core tq_fingerprint tq_failed_targets msys2_runtime_fork"
+    local p k
+    for p in "$dir"/*/; do
+        p=$(basename "$p")
+        echo "== $p"
+        for k in $keys; do
+            grep -m1 "^$k:" "$dir/$p/summary.txt" 2>/dev/null | sed 's/^/   /'
+        done
+        grep -h '^smoke_.*FAIL' "$dir/$p/summary.txt" 2>/dev/null | sed 's/^/   /'
+        [ -s "$dir/$p/test_quick-failures.txt" ] && sed 's/^/   failed: /' "$dir/$p/test_quick-failures.txt"
+    done
+}
+
+cmd_clean() {
+    local run=no; [ "${1:-}" = --run ] && run=yes
+    local cmds=()
+    local c i
+    c=$(podman ps -aq --filter name='^opprel-' | tr '\n' ' ')
+    [ -n "$c" ] && cmds+=("podman rm -f $c")
+    i=$(podman images --format '{{.Repository}}:{{.Tag}}' | grep '^localhost/opprel-' | tr '\n' ' ')
+    [ -n "$i" ] && cmds+=("podman rmi $i")
+    [ -d "$WORK" ] && cmds+=("rm -rf '$WORK'")
+    cmds+=("$SSH $MAC_HOST 'rm -rf ~/opp-dist-test'")
+    for c in "${cmds[@]}"; do
+        if [ $run = yes ]; then echo "+ $c"; eval "$c"; else echo "$c"; fi
+    done
+    i=$(podman images --format '{{.Repository}}:{{.Tag}}' | grep '^localhost/opptest-' | tr '\n' ' ')
+    [ -n "$i" ] && echo "# legacy images from earlier test runs, remove by hand: podman rmi $i"
+    echo "# kept: base images (podman images), $DIST/test-results"
+}
+
+[ $# -ge 1 ] || { usage; exit 1; }
+c=$1; shift
+case "$c" in linux|windows|macos|summary) BUILDID=$(buildid); [ -n "$BUILDID" ] || die "cannot read the build id from the Linux archive";; esac
+case "$c" in
+    linux) cmd_linux "$@" ;;
+    windows) cmd_windows ;;
+    macos) cmd_macos ;;
+    summary) cmd_summary ;;
+    clean) cmd_clean "$@" ;;
+    -h|--help|help) usage ;;
+    *) usage; exit 1 ;;
+esac

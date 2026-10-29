@@ -1,4 +1,4 @@
-# mac-box
+# opp-mac-shell
 
 `opp-mac-shell` opens a shell on a Mac in a copy of the OMNeT++ tree you are working on, for
 building and testing it on macOS while editing on Linux. Only source files are synced, one way
