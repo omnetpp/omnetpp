@@ -962,7 +962,10 @@ public class ConfigRegistry {
         "initialization, i.e. before the simulation starts; `end`: after finish() " +
         "has been called on all modules. Checking after initialization reports " +
         "problems early, but it also reports entries that are meant for modules " +
-        "created later during the simulation.");
+        "created later during the simulation. With `end`, if the run stops with an " +
+        "error after the network has been set up, the entries that have had no " +
+        "effect until the error are reported as a warning, even if " +
+        "`unused-entry-check` is `error`.");
     public static final ConfigOption CFGID_USER_INTERFACE = addGlobalOption(
         "user-interface", CFG_STRING, null,
         "Selects the user interface to be started. Known good values are Cmdenv and " +
