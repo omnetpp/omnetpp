@@ -16,6 +16,6 @@
 # TODO restore "6.x   omnetpp-6.x" once the unified doc build system is merged
 # there; until then omnetpp-6.x still carries the old LaTeX-only doc/src and
 # build-version.sh rejects it.
-6.4   doc
+6.5   doc
 
 # 7.x   omnetpp-7.x
