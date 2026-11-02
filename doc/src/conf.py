@@ -223,6 +223,8 @@ html_title = 'OMNeT++: Discrete Event Simulator'
 if os.getenv("GITHUB_ACTIONS") == "true":
     html_link_suffix = '' 
 
+omnetpp_privacy_url = html_baseurl + 'privacy' + ('' if os.getenv("GITHUB_ACTIONS") == "true" else '.html')
+
 # material theme options (see theme.conf for more information)
 html_theme_options = {
     "icon": {
@@ -298,8 +300,17 @@ html_theme_options = {
     # END: social icons
     "analytics": {
         "provider": "google",
-        "property": "G-XXXXXXX"
-    }
+        "property": "G-QGGDS2R96M"
+    },
+    # Google Analytics runs only after the reader accepts it; the footer reopens the dialog
+    # (_templates/partials/copyright.html).
+    "consent": {
+        "title": "Cookie consent",
+        "description": "With your consent, this site uses Google Analytics cookies to learn how it is used, which "
+                       "helps us improve it. You can change your choice at any time with <em>Cookie settings</em> "
+                       f'at the bottom of every page. See the <a href="{omnetpp_privacy_url}">privacy notice</a>.',
+        "actions": ["manage", "reject", "accept"],
+    },
 }
 
 # end html_theme_options
