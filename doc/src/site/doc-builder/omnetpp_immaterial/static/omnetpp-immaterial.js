@@ -731,3 +731,15 @@
   reset();
   if (window.document$) window.document$.subscribe(reset);
 })();
+
+// The theme's Accept saves the choices of the consent settings, also while they are folded away, where the reader
+// cannot see them: after a Reject, all of them are cleared, and Accept would accept nothing. Folded away, Accept
+// accepts all.
+document.addEventListener('click', event => {
+  const accept = event.target.closest('.md-consent__controls button:not([type=reset])');
+  if (accept && !document.getElementById('__settings').checked) {
+    for (const input of accept.form.elements) {
+      if (input.name) input.checked = true;
+    }
+  }
+}, true);

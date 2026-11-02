@@ -49,6 +49,10 @@ Its settings, all optional:
 | `omnetpp_nav_menu_depth` | `3` | levels of submenus |
 | `omnetpp_nav_no_menu` | `[]` | tab titles that open no menu |
 | `omnetpp_nav_dropdown` | `False` | tab titles (or `True` for all) navigated by their menus alone, without the navigation sidebar |
+| `omnetpp_privacy_url` | `None` | URL of the privacy policy of the site, linked from the footer |
+
+With the theme's cookie consent configured (`html_theme_options['consent']`), the footer also links to the consent
+dialog, so that the reader can change their choice.
 
 A site restyles it with its own stylesheet; e.g. `--omnetpp-tabs-edge` is the height of a bottom border that the
 site gives the tab bar, which stays below the header while the tab bar is away.

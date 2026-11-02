@@ -13,7 +13,9 @@ content, and are navigated by their menus.
 
 The table of contents follows the section in view also with the theme's instant navigation, which the theme's own
 tracking does not. With omnetpp_homepage set, the logo and the name of the site in the header lead to that URL.
-The footer credits the OMNeT++ Discrete Event Simulator. With html_baseurl set, every page names its canonical URL,
+The footer credits the OMNeT++ Discrete Event Simulator, and links to the privacy policy of the site
+(omnetpp_privacy_url) and, with the theme's cookie consent configured, to the consent dialog, which the theme opens
+as a card at the bottom of the window, leaving the page usable. With html_baseurl set, every page names its canonical URL,
 which the theme has a place for but never fills in.
 
 A build that reads no document still writes the CSS and JavaScript bundles of the theme (see bundle_always).
@@ -55,6 +57,9 @@ def dropdown(app, context):
 
 
 def page_context(app, pagename, templatename, context, doctree):
+    # The footer links to it (templates/partials/copyright.html); a site that links to it itself can tell from this
+    # being defined that the theme does.
+    context['omnetpp_privacy_url'] = app.config.omnetpp_privacy_url
     # The theme leads the logo to the root document of the build, e.g. the start page of a version.
     if app.config.omnetpp_homepage and 'config' in context:
         context['config'].setdefault('extra', {})['homepage'] = app.config.omnetpp_homepage
@@ -93,6 +98,7 @@ def setup(app):
     app.add_config_value('omnetpp_nav_menu_depth', 3, 'html')
     app.add_config_value('omnetpp_nav_no_menu', [], 'html', types=(list, tuple))
     app.add_config_value('omnetpp_nav_dropdown', False, 'html', types=(bool, list, tuple))
+    app.add_config_value('omnetpp_privacy_url', None, 'html')
     app.connect('config-inited', config_inited)
     app.connect('builder-inited', builder_inited)
     app.connect('html-page-context', page_context, priority=900)

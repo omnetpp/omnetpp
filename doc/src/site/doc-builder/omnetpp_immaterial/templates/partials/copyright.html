@@ -4,4 +4,10 @@
     {{- rendered_extracopyright }}
   {%- endset %}
 {%- endif %}
+{#- The consent dialog can only be reopened from a link to it. #}
+{%- set rendered_extracopyright -%}
+  {{ rendered_extracopyright }}
+  {%- if omnetpp_privacy_url %}. <a href="{{ omnetpp_privacy_url }}">Privacy</a>{% endif %}
+  {%- if config.extra.consent %}{{ " · " if omnetpp_privacy_url else ". " }}<a href="#__consent">Cookie settings</a>{% endif %}
+{%- endset %}
 {% include "!partials/copyright.html" %}

@@ -570,3 +570,28 @@ html {
     --md-scroll-margin: calc(3.6rem + var(--omnetpp-tabs-height, 1.8rem));
   }
 }
+
+/* The cookie consent dialog is a card at the bottom of the window, which leaves the page usable; Reject is not
+   emphasized like Accept. */
+.md-consent__overlay {
+  display: none;
+}
+
+.md-consent__inner {
+  right: 0.8rem;
+  bottom: 0.8rem;
+  left: 0.8rem;
+  width: auto;
+  max-width: 50rem;
+  margin: 0 auto;
+  border-radius: 0.4rem;
+}
+
+.md-consent__form {
+  padding: 0.6rem 1.2rem;
+}
+
+.md-typeset .md-consent__controls .md-button--primary[type=reset] {
+  background-color: transparent;
+  color: var(--md-primary-fg-color);
+}
