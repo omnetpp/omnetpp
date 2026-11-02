@@ -230,6 +230,28 @@
   }
 }
 
+@media screen and (max-width: 76.2344em) {
+  /* The drawer puts the name of the site to the right of a smaller logo, not under it. */
+  .md-nav--primary .md-nav__title[for="__drawer"] {
+    min-height: 0;
+    padding: 0.6rem 0.8rem;
+    align-items: center;
+    line-height: 1.6rem;
+  }
+
+  .md-nav--primary .md-nav__title[for="__drawer"] .md-logo {
+    position: static;
+    flex-shrink: 0;
+    margin: 0 0.6rem 0 0;
+    padding: 0;
+  }
+
+  .md-nav--primary .md-nav__title[for="__drawer"] .md-logo img {
+    width: auto;
+    height: 1.6rem;
+  }
+}
+
 @media screen and (min-width: 60em) {
   /* Without the theme's right margin, an entry that fits needs no scrollbar: these entries have no icon to keep
      clear of the edge. */
