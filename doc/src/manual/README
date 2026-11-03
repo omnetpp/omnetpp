@@ -28,7 +28,7 @@ TeX -> RST conversion (Sphinx site)
 The unified Sphinx documentation site converts these LaTeX sources to RST at
 build time with tools/tex2rst, which wraps "pandoc". The conversion is
 version-sensitive; the doc-builder image pins the pandoc version (see
-doc/src/site/doc-builder/Containerfile). The generated .rst files are gitignored.
+the Containerfile of the omnetpp/doc-builder repository). The generated .rst files are gitignored.
 
 Conversion quality is enforced by doc/src/site/check-conversion.py: run
 "make -C doc/src ci-audit" (or "python3 doc/src/site/check-conversion.py manual"

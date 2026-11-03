@@ -3,8 +3,9 @@
 # Build the OMNeT++ HTML documentation for the current checkout inside the
 # doc-builder container. Produces doc/src/out.
 #
-# Usage:  site/doc-builder/run.sh [make-target]   (default target: ci-html)
-# Env:    IMAGE    image reference (default: ghcr.io/omnetpp/doc-builder:latest)
+# Usage:  site/run.sh [make-target]   (default target: ci-html)
+# Env:    IMAGE    image reference (default: ghcr.io/omnetpp/doc-builder:latest; built from the
+#                  omnetpp/doc-builder repository)
 #         ENGINE   podman (default) or docker
 #         VERSION  documentation version label (default: 6.x)
 #         WHAT     omnetpp (default) or omnest

@@ -30,10 +30,9 @@ push doc branch ──► .github/workflows/deploy-docs.yml
 | `deploy/assemble-site.sh` | Copies the default version to the site root and renders `404.html`. |
 | `deploy/check-legacy-urls.py` | Checks that the URLs of the pre-versioning site lead to pages; prints the Cloudflare redirect rules they need. |
 | `templates/404.html` | Template for the not-found page. |
-| `doc-builder/` | The container image with the full build toolchain (see `doc-builder/README.md`). |
+| `run.sh` | Builds the docs of the current checkout in the doc-builder image (see [Testing locally](#testing-locally-before-pushing)). |
 | `check-conversion.py` | The TeX→RST conversion audit that gates the build. |
 | `../../../.github/workflows/deploy-docs.yml` | Builds and deploys the site. |
-| `../../../.github/workflows/doc-builder-image.yml` | Builds and publishes the doc-builder image. |
 
 ---
 
@@ -57,36 +56,15 @@ git push origin doc
 ### Step 2 — Publish the `doc-builder` image
 
 The build job runs inside `ghcr.io/omnetpp/doc-builder:latest`, so that image must
-exist and be pullable. Go to **Actions → Build doc-builder image → Run workflow**
-and run it on the `doc` branch. It pushes two tags, `:latest` and `:<short-sha>`.
-It is manual only: republishing `:latest` retunes the toolchain under every
-subsequent deploy, so it should never happen as a side effect of a push.
+exist and be pullable. It is built and published from the
+[omnetpp/doc-builder](https://github.com/omnetpp/doc-builder) repository, which also
+holds the OMNeT++ Sphinx extensions in it (see its `image/README.md`). Republishing
+`:latest` retunes the toolchain under every subsequent deploy, so it is a deliberate
+act, never a side effect of a push here.
 
-> **The workflow file must exist on the repository's default branch** for the *Run
-> workflow* button to appear at all — that is how GitHub surfaces
-> `workflow_dispatch`, and it applies to the API and `gh workflow run` equally.
-> Merge `.github/workflows/doc-builder-image.yml` (and `deploy-docs.yml`, whose
-> manual trigger is subject to the same rule) to the default branch before relying
-> on this step. Pushing the `doc` branch triggers *Deploy documentation* regardless,
-> because push events use the workflow file from the pushed branch.
-
-The workflow stamps an `org.opencontainers.image.source` label naming the pipeline
-repository, so GHCR links the package to it automatically. With that link in
-place, the build job's `GITHUB_TOKEN` can pull the image even while the package is
-private. Making the package public also works, in which case the `credentials:`
-block under `container:` in `deploy-docs.yml` becomes redundant.
-
-<details>
-<summary>Building and pushing the image from a workstation instead</summary>
-
-```bash
-echo "$GHCR_TOKEN" | podman login ghcr.io -u <your-user> --password-stdin
-doc/src/site/doc-builder/build.sh --push
-```
-
-`GHCR_TOKEN` needs `write:packages`. The image only needs rebuilding when the
-toolchain changes — see `doc-builder/README.md`.
-</details>
+The package is public, so the build job pulls it without credentials. (A private
+package can only be pulled with the `GITHUB_TOKEN` of a repository that its
+**Package settings → Manage Actions access** lists.)
 
 ### Step 3 — Point DNS at GitHub Pages
 
@@ -223,11 +201,11 @@ moving those refs republishes the same content with a possibly different pipelin
 Build the docs exactly as CI does, using the same image:
 
 ```bash
-doc/src/site/doc-builder/build.sh          # build the image locally (once)
-doc/src/site/doc-builder/run.sh            # -> doc/src/out for the current checkout
+doc/src/site/run.sh                        # -> doc/src/out for the current checkout
 ```
 
-Note that `run.sh` builds **your current checkout**. To exercise the full pipeline
+`IMAGE=<ref>` runs it in another image, e.g. one built from a doc-builder checkout
+with its `image/build.sh`. Note that `run.sh` builds **your current checkout**. To exercise the full pipeline
 instead — which builds the *refs listed in `versions.txt`*, fetching them from
 origin if the local clone lacks them — stage it into a scratch directory:
 
@@ -257,14 +235,7 @@ no GitHub Actions or Pages, but it does need read access to origin.
   `make -C doc/src/manual rst && make -C doc/src ci-audit`, which leaves it in
   `doc/src/out/conversion-report.md`.
 - **The job cannot pull the image**: confirm the package exists at
-  `ghcr.io/omnetpp/doc-builder:latest`, and that it is either public or linked to
-  the pipeline repository (see step 2).
-- **`denied: permission_denied: write_package` when publishing the image**: the
-  publishing repository must be owned by the `omnetpp` org (the package namespace),
-  and its **Settings → Actions → General → Workflow permissions** must allow write.
-  If the package already exists, it does not grant access to new repositories
-  automatically: **org → Packages → doc-builder → Package settings → Manage Actions
-  access** must list the pipeline repository with the **Write** role.
+  `ghcr.io/omnetpp/doc-builder:latest`, and that it is public (see step 2).
 - **The deploy job is skipped**: it only runs on `refs/heads/doc`. Download the
   `github-pages` artifact from the run to inspect what would have been published.
 - **`Branch "doc" is not allowed to deploy to github-pages due to environment

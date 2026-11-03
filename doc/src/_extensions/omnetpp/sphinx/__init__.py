@@ -10,13 +10,8 @@ from os import path
 from typing import Any, Dict
 from sphinx.application import Sphinx
 from sphinx.config import Config
-from sphinx.highlighting import lexers
 from omnetpp.sphinx import builders
-from omnetpp.sphinx import video
-from omnetpp.sphinx import audio
 from omnetpp.sphinx import preprocessor
-from omnetpp.sphinx import highlighters
-from omnetpp.sphinx import searchfix
 
 def setup(app: Sphinx) -> Dict[str, Any]:
     # config keys
@@ -29,23 +24,9 @@ def setup(app: Sphinx) -> Dict[str, Any]:
     app.setup_extension('sphinx.builders.html')
     app.add_builder(builders.EclipseHelpBuilder)
 
-    # set up directives
-    app.add_directive('youtube', video.Youtube)
-    app.add_directive('vimeo', video.Vimeo)
-    app.add_directive('video', video.Video)
-    app.add_directive('video_no_loop', video.Video_noloop)
-    app.add_directive('audio', audio.Audio)
-
-    # highlighters
-    app.add_lexer('ned', highlighters.NedLexer)
-    app.add_lexer('msg', highlighters.MsgLexer)
-    app.add_lexer('ini', highlighters.IniLexer)
-    app.add_lexer('fp', highlighters.FingerprintLexer)
-
     # hook up event handlers
     app.connect('source-read', preprocessor.opp_preprocess)
     app.connect('include-read', preprocessor.opp_preprocess_include)
-    app.connect('build-finished', searchfix.fix_stopwords_lookup)
 
     return {
         'version': '6.0.0',

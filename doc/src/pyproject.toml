@@ -1,4 +1,7 @@
-# Python environment for building the OMNeT++ Sphinx documentation.
+# Python environment for building the OMNeT++ Sphinx documentation outside the
+# doc-builder image (local uv builds, releng/makedist). The image installs the
+# same stack from its own copy in the omnetpp/doc-builder repository (image/),
+# which is the one to change; keep this one in step with it.
 # Managed with uv (https://docs.astral.sh/uv/): `uv sync` creates ./.venv from
 # uv.lock, `uv run <cmd>` runs a tool in it. This is a virtual project (no package
 # is built/installed - only the dependencies below).

@@ -6,10 +6,11 @@
 # Pages service using the run's own OIDC token. There is no second repository and
 # no long-lived deployment credential.
 #
-# The build job runs inside the doc-builder image (doc/src/site/doc-builder/), which
-# carries the whole toolchain (doxygen, graphviz, pinned pandoc, KaTeX math, and
-# the Sphinx stack). All build logic lives in doc/src/site/ (versions.txt +
-# deploy/*.sh) so it can be run and tested locally with site/doc-builder/run.sh.
+# The build job runs inside the doc-builder image (built from the omnetpp/doc-builder
+# repository), which carries the whole toolchain (doxygen, graphviz, pinned pandoc,
+# KaTeX math, the Sphinx stack and the OMNeT++ Sphinx extensions). All build logic
+# lives in doc/src/site/ (versions.txt + deploy/*.sh) so it can be run and tested
+# locally with doc/src/site/run.sh.
 #
 # Trigger: push the long-lived `doc` branch (move it forward to publish an update).
 # The versions to build are listed in doc/src/site/versions.txt; a Pages deployment
@@ -17,8 +18,8 @@
 #
 # Prerequisites:
 #   - Settings -> Pages -> Source = GitHub Actions.
-#   - The doc-builder image published at the reference below; build and push it
-#     with the "Build doc-builder image" workflow (doc-builder-image.yml).
+#   - The doc-builder image published at the reference below (see the README of
+#     the omnetpp/doc-builder repository).
 name: Deploy documentation
 
 on:

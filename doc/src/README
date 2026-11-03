@@ -14,9 +14,14 @@ itself has to be installed. Native tools needed for this target, on Ubuntu:
 
 Math is rendered client-side by KaTeX, so no LaTeX is required for the site.
 
+The OMNeT++ Sphinx extensions (omnetpp_immaterial etc.) come from a checkout of
+https://github.com/omnetpp/doc-builder next to this repository (or set
+DOC_BUILDER_DIR to one).
+
 The easiest way to reproduce the exact CI toolchain (pinned doxygen and pandoc)
-is the doc-builder container image; see site/doc-builder/README.md. The whole
-site build/deploy pipeline is documented in site/README.md.
+is the doc-builder container image, built from that repository, which has the
+extensions too: site/run.sh builds the site in it. The whole site build/deploy
+pipeline is documented in site/README.md.
 
 Legacy targets
 --------------

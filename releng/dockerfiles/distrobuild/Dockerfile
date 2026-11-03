@@ -46,6 +46,11 @@ RUN mkdir -p /tmp/docproj && \
     find /opt/docvenv -type d -name '__pycache__' -prune -exec rm -rf {} + && \
     rm -rf /tmp/docproj
 
+# The OMNeT++ Sphinx extensions (omnetpp_immaterial etc.), which doc/src/conf.py finds through DOC_BUILDER_DIR.
+RUN git clone --depth 1 --branch v1 https://github.com/omnetpp/doc-builder.git /opt/doc-builder && \
+    rm -rf /opt/doc-builder/.git
+ENV DOC_BUILDER_DIR=/opt/doc-builder
+
 # getting only the dependnecies does not work correctly (not everything is cached unfortunately, so a full build is required)
 #RUN git checkout master && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -Dwhat=omnetpp -fn || true)) ; rm -rf $OMNETPP_DIR
 
