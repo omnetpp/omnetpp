@@ -13,7 +13,7 @@
 #
 set -euo pipefail
 
-SITE_URL="https://docs.omnetpp.org/"
+SITE_URL="https://doc.omnetpp.org/"
 
 OUT="${1:?usage: build-all.sh <output-dir>}"
 SITE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # doc/src/site

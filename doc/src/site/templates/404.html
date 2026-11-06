@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Not-found page of docs.omnetpp.org. site/deploy/assemble-site.sh fills in the
+  Not-found page of doc.omnetpp.org. site/deploy/assemble-site.sh fills in the
   default version, the version labels and the list of versions from versions.txt.
   GitHub Pages serves it at whatever path was missing, so every link is absolute.
 -->
@@ -35,6 +35,56 @@
   </ul>
 </main>
 <script>
+  // Before this site, doc.omnetpp.org served the documentation under /omnetpp/. Its URLs, and the indexes of
+  // the API references, which the Doxygen trees of this site do not have, lead to their pages here.
+  // site/deploy/check-legacy-urls.py checks that the fixed targets exist.
+  (function () {
+    var landing = {
+      'api': '/api/api-index',
+      'nedxml-api': '/nedxml-api/nedxml-api-index',
+      'parsim-api': '/parsim-api/parsim-api-index'
+    };
+    var guides = {
+      'SimulationManual.pdf': '/manual/index',
+      'UserGuide.pdf': '/userguide/index',
+      'InstallGuide.pdf': '/installguide/index',
+      'IDE-Overview.pdf': '/ide-overview/ide-overview',
+      'IDE-DevelopersGuide.pdf': '/ide-developersguide/ide-developersguide',
+      'IDE-CustomizationGuide.pdf': '/ide-customization-guide/ide-customization-guide'
+    };
+    function go(url) {
+      location.replace(url);
+    }
+    // The ids that docutils makes of the labels, which were the anchors of the old one-page manual.
+    function anchor(hash) {
+      var label = hash.slice(1);
+      try { label = decodeURIComponent(label); } catch (e) {}
+      var id = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^[-0-9]+|-+$/g, '');
+      return id ? '#' + id : '';
+    }
+
+    var path = location.pathname;
+    var index = path.match(/^\/(api|nedxml-api|parsim-api)\/(index\.html)?$/);
+    if (index) {
+      document.querySelector('main').hidden = true;
+      return go(landing[index[1]]);
+    }
+    if (path !== '/omnetpp' && path.indexOf('/omnetpp/') !== 0) return;
+    document.querySelector('main').hidden = true;
+    var rest = path.slice('/omnetpp/'.length);
+    if (guides[rest]) return go(guides[rest]);
+    if (rest.indexOf('manual/') === 0) return go('/manual/index' + anchor(location.hash));
+    var api = rest.match(/^(api|nedxml-api|parsim-api)\/(.*)$/);
+    if (!api) return go('/');
+    if (!api[2] || api[2] === 'index.html') return go(landing[api[1]]);
+    // A page that is gone, e.g. a class removed since, leads to the index of its reference.
+    var page = '/' + api[1] + '/' + api[2].replace(/-members\.html$/, '.html');
+    fetch(page, {method: 'HEAD'}).then(function (response) {
+      go(response.ok ? page + location.hash : landing[api[1]]);
+    }, function () {
+      go(landing[api[1]]);
+    });
+  })();
   (function () {
     var labels = @VERSION_LABELS@;
     var parts = location.pathname.split('/');

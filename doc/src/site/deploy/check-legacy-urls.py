@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 Checks that the URLs of the documentation site from before it was versioned
-(MkDocs, e.g. /tutorials/tictoc/part2/) still lead to a page of an assembled site.
+(MkDocs, e.g. /tutorials/tictoc/part2/) still lead to a page of an assembled site,
+and that the pages exist to which the not-found page sends the URLs of the
+documentation that doc.omnetpp.org served before it, under /omnetpp/.
 
     check-legacy-urls.py <site-dir>       check the tree made by assemble-site.sh
     check-legacy-urls.py --cloudflare     print the Cloudflare redirect rules
@@ -17,7 +19,9 @@ never grow; what can break them is a page of the new site being renamed.
 import os
 import sys
 
-SITE_URL = "https://docs.omnetpp.org"
+SITE_URL = "https://doc.omnetpp.org"
+# The rules are created in the omnetpp.org zone, which other sites share.
+SITE_HOST = SITE_URL.split("://", 1)[1]
 
 # Pages of the old site that the current documentation has, served from <path-without-slash>.html.
 LEAF_PAGES = [
@@ -63,6 +67,19 @@ GONE_PREFIX_PAGES = ["/tutorials/pandas/", "/tutorials/pandas/index-src/", "/tut
 # Pages of the old site that are left to the 404 page.
 NOT_FOUND = ["/showfile/"]
 
+# The fixed targets of the redirects in templates/404.html.
+REDIRECT_TARGETS = [
+    "/api/api-index",
+    "/nedxml-api/nedxml-api-index",
+    "/parsim-api/parsim-api-index",
+    "/manual/index",
+    "/userguide/index",
+    "/installguide/index",
+    "/ide-overview/ide-overview",
+    "/ide-developersguide/ide-developersguide",
+    "/ide-customization-guide/ide-customization-guide",
+]
+
 
 def cloudflare_rules():
     gone = " or ".join([f'http.request.uri.path eq "{p}"' for p in GONE_PAGES] +
@@ -70,11 +87,11 @@ def cloudflare_rules():
     leaves = " ".join(f'"{p}"' for p in LEAF_PAGES)
     return f"""\
 Rule 1 - removed pages to the home page
-  When:   {gone}
+  When:   http.host eq "{SITE_HOST}" and ({gone})
   Then:   Static redirect, 301, URL {SITE_URL}/ , do not preserve the query string
 
 Rule 2 - strip the trailing slash of the old pages
-  When:   http.request.uri.path in {{{leaves}}}
+  When:   http.host eq "{SITE_HOST}" and http.request.uri.path in {{{leaves}}}
   Then:   Dynamic redirect, 301, preserve the query string, expression
           concat("{SITE_URL}", substring(http.request.uri.path, 0, -1))
 """
@@ -136,6 +153,11 @@ def main():
             ok = status == expected
             failures += not ok
             print(f"{'ok  ' if ok else 'FAIL'} {status!s:>4}  {' -> '.join(chain)}")
+    for path in REDIRECT_TARGETS:
+        status, _ = github_pages(site, path)
+        ok = status == 200
+        failures += not ok
+        print(f"{'ok  ' if ok else 'FAIL'} {status!s:>4}  {path} (redirect target)")
     if failures:
         print(f"check-legacy-urls: {failures} old URL(s) do not lead to a page")
         return 1

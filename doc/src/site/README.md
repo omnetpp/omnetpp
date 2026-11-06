@@ -1,7 +1,7 @@
 # Documentation site pipeline (`doc/src/site`)
 
 This directory holds everything needed to **automatically build and deploy** the
-OMNeT++ documentation to <https://docs.omnetpp.org>.
+OMNeT++ documentation to <https://doc.omnetpp.org>.
 
 On every push of the dedicated **`doc` branch**, a GitHub Actions workflow builds
 the documentation for the versions listed in [`versions.txt`](versions.txt) and
@@ -17,7 +17,7 @@ push doc branch ──► .github/workflows/deploy-docs.yml
       ├─ deploy/check-legacy-urls.py _site # pre-versioning URLs still lead to pages
       └─ actions/upload-pages-artifact     # pack _site as the 'github-pages' artifact
     job deploy (plain runner, only on refs/heads/doc)
-      └─ actions/deploy-pages              # OIDC → Pages → https://docs.omnetpp.org
+      └─ actions/deploy-pages              # OIDC → Pages → https://doc.omnetpp.org
 ```
 
 ## What's here
@@ -28,8 +28,8 @@ push doc branch ──► .github/workflows/deploy-docs.yml
 | `deploy/build-all.sh` | Reads `versions.txt` and builds every listed version. |
 | `deploy/build-version.sh` | Checks a ref out into a git worktree and runs `make ci-html` for it, staging `_site/<label>/`. |
 | `deploy/assemble-site.sh` | Copies the default version to the site root and renders `404.html`. |
-| `deploy/check-legacy-urls.py` | Checks that the URLs of the pre-versioning site lead to pages; prints the Cloudflare redirect rules they need. |
-| `templates/404.html` | Template for the not-found page. |
+| `deploy/check-legacy-urls.py` | Checks that the URLs of the pre-versioning site lead to pages, and that the pages exist which `404.html` sends the old `/omnetpp/` URLs to; prints the Cloudflare redirect rules they need. |
+| `templates/404.html` | Template for the not-found page, which also leads the old `/omnetpp/` URLs and the indexes of the API references on to their pages. |
 | `run.sh` | Builds the docs of the current checkout in the doc-builder image (see [Testing locally](#testing-locally-before-pushing)). |
 | `check-conversion.py` | The TeX→RST conversion audit that gates the build. |
 | `../../../.github/workflows/deploy-docs.yml` | Builds and deploys the site. |
@@ -69,7 +69,7 @@ package can only be pulled with the `GITHUB_TOKEN` of a repository that its
 ### Step 3 — Point DNS at GitHub Pages
 
 ```
-docs.omnetpp.org.   CNAME   omnetpp.github.io.
+doc.omnetpp.org.   CNAME   omnetpp.github.io.
 ```
 
 Do this before step 4: GitHub verifies the record when the custom domain is set.
@@ -86,13 +86,19 @@ doc/src/site/deploy/check-legacy-urls.py --cloudflare
 They list the old site's pages explicitly: that set never grows, so the rules
 never change. The deploy job checks every old URL against them on each run.
 
+Before this site, doc.omnetpp.org served the documentation under `/omnetpp/`
+(e.g. `/omnetpp/manual/#sec:sim-lib:cobject`, `/omnetpp/api/classomnetpp_1_1cMessage.html`,
+`/omnetpp/InstallGuide.pdf`). Those URLs need no rule: `404.html`, which GitHub
+Pages serves for them, leads on to the matching page in the browser, the section
+of the manual included. Crawlers see a 404 there, not a redirect.
+
 ### Step 4 — Turn on Pages
 
 In the pipeline repository, **Settings → Pages**:
 
 1. *Source* = **GitHub Actions**. (Not "Deploy from a branch" — there is no
    publishing branch; the workflow run is the source.)
-2. *Custom domain* = **`docs.omnetpp.org`**, then enable **Enforce HTTPS** once
+2. *Custom domain* = **`doc.omnetpp.org`**, then enable **Enforce HTTPS** once
    the certificate has been issued, which can take a few minutes.
 
 The custom domain lives here and only here. Nothing in the built tree configures
@@ -124,12 +130,15 @@ links the published URL.
 ### Step 7 — Verify
 
 ```bash
-curl -sI https://docs.omnetpp.org/                          # 200 - the default version
-curl -sI https://docs.omnetpp.org/6.4/                      # 200 - the same, under its label
-curl -sI https://docs.omnetpp.org/api/                      # 200 - the doxygen C++ API
-curl -sI https://docs.omnetpp.org/tutorials/tictoc/part2/   # 301 to .../part2 (Cloudflare)
-curl -sI https://docs.omnetpp.org/no-such-page              # 404, with the site's 404.html
+curl -sI https://doc.omnetpp.org/                          # 200 - the default version
+curl -sI https://doc.omnetpp.org/6.5/                      # 200 - the same, under its label
+curl -sI https://doc.omnetpp.org/api/api-index             # 200 - the C++ API
+curl -sI https://doc.omnetpp.org/tutorials/tictoc/part2/   # 301 to .../part2 (Cloudflare)
+curl -sI https://doc.omnetpp.org/no-such-page              # 404, with the site's 404.html
 ```
+
+Open <https://doc.omnetpp.org/omnetpp/manual/#sec:sim-lib:cobject> in a browser:
+the not-found page should lead on to that section of the manual.
 
 Check that a page under `_static/` loads and that math renders, which confirms the
 bundled KaTeX assets were published.
@@ -176,7 +185,7 @@ moving those refs republishes the same content with a possibly different pipelin
 # 7.x       omnetpp-7.x      # future: uncomment when a 7.x release exists
 ```
 
-- `<label>` is the URL path segment: `docs.omnetpp.org/<label>/…`. It is also
+- `<label>` is the URL path segment: `doc.omnetpp.org/<label>/…`. It is also
   passed to the build as `VERSION`. It must not be the name of a top-level entry
   of the documentation (`manual`, `api`, …), with which it shares the root;
   `assemble-site.sh` refuses such a label.

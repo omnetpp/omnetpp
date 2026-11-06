@@ -26,7 +26,7 @@ of the `configure.user` file:
     cp configure.user.dist configure.user
 
 then follow instructions in the [Installation
-Guide](https://doc.omnetpp.org/omnetpp/InstallGuide.pdf) of the last release.
+Guide](https://doc.omnetpp.org/installguide/index) of the last release.
 It contains OS-specific information on installing dependencies, selecting build
 options, compilation, and more. (The hyperlinked PDF is generated from the
 sources in `doc/src/installguide`.)

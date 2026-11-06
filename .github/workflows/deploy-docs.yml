@@ -1,5 +1,5 @@
 # Builds the OMNeT++ documentation site and publishes it to GitHub Pages, which
-# serves it at https://docs.omnetpp.org.
+# serves it at https://doc.omnetpp.org.
 #
 # The site is deployed straight out of this workflow run: Pages is configured with
 # "Source: GitHub Actions", so actions/deploy-pages hands the built tree to the

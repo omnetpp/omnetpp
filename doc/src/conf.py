@@ -200,7 +200,7 @@ html_show_source_link = False
 # /<VERSION>/, but the default version is also served at the site root, which is
 # its canonical location: the deploy scripts pass that in BASEURL. Other versions
 # stay canonical under their own directory, where all their pages exist.
-html_baseurl = os.environ.get('BASEURL') or 'https://docs.omnetpp.org/%s/' % version
+html_baseurl = os.environ.get('BASEURL') or 'https://doc.omnetpp.org/%s/' % version
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
