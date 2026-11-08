@@ -1,0 +1,73 @@
+%description:
+The fake GUI must reach the next event even when the simulation-time interval
+contains fewer ticks than the requested animation frames. Check event delivery
+and animation-time accounting with interpolation disabled, one frame, the default
+three frames, and the maximum supported frame count.
+
+%module: Module
+
+class Module : public cSimpleModule
+{
+  private:
+    const int64_t intervals[7] = {0, 1, 2, 3, 4, 6, 1001};
+    int received = 0;
+    int64_t expectedTicks = 0;
+    mutable int refreshesSinceEvent = 0;
+
+  protected:
+    virtual void initialize() override
+    {
+        getCanvas()->setAnimationSpeed(1, this);
+        scheduleAt(SimTime::fromRaw(intervals[0]), new cMessage("tick"));
+    }
+
+    virtual void handleMessage(cMessage *message) override
+    {
+        ASSERT(simTime().raw() == expectedTicks);
+        double error = getEnvir()->getAnimationTime() - simTime().dbl();
+        ASSERT(error > -1e-18 && error < 1e-18);
+        refreshesSinceEvent = 0;
+        if (++received < 7) {
+            expectedTicks += intervals[received];
+            scheduleAt(SimTime::fromRaw(expectedTicks), message);
+        }
+        else
+            delete message;
+    }
+
+    virtual void refreshDisplay() const override
+    {
+        // Fail promptly if a zero interpolation step repeatedly refreshes the display.
+        if (++refreshesSinceEvent > 2000)
+            throw cRuntimeError("Fake GUI failed to advance to the next event");
+    }
+
+    virtual void finish() override
+    {
+        ASSERT(received == 7);
+        EV << "Completed all seven intervals" << endl;
+    }
+};
+
+Define_Module(Module);
+
+%inifile: omnetpp.ini
+[General]
+network = Module
+simtime-resolution = ps
+cmdenv-express-mode = false
+cmdenv-fake-gui = true
+cmdenv-fake-gui-before-event-probability = 1
+cmdenv-fake-gui-after-event-probability = 1
+cmdenv-fake-gui-on-hold-probability = 0
+cmdenv-fake-gui-on-simtime-probability = 1
+cmdenv-fake-gui-on-simtime-numsteps = ${0,1,3,1000}
+
+%contains: stdout
+Completed all seven intervals
+
+%contains: stdout
+Run statistics: total 4, successful 4
+
+%not-contains: stdout
+Fake GUI failed to advance
