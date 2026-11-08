@@ -121,7 +121,8 @@ void FakeGUI::animateUntil(simtime_t targetSimTime)
         if (numSteps > 0) {
             simtime_t simtimeStep = simtimeInterval / numSteps;
             simtime_t t = getSimulation()->getSimTime();
-            while (true) {
+            // Skip interpolation when division rounds the step down to zero ticks.
+            while (simtimeStep > 0) {
                 t += simtimeStep;
                 if (t >= targetSimTime)
                     break;
