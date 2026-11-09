@@ -10,6 +10,13 @@ import mistune
 import inspect
 
 def finalize_latex(s):
+    # Code blocks become listings, which LaTeX prints verbatim: escaping them would print the escapes.
+    parts = re.split(r'(∇begin☾filelisting☽.*?∇end☾filelisting☽)', s, flags=re.DOTALL)
+    return "".join(part.replace("∇begin☾filelisting☽", "\\begin{filelisting}").replace("∇end☾filelisting☽", "\\end{filelisting}")
+                   if i % 2 else escape_latex(part) for i, part in enumerate(parts))
+
+
+def escape_latex(s):
     substitutes = [
         ("\\", "\b"), # temporarily
         ("{", "\\{"),

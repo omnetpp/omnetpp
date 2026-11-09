@@ -40,11 +40,8 @@ def preprocess(content):
         cleaned_block = re.sub(r'\\textit\{([^}]*)\}', r'\1', cleaned_block)
         cleaned_block = re.sub(r'\\textrm\{([^}]*)\}', r'\1', cleaned_block)
 
-        # Handle escaped curly braces $ # etc. , removing the backslash
-        cleaned_block = re.sub(r'\\\{', r'{', cleaned_block)
-        cleaned_block = re.sub(r'\\\}', r'}', cleaned_block)
-        cleaned_block = re.sub(r'\\\$', r'$', cleaned_block)
-        cleaned_block = re.sub(r'\\\#', r'#', cleaned_block)
+        # Handle escaped special characters, removing the backslash
+        cleaned_block = re.sub(r'\\([{}$#_%&])', r'\1', cleaned_block)
  
         cleaned_block = re.sub(r'\\opp', r'|omnet++|', cleaned_block)
         

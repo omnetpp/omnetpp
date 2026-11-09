@@ -2307,14 +2307,14 @@ instances in the rows, because it would have an unwanted effect when used in \tt
 \begin{filelisting}
 from omnetpp.scave import vectorops
 
-@vectorops.vector\_operation("Fooize", "foo(42)")
+@vectorops.vector_operation("Fooize", "foo(42)")
 def foo(r, arg1, arg2=5):
-    \# r.vectime = r.vectime * 2    \# <- this is okay
-    \# r.vectime *= 2               \# <- this is NOT okay!
+    # r.vectime = r.vectime * 2    # <- this is okay
+    # r.vectime *= 2               # <- this is NOT okay!
 
     r.vectime = r.vectime * arg1 + arg2
     if "title" in r:
-        r.title = r.title + ", but fooized" \# this is also okay
+        r.title = r.title + ", but fooized" # this is also okay
     return r
 
 \end{filelisting}
