@@ -3,6 +3,10 @@
 IDE Customization Guide
 =======================
 
+.. only:: html
+
+   `PDF version <../pdf/IDE-CustomizationGuide.pdf>`__
+
 Motivation
 ----------
 

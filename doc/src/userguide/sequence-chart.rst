@@ -121,6 +121,7 @@ Graphical elements on the Sequence Chart represent modules, events, and messages
 
 .. list-table::
    :widths: 45 55
+   :class: longtable
    :header-rows: 0
 
    * - .. image:: pictures/SequenceChart-Legend-SimpleModuleAxis.png

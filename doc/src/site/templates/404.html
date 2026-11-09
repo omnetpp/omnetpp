@@ -44,14 +44,6 @@
       'nedxml-api': '/nedxml-api/nedxml-api-index',
       'parsim-api': '/parsim-api/parsim-api-index'
     };
-    var guides = {
-      'SimulationManual.pdf': '/manual/index',
-      'UserGuide.pdf': '/userguide/index',
-      'InstallGuide.pdf': '/installguide/index',
-      'IDE-Overview.pdf': '/ide-overview/ide-overview',
-      'IDE-DevelopersGuide.pdf': '/ide-developersguide/ide-developersguide',
-      'IDE-CustomizationGuide.pdf': '/ide-customization-guide/ide-customization-guide'
-    };
     function go(url) {
       location.replace(url);
     }
@@ -72,7 +64,7 @@
     if (path !== '/omnetpp' && path.indexOf('/omnetpp/') !== 0) return;
     document.querySelector('main').hidden = true;
     var rest = path.slice('/omnetpp/'.length);
-    if (guides[rest]) return go(guides[rest]);
+    if (/^[^/]+\.pdf$/.test(rest)) return go('/pdf/' + rest);
     if (rest.indexOf('manual/') === 0) return go('/manual/index' + anchor(location.hash));
     var api = rest.match(/^(api|nedxml-api|parsim-api)\/(.*)$/);
     if (!api) return go('/');

@@ -1,6 +1,10 @@
 Overview of the |omnet++| IDE
 =============================
 
+.. only:: html
+
+   `PDF version <../pdf/IDE-Overview.pdf>`__
+
 Introduction
 ------------
 

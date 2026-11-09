@@ -5,6 +5,8 @@ User Guide
 
 .. only:: html
 
+   `PDF version <../pdf/UserGuide.pdf>`__
+
    Table of Contents
 
 .. toctree::

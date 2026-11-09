@@ -9,6 +9,8 @@
 #         ENGINE   podman (default) or docker
 #         VERSION  documentation version label (default: 6.x)
 #         WHAT     omnetpp (default) or omnest
+#         BASEURL  base URL of the pages, e.g. http://localhost:8000/ to serve doc/src/out there: the
+#                  Manual (pdf) entry of the navigation leads to it (default: the live version's)
 #
 set -euo pipefail
 
@@ -19,6 +21,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO="$(git -C "$HERE" rev-parse --show-toplevel)"
 VERSION="${VERSION:-6.x}"
 WHAT="${WHAT:-omnetpp}"
+BASEURL="${BASEURL:-}"
 BUILDID="$(git -C "$REPO" rev-parse --short HEAD)"
 # On SELinux-enforcing hosts set MOUNTOPT=:z (shared) or :Z (private) to relabel.
 MOUNTOPT="${MOUNTOPT:-}"
@@ -28,4 +31,4 @@ exec "$ENGINE" run --rm \
     -v "$REPO":/work${MOUNTOPT} \
     -w /work/doc/src \
     "$IMAGE" \
-    make "$TARGET" PIPRUN= VENVDEP= VERSION="$VERSION" BUILDID="$BUILDID" what="$WHAT"
+    make "$TARGET" PIPRUN= VENVDEP= VERSION="$VERSION" BUILDID="$BUILDID" what="$WHAT" BASEURL="$BASEURL"

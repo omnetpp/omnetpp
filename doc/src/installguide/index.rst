@@ -5,6 +5,8 @@ Installation Guide
 
 .. only:: html
 
+   `PDF version <../pdf/InstallGuide.pdf>`__
+
    Table of Contents
 
 .. toctree::

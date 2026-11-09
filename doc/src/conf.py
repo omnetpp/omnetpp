@@ -216,7 +216,6 @@ extensions.append('omnetpp_immaterial')
 html_theme = "sphinx_immaterial"
 omnetpp_homepage = 'https://omnetpp.org/'
 omnetpp_nav_nowrap = ['/api/', '/nedxml-api/', '/parsim-api/', '/python-api/']
-omnetpp_nav_no_menu = ['Manual']
 html_css_files = ['sphinx-omnetpp.css',]
 html_logo = 'images/logo.png'
 html_favicon = '_static/logo.png'
@@ -338,7 +337,6 @@ latex_additional_files = ['cover/cover-background.pdf']
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('manual/index', 'Simulation-Manual.tex', "Simulation Manual", author, 'manual', False),
     ('userguide/index', 'UserGuide.tex', "User Guide", author, 'manual', False),
     ('ide-developersguide/ide-developersguide', 'IDE-DevelopersGuide.tex', "IDE Developer's Guide", author, 'manual', False),
     ('ide-customization-guide/ide-customization-guide', 'IDE-CustomizationGuide.tex', "IDE Customization Guide", author, 'manual', False),
@@ -479,7 +477,13 @@ def convert_markdown_docstring(app, what, name, obj, options, lines):
         return
     lines[:] = rst.splitlines()
 
+# A toctree takes no relative URL, and the PDF of a version is in the directory of that version.
+def fill_in_base_url(app, docname, source):
+    if docname == 'index':
+        source[0] = source[0].replace('@BASEURL@', html_baseurl)
+
 def setup(app : Sphinx):
+    app.connect("source-read", fill_in_base_url)
     app.connect("autodoc-skip-member", autodoc_skip_member_callback) # Entry point to autodoc-skip-member
     app.connect("autodoc-process-docstring", convert_markdown_docstring)
     app.add_config_value('what', 'omnetpp', 'env')

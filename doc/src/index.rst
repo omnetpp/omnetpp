@@ -13,6 +13,7 @@
    :hidden:
 
    Simulation Manual <manual/index>
+   Manual (pdf) <@BASEURL@pdf/SimulationManual.pdf>
 
 .. toctree::
    :caption: API Reference

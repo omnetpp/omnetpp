@@ -3,6 +3,10 @@
 IDE Developers Guide
 ====================
 
+.. only:: html
+
+   `PDF version <../pdf/IDE-DevelopersGuide.pdf>`__
+
 Introduction
 ------------
 

@@ -26,7 +26,7 @@ push doc branch ──► .github/workflows/deploy-docs.yml
 |------|---------|
 | `versions.txt` | Version manifest: `"<label>  <git-ref>"` per line; the first non-comment line is the **default**, also published at the site root. |
 | `deploy/build-all.sh` | Reads `versions.txt` and builds every listed version. |
-| `deploy/build-version.sh` | Checks a ref out into a git worktree and runs `make ci-html` for it, staging `_site/<label>/`. |
+| `deploy/build-version.sh` | Checks a ref out into a git worktree and runs `make ci-html` for it, staging `_site/<label>/`, with the PDFs of the manual and the guides in its `pdf/`. |
 | `deploy/assemble-site.sh` | Copies the default version to the site root and renders `404.html`. |
 | `deploy/check-legacy-urls.py` | Checks that the URLs of the pre-versioning site lead to pages, and that the pages exist which `404.html` sends the old `/omnetpp/` URLs to; prints the Cloudflare redirect rules they need. |
 | `templates/404.html` | Template for the not-found page, which also leads the old `/omnetpp/` URLs and the indexes of the API references on to their pages. |
@@ -90,7 +90,7 @@ Before this site, doc.omnetpp.org served the documentation under `/omnetpp/`
 (e.g. `/omnetpp/manual/#sec:sim-lib:cobject`, `/omnetpp/api/classomnetpp_1_1cMessage.html`,
 `/omnetpp/InstallGuide.pdf`). Those URLs need no rule: `404.html`, which GitHub
 Pages serves for them, leads on to the matching page in the browser, the section
-of the manual included. Crawlers see a 404 there, not a redirect.
+of the manual included, or to the PDF. Crawlers see a 404 there, not a redirect.
 
 ### Step 4 — Turn on Pages
 

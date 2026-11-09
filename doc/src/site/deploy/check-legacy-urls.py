@@ -73,11 +73,12 @@ REDIRECT_TARGETS = [
     "/nedxml-api/nedxml-api-index",
     "/parsim-api/parsim-api-index",
     "/manual/index",
-    "/userguide/index",
-    "/installguide/index",
-    "/ide-overview/ide-overview",
-    "/ide-developersguide/ide-developersguide",
-    "/ide-customization-guide/ide-customization-guide",
+    "/pdf/SimulationManual.pdf",
+    "/pdf/UserGuide.pdf",
+    "/pdf/InstallGuide.pdf",
+    "/pdf/IDE-Overview.pdf",
+    "/pdf/IDE-DevelopersGuide.pdf",
+    "/pdf/IDE-CustomizationGuide.pdf",
 ]
 
 

@@ -3,6 +3,8 @@ VENV          = .venv/pyvenv.cfg
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = out
+LATEXDIR      = out-latex
+GUIDES_PDF    = UserGuide.pdf InstallGuide.pdf IDE-Overview.pdf IDE-DevelopersGuide.pdf IDE-CustomizationGuide.pdf
 SPHINXOPTS    ?= -q
 
 # by default disable latex output to reduce noise.
@@ -25,7 +27,7 @@ export what VERSION BUILDID BASEURL
 PIPRUN        ?= uv run
 VENVDEP       ?= $(VENV)
 
-.PHONY: all clean site site-api apis api nedxml-api parsim-api do-manual do-manual-html do-manual-pdf do-manual-eclipse do-guides do-guides-html do-guides-eclipsehelp do-guides-pdf ci-html ci-audit
+.PHONY: all clean site site-api apis api nedxml-api parsim-api do-manual do-manual-html do-manual-pdf do-manual-eclipse do-guides do-guides-html do-guides-eclipsehelp do-guides-pdf ci-html ci-pdf ci-audit
 
 #
 # Targets
@@ -64,6 +66,15 @@ ci-html: $(VENVDEP)
 	$(MAKE) -C manual rst figures
 	$(MAKE) ci-audit
 	$(MAKE) site
+	$(MAKE) ci-pdf
+
+# The PDFs that the pages link to: the manual's comes from its LaTeX sources, the guides' from Sphinx.
+ci-pdf: $(VENVDEP)
+	$(MAKE) -C manual pdf VERSION=$(VERSION)
+	$(PIPRUN) $(SPHINXBUILD) -b latex -d "$(BUILDDIR)/.doctrees" "$(SOURCEDIR)" "$(LATEXDIR)" $(SPHINXOPTS) $(O)
+	$(MAKE) -C "$(LATEXDIR)" $(GUIDES_PDF) LATEXOPTS="$(LATEXOPTS)"
+	mkdir -p "$(BUILDDIR)/pdf"
+	cp ../SimulationManual.pdf $(addprefix $(LATEXDIR)/,$(GUIDES_PDF)) "$(BUILDDIR)/pdf"
 
 # Fail the build on HARD TeX->RST conversion defects (leftover raw TeX, undefined
 # roles, unmapped code environments). Soft cross-reference warnings are left to
