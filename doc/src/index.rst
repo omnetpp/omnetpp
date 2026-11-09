@@ -8,7 +8,6 @@
 .. toctree::
    :caption: Manual
    :maxdepth: 2
-   :numbered: 3
    :titlesonly:
    :hidden:
 

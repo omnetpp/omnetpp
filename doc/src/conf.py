@@ -444,6 +444,8 @@ from sphinx.application import Sphinx
 # IDE), convert each docstring to RST at build time with pandoc - the same
 # tool the manual's tex2rst converter uses. Hooked on 'autodoc-process-docstring',
 # which sphinx-autoapi emits for every documented object.
+import json
+import docutils.nodes
 import subprocess
 import textwrap
 import functools
@@ -482,8 +484,31 @@ def fill_in_base_url(app, docname, source):
     if docname == 'index':
         source[0] = source[0].replace('@BASEURL@', html_baseurl)
 
+# The chapters of the manual are generated from its LaTeX sources.
+def mark_manual_no_copy(app, docname, source):
+    if docname.startswith(('manual/ch-', 'manual/appendix-')):
+        source[0] = ':no-copy:\n\n' + source[0]
+
+# Links to the sections of the manual from when it was one page, whose anchors only the browser sees: 404.html and
+# manual/index.rst look up the page of a section here.
+def write_manual_anchors(app, exception):
+    if exception or app.builder.format != 'html':
+        return
+    pages = {}
+    for docname in app.env.found_docs:
+        if docname.startswith('manual/'):
+            for section in app.env.get_doctree(docname).findall(docutils.nodes.section):
+                pages.update((id, docname.removeprefix('manual/')) for id in section['ids'])
+    for docname, labelid in app.env.get_domain('std').anonlabels.values():
+        if docname.startswith('manual/'):
+            pages[labelid] = docname.removeprefix('manual/')
+    with open(os.path.join(app.outdir, 'manual', 'anchors.json'), 'w') as f:
+        json.dump(pages, f)
+
 def setup(app : Sphinx):
     app.connect("source-read", fill_in_base_url)
+    app.connect("source-read", mark_manual_no_copy)
+    app.connect("build-finished", write_manual_anchors)
     app.connect("autodoc-skip-member", autodoc_skip_member_callback) # Entry point to autodoc-skip-member
     app.connect("autodoc-process-docstring", convert_markdown_docstring)
     app.add_config_value('what', 'omnetpp', 'env')

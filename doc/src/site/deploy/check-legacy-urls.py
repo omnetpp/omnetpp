@@ -73,6 +73,7 @@ REDIRECT_TARGETS = [
     "/nedxml-api/nedxml-api-index",
     "/parsim-api/parsim-api-index",
     "/manual/index",
+    "/manual/anchors.json",
     "/pdf/SimulationManual.pdf",
     "/pdf/UserGuide.pdf",
     "/pdf/InstallGuide.pdf",

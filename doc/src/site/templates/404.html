@@ -65,7 +65,15 @@
     document.querySelector('main').hidden = true;
     var rest = path.slice('/omnetpp/'.length);
     if (/^[^/]+\.pdf$/.test(rest)) return go('/pdf/' + rest);
-    if (rest.indexOf('manual/') === 0) return go('/manual/index' + anchor(location.hash));
+    if (rest.indexOf('manual/') === 0) {
+      var id = anchor(location.hash);
+      return fetch('/manual/anchors.json').then(function (response) { return response.json(); }).then(function (pages) {
+        var page = pages[id.slice(1)];
+        go(page ? '/manual/' + page + '.html' + id : '/manual/index');
+      }, function () {
+        go('/manual/index');
+      });
+    }
     var api = rest.match(/^(api|nedxml-api|parsim-api)\/(.*)$/);
     if (!api) return go('/');
     if (!api[2] || api[2] === 'index.html') return go(landing[api[1]]);
