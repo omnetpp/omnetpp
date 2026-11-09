@@ -124,7 +124,7 @@ the opening table. If the table contains the Generic section only, then it can b
 |expand_image| button next to them.
 
 .. figure:: pictures/INI-FormEditor2.png
-   :width: 60%
+   :width: 80%
 
    Editing general configuration
 

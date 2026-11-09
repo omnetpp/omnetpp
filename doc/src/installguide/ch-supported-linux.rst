@@ -215,7 +215,7 @@ You can launch the |omnet++| Simulation IDE by typing the following command in t
    $ |omnetpp|
 
 .. figure:: pictures/ide-initial.png
-   :width: 75.0%
+   :width: 100%
 
    The Simulation IDE
 

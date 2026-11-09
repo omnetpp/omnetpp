@@ -208,7 +208,7 @@ You can run the IDE by typing the following command in the terminal:
    $ |omnetpp|
 
 .. figure:: pictures/ide-initial.png
-   :width: 75.0%
+   :width: 100%
 
    The Simulation IDE
 

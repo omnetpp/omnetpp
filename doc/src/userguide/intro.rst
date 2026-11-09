@@ -77,7 +77,7 @@ the preferred license type or custom license text. The IDE will copy the license
 license will also be shown in the generated NED documentation. 
 
 .. figure:: pictures/Intro-Preferences.png
-   :width: 75%
+   :width: 100%
 
    Configuring |omnet++| preferences
 

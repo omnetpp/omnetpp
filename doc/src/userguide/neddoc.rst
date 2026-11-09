@@ -17,7 +17,7 @@ to make its style customizable. You can provide your own style sheet if the defa
 general, all project-specific settings have good defaults that work well with the documentation generator.
 
 .. figure:: pictures/NEDDOC-ProjectProperties.png
-   :width: 60%
+   :width: 90%
 
    Configuring project-specific settings
 
@@ -26,7 +26,7 @@ the project context menu and select the :guilabel:`Generate NED Documentation` m
 dialog where you can set various settings for the current generation before starting it.
 
 .. figure:: pictures/NEDDOC-ProjectMenu.png
-   :width: 25%
+   :width: 30%
 
    Opening the NED documentation generator
 
@@ -45,7 +45,7 @@ types will be hyperlinked to it.
 NED documentation can also be generated outside the IDE, using the :command:`opp_neddoc` command-line tool.
 
 .. figure:: pictures/NEDDOC-Configuration.png
-   :width: 80%
+   :width: 100%
 
    Configuring the NED documentation generator
 
@@ -64,7 +64,7 @@ you have not yet added a ``@titlepage`` directive to your NED comments, then the
 content.
 
 .. figure:: pictures/NEDDOC-Documentation.png
-   :width: 80%
+   :width: 100%
 
    The resulting NED documentation
 
@@ -74,7 +74,7 @@ opened. The NED model elements are also exported graphically from the NED Editor
 cross-referencing navigation for submodules.
 
 .. figure:: pictures/NEDDOC-UsageDiagram.png
-   :width: 60%
+   :width: 80%
 
    NED usage diagram
 

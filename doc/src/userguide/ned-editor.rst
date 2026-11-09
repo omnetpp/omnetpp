@@ -214,7 +214,7 @@ the :guilabel:`General` tab. Visual properties like icon, size, color, border, e
 tab. You can check how your module will look in the preview panel at the bottom of the dialog.
 
 .. figure:: pictures/NED-Properties.png
-   :width: 60%
+   :width: 80%
 
    Editing Visual Properties
 

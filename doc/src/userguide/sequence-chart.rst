@@ -120,7 +120,7 @@ Legend
 Graphical elements on the Sequence Chart represent modules, events, and messages, as listed in the following table.
 
 .. list-table::
-   :widths: 10 90
+   :widths: 45 55
    :header-rows: 0
 
    * - .. image:: pictures/SequenceChart-Legend-SimpleModuleAxis.png
@@ -1006,7 +1006,7 @@ back to 'host1,' which then sends a WLAN acknowledge in return. In this process,
 'host0' based on its IP address.
 
 .. figure:: pictures/SequenceChart-Examples-WirelessARP.png
-   :width: 80%
+   :width: 100%
 
    Discovering the MAC address
 
@@ -1028,7 +1028,7 @@ calculated from the message's length and the radio module's bitrate.
 
 .. _fig-wireless-succping:
 .. figure:: pictures/SequenceChart-Examples-WirelessSuccessfulPing.png
-   :width: 80%
+   :width: 100%
 
    The second ping procedure
 

@@ -10,7 +10,7 @@ Overview of the User Interface
 ------------------------------
 
 .. figure:: pictures/Qtenv-main.png
-   :width: 80%
+   :width: 100%
 
    The main window of Qtenv
 
@@ -105,7 +105,7 @@ The Timeline
 ~~~~~~~~~~~~
 
 .. figure:: pictures/Qtenv-timeline.png
-   :width: 90%
+   :width: 100%
 
    The timeline
 
@@ -130,7 +130,7 @@ The Object Navigator
 ~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: pictures/Qtenv-objtree.png
-   :width: 40%
+   :width: 60%
 
    The object tree
 
@@ -234,7 +234,7 @@ The context menu of submodules provides further actions (see below).
    Submodule context menu
 
 .. figure:: pictures/Qtenv-submod-utilities.png
-   :width: 80%
+   :width: 100%
 
    The Utilities submenu
 
@@ -291,12 +291,12 @@ from several modules simultaneously. To open a log window, locate the module in 
 right-click it, and select :guilabel:`Open Component Log` from the context menu.
 
 .. figure:: pictures/Qtenv-log-msgs.png
-   :width: 80%
+   :width: 100%
 
    The log viewer showing message traffic
 
 .. figure:: pictures/Qtenv-log-textual.png
-   :width: 80%
+   :width: 100%
 
    The log viewer showing module log
 
@@ -459,7 +459,7 @@ like the object inspector, or something entirely different.
 The screenshot below shows Qtenv with several inspectors open.
 
 .. figure:: pictures/Qtenv-with-inspectors.png
-   :width: 80%
+   :width: 100%
 
    Qtenv with several floating inspectors open
 
@@ -510,7 +510,7 @@ Browsing the Registered Components
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: pictures/Qtenv-inspect-menu-full.png
-   :width: 60%
+   :width: 80%
 
    The Inspect menu
 
@@ -539,7 +539,7 @@ Some possible use cases:
   the result list as a collection of shortcuts, eliminating the need to manually navigate the simulation's object tree.
 
 .. figure:: pictures/Qtenv-find.png
-   :width: 60%
+   :width: 80%
 
    Using the Find/Inspect Objects dialog to find long queues
 

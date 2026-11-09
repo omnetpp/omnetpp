@@ -115,7 +115,7 @@ Testing the Plug-in
 On the *Overview* tab click the *Launch an Eclipse application* link
 
 .. figure:: images/plugin-overview-page.png
-   :width: 60%
+   :width: 90%
 
 A new instance of Eclipse will be started containing the generated plug-in. If everything is OK you should see a *Sample
 Menu* containing a *Sample Action*. When clicked, it will bring up a message dialog.
@@ -205,7 +205,7 @@ Double click on the ``plugin.xml`` file in your plug-in project and open the dep
 ``org.eclipse.core.resources``. We will need it for our example later.)
 
 .. figure:: images/ned-core-dependency.png
-   :width: 60%
+   :width: 90%
 
 Accessing NED and Message Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

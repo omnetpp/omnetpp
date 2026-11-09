@@ -77,7 +77,7 @@ dialog, select :guilabel:`|omnet++| Simulation` from the tree and click the :gui
 the top-left corner. A blank launch configuration will be created, where you can give it a name at the top of the form.
 
 .. figure:: pictures/Launch-RunDialog.png
-   :width: 60%
+   :width: 80%
 
    The Simulation Launcher
 

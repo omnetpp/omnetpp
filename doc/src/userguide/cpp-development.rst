@@ -344,7 +344,7 @@ The build system for an |omnet++| project can be configured on the :menuselectio
 :guilabel:`Project Properties` dialog. All settings on this page will affect all build configurations.
 
 .. figure:: pictures/CPP-SourceFolder.png
-   :width: 60%
+   :width: 90%
 
    Configuring Makefiles
 
