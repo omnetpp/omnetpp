@@ -84,7 +84,6 @@ extensions = [
     # napoleon would misparse the 'Parameters:'/'Returns:' labels and mangle them.
     #'sphinx.ext.napoleon',
     'autoapi.extension',
-    #'sphinxcontrib.images',
     'omnetpp_doxylink',
     'omnetpp_lexers',
     'omnetpp_media',
@@ -378,17 +377,6 @@ smart_quotes = False
 # external link configuration
 extlinks = {
   'wiki': ('https://en.wikipedia.org/wiki/%s', '')
-}
-
-# image extension config
-images_config = {
-    'override_image_directive': True,
-#    'backend': 'LightBox2',
-#    'default_image_width': '100%',
-#    'default_image_height': 'auto',
-#    'default_group': 'None',
-#    'download': True,
-    'default_show_title': False
 }
 
 # -- Doxylink config ---------------------------------------------------------

@@ -576,7 +576,6 @@ dependencies = [
     { name = "sphinx-autobuild" },
     { name = "sphinx-design" },
     { name = "sphinx-immaterial" },
-    { name = "sphinxcontrib-images" },
     { name = "sphinxcontrib-jquery" },
     { name = "sphinxcontrib-katex" },
 ]
@@ -593,7 +592,6 @@ requires-dist = [
     { name = "sphinx-autobuild" },
     { name = "sphinx-design", specifier = ">=0.7.0" },
     { name = "sphinx-immaterial" },
-    { name = "sphinxcontrib-images", specifier = ">=1.0.1" },
     { name = "sphinxcontrib-jquery", specifier = ">=4.1" },
     { name = "sphinxcontrib-katex" },
 ]
@@ -1154,19 +1152,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/43/93/983afd9aa001e5201eab16b5a444ed5b9b0a7a010541e0ddfbbfd0b2470c/sphinxcontrib_htmlhelp-2.1.0.tar.gz", hash = "sha256:c9e2916ace8aad64cc13a0d233ee22317f2b9025b9cf3295249fa985cc7082e9", size = 22617, upload-time = "2024-07-29T01:09:37.889Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0a/7b/18a8c0bcec9182c05a0b3ec2a776bba4ead82750a55ff798e8d406dae604/sphinxcontrib_htmlhelp-2.1.0-py3-none-any.whl", hash = "sha256:166759820b47002d22914d64a075ce08f4c46818e17cfc9470a9786b759b19f8", size = 98705, upload-time = "2024-07-29T01:09:36.407Z" },
-]
-
-[[package]]
-name = "sphinxcontrib-images"
-version = "1.0.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "requests" },
-    { name = "sphinx", version = "9.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.13'" },
-    { name = "sphinx", version = "9.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.13'" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/08/c5/402cce1cc18caff306effa09e77fdb3872289edc956a5c1bf53c03799b3b/sphinxcontrib_images-1.0.1-py3-none-any.whl", hash = "sha256:3cc9738dc15bacb3ab153b411a1b50dbfaa2535b49853ef3eae4d22adbbffa26", size = 119672, upload-time = "2025-06-07T22:42:48.954Z" },
 ]
 
 [[package]]
