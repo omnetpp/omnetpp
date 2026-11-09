@@ -10,6 +10,7 @@ Installation Guide
    Table of Contents
 
 .. toctree::
+   :numbered: 3
    :maxdepth: 2
 
    ch-intro
