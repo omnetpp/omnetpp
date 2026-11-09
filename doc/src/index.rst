@@ -56,7 +56,8 @@
 Overview of OMNeT++
 ===================
 
-.. abstract:: What is OMNeT++?
+.. admonition:: What is OMNeT++?
+   :class: opp-highlight
 
    OMNeT++ is an extensible, modular, component-based C++ simulation
    library and framework, primarily for building network simulators.

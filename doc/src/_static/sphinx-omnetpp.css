@@ -127,3 +127,40 @@ div#doc-content {
 aside.footnote-list {
     padding-bottom: 2rem;
 }
+
+/* A panel that stands out from the page, unlike an admonition, whose text is smaller than the page's. The darkened
+   primary color keeps white text readable in both schemes: the orange of the dark scheme is too light for it. */
+.md-typeset .admonition.opp-highlight {
+    padding: 1rem 1.4rem;
+    border: none;
+    border-radius: 0.4rem;
+    background-color: color-mix(in srgb, var(--md-primary-fg-color) 70%, black);
+    box-shadow: var(--md-shadow-z2);
+    color: #fff;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.md-typeset .opp-highlight .admonition-title {
+    margin: 0 0 0.5rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.md-typeset .opp-highlight .admonition-title::before,
+.md-typeset .opp-highlight .admonition-title::after {
+    display: none;
+}
+
+.md-typeset .opp-highlight p:last-child {
+    margin-bottom: 0;
+}
+
+.md-typeset .opp-highlight a {
+    color: inherit;
+    text-decoration: underline;
+}
