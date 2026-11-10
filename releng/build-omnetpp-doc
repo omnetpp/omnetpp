@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# Builds the documentation of the release archives of a commit in the doc-builder image
+# (doc/src/build.sh all). The tree of the commit is exported into <dir> and built there, so that the
+# documentation comes from exactly the commit of the archives, not from the working copy. makedist
+# takes the generated files from <dir> (see DOC_OUTPUTS there).
+#
+# Usage:  releng/build-omnetpp-doc <commit> <dir>
+# Env:    what     omnetpp (default) or omnest
+#         BUILDID  build identifier (default: <date>-<short hash of the commit>, as makedist's)
+#         IMAGE, ENGINE  see doc/src/build.sh
+#
+set -euo pipefail
+
+COMMIT="${1:?usage: build-omnetpp-doc <commit> <dir>}"
+DIR="${2:?usage: build-omnetpp-doc <commit> <dir>}"
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+
+what="${what:-omnetpp}"
+VERSION="$(git -C "$REPO" show "$COMMIT:Version" | sed 's/^.*-//')"
+BUILDID="${BUILDID:-$(date +%y%m%d)-$(git -C "$REPO" rev-parse --short "$COMMIT")}"
+
+mkdir -p "$DIR"
+[ -z "$(ls -A "$DIR")" ] || { echo "build-omnetpp-doc: $DIR is not empty" >&2; exit 1; }
+git -C "$REPO" archive "$COMMIT" | tar -x -C "$DIR"
+
+echo "Building the documentation of $what $VERSION ($BUILDID) in $DIR"
+VERSION="$VERSION" WHAT="$what" BUILDID="$BUILDID" "$DIR/doc/src/build.sh" all

@@ -9,7 +9,8 @@
 # in: Build identifier can be passed as BUILDID variable (optional)
 # in: If BUILD_IDE=true (default) - it tries to build the native and java part of the IDE
 # in: If BUILD_IDE_NATIVE=true (default) - it tries to build the native part of the IDE
-# in: If BUILD_DOC=true (default) - it tries to build the documentation
+# in: If BUILD_DOC=true (default) - the documentation is taken from DOC_PREBUILT_DIR (default:
+#     /root/omnetpp-doc), where releng/build-omnetpp-doc built it in the doc-builder image
 # out: SOURCE_DISTRIBUTION_NAME contains the created archivename
 
 TWEAKCONFIG="perl releng/tweakconfigfile.pl"
@@ -29,6 +30,16 @@ fi
 if test -z "$BUILD_DOC"; then
   BUILD_DOC="true"
 fi
+
+if test -z "$DOC_PREBUILT_DIR"; then
+  DOC_PREBUILT_DIR=/root/omnetpp-doc
+fi
+
+# the files that releng/build-omnetpp-doc generates for the distribution and the IDE's help plugin
+DOC_OUTPUTS="doc/api doc/nedxml-api doc/parsim-api doc/manual doc/guides
+  doc/SimulationManual.pdf doc/InstallGuide.pdf doc/UserGuide.pdf doc/IDE-Overview.pdf
+  doc/IDE-CustomizationGuide.pdf doc/IDE-DevelopersGuide.pdf
+  doc/src/manual/eclipse doc/src/out/eclipsehelp"
 
 if test -z "$BUILD_IDE"; then
   BUILD_IDE="true"
@@ -105,14 +116,6 @@ $TWEAKCONFIG set configure.user WITH_PARSIM yes || exit 1
 $TWEAKCONFIG set configure.user WITH_QTENV no || exit 1
 $TWEAKCONFIG set configure.user WITH_OSG no || exit 1
 
-# set vars for documentation
-$TWEAKCONFIG set doc/src/doxy/api.doxyfile    PROJECT_NUMBER $VERSION || exit 1
-$TWEAKCONFIG set doc/src/doxy/nedxml.doxyfile PROJECT_NUMBER $VERSION || exit 1
-$TWEAKCONFIG set doc/src/doxy/parsim.doxyfile PROJECT_NUMBER $VERSION || exit 1
-$TWEAKCONFIG set doc/src/doxy/scave.doxyfile  PROJECT_NUMBER $VERSION || exit 1
-$TWEAKCONFIG set doc/src/manual/Makefile TEMPLATE $what || exit 1
-$TWEAKCONFIG set doc/src/manual/Makefile VERSION $VERSION || exit 1
-
 echo "Preparing to build $WHAT, version: $VERSION, build: $BUILDID, edition: $EDITION..."
 echo "Core build: $BUILD_CORE_DISTRO"
 echo "Linux x86_64 build: $BUILD_LINUX_X86_64_DISTRO"
@@ -132,20 +135,15 @@ echo
 # create Makefile.inc
 ./configure || { echo --- error during running configure ---; exit 1;}
 
-# Generating documentation
+# Taking the prebuilt documentation
 if [ "$BUILD_DOC" = "true" ]; then
-  echo Generating documentation
-  (cd doc/src && make clean)
-  if [ -d /opt/docvenv ]; then
-    # the distrobuild image has no network, so the docs use the venv baked into the image
-    if ! cmp -s doc/src/uv.lock /opt/docvenv/uv.lock; then
-      echo "--- doc/src/uv.lock differs from the one baked into the distrobuild image; rebuild the image ---"
-      exit 1
-    fi
-    PATH=/opt/docvenv/bin:$PATH make doc PIPRUN= VENVDEP= || { echo --- error generating documentation ---; exit 1;}
-  else
-    make doc || { echo --- error generating documentation ---; exit 1;}
-  fi
+  echo Copying the prebuilt documentation from $DOC_PREBUILT_DIR
+  for f in $DOC_OUTPUTS; do
+    checkfile $DOC_PREBUILT_DIR/$f 'build it with releng/build-omnetpp-doc'
+    rm -rf $f
+    mkdir -p $(dirname $f)
+    cp -r $DOC_PREBUILT_DIR/$f $f
+  done
   if [ "$BUILD_IDE" = "true" ]; then
     echo --- Copying documatation to the IDE doc plugin
     make copy-ui-doc || { echo --- error copyig documentation ---; exit 1;}
@@ -186,12 +184,6 @@ git reset
 if [ "$BUILD_DOC" = "true" ]; then
 
   echo Copying generated documentation
-
-  checkfile doc/SimulationManual.pdf               'SimulationManual.pdf must exist in doc/'
-  checkfile doc/UserGuide.pdf            'UserGuide.pdf must exist in doc/'
-  checkfile doc/IDE-CustomizationGuide.pdf      'IDE-CustomizationGuide.pdf must exist in doc/'
-  checkfile doc/IDE-DevelopersGuide.pdf      'IDE-DevelopersGuide.pdf must exist in doc/'
-  checkfile doc/InstallGuide.pdf    'InstallGuide.pdf must exist in doc/'
 
   cp -r doc/api $DISTDIR/$what-$VERSION/doc/api
   cp -r doc/parsim-api $DISTDIR/$what-$VERSION/doc/parsim-api

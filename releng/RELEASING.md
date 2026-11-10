@@ -19,7 +19,8 @@ In the commands, `X.Y.Z` is the version (e.g. `6.5.0`) and `X.Y` is its first tw
   ChangeLogs, `doc/API-changes.txt`, `WHATSNEW.md` and the ChangeLog tagging done by
   `misc/tag-changelogs` (see the omnetpp-release-engineering skill).
 - `releng/dist` contains the archives of one build of exactly that commit, made with
-  `build-omnetpp-dist`, and `releng/dist/test-results/<buildid>/` contains its test results.
+  `build-omnetpp-dist` (which builds the documentation in the doc-builder image of
+  `doc/src/doc-builder.image`), and `releng/dist/test-results/<buildid>/` contains its test results.
 - The release check report accepts the results. Failed tests are allowed only if the report
   accepts them.
 - `gh` is logged in with write access to `omnetpp/omnetpp`, and podman (or docker) can push to
