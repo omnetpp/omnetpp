@@ -26,7 +26,7 @@ $(error $(SPHINXBUILD) not found: the documentation is built in the doc-builder 
 endif
 endif
 
-.PHONY: all clean site site-api apis api nedxml-api parsim-api do-manual do-manual-html do-manual-pdf do-manual-eclipse do-guides do-guides-html do-guides-eclipsehelp do-guides-pdf ci-html ci-pdf ci-audit
+.PHONY: all clean site site-api apis api nedxml-api parsim-api do-manual do-manual-html do-manual-pdf do-manual-eclipse do-guides do-guides-html do-guides-eclipse do-guides-pdf manual-rst ci-html ci-pdf ci-audit
 
 #
 # Targets
@@ -105,14 +105,18 @@ do-manual-eclipse:
 
 do-guides: | do-guides-html do-guides-pdf do-guides-eclipse
 
-do-guides-html:
+# The guides are built from the whole Sphinx project, which also has the manual, converted from LaTeX.
+manual-rst:
+	$(MAKE) -C manual rst figures
+
+do-guides-html: | manual-rst
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	cp -R $(BUILDDIR)/html ../guides
 
-do-guides-eclipse:
+do-guides-eclipse: | manual-rst
 	@$(SPHINXBUILD) -M eclipsehelp "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-do-guides-pdf:
+do-guides-pdf: | manual-rst
 	LATEXOPTS="$(LATEXOPTS)" $(SPHINXBUILD) -M latexpdf "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 	cp $(BUILDDIR)/latex/UserGuide.pdf ..
 	cp $(BUILDDIR)/latex/IDE-CustomizationGuide.pdf ..
