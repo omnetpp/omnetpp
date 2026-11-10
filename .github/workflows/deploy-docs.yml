@@ -38,8 +38,8 @@ jobs:
       contents: read
       packages: read          # to pull ghcr.io/omnetpp/doc-builder
     container:
-      # The same digest as in doc/src/doc-builder.image (doc-builder v1.0.3); bump the two together.
-      image: ghcr.io/omnetpp/doc-builder@sha256:f31890fcf835187debe7e381537d59242a0f179ed286e4aa4fca4165e5ea333e
+      # The same digest as in doc/src/doc-builder.image (doc-builder v1.0.4); bump the two together.
+      image: ghcr.io/omnetpp/doc-builder@sha256:8b45f35cfb09fbbf05bfc4d2d84379251e03071dc44cc7adf00552d84f1af11c
       credentials:            # needed only while the package is private
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}

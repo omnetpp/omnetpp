@@ -2,5 +2,5 @@
 # doc/src/build.sh, and through it `make doc` and the release scripts. Pinned by digest, so that the
 # same commit always builds the same documentation; bump it on purpose, together with the image of
 # .github/workflows/deploy-docs.yml. The tag is the release the digest was published as.
-# doc-builder v1.0.3
-ghcr.io/omnetpp/doc-builder@sha256:f31890fcf835187debe7e381537d59242a0f179ed286e4aa4fca4165e5ea333e
+# doc-builder v1.0.4
+ghcr.io/omnetpp/doc-builder@sha256:8b45f35cfb09fbbf05bfc4d2d84379251e03071dc44cc7adf00552d84f1af11c
