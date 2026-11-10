@@ -1,2 +1,0 @@
-#!/bin/sh
-docker build --force-rm -t ghcr.io/omnetpp/docker-sphinx:251211 .

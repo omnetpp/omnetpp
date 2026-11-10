@@ -1,4 +1,4 @@
-FROM ghcr.io/omnetpp/distrobuild-base:ubuntu22.04-macos13.3-261023
+FROM ghcr.io/omnetpp/distrobuild-base:ubuntu22.04-macos13.3-261110
 LABEL maintainer="Rudolf Hornig <rudi@omnetpp.org>"
 
 # during docker image builds, the 'tools' directory in the context dir should contain the Windows and macOS toolchains (i.e. ./tools/170717/...)
@@ -33,24 +33,6 @@ RUN uv venv --python /usr/bin/python3 --no-python-downloads --seed /opt/pyvenv &
     rm -f /tmp/requirements.txt
 ENV PATH="/opt/pyvenv/bin:$PATH" VIRTUAL_ENV=/opt/pyvenv
 
-# The Sphinx toolchain comes from the locked doc/src project. It needs Python >=3.12 (the system Python
-# is 3.10), so uv provides its own CPython. The venv is kept off PATH so that configure never builds
-# against it; makedist uses it for the doc build only, and refuses to do so if the checked out uv.lock
-# differs from the copy stored next to the venv.
-RUN mkdir -p /tmp/docproj && \
-    git show origin/topic/buildimage:doc/src/pyproject.toml > /tmp/docproj/pyproject.toml && \
-    git show origin/topic/buildimage:doc/src/uv.lock > /tmp/docproj/uv.lock && \
-    (cd /tmp/docproj && UV_PROJECT_ENVIRONMENT=/opt/docvenv UV_PYTHON=3.12 UV_PYTHON_INSTALL_DIR=/opt/uvpython \
-        uv sync --frozen --no-dev --no-cache) && \
-    cp /tmp/docproj/uv.lock /opt/docvenv/uv.lock && \
-    find /opt/docvenv -type d -name '__pycache__' -prune -exec rm -rf {} + && \
-    rm -rf /tmp/docproj
-
-# The OMNeT++ Sphinx extensions (omnetpp_immaterial etc.), which doc/src/conf.py finds through DOC_BUILDER_DIR.
-RUN git clone --depth 1 --branch v1 https://github.com/omnetpp/doc-builder.git /opt/doc-builder && \
-    rm -rf /opt/doc-builder/.git
-ENV DOC_BUILDER_DIR=/opt/doc-builder
-
 # getting only the dependnecies does not work correctly (not everything is cached unfortunately, so a full build is required)
 #RUN git checkout master && (cd $OMNETPP_DIR/ui && (mvn dependency:go-offline -Dwhat=omnetpp -fn || true)) ; rm -rf $OMNETPP_DIR
 
@@ -63,15 +45,8 @@ RUN /bin/bash -c 'git checkout topic/buildimage && \
     OFFLINE=no releng/ide/java/build-ide-java && \
     rm -rf $OMNETPP_DIR'
 
-# sphinx_immaterial downloads the Google fonts of the theme when the build starts, which fails without
-# network. A minimal build with the default theme fonts (conf.py does not override them) fills its cache.
-ENV SPHINX_IMMATERIAL_EXTERNAL_RESOURCE_CACHE_DIR=/opt/sphinx-immaterial-cache
-RUN mkdir -p /tmp/fontcache && cd /tmp/fontcache && \
-    printf 'extensions = ["sphinx_immaterial"]\nhtml_theme = "sphinx_immaterial"\n' > conf.py && \
-    printf 'Font cache\n==========\n' > index.rst && \
-    /opt/docvenv/bin/sphinx-build -q -b html . out && \
-    cd / && rm -rf /tmp/fontcache && \
-    ls /opt/sphinx-immaterial-cache/google_fonts | grep -q response
+# The documentation is not built in this image: releng/build-omnetpp-doc builds it in the doc-builder
+# image before, and makedist copies it from /root/omnetpp-doc.
 
 # while running this image you should either map a local OMNeT++ repo from the host to the /root/omnetpp-repo dir
 # or specify a remote OMNeT++ repo URL in the OMNETPP_REPO environment variable.
