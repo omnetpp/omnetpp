@@ -2,8 +2,9 @@ LATEX=pdflatex -halt-on-error -file-line-error -interaction=nonstopmode >pdflate
 PERL=perl
 RSVGCONVERT=rsvg-convert
 DOT=dot
-TEMPLATE=omnetpp
-VERSION=6.x
+what ?= omnetpp
+TEMPLATE = $(what)
+VERSION ?= 6.x
 
 ALLTEX = $(wildcard *.tex)
 CHAPTERS_TEX = $(wildcard ch-*.tex) $(wildcard appendix-*.tex)
