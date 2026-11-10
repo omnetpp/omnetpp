@@ -1,33 +1,25 @@
 Building the OMNeT++ documentation
 ==================================
 
+The documentation is built only in the doc-builder container image
+(https://github.com/omnetpp/doc-builder), which has the whole toolchain: Sphinx
+with the OMNeT++ extensions, doxygen, graphviz, pandoc and TeX Live. The image is
+pinned by digest in doc-builder.image. build.sh runs a target of the Makefile in
+it, with podman or docker; the Makefile refuses to run outside the image.
+
 The unified HTML site (manual, guides, tutorials, articles, C++ and Python API
-reference) is built with Sphinx:
+reference) and the PDFs it links to:
 
-    $ make ci-html
+    $ ./build.sh ci-html
 
-The Python toolchain is managed with uv (https://docs.astral.sh/uv/): the build
-runs `uv sync --frozen` to create ./.venv from the pinned uv.lock, so only uv
-itself has to be installed. Native tools needed for this target, on Ubuntu:
+A live preview of the site at http://localhost:8000/:
 
-    $ sudo apt install doxygen graphviz pandoc
+    $ ./build.sh site-server
 
-Math is rendered client-side by KaTeX, so no LaTeX is required for the site.
+The outputs of the release archives (doxygen API references, the HTML, PDF and
+Eclipse-help manual and guides), also built by `make doc` in the OMNeT++ root:
 
-The OMNeT++ Sphinx extensions (omnetpp_immaterial etc.) come from a checkout of
-https://github.com/omnetpp/doc-builder next to this repository (or set
-DOC_BUILDER_DIR to one).
+    $ ./build.sh all
 
-The easiest way to reproduce the exact CI toolchain (pinned doxygen and pandoc)
-is the doc-builder container image, built from that repository, which has the
-extensions too: site/run.sh builds the site in it. The whole site build/deploy
-pipeline is documented in site/README.md.
-
-Legacy targets
---------------
-
-The legacy html, PDF and Eclipse-help outputs (`make all`, `do-manual-pdf`, `do-guides-pdf`,
-`do-manual-html`, `do-manual-eclipse`) still go through LaTeX and need more:
-
-    $ sudo apt install texlive texlive-latex-extra latexmk librsvg2-bin \
-          libxml2-utils perl
+See build.sh for the variables it takes (VERSION, WHAT, BUILDID, BASEURL, IMAGE,
+ENGINE). The site build/deploy pipeline is documented in site/README.md.

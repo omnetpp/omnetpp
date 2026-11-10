@@ -57,13 +57,9 @@ if [ ! -f "$DOCSRC/site/check-conversion.py" ]; then
 fi
 
 echo "--> building HTML (VERSION=$LABEL BUILDID=$BUILDID what=$WHAT BASEURL=${BASEURL:-<per-version>})"
-# If the Sphinx toolchain is available globally (e.g. inside the doc-builder
-# container), bypass uv; otherwise fall back to the uv-managed virtualenv.
-make_args=(VERSION="$LABEL" BUILDID="$BUILDID" what="$WHAT" BASEURL="$BASEURL")
-if command -v sphinx-build >/dev/null 2>&1 && command -v doxysphinx >/dev/null 2>&1; then
-    make_args+=(PIPRUN= VENVDEP=)
-fi
-make -C "$DOCSRC" ci-html "${make_args[@]}"
+# Runs in the doc-builder image. PIPRUN= VENVDEP= keep the Makefiles of older refs, which still run
+# Sphinx through uv, on the image's toolchain.
+make -C "$DOCSRC" ci-html VERSION="$LABEL" BUILDID="$BUILDID" what="$WHAT" BASEURL="$BASEURL" PIPRUN= VENVDEP=
 
 # The unified Sphinx `site` target builds with `sphinx-build -b html . out`, so the
 # HTML root is doc/src/out itself: manual, guides, tutorials, articles, the doxygen

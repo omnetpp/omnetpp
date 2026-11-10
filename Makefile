@@ -163,7 +163,7 @@ apis:
 
 doc:
 	@echo ===== Building $@ ====
-	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE) -j1
+	$(Q)$(OMNETPP_DOC_DIR)/src/build.sh all
 
 #
 # Test

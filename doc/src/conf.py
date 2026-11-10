@@ -24,12 +24,8 @@ sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('_extensions'))
 sys.path.insert(0, os.path.abspath('_templates'))
 sys.path.insert(0, os.path.abspath('_themes'))
-# omnetpp_immaterial, omnetpp_doxylink, omnetpp_lexers and omnetpp_media are installed in the doc-builder image.
-# Builds outside it (local uv builds, releng/makedist) take them from a checkout of omnetpp/doc-builder,
-# $DOC_BUILDER_DIR, by default next to this repository; when there is one, it also wins inside the image.
-doc_builder_extensions = os.path.join(os.environ.get('DOC_BUILDER_DIR', os.path.abspath('../../../doc-builder')), 'extensions')
-if os.path.isdir(doc_builder_extensions):
-    sys.path.insert(0, doc_builder_extensions)
+# omnetpp_immaterial, omnetpp_doxylink, omnetpp_lexers and omnetpp_media come from the doc-builder image
+# (doc-builder.image), which is the only environment the documentation is built in (build.sh).
 
 
 # -- Project information -----------------------------------------------------
@@ -124,7 +120,7 @@ language = "en"
 # This pattern also affects html_static_path and html_extra_path .
 exclude_patterns = [
   '_build', '_deploy', 'Thumbs.db', '.DS_Store', '**/_docs',
-  '_static', '_themes', '_templates', '.venv', 'images', 'site', 'out'
+  '_static', '_themes', '_templates', 'images', 'site', 'out'
 ]
 
 # graphviz options

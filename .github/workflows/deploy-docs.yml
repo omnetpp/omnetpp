@@ -10,7 +10,7 @@
 # repository), which carries the whole toolchain (doxygen, graphviz, pinned pandoc,
 # KaTeX math, the Sphinx stack and the OMNeT++ Sphinx extensions). All build logic
 # lives in doc/src/site/ (versions.txt + deploy/*.sh) so it can be run and tested
-# locally with doc/src/site/run.sh.
+# locally in the same image (see doc/src/site/README.md).
 #
 # Trigger: push the long-lived `doc` branch (move it forward to publish an update).
 # The versions to build are listed in doc/src/site/versions.txt; a Pages deployment
@@ -38,7 +38,8 @@ jobs:
       contents: read
       packages: read          # to pull ghcr.io/omnetpp/doc-builder
     container:
-      image: ghcr.io/omnetpp/doc-builder:latest
+      # The same digest as in doc/src/doc-builder.image (doc-builder v1.0.3); bump the two together.
+      image: ghcr.io/omnetpp/doc-builder@sha256:f31890fcf835187debe7e381537d59242a0f179ed286e4aa4fca4165e5ea333e
       credentials:            # needed only while the package is private
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -50,8 +51,7 @@ jobs:
       - name: Build documentation versions
         # build-all.sh reads doc/src/site/versions.txt and, per version, checks the
         # ref out into a git worktree and runs `make ci-html` (manual RST + figures +
-        # conversion audit + doxygen APIs + Sphinx site) using the image's toolchain
-        # (no uv needed). HARD conversion defects fail the build here.
+        # conversion audit + doxygen APIs + Sphinx site) using the image's toolchain. HARD conversion defects fail the build here.
         run: doc/src/site/deploy/build-all.sh _site
 
       - name: Assemble site root

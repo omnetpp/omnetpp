@@ -30,7 +30,8 @@ push doc branch ──► .github/workflows/deploy-docs.yml
 | `deploy/assemble-site.sh` | Copies the default version to the site root and renders `404.html`. |
 | `deploy/check-legacy-urls.py` | Checks that the URLs of the pre-versioning site lead to pages, and that the pages exist which `404.html` sends the old `/omnetpp/` URLs to; prints the Cloudflare redirect rules they need. |
 | `templates/404.html` | Template for the not-found page, which also leads the old `/omnetpp/` URLs and the indexes of the API references on to their pages. |
-| `run.sh` | Builds the docs of the current checkout in the doc-builder image (see [Testing locally](#testing-locally-before-pushing)). |
+| `../build.sh` | Runs a target of `doc/src/Makefile` for the current checkout in the doc-builder image (see [Testing locally](#testing-locally-before-pushing)). |
+| `../doc-builder.image` | The doc-builder image that `build.sh` runs in, pinned by digest; `deploy-docs.yml` names the same digest. |
 | `check-conversion.py` | The TeX→RST conversion audit that gates the build. |
 | `../../../.github/workflows/deploy-docs.yml` | Builds and deploys the site. |
 
@@ -55,12 +56,12 @@ git push origin doc
 
 ### Step 2 — Publish the `doc-builder` image
 
-The build job runs inside `ghcr.io/omnetpp/doc-builder:latest`, so that image must
-exist and be pullable. It is built and published from the
+The build job runs inside the doc-builder image pinned by digest in
+`.github/workflows/deploy-docs.yml`, the same one as in `doc/src/doc-builder.image`, so
+that image must exist and be pullable. It is built and published from the
 [omnetpp/doc-builder](https://github.com/omnetpp/doc-builder) repository, which also
-holds the OMNeT++ Sphinx extensions in it (see its `image/README.md`). Republishing
-`:latest` retunes the toolchain under every subsequent deploy, so it is a deliberate
-act, never a side effect of a push here.
+holds the OMNeT++ Sphinx extensions in it (see its `image/README.md`). Moving to a new
+image is a commit that changes both digests, never a side effect of a publish there.
 
 The package is public, so the build job pulls it without credentials. (A private
 package can only be pulled with the `GITHUB_TOKEN` of a repository that its
@@ -210,22 +211,26 @@ moving those refs republishes the same content with a possibly different pipelin
 Build the docs exactly as CI does, using the same image:
 
 ```bash
-doc/src/site/run.sh                        # -> doc/src/out for the current checkout
+doc/src/build.sh                           # make ci-html -> doc/src/out for the current checkout
+doc/src/build.sh site-server               # live preview at http://localhost:8000/
 ```
 
 `IMAGE=<ref>` runs it in another image, e.g. one built from a doc-builder checkout
-with its `image/build.sh`. Note that `run.sh` builds **your current checkout**. To exercise the full pipeline
+with its `image/build.sh`. Note that `build.sh` builds **your current checkout**. To exercise the full pipeline
 instead — which builds the *refs listed in `versions.txt`*, fetching them from
-origin if the local clone lacks them — stage it into a scratch directory:
+origin if the local clone lacks them — run it in the image, from the repo root, into
+a directory of the checkout:
 
 ```bash
-doc/src/site/deploy/build-all.sh    /tmp/_site   # run from the repo root
-doc/src/site/deploy/assemble-site.sh /tmp/_site
-doc/src/site/deploy/check-legacy-urls.py /tmp/_site
-python3 -m http.server -d /tmp/_site 8000   # open http://localhost:8000/
+podman run --rm --security-opt label=disable -v "$PWD:$PWD" -w "$PWD" \
+    "$(grep -v '^#' doc/src/doc-builder.image)" sh -c '
+        doc/src/site/deploy/build-all.sh _site &&
+        doc/src/site/deploy/assemble-site.sh _site &&
+        doc/src/site/deploy/check-legacy-urls.py _site'
+python3 -m http.server -d _site 8000       # open http://localhost:8000/
 ```
 
-`/tmp/_site` is then byte-for-byte what the workflow uploads to Pages. This needs
+`_site` is then byte-for-byte what the workflow uploads to Pages. This needs
 no GitHub Actions or Pages, but it does need read access to origin.
 
 ## Notes / troubleshooting
@@ -241,10 +246,9 @@ no GitHub Actions or Pages, but it does need read access to origin.
   leftover raw TeX / undefined roles. In CI only its per-file summary is available,
   in the job log — the full `conversion-report.md` is written inside the throwaway
   worktree and dies with it. To see the report, reproduce the failure locally with
-  `make -C doc/src/manual rst && make -C doc/src ci-audit`, which leaves it in
-  `doc/src/out/conversion-report.md`.
-- **The job cannot pull the image**: confirm the package exists at
-  `ghcr.io/omnetpp/doc-builder:latest`, and that it is public (see step 2).
+  `doc/src/build.sh ci-html`, which leaves it in `doc/src/out/conversion-report.md`.
+- **The job cannot pull the image**: confirm that the digest in `deploy-docs.yml`
+  exists in the `ghcr.io/omnetpp/doc-builder` package, and that it is public (see step 2).
 - **The deploy job is skipped**: it only runs on `refs/heads/doc`. Download the
   `github-pages` artifact from the run to inspect what would have been published.
 - **`Branch "doc" is not allowed to deploy to github-pages due to environment
