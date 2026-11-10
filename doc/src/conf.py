@@ -126,12 +126,12 @@ exclude_patterns = [
 # graphviz options
 graphviz_output_format = 'svg'
 
-# KaTeX renders math client-side; no server-side prerendering (no node needed).
-katex_prerender = False
-# Serve KaTeX from bundled local assets (_static/katex) instead of a CDN, so the
-# site is self-contained. The JS (katex.min.js, auto-render.min.js) is already
-# shipped and copied locally by sphinxcontrib.katex; only the CSS + fonts default
-# to the CDN, so point that at the vendored copy. Only woff2 fonts are bundled
+# KaTeX renders the math into the HTML at build time (with node of the doc-builder image), so the
+# pages need no script for it: the Eclipse help has none, and the instant navigation of the site
+# replaces the page content without a page load, which a client-side renderer does not notice.
+katex_prerender = True
+# The prerendered math needs the KaTeX CSS and fonts, which default to a CDN; serve the vendored
+# copy (_static/katex) instead, so the site is self-contained. Only woff2 fonts are bundled
 # (browsers pick woff2 first, so the missing woff/ttf are never requested).
 katex_css_path = 'katex/katex.min.css'
 
