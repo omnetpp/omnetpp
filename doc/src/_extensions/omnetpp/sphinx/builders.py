@@ -49,7 +49,8 @@ class EclipseHelpBuilder(StandaloneHTMLBuilder):
 
     # don't copy the reST source
     copysource = False
-    supported_image_types = ['image/png', 'image/gif', 'image/jpeg']
+    # The help browser of the IDE shows SVG (the manual's Eclipse help has SVG figures too).
+    supported_image_types = ['image/svg+xml', 'image/png', 'image/gif', 'image/jpeg']
 
     # don't add links
     add_permalinks = False
