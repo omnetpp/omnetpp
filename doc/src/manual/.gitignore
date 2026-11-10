@@ -1,3 +1,4 @@
 *.rst
 usman.bbl
 
+!sp/index.rst

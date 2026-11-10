@@ -444,8 +444,11 @@ from sphinx.application import Sphinx
 # IDE), convert each docstring to RST at build time with pandoc - the same
 # tool the manual's tex2rst converter uses. Hooked on 'autodoc-process-docstring',
 # which sphinx-autoapi emits for every documented object.
+import collections
 import json
+import re
 import docutils.nodes
+import docutils.utils
 import subprocess
 import textwrap
 import functools
@@ -496,18 +499,100 @@ def write_manual_anchors(app, exception):
         return
     pages = {}
     for docname in app.env.found_docs:
-        if docname.startswith('manual/'):
+        if docname.startswith('manual/') and docname != SINGLE_PAGE_MANUAL:
             for section in app.env.get_doctree(docname).findall(docutils.nodes.section):
                 pages.update((id, docname.removeprefix('manual/')) for id in section['ids'])
     for docname, labelid in app.env.get_domain('std').anonlabels.values():
-        if docname.startswith('manual/'):
+        if docname.startswith('manual/') and docname != SINGLE_PAGE_MANUAL:
             pages[labelid] = docname.removeprefix('manual/')
     with open(os.path.join(app.outdir, 'manual', 'anchors.json'), 'w') as f:
         json.dump(pages, f)
 
+SINGLE_PAGE_MANUAL = 'manual/sp/index'
+
+def manual_chapters(app):
+    with open(os.path.join(app.srcdir, 'manual', 'index.rst'), encoding='utf-8') as f:
+        return ['manual/' + name for name in re.findall(r'^ +((?:ch|appendix)-[\w-]+)$', f.read(), re.M)]
+
+# The single-page manual is the text of the chapters. Its labels get a prefix, so that they don't clash with those of
+# the chapter pages and its links stay on the page.
+def build_single_page_manual(app, docname, source):
+    if docname != SINGLE_PAGE_MANUAL:
+        return
+    texts = []
+    for chapter in manual_chapters(app):
+        path = app.env.doc2path(chapter)
+        app.env.note_dependency(path)
+        with open(path, encoding='utf-8') as f:
+            texts.append(f.read())
+    names = collections.Counter(name for text in texts for name in re.findall(r'^[ \t]+:name: (\S+)[ \t]*$', text, re.M))
+    for i, text in enumerate(texts):
+        # the footnote numbers and the names that recur (e.g. 'refs') are of a chapter
+        text = re.sub(r'^(\s*\.\. \[)(\d+)\]', rf'\g<1>#c{i}-\2]', text, flags=re.M)
+        text = re.sub(r'\[(\d+)\]_', rf'[#c{i}-\1]_', text)
+        texts[i] = re.sub(r'^([ \t]+:name: )(\S+)[ \t]*$',
+                          lambda m: m[1] + ('sp-c%d-' % i if names[m[2]] > 1 else 'sp-') + m[2], text, flags=re.M)
+    text = '\n\n'.join(texts)
+    labels = set(re.findall(r'^\s*\.\. _`([^`]+)`:', text, re.M)) | {name for name, n in names.items() if n == 1}
+    text = re.sub(r'^(\s*\.\. _`)', r'\1sp-', text, flags=re.M)
+    text = re.sub(r'(:(?:num)?ref:`(?:[^`<]*<)?)([^`<>]+)(?=>?`)',
+                  lambda m: m[1] + ('sp-' if m[2] in labels else '') + m[2], text)
+    # paths are relative to the directory of the document
+    text = re.sub(r'^(\s*\.\. (?:\|[^|]+\| )?(?:figure|image|graphviz)::[ \t]+)(?=[^/\s])', r'\1../', text, flags=re.M)
+    source[0] += '\n\n' + text
+
+# The single-page manual is in no numbered toctree, because the figure counters of Sphinx are shared by the documents:
+# its section and figure numbers are those of the chapter pages, and Sphinx numbers the figures of the other documents
+# as if it were not there.
+def number_single_page_manual(app, env):
+    if SINGLE_PAGE_MANUAL not in env.found_docs:
+        return []
+    from sphinx.environment.collectors.toctree import TocTreeCollector
+    empty = docutils.utils.new_document('')
+    env.get_doctree = lambda docname, get_doctree=env.get_doctree: \
+        empty if docname == SINGLE_PAGE_MANUAL else get_doctree(docname)
+    try:
+        updated = TocTreeCollector().assign_figure_numbers(env)
+    finally:
+        del env.get_doctree
+
+    std = env.domains.standard_domain
+    def enumerables(doctree):
+        for node in doctree.findall(docutils.nodes.Element):
+            figtype = std.get_enumerable_node_type(node)
+            if figtype and node['ids'] and std.get_numfig_title(node):
+                yield figtype, node['ids'][0]
+
+    chapter_sections, chapter_figures = [], []
+    for chapter in manual_chapters(app):
+        doctree = env.get_doctree(chapter)
+        secnumbers = env.toc_secnumbers.get(chapter, {})
+        fignumbers = env.toc_fignumbers.get(chapter, {})
+        chapter_sections += [secnumbers.get('#' + section['ids'][0] if i else '')
+                             for i, section in enumerate(doctree.findall(docutils.nodes.section))]
+        chapter_figures += [fignumbers.get(figtype, {}).get(id) for figtype, id in enumerables(doctree)]
+
+    doctree = env.get_doctree(SINGLE_PAGE_MANUAL)
+    sections = list(doctree.findall(docutils.nodes.section))[1:]
+    figures = list(enumerables(doctree))
+    if len(sections) != len(chapter_sections) or len(figures) != len(chapter_figures):
+        _docstring_logger.warning('the single-page manual is not numbered: its sections or figures are not those of the chapters')
+        return updated
+    secnumbers = {'#' + section['ids'][0]: number for section, number in zip(sections, chapter_sections) if number}
+    env.toc_secnumbers[SINGLE_PAGE_MANUAL] = secnumbers
+    for reference in env.tocs[SINGLE_PAGE_MANUAL].findall(docutils.nodes.reference):
+        reference['secnumber'] = secnumbers.get(reference['anchorname'])
+    fignumbers = env.toc_fignumbers[SINGLE_PAGE_MANUAL] = {}
+    for (figtype, id), number in zip(figures, chapter_figures):
+        if number:
+            fignumbers.setdefault(figtype, {})[id] = number
+    return updated + [SINGLE_PAGE_MANUAL]
+
 def setup(app : Sphinx):
     app.connect("source-read", fill_in_base_url)
     app.connect("source-read", mark_manual_no_copy)
+    app.connect("source-read", build_single_page_manual, priority=400) # before the replacements of omnetpp.sphinx
+    app.connect("env-get-updated", number_single_page_manual)
     app.connect("build-finished", write_manual_anchors)
     app.connect("autodoc-skip-member", autodoc_skip_member_callback) # Entry point to autodoc-skip-member
     app.connect("autodoc-process-docstring", convert_markdown_docstring)

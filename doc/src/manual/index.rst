@@ -15,7 +15,7 @@ Simulation Manual
         }
       </script>
 
-   `PDF version <../pdf/SimulationManual.pdf>`__
+   :doc:`Single page version <sp/index>` | `PDF version <../pdf/SimulationManual.pdf>`__
 
    Table of Contents
 
